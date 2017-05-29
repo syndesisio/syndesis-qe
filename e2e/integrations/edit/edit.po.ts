@@ -1,6 +1,5 @@
 import { SyndesisComponent } from '../../common/common';
 import { element, by, ElementFinder } from 'protractor';
-import { CallbackStepDefinition } from 'cucumber';
 import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
@@ -42,6 +41,18 @@ export class FlowViewComponent implements SyndesisComponent {
     type = type.toLowerCase();
     const e = await this.rootElement().element(by.css(`div.row.steps.${type}`));
     return new FlowConnection(type, e);
+  }
+}
+
+export class IntegrationStepComponent implements SyndesisComponent {
+  rootElement(): ElementFinder {
+    return $('syndesis-integrations-step-select');
+  }
+
+  selectStep(name: string): P<any> {
+    log.info(`selecting integration step ${name}`);
+    const step = this.rootElement().element(by.cssContainingText('div.list-group-item-heading', name));
+    return step.click();
   }
 }
 

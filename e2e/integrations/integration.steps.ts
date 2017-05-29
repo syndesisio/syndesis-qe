@@ -4,6 +4,7 @@
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
+import { IntegrationEditPage, IntegrationStepComponent, ListActionsComponent } from '../integrations/edit/edit.po';
 import { IntegrationEditPage, ListActionsComponent } from '../integrations/edit/edit.po';
 import { IntegrationAddStepPage, StepFactory } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
@@ -55,10 +56,18 @@ class IntegrationSteps {
     return page.selectAction(action);
   }
 
+
   @when(/^Camilla deletes the "([^"]*)" integration*$/)
   public deleteIntegration(integrationName: string): P<any> {
     const listComponent = new IntegrationsListComponent();
     return this.world.app.clickDeleteIntegration(integrationName, listComponent.rootElement());
+  }
+
+
+  @when(/^she selects "([^"]*)" integration step$/)
+  public selectIntegrationStep(stepName: string): P<any> {
+    const page = new IntegrationStepComponent();
+    return page.selectStep(stepName);
   }
 
   @then(/^Integration "([^"]*)" is present in integrations list$/)
