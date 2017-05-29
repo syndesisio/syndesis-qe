@@ -41,7 +41,7 @@ cube.namespace().withCloud('openshift').withPrefix('e2e').inside {
 
                         stage ('End to End Tests')
                         container(name: 'yarn') {
-                            git url: 'https://github.com/syndesisio/syndesis-ui.git'
+                            git url: 'https://github.com/syndesisio/syndesis-e2e-tests.git'
                             writeFile(file: 'e2e/data/users.json', text: "${users}")
                             try {
                                 sh """
