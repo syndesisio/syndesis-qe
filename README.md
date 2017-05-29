@@ -3,31 +3,45 @@
 To run tests first start local web server
 ```bash
 yarn
-yarn start
+yarn webdriver-manager update
 ```
 
-create `e2e/data/users.json` file with your github login credentials
+#### GitHub credentials
 
-launch tests using local dev server `http://localhost:4200`
+Create `e2e/data/users.json` file with your GitHub login credentials
+```json
+{
+  "users": {
+    "camilla": {
+      "username": "<GITHUB_USERNAME>",
+      "password": "<GITHUB_PASSWORD>"
+    }
+  }
+}
+```
+Alternatively you can define credentials through env variables
 ```bash
-yarn e2e
+export SYNDESIS_CAMILLA_USERNAME='CamillaOfGit'
+export SYNDESIS_CAMILLA_PASSWORD='topSecret'
 ```
 
-launch tests using remote web ui
+
+#### Test environment configuration
+Define env variable that points to your Syndesis UI web console
 ```bash
-export SYNDESIS_UI_URL='https://syndesis-qe.b6ff.rh-idev.openshiftapps.com/'
+export SYNDESIS_UI_URL='https://<SYNDESIS_UI_URL>'
 yarn e2e:syndesis-qe
 ```
 
-alternatively launch tests in Docker container with Xvfb
+Alternatively execute tests in Docker container with Xvfb
 ```bash
-export SYNDESIS_UI_URL='https://syndesis-qe.b6ff.rh-idev.openshiftapps.com/'
+export SYNDESIS_UI_URL='https://<SYNDESIS_UI_URL>'
 yarn e2e:xvfb
 ```
 
 
-## Launch subset of cucumber tests
-Tests (`*.feature) files can have something like java annotations.
+#### Execute subset of cucumber tests
+Tests `*.feature` files can have something like java annotations.
 In the cucumber docs it's called [tags](https://github.com/cucumber/cucumber/wiki/Tags).
 
 
