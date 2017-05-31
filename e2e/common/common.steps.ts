@@ -99,6 +99,14 @@ class CommonSteps {
       .catch((e) => callback(e));
   }
 
+  @when(/clicks? on the random "([^"]*)" link.*$/)
+  public clickOnLinkRandom(linkTitle: string, callback: CallbackStepDefinition): void {
+    this.world.app.clickLinkRandom(linkTitle)
+      .then(() => callback())
+      // it may fail but we still want to let tests continue
+      .catch((e) => callback(e));
+  }
+
   @then(/^she is presented with the "([^"]*)" button.*$/)
   public expectButtonPresent(buttonTitle: string, callback: CallbackStepDefinition): void {
 
