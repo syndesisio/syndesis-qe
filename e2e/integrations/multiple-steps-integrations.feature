@@ -24,7 +24,7 @@ Feature: Test to verify advanced integration with multiple steps
     Then she selects "Filter" step
     And she is presented with a "Filter" step configure page
     Then she fill configure page for "Filter" step with "filter" parameter
-    And click on the "Nexte" button
+    And click on the "Next" button
     
     When click on the "Save" button
     And she defines integration name "One step integration"
