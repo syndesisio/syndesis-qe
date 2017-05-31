@@ -1,5 +1,3 @@
-@Library('syndesis-pipeline-library@master')
-
 def username = System.getenv().get('GITHUB_USERNAME')
 def password = System.getenv().get('GITHUB_PASSWORD')
 def openshiftMaster = System.getenv().get('OPENSHIFT_MASTER')
