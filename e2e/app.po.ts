@@ -104,7 +104,7 @@ export class AppPage {
   clickButton(buttonTitle: string): P<any> {
     log.info(`clicking button ${buttonTitle}`);
     const buttonElement = this.getButton(buttonTitle);
-    browser.wait(ExpectedConditions.presenceOf(buttonElement), 10000, 'Wait for button');
+    browser.wait(ExpectedConditions.visibilityOf(buttonElement), 10000, 'Wait for button');
     return buttonElement.click();
   }
 
