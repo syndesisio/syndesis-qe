@@ -1,4 +1,4 @@
-import { by, browser, element, ExpectedConditions, ElementFinder } from 'protractor';
+import { by, browser, element, ExpectedConditions, ElementFinder, ElementArrayFinder } from 'protractor';
 import * as webdriver from 'selenium-webdriver';
 import { Promise as P } from 'es6-promise';
 import { User, UserDetails } from './common/common';
@@ -103,7 +103,10 @@ export class AppPage {
 
   clickButton(buttonTitle: string): P<any> {
     log.info(`clicking button ${buttonTitle}`);
-    return this.getButton(buttonTitle).click();
+    const buttonElement = this.getButton(buttonTitle);
+    return browser.wait(ExpectedConditions.visibilityOf(buttonElement), 6000, 'No button visible')
+      .then(() =>  this.getButton(buttonTitle).click())
+      .catch((e) => P.reject(e) );
   }
 
   getLink(linkTitle: string): ElementFinder {
@@ -111,9 +114,22 @@ export class AppPage {
     return element(by.linkText(linkTitle));
   }
 
+  getLinks(linkTitle: string): ElementArrayFinder {
+    log.info(`searching for links ${linkTitle}`);
+    return element.all(by.linkText(linkTitle));
+  }
+
   clickLink(linkTitle: string): P<any> {
     log.info(`clicking link ${linkTitle}`);
     return this.getLink(linkTitle).click();
+  }
+
+  clickLinkRandom(linkTitle: string): P<any> {
+    log.info(`clicking on one of links ${linkTitle}`);
+    const links = this.getLinks(linkTitle);
+    return links.count().then(function (count) {
+      links.get(Math.floor(Math.random() * count)).click();
+    });
   }
 
   getElementByClassName(elementClassName: string): ElementFinder {
