@@ -20,8 +20,10 @@ inNamespace(cloud:'openshift', prefix: 'e2e') {
     createEnvironment(
           environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
           environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
-          servicesToWait: ['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak', 'syndesis-verifier'],
-          waitTimeout: 600000L)
+          waitForServiceList: ['syndesis-rest', 'syndesis-ui'],
+          waitTimeout: 600000L,
+          namespaceCleanupEnabled: false,
+     			namespaceDestroyEnabled: false)
   }
 
   slave {
