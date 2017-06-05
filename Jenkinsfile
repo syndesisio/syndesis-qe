@@ -13,7 +13,8 @@ def users = """
   }
 }
 """
-cube.namespace().withCloud('openshift').withPrefix('e2e').inside {
+node {
+    inNamespace(cloud:'openshift', prefix: 'e2e') {
 
     env = []
     env.add(containerEnvVar(key:'NAMESPACE_USE_EXISTING', value: "${KUBERNETES_NAMESPACE}"))
@@ -27,15 +28,14 @@ cube.namespace().withCloud('openshift').withPrefix('e2e').inside {
             withYarn(envVar: env) {
                     inside {
                         stage 'Prepare Environment'
-                        cube.environment()
-                            .withName("${KUBERNETES_NAMESPACE}")
-                            .withSetupScriptUrl('https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh')
-                            .withTeardownScriptUrl('https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh')
-                            .withServicesToWait(['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak', 'syndesis-verifier'])
-                            .withWaitTimeout(2400000L)
-                            .withNamespaceDestroyEnabled(false)
-                            .withNamespaceCleanupEnabled(false)
-                            .create()
+                        createEnvironment(cloud: 'openshift', name: "${KUBERNETES_NAMESPACE}",
+                                    setupScriptUrl: 'https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh',
+                                    teardownScriptUrl: 'https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh',
+                                    servicesToWait: ['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak', 'syndesis-verifier'],
+                                    waitTimeout: 600000L,
+                                    namespaceDestroyEnabled: false,
+                                    namespaceCleanupEnabled: false)
+
 
                         stage ('End to End Tests')
                         container(name: 'yarn') {
@@ -58,3 +58,4 @@ cube.namespace().withCloud('openshift').withPrefix('e2e').inside {
             }
         }
     }
+}
