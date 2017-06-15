@@ -13,7 +13,7 @@ def users = """
   }
 }
 """
-cube.namespace().withCloud('openshift').withPrefix('e2e').inside {
+ inNamespace(cloud: 'openshift', prefix: 'e2e') {
 
     env = []
     env.add(containerEnvVar(key:'NAMESPACE_USE_EXISTING', value: "${KUBERNETES_NAMESPACE}"))
@@ -27,15 +27,14 @@ cube.namespace().withCloud('openshift').withPrefix('e2e').inside {
             withYarn(envVar: env) {
                     inside {
                         stage 'Prepare Environment'
-                        cube.environment()
-                            .withName("${KUBERNETES_NAMESPACE}")
-                            .withSetupScriptUrl('https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh')
-                            .withTeardownScriptUrl('https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh')
-                            .withServicesToWait(['syndesis-rest', 'syndesis-ui' ])
-                            .withWaitTimeout(600000L)
-                            .withNamespaceDestroyEnabled(false)
-                            .withNamespaceCleanupEnabled(false)
-                            .create()
+			          createEnvironment(
+            				cloud: 'openshift',
+            				environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
+            				environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
+            				waitForServiceList: ['syndesis-rest', 'syndesis-ui'],
+           				waitTimeout: 600000L,
+            				namespaceCleanupEnabled: false,
+            				namespaceDestroyEnabled: false)
 
                         stage ('End to End Tests')
                         container(name: 'yarn') {
