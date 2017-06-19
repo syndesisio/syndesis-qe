@@ -37,7 +37,7 @@ inNamespace(cloud:'openshift', prefix: 'e2e') {
               writeFile(file: 'e2e/data/users.json', text: "${users}")
               try {
                 sh """
-                export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
+                export SYNDESIS_UI_URL=https://syndesis-qe.b6ff.rh-idev.openshiftapps.com
                 ./e2e-xvfb.sh
                 """
               } catch(err) {
