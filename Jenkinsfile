@@ -18,6 +18,7 @@ inNamespace(cloud:'openshift', prefix: 'e2e') {
   node {
     stage 'Prepare test environment'
     createEnvironment(
+          scriptEnvironmentVariables: ['SYNDESIS_TEMPLATE_TYPE': 'syndesis-ci'],
           environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
           environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
           waitForServiceList: ['syndesis-rest', 'syndesis-ui'],
@@ -37,7 +38,7 @@ inNamespace(cloud:'openshift', prefix: 'e2e') {
               writeFile(file: 'e2e/data/users.json', text: "${users}")
               try {
                 sh """
-                export SYNDESIS_UI_URL=https://syndesis-qe.b6ff.rh-idev.openshiftapps.com
+                export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
                 ./e2e-xvfb.sh
                 """
               } catch(err) {
