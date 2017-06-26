@@ -9,7 +9,8 @@ export class DataMapperComponent implements SyndesisComponent {
 
 
   /**
-   * Eventually returns true if DataMapper UI is loaded
+   * Eventually returns count of found datamapper fields.
+   *
    * @returns {wdpromise.Promise<boolean>}
    */
   async fieldsCount(): P<number> {
@@ -19,9 +20,8 @@ export class DataMapperComponent implements SyndesisComponent {
 
     const isPresent = await countElement.isPresent();
     const count = await countElement.getText();
-
+    // "77 fields" > 77
     const regex = /(\d+) /;
-
     const found = regex.exec(count);
     if (found.length !== 2) {
       throw new Error(`failed to get files number from ${count}`);

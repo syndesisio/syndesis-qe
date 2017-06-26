@@ -11,8 +11,6 @@ class DataMapperSteps {
 
   @then(/^she is presented with data mapper ui$/)
   public dataMapperUIpresent(): P<any> {
-    // Write code here that turns the phrase above into concrete actions
-
 
     const component = new DataMapperComponent();
 

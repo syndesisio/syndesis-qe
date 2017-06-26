@@ -4,11 +4,9 @@
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationEditPage, IntegrationStepComponent, ListActionsComponent } from '../integrations/edit/edit.po';
-import { IntegrationEditPage, ListActionsComponent } from '../integrations/edit/edit.po';
-import { IntegrationAddStepPage, StepFactory } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
-import { IntegrationsListPage, IntegrationsListComponent } from '../integrations/list/list.po';
+import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 
 /**
  * Created by jludvice on 1.3.17.
@@ -63,11 +61,11 @@ class IntegrationSteps {
     return this.world.app.clickDeleteIntegration(integrationName, listComponent.rootElement());
   }
 
-
   @when(/^she selects "([^"]*)" integration step$/)
-  public selectIntegrationStep(stepName: string): P<any> {
-    const page = new IntegrationStepComponent();
-    return page.selectStep(stepName);
+  public addStep (stepName: string): P<any> {
+    log.info(`Adding ${stepName} step to integration`);
+    const page = new IntegrationAddStepPage();
+    return page.addStep(stepName);
   }
 
   @then(/^Integration "([^"]*)" is present in integrations list$/)
@@ -101,13 +99,6 @@ class IntegrationSteps {
       .to.eventually.be.true;
     expect(page.validate(), 'page must contain certain elements')
       .to.eventually.be.true;
-  }
-
-  @then(/^she selects "([^"]*)" step$/)
-  public addStep (stepName: string): P<any> {
-    log.info(`Adding ${stepName} step to integration`);
-    const page = new IntegrationAddStepPage();
-    return page.addStep(stepName);
   }
 
   @then(/^she fill configure page for "([^"]*)" step with "([^"]*)" parameter$/)
