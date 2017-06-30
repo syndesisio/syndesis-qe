@@ -101,6 +101,16 @@ export class AppPage {
     return element(by.buttonText(buttonTitle));
   }
 
+  getFirstVisibleButton(buttonTitle: string): ElementFinder {
+    log.info(`searching for first visible button ${buttonTitle}`);
+    const allButtonsByTitle = element.all(by.buttonText(buttonTitle));
+    return allButtonsByTitle.filter(function(elem) {
+      return elem.isDisplayed().then(function(displayedElement){
+        return displayedElement;
+      });
+    }).first();
+  }
+
   clickButton(buttonTitle: string): P<any> {
     log.info(`clicking button ${buttonTitle}`);
     const buttonElement = this.getButton(buttonTitle);
@@ -132,9 +142,19 @@ export class AppPage {
     });
   }
 
+  getElementByCssSelector(cssSelector: string): ElementFinder {
+    log.info(`searching for element by ${cssSelector}`);
+    return element(by.css(cssSelector));
+  }
+
   getElementByClassName(elementClassName: string): ElementFinder {
     log.info(`searching for element ${elementClassName}`);
     return element(by.className(elementClassName));
+  }
+
+  getElementsByClassName(elementClassName: string): ElementArrayFinder {
+    log.info(`searching for elements by class name ${elementClassName}`);
+    return element.all(by.className(elementClassName));
   }
 
   getTitleByText(text: string): ElementFinder {

@@ -6,6 +6,7 @@ import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
 import { IntegrationEditPage, ListActionsComponent } from '../integrations/edit/edit.po';
 import { IntegrationAddStepPage, StepFactory } from '../integrations/edit/edit.po';
+import { IntegrationConfigureLogStepPage, IntegrationConfigureFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListPage, IntegrationsListComponent } from '../integrations/list/list.po';
 
@@ -106,6 +107,52 @@ class IntegrationSteps {
     const stepFactory = new StepFactory();
     const page = stepFactory.getStep(stepType, paremeter);
     return page.fillConfiguration();
+  }
+
+  @then(/^she delete one randomm step and check rest$/)
+  public deleteRandomStepAndCheckRest (): void {
+
+    this.getStepsArray().then((array) => {
+      const trashes = this.world.app.getElementsByClassName('delete-icon');
+
+      trashes.count().then((count) => {
+        const randomIndex = Math.floor((Math.random() * (count - 2)));
+        return randomIndex;
+      }).then((randomIndex) => {
+        trashes.get(randomIndex + 1).click();
+        this.world.app.getFirstVisibleButton('Delete').click();
+
+        this.getStepsArray().then((array2) => {
+          array.splice(randomIndex, 1);
+          for (let i = 0; i < array.length; i++) {
+            log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+            expect(array[i]).to.be.equal(array2[i]);
+          }
+        });
+      });
+    });
+  }
+
+  public getStepsArray (): P<any> {
+    const stepFactory = new StepFactory();
+    const steps = this.world.app.getElementsByClassName('parent-step');
+
+    return steps.count().then((count) => {
+      const stepsArray = new Array();
+      for (let i = 1; i < (count - 1); i++) {
+        steps.get(i).click();
+        const title = this.world.app.getElementByCssSelector("span[class='parent-step active']");
+
+        title.getText().then((text) => {
+          const stepPage = stepFactory.getStep(text, '');
+
+          stepPage.initialize().then(() => {
+            stepsArray.push(stepPage.getParameter());
+          });
+        });
+      }
+      return stepsArray;
+    });
   }
 }
 

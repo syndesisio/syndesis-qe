@@ -147,6 +147,12 @@ export abstract class IntegrationConfigureStepPage implements SyndesisComponent 
   abstract fillConfiguration(): P<any>;
 
   abstract validate(): P<any>;
+
+  abstract initialize(): P<any>;
+
+  abstract setParameter(parameter: string): void;
+
+  abstract getParameter(): string;
 }
 
 export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPage {
@@ -168,14 +174,32 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
     return this.getMessageInput().isPresent();
   }
 
+  initialize(): P<any> {
+    return this.getMessageInputValue().then((function(text) {
+      this.setParameter(text);
+    }).bind(this));
+  }
+
   setMessage(message: string): P<any> {
     log.info(`setting integration step message to ${message}`);
     return this.rootElement().$(IntegrationConfigureLogStepPage.messageSelector).sendKeys(message);
   }
 
+  setParameter(logMessage: string): void {
+    this.logMessage = logMessage;
+  }
+
   getMessageInput(): ElementFinder {
     log.debug(`searching for message input`);
     return this.rootElement().$(IntegrationConfigureLogStepPage.messageSelector);
+  }
+
+  getMessageInputValue(): P<any> {
+    return this.getMessageInput().getAttribute('value');
+  }
+
+  getParameter(): string {
+    return this.logMessage;
   }
 }
 
@@ -190,7 +214,7 @@ export class IntegrationConfigureFilterStepPage extends IntegrationConfigureStep
   }
 
   fillConfiguration(): P<any> {
-    return this.setFilter(this.filterCondition);
+    return this.setFilterCondition(this.filterCondition);
   }
 
   validate(): P<any> {
@@ -198,15 +222,31 @@ export class IntegrationConfigureFilterStepPage extends IntegrationConfigureStep
     return this.getFilterDefinitioTextArea().isPresent();
   }
 
-  setFilter(filterCondition: string): P<any> {
+  initialize(): P<any> {
+    return this.getFilterDefinitioTextAreaValue().then((function(text) {
+      this.setParameter(text);
+    }).bind(this));
+  }
+
+  setFilterCondition(filterCondition: string): P<any> {
     log.info(`setting integration filter step condition to ${filterCondition}`);
     return this.rootElement().$(IntegrationConfigureFilterStepPage.filterSelector).sendKeys(filterCondition);
+  }
+
+  setParameter(filterCondition: string): void {
+    this.filterCondition = filterCondition;
   }
 
   getFilterDefinitioTextArea(): ElementFinder {
     log.debug(`searching filter definition text area`);
     return this.rootElement().$(IntegrationConfigureFilterStepPage.filterSelector);
   }
+
+  getFilterDefinitioTextAreaValue(): P<any> {
+    return this.getFilterDefinitioTextArea().getAttribute('value');
+  }
+
+  getParameter(): string {
+    return this.filterCondition;
+  }
 }
-
-
