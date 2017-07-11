@@ -1,4 +1,4 @@
-import { binding, then } from 'cucumber-tsflow';
+import { binding, then, when } from 'cucumber-tsflow';
 import { expect, P, World } from '../common/world';
 import { DataMapperComponent } from './edit/datamapper.po';
 
@@ -7,6 +7,13 @@ import { DataMapperComponent } from './edit/datamapper.po';
 class DataMapperSteps {
 
   constructor(private world: World) {
+  }
+
+  @when(/^she creates mapping from "([^"]*)" to "([^"]*)"$/)
+  public createMapping(source: string, target: string): P<any> {
+
+    const mapper = new DataMapperComponent();
+    return mapper.createMapping(source, target);
   }
 
   @then(/^she is presented with data mapper ui$/)

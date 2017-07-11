@@ -31,6 +31,26 @@ export SYNDESIS_CAMILLA_USERNAME='CamillaOfGit'
 export SYNDESIS_CAMILLA_PASSWORD='topSecret'
 ```
 
+Create json config file `${PROJECT_ROOT}/test_config.json` with connection credentials
+or specify `export SYNDESIS_TEST_CONFIG=/path/to/test-config.json` 
+```json
+{
+  "connection": {
+    "Twitter Listener": {
+      "accessToken": "YOUR_SECRET_DATA",
+      "accessTokenSecret": "YOUR_SECRET_DATA",
+      "consumerKey": "YOUR_SECRET_DATA",
+      "consumerSecret": "YOUR_SECRET_DATA"
+    },
+    "QE Salesforce": {
+      "clientId": "YOUR_SECRET_DATA",
+      "clientSecret": "YOUR_SECRET_DATA",
+      "password": "YOUR_SECRET_DATA",
+      "userName": "YOUR_SECRET_DATA"
+    }
+  }
+}
+```
 
 #### Test environment configuration
 Define env variable that points to your Syndesis UI web console

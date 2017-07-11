@@ -39,6 +39,9 @@ testem.log
 /e2e/*.map
 /e2e/cucumber-reports
 
+# test config with login credentials and other stuff
+test_config.json
+
 #System Files
 .DS_Store
 Thumbs.db
