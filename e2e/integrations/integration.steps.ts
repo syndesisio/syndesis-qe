@@ -109,21 +109,25 @@ class IntegrationSteps {
     return page.fillConfiguration();
   }
 
-  @then(/^she delete one randomm step and check rest$/)
-  public deleteRandomStepAndCheckRest (): void {
+  @then(/^she delete "([^"]*)" randomm steps and check rest$/)
+  public deleteRandomStepsAndCheckRest (numberOfSteps: number): void {
 
     this.getStepsArray().then((array) => {
       const trashes = this.world.app.getElementsByClassName('delete-icon');
 
       trashes.count().then((count) => {
-        const randomIndex = Math.floor((Math.random() * (count - 2)));
-        return randomIndex;
-      }).then((randomIndex) => {
-        trashes.get(randomIndex + 1).click();
-        this.world.app.getFirstVisibleButton('Delete').click();
-
-        this.getStepsArray().then((array2) => {
+        const randomIndexes = [];
+        for (let i = 0; i < numberOfSteps; i++) {
+          randomIndexes.push(Math.floor((Math.random() * (count - 2 - i))));
+        }
+        return randomIndexes;
+      }).then((randomIndexes) => {
+        for (const randomIndex of randomIndexes) {
+          trashes.get(randomIndex + 1).click();
+          this.world.app.getFirstVisibleButton('Delete').click();
           array.splice(randomIndex, 1);
+        }
+        this.getStepsArray().then((array2) => {
           for (let i = 0; i < array.length; i++) {
             log.info(`assserting "${array[i]}" and "${array2[i]}"`);
             expect(array[i]).to.be.equal(array2[i]);

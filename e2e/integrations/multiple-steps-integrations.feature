@@ -118,8 +118,43 @@ Feature: Test to verify advanced integration with multiple steps
     Then she fill configure page for "Log" step with "log 2" parameter
     And click on the "Next" button
     
-    Then she delete one randomm step and check rest
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Log" step
+    And she is presented with a "Log" step configure page
+    Then she fill configure page for "Log" step with "log 3" parameter
     And click on the "Next" button
+    
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Log" step
+    And she is presented with a "Log" step configure page
+    Then she fill configure page for "Log" step with "log 4" parameter
+    And click on the "Next" button
+    
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Filter" step
+    And she is presented with a "Filter" step configure page
+    Then she fill configure page for "Filter" step with "filter 3" parameter
+    And click on the "Next" button
+    
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Filter" step
+    And she is presented with a "Filter" step configure page
+    Then she fill configure page for "Filter" step with "filter 4" parameter
+    And click on the "Next" button
+    
+    Then she delete "1" randomm steps and check rest
+    And click on the "Next" button
+    Then she delete "3" randomm steps and check rest
+    And click on the "Next" button
+    
     Then "Camilla" navigates to the "Home" page
   	
   	
