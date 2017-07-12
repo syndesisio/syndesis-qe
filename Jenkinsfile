@@ -29,12 +29,14 @@ node {
 
           slave {
             withOpenshift() {
+              def test_config = sh returnStdout: true, script: 'oc get cm e2e-test-config -o jsonpath="{ .data.test_config\\\\\\.json }" -n syndesis-ci'
               withYarn() {
                 inside{
                     stage ('End to End Tests')
                     container(name: 'yarn') {
                       checkout scm
                       writeFile(file: 'e2e/data/users.json', text: "${users}")
+                      writeFile(file: 'test_config.json', text: "${test_config}")
                       try {
                         sh """
                         export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
