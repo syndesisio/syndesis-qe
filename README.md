@@ -47,7 +47,8 @@ or specify `export SYNDESIS_TEST_CONFIG=/path/to/test-config.json`
       "clientSecret": "YOUR_SECRET_DATA",
       "password": "YOUR_SECRET_DATA",
       "userName": "YOUR_SECRET_DATA"
-    }
+    },
+    "Twitter" : "..."
   }
 }
 ```
