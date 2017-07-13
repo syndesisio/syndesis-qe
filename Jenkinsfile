@@ -29,7 +29,7 @@ node {
 
           slave {
             withOpenshift() {
-              def test_config = sh returnStdout: true, script: 'oc get cm e2e-test-config -o jsonpath="{ .data.test_config\\\\\\.json }" -n syndesis-ci'
+              def test_config = sh returnStdout: true, script: "oc get cm e2e-test-config -o jsonpath=\"{ .data.test_config }\" -n syndesis-ci"
               withYarn() {
                 inside{
                     stage ('End to End Tests')
