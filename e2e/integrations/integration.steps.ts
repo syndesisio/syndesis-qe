@@ -109,7 +109,53 @@ class IntegrationSteps {
     return page.fillConfiguration();
   }
 
-  @then(/^she delete "([^"]*)" randomm steps and check rest$/)
+  @then(/^she adds "([^"]*)" random steps and then check the structure$/)
+  public addRandomStepsAndCheckRest (numberOfSteps: number): void {
+
+    this.getStepsArray().then((array) => {
+      this.world.app.clickButton('Next');
+      this.world.app.clickButton('Add a Step');
+
+      const links = this.world.app.getLinks('Add a step');
+
+      links.count().then((count) => {
+        log.info(`links "${count}"`);
+
+        const randomIndexes = [];
+        for (let i = 0; i < numberOfSteps; i++) {
+          randomIndexes.push(Math.floor((Math.random() * count)));
+        }
+        return randomIndexes;
+      }).then((randomIndexes) => {
+        const page = new IntegrationAddStepPage();
+
+        for (const randomIndex of randomIndexes) {
+          links.get(randomIndex).click();
+
+          const steType = 'Filter';
+          const stepParameter = 'filter x' + randomIndex;
+
+          page.addStep(steType);
+          const stepFactory = new StepFactory();
+          const stepPage = stepFactory.getStep(steType, stepParameter);
+          stepPage.fillConfiguration();
+
+          this.world.app.clickButton('Next');
+          this.world.app.clickButton('Add a Step');
+
+          array.splice(randomIndex, 0, stepParameter);
+        }
+        this.getStepsArray().then((array2) => {
+          for (let i = 0; i < array2.length; i++) {
+            log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+            expect(array[i]).to.be.equal(array2[i]);
+          }
+        });
+      });
+    });
+  }
+
+  @then(/^she delete "([^"]*)" random steps and check rest$/)
   public deleteRandomStepsAndCheckRest (numberOfSteps: number): void {
 
     this.getStepsArray().then((array) => {
