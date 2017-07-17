@@ -10,9 +10,6 @@ import { IntegrationConfigureLogStepPage, IntegrationConfigureFilterStepPage } f
 import { log } from '../../src/app/logging';
 import { IntegrationsListPage, IntegrationsListComponent } from '../integrations/list/list.po';
 
-/**
- * Created by jludvice on 1.3.17.
- */
 @binding([World])
 class IntegrationSteps {
 

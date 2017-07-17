@@ -160,6 +160,3 @@ Feature: Test to verify advanced integration with multiple steps
     And click on the "Next" button
 
     Then "Camilla" navigates to the "Home" page
-  	
-  	
-  	
