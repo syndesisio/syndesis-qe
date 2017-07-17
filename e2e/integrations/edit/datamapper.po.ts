@@ -1,5 +1,5 @@
 import { SyndesisComponent } from '../../common/common';
-import { $, browser, ElementFinder, ExpectedConditions} from 'protractor';
+import { $, browser, ElementFinder, ExpectedConditions } from 'protractor';
 import { P } from '../../common/world';
 import { log } from '../../../src/app/logging';
 
@@ -16,7 +16,8 @@ export class DataMapperComponent implements SyndesisComponent {
     log.info('searching for columns');
 
     const loadedSelector = this.rootElement().$('div.card-pf-heading.fieldsCount');
-    browser.wait(ExpectedConditions.presenceOf(loadedSelector), 1000, 'wait for datamapper to load');
+    // thanks to await it will propagate possible error in reasonable way
+    await browser.wait(ExpectedConditions.presenceOf(loadedSelector), 1000, 'waiting for datamapper full load failed');
 
     log.info(`datamapper loaded`);
     const elements = await this.rootElement().$$('div.docDef');
