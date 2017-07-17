@@ -1,6 +1,9 @@
 def username = System.getenv().get('GITHUB_USERNAME')
 def password = System.getenv().get('GITHUB_PASSWORD')
 def namespace = System.getenv().get('E2E_NAMESPACE')
+def clientId = System.getenv().get('GITHUB_E2E_OAUTH_CLIENT_ID')
+def clientSecret = System.getenv().get('GITHUB_E2E_OAUTH_CLIENT_SECRET')
+
 
 def users = """
 {
@@ -16,19 +19,25 @@ def users = """
 node {
   inNamespace(cloud: 'openshift', name: "${namespace}") {
 
-          stage 'Prepare test environment'
-          createEnvironment(
-                cloud: 'openshift',
-                scriptEnvironmentVariables: ['SYNDESIS_E2E_SECRET': 'true'],
-                environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
-                environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
-                waitForServiceList: ['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak'],
-                waitTimeout: 600000L,
-                namespaceCleanupEnabled: true,
-                namespaceDestroyEnabled: true)
-
           slave {
-            withOpenshift() {
+            withOpenshift( envVars: [
+                    containerEnvVar(key:'SYNDESIS_E2E_SECRET', value:'true'),
+                    containerEnvVar(key:'GITHUB_OAUTH_CLIENT_ID', value: "${clientId}"),
+                    containerEnvVar(key:'GITHUB_OAUTH_CLIENT_SECRET', value: "${clientSecret}")]
+            ) {
+              inside {
+              stage 'Prepare test environment'
+              createEnvironment(
+                    cloud: 'openshift',
+                    scriptEnvironmentVariables: ['SYNDESIS_E2E_SECRET':'true','GITHUB_E2E_OAUTH_CLIENT_ID':"${clientId}",'GITHUB_E2E_OAUTH_CLIENT_SECRET':"${clientSecret}"],
+                    environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
+                    environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
+                    waitForServiceList: ['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak'],
+                    waitTimeout: 600000L,
+                    namespaceCleanupEnabled: true,
+                    namespaceDestroyEnabled: true)
+              }
+
               def test_config = sh returnStdout: true, script: "oc get cm e2e-test-config -o jsonpath=\"{ .data.test_config }\" -n syndesis-ci"
               withYarn() {
                 inside{
