@@ -154,6 +154,8 @@ export class AppPage {
 
     parentElement.first().element(by.id('dropdownKebabRight9')).click();
     this.rootElement.element(by.linkText('Delete')).click();
+    browser.wait(ExpectedConditions.visibilityOf(this.rootElement.element(by.css('div.modal.fade.in'))), 30 * 1000,
+      'Modal not loaded in time');
     return this.rootElement.element(by.buttonText('Delete')).click();
   }
 
