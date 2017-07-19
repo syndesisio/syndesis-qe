@@ -9,6 +9,8 @@ import { IntegrationAddStepPage, StepFactory } from '../integrations/edit/edit.p
 import { log } from '../../src/app/logging';
 import { IntegrationsListPage, IntegrationsListComponent } from '../integrations/list/list.po';
 
+import { element, by, ElementFinder, browser, ExpectedConditions } from 'protractor';
+
 /**
  * Created by jludvice on 1.3.17.
  */
@@ -107,8 +109,15 @@ class IntegrationSteps {
     const page = stepFactory.getStep(stepType, paremeter);
     return page.fillConfiguration();
   }
+
+  @then(/^she is presented with an actions list$/)
+  public expectActionListIsPresent(): void {
+      const page = new ListActionsComponent();
+      browser.wait(ExpectedConditions.visibilityOf(page.rootElement()), 5000, 'Actions List not loaded');
+      expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
+        .to.eventually.be.true;
+  }
 }
 
 
 export = IntegrationSteps;
-
