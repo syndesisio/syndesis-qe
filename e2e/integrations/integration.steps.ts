@@ -129,8 +129,8 @@ class IntegrationSteps {
         for (const randomIndex of randomIndexes) {
           links.get(randomIndex).click();
 
-          const steType = 'Filter';
-          const stepParameter = 'filter x' + randomIndex;
+          const steType = 'Log';
+          const stepParameter = 'log x' + randomIndex;
 
           page.addStep(steType);
           const stepFactory = new StepFactory();
