@@ -1,2027 +1,2099 @@
 ﻿[
   {
-    "kind": "integration",
     "data": {
-      "configuration": "",
-      "users": [],
-      "steps": [
+      "actions": [
         {
-          "action": {
-            "connectorId": "com.redhat.ipaas:twitter-mention-connector:latest",
-            "properties": {},
-            "description": "Connection from twitter when anyone mention you",
-            "camelConnectorGAV": "com.redhat.ipaas:twitter-mention-connector:0.3.6",
-            "camelConnectorPrefix": "twitter-mention",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "java",
-              "type": "twitter4j.Status"
-            },
-            "id": "1",
-            "name": "Twitter Mention"
+          "camelConnectorGAV": "io.syndesis:day-trade-place-connector:0.4.4",
+          "camelConnectorPrefix": "day-trade-place",
+          "description": "Place trade on Day Trade API server",
+          "id": "io.syndesis:day-trade-place-connector:latest",
+          "inputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.daytrade.Trade"
           },
-          "connection": {
-            "connectorId": "twitter",
-            "configuredProperties": {
-              "accessToken": "",
-              "accessTokenSecret": "",
-              "consumerKey": "",
-              "consumerSecret": ""
-            },
-            "options": {},
-            "icon": "fa-twitter",
-            "description": "Twitter Connection",
-            "id": "1",
-            "name": "Twitter Example"
+          "name": "Place Trade",
+          "outputDataShape": {
+            "kind": "none"
           },
-          "stepKind": "endpoint",
-          "id": "1"
+          "properties": {}
         },
         {
-          "stepKind": "filter",
-          "configuredProperties": {
-            "filter": "in.body contains \"#RHSummit\""
+          "camelConnectorGAV": "io.syndesis:day-trade-place-connector:0.4.4",
+          "camelConnectorPrefix": "day-trade-place",
+          "description": "Retrieve a trade on Day Trade API server",
+          "id": "io.syndesis:day-trade-place-connector:latest",
+          "inputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.daytrade.Trade"
           },
-          "id": "2"
+          "name": "Retrieve Trade",
+          "outputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.daytrade.Trade"
+          },
+          "properties": {}
         },
         {
-          "stepKind": "mapper",
-          "configuredProperties": {
-            "atlasmapping": "{ \"AtlasMapping\": { \"jsonType\": \"com.mediadriver.atlas.v2.AtlasMapping\", \"properties\": { \"property\": [] }, \"fieldMappings\": { \"fieldMapping\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.SeparateFieldMapping\", \"inputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Name\", \"path\": \"User.name\", \"type\": \"STRING\", \"getMethod\": \"getName\" }, \"fieldActions\": { \"fieldAction\": [] } }, \"outputFields\": { \"mappedField\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"FirstName\", \"path\": \"FirstName\", \"type\": \"STRING\", \"setMethod\": \"setFirstName\" }, \"fieldActions\": { \"fieldAction\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.MapAction\", \"index\": 0 } ] } }, { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"LastName\", \"path\": \"LastName\", \"type\": \"STRING\", \"setMethod\": \"setLastName\" }, \"fieldActions\": { \"fieldAction\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.MapAction\", \"index\": 1 } ] } } ] } }, { \"jsonType\": \"com.mediadriver.atlas.v2.MapFieldMapping\", \"inputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Text\", \"path\": \"Text\", \"type\": \"STRING\", \"getMethod\": \"getText\" }, \"fieldActions\": { \"fieldAction\": [] } }, \"outputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Description\", \"path\": \"description\", \"type\": \"STRING\", \"setMethod\": \"setDescription\" }, \"fieldActions\": { \"fieldAction\": [] } } }, { \"jsonType\": \"com.mediadriver.atlas.v2.MapFieldMapping\", \"inputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"ScreenName\", \"path\": \"User.screenName\", \"type\": \"STRING\", \"getMethod\": \"getScreenName\" }, \"fieldActions\": { \"fieldAction\": [] } }, \"outputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Title\", \"path\": \"Title\", \"type\": \"STRING\", \"setMethod\": \"setTitle\" }, \"fieldActions\": { \"fieldAction\": [] } } } ] }, \"name\": \"twitterStatusToSalesforceContact\", \"sourceUri\": \"atlas:java?className=twitter4j.Status\", \"targetUri\": \"atlas:java?className=com.redhat.ipaas.connector.salesforce.Contact\" } } "
+          "camelConnectorGAV": "io.syndesis:day-trade-place-connector:0.4.4",
+          "camelConnectorPrefix": "day-trade-place",
+          "description": "Get the latest trade on Day Trade API server",
+          "id": "io.syndesis:day-trade-place-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
           },
-          "id": "3"
-        },
-        {
-          "action": {
-            "connectorId": "com.redhat.ipaas:salesforce-upsert-contact-connector:latest",
-            "properties": {},
-            "description": "Connection to Create or Update Salesforce Contact SObject",
-            "camelConnectorGAV": "com.redhat.ipaas:salesforce-upsert-contact-connector:0.3.6",
-            "camelConnectorPrefix": "salesforce-upsert-contact",
-            "inputDataShape": {
-              "kind": "java",
-              "type": "com.redhat.ipaas.connector.salesforce.Contact"
-            },
-            "outputDataShape": {
-              "kind": "none"
-            },
-            "id": "2",
-            "name": "Salesforce Upsert Contact"
+          "name": "Get Latest Trade",
+          "outputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.daytrade.Trade"
           },
-          "connection": {
-            "connectorId": "salesforce",
-            "configuredProperties": {
-              "clientId": "",
-              "clientSecret": "",
-              "loginUrl": "https://login.salesforce.com",
-              "refreshToken": ""
-            },
-            "options": {},
-            "icon": "fa-puzzle-piece",
-            "description": "Salesforce Connection",
-            "id": "2",
-            "name": "Salesforce Example"
-          },
-          "stepKind": "endpoint",
-          "id": "4"
+          "properties": {}
         }
       ],
-      "description": "This is an example of a Twitter to Salesforce integration",
-      "desiredStatus": "Activated",
-      "currentStatus": "Activated",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "1",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Twitter to Salesforce Example"
-    }
+      "description": "Day Trade API connector",
+      "icon": "fa-usd",
+      "id": "day-trade",
+      "name": "Day Trade",
+      "properties": {
+        "api_key": {
+          "componentProperty": false,
+          "deprecated": false,
+          "description": "The API Key used to access the service",
+          "displayName": "API Key",
+          "group": "producer",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "producer",
+          "required": true,
+          "secret": true,
+          "type": "string"
+        },
+        "host": {
+          "componentProperty": false,
+          "deprecated": false,
+          "description": "Host and port of HTTP service to use (override host in swagger schema)",
+          "displayName": "Host",
+          "group": "producer",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "producer",
+          "required": true,
+          "secret": false,
+          "type": "string"
+        }
+      }
+    },
+    "kind": "connector"
   },
   {
-    "kind": "integration",
     "data": {
-      "configuration": "",
-      "users": [],
-      "steps": [
+      "actions": [
         {
-          "action": {
-            "properties": {
-              "period": {
-                "kind": "parameter",
-                "displayName": "Period",
-                "group": "consumer",
-                "required": false,
-                "type": "integer",
-                "javaType": "long",
-                "deprecated": false,
-                "secret": false,
-                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-                "defaultValue": "10000"
-              }
-            },
-            "description": "Set a timer that fires at intervals that you specify",
-            "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-            "camelConnectorPrefix": "periodic-timer",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas_timer-connector:latest",
-            "name": "PeriodicTimer"
+          "camelConnectorGAV": "io.syndesis:facebook-post-connector:0.4.4",
+          "camelConnectorPrefix": "facebook-post",
+          "description": "Creates a post to Facebook",
+          "id": "io.syndesis:facebook-post-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "timer",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Timer Connection",
-            "id": "4",
-            "name": "Timer Example"
+          "name": "Post",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "period": "500"
-          },
-          "id": "5"
+          "properties": {}
         },
         {
-          "stepKind": "log",
-          "configuredProperties": {
-            "loggingLevel": "INFO",
-            "message": "Hello World! ${body}"
+          "camelConnectorGAV": "io.syndesis:facebook-like-connector:0.4.4",
+          "camelConnectorPrefix": "facebook-like",
+          "description": "Like something on Facebook",
+          "id": "io.syndesis:facebook-like-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "id": "6"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-            "camelConnectorPrefix": "http-post",
-            "inputDataShape": {
-              "kind": "any"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-post-connector:latest",
-            "name": "HTTP POST"
+          "name": "Like",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/bye"
-          },
-          "id": "7"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-            "camelConnectorPrefix": "http-get",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-get-connector:latest",
-            "name": "HTTP GET"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/hello"
-          },
-          "id": "8"
+          "properties": {}
         }
       ],
-      "description": "This is an example of a Timed Pull to Post Integration",
-      "desiredStatus": "Activated",
-      "currentStatus": "Activated",
-      "statusMessage": "This integration failed. Please contact system admin for errors.",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "2",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Timed Pull to Post Example"
-    }
+      "description": "Access Facebook social network features such as posts, users, checkins, etc",
+      "icon": "fa-puzzle-piece",
+      "id": "facebook",
+      "name": "Facebook",
+      "properties": {}
+    },
+    "kind": "connector"
   },
   {
-    "kind": "integration",
     "data": {
-      "configuration": "",
-      "users": [],
-      "steps": [
+      "actions": [
         {
-          "action": {
-            "properties": {
-              "period": {
-                "kind": "parameter",
-                "displayName": "Period",
-                "group": "consumer",
-                "required": false,
-                "type": "integer",
-                "javaType": "long",
-                "deprecated": false,
-                "secret": false,
-                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-                "defaultValue": "10000"
-              }
-            },
-            "description": "Set a timer that fires at intervals that you specify",
-            "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-            "camelConnectorPrefix": "periodic-timer",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas_timer-connector:latest",
-            "name": "PeriodicTimer"
+          "camelConnectorGAV": "io.syndesis:ftp-connector:0.4.4",
+          "camelConnectorPrefix": "ftp",
+          "description": "FTP/SFTP/FPTS file transfer",
+          "id": "io.syndesis:ftp-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "timer",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Timer Connection",
-            "id": "4",
-            "name": "Timer Example"
+          "name": "File Transport",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "period": "500"
-          },
-          "id": "5"
-        },
-        {
-          "stepKind": "log",
-          "configuredProperties": {
-            "loggingLevel": "INFO",
-            "message": "Hello World! ${body}"
-          },
-          "id": "6"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-            "camelConnectorPrefix": "http-post",
-            "inputDataShape": {
-              "kind": "any"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-post-connector:latest",
-            "name": "HTTP POST"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/bye"
-          },
-          "id": "7"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-            "camelConnectorPrefix": "http-get",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-get-connector:latest",
-            "name": "HTTP GET"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/hello"
-          },
-          "id": "8"
+          "properties": {}
         }
       ],
-      "description": "This is an example in Active state",
-      "desiredStatus": "Activated",
-      "currentStatus": "Activated",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "3",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Breakaway Example"
-    }
+      "description": "Remote, secure file transfer",
+      "icon": "fa-puzzle-piece",
+      "id": "ftp",
+      "name": "File Transfer",
+      "properties": {}
+    },
+    "kind": "connector"
   },
   {
-    "kind": "integration",
     "data": {
-      "configuration": "",
-      "users": [],
-      "steps": [
+      "actions": [
         {
-          "action": {
-            "properties": {
-              "period": {
-                "kind": "parameter",
-                "displayName": "Period",
-                "group": "consumer",
-                "required": false,
-                "type": "integer",
-                "javaType": "long",
-                "deprecated": false,
-                "secret": false,
-                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-                "defaultValue": "10000"
-              }
-            },
-            "description": "Set a timer that fires at intervals that you specify",
-            "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-            "camelConnectorPrefix": "periodic-timer",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas_timer-connector:latest",
-            "name": "PeriodicTimer"
+          "camelConnectorGAV": "io.syndesis:github-pullrequest-connector:0.4.4",
+          "camelConnectorPrefix": "github-pullrequest",
+          "description": "Create a GitHub PullRequest",
+          "id": "io.syndesis:github-pullrequest-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "timer",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Timer Connection",
-            "id": "4",
-            "name": "Timer Example"
+          "name": "github-pullrequest",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "period": "500"
-          },
-          "id": "5"
+          "properties": {}
         },
         {
-          "stepKind": "log",
-          "configuredProperties": {
-            "loggingLevel": "INFO",
-            "message": "Hello World! ${body}"
+          "camelConnectorGAV": "io.syndesis:github-tag-connector:0.4.4",
+          "camelConnectorPrefix": "github-tag",
+          "description": "Create a GitHub Tag",
+          "id": "io.syndesis:github-tag-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "id": "6"
+          "name": "github-tag",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {}
         },
         {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-            "camelConnectorPrefix": "http-post",
-            "inputDataShape": {
-              "kind": "any"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-post-connector:latest",
-            "name": "HTTP POST"
+          "camelConnectorGAV": "io.syndesis:github-commit-connector:0.4.4",
+          "camelConnectorPrefix": "github-commit",
+          "description": "Performs a GitHub Commit",
+          "id": "io.syndesis:github-commit-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
+          "name": "github-commit",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/bye"
-          },
-          "id": "7"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-            "camelConnectorPrefix": "http-get",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-get-connector:latest",
-            "name": "HTTP GET"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/hello"
-          },
-          "id": "8"
+          "properties": {}
         }
       ],
-      "description": "This is an example in Deactivated state",
-      "desiredStatus": "Deactivated",
-      "currentStatus": "Deactivated",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "4",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Facebook Message to Twitter"
-    }
+      "description": "Manage code on GitHub through commits, pull requests, tags, and more",
+      "icon": "fa-puzzle-piece",
+      "id": "github",
+      "name": "GitHub",
+      "properties": {}
+    },
+    "kind": "connector"
   },
   {
-    "kind": "integration",
     "data": {
-      "configuration": "",
-      "users": [],
-      "steps": [
+      "actions": [
         {
-          "action": {
-            "properties": {
-              "period": {
-                "kind": "parameter",
-                "displayName": "Period",
-                "group": "consumer",
-                "required": false,
-                "type": "integer",
-                "javaType": "long",
-                "deprecated": false,
-                "secret": false,
-                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-                "defaultValue": "10000"
-              }
-            },
-            "description": "Set a timer that fires at intervals that you specify",
-            "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-            "camelConnectorPrefix": "periodic-timer",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas_timer-connector:latest",
-            "name": "PeriodicTimer"
+          "camelConnectorGAV": "io.syndesis:gmail-send-connector:0.4.4",
+          "camelConnectorPrefix": "gmail-send",
+          "description": "Send an email",
+          "id": "io.syndesis:gmail-send:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "timer",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Timer Connection",
-            "id": "4",
-            "name": "Timer Example"
+          "name": "GMail Send",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "period": "500"
-          },
-          "id": "5"
+          "properties": {}
         },
         {
-          "stepKind": "log",
-          "configuredProperties": {
-            "loggingLevel": "INFO",
-            "message": "Hello World! ${body}"
+          "camelConnectorGAV": "io.syndesis:gmail-list-connector:0.4.4",
+          "camelConnectorPrefix": "gmail-list",
+          "description": "List incoming messages",
+          "id": "io.syndesis:gmail-list:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "id": "6"
+          "name": "GMail List",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {}
         },
         {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-            "camelConnectorPrefix": "http-post",
-            "inputDataShape": {
-              "kind": "any"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-post-connector:latest",
-            "name": "HTTP POST"
+          "camelConnectorGAV": "io.syndesis:gmail-get-connector:0.4.4",
+          "camelConnectorPrefix": "gmail-get",
+          "description": "Get email message",
+          "id": "io.syndesis:gmail-get:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
+          "name": "GMail Get",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/bye"
-          },
-          "id": "7"
+          "properties": {}
         },
         {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-            "camelConnectorPrefix": "http-get",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-get-connector:latest",
-            "name": "HTTP GET"
+          "camelConnectorGAV": "io.syndesis:gmail-delete-connector:0.4.4",
+          "camelConnectorPrefix": "gmail-delete",
+          "description": "Delete email message",
+          "id": "io.syndesis:gmail-delete:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
+          "name": "GMail Delete",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/hello"
-          },
-          "id": "8"
+          "properties": {}
         }
       ],
-      "description": "This is an example in Pending state",
-      "desiredStatus": "Activated",
-      "currentStatus": "Pending",
-      "statusMessage": "No token present",
-      "lastUpdated": 1493126932946,
-      "createdDate": 1492095344060,
-      "id": "5",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Facebook Photo to Twitter"
-    }
+      "description": "Send and receive email using Google's Gmail service",
+      "icon": "fa-puzzle-piece",
+      "id": "gmail",
+      "name": "GMail",
+      "properties": {}
+    },
+    "kind": "connector"
   },
   {
-    "kind": "integration",
     "data": {
-      "configuration": "",
-      "users": [],
-      "steps": [
+      "actions": [
         {
-          "action": {
-            "properties": {
-              "period": {
-                "kind": "parameter",
-                "displayName": "Period",
-                "group": "consumer",
-                "required": false,
-                "type": "integer",
-                "javaType": "long",
-                "deprecated": false,
-                "secret": false,
-                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-                "defaultValue": "10000"
-              }
-            },
-            "description": "Set a timer that fires at intervals that you specify",
-            "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-            "camelConnectorPrefix": "periodic-timer",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas_timer-connector:latest",
-            "name": "PeriodicTimer"
+          "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+          "camelConnectorPrefix": "http-get",
+          "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+          "id": "io.syndesis:http-get-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
           },
-          "connection": {
-            "connectorId": "timer",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Timer Connection",
-            "id": "4",
-            "name": "Timer Example"
+          "name": "HTTP GET",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "period": "500"
-          },
-          "id": "5"
+          "properties": {
+            "httpUri": {
+              "componentProperty": false,
+              "deprecated": false,
+              "description": "The url of the HTTP endpoint to call.",
+              "displayName": "Http Uri",
+              "group": "producer",
+              "javaType": "java.net.URI",
+              "kind": "path",
+              "label": "producer",
+              "required": true,
+              "secret": false,
+              "type": "string"
+            }
+          }
         },
         {
-          "stepKind": "log",
-          "configuredProperties": {
-            "loggingLevel": "INFO",
-            "message": "Hello World! ${body}"
+          "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+          "camelConnectorPrefix": "http-post",
+          "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+          "id": "io.syndesis:http-post-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
           },
-          "id": "6"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-            "camelConnectorPrefix": "http-post",
-            "inputDataShape": {
-              "kind": "any"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-post-connector:latest",
-            "name": "HTTP POST"
+          "name": "HTTP POST",
+          "outputDataShape": {
+            "kind": "any"
           },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/bye"
-          },
-          "id": "7"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-            "camelConnectorPrefix": "http-get",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-get-connector:latest",
-            "name": "HTTP GET"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/hello"
-          },
-          "id": "8"
+          "properties": {
+            "httpUri": {
+              "componentProperty": false,
+              "deprecated": false,
+              "description": "The url of the HTTP endpoint to call.",
+              "displayName": "Http Uri",
+              "group": "producer",
+              "javaType": "java.net.URI",
+              "kind": "path",
+              "label": "producer",
+              "required": true,
+              "secret": false,
+              "type": "string"
+            }
+          }
         }
       ],
-      "description": "This is an example in Draft state",
-      "desiredStatus": "Draft",
+      "description": "Interact with APIs and plain HTTP endpoints",
+      "icon": "fa-globe",
+      "id": "http",
+      "name": "HTTP",
+      "properties": {}
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:jms-producer-connector:0.4.4",
+          "camelConnectorPrefix": "jms-producer",
+          "description": "Drop a message on a Queue",
+          "id": "io.syndesis:jms-producer-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
+          },
+          "name": "Message Producer",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:jms-consumer-connector:0.4.4",
+          "camelConnectorPrefix": "jms-consumer",
+          "description": "Takes a message off a Queue",
+          "id": "io.syndesis:jms-consumer-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
+          },
+          "name": "Message Consumer",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {}
+        }
+      ],
+      "description": "Produce and consume messages for event-driven interaction",
+      "icon": "fa-puzzle-piece",
+      "id": "jms",
+      "name": "Messaging",
+      "properties": {}
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:linkedin-connections-connector:0.4.4",
+          "camelConnectorPrefix": "linkedin-connections",
+          "description": "Get all LinkedIn connections",
+          "id": "io.syndesis:linkedin-get-connections-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
+          },
+          "name": "Get Connections",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:linkedin-invite-connector:0.4.4",
+          "camelConnectorPrefix": "linkedin-invite",
+          "description": "Send out a LinkedIn Invite",
+          "id": "io.syndesis:linkedin-add-invite-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
+          },
+          "name": "Send Invite",
+          "outputDataShape": {
+            "kind": "none"
+          },
+          "properties": {}
+        }
+      ],
+      "description": "Connect and interact with your professional social network",
+      "icon": "fa-puzzle-piece",
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "properties": {}
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-upsert-contact-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-upsert-contact",
+          "description": "Create or Update a Salesforce Contact",
+          "id": "io.syndesis:salesforce-upsert-contact-connector:latest",
+          "inputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.salesforce.Contact"
+          },
+          "name": "Create/Update Contact",
+          "outputDataShape": {
+            "kind": "none"
+          },
+          "properties": {
+            "sObjectIdName": {
+              "componentProperty": false,
+              "defaultValue": "TwitterScreenName__c",
+              "deprecated": false,
+              "description": "SObject external ID field name",
+              "displayName": "SObject Id Name",
+              "group": "common",
+              "javaType": "java.lang.String",
+              "kind": "parameter",
+              "required": false,
+              "secret": false,
+              "type": "string"
+            }
+          }
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-create-opportunity-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-create-opportunity",
+          "description": "Create a new Salesforce opportunity based on the input message",
+          "id": "io.syndesis:salesforce-create-opportunity-connector:latest",
+          "name": "Create Opportunity",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-create-lead-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-create-lead",
+          "description": "Create a new Salesforce lead based on the input message",
+          "id": "io.syndesis:salesforce-create-lead-connector:latest",
+          "name": "Create Lead",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-create-account-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-create-account",
+          "description": "Create a new Salesforce account based on the input message",
+          "id": "io.syndesis:salesforce-create-account-connector:latest",
+          "name": "Create Account",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-create-case-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-create-case",
+          "description": "Create a new Salesforce case based on the input message",
+          "id": "io.syndesis:salesforce-create-case-connector:latest",
+          "name": "Create Case",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-search-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-search",
+          "description": "Execute a search in Salesforce using arbitrary SOQL",
+          "id": "io.syndesis:salesforce-search-connector:latest",
+          "name": "Search",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:salesforce-notification-connector:0.4.4",
+          "camelConnectorPrefix": "salesforce-notification",
+          "description": "Trigger an integration when updates occur to a specific Salesforce object",
+          "id": "io.syndesis:salesforce-notification-connector:latest",
+          "name": "Notification",
+          "properties": {}
+        }
+      ],
+      "description": "Cloud-based Customer Relationship Management",
+      "icon": "fa-puzzle-piece",
+      "id": "salesforce",
+      "name": "Salesforce",
+      "properties": {
+        "clientId": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "OAuth Consumer Key of the connected app configured in the Salesforce instance setup. Typically a connected app needs to be configured but one can be provided by installing a package.",
+          "displayName": "Client Id",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "common,security",
+          "required": true,
+          "secret": true,
+          "type": "string"
+        },
+        "clientSecret": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "OAuth Consumer Secret of the connected app configured in the Salesforce instance setup.",
+          "displayName": "Client Secret",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "common,security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        },
+        "loginUrl": {
+          "componentProperty": true,
+          "defaultValue": "https://login.salesforce.com",
+          "deprecated": false,
+          "description": "URL of the Salesforce instance by default set to https://login.salesforce.com",
+          "displayName": "Login Url",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "common,security",
+          "required": true,
+          "secret": false,
+          "type": "string"
+        },
+        "password": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "Password used in OAuth flow to gain access to access token. It's easy to get started with password OAuth flow but in general one should avoid it as it is deemed less secure than other flows. Make sure that you append security token to the end of the password if using one.",
+          "displayName": "Password",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "common,security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        },
+        "refreshToken": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "Refresh token already obtained in the refresh token OAuth flow. One needs to setup a web application and configure a callback URL to receive the refresh token or configure using the builtin callback at https://login.salesforce.com/services/oauth2/success or https://test.salesforce.com/services/oauth2/success and then retrive the refresh_token from the URL at the end of the flow. Note that in development organizations Salesforce allows hosting the callback web application at localhost.",
+          "displayName": "Refresh Token",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "common,security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        },
+        "userName": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "Username used in OAuth flow to gain access to access token. It's easy to get started with password OAuth flow but in general one should avoid it as it is deemed less secure than other flows.",
+          "displayName": "User Name",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "common,security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        }
+      }
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:servicenow-connector:0.4.4",
+          "camelConnectorPrefix": "servicenow",
+          "description": "Provides access to all of ServiceNow REST API",
+          "id": "io.syndesis:servicenow-connector:latest",
+          "inputDataShape": {
+            "kind": "any"
+          },
+          "name": "service-now",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {}
+        }
+      ],
+      "description": "Cloud-based IT Service Management",
+      "icon": "fa-puzzle-piece",
+      "id": "servicenow",
+      "name": "ServiceNow",
+      "properties": {}
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+          "camelConnectorPrefix": "periodic-timer",
+          "description": "Set a timer that fires at intervals that you specify",
+          "id": "io.syndesis_timer-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
+          },
+          "name": "Periodic Timer",
+          "outputDataShape": {
+            "kind": "any"
+          },
+          "properties": {
+            "period": {
+              "componentProperty": false,
+              "defaultValue": "10000",
+              "deprecated": false,
+              "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+              "displayName": "Period",
+              "group": "consumer",
+              "javaType": "long",
+              "kind": "parameter",
+              "required": false,
+              "secret": false,
+              "type": "integer"
+            }
+          }
+        }
+      ],
+      "description": "Timer Connector",
+      "icon": "fa-puzzle-piece",
+      "id": "timer",
+      "name": "Timer",
+      "properties": {}
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:trade-insight-buy-connector:0.4.4",
+          "camelConnectorPrefix": "trade-insight-buy",
+          "description": "Fetches buy recommendation from Trade Insight API server",
+          "id": "io.syndesis:trade-insight-buy-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
+          },
+          "name": "Buy Recommendation",
+          "outputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.tradeinsight.Suggestion"
+          },
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:trade-insight-sell-connector:0.4.4",
+          "camelConnectorPrefix": "trade-insight-sell",
+          "description": "Fetches sell recommendation from Trade Insight API server",
+          "id": "io.syndesis:trade-insight-sell-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
+          },
+          "name": "Sell Recommendation",
+          "outputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.tradeinsight.Suggestion"
+          },
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:trade-insight-top-connector:0.4.4",
+          "camelConnectorPrefix": "trade-insight-top",
+          "description": "Fetches top recommendation from Trade Insight API server",
+          "id": "io.syndesis:trade-insight-top-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
+          },
+          "name": "Top Recommendation",
+          "outputDataShape": {
+            "kind": "java",
+            "type": "io.syndesis.connector.tradeinsight.Suggestion"
+          },
+          "properties": {}
+        }
+      ],
+      "description": "Trade Insight API connector",
+      "icon": "fa-usd",
+      "id": "trade-insight",
+      "name": "Trade Insight",
+      "properties": {
+        "api_key": {
+          "componentProperty": false,
+          "deprecated": false,
+          "description": "The API Key used to access the service",
+          "displayName": "API Key",
+          "group": "producer",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "producer",
+          "required": true,
+          "secret": true,
+          "type": "string"
+        },
+        "host": {
+          "componentProperty": false,
+          "deprecated": false,
+          "description": "Host and port of HTTP service to use (override host in swagger schema)",
+          "displayName": "Host",
+          "group": "producer",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "producer",
+          "required": true,
+          "secret": false,
+          "type": "string"
+        }
+      }
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "actions": [
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-mention-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-mention",
+          "description": "Search for tweets that mention you",
+          "id": "io.syndesis:twitter-mention-connector:latest",
+          "inputDataShape": {
+            "kind": "none"
+          },
+          "name": "Mention",
+          "outputDataShape": {
+            "kind": "java",
+            "type": "twitter4j.Status"
+          },
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-search-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-search",
+          "description": "Search tweets based one or more keywords",
+          "id": "io.syndesis:twitter-search-connector:latest",
+          "name": "Search",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-tweet-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-tweet",
+          "description": "Creates a new tweet",
+          "id": "io.syndesis:twitter-tweet-connector:latest",
+          "name": "Send a Tweet",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-directmessage-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-directmessage",
+          "description": "Direct message a specific user",
+          "id": "io.syndesis:twitter-directmessage-connector:latest",
+          "name": "Send a Direct Message",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-mytimeline-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-mytimeline",
+          "description": "Retrieve tweets from my timeline",
+          "id": "io.syndesis:twitter-mytimeline-connector:latest",
+          "name": "Get My Timeline",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-usertimeline-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-usertimeline",
+          "description": "Retrieve tweets from another user's timeline",
+          "id": "io.syndesis:twitter-usertimeline-connector:latest",
+          "name": "Get A Timeline",
+          "properties": {}
+        },
+        {
+          "camelConnectorGAV": "io.syndesis:twitter-retweets-connector:0.4.4",
+          "camelConnectorPrefix": "twitter-retweets",
+          "description": "Retrieve tweets which retweet one of my tweets",
+          "id": "io.syndesis:twitter-retweets-connector:latest",
+          "name": "Get Retweets",
+          "properties": {}
+        }
+      ],
+      "description": "Direct and event-driven interaction with Twitter timelines, searches, and messages",
+      "icon": "fa-twitter",
+      "id": "twitter",
+      "name": "Twitter",
+      "properties": {
+        "accessToken": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "The access token",
+          "displayName": "Access Token",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        },
+        "accessTokenSecret": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "The access token secret",
+          "displayName": "Access Token Secret",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        },
+        "consumerKey": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "The consumer key",
+          "displayName": "Consumer Key",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        },
+        "consumerSecret": {
+          "componentProperty": true,
+          "deprecated": false,
+          "description": "The consumer secret",
+          "displayName": "Consumer Secret",
+          "group": "security",
+          "javaType": "java.lang.String",
+          "kind": "property",
+          "label": "security",
+          "required": false,
+          "secret": true,
+          "type": "string"
+        }
+      }
+    },
+    "kind": "connector"
+  },
+  {
+    "data": {
+      "createdDate": 1497863007641,
       "currentStatus": "Draft",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "6",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Update Client Service Example"
-    }
-  },
-  {
-    "kind": "integration",
-    "data": {
-      "configuration": "",
-      "users": [],
+      "description": "base for data mapper e2e test",
+      "desiredStatus": "Draft",
+      "id": "-Kmz_uqP2xw-lnqE_yqg",
+      "lastUpdated": 1497863007641,
+      "name": "DataMapper integration base",
       "steps": [
         {
           "action": {
-            "properties": {
-              "period": {
-                "kind": "parameter",
-                "displayName": "Period",
-                "group": "consumer",
-                "required": false,
-                "type": "integer",
-                "javaType": "long",
-                "deprecated": false,
-                "secret": false,
-                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-                "defaultValue": "10000"
-              }
-            },
-            "description": "Set a timer that fires at intervals that you specify",
-            "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-            "camelConnectorPrefix": "periodic-timer",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas_timer-connector:latest",
-            "name": "PeriodicTimer"
-          },
-          "connection": {
-            "connectorId": "timer",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Timer Connection",
-            "id": "4",
-            "name": "Timer Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "period": "500"
-          },
-          "id": "5"
-        },
-        {
-          "stepKind": "log",
-          "configuredProperties": {
-            "loggingLevel": "INFO",
-            "message": "Hello World! ${body}"
-          },
-          "id": "6"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-            "camelConnectorPrefix": "http-post",
-            "inputDataShape": {
-              "kind": "any"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-post-connector:latest",
-            "name": "HTTP POST"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/bye"
-          },
-          "id": "7"
-        },
-        {
-          "action": {
-            "properties": {
-              "httpUri": {
-                "kind": "path",
-                "displayName": "Http Uri",
-                "group": "producer",
-                "label": "producer",
-                "required": true,
-                "type": "string",
-                "javaType": "java.net.URI",
-                "deprecated": false,
-                "secret": false,
-                "description": "The url of the HTTP endpoint to call."
-              }
-            },
-            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-            "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-            "camelConnectorPrefix": "http-get",
-            "inputDataShape": {
-              "kind": "none"
-            },
-            "outputDataShape": {
-              "kind": "any"
-            },
-            "id": "com.redhat.ipaas:http-get-connector:latest",
-            "name": "HTTP GET"
-          },
-          "connection": {
-            "connectorId": "http",
-            "configuredProperties": {},
-            "options": {},
-            "icon": "fa-globe",
-            "description": "HTTP Connection",
-            "id": "3",
-            "name": "HTTP Example"
-          },
-          "stepKind": "endpoint",
-          "configuredProperties": {
-            "httpUri": "http://localhost:8080/hello"
-          },
-          "id": "8"
-        }
-      ],
-      "description": "This is an example in Deleted state",
-      "desiredStatus": "Deleted",
-      "currentStatus": "Deleted",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "7",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "Deleted Client Service Example"
-    }
-  },
-  {
-    "kind": "integration",
-    "data": {
-      "token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDRUZGWjZHOWQ4bHhNX1JzNUNZSVJCanpOM1ZRVDMzMmdnRnI2S3d2U3RnIn0.eyJqdGkiOiJlNzUzZGJkZi1kN2Y2LTRjZDYtOTI0My1hNmRmMWE2YzRmMGIiLCJleHAiOjE0OTMxMjcyMTIsIm5iZiI6MCwiaWF0IjoxNDkzMTI2OTEyLCJpc3MiOiJodHRwczovL2lwYWFzLXFlLmI2ZmYucmgtaWRldi5vcGVuc2hpZnRhcHBzLmNvbS9hdXRoL3JlYWxtcy9pcGFhcyIsImF1ZCI6ImlwYWFzLXVpIiwic3ViIjoiOTk4ZWRjOWQtOWZhMy00YzY4LWFhODktY2M0YTI1NGZmNjYzIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaXBhYXMtdWkiLCJub25jZSI6Ik55cFBZRDlmRTVQNWZuZU9HUWxrWGYxdXYwaEw0dkd5QnRVdHpmaGpIZGVEUzNkaXdTQU5jTzFqNVF1dGxYbEciLCJhdXRoX3RpbWUiOjAsInNlc3Npb25fc3RhdGUiOiJhYjZhNDRiMy0yMGJkLTRiZTktODEwNy0wZmUzYzRjOGJmNzAiLCJhY3IiOiIwIiwiY2xpZW50X3Nlc3Npb24iOiI3NjE5NTU3OS05YzQ3LTQ0ZTItYmI5Ni00MjVmNzVkNzFhYzEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9pcGFhcy1xZS5iNmZmLnJoLWlkZXYub3BlbnNoaWZ0YXBwcy5jb20iXSwicmVzb3VyY2VfYWNjZXNzIjp7ImJyb2tlciI6eyJyb2xlcyI6WyJyZWFkLXRva2VuIl19fSwibmFtZSI6Ikpvc2VmIEx1ZHZpY2VrIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiamx1ZHZpY2UiLCJnaXZlbl9uYW1lIjoiSm9zZWYiLCJmYW1pbHlfbmFtZSI6Ikx1ZHZpY2VrIiwiZW1haWwiOiJhc2ZkQHJlLmNvbSJ9.EX_ezE7YgP_PAQ8avukzE-MoIQGpgh5QSKHjwy5dmHKXv2J4qvgAc0YxO5fdq3WsmjomcFUgkky4JA_61eaa0XurJ2jamGBv9ojfBBza-LX_1lVSd7EhoyYOzdAnbexVdfpES1tIY6lDNKAQN8ef7DefYvCUB-ggAZAMG2CTcIftzIYsWXvneCImnEu-ekieLmz9bL5jQswImLwWmcf1_94VEGQ4GSZXHZ4uvly0dfamy8iz3-Igk172jpf3raZc7-k6XFjxmHDyuLZfrtwpes1A-trhaU8oLNkAvzYBJ6xLvXI8kUcfUqXEmosoeGUYAag_-fi2gZq9o7Kea6IuxQ",
-      "users": [],
-      "steps": [
-        {
-          "action": {
-            "properties": {},
-            "description": "Search for tweets that mention you",
-            "camelConnectorGAV": "com.redhat.ipaas:twitter-mention-connector:0.3.6",
+            "camelConnectorGAV": "io.syndesis:twitter-mention-connector:0.4.4",
             "camelConnectorPrefix": "twitter-mention",
+            "description": "Search for tweets that mention you",
+            "id": "io.syndesis:twitter-mention-connector:latest",
             "inputDataShape": {
               "kind": "none"
             },
+            "name": "Mention",
             "outputDataShape": {
               "kind": "java",
               "type": "twitter4j.Status"
             },
-            "id": "com.redhat.ipaas:twitter-mention-connector:latest",
-            "name": "Mention"
+            "properties": {}
           },
           "connection": {
-            "connectorId": "twitter",
             "configuredProperties": {
               "accessToken": "",
               "accessTokenSecret": "",
               "consumerKey": "",
               "consumerSecret": ""
             },
-            "options": {},
-            "icon": "fa-twitter",
-            "description": "Twitter Connection",
-            "lastUpdated": 1492095344060,
+            "connectorId": "twitter",
             "createdDate": 1492095344060,
+            "description": "Twitter Connection",
+            "icon": "fa-twitter",
             "id": "1",
-            "name": "Twitter Example"
+            "lastUpdated": 1492095344060,
+            "name": "Twitter Example",
+            "options": {}
           },
           "stepKind": "endpoint"
         },
         {
           "action": {
-            "properties": {},
-            "description": "Create or Update a Salesforce Contact",
-            "camelConnectorGAV": "com.redhat.ipaas:salesforce-upsert-contact-connector:0.3.6",
+            "camelConnectorGAV": "io.syndesis:salesforce-upsert-contact-connector:0.4.4",
             "camelConnectorPrefix": "salesforce-upsert-contact",
+            "description": "Create or Update a Salesforce Contact",
+            "id": "io.syndesis:salesforce-upsert-contact-connector:latest",
             "inputDataShape": {
               "kind": "java",
-              "type": "com.redhat.ipaas.connector.salesforce.Contact"
+              "type": "io.syndesis.connector.salesforce.Contact"
             },
+            "name": "Create/Update Contact",
             "outputDataShape": {
               "kind": "none"
             },
-            "id": "com.redhat.ipaas:salesforce-upsert-contact-connector:latest",
-            "name": "Create/Update Contact"
+            "properties": {
+              "sObjectIdName": {
+                "componentProperty": false,
+                "defaultValue": "TwitterScreenName__c",
+                "deprecated": false,
+                "description": "SObject external ID field name",
+                "displayName": "SObject Id Name",
+                "group": "common",
+                "javaType": "java.lang.String",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "sObjectIdName": "TwitterScreenName__c"
           },
           "connection": {
-            "connectorId": "salesforce",
             "configuredProperties": {
               "clientId": "",
               "clientSecret": "",
               "loginUrl": "https://login.salesforce.com",
               "refreshToken": ""
             },
-            "options": {},
-            "icon": "fa-globe",
-            "description": "Salesforce Connection",
-            "lastUpdated": 1492095344060,
+            "connectorId": "salesforce",
             "createdDate": 1492095344060,
+            "description": "Salesforce Connection",
+            "icon": "fa-globe",
             "id": "2",
+            "lastUpdated": 1492095344060,
+            "name": "Salesforce Example",
+            "options": {},
             "tags": [
               "example",
               "test"
-            ],
-            "name": "Salesforce Example"
+            ]
           },
           "stepKind": "endpoint"
         }
       ],
-      "description": "base for integration test with data mapper",
-      "desiredStatus": "Activated",
-      "currentStatus": "Draft",
-      "lastUpdated": 1493126940328,
-      "createdDate": 1493126940328,
-      "id": "8",
-      "name": "DataMapper integration base"
-    }
+      "token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJJSkdEZTg1dHhZc1N5UEt3VDJkdmJFWGxUSnpZbDM5Q01qRTdBemFDOWFZIn0.eyJqdGkiOiJhNDUzYzA0Zi1jMjlkLTRiOTgtODVlMS1hNmQxYTYyMzU2NjciLCJleHAiOjE0OTc4NjMyNzksIm5iZiI6MCwiaWF0IjoxNDk3ODYyOTc5LCJpc3MiOiJodHRwczovL3N5bmRlc2lzLXFlLmI2ZmYucmgtaWRldi5vcGVuc2hpZnRhcHBzLmNvbS9hdXRoL3JlYWxtcy9zeW5kZXNpcyIsImF1ZCI6InN5bmRlc2lzLXVpIiwic3ViIjoiYWYyNWRjYmItYmIxZC00YzYyLWFlN2QtM2Y1YWM2N2ZjYzA4IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoic3luZGVzaXMtdWkiLCJub25jZSI6IlFIYlJDa3RkNXJjbEtoaEtZVnBUR0VJOWZ6TUd4S2FPZEt5YVUwb0NHdVJiUFZRMWVNckZEaFZjQmlleEhyOXoiLCJhdXRoX3RpbWUiOjAsInNlc3Npb25fc3RhdGUiOiJlM2RiNmFhNS04ZWUwLTRmOTktODIwYy0wMWZiNTliNTRjYTMiLCJhY3IiOiIwIiwiY2xpZW50X3Nlc3Npb24iOiI5MWY4NjI5Ni1lMWZlLTRlNTQtOTdkMi00ZDc1MTBlZDg3ZmUiLCJhbGxvd2VkLW9yaWdpbnMiOlsiaHR0cHM6Ly9zeW5kZXNpcy1xZS5iNmZmLnJoLWlkZXYub3BlbnNoaWZ0YXBwcy5jb20iXSwicmVzb3VyY2VfYWNjZXNzIjp7ImJyb2tlciI6eyJyb2xlcyI6WyJyZWFkLXRva2VuIl19fSwibmFtZSI6Ikpvc2VmIEx1ZHZpY2VrIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiamx1ZHZpY2UiLCJnaXZlbl9uYW1lIjoiSm9zZWYiLCJmYW1pbHlfbmFtZSI6Ikx1ZHZpY2VrIiwiZW1haWwiOiJqbHVkdmljZUByZWRoYXQuY29tIn0.GsQy-EliTDAoHCGz-gCir_CdkwQNfFn2VqMiINsskYoiJHosRw6zu3cXFag4XHatYcIqyEpLgCnBVotZpaQDgiAVunlDixi1Gstw8CDMQ9bzifnJKbz2EAJ9UW1Wre-ckIksKS0WNoc__2upHapDMu-dstkXqyVJWg21zekEIbbTrOxTHtR2jYkNOgPOEa5CPn5nGQnAMUNetBh1oIDzfOG6sCkLw98rwRqLYTaoW0XcGwmvKhyNtnHml32J2WAxGjuLjitczn9ZTbpfMXIgtqMJJqwQiVhmzAXAL6fkmKkSNOkgCPCB4yYwRokxyidoQoFQUef7kAZPcZprVYDxUA",
+      "users": []
+    },
+    "kind": "integration"
   },
   {
-    "kind": "connection",
     "data": {
-      "connectorId": "twitter",
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Activated",
+      "description": "This is an example of a Twitter to Salesforce integration",
+      "desiredStatus": "Activated",
+      "id": "1",
+      "lastUpdated": 1492095344060,
+      "name": "Twitter to Salesforce Example",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:twitter-mention-connector:0.4.4",
+            "camelConnectorPrefix": "twitter-mention",
+            "connectorId": "io.syndesis:twitter-mention-connector:latest",
+            "description": "Connection from twitter when anyone mention you",
+            "id": "1",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "Twitter Mention",
+            "outputDataShape": {
+              "kind": "java",
+              "type": "twitter4j.Status"
+            },
+            "properties": {}
+          },
+          "connection": {
+            "configuredProperties": {
+              "accessToken": "",
+              "accessTokenSecret": "",
+              "consumerKey": "",
+              "consumerSecret": ""
+            },
+            "connectorId": "twitter",
+            "description": "Twitter Connection",
+            "icon": "fa-twitter",
+            "id": "1",
+            "name": "Twitter Example",
+            "options": {}
+          },
+          "id": "1",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "filter": "in.body contains \"#RHSummit\""
+          },
+          "id": "2",
+          "stepKind": "filter"
+        },
+        {
+          "configuredProperties": {
+            "atlasmapping": "{ \"AtlasMapping\": { \"jsonType\": \"com.mediadriver.atlas.v2.AtlasMapping\", \"properties\": { \"property\": [] }, \"fieldMappings\": { \"fieldMapping\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.SeparateFieldMapping\", \"inputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Name\", \"path\": \"User.name\", \"type\": \"STRING\", \"getMethod\": \"getName\" }, \"fieldActions\": { \"fieldAction\": [] } }, \"outputFields\": { \"mappedField\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"FirstName\", \"path\": \"FirstName\", \"type\": \"STRING\", \"setMethod\": \"setFirstName\" }, \"fieldActions\": { \"fieldAction\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.MapAction\", \"index\": 0 } ] } }, { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"LastName\", \"path\": \"LastName\", \"type\": \"STRING\", \"setMethod\": \"setLastName\" }, \"fieldActions\": { \"fieldAction\": [ { \"jsonType\": \"com.mediadriver.atlas.v2.MapAction\", \"index\": 1 } ] } } ] } }, { \"jsonType\": \"com.mediadriver.atlas.v2.MapFieldMapping\", \"inputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Text\", \"path\": \"Text\", \"type\": \"STRING\", \"getMethod\": \"getText\" }, \"fieldActions\": { \"fieldAction\": [] } }, \"outputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Description\", \"path\": \"description\", \"type\": \"STRING\", \"setMethod\": \"setDescription\" }, \"fieldActions\": { \"fieldAction\": [] } } }, { \"jsonType\": \"com.mediadriver.atlas.v2.MapFieldMapping\", \"inputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"ScreenName\", \"path\": \"User.screenName\", \"type\": \"STRING\", \"getMethod\": \"getScreenName\" }, \"fieldActions\": { \"fieldAction\": [] } }, \"outputField\": { \"jsonType\": \"com.mediadriver.atlas.v2.MappedField\", \"field\": { \"jsonType\": \"com.mediadriver.atlas.java.v2.JavaField\", \"name\": \"Title\", \"path\": \"Title\", \"type\": \"STRING\", \"setMethod\": \"setTitle\" }, \"fieldActions\": { \"fieldAction\": [] } } } ] }, \"name\": \"twitterStatusToSalesforceContact\", \"sourceUri\": \"atlas:java?className=twitter4j.Status\", \"targetUri\": \"atlas:java?className=io.syndesis.connector.salesforce.Contact\" } } "
+          },
+          "id": "3",
+          "stepKind": "mapper"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:salesforce-upsert-contact-connector:0.4.4",
+            "camelConnectorPrefix": "salesforce-upsert-contact",
+            "connectorId": "io.syndesis:salesforce-upsert-contact-connector:latest",
+            "description": "Connection to Create or Update Salesforce Contact SObject",
+            "id": "2",
+            "inputDataShape": {
+              "kind": "java",
+              "type": "io.syndesis.connector.salesforce.Contact"
+            },
+            "name": "Salesforce Upsert Contact",
+            "outputDataShape": {
+              "kind": "none"
+            },
+            "properties": {}
+          },
+          "connection": {
+            "configuredProperties": {
+              "clientId": "",
+              "clientSecret": "",
+              "loginUrl": "https://login.salesforce.com",
+              "refreshToken": ""
+            },
+            "connectorId": "salesforce",
+            "description": "Salesforce Connection",
+            "icon": "fa-puzzle-piece",
+            "id": "2",
+            "name": "Salesforce Example",
+            "options": {}
+          },
+          "id": "4",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Activated",
+      "description": "This is an example of a Timed Pull to Post Integration",
+      "desiredStatus": "Activated",
+      "id": "2",
+      "lastUpdated": 1492095344060,
+      "name": "Timed Pull to Post Example",
+      "statusMessage": "This integration failed. Please contact system admin for errors.",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+            "camelConnectorPrefix": "periodic-timer",
+            "description": "Set a timer that fires at intervals that you specify",
+            "id": "io.syndesis_timer-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "PeriodicTimer",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "period": {
+                "defaultValue": "10000",
+                "deprecated": false,
+                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+                "displayName": "Period",
+                "group": "consumer",
+                "javaType": "long",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "integer"
+              }
+            }
+          },
+          "configuredProperties": {
+            "period": "500"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "timer",
+            "description": "Timer Connection",
+            "icon": "fa-globe",
+            "id": "4",
+            "name": "Timer Example",
+            "options": {}
+          },
+          "id": "5",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "loggingLevel": "INFO",
+            "message": "Hello World! ${body}"
+          },
+          "id": "6",
+          "stepKind": "log"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+            "camelConnectorPrefix": "http-post",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-post-connector:latest",
+            "inputDataShape": {
+              "kind": "any"
+            },
+            "name": "HTTP POST",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/bye"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "7",
+          "stepKind": "endpoint"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+            "camelConnectorPrefix": "http-get",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-get-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "HTTP GET",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/hello"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "8",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Activated",
+      "description": "This is an example in Active state",
+      "desiredStatus": "Activated",
+      "id": "3",
+      "lastUpdated": 1492095344060,
+      "name": "Breakaway Example",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+            "camelConnectorPrefix": "periodic-timer",
+            "description": "Set a timer that fires at intervals that you specify",
+            "id": "io.syndesis_timer-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "PeriodicTimer",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "period": {
+                "defaultValue": "10000",
+                "deprecated": false,
+                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+                "displayName": "Period",
+                "group": "consumer",
+                "javaType": "long",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "integer"
+              }
+            }
+          },
+          "configuredProperties": {
+            "period": "500"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "timer",
+            "description": "Timer Connection",
+            "icon": "fa-globe",
+            "id": "4",
+            "name": "Timer Example",
+            "options": {}
+          },
+          "id": "5",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "loggingLevel": "INFO",
+            "message": "Hello World! ${body}"
+          },
+          "id": "6",
+          "stepKind": "log"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+            "camelConnectorPrefix": "http-post",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-post-connector:latest",
+            "inputDataShape": {
+              "kind": "any"
+            },
+            "name": "HTTP POST",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/bye"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "7",
+          "stepKind": "endpoint"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+            "camelConnectorPrefix": "http-get",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-get-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "HTTP GET",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/hello"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "8",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Deactivated",
+      "description": "This is an example in Deactivated state",
+      "desiredStatus": "Deactivated",
+      "id": "4",
+      "lastUpdated": 1492095344060,
+      "name": "Facebook Message to Twitter",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+            "camelConnectorPrefix": "periodic-timer",
+            "description": "Set a timer that fires at intervals that you specify",
+            "id": "io.syndesis_timer-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "PeriodicTimer",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "period": {
+                "defaultValue": "10000",
+                "deprecated": false,
+                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+                "displayName": "Period",
+                "group": "consumer",
+                "javaType": "long",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "integer"
+              }
+            }
+          },
+          "configuredProperties": {
+            "period": "500"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "timer",
+            "description": "Timer Connection",
+            "icon": "fa-globe",
+            "id": "4",
+            "name": "Timer Example",
+            "options": {}
+          },
+          "id": "5",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "loggingLevel": "INFO",
+            "message": "Hello World! ${body}"
+          },
+          "id": "6",
+          "stepKind": "log"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+            "camelConnectorPrefix": "http-post",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-post-connector:latest",
+            "inputDataShape": {
+              "kind": "any"
+            },
+            "name": "HTTP POST",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/bye"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "7",
+          "stepKind": "endpoint"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+            "camelConnectorPrefix": "http-get",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-get-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "HTTP GET",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/hello"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "8",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Pending",
+      "description": "This is an example in Pending state",
+      "desiredStatus": "Activated",
+      "id": "5",
+      "lastUpdated": 1497862974280,
+      "name": "Facebook Photo to Twitter",
+      "statusMessage": "No token present",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+            "camelConnectorPrefix": "periodic-timer",
+            "description": "Set a timer that fires at intervals that you specify",
+            "id": "io.syndesis_timer-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "PeriodicTimer",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "period": {
+                "defaultValue": "10000",
+                "deprecated": false,
+                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+                "displayName": "Period",
+                "group": "consumer",
+                "javaType": "long",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "integer"
+              }
+            }
+          },
+          "configuredProperties": {
+            "period": "500"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "timer",
+            "description": "Timer Connection",
+            "icon": "fa-globe",
+            "id": "4",
+            "name": "Timer Example",
+            "options": {}
+          },
+          "id": "5",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "loggingLevel": "INFO",
+            "message": "Hello World! ${body}"
+          },
+          "id": "6",
+          "stepKind": "log"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+            "camelConnectorPrefix": "http-post",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-post-connector:latest",
+            "inputDataShape": {
+              "kind": "any"
+            },
+            "name": "HTTP POST",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/bye"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "7",
+          "stepKind": "endpoint"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+            "camelConnectorPrefix": "http-get",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-get-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "HTTP GET",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/hello"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "8",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Draft",
+      "description": "This is an example in Draft state",
+      "desiredStatus": "Draft",
+      "id": "6",
+      "lastUpdated": 1492095344060,
+      "name": "Update Client Service Example",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+            "camelConnectorPrefix": "periodic-timer",
+            "description": "Set a timer that fires at intervals that you specify",
+            "id": "io.syndesis_timer-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "PeriodicTimer",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "period": {
+                "defaultValue": "10000",
+                "deprecated": false,
+                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+                "displayName": "Period",
+                "group": "consumer",
+                "javaType": "long",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "integer"
+              }
+            }
+          },
+          "configuredProperties": {
+            "period": "500"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "timer",
+            "description": "Timer Connection",
+            "icon": "fa-globe",
+            "id": "4",
+            "name": "Timer Example",
+            "options": {}
+          },
+          "id": "5",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "loggingLevel": "INFO",
+            "message": "Hello World! ${body}"
+          },
+          "id": "6",
+          "stepKind": "log"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+            "camelConnectorPrefix": "http-post",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-post-connector:latest",
+            "inputDataShape": {
+              "kind": "any"
+            },
+            "name": "HTTP POST",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/bye"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "7",
+          "stepKind": "endpoint"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+            "camelConnectorPrefix": "http-get",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-get-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "HTTP GET",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/hello"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "8",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
+      "configuration": "",
+      "createdDate": 1492095344060,
+      "currentStatus": "Deleted",
+      "description": "This is an example in Deleted state",
+      "desiredStatus": "Deleted",
+      "id": "7",
+      "lastUpdated": 1492095344060,
+      "name": "Deleted Client Service Example",
+      "steps": [
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:timer-connector:0.4.4",
+            "camelConnectorPrefix": "periodic-timer",
+            "description": "Set a timer that fires at intervals that you specify",
+            "id": "io.syndesis_timer-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "PeriodicTimer",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "period": {
+                "defaultValue": "10000",
+                "deprecated": false,
+                "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
+                "displayName": "Period",
+                "group": "consumer",
+                "javaType": "long",
+                "kind": "parameter",
+                "required": false,
+                "secret": false,
+                "type": "integer"
+              }
+            }
+          },
+          "configuredProperties": {
+            "period": "500"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "timer",
+            "description": "Timer Connection",
+            "icon": "fa-globe",
+            "id": "4",
+            "name": "Timer Example",
+            "options": {}
+          },
+          "id": "5",
+          "stepKind": "endpoint"
+        },
+        {
+          "configuredProperties": {
+            "loggingLevel": "INFO",
+            "message": "Hello World! ${body}"
+          },
+          "id": "6",
+          "stepKind": "log"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-post-connector:0.4.4",
+            "camelConnectorPrefix": "http-post",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-post-connector:latest",
+            "inputDataShape": {
+              "kind": "any"
+            },
+            "name": "HTTP POST",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/bye"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "7",
+          "stepKind": "endpoint"
+        },
+        {
+          "action": {
+            "camelConnectorGAV": "io.syndesis:http-get-connector:0.4.4",
+            "camelConnectorPrefix": "http-get",
+            "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
+            "id": "io.syndesis:http-get-connector:latest",
+            "inputDataShape": {
+              "kind": "none"
+            },
+            "name": "HTTP GET",
+            "outputDataShape": {
+              "kind": "any"
+            },
+            "properties": {
+              "httpUri": {
+                "deprecated": false,
+                "description": "The url of the HTTP endpoint to call.",
+                "displayName": "Http Uri",
+                "group": "producer",
+                "javaType": "java.net.URI",
+                "kind": "path",
+                "label": "producer",
+                "required": true,
+                "secret": false,
+                "type": "string"
+              }
+            }
+          },
+          "configuredProperties": {
+            "httpUri": "http://localhost:8080/hello"
+          },
+          "connection": {
+            "configuredProperties": {},
+            "connectorId": "http",
+            "description": "HTTP Connection",
+            "icon": "fa-globe",
+            "id": "3",
+            "name": "HTTP Example",
+            "options": {}
+          },
+          "id": "8",
+          "stepKind": "endpoint"
+        }
+      ],
+      "tags": [
+        "example",
+        "test"
+      ],
+      "users": []
+    },
+    "kind": "integration"
+  },
+  {
+    "data": {
       "configuredProperties": {
         "accessToken": "",
         "accessTokenSecret": "",
         "consumerKey": "",
         "consumerSecret": ""
       },
-      "options": {},
-      "icon": "fa-twitter",
-      "description": "Twitter Connection",
-      "lastUpdated": 1492095344060,
+      "connectorId": "twitter",
       "createdDate": 1492095344060,
+      "description": "Twitter Connection",
+      "icon": "fa-twitter",
       "id": "1",
-      "name": "Twitter Example"
-    }
+      "lastUpdated": 1492095344060,
+      "name": "Twitter Example",
+      "options": {}
+    },
+    "kind": "connection"
   },
   {
-    "kind": "connection",
     "data": {
-      "connectorId": "salesforce",
       "configuredProperties": {
         "clientId": "",
         "clientSecret": "",
         "loginUrl": "https://login.salesforce.com",
         "refreshToken": ""
       },
-      "options": {},
-      "icon": "fa-globe",
+      "connectorId": "salesforce",
+      "createdDate": 1492095344060,
       "description": "Salesforce Connection",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
+      "icon": "fa-globe",
       "id": "2",
+      "lastUpdated": 1492095344060,
+      "name": "Salesforce Example",
+      "options": {},
       "tags": [
         "example",
         "test"
-      ],
-      "name": "Salesforce Example"
-    }
+      ]
+    },
+    "kind": "connection"
   },
   {
-    "kind": "connection",
     "data": {
+      "configuredProperties": {},
       "connectorId": "http",
-      "configuredProperties": {},
-      "options": {},
-      "icon": "fa-globe",
+      "createdDate": 1492095344060,
       "description": "HTTP Connection",
-      "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
+      "icon": "fa-globe",
       "id": "3",
-      "tags": [
-        "example",
-        "test"
-      ],
-      "name": "HTTP Example"
-    }
-  },
-  {
-    "kind": "connection",
-    "data": {
-      "connectorId": "timer",
-      "configuredProperties": {},
-      "options": {},
-      "icon": "fa-globe",
-      "description": "Timer Connection",
       "lastUpdated": 1492095344060,
-      "createdDate": 1492095344060,
-      "id": "4",
+      "name": "HTTP Example",
+      "options": {},
       "tags": [
         "example",
         "test"
-      ],
-      "name": "Timer Example"
-    }
+      ]
+    },
+    "kind": "connection"
   },
   {
-    "kind": "connector",
     "data": {
-      "icon": "fa-usd",
-      "properties": {
-        "api_key": {
-          "kind": "property",
-          "displayName": "API Key",
-          "group": "producer",
-          "label": "producer",
-          "required": true,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "The API Key used to access the service"
-        },
-        "host": {
-          "kind": "property",
-          "displayName": "Host",
-          "group": "producer",
-          "label": "producer",
-          "required": true,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": false,
-          "description": "Host and port of HTTP service to use (override host in swagger schema)"
-        }
-      },
-      "description": "Day Trade API connector",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Place trade on Day Trade API server",
-          "camelConnectorGAV": "com.redhat.ipaas:day-trade-place-connector:0.3.6",
-          "camelConnectorPrefix": "day-trade-place",
-          "inputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.daytrade.Trade"
-          },
-          "outputDataShape": {
-            "kind": "none"
-          },
-          "id": "com.redhat.ipaas:day-trade-place-connector:latest",
-          "name": "Place Trade"
-        },
-        {
-          "properties": {},
-          "description": "Retrieve a trade on Day Trade API server",
-          "camelConnectorGAV": "com.redhat.ipaas:day-trade-place-connector:0.3.6",
-          "camelConnectorPrefix": "day-trade-place",
-          "inputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.daytrade.Trade"
-          },
-          "outputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.daytrade.Trade"
-          },
-          "id": "com.redhat.ipaas:day-trade-place-connector:latest",
-          "name": "Retrieve Trade"
-        },
-        {
-          "properties": {},
-          "description": "Get the latest trade on Day Trade API server",
-          "camelConnectorGAV": "com.redhat.ipaas:day-trade-place-connector:0.3.6",
-          "camelConnectorPrefix": "day-trade-place",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.daytrade.Trade"
-          },
-          "id": "com.redhat.ipaas:day-trade-place-connector:latest",
-          "name": "Get Latest Trade"
-        }
-      ],
-      "id": "day-trade",
-      "name": "Day Trade"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Access Facebook social network features such as posts, users, checkins, etc",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Creates a post to Facebook",
-          "camelConnectorGAV": "com.redhat.ipaas:facebook-post-connector:0.3.6",
-          "camelConnectorPrefix": "facebook-post",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:facebook-post-connector:latest",
-          "name": "Post"
-        },
-        {
-          "properties": {},
-          "description": "Like something on Facebook",
-          "camelConnectorGAV": "com.redhat.ipaas:facebook-like-connector:0.3.6",
-          "camelConnectorPrefix": "facebook-like",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:facebook-like-connector:latest",
-          "name": "Like"
-        }
-      ],
-      "id": "facebook",
-      "name": "Facebook"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Remote, secure file transfer",
-      "actions": [
-        {
-          "properties": {},
-          "description": "FTP/SFTP/FPTS file transfer",
-          "camelConnectorGAV": "com.redhat.ipaas:ftp-connector:0.3.6",
-          "camelConnectorPrefix": "ftp",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:ftp-connector:latest",
-          "name": "File Transport"
-        }
-      ],
-      "id": "ftp",
-      "name": "File Transfer"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Manage code on GitHub through commits, pull requests, tags, and more",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Create a GitHub PullRequest",
-          "camelConnectorGAV": "com.redhat.ipaas:github-pullrequest-connector:0.3.6",
-          "camelConnectorPrefix": "github-pullrequest",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:github-pullrequest-connector:latest",
-          "name": "github-pullrequest"
-        },
-        {
-          "properties": {},
-          "description": "Create a GitHub Tag",
-          "camelConnectorGAV": "com.redhat.ipaas:github-tag-connector:0.3.6",
-          "camelConnectorPrefix": "github-tag",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:github-tag-connector:latest",
-          "name": "github-tag"
-        },
-        {
-          "properties": {},
-          "description": "Performs a GitHub Commit",
-          "camelConnectorGAV": "com.redhat.ipaas:github-commit-connector:0.3.6",
-          "camelConnectorPrefix": "github-commit",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:github-commit-connector:latest",
-          "name": "github-commit"
-        }
-      ],
-      "id": "github",
-      "name": "GitHub"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Send and receive email using Google's Gmail service",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Send an email",
-          "camelConnectorGAV": "com.redhat.ipaas:gmail-send-connector:0.3.6",
-          "camelConnectorPrefix": "gmail-send",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:gmail-send:latest",
-          "name": "GMail Send"
-        },
-        {
-          "properties": {},
-          "description": "List incoming messages",
-          "camelConnectorGAV": "com.redhat.ipaas:gmail-list-connector:0.3.6",
-          "camelConnectorPrefix": "gmail-list",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:gmail-list:latest",
-          "name": "GMail List"
-        },
-        {
-          "properties": {},
-          "description": "Get email message",
-          "camelConnectorGAV": "com.redhat.ipaas:gmail-get-connector:0.3.6",
-          "camelConnectorPrefix": "gmail-get",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:gmail-get:latest",
-          "name": "GMail Get"
-        },
-        {
-          "properties": {},
-          "description": "Delete email message",
-          "camelConnectorGAV": "com.redhat.ipaas:gmail-delete-connector:0.3.6",
-          "camelConnectorPrefix": "gmail-delete",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:gmail-delete:latest",
-          "name": "GMail Delete"
-        }
-      ],
-      "id": "gmail",
-      "name": "GMail"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
+      "configuredProperties": {},
+      "connectorId": "timer",
+      "createdDate": 1492095344060,
+      "description": "Timer Connection",
       "icon": "fa-globe",
-      "properties": {},
-      "description": "Interact with APIs and plain HTTP endpoints",
-      "actions": [
-        {
-          "properties": {
-            "httpUri": {
-              "kind": "path",
-              "displayName": "Http Uri",
-              "group": "producer",
-              "label": "producer",
-              "required": true,
-              "type": "string",
-              "javaType": "java.net.URI",
-              "deprecated": false,
-              "secret": false,
-              "description": "The url of the HTTP endpoint to call."
-            }
-          },
-          "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-          "camelConnectorGAV": "com.redhat.ipaas:http-get-connector:0.3.6",
-          "camelConnectorPrefix": "http-get",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:http-get-connector:latest",
-          "name": "HTTP GET"
-        },
-        {
-          "properties": {
-            "httpUri": {
-              "kind": "path",
-              "displayName": "Http Uri",
-              "group": "producer",
-              "label": "producer",
-              "required": true,
-              "type": "string",
-              "javaType": "java.net.URI",
-              "deprecated": false,
-              "secret": false,
-              "description": "The url of the HTTP endpoint to call."
-            }
-          },
-          "description": "Call a service that is internal (within your company) or external (on the internet) by specifying the service's URL",
-          "camelConnectorGAV": "com.redhat.ipaas:http-post-connector:0.3.6",
-          "camelConnectorPrefix": "http-post",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:http-post-connector:latest",
-          "name": "HTTP POST"
-        }
-      ],
-      "id": "http",
-      "name": "HTTP"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Produce and consume messages for event-driven interaction",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Drop a message on a Queue",
-          "camelConnectorGAV": "com.redhat.ipaas:jms-producer-connector:0.3.6",
-          "camelConnectorPrefix": "jms-producer",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:jms-producer-connector:latest",
-          "name": "Message Producer"
-        },
-        {
-          "properties": {},
-          "description": "Takes a message off a Queue",
-          "camelConnectorGAV": "com.redhat.ipaas:jms-consumer-connector:0.3.6",
-          "camelConnectorPrefix": "jms-consumer",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:jms-consumer-connector:latest",
-          "name": "Message Consumer"
-        }
-      ],
-      "id": "jms",
-      "name": "Messaging"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Connect and interact with your professional social network",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Get all LinkedIn connections",
-          "camelConnectorGAV": "com.redhat.ipaas:linkedin-connections-connector:0.3.6",
-          "camelConnectorPrefix": "linkedin-connections",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:linkedin-get-connections-connector:latest",
-          "name": "Get Connections"
-        },
-        {
-          "properties": {},
-          "description": "Send out a LinkedIn Invite",
-          "camelConnectorGAV": "com.redhat.ipaas:linkedin-invite-connector:0.3.6",
-          "camelConnectorPrefix": "linkedin-invite",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "none"
-          },
-          "id": "com.redhat.ipaas:linkedin-add-invite-connector:latest",
-          "name": "Send Invite"
-        }
-      ],
-      "id": "linkedin",
-      "name": "LinkedIn"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {
-        "clientId": {
-          "kind": "property",
-          "displayName": "Client Id",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "Salesforce connected application Consumer Key"
-        },
-        "clientSecret": {
-          "kind": "property",
-          "displayName": "Client Secret",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "Salesforce connected application Consumer Secret"
-        },
-        "loginUrl": {
-          "kind": "property",
-          "displayName": "Login Url",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": false,
-          "description": "Salesforce login URL defaults to https://login.salesforce.com",
-          "defaultValue": "https://login.salesforce.com"
-        },
-        "refreshToken": {
-          "kind": "property",
-          "displayName": "Refresh Token",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "Salesforce connected application Consumer token"
-        }
-      },
-      "description": "Cloud-based Customer Relationship Management",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Create or Update a Salesforce Contact",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-upsert-contact-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-upsert-contact",
-          "inputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.salesforce.Contact"
-          },
-          "outputDataShape": {
-            "kind": "none"
-          },
-          "id": "com.redhat.ipaas:salesforce-upsert-contact-connector:latest",
-          "name": "Create/Update Contact"
-        },
-        {
-          "properties": {},
-          "description": "Create a new Salesforce opportunity based on the input message",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-create-opportunity-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-create-opportunity",
-          "id": "com.redhat.ipaas:salesforce-create-opportunity-connector:latest",
-          "name": "Create Opportunity"
-        },
-        {
-          "properties": {},
-          "description": "Create a new Salesforce lead based on the input message",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-create-lead-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-create-lead",
-          "id": "com.redhat.ipaas:salesforce-create-lead-connector:latest",
-          "name": "Create Lead"
-        },
-        {
-          "properties": {},
-          "description": "Create a new Salesforce account based on the input message",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-create-account-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-create-account",
-          "id": "com.redhat.ipaas:salesforce-create-account-connector:latest",
-          "name": "Create Account"
-        },
-        {
-          "properties": {},
-          "description": "Create a new Salesforce case based on the input message",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-create-case-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-create-case",
-          "id": "com.redhat.ipaas:salesforce-create-case-connector:latest",
-          "name": "Create Case"
-        },
-        {
-          "properties": {},
-          "description": "Execute a search in Salesforce using arbitrary SOQL",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-search-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-search",
-          "id": "com.redhat.ipaas:salesforce-search-connector:latest",
-          "name": "Search"
-        },
-        {
-          "properties": {},
-          "description": "Trigger an integration when updates occur to a specific Salesforce object",
-          "camelConnectorGAV": "com.redhat.ipaas:salesforce-notification-connector:0.3.6",
-          "camelConnectorPrefix": "salesforce-notification",
-          "id": "com.redhat.ipaas:salesforce-notification-connector:latest",
-          "name": "Notification"
-        }
-      ],
-      "id": "salesforce",
-      "name": "Salesforce"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Cloud-based IT Service Management",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Provides access to all of ServiceNow REST API",
-          "camelConnectorGAV": "com.redhat.ipaas:servicenow-connector:0.3.6",
-          "camelConnectorPrefix": "servicenow",
-          "inputDataShape": {
-            "kind": "any"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas:servicenow-connector:latest",
-          "name": "service-now"
-        }
-      ],
-      "id": "servicenow",
-      "name": "ServiceNow"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-puzzle-piece",
-      "properties": {},
-      "description": "Timer Connector",
-      "actions": [
-        {
-          "properties": {
-            "period": {
-              "kind": "parameter",
-              "displayName": "Period",
-              "group": "consumer",
-              "required": false,
-              "type": "integer",
-              "javaType": "long",
-              "deprecated": false,
-              "secret": false,
-              "description": "Period in milli seconds when the timer runs. By default the timer runs every 10000 (10 second).",
-              "defaultValue": "10000"
-            }
-          },
-          "description": "Set a timer that fires at intervals that you specify",
-          "camelConnectorGAV": "com.redhat.ipaas:timer-connector:0.3.6",
-          "camelConnectorPrefix": "periodic-timer",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "any"
-          },
-          "id": "com.redhat.ipaas_timer-connector:latest",
-          "name": "Periodic Timer"
-        }
-      ],
-      "id": "timer",
-      "name": "Timer"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-usd",
-      "properties": {
-        "api_key": {
-          "kind": "property",
-          "displayName": "API Key",
-          "group": "producer",
-          "label": "producer",
-          "required": true,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "The API Key used to access the service"
-        },
-        "host": {
-          "kind": "property",
-          "displayName": "Host",
-          "group": "producer",
-          "label": "producer",
-          "required": true,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": false,
-          "description": "Host and port of HTTP service to use (override host in swagger schema)"
-        }
-      },
-      "description": "Trade Insight API connector",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Fetches buy recommendation from Trade Insight API server",
-          "camelConnectorGAV": "com.redhat.ipaas:trade-insight-buy-connector:0.3.6",
-          "camelConnectorPrefix": "trade-insight-buy",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.tradeinsight.Suggestion"
-          },
-          "id": "com.redhat.ipaas:trade-insight-buy-connector:latest",
-          "name": "Buy Recommendation"
-        },
-        {
-          "properties": {},
-          "description": "Fetches sell recommendation from Trade Insight API server",
-          "camelConnectorGAV": "com.redhat.ipaas:trade-insight-sell-connector:0.3.6",
-          "camelConnectorPrefix": "trade-insight-sell",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.tradeinsight.Suggestion"
-          },
-          "id": "com.redhat.ipaas:trade-insight-sell-connector:latest",
-          "name": "Sell Recommendation"
-        },
-        {
-          "properties": {},
-          "description": "Fetches top recommendation from Trade Insight API server",
-          "camelConnectorGAV": "com.redhat.ipaas:trade-insight-top-connector:0.3.6",
-          "camelConnectorPrefix": "trade-insight-top",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "java",
-            "type": "com.redhat.ipaas.connector.tradeinsight.Suggestion"
-          },
-          "id": "com.redhat.ipaas:trade-insight-top-connector:latest",
-          "name": "Top Recommendation"
-        }
-      ],
-      "id": "trade-insight",
-      "name": "Trade Insight"
-    }
-  },
-  {
-    "kind": "connector",
-    "data": {
-      "icon": "fa-twitter",
-      "properties": {
-        "accessToken": {
-          "kind": "property",
-          "displayName": "Access Token",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "The access token"
-        },
-        "accessTokenSecret": {
-          "kind": "property",
-          "displayName": "Access Token Secret",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "The access token secret"
-        },
-        "consumerKey": {
-          "kind": "property",
-          "displayName": "Consumer Key",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "The consumer key"
-        },
-        "consumerSecret": {
-          "kind": "property",
-          "displayName": "Consumer Secret",
-          "group": "security",
-          "label": "security",
-          "required": false,
-          "type": "string",
-          "javaType": "java.lang.String",
-          "deprecated": false,
-          "secret": true,
-          "description": "The consumer secret"
-        }
-      },
-      "description": "Direct and event-driven interaction with Twitter timelines, searches, and messages",
-      "actions": [
-        {
-          "properties": {},
-          "description": "Search for tweets that mention you",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-mention-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-mention",
-          "inputDataShape": {
-            "kind": "none"
-          },
-          "outputDataShape": {
-            "kind": "java",
-            "type": "twitter4j.Status"
-          },
-          "id": "com.redhat.ipaas:twitter-mention-connector:latest",
-          "name": "Mention"
-        },
-        {
-          "properties": {},
-          "description": "Search tweets based one or more keywords",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-search-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-search",
-          "id": "com.redhat.ipaas:twitter-search-connector:latest",
-          "name": "Search"
-        },
-        {
-          "properties": {},
-          "description": "Creates a new tweet",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-tweet-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-tweet",
-          "id": "com.redhat.ipaas:twitter-tweet-connector:latest",
-          "name": "Send a Tweet"
-        },
-        {
-          "properties": {},
-          "description": "Direct message a specific user",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-directmessage-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-directmessage",
-          "id": "com.redhat.ipaas:twitter-directmessage-connector:latest",
-          "name": "Send a Direct Message"
-        },
-        {
-          "properties": {},
-          "description": "Retrieve tweets from my timeline",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-mytimeline-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-mytimeline",
-          "id": "com.redhat.ipaas:twitter-mytimeline-connector:latest",
-          "name": "Get My Timeline"
-        },
-        {
-          "properties": {},
-          "description": "Retrieve tweets from another user's timeline",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-usertimeline-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-usertimeline",
-          "id": "com.redhat.ipaas:twitter-usertimeline-connector:latest",
-          "name": "Get A Timeline"
-        },
-        {
-          "properties": {},
-          "description": "Retrieve tweets which retweet one of my tweets",
-          "camelConnectorGAV": "com.redhat.ipaas:twitter-retweets-connector:0.3.6",
-          "camelConnectorPrefix": "twitter-retweets",
-          "id": "com.redhat.ipaas:twitter-retweets-connector:latest",
-          "name": "Get Retweets"
-        }
-      ],
-      "id": "twitter",
-      "name": "Twitter"
-    }
+      "id": "4",
+      "lastUpdated": 1492095344060,
+      "name": "Timer Example",
+      "options": {},
+      "tags": [
+        "example",
+        "test"
+      ]
+    },
+    "kind": "connection"
   }
 ]

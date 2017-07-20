@@ -4,12 +4,6 @@ Feature: Connections smoke test
   # Enter feature description here
 
   Background:
-    Given details for "Twitter" connection:
-      | accessToken       | randomly generated token        |
-      | accessTokenSecret | this is just the biggest secret |
-      | consumerKey       | rrrrrrrrrrrrrrrrrrrrrrr333      |
-      | consumerSecret    | ssssssssssssssssssssssss333     |
-
     Given credentials for "Camilla"
     And clean application state
 
