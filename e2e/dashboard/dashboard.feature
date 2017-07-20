@@ -28,12 +28,6 @@ Feature: Test to verify Dashboard links
     Then she is presented with a connection create page
 
   Scenario: Create connection happy path and verify its presence on dashboard
-  	Given details for "Twitter" connection:
-      | accessToken       | randomly generated token        |
-      | accessTokenSecret | this is just the biggest secret |
-      | consumerKey       | rrrrrrrrrrrrrrrrrrrrrrr333      |
-      | consumerSecret    | ssssssssssssssssssssssss333     |
-  
     When "Camilla" navigates to the "Home" page  
     Then Camilla click on the "Create Connection" button
     And Camilla selects the "Twitter" connection

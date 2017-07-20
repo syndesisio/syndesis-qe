@@ -1,11 +1,9 @@
-import { when, binding, then, given } from 'cucumber-tsflow';
-import { World, expect, P } from '../common/world';
-import { CallbackStepDefinition, TableDefinition } from 'cucumber';
+import { binding, then, when } from 'cucumber-tsflow';
+import { expect, P, World } from '../common/world';
+import { CallbackStepDefinition } from 'cucumber';
 import { ConnectionDetailPage } from './detail/detail.po';
 import { ConnectionsListComponent } from './list/list.po';
-import { ConnectionViewComponent } from './edit/edit.po';
-import { ConnectionCreatePage } from './edit/edit.po';
-import { log } from '../../src/app/logging';
+import { ConnectionCreatePage, ConnectionViewComponent } from './edit/edit.po';
 import util = require('util');
 
 // let http = require('http');
@@ -21,19 +19,6 @@ class ConnectionSteps {
   constructor(private world: World) {
   }
 
-  @given(/^details for "([^"]*)" connection:$/)
-  public setConnectionDetails(connectionName: string, table: TableDefinition, callback: CallbackStepDefinition): void {
-    log.info(`asdfasdf ${table.rowsHash()}`);
-    const content = new Map<string, string>();
-    log.info(JSON.stringify(Object.keys(table.rowsHash())));
-    for (const key of Object.keys(table.rowsHash())) {
-      content.set(key, table.rowsHash()[key]);
-    }
-    this.world.connectionDetails.set(connectionName, content);
-    log.debug(`connectionDetails update. Current value: ${util.inspect(this.world.connectionDetails)})`);
-    callback();
-  }
-
   @then(/^Camilla is presented with "([^"]*)" connection details$/)
   public verifyConnectionDetails(connectionName: string, callback: CallbackStepDefinition): void {
     // Write code here that turns the phrase above into concrete actions
@@ -44,7 +29,7 @@ class ConnectionSteps {
   }
 
   @then(/^Camilla can see "([^"]*)" connection$/)
-  public expectConnectionTitlePresent (connectionName: string, callback: CallbackStepDefinition): void {
+  public expectConnectionTitlePresent(connectionName: string, callback: CallbackStepDefinition): void {
     const listComponent = new ConnectionsListComponent();
     const connection = listComponent.getConnection(connectionName);
     expect(connection.isPresent(), `There should be present connection ${connectionName}`)
@@ -52,7 +37,7 @@ class ConnectionSteps {
   }
 
   @then(/^Camilla can not see "([^"]*)" connection anymore$/)
-  public expectConnectionTitleNonPresent (connectionName: string, callback: CallbackStepDefinition): void {
+  public expectConnectionTitleNonPresent(connectionName: string, callback: CallbackStepDefinition): void {
     const listComponent = new ConnectionsListComponent();
     const connection = listComponent.getConnection(connectionName);
     expect(connection.isPresent(), `There shouldnt be a present connection ${connectionName}`)
@@ -97,7 +82,9 @@ class ConnectionSteps {
   @when(/^she fills "([^"]*)" connection details$/)
   public fillConnectionDetails(connectionName: string): P<any> {
     const connectionView = new ConnectionViewComponent();
-    return connectionView.fillForm(this.world.connectionDetails.get(connectionName));
+    // return connectionView.fillForm(this.world.connectionDetails.get(connectionName));
+    return connectionView.fillDetails(this.world.testConfig.connection[connectionName]);
+
   }
 }
 

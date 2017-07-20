@@ -19,7 +19,7 @@ node {
           stage 'Prepare test environment'
           createEnvironment(
                 cloud: 'openshift',
-                scriptEnvironmentVariables: ['SYNDESIS_E2E_SECRET': "true", 'SYNDESIS_TEMPLATE_TYPE': "syndesis-ci"],
+                scriptEnvironmentVariables: ['SYNDESIS_E2E_SECRET': 'true', 'SYNDESIS_RELEASED_IMAGES':'true'],
                 environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
                 environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
                 waitForServiceList: ['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak'],

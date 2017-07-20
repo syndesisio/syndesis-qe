@@ -1,6 +1,5 @@
 import { SyndesisComponent } from '../../common/common';
-import { element, by, ElementFinder } from 'protractor';
-import { CallbackStepDefinition } from 'cucumber';
+import { by, element, ElementFinder } from 'protractor';
 import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';

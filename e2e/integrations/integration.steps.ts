@@ -4,11 +4,17 @@
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
+<<<<<<< HEAD
 import { IntegrationEditPage, ListActionsComponent } from '../integrations/edit/edit.po';
 import { IntegrationAddStepPage, StepFactory } from '../integrations/edit/edit.po';
 import { IntegrationConfigureLogStepPage, IntegrationConfigureFilterStepPage } from '../integrations/edit/edit.po';
+=======
+import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory } from '../integrations/edit/edit.po';
+>>>>>>> upstream/master
 import { log } from '../../src/app/logging';
-import { IntegrationsListPage, IntegrationsListComponent } from '../integrations/list/list.po';
+import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
+
+import { element, by, ElementFinder, browser, ExpectedConditions } from 'protractor';
 
 @binding([World])
 class IntegrationSteps {
@@ -53,10 +59,18 @@ class IntegrationSteps {
     return page.selectAction(action);
   }
 
+
   @when(/^Camilla deletes the "([^"]*)" integration*$/)
   public deleteIntegration(integrationName: string): P<any> {
     const listComponent = new IntegrationsListComponent();
     return this.world.app.clickDeleteIntegration(integrationName, listComponent.rootElement());
+  }
+
+  @when(/^she selects "([^"]*)" integration step$/)
+  public addStep (stepName: string): P<any> {
+    log.info(`Adding ${stepName} step to integration`);
+    const page = new IntegrationAddStepPage();
+    return page.addStep(stepName);
   }
 
   @then(/^Integration "([^"]*)" is present in integrations list$/)
@@ -90,13 +104,6 @@ class IntegrationSteps {
       .to.eventually.be.true;
     expect(page.validate(), 'page must contain certain elements')
       .to.eventually.be.true;
-  }
-
-  @then(/^she selects "([^"]*)" step$/)
-  public addStep (stepName: string): P<any> {
-    log.info(`Adding ${stepName} step to integration`);
-    const page = new IntegrationAddStepPage();
-    return page.addStep(stepName);
   }
 
   @then(/^she fill configure page for "([^"]*)" step with "([^"]*)" parameter$/)
@@ -201,8 +208,15 @@ class IntegrationSteps {
       return stepsArray;
     });
   }
+
+  @then(/^she is presented with an actions list$/)
+  public expectActionListIsPresent(): void {
+      const page = new ListActionsComponent();
+      browser.wait(ExpectedConditions.visibilityOf(page.rootElement()), 5000, 'Actions List not loaded');
+      expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
+        .to.eventually.be.true;
+  }
 }
 
 
 export = IntegrationSteps;
-

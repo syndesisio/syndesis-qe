@@ -4,12 +4,6 @@ Feature: Test to verify delete action
   https://issues.jboss.org/browse/IPAAS-290
 
   Background:
-    Given details for "Twitter" connection:
-      | accessToken       | randomly generated token        |
-      | accessTokenSecret | this is just the biggest secret |
-      | consumerKey       | rrrrrrrrrrrrrrrrrrrrrrr333      |
-      | consumerSecret    | ssssssssssssssssssssssss333     |
-
     Given credentials for "Camilla"
     And clean application state
 

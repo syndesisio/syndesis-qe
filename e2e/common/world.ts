@@ -7,6 +7,7 @@ import http = require('http');
 import url = require('url');
 import request = require('request');
 import fs = require('fs-extra');
+import paths = require('path');
 
 
 // let r  = require('request');
@@ -55,10 +56,17 @@ export class World {
   user: User;
   app: AppPage;
   private token: string = null;
-  connectionDetails: Map<string, Map<string, string>> = new Map();
+  testConfig: any;
 
   constructor() {
     this.app = new AppPage();
+
+    // load test config from json
+    let configPath =  process.env.SYNDESIS_TEST_CONFIG ||  'test_config.json';
+    configPath = paths.resolve(configPath);
+    log.info(`loading test config from ${configPath}`);
+    this.testConfig = fs.readJSONSync(configPath);
+    log.info(`loaded test config:\n ${JSON.stringify(this.testConfig, null, 4) }`);
   }
 
 
@@ -139,7 +147,7 @@ export class World {
       return P.reject(`File path ${jsonPath} doesn't exist`);
     }
 
-    const data: string = fs.readFileSync(jsonPath);
+    const data: string = fs.readFileSync(jsonPath).toString();
     log.debug(`data: ${data}`);
     const result = await this.authRequest(`${link}/test-support/restore-db`, 'POST', data);
     if (result.statusCode !== 204) {
