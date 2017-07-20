@@ -1,3 +1,4 @@
+import { Utils } from '../../common/utils';
 import { SyndesisComponent } from '../../common/common';
 import { by, element, ElementFinder } from 'protractor';
 import { P } from '../../common/world';
@@ -43,6 +44,7 @@ export class FlowViewComponent implements SyndesisComponent {
     return new FlowConnection(type, e);
   }
 }
+
 
 export class ListActionsComponent implements SyndesisComponent {
   rootElement(): ElementFinder {
@@ -94,6 +96,11 @@ export class IntegrationEditPage implements SyndesisComponent {
   rootElement(): ElementFinder {
     return element(by.css('syndesis-integrations-edit-page'));
   }
+
+  actionConfigureComponent(): ActionConfigureComponent {
+    return new ActionConfigureComponent();
+  }
+
 
   flowViewComponent(): FlowViewComponent {
     return new FlowViewComponent();
@@ -248,4 +255,27 @@ export class IntegrationConfigureFilterStepPage extends IntegrationConfigureStep
   getParameter(): string {
     return this.filterCondition;
   }
+}
+
+/*
+ * Element for keywords value fill.
+ */
+export class ActionConfigureComponent implements SyndesisComponent {
+  static readonly idSelector = 'keywords';
+
+  rootElement(): ElementFinder {
+    return element(by.css('syndesis-integrations-action-configure'));
+  }
+
+  keywordsElement(): ElementFinder {
+    return element(by.id(ActionConfigureComponent.idSelector));
+  }
+
+  fillKeywordsValueB(value: string): P<any> {
+    log.debug(`setting keywords element of twitter search with value: ${value}`);
+    var fillMap = new Map();
+    fillMap.set(ActionConfigureComponent.idSelector, value);
+    return Utils.fillForm(fillMap, this.rootElement(), "id");
+  }
+  
 }

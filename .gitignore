@@ -16,6 +16,7 @@
 *.launch
 .settings/
 .tern-project
+/nbproject
 
 # IDE - VSCode
 .vscode/*
@@ -33,6 +34,9 @@
 npm-debug.log
 testem.log
 /typings
+/e2e/data/node_modules
+/e2e/data/yarn.lock
+package-lock.json
 
 # e2e
 /e2e/*.js
