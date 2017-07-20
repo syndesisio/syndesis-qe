@@ -91,7 +91,7 @@ Feature: Test to verify advanced integration with multiple steps
     
     When Camilla click on the "Add a Step" button
     Then she is presented with a add step page
-    Then she selects "Log" step
+    Then she selects "Log" integration step
     And she is presented with a "Log" step configure page
     Then she fill configure page for "Log" step with "log 1" parameter
     And click on the "Next" button
@@ -99,7 +99,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Filter" step
+    Then she selects "Filter" integration step
     And she is presented with a "Filter" step configure page
     Then she fill configure page for "Filter" step with "filter 1" parameter
     And click on the "Next" button
@@ -107,7 +107,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Filter" step
+    Then she selects "Filter" integration step
     And she is presented with a "Filter" step configure page
     Then she fill configure page for "Filter" step with "filter 2" parameter
     And click on the "Next" button
@@ -115,7 +115,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" step
+    Then she selects "Log" integration step
     And she is presented with a "Log" step configure page
     Then she fill configure page for "Log" step with "log 2" parameter
     And click on the "Next" button
@@ -123,7 +123,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" step
+    Then she selects "Log" integration step
     And she is presented with a "Log" step configure page
     Then she fill configure page for "Log" step with "log 3" parameter
     And click on the "Next" button
@@ -131,7 +131,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" step
+    Then she selects "Log" integration step
     And she is presented with a "Log" step configure page
     Then she fill configure page for "Log" step with "log 4" parameter
     And click on the "Next" button
@@ -139,7 +139,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Filter" step
+    Then she selects "Filter" integration step
     And she is presented with a "Filter" step configure page
     Then she fill configure page for "Filter" step with "filter 3" parameter
     And click on the "Next" button
@@ -147,7 +147,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Filter" step
+    Then she selects "Filter" integration step
     And she is presented with a "Filter" step configure page
     Then she fill configure page for "Filter" step with "filter 4" parameter
     And click on the "Next" button

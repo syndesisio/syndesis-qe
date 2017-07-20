@@ -4,13 +4,7 @@
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-<<<<<<< HEAD
-import { IntegrationEditPage, ListActionsComponent } from '../integrations/edit/edit.po';
-import { IntegrationAddStepPage, StepFactory } from '../integrations/edit/edit.po';
-import { IntegrationConfigureLogStepPage, IntegrationConfigureFilterStepPage } from '../integrations/edit/edit.po';
-=======
 import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory } from '../integrations/edit/edit.po';
->>>>>>> upstream/master
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 
@@ -58,7 +52,6 @@ class IntegrationSteps {
     const page = new ListActionsComponent();
     return page.selectAction(action);
   }
-
 
   @when(/^Camilla deletes the "([^"]*)" integration*$/)
   public deleteIntegration(integrationName: string): P<any> {
