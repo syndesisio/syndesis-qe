@@ -10,9 +10,6 @@ import { IntegrationsListComponent, IntegrationsListPage } from '../integrations
 
 import { element, by, ElementFinder, browser, ExpectedConditions } from 'protractor';
 
-/**
- * Created by jludvice on 1.3.17.
- */
 @binding([World])
 class IntegrationSteps {
 
@@ -55,7 +52,6 @@ class IntegrationSteps {
     const page = new ListActionsComponent();
     return page.selectAction(action);
   }
-
 
   @when(/^Camilla deletes the "([^"]*)" integration*$/)
   public deleteIntegration(integrationName: string): P<any> {
@@ -108,6 +104,102 @@ class IntegrationSteps {
     const stepFactory = new StepFactory();
     const page = stepFactory.getStep(stepType, paremeter);
     return page.fillConfiguration();
+  }
+
+  @then(/^she adds "([^"]*)" random steps and then check the structure$/)
+  public addRandomStepsAndCheckRest (numberOfSteps: number): void {
+
+    this.getStepsArray().then((array) => {
+      this.world.app.clickButton('Next');
+      this.world.app.clickButton('Add a Step');
+
+      const links = this.world.app.getLinks('Add a step');
+
+      links.count().then((count) => {
+        log.info(`links "${count}"`);
+
+        const randomIndexes = [];
+        for (let i = 0; i < numberOfSteps; i++) {
+          randomIndexes.push(Math.floor((Math.random() * count)));
+        }
+        return randomIndexes;
+      }).then((randomIndexes) => {
+        const page = new IntegrationAddStepPage();
+
+        for (const randomIndex of randomIndexes) {
+          links.get(randomIndex).click();
+
+          const steType = 'Log';
+          const stepParameter = 'log x' + randomIndex;
+
+          page.addStep(steType);
+          const stepFactory = new StepFactory();
+          const stepPage = stepFactory.getStep(steType, stepParameter);
+          stepPage.fillConfiguration();
+
+          this.world.app.clickButton('Next');
+          this.world.app.clickButton('Add a Step');
+
+          array.splice(randomIndex, 0, stepParameter);
+        }
+        this.getStepsArray().then((array2) => {
+          for (let i = 0; i < array2.length; i++) {
+            log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+            expect(array[i]).to.be.equal(array2[i]);
+          }
+        });
+      });
+    });
+  }
+
+  @then(/^she delete "([^"]*)" random steps and check rest$/)
+  public deleteRandomStepsAndCheckRest (numberOfSteps: number): void {
+
+    this.getStepsArray().then((array) => {
+      const trashes = this.world.app.getElementsByClassName('delete-icon');
+
+      trashes.count().then((count) => {
+        const randomIndexes = [];
+        for (let i = 0; i < numberOfSteps; i++) {
+          randomIndexes.push(Math.floor((Math.random() * (count - 2 - i))));
+        }
+        return randomIndexes;
+      }).then((randomIndexes) => {
+        for (const randomIndex of randomIndexes) {
+          trashes.get(randomIndex + 1).click();
+          this.world.app.getFirstVisibleButton('Delete').click();
+          array.splice(randomIndex, 1);
+        }
+        this.getStepsArray().then((array2) => {
+          for (let i = 0; i < array.length; i++) {
+            log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+            expect(array[i]).to.be.equal(array2[i]);
+          }
+        });
+      });
+    });
+  }
+
+  public getStepsArray (): P<any> {
+    const stepFactory = new StepFactory();
+    const steps = this.world.app.getElementsByClassName('parent-step');
+
+    return steps.count().then((count) => {
+      const stepsArray = new Array();
+      for (let i = 1; i < (count - 1); i++) {
+        steps.get(i).click();
+        const title = this.world.app.getElementByCssSelector("span[class='parent-step active']");
+
+        title.getText().then((text) => {
+          const stepPage = stepFactory.getStep(text, '');
+
+          stepPage.initialize().then(() => {
+            stepsArray.push(stepPage.getParameter());
+          });
+        });
+      }
+      return stepsArray;
+    });
   }
 
   @then(/^she is presented with an actions list$/)
