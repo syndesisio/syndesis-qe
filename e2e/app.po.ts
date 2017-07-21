@@ -166,17 +166,22 @@ export class AppPage {
     log.info(`clicking delete link for integration ${integrationName}`);
     log.info(`root element ${rootElement}`);
 
-    const parentElement = rootElement.all(by.className('integration')).filter(function(elem, index) {
-      return elem.element(by.className('name')).getText().then(function(text) {
-        return text === integrationName;
+    const parentElement = this.getElementByClassName('integration');
+    return browser.wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present').then(function() {
+      const parentElements = rootElement.all(by.className('integration')).filter(function(elem, index) {
+        return elem.element(by.className('name')).getText().then(function(text) {
+          return text === integrationName;
+        });
       });
-    });
 
-    parentElement.first().element(by.id('dropdownKebabRight9')).click();
-    this.rootElement.element(by.linkText('Delete')).click();
-    browser.wait(ExpectedConditions.visibilityOf(this.rootElement.element(by.css('div.modal.fade.in'))), 30 * 1000,
+      parentElements.first().element(by.id('dropdownKebabRight9')).click();
+      rootElement.element(by.linkText('Delete')).click();
+      browser.wait(ExpectedConditions.visibilityOf(rootElement.element(by.css('div.modal.fade.in'))), 30 * 1000,
       'Modal not loaded in time');
-    return this.rootElement.element(by.buttonText('Delete')).click();
+      return rootElement.element(by.buttonText('Delete')).click();
+    }).catch(function(e) {
+      return P.reject(e);
+    });
   }
 
   async link(title: String): P<NavLink> {
