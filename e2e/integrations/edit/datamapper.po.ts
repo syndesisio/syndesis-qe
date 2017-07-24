@@ -17,7 +17,7 @@ export class DataMapperComponent implements SyndesisComponent {
 
     const loadedSelector = this.rootElement().$('div.card-pf-heading.fieldsCount');
     // thanks to await it will propagate possible error in reasonable way
-    await browser.wait(ExpectedConditions.presenceOf(loadedSelector), 1000, 'waiting for datamapper full load failed');
+    await browser.wait(ExpectedConditions.presenceOf(loadedSelector), 5000, 'waiting for datamapper full load failed');
 
     log.info(`datamapper loaded`);
     const elements = await this.rootElement().$$('div.docDef');
