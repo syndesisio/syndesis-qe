@@ -12,16 +12,13 @@ let reportsPath = path.join(testPath, 'cucumber-reports/');
 let cucumberJsonPath = path.join(reportsPath, 'cucumber-report.json');
 let cucumberHtmlPath = path.join(reportsPath, 'cucumber-report.html');
 
-
 exports.config = {
   allScriptsTimeout: 11000,
-  specs: [
-    testPath + '/**/*.feature'
-  ],
+  specs: [testPath + '/**/*.feature'],
   capabilities: {
-    'browserName': 'chrome',
-    'chromeOptions': {
-      'args': ['--no-sandbox']
+    browserName: 'chrome',
+    chromeOptions: {
+      args: ['--no-sandbox']
     }
   },
   directConnect: true,
@@ -29,27 +26,21 @@ exports.config = {
   framework: 'custom',
   frameworkPath: require.resolve('protractor-cucumber-framework'),
   cucumberOpts: {
-    require: [
-      testPath + '/env.ts',
-      testPath + '/**/*.steps.ts'
-    ],
-    format: [
-      'pretty',
-      'json:' + cucumberJsonPath
-    ]
+    require: [testPath + '/env.ts', testPath + '/**/*.steps.ts'],
+    format: ['pretty', 'json:' + cucumberJsonPath]
   },
-  onPrepare: function () {
+  onPrepare: function() {
     browser.manage().window().setSize(1280, 720);
   },
   useAllAngular2AppRoots: true,
-  beforeLaunch: function () {
+  beforeLaunch: function() {
     require('ts-node').register({
       project: 'e2e'
     });
     // ensure we have empty directory to store cucumber reports
     fse.emptyDirSync(reportsPath);
   },
-  afterLaunch: function () {
+  afterLaunch: function() {
     // see docs https://www.npmjs.com/package/cucumber-html-reporter
     let options = {
       theme: 'bootstrap',
@@ -59,12 +50,11 @@ exports.config = {
       storeScreenShots: false,
       launchReport: false,
       metadata: {
-        "Browser": "Chrome",
-        "Platform": `${os.platform()}  ${os.release()} (${os.arch()})`,
-        "Parallel": "no",
+        Browser: 'Chrome',
+        Platform: `${os.platform()}  ${os.release()} (${os.arch()})`,
+        Parallel: 'no'
       }
     };
     reporter.generate(options);
-
   }
 };

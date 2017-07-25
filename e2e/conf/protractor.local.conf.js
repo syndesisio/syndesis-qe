@@ -6,10 +6,7 @@ let merge = require('merge');
 // load base config
 let baseConfig = require('./protractor.base.conf').config;
 
-
 // changes specific to local testing
 exports.config = merge(baseConfig, {
-
-  baseUrl: 'http://localhost:4200/',
-
+  baseUrl: 'http://localhost:4200/'
 });

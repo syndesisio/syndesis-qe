@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "scripts": {
-    "format": "yarn prettier -- --single-quote --print-widht 120 --write \"./**/*.{ts,js}\"",
+    "format": "yarn prettier -- --single-quote --print-width 120 --write \"./**/*.{ts,js}\"",
     "lint": "yarn ng lint",
     "lint:fix": "yarn ng lint -- --fix",
     "test:xvfb": "docker run --rm -v `pwd`:/syndesis-ui:z -w /syndesis-ui -u `id -u` docker.io/syndesis/karma-xvfb ./karma-xvfb.sh",
@@ -16,7 +16,7 @@
   },
   "lint-staged": {
     "*.{ts,js}": [
-      "prettier --single-quote --print-widht 120 --write",
+      "prettier --single-quote --print-width 120 --write",
       "git add"
     ]
   },

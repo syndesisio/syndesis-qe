@@ -7,7 +7,6 @@ export class User {
   password: string;
   userDetails: UserDetails;
 
-
   constructor(alias: string, description: string, userDetails: UserDetails) {
     this.alias = alias;
     this.description = description;
@@ -30,11 +29,9 @@ export class User {
     }
   }
 
-
   toString(): string {
     return `User{alias=${this.alias}, login=${this.username}}`;
   }
-
 }
 
 export class UserDetails {

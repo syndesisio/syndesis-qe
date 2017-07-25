@@ -12,5 +12,4 @@ switch (env) {
   default:
     exports.config = require('./e2e/conf/protractor.local.conf').config;
     break;
-
 }

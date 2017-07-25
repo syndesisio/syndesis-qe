@@ -7,7 +7,6 @@ import Promise = promise.Promise;
  * Created by jludvice on 4.4.17.
  */
 
-
 export class TextEntity {
   readonly selector: ElementFinder;
 
@@ -23,7 +22,6 @@ export class TextEntity {
     return P.resolve(value).then(v => this.selector.sendKeys(v));
   }
 }
-
 
 export class ConnectionViewComponent implements SyndesisComponent {
   name = new TextEntity(this.rootElement().$('input[name="nameInput"]'));
@@ -52,9 +50,7 @@ export class ConnectionViewComponent implements SyndesisComponent {
   }
 }
 
-
 export class ConnectionCreatePage implements SyndesisComponent {
-
   rootElement(): ElementFinder {
     return $('syndesis-connection-create-page');
   }

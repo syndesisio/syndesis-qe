@@ -3,7 +3,6 @@ import { $, by, ElementFinder } from 'protractor';
 import { P } from '../../common/world';
 import { log } from '../../../src/app/logging';
 
-
 export class IntegrationsListComponent implements SyndesisComponent {
   rootElement(): ElementFinder {
     return $('syndesis-integrations-list');
@@ -26,7 +25,6 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return this.integrationEntry(name).click();
   }
 }
-
 
 export class IntegrationsListPage implements SyndesisComponent {
   rootElement(): ElementFinder {

@@ -15,18 +15,14 @@ import { IntegrationsListPage } from '../integrations/list/list.po';
  */
 @binding([World])
 class FirstPass {
-
   //todo consider using inheriance in *.steps.ts
-  constructor(protected world: World) {
-  }
-
+  constructor(protected world: World) {}
 
   @when(/^Camilla navigates to Syndesis "([^"]*)"$/)
   public navigateSyndesis(arg1: string, callback: CallbackStepDefinition): void {
     // Write code here that turns the phrase above into concrete actions
     callback(null, 'pending');
   }
-
 
   /**
    * whether it's start or finish connection
@@ -41,8 +37,7 @@ class FirstPass {
 
     const connection = await page.flowViewComponent().flowConnection(type);
 
-    return expect(connection.isActive(), `${type} connection must be active`)
-      .to.eventually.be.true;
+    return expect(connection.isActive(), `${type} connection must be active`).to.eventually.be.true;
   }
 }
 

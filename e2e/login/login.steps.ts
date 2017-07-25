@@ -4,15 +4,12 @@ import { ConnectionsListComponent } from '../connections/list/list.po';
 import { World, expect } from '../common/world';
 import { log } from '../../src/app/logging';
 
-
 /**
  * Created by jludvice on 1.3.17.
  */
 @binding([World])
 class LoginSteps {
-
-  constructor(protected world: World) {
-  }
+  constructor(protected world: World) {}
 
   /**
    * this accepts callback and it calls callback once it's done
@@ -25,10 +22,10 @@ class LoginSteps {
     log.info(`should assert ${connectionCount}`);
 
     const page = new ConnectionsListComponent();
-    expect(page.countConnections(), `There should be ${connectionCount} available`)
-      .to.eventually.be.least(Number(connectionCount)).notify(callback);
+    expect(page.countConnections(), `There should be ${connectionCount} available`).to.eventually.be
+      .least(Number(connectionCount))
+      .notify(callback);
   }
 }
-
 
 export = LoginSteps;
