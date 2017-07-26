@@ -184,6 +184,9 @@ class IntegrationSteps {
     const stepFactory = new StepFactory();
     const steps = this.world.app.getElementsByClassName('parent-step');
 
+    const navBar = this.world.app.getElementByClassName('navbar-toggle');
+    navBar.click();
+
     return steps.count().then((count) => {
       const stepsArray = new Array();
       for (let i = 1; i < (count - 1); i++) {
@@ -198,6 +201,7 @@ class IntegrationSteps {
           });
         });
       }
+      navBar.click();
       return stepsArray;
     });
   }
