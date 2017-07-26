@@ -20,17 +20,8 @@ class CommonSteps {
   constructor(protected world: World) {
   }
 
-  @given(/^credentials for "([^"]*)"$/)
-  public loadCredentials(alias: string, callback: CallbackStepDefinition): void {
-    this.world.user = new User(alias.toLowerCase(), 'asdfadf', null);
-    log.info(`using alias ${alias} with login ${this.world.user.username}`);
-    callback();
-  }
-
   @when(/^"(\w+)" logs into the Syndesis.*$/i)
   public login(alias: string): P<any> {
-    this.world.user = new User(alias.toLowerCase(), 'asdfadf', null);
-    // return this.app.login(this.world.user);
     return this.world.app.login(this.world.user);
   }
 

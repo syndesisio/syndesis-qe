@@ -53,7 +53,7 @@ export class Deferred<T> {
  *
  */
 export class World {
-  user: User;
+  users: Map<string, User>;
   app: AppPage;
   private token: string = null;
   testConfig: any;
@@ -62,11 +62,25 @@ export class World {
     this.app = new AppPage();
 
     // load test config from json
-    let configPath =  process.env.SYNDESIS_TEST_CONFIG ||  'test_config.json';
+    let configPath = process.env.SYNDESIS_TEST_CONFIG || 'test_config.json';
     configPath = paths.resolve(configPath);
     log.info(`loading test config from ${configPath}`);
     this.testConfig = fs.readJSONSync(configPath);
     log.info(`loaded test config:\n ${JSON.stringify(this.testConfig, null, 4) }`);
+
+    this.users = new Map();
+    Object.keys(this.testConfig.users).forEach(key => {
+      this.users.set(key, this.testConfig.users[key]);
+    });
+    log.info(`found ${this.users.size} users in test config`);
+  }
+
+  /**
+   * use camilla as default user
+   * @returns {User}
+   */
+  get user(): User {
+    return this.users.get('camilla');
   }
 
 
