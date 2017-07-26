@@ -100,9 +100,9 @@ class IntegrationSteps {
   }
 
   @then(/^she fill configure page for "([^"]*)" step with "([^"]*)" parameter$/)
-  public fillStepConfiguration (stepType: string, paremeter: string): P<any> {
+  public fillStepConfiguration (stepType: string, parameter: string): P<any> {
     const stepFactory = new StepFactory();
-    const page = stepFactory.getStep(stepType, paremeter);
+    const page = stepFactory.getStep(stepType, parameter);
     return page.fillConfiguration();
   }
 
@@ -129,8 +129,8 @@ class IntegrationSteps {
         for (const randomIndex of randomIndexes) {
           links.get(randomIndex).click();
 
-          const steType = 'Log';
-          const stepParameter = 'log x' + randomIndex;
+          const steType = 'Basic Filter';
+          const stepParameter = 'Any, path' + randomIndex + ', Does Not Contain, value' + randomIndex;
 
           page.addStep(steType);
           const stepFactory = new StepFactory();

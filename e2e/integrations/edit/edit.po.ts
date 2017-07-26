@@ -129,8 +129,8 @@ export class StepFactory {
     }
     if (stepType.toUpperCase() === 'LOG') {
       return new IntegrationConfigureLogStepPage(parameter);
-    } else if (stepType.toUpperCase() === 'FILTER') {
-      return new IntegrationConfigureFilterStepPage(parameter);
+    } else if (stepType.toUpperCase() === 'BASIC FILTER') {
+      return new IntegrationConfigureBasicFilterStepPage(parameter);
     }
 
     return null;
@@ -202,50 +202,217 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
   }
 }
 
-export class IntegrationConfigureFilterStepPage extends IntegrationConfigureStepPage {
-  static readonly filterSelector = 'textarea[name="filter"]';
+export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigureStepPage {
+  static readonly predicateSelector = 'select[id="predicate"]';
+  static readonly predicateOptionSelector = 'option[name="predicate"]';
+
+  static readonly pathSelector = 'input[name="path"]';
+  static readonly valueSelector = 'input[name="value"]';
+  static readonly opSelector = 'select[name="op"]';
+  static readonly opOptionSelector = 'option[name="op"]';
 
   filterCondition: string;
+
+  predicate: number;
+
+  ruleArray: BasicFilterRule[];
 
   constructor(filterCondition: string) {
     super();
     this.filterCondition = filterCondition;
+
+    log.info(`filterConditions ${filterCondition}`);
+
+    const filterConditionsArray = filterCondition.split(', ');
+
+    this.predicate = BasicFilterPredicates[filterConditionsArray[0]];
+
+    log.info(`predicate ${filterConditionsArray[0]}`);
+    log.info(`predicate number ${this.predicate}`);
+
+    this.ruleArray = [];
+
+    for (let i = 1; i < (filterConditionsArray.length - 2); i = i + 3) {
+
+      log.info(`filter condition ${filterConditionsArray[i]}`);
+      log.info(`filter condition ${filterConditionsArray[i + 1]}`);
+      log.info(`filter condition ${filterConditionsArray[i + 2]}`);
+
+      let op = filterConditionsArray[i + 1];
+      op = op.split(' ').join('_');
+      op = op.toLocaleLowerCase();
+
+      log.info(`filter condition ${op}`);
+
+      const basicFilterRule = new BasicFilterRule(filterConditionsArray[i], BasicFilterOps[op], filterConditionsArray[i + 2]);
+      this.ruleArray.push(basicFilterRule);
+
+      log.info(`filter conditions ` + basicFilterRule.toString());
+    }
   }
 
   fillConfiguration(): P<any> {
-    return this.setFilterCondition(this.filterCondition);
+    log.info(`fillConfiguration`);
+
+    for (const rule of this.ruleArray) {
+      this.setPath(rule.getPath());
+      this.setOp(rule.getOp());
+      this.setValue(rule.getValue());
+        
+      /**TODO add rule**/
+    }
+
+    return this.setPredicate(this.predicate);
   }
 
   validate(): P<any> {
     log.debug(`validating configuration page`);
-    return this.getFilterDefinitioTextArea().isPresent();
+
+    const predicatPresent = this.getPredicateSelect().isPresent();
+    const pathPresent = this.getPathInput().isPresent();
+    const valuePresent = this.getValueInput().isPresent();
+    const opPresent = this.getOpSelect().isPresent();
+
+    return (predicatPresent && pathPresent && valuePresent && opPresent);
   }
 
   initialize(): P<any> {
-    return this.getFilterDefinitioTextAreaValue().then((function(text) {
-      this.setParameter(text);
-    }).bind(this));
-  }
-
-  setFilterCondition(filterCondition: string): P<any> {
-    log.info(`setting integration filter step condition to ${filterCondition}`);
-    return this.rootElement().$(IntegrationConfigureFilterStepPage.filterSelector).sendKeys(filterCondition);
+    let parameter;  
+      
+    return this.getPredicateSelectValue().then((text) => {
+      parameter = text;
+      return this.getPathInputValue();
+    }).then((text) => {
+      parameter = parameter + ", " + text;
+      return this.getOpSelectValue()
+    }).then((text) => {
+      parameter = parameter + ", " + text;
+      return this.getValueInputValue()
+    }).then(((text) => {
+      parameter = parameter + ", " + text;
+      return this.setParameter(parameter);
+    }).bind(this));  
   }
 
   setParameter(filterCondition: string): void {
     this.filterCondition = filterCondition;
   }
 
-  getFilterDefinitioTextArea(): ElementFinder {
-    log.debug(`searching filter definition text area`);
-    return this.rootElement().$(IntegrationConfigureFilterStepPage.filterSelector);
+  setPredicate(predicate: number): P<any> {
+    log.info(`setting basic filter step predicate to option number ${predicate}`);
+    const predicateOptions = this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.predicateOptionSelector));
+    return predicateOptions.then((options) => {
+      options[this.predicate].click();
+    });
   }
 
-  getFilterDefinitioTextAreaValue(): P<any> {
-    return this.getFilterDefinitioTextArea().getAttribute('value');
+  setOp(op: number): P<any> {
+    log.info(`setting basic filter step predicate to option number ${op}`);
+    const opOptions = this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opOptionSelector));
+    return opOptions.then((options) => {
+      options[op].click();
+    });
+  }
+
+  setPath(path: string): P<any> {
+    log.info(`setting basic filter step path to ${path}`);
+    const pathInput = this.rootElement().$(IntegrationConfigureBasicFilterStepPage.pathSelector);
+    
+    return pathInput.clear().then(function() {
+      pathInput.sendKeys(path);
+    });
+  }
+
+  setValue(value: string): P<any> {
+    log.info(`setting basic filter step value to ${value}`);
+    const valueInput = this.rootElement().$(IntegrationConfigureBasicFilterStepPage.valueSelector);
+    
+    return valueInput.clear().then(function() {
+      valueInput.sendKeys(value);
+    });
   }
 
   getParameter(): string {
     return this.filterCondition;
   }
+
+  getPredicateSelect(): ElementFinder {
+    log.debug(`Searching basic filter predicate select`);
+    return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.predicateSelector);
+  }
+
+  getPredicateSelectValue(): P<any> {
+    log.debug(`Searching basic filter predicate select checked option`);
+    return this.getPredicateSelect().$('option:checked').getText();
+  }
+
+  getPathInput(): ElementFinder {
+    log.debug(`Searching basic filter path input`);
+    return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.pathSelector);
+  }
+  
+  getPathInputValue(): P<any> {
+    return this.getPathInput().getAttribute('value');
+  }
+
+  getValueInput(): ElementFinder {
+    log.debug(`Searching basic filter value input`);
+    return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.valueSelector);
+  }
+
+  getValueInputValue(): P<any> {
+    return this.getValueInput().getAttribute('value');
+  }  
+
+  getOpSelect(): ElementFinder {
+    log.debug(`Searching basic filter op select`);
+    return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.opSelector);
+  }
+
+  getOpSelectValue(): P<any> {
+    log.debug(`Searching basic filter op select checked option`);
+    return this.getOpSelect().$('option:checked').getText();
+  }
+}
+
+export class BasicFilterRule {
+  path: string;
+  op: number;
+  value: string;
+
+  constructor(path: string, op: number, value: string) {
+    this.path = path;
+    this.op = op;
+    this.value = value;
+  }
+
+  getPath(): string {
+    return this.path;
+  }
+
+  getOp(): number {
+    return this.op;
+  }
+
+  getValue(): string {
+    return this.value;
+  }
+
+  toString(): string {
+    return 'Path: ' + this.path + ' Op: ' + this.op + ' Value: ' + this.value;
+  }
+}
+
+enum BasicFilterPredicates {
+    All,
+    Any,
+}
+
+enum BasicFilterOps {
+    contains,
+    does_not_contain,
+    matches_regex,
+    does_not_match_regex,
+    starts_with,
+    ends_with,
 }
