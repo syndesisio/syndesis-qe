@@ -207,6 +207,14 @@ class IntegrationSteps {
           });
         });
       }
+
+      navBar.isDisplayed().then((visible) => {
+        if (!visible) {
+          const navBarToggle = this.world.app.getElementByClassName('navbar-toggle');
+          navBarToggle.click();
+        }
+      });
+
       return stepsArray;
     });
   }
