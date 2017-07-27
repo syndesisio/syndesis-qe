@@ -183,6 +183,15 @@ class IntegrationSteps {
   public getStepsArray (): P<any> {
     const stepFactory = new StepFactory();
     const steps = this.world.app.getElementsByClassName('parent-step');
+    const navBar = this.world.app.getElementByClassName('nav-pf-vertical');
+
+    navBar.isDisplayed().then((visible) => {
+      if (visible) {
+        log.warn('Navigation bar is not hidden.');
+        const navBarToggle = this.world.app.getElementByClassName('navbar-toggle');
+        navBarToggle.click();
+      }
+    });
 
     return steps.count().then((count) => {
       const stepsArray = new Array();
@@ -198,6 +207,14 @@ class IntegrationSteps {
           });
         });
       }
+
+      navBar.isDisplayed().then((visible) => {
+        if (!visible) {
+          const navBarToggle = this.world.app.getElementByClassName('navbar-toggle');
+          navBarToggle.click();
+        }
+      });
+
       return stepsArray;
     });
   }
