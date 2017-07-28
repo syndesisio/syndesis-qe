@@ -1,4 +1,10 @@
-import { Category, CategoryLogger, CategoryServiceFactory, CategoryDefaultConfiguration, LogLevel } from 'typescript-logging';
+import {
+  Category,
+  CategoryLogger,
+  CategoryServiceFactory,
+  CategoryDefaultConfiguration,
+  LogLevel
+} from 'typescript-logging';
 
 // TODO typescript-logging will support a console API to change this at runtime in the future, for now we'll use localStorage
 const storedLogLevel = typeof localStorage !== 'undefined' && localStorage.getItem('logLevel');

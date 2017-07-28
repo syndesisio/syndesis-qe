@@ -12,19 +12,17 @@ import util = require('util');
  * Created by jludvice on 29.3.17.
  */
 
-
 @binding([World])
 class ConnectionSteps {
-
-  constructor(private world: World) {
-  }
+  constructor(private world: World) {}
 
   @then(/^Camilla is presented with "([^"]*)" connection details$/)
   public verifyConnectionDetails(connectionName: string, callback: CallbackStepDefinition): void {
     // Write code here that turns the phrase above into concrete actions
     const page = new ConnectionDetailPage();
-    expect(page.connectionName(), `Connection detail page must show connection name`)
-      .to.eventually.be.equal(connectionName).notify(callback);
+    expect(page.connectionName(), `Connection detail page must show connection name`).to.eventually.be
+      .equal(connectionName)
+      .notify(callback);
     // todo add more assertion on connection details page
   }
 
@@ -32,23 +30,27 @@ class ConnectionSteps {
   public expectConnectionTitlePresent(connectionName: string, callback: CallbackStepDefinition): void {
     const listComponent = new ConnectionsListComponent();
     const connection = listComponent.getConnection(connectionName);
-    expect(connection.isPresent(), `There should be present connection ${connectionName}`)
-      .to.eventually.be.true.notify(callback);
+    expect(connection.isPresent(), `There should be present connection ${connectionName}`).to.eventually.be.true.notify(
+      callback
+    );
   }
 
   @then(/^Camilla can not see "([^"]*)" connection anymore$/)
   public expectConnectionTitleNonPresent(connectionName: string, callback: CallbackStepDefinition): void {
     const listComponent = new ConnectionsListComponent();
     const connection = listComponent.getConnection(connectionName);
-    expect(connection.isPresent(), `There shouldnt be a present connection ${connectionName}`)
-      .to.eventually.be.false.notify(callback);
+    expect(
+      connection.isPresent(),
+      `There shouldnt be a present connection ${connectionName}`
+    ).to.eventually.be.false.notify(callback);
   }
 
   @then(/^she is presented with a connection create page$/)
   public editorOpened(callback: CallbackStepDefinition): void {
     const page = new ConnectionCreatePage();
-    expect(page.rootElement().isPresent(), 'there must be edit page root element')
-      .to.eventually.be.true.notify(callback);
+    expect(page.rootElement().isPresent(), 'there must be edit page root element').to.eventually.be.true.notify(
+      callback
+    );
   }
 
   @when(/^Camilla deletes the "([^"]*)" connection*$/)
@@ -84,7 +86,6 @@ class ConnectionSteps {
     const connectionView = new ConnectionViewComponent();
     // return connectionView.fillForm(this.world.connectionDetails.get(connectionName));
     return connectionView.fillDetails(this.world.testConfig.connection[connectionName]);
-
   }
 }
 

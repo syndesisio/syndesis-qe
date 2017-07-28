@@ -4,11 +4,8 @@ import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
 
-
 export class FlowConnection {
-
-  constructor(public type: string, public element: ElementFinder) {
-  }
+  constructor(public type: string, public element: ElementFinder) {}
 
   /**
    * Check if this element is active
@@ -17,7 +14,6 @@ export class FlowConnection {
   isActive(): P<boolean> {
     return this.element.element(by.css('p.icon.active')).isPresent();
   }
-
 }
 
 export class FlowViewComponent implements SyndesisComponent {
@@ -28,9 +24,7 @@ export class FlowViewComponent implements SyndesisComponent {
   }
 
   getIntegrationName(): P<string> {
-    return this.rootElement()
-      .element(by.css(FlowViewComponent.nameSelector))
-      .getAttribute('value');
+    return this.rootElement().element(by.css(FlowViewComponent.nameSelector)).getAttribute('value');
   }
 
   /**
@@ -53,7 +47,6 @@ export class ListActionsComponent implements SyndesisComponent {
     log.info(`searching for integration action '${name}'`);
     return this.rootElement().element(by.cssContainingText('div.name', name)).click();
   }
-
 }
 
 export class ConnectionSelectComponent implements SyndesisComponent {
@@ -64,10 +57,7 @@ export class ConnectionSelectComponent implements SyndesisComponent {
   connectionListComponent(): ConnectionsListComponent {
     return new ConnectionsListComponent();
   }
-
-
 }
-
 
 export class IntegrationBasicsComponent implements SyndesisComponent {
   static readonly nameSelector = 'input[name="nameInput"]';
@@ -85,12 +75,9 @@ export class IntegrationBasicsComponent implements SyndesisComponent {
   setDescription(description: string): P<any> {
     return this.rootElement().$(IntegrationBasicsComponent.descriptionSelector).sendKeys(description);
   }
-
-
 }
 
 export class IntegrationEditPage implements SyndesisComponent {
-
   rootElement(): ElementFinder {
     return element(by.css('syndesis-integrations-edit-page'));
   }
@@ -106,8 +93,6 @@ export class IntegrationEditPage implements SyndesisComponent {
   basicsComponent(): IntegrationBasicsComponent {
     return new IntegrationBasicsComponent();
   }
-
-
 }
 
 export class IntegrationAddStepPage implements SyndesisComponent {
@@ -117,12 +102,14 @@ export class IntegrationAddStepPage implements SyndesisComponent {
 
   addStep(stepName: string): P<any> {
     log.info(`searching for step ${stepName}`);
-    return this.rootElement().element(by.cssContainingText('div.list-group-item-heading', stepName)).getWebElement().click();
+    return this.rootElement()
+      .element(by.cssContainingText('div.list-group-item-heading', stepName))
+      .getWebElement()
+      .click();
   }
 }
 
 export class StepFactory {
-
   getStep(stepType: string, parameter: string): IntegrationConfigureStepPage {
     if (stepType == null) {
       return null;
@@ -174,9 +161,11 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
   }
 
   initialize(): P<any> {
-    return this.getMessageInputValue().then((function(text) {
-      this.setParameter(text);
-    }).bind(this));
+    return this.getMessageInputValue().then(
+      function(text) {
+        this.setParameter(text);
+      }.bind(this)
+    );
   }
 
   setMessage(message: string): P<any> {
@@ -222,9 +211,11 @@ export class IntegrationConfigureFilterStepPage extends IntegrationConfigureStep
   }
 
   initialize(): P<any> {
-    return this.getFilterDefinitioTextAreaValue().then((function(text) {
-      this.setParameter(text);
-    }).bind(this));
+    return this.getFilterDefinitioTextAreaValue().then(
+      function(text) {
+        this.setParameter(text);
+      }.bind(this)
+    );
   }
 
   setFilterCondition(filterCondition: string): P<any> {

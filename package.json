@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "scripts": {
+    "format": "yarn prettier -- --single-quote --print-width 120 --write \"./**/*.{ts,js}\"",
     "lint": "yarn ng lint",
     "lint:fix": "yarn ng lint -- --fix",
     "test:xvfb": "docker run --rm -v `pwd`:/syndesis-ui:z -w /syndesis-ui -u `id -u` docker.io/syndesis/karma-xvfb ./karma-xvfb.sh",
@@ -10,7 +11,14 @@
     "e2e": "better-npm-run e2e:local",
     "pree2e:syndesis-qe": "webdriver-manager update --versions.chrome 2.30",
     "e2e:syndesis-qe": "better-npm-run e2e:syndesis-qe",
-    "e2e:xvfb": "docker run -e SYNDESIS_UI_URL=$SYNDESIS_UI_URL --rm -v `pwd`:/syndesis-ui:z -w /syndesis-ui -u `id -u` docker.io/syndesis/karma-xvfb ./e2e-xvfb.sh"
+    "e2e:xvfb": "docker run -e SYNDESIS_UI_URL=$SYNDESIS_UI_URL --rm -v `pwd`:/syndesis-ui:z -w /syndesis-ui -u `id -u` docker.io/syndesis/karma-xvfb ./e2e-xvfb.sh",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "prettier --single-quote --print-width 120 --write",
+      "git add"
+    ]
   },
   "betterScripts": {
     "e2e:local": {
@@ -57,7 +65,10 @@
     "cucumber-html-reporter": "^0.3.7",
     "cucumber-tsflow": "^1.1.2",
     "fs-extra": "^2.0.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.0.2",
     "ncp": "^2.0.0",
+    "prettier": "^1.5.3",
     "protractor": "5.1.1",
     "protractor-cucumber-framework": "^0.6.0",
     "ts-node": "2.1.0",

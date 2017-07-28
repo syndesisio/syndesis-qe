@@ -48,18 +48,13 @@ export class DataMapperComponent implements SyndesisComponent {
     return Number.parseInt(found[1]);
   }
 
-
   async createMapping(source: string, target: string): P<any> {
     log.info(`creating mapping from ${source} to ${target}`);
     const columns = await this.dataMapperColumns();
     const src = columns[0];
     const dest = columns[1];
 
-
-    return P.all([
-      this.selectMapping(source, src),
-      this.selectMapping(target, dest),
-    ]);
+    return P.all([this.selectMapping(source, src), this.selectMapping(target, dest)]);
   }
 
   /**
@@ -88,8 +83,7 @@ export class DataMapperComponent implements SyndesisComponent {
    * @returns {Promise<void>}
    */
   async selectMapping(mappingName: string, containerElement: ElementFinder): P<any> {
-    const path = mappingName.split('.')
-      .map(item => item.trim());
+    const path = mappingName.split('.').map(item => item.trim());
 
     let fields = await containerElement.$$('document-field-detail');
     log.info(`source has ${fields.length} fields`);

@@ -9,7 +9,6 @@ import request = require('request');
 import fs = require('fs-extra');
 import paths = require('path');
 
-
 // let r  = require('request');
 // create instance of chai and expect instance
 // so we can just use import {World, expect} from '../common/world';
@@ -34,7 +33,6 @@ export interface SyndesisResult {
  * Helper for easier wrapping of callbacks into Promise.
  */
 export class Deferred<T> {
-
   promise: P<T>;
   resolve: (value?: T | PromiseLike<T>) => void;
   reject: (reason?: any) => void;
@@ -62,13 +60,12 @@ export class World {
     this.app = new AppPage();
 
     // load test config from json
-    let configPath =  process.env.SYNDESIS_TEST_CONFIG ||  'test_config.json';
+    let configPath = process.env.SYNDESIS_TEST_CONFIG || 'test_config.json';
     configPath = paths.resolve(configPath);
     log.info(`loading test config from ${configPath}`);
     this.testConfig = fs.readJSONSync(configPath);
-    log.info(`loaded test config:\n ${JSON.stringify(this.testConfig, null, 4) }`);
+    log.info(`loaded test config:\n ${JSON.stringify(this.testConfig, null, 4)}`);
   }
-
 
   /**
    * Fetch oauth token from application session store or return cached one.
@@ -81,8 +78,12 @@ export class World {
     return this.token;
   }
 
-
-  async authRequest(urlString: string, method: string = 'GET', data: string = null, encoding: string = null): P<SyndesisResult> {
+  async authRequest(
+    urlString: string,
+    method: string = 'GET',
+    data: string = null,
+    encoding: string = null
+  ): P<SyndesisResult> {
     const link = url.parse(urlString);
     const deferred: Deferred<SyndesisResult> = new Deferred();
 
@@ -95,12 +96,12 @@ export class World {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
+        Accept: 'application/json'
+      }
     };
 
     log.info(`invoking http request with options: ${JSON.stringify(options)}`);
-    const req = https.request(options, (res) => {
+    const req = https.request(options, res => {
       let receivedData = '';
 
       res.on('data', chunk => {
@@ -112,11 +113,10 @@ export class World {
         log.info(`http request finished with status: ${res.statusCode}`);
         const result: SyndesisResult = {
           statusCode: res.statusCode,
-          data: receivedData,
+          data: receivedData
         };
         deferred.resolve(result);
       });
-
     });
 
     if (data !== null) {
@@ -167,14 +167,11 @@ export class World {
   }
 }
 
-
 // helpers (move them to it's own file eventually)
 export function contains(text: string, substring: string): boolean {
   return text.indexOf(substring) > -1;
 }
 
 export function filterAsync(array: any[], filter: (any) => P<boolean>): P<any[]> {
-  return P.all(array.map(entry => filter(entry)))
-    .then(bits => array.filter(entry => bits.shift()));
+  return P.all(array.map(entry => filter(entry))).then(bits => array.filter(entry => bits.shift()));
 }
-

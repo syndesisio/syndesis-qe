@@ -8,7 +8,6 @@ import { log } from '../src/app/logging';
 import * as jQuery from 'jquery';
 import WebElement = webdriver.WebElement;
 
-
 /**
  * Object representation on navigation link (element on left navbar).
  */
@@ -20,11 +19,9 @@ class NavLink {
   active: boolean;
   element: WebElement;
 
-
   public toString = (): string => {
     return `NavLink{${this.text} => ${this.href}, active=${this.active}`;
-  }
-
+  };
 }
 
 /**
@@ -36,10 +33,10 @@ class SessionStorage {
    * @param key session item key
    * @returns {string|null} value of given item
    */
-  getItem(key: string): P<string|null> {
+  getItem(key: string): P<string | null> {
     log.info(`Fetching session item '${key}' from browser session storage`);
     // we may need to include  $('syndesis-root').isPresent().then() eventually
-    return browser.driver.executeScript((itemKey) => sessionStorage.getItem(itemKey), key);
+    return browser.driver.executeScript(itemKey => sessionStorage.getItem(itemKey), key);
   }
 }
 
@@ -58,10 +55,7 @@ export class AppPage {
    * @returns {Promise<NavLink>} eventually return list of found links
    */
   findNavLinks(): P<NavLink[]> {
-
-    const elems: P<WebElement[]> = element
-      .all(by.css(NavLink.selector))
-      .getWebElements();
+    const elems: P<WebElement[]> = element.all(by.css(NavLink.selector)).getWebElements();
 
     return elems.then(found => {
       return found.map(val => {
@@ -71,17 +65,13 @@ export class AppPage {
           link.active = s.indexOf('active') > -1;
         });
 
-        val.findElement(by.css('a > span.list-group-item-value'))
-          .getText().then(text => link.text = text);
+        val.findElement(by.css('a > span.list-group-item-value')).getText().then(text => (link.text = text));
 
-        val.findElement(by.css('a'))
-          .getAttribute('href').then(href => link.href = href);
+        val.findElement(by.css('a')).getAttribute('href').then(href => (link.href = href));
         link.element = val;
         return link;
       });
     });
-
-
   }
 
   currentUrl(): P<string> {
@@ -104,19 +94,22 @@ export class AppPage {
   getFirstVisibleButton(buttonTitle: string): ElementFinder {
     log.info(`searching for first visible button ${buttonTitle}`);
     const allButtonsByTitle = element.all(by.buttonText(buttonTitle));
-    return allButtonsByTitle.filter(function(elem) {
-      return elem.isDisplayed().then(function(displayedElement){
-        return displayedElement;
-      });
-    }).first();
+    return allButtonsByTitle
+      .filter(function(elem) {
+        return elem.isDisplayed().then(function(displayedElement) {
+          return displayedElement;
+        });
+      })
+      .first();
   }
 
   clickButton(buttonTitle: string): P<any> {
     log.info(`clicking button ${buttonTitle}`);
     const buttonElement = this.getButton(buttonTitle);
-    return browser.wait(ExpectedConditions.visibilityOf(buttonElement), 6000, 'No button visible')
-      .then(() =>  this.getButton(buttonTitle).click())
-      .catch((e) => P.reject(e) );
+    return browser
+      .wait(ExpectedConditions.visibilityOf(buttonElement), 6000, 'No button visible')
+      .then(() => this.getButton(buttonTitle).click())
+      .catch(e => P.reject(e));
   }
 
   getLink(linkTitle: string): ElementFinder {
@@ -137,7 +130,7 @@ export class AppPage {
   clickLinkRandom(linkTitle: string): P<any> {
     log.info(`clicking on one of links ${linkTitle}`);
     const links = this.getLinks(linkTitle);
-    return links.count().then(function (count) {
+    return links.count().then(function(count) {
       links.get(Math.floor(Math.random() * count)).click();
     });
   }
@@ -167,21 +160,27 @@ export class AppPage {
     log.info(`root element ${rootElement}`);
 
     const parentElement = this.getElementByClassName('integration');
-    return browser.wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present').then(function() {
-      const parentElements = rootElement.all(by.className('integration')).filter(function(elem, index) {
-        return elem.element(by.className('name')).getText().then(function(text) {
-          return text === integrationName;
+    return browser
+      .wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present')
+      .then(function() {
+        const parentElements = rootElement.all(by.className('integration')).filter(function(elem, index) {
+          return elem.element(by.className('name')).getText().then(function(text) {
+            return text === integrationName;
+          });
         });
-      });
 
-      parentElements.first().element(by.id('dropdownKebabRight9')).click();
-      rootElement.element(by.linkText('Delete')).click();
-      browser.wait(ExpectedConditions.visibilityOf(rootElement.element(by.css('div.modal.fade.in'))), 30 * 1000,
-      'Modal not loaded in time');
-      return rootElement.element(by.buttonText('Delete')).click();
-    }).catch(function(e) {
-      return P.reject(e);
-    });
+        parentElements.first().element(by.id('dropdownKebabRight9')).click();
+        rootElement.element(by.linkText('Delete')).click();
+        browser.wait(
+          ExpectedConditions.visibilityOf(rootElement.element(by.css('div.modal.fade.in'))),
+          30 * 1000,
+          'Modal not loaded in time'
+        );
+        return rootElement.element(by.buttonText('Delete')).click();
+      })
+      .catch(function(e) {
+        return P.reject(e);
+      });
   }
 
   async link(title: String): P<NavLink> {
@@ -217,13 +216,15 @@ export class AppPage {
       await new GithubLogin().authorizeApp();
     }
 
-    await browser.wait(ExpectedConditions.presenceOf(this.rootElement), 30 * 1000,
-    'syndesis root element - assuming we are already logged in');
+    await browser.wait(
+      ExpectedConditions.presenceOf(this.rootElement),
+      30 * 1000,
+      'syndesis root element - assuming we are already logged in'
+    );
 
     browser.waitForAngularEnabled(true);
     return this.goToUrl(AppPage.baseurl);
   }
-
 
   /**
    * Hook into browser and fetch config.json
@@ -231,11 +232,13 @@ export class AppPage {
    */
   getSettings(): P<any> {
     // jquery is invoked in the context of the browser
-    return browser.driver.executeAsyncScript((callback) => {
-      jQuery.get('/config.json', function (data) {
-        callback(data);
-      });
-    }).then(jsonString => JSON.parse(<string> jsonString));
+    return browser.driver
+      .executeAsyncScript(callback => {
+        jQuery.get('/config.json', function(data) {
+          callback(data);
+        });
+      })
+      .then(jsonString => JSON.parse(<string>jsonString));
   }
 
   async getApiUrl(): P<string> {

@@ -12,7 +12,6 @@ export interface LoginPage {
 }
 
 export class GithubLogin implements LoginPage {
-
   loginSelector = '#login_field';
   passwordSelector = '#password';
   submitSelector = '#login > form > div.auth-form-body.mt-3 > input.btn.btn-primary.btn-block';
@@ -28,10 +27,10 @@ export class GithubLogin implements LoginPage {
     await submit.getWebElement().click();
 
     //const url = await browser.getCurrentUrl();
-     browser.driver.wait(function() {
-            return browser.driver.getCurrentUrl().then(function(currentUrl) {
-                return currentUrl;
-            });
+    browser.driver.wait(function() {
+      return browser.driver.getCurrentUrl().then(function(currentUrl) {
+        return currentUrl;
+      });
     }, 10 * 1000);
     const url = await browser.getCurrentUrl();
     log.info(`github login, current url: ${url}`);
@@ -39,22 +38,21 @@ export class GithubLogin implements LoginPage {
   }
 
   async authorizeApp(): P<any> {
-      const url = await browser.getCurrentUrl();
-      if (contains(url, 'https://github.com/login/oauth')) {
-        log.info('reauthorizing application');
-        // we made too much auth requests, need to reauthorize app
-        const reauthorize = element(by.css('#js-oauth-authorize-btn'));
-        // wait for reauthorize button to become enabled
-        browser.wait(reauthorize.isEnabled, 5000, 'Waiting for reauthorize button to be enabled');
-        return reauthorize.getWebElement().click();
-      } else {
-        return P.resolve();
-      }
+    const url = await browser.getCurrentUrl();
+    if (contains(url, 'https://github.com/login/oauth')) {
+      log.info('reauthorizing application');
+      // we made too much auth requests, need to reauthorize app
+      const reauthorize = element(by.css('#js-oauth-authorize-btn'));
+      // wait for reauthorize button to become enabled
+      browser.wait(reauthorize.isEnabled, 5000, 'Waiting for reauthorize button to be enabled');
+      return reauthorize.getWebElement().click();
+    } else {
+      return P.resolve();
+    }
   }
 }
 
 export class OpenShiftAuthorize {
-
   submitSelector = 'input[name="approve"]';
 
   async authorizeAccess(): P<any> {
@@ -65,7 +63,6 @@ export class OpenShiftAuthorize {
 }
 
 export class KeycloakDetails {
-
   loginSelector = 'input#username';
   emailSelector = 'input#email';
   firstNameSelector = 'input#firstName';

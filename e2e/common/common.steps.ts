@@ -16,9 +16,7 @@ import { DashboardPage } from '../dashboard/dashboard.po';
  */
 @binding([World])
 class CommonSteps {
-
-  constructor(protected world: World) {
-  }
+  constructor(protected world: World) {}
 
   @given(/^credentials for "([^"]*)"$/)
   public loadCredentials(alias: string, callback: CallbackStepDefinition): void {
@@ -79,48 +77,44 @@ class CommonSteps {
   public async verifyLink(alias: string, linkTitle: string): P<any> {
     const currentLink = await this.world.app.getLink(linkTitle);
 
-    expect(currentLink.isPresent(), `There must be present a link ${linkTitle}`)
-      .to.eventually.be.true;
+    expect(currentLink.isPresent(), `There must be present a link ${linkTitle}`).to.eventually.be.true;
   }
 
   @when(/clicks? on the "([^"]*)" button.*$/)
   public clickOnButton(buttonTitle: string, callback: CallbackStepDefinition): void {
-    this.world.app.clickButton(buttonTitle)
-      .then(() => callback())
-      // it may fail but we still want to let tests continue
-      .catch((e) => callback(e));
+    this.world.app
+      .clickButton(buttonTitle)
+      .then(() => callback()) // it may fail but we still want to let tests continue
+      .catch(e => callback(e));
   }
 
   @when(/clicks? on the "([^"]*)" link.*$/)
   public clickOnLink(linkTitle: string, callback: CallbackStepDefinition): void {
-    this.world.app.clickLink(linkTitle)
-      .then(() => callback())
-      // it may fail but we still want to let tests continue
-      .catch((e) => callback(e));
+    this.world.app
+      .clickLink(linkTitle)
+      .then(() => callback()) // it may fail but we still want to let tests continue
+      .catch(e => callback(e));
   }
 
   @when(/clicks? on the random "([^"]*)" link.*$/)
   public clickOnLinkRandom(linkTitle: string, callback: CallbackStepDefinition): void {
-    this.world.app.clickLinkRandom(linkTitle)
+    this.world.app
+      .clickLinkRandom(linkTitle)
       .then(() => callback())
       // it may fail but we still want to let tests continue
-      .catch((e) => callback(e));
+      .catch(e => callback(e));
   }
 
   @then(/^she is presented with the "([^"]*)" button.*$/)
   public expectButtonPresent(buttonTitle: string, callback: CallbackStepDefinition): void {
-
     const button = this.world.app.getButton(buttonTitle);
-    expect(button.isPresent(), `There must be present a button ${buttonTitle}`)
-      .to.eventually.be.true;
+    expect(button.isPresent(), `There must be present a button ${buttonTitle}`).to.eventually.be.true;
 
-    expect(button.isPresent(), `There must be enabled button ${buttonTitle}`)
-      .to.eventually.be.true.notify(callback);
+    expect(button.isPresent(), `There must be enabled button ${buttonTitle}`).to.eventually.be.true.notify(callback);
   }
 
   @then(/^she is presented with the "([^"]*)" tables*$/)
   public expectTableTitlesPresent(tableTitles: string, callback: CallbackStepDefinition): void {
-
     const tableTitlesArray = tableTitles.split(', ');
 
     for (const tableTitle of tableTitlesArray) {
@@ -129,18 +123,14 @@ class CommonSteps {
   }
 
   public expectTableTitlePresent(tableTitle: string, callback: CallbackStepDefinition): void {
-
     const table = this.world.app.getTitleByText(tableTitle);
-    expect(table.isPresent(), `There must be present a table ${tableTitle}`)
-      .to.eventually.be.true;
+    expect(table.isPresent(), `There must be present a table ${tableTitle}`).to.eventually.be.true;
 
-    expect(table.isPresent(), `There must be enabled table ${tableTitle}`)
-      .to.eventually.be.true.notify(callback);
+    expect(table.isPresent(), `There must be enabled table ${tableTitle}`).to.eventually.be.true.notify(callback);
   }
 
   @then(/^she is presented with the "([^"]*)" elements*$/)
   public expectElementsPresent(elementClassNames: string, callback: CallbackStepDefinition): void {
-
     const elementClassNamesArray = elementClassNames.split(',');
 
     for (const elementClassName of elementClassNamesArray) {
@@ -150,37 +140,40 @@ class CommonSteps {
 
   @then(/^she is presented with the "([^"]*)"$/)
   public expectElementPresent(elementClassName: string, callback: CallbackStepDefinition): void {
-
     const element = this.world.app.getElementByClassName(elementClassName);
-    expect(element.isPresent(), `There must be present a element ${elementClassName}`)
-      .to.eventually.be.true;
+    expect(element.isPresent(), `There must be present a element ${elementClassName}`).to.eventually.be.true;
 
-    expect(element.isPresent(), `There must be enabled element ${elementClassName}`)
-      .to.eventually.be.true.notify(callback);
+    expect(element.isPresent(), `There must be enabled element ${elementClassName}`).to.eventually.be.true.notify(
+      callback
+    );
   }
 
   @then(/^Integration "([^"]*)" is present in top 5 integrations$/)
   public expectIntegrationPresentinTopFive(name: string, callback: CallbackStepDefinition): void {
     log.info(`Verifying integration ${name} is present in top 5 integrations`);
     const page = new DashboardPage();
-    expect(page.isIntegrationPresent(name), `Integration ${name} must be present`)
-      .to.eventually.be.true.notify(callback);
+    expect(page.isIntegrationPresent(name), `Integration ${name} must be present`).to.eventually.be.true.notify(
+      callback
+    );
   }
 
   @then(/^Camilla can see "([^"]*)" connection on dashboard page$/)
-  public expectConnectionTitlePresent (connectionName: string, callback: CallbackStepDefinition): void {
+  public expectConnectionTitlePresent(connectionName: string, callback: CallbackStepDefinition): void {
     const dashboard = new DashboardPage();
     const connection = dashboard.getConnection(connectionName);
-    expect(connection.isPresent(), `There should be present connection ${connectionName}`)
-      .to.eventually.be.true.notify(callback);
+    expect(connection.isPresent(), `There should be present connection ${connectionName}`).to.eventually.be.true.notify(
+      callback
+    );
   }
 
   @then(/^Camilla can not see "([^"]*)" connection on dashboard page anymore$/)
-  public expectConnectionTitleNonPresent (connectionName: string, callback: CallbackStepDefinition): void {
+  public expectConnectionTitleNonPresent(connectionName: string, callback: CallbackStepDefinition): void {
     const dashboard = new DashboardPage();
     const connection = dashboard.getConnection(connectionName);
-    expect(connection.isPresent(), `There shouldnt be a present connection ${connectionName}`)
-      .to.eventually.be.false.notify(callback);
+    expect(
+      connection.isPresent(),
+      `There shouldnt be a present connection ${connectionName}`
+    ).to.eventually.be.false.notify(callback);
   }
 
   @when(/^Camilla deletes the "([^"]*)" integration in top 5 integrations$/)
@@ -194,10 +187,10 @@ class CommonSteps {
   public expectIntegrationPresentOnDashboard(name: string, callback: CallbackStepDefinition): void {
     log.info(`Verifying if integration ${name} is present`);
     const dashboard = new DashboardPage();
-    expect(dashboard.isIntegrationPresent(name), `Integration ${name} must be present`)
-      .to.eventually.be.false.notify(callback);
+    expect(dashboard.isIntegrationPresent(name), `Integration ${name} must be present`).to.eventually.be.false.notify(
+      callback
+    );
   }
-
 
   /**
    * Scroll the webpage.
@@ -208,13 +201,12 @@ class CommonSteps {
    */
   @when(/^scroll "([^"]*)" "([^"]*)"$/)
   public async scroll(topBottom: string, leftRight: string): P<any> {
-
     const size = await browser.manage().window().getSize();
     const directions: Object = {
       top: 0,
       bottom: size.height,
       left: 0,
-      right: size.width,
+      right: size.width
     };
     if (!directions.hasOwnProperty(topBottom) || !directions.hasOwnProperty(leftRight)) {
       return P.reject(`unknown directions [${topBottom}, ${leftRight}`);
