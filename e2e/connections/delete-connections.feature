@@ -4,8 +4,7 @@ Feature: Test to verify delete action
   https://issues.jboss.org/browse/IPAAS-290
 
   Background:
-    Given credentials for "Camilla"
-    And clean application state
+    Given clean application state
 
   Scenario: Create connection happy path and then delete it
     When "Camilla" navigates to the "Connections" page

@@ -22,7 +22,7 @@ export class GithubLogin implements LoginPage {
     const password = element(by.css(this.passwordSelector));
     const submit = element(by.css(this.submitSelector));
 
-    browser.wait(ExpectedConditions.presenceOf(login), 10000, 'waiting for github login field');
+    await browser.wait(ExpectedConditions.presenceOf(login), 10000, 'waiting for github login field');
     login.getWebElement().sendKeys(user.username);
     password.getWebElement().sendKeys(user.password);
     await submit.getWebElement().click();

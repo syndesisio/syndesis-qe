@@ -1,17 +1,4 @@
-def username = System.getenv().get('GITHUB_USERNAME')
-def password = System.getenv().get('GITHUB_PASSWORD')
 def namespace = System.getenv().get('E2E_NAMESPACE')
-
-def users = """
-{
-  \"users\": {
-    \"camilla\": {
-      \"username\": \"${username}\",
-      \"password\": \"${password}\"
-    }
-  }
-}
-"""
 
 node {
   inNamespace(cloud: 'openshift', name: "${namespace}") {
@@ -35,7 +22,6 @@ node {
                     stage ('End to End Tests')
                     container(name: 'yarn') {
                       checkout scm
-                      writeFile(file: 'e2e/data/users.json', text: "${users}")
                       writeFile(file: 'test_config.json', text: "${test_config}")
                       try {
                         ansiColor('xterm') {

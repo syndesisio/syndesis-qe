@@ -9,10 +9,10 @@ yarn
 yarn webdriver-manager update
 ```
 
-#### GitHub credentials
+#### Credentials
 
-Create `e2e/data/users.json` file with your GitHub login credentials
-
+Create json config file `${PROJECT_ROOT}/test_config.json` with connection credentials
+or specify `export SYNDESIS_TEST_CONFIG=/path/to/test-config.json` 
 ```json
 {
   "users": {
@@ -20,21 +20,7 @@ Create `e2e/data/users.json` file with your GitHub login credentials
       "username": "<GITHUB_USERNAME>",
       "password": "<GITHUB_PASSWORD>"
     }
-  }
-}
-```
-
-Alternatively you can define credentials through env variables
-
-```bash
-export SYNDESIS_CAMILLA_USERNAME='CamillaOfGit'
-export SYNDESIS_CAMILLA_PASSWORD='topSecret'
-```
-
-Create json config file `${PROJECT_ROOT}/test_config.json` with connection credentials
-or specify `export SYNDESIS_TEST_CONFIG=/path/to/test-config.json` 
-```json
-{
+  },
   "connection": {
     "Twitter Listener": {
       "accessToken": "YOUR_SECRET_DATA",
