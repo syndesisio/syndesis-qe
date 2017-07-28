@@ -38,10 +38,12 @@ node {
                       writeFile(file: 'e2e/data/users.json', text: "${users}")
                       writeFile(file: 'test_config.json', text: "${test_config}")
                       try {
-                        sh """
-                        export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
-                        ./e2e-xvfb.sh
-                        """
+                        ansiColor('xterm') {
+                          sh """
+                          export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
+                          ./e2e-xvfb.sh
+                          """
+                        }
                       } catch(err) {
                         echo "E2E tests failed: ${err}"
                         currentBuild.result = 'FAILURE'
