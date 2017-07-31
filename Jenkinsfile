@@ -1,6 +1,14 @@
 def namespace = System.getenv().get('E2E_NAMESPACE')
 
 node {
+  //wait for the test namespace to not exist to prevent conflicts
+  timeout(600) {
+    waitUntil {
+      def r = sh script: "oc get project ${namespace}", returnStatus: true
+      return (r == 1);
+    }
+  }
+
   inNamespace(cloud: 'openshift', name: "${namespace}") {
 
           stage 'Prepare test environment'
