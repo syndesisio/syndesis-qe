@@ -100,10 +100,7 @@ class CommonSteps {
 
   @then(/^she is presented with the "([^"]*)" button.*$/)
   public expectButtonPresent(buttonTitle: string, callback: CallbackStepDefinition): void {
-
     const button = this.world.app.getButton(buttonTitle);
-    expect(button.isPresent(), `There must be present a button ${buttonTitle}`)
-      .to.eventually.be.true;
 
     expect(button.isPresent(), `There must be enabled button ${buttonTitle}`)
       .to.eventually.be.true.notify(callback);
