@@ -3,7 +3,8 @@ Feature: Test to verify delete action
   https://issues.jboss.org/browse/IPAAS-290
 
   Scenario: Create integration as draft and delete it
-    When "Camilla" navigates to the "Home" page
+    When "Camilla" logs into the Syndesis
+    And "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
