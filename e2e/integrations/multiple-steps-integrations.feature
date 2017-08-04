@@ -153,12 +153,9 @@ Feature: Test to verify advanced integration with multiple steps
     And click on the "Next" button
 
     Then she delete "1" random steps and check rest
-    And click on the "Next" button
 
     Then she delete "3" random steps and check rest
-    And click on the "Next" button
 
     Then she adds "2" random steps and then check the structure
-    And click on the "Next" button
 
     Then "Camilla" navigates to the "Home" page
