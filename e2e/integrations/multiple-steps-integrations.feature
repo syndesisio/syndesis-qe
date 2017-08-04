@@ -24,7 +24,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla click on the "Add a Step" button
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "filter" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path, Does Not Contain, value" parameter
     And click on the "Next" button
 
     When click on the "Save" button
@@ -35,7 +35,7 @@ Feature: Test to verify advanced integration with multiple steps
 
     When Camilla deletes the "One step integration" integration
     Then Camilla can not see "One step integration" integration anymore
-
+    
   Scenario: Create integration with two steps
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
@@ -63,7 +63,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "filter" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path1, Does Not Contain, value1" parameter
     And click on the "Next" button
 
     When click on the "Save" button
@@ -101,7 +101,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "filter 1" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path1, Does Not Contain, value1" parameter
     And click on the "Next" button
     
     When Camilla clicks on the "Add a Step" button
@@ -109,7 +109,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "filter 2" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path2, Does Not Contain, value2" parameter
     And click on the "Next" button
     
     When Camilla clicks on the "Add a Step" button
@@ -117,7 +117,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "log 2" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path3, Does Not Contain, value3" parameter
     And click on the "Next" button
     
     When Camilla clicks on the "Add a Step" button
@@ -141,7 +141,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "filter 3" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path4, Does Not Contain, value4" parameter
     And click on the "Next" button
     
     When Camilla clicks on the "Add a Step" button
@@ -149,7 +149,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "filter 4" parameter
+    Then she fill configure page for "Basic Filter" step with "Any, path5, Does Not Contain, value5" parameter
     And click on the "Next" button
     
     Then she delete "1" random steps and check rest
