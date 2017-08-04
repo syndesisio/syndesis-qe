@@ -110,7 +110,6 @@ class IntegrationSteps {
   public addRandomStepsAndCheckRest (numberOfSteps: number): void {
 
     this.getStepsArray().then((array) => {
-      this.world.app.clickButton('Next');
       this.world.app.clickButton('Add a Step');
 
       const links = this.world.app.getLinks('Add a step');
@@ -198,6 +197,7 @@ class IntegrationSteps {
           });
         });
       }
+      this.world.app.getFirstVisibleButton('Done').click();
 
       return stepsArray;
     });
