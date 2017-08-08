@@ -5,7 +5,7 @@ Feature: Sprint 8 narrative
 
   Scenario: First pass at login, homepage
     When "Camilla" logs into the Syndesis URL for her installation (e.g. rh-syndesis.[openshift online domain].com)
-    Then Camilla is presented with the Syndesis page "Dashboard"
+    Then Camilla is presented with the Syndesis page "Home"
 
   Scenario: Explore connections
     When "Camilla" navigates to the "Connections" page to see what's available in Syndesis

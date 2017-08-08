@@ -39,7 +39,9 @@ exports.config = {
     ]
   },
   onPrepare: function () {
-    browser.manage().window().setSize(1280, 720);
+    // do stuff like set browser window size...
+    // the set window size was moved to env.ts
+    // because of browser restart afterFeature
   },
   useAllAngular2AppRoots: true,
   beforeLaunch: function () {

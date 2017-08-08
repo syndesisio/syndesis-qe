@@ -10,7 +10,7 @@ export class IntegrationsListComponent implements SyndesisComponent {
   }
 
   private integrationEntry(name: string): ElementFinder {
-    return this.rootElement().element(by.cssContainingText('div.name', name));
+    return this.rootElement().$(`div.integration[title="${name}"]`);
   }
 
   isIntegrationPresent(name: string): P<boolean> {

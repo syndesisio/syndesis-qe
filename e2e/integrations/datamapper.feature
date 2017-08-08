@@ -1,9 +1,6 @@
 @datamapper
 Feature: Create integration with datamapper step
 
-  Background:
-    Given credentials for "Camilla"
-
   @datamapper-create-connections
   Scenario: Create Twitter and Salesforce connection
     Given clean application state
