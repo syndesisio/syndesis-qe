@@ -211,6 +211,20 @@ class IntegrationSteps {
       .to.eventually.be.true;
   }
 
+  @when(/clicks? on the integration save button.*$/)
+  public async clickOnSaveButton(): P<any> {
+    let saveButton = await this.world.app.getButton('Save');
+    const isSaveButtonPresent = await saveButton.isPresent();
+
+    if (!isSaveButtonPresent) {
+      log.warn(`Save button is not present on integration edit.`);
+      saveButton = await this.world.app.getButton('Save as Draft');
+    }
+
+    return saveButton.click();
+  }
+}
+
   //Kebab menu test, #553 -> part #548, #549.
   @when(/^clicks on the kebab menu icon of each available Integration and checks whether each kebab menu 1. is visible and 2. has appropriate actions$/)
   public clickOnAllKebabMenus(): P<any> {
