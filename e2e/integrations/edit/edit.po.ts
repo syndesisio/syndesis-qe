@@ -239,8 +239,8 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
       log.info(`filter condition ${filterConditionsArray[i + 2]}`);
 
       let op = filterConditionsArray[i + 1];
-      op = op.split(' ').join('_');
-      op = op.toLocaleLowerCase();
+      //op = op.split(' ').join('_');
+      //op = op.toLocaleLowerCase();
 
       log.info(`filter condition ${op}`);
 
@@ -341,9 +341,10 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.predicateSelector);
   }
 
-  getPredicateSelectValue(): P<any> {
+  async getPredicateSelectValue(): P<any> {
     log.debug(`Searching basic filter predicate select checked option`);
-    return this.getPredicateSelect().$('option:checked').getText();
+    const predicateValue = await this.getPredicateSelect().$('option:checked').getText();
+    return predicateValue.trim();
   }
 
   getPathInput(): ElementFinder {
@@ -369,9 +370,10 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.opSelector);
   }
 
-  getOpSelectValue(): P<any> {
+  async getOpSelectValue(): P<any> {
     log.debug(`Searching basic filter op select checked option`);
-    return this.getOpSelect().$('option:checked').getText();
+    const opValue = await this.getOpSelect().$('option:checked').getText();
+    return opValue.trim();
   }
 }
 
@@ -404,15 +406,15 @@ export class BasicFilterRule {
 }
 
 enum BasicFilterPredicates {
-    All,
-    Any,
+    "ALL of the following",
+    "ANY of the following",
 }
 
 enum BasicFilterOps {
-    contains,
-    does_not_contain,
-    matches_regex,
-    does_not_match_regex,
-    starts_with,
-    ends_with,
+    "Contains",
+    "Does Not Contain",
+    "Matches Regex",
+    "Does Not Match Regex",
+    "Starts With",
+    "Ends With",
 }

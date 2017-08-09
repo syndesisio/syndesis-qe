@@ -129,7 +129,7 @@ class IntegrationSteps {
           links.get(randomIndex).click();
 
           const steType = 'Basic Filter';
-          const stepParameter = 'Any, path' + randomIndex + ', Does Not Contain, value' + randomIndex;
+          const stepParameter = 'ANY of the following, path' + randomIndex + ', Does Not Contain, value' + randomIndex;
 
           page.addStep(steType);
           const stepFactory = new StepFactory();
