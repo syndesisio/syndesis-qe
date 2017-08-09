@@ -24,6 +24,7 @@ node {
 
           slave {
             withOpenshift() {
+              sh "oc policy add-role-to-user admin syndesisqe"    
               def test_config = sh returnStdout: true, script: "oc get cm e2e-test-config -o jsonpath=\"{ .data.test_config }\" -n syndesis-ci"
               withYarn() {
                 inside{
