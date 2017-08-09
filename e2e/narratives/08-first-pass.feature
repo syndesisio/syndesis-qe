@@ -25,7 +25,7 @@ Feature: Sprint 8 narrative
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
     Then she is presented with the "Add a Step" button
-    And click on the "Save" button
+    And click on the integration save button
 
 #    try to publish without integration name will open basics page
     When Camilla clicks on the "Save as Draft" button

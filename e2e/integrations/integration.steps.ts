@@ -210,6 +210,19 @@ class IntegrationSteps {
       expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
         .to.eventually.be.true;
   }
+
+  @when(/clicks? on the integration save button.*$/)
+  public async clickOnSaveButton(): P<any> {
+    let saveButton = await this.world.app.getButton('Save');
+    const isSaveButtonPresent = await saveButton.isPresent();
+
+    if (!isSaveButtonPresent) {
+      log.warn(`Save button is not present on integration edit.`);
+      saveButton = await this.world.app.getButton('Save as Draft');
+    }
+
+    return saveButton.click();
+  }
 }
 
 

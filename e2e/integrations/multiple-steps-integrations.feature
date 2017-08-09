@@ -27,7 +27,7 @@ Feature: Test to verify advanced integration with multiple steps
     Then she fill configure page for "Log" step with "filter" parameter
     And click on the "Next" button
 
-    When click on the "Save" button
+    Then click on the integration save button
     And she defines integration name "One step integration"
     And click on the "Save as Draft" button
     Then Camilla is presented with the Syndesis page "Integrations"
@@ -66,7 +66,7 @@ Feature: Test to verify advanced integration with multiple steps
     Then she fill configure page for "Log" step with "filter" parameter
     And click on the "Next" button
 
-    When click on the "Save" button
+    When click on the integration save button
     And she defines integration name "Two steps integration"
     And click on the "Save as Draft" button
     Then Camilla is presented with the Syndesis page "Integrations"

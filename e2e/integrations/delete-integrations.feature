@@ -16,7 +16,7 @@ Feature: Test to verify delete action
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
     Then she is presented with the "Add a Step" button
-    And click on the "Save" button
+    And click on the integration save button
 
     And she defines integration name "Awesome integration for delete"
     And click on the "Save as Draft" button

@@ -71,7 +71,7 @@ Feature: Test to verify Dashboard links
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
     Then she is presented with the "Add a Step" button
-    And click on the "Save" button
+    And click on the integration save button
 
     When Camilla clicks on the "Save as Draft" button
     And she defines integration name "dashboard verification integration"
