@@ -28,6 +28,13 @@ exports.config = {
   baseUrl: 'http://localhost:4200/',
   framework: 'custom',
   frameworkPath: require.resolve('protractor-cucumber-framework'),
+  plugins: [{
+    package: 'protractor-console-plugin',
+    failOnWarning: false,
+    failOnError: false,
+    logWarnings: true,
+    exclude: {}
+  }],
   cucumberOpts: {
     require: [
       testPath + '/env.ts',

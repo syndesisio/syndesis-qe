@@ -1,10 +1,11 @@
 /**
  * Created by jludvice on 8.3.17.
  */
+import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory, ActionConfigureComponent } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 
@@ -21,7 +22,6 @@ class IntegrationSteps {
     const page = new IntegrationEditPage();
     return page.basicsComponent().setName(integrationName);
   }
-
 
   @then(/^she is presented with a visual integration editor$/)
   public editorOpened(): P<any> {
@@ -60,7 +60,7 @@ class IntegrationSteps {
   }
 
   @when(/^she selects "([^"]*)" integration step$/)
-  public addStep (stepName: string): P<any> {
+  public addStep(stepName: string): P<any> {
     log.info(`Adding ${stepName} step to integration`);
     const page = new IntegrationAddStepPage();
     return page.addStep(stepName);
@@ -100,14 +100,14 @@ class IntegrationSteps {
   }
 
   @then(/^she fill configure page for "([^"]*)" step with "([^"]*)" parameter$/)
-  public fillStepConfiguration (stepType: string, parameter: string): P<any> {
+  public fillStepConfiguration(stepType: string, parameter: string): P<any> {
     const stepFactory = new StepFactory();
     const page = stepFactory.getStep(stepType, parameter);
     return page.fillConfiguration();
   }
 
   @then(/^she adds "([^"]*)" random steps and then check the structure$/)
-  public async addRandomStepsAndCheckRest (numberOfSteps: number): P<any> {
+  public async addRandomStepsAndCheckRest(numberOfSteps: number): P<any> {
     log.info(`Adding random steps`);
 
     const array = await this.getStepsArray();
@@ -158,7 +158,7 @@ class IntegrationSteps {
   }
 
   @then(/^she delete "([^"]*)" random steps and check rest$/)
-  public async deleteRandomStepsAndCheckRest (numberOfSteps: number): P<any> {
+  public async deleteRandomStepsAndCheckRest(numberOfSteps: number): P<any> {
     log.info(`Deleting random steps`);
 
     const array = await this.getStepsArray();
@@ -190,7 +190,7 @@ class IntegrationSteps {
     return P.resolve();
   }
 
-  public async getStepsArray (): P<any> {
+  public async getStepsArray(): P<any> {
     const stepFactory = new StepFactory();
     const steps = this.world.app.getElementsByClassName('parent-step');
 
@@ -216,12 +216,42 @@ class IntegrationSteps {
 
   @then(/^she is presented with an actions list$/)
   public expectActionListIsPresent(): void {
-      const page = new ListActionsComponent();
-      browser.wait(ExpectedConditions.visibilityOf(page.rootElement()), 5000, 'Actions List not loaded');
-      expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
-        .to.eventually.be.true;
+    const page = new ListActionsComponent();
+    browser.wait(ExpectedConditions.visibilityOf(page.rootElement()), 5000, 'Actions List not loaded');
+    expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
+      .to.eventually.be.true;
   }
+
+  @when(/clicks? on the integration save button.*$/)
+  public async clickOnSaveButton(): P<any> {
+    let saveButton = await this.world.app.getButton('Save');
+    const isSaveButtonPresent = await saveButton.isPresent();
+
+    if (!isSaveButtonPresent) {
+      log.warn(`Save button is not present on integration edit.`);
+      saveButton = await this.world.app.getButton('Save as Draft');
+    }
+
+    return saveButton.click();
+  }
+
+  //Kebab menu test, #553 -> part #548, #549.
+  @when(/^clicks on the kebab menu icon of each available Integration and checks whether each kebab menu 1. is visible and 2. has appropriate actions$/)
+  public clickOnAllKebabMenus(): P<any> {
+    const integrationsListComponent = new IntegrationsListComponent();
+    return integrationsListComponent.checkAllIntegrationsKebabButtons();
+  }
+
+
+  // Twitter search specification
+  @then(/^she fills keywords field with random text to configure search action$/)
+  public fillKeywords(): P<any> {
+
+    const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
+    const value = Utils.randomString(20, 'abcdefghijklmnopqrstuvwxyz');
+    return actionConfComponent.fillKeywordsValueB(value);
+
+  }
+
 }
-
-
 export = IntegrationSteps;

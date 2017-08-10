@@ -81,7 +81,6 @@ export class AppPage {
       });
     });
 
-
   }
 
   currentUrl(): P<string> {
