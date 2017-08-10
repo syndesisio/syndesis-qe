@@ -2,7 +2,7 @@
 Feature: Test to verify that as a citizen user, search for Tweets using Twitter connection has been added.
   https://app.zenhub.com/workspace/o/syndesisio/syndesis-project/issues/3
 
-  //we need to create Twitter Connection first
+  # we need to create Twitter Connection first
   Scenario: Create Twitter connection  
     Given clean application state
     
