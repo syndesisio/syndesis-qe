@@ -5,6 +5,20 @@ Feature: Create integration with datamapper step
   Scenario: Create Twitter and Salesforce connection
     Given clean application state
 
+    # create salesforce connection
+    When "Camilla" navigates to the "Connections" page
+    And click on the "Create Connection" button
+    And Camilla selects the "Salesforce" connection
+    Then she is presented with the "Validate" button
+    # fill salesforce connection details
+    When she fills "QE Salesforce" connection details
+    And scroll "top" "right"
+    And click on the "Next" button
+    And type "QE Salesforce" into connection name
+    And type "SyndesisQE salesforce test" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
+
     # create twitter connection
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Connections" page
@@ -20,19 +34,6 @@ Feature: Create integration with datamapper step
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
-    # create salesforce connection
-    When "Camilla" navigates to the "Connections" page
-    And click on the "Create Connection" button
-    And Camilla selects the "Salesforce" connection
-    Then she is presented with the "Validate" button
-    # fill salesforce connection details
-    When she fills "QE Salesforce" connection details
-    And scroll "top" "right"
-    And click on the "Next" button
-    And type "QE Salesforce" into connection name
-    And type "SyndesisQE salesforce test" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
 
 
   @datamapper-create-integration
@@ -57,7 +58,7 @@ Feature: Create integration with datamapper step
     When Camilla click on the "Add a Step" button
     And she selects "Data Mapper" integration step
     Then she is presented with data mapper ui
-		
+
 		# TODO: This part of scenario is currently blocked by issues related to Maven classpath inspection
 		#
     # When she creates mapping from "User.ScreenName" to "TwitterScreenName__c"
