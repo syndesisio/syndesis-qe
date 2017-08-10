@@ -242,5 +242,5 @@ class IntegrationSteps {
 
   }
 
-
+}
 export = IntegrationSteps;
