@@ -56,7 +56,7 @@ export class IntegrationsListComponent implements SyndesisComponent {
   }
   //kebab
   getKebabElement(isOpen: boolean, item: ElementFinder): ElementFinder {
-    const open = isOpen ? ".open" : "";
+    const open = isOpen ? '.open' : '';
     return item.element(by.css(`div.dropdown.dropdown-kebab-pf.pull-right${open}`));
   }
 
@@ -73,7 +73,7 @@ export class IntegrationsListComponent implements SyndesisComponent {
     const promises: P<any>[] = [];
     //    const status: IntegrationStatus = await this.getIntegrationItemStatus(item);
     const properActions: string[] = IntegrationsUtils.getProperKebabActions(status);
-    if (properActions.length == 0) {
+    if (properActions.length === 0) {
       throw new Error(`Wrong status!`);
     }
     log.debug(`checking kebab menu of kebab element:`);
@@ -94,13 +94,13 @@ export class IntegrationsListComponent implements SyndesisComponent {
     integrationsItems.reverse();
     //2. go through elements and:
     //    integrationsTems.forEach(item => { // .forEach doesn't work for await
-    for (let item of integrationsItems) {
+    for (const item of integrationsItems) {
       const name = await this.getIntegrationItemName(item);
       log.info(`INTEGRATION ITEM NAME: *${name}*`);
       //    check whether status is not "Deleted";
       const status = await this.getIntegrationItemStatus(item);
       log.info(`INTEGRATION ITEM STATUS: *${status}*`);
-      if (status == 'Deleted') {
+      if (status === 'Deleted') {
 
         //check whether it dont have any kebab
         promises.push(this.checkIfThereIsKebabButtonInItem(item).catch((e) => P.reject(e)));

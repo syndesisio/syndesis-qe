@@ -5,7 +5,8 @@ import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory, ActionConfigureComponent } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage } from '../integrations/edit/edit.po';
+import { ListActionsComponent, StepFactory, ActionConfigureComponent } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 
@@ -236,7 +237,7 @@ class IntegrationSteps {
   }
 
   //Kebab menu test, #553 -> part #548, #549.
-  @when(/^clicks on the kebab menu icon of each available Integration and checks whether each kebab menu 1. is visible and 2. has appropriate actions$/)
+  @when(/^clicks on the kebab menu icon of each available Integration and checks whether menu is visible and has appropriate actions$/)
   public clickOnAllKebabMenus(): P<any> {
     const integrationsListComponent = new IntegrationsListComponent();
     return integrationsListComponent.checkAllIntegrationsKebabButtons();

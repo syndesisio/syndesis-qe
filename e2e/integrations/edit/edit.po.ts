@@ -469,9 +469,9 @@ export class ActionConfigureComponent implements SyndesisComponent {
 
   fillKeywordsValueB(value: string): P<any> {
     log.debug(`setting keywords element of twitter search with value: ${value}`);
-    var fillMap = new Map();
+    const fillMap = new Map();
     fillMap.set(ActionConfigureComponent.idSelector, value);
-    return Utils.fillForm(fillMap, this.rootElement(), "id");
+    return Utils.fillForm(fillMap, this.rootElement(), 'id');
   }
-  
+
 }
