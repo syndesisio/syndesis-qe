@@ -86,6 +86,29 @@ class ConnectionSteps {
     return connectionView.fillDetails(this.world.testConfig.connection[connectionName]);
 
   }
+
+  //Kebab menu test, #553 -> part #550.
+  @when(/^clicks on the kebab menu icon of each available connection$/)
+  public clickOnAllKebabMenus(): P<any> {
+
+    const connectionsListComp = new ConnectionsListComponent();
+
+    return connectionsListComp.clickOnAllKebabButtons();
+
+  }
+
+  //Kebab menu test, #553 -> part #550.
+  @then(/^she can see unveiled kebab menu of all connections, each of this menu consist of "([^"]*)", "([^"]*)" and "([^"]*)" actions$/)
+  public checkAllVisibleKebabMenus(action1: string, action2: string, action3: string): P<any> {
+    
+    const actions = [action1, action2, action3];
+
+    const connectionsListComp = new ConnectionsListComponent();
+
+    return connectionsListComp.checkAllKebabElementsAreDisplayed(true, actions);
+
+  }
 }
+
 
 export = ConnectionSteps;

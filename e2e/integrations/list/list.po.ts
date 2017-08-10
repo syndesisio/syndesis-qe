@@ -1,7 +1,10 @@
 import { SyndesisComponent } from '../../common/common';
-import { $, by, ElementFinder } from 'protractor';
+import { $, by, ElementFinder, ElementArrayFinder, element } from 'protractor';
 import { P } from '../../common/world';
 import { log } from '../../../src/app/logging';
+import { IntegrationsUtils } from '../utils/integrations.utils';
+
+import * as webdriver from 'selenium-webdriver';
 
 
 export class IntegrationsListComponent implements SyndesisComponent {
@@ -25,8 +28,93 @@ export class IntegrationsListComponent implements SyndesisComponent {
   editIntegration(name: string): P<any> {
     return this.integrationEntry(name).click();
   }
-}
 
+  //kebab
+  getAllIntegrationsItems(): ElementArrayFinder {
+    return this.rootElement().all(by.css(`div.integration.vertical-align.col-xs-12`));
+  }
+
+  //kebab
+  getIntegrationItemName(item: ElementFinder): P<string> {
+    return item.element(by.css('div.col-xs-5.name')).getText();
+  }
+
+  //kebab
+  async getIntegrationItemStatus(item: ElementFinder): P<string> {
+    // 1. check whether not in progress:
+    const inprogress: boolean = await item.element(by.css('div.spinner.spinner-sm.spinner-inline')).isPresent();
+    if (inprogress) {
+      return item.element(by.css('h3')).getText(); //this is not very good specified, but that h3 didnt have any class spec.
+      //  return "In Progress";
+    } else {
+      return item.element(by.css('span.label')).getText();
+    }
+  }
+  //kebab
+  getKebabButtonFromItem(item: ElementFinder): ElementFinder {
+    return item.element(by.css('button.btn.btn-link'));
+  }
+  //kebab
+  getKebabElement(isOpen: boolean, item: ElementFinder): ElementFinder {
+    const open = isOpen ? ".open" : "";
+    return item.element(by.css(`div.dropdown.dropdown-kebab-pf.pull-right${open}`));
+  }
+
+  async checkIfThereIsKebabButtonInItem(item: ElementFinder): P<boolean> {
+    const isPresent = await item.element(by.css('button.btn.btn-link')).isPresent();
+    if (isPresent) {
+      throw new Error(`There shouldn't be any kebab button here!`);
+    }
+    return true;
+  }
+
+
+  async checkIfKebabHasWhatShouldHave(item: ElementFinder, status: string): P<any> {
+    const promises: P<any>[] = [];
+    //    const status: IntegrationStatus = await this.getIntegrationItemStatus(item);
+    const properActions: string[] = IntegrationsUtils.getProperKebabActions(status);
+    if (properActions.length == 0) {
+      throw new Error(`Wrong status!`);
+    }
+    log.debug(`checking kebab menu of kebab element:`);
+    const kebabE = await this.getKebabElement(true, item);
+    promises.push(kebabE.getWebElement().isDisplayed().catch((e) => P.reject(e)));
+    properActions.forEach(pa => {
+      log.info(`testing action :searching for kebab action *${pa}*`);
+      promises.push(kebabE.element(by.cssContainingText('a', pa)).getWebElement().isDisplayed().catch((e) => P.reject(e)));
+    });
+    return P.all(promises).catch((e) => P.reject(e));
+  }
+
+  async checkAllIntegrationsKebabButtons(): P<any> {
+    const promises: P<any>[] = [];
+    const integrationsItems = await this.getAllIntegrationsItems();
+    // have to reverse, since expanded kebab of integrations entry hides kebab of the below integration item.
+    // and this is problem for selenium.
+    integrationsItems.reverse();
+    //2. go through elements and:
+    //    integrationsTems.forEach(item => { // .forEach doesn't work for await
+    for (let item of integrationsItems) {
+      const name = await this.getIntegrationItemName(item);
+      log.info(`INTEGRATION ITEM NAME: *${name}*`);
+      //    check whether status is not "Deleted";
+      const status = await this.getIntegrationItemStatus(item);
+      log.info(`INTEGRATION ITEM STATUS: *${status}*`);
+      if (status == 'Deleted') {
+
+        //check whether it dont have any kebab
+        promises.push(this.checkIfThereIsKebabButtonInItem(item).catch((e) => P.reject(e)));
+      } else {
+        log.info(`clicking on kebab button`);
+        const kebabB = await this.getKebabButtonFromItem(item);
+        promises.push(kebabB.getWebElement().click());
+        log.info(`checking whether integration ${name} kebab has all actions that should have`);
+        promises.push(this.checkIfKebabHasWhatShouldHave(item, status).catch((e) => P.reject(e)));
+      }
+    }
+    return P.all(promises).catch((e) => P.reject(e));
+  }
+}
 
 export class IntegrationsListPage implements SyndesisComponent {
   rootElement(): ElementFinder {

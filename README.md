@@ -18,7 +18,12 @@ or specify `export SYNDESIS_TEST_CONFIG=/path/to/test-config.json`
   "users": {
     "camilla": {
       "username": "<GITHUB_USERNAME>",
-      "password": "<GITHUB_PASSWORD>"
+      "password": "<GITHUB_PASSWORD>",
+      "userDetails": {
+        "email": "camilla@gmail.com",
+        "firstName": "Camilla",
+        "lastName": "Syndesio"
+
     }
   },
   "connection": {
