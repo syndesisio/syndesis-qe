@@ -1,10 +1,11 @@
 /**
  * Created by jludvice on 8.3.17.
  */
+import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, ListActionsComponent, StepFactory, ActionConfigureComponent } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 
@@ -21,7 +22,6 @@ class IntegrationSteps {
     const page = new IntegrationEditPage();
     return page.basicsComponent().setName(integrationName);
   }
-
 
   @then(/^she is presented with a visual integration editor$/)
   public editorOpened(): P<any> {
@@ -231,6 +231,16 @@ class IntegrationSteps {
     return integrationsListComponent.checkAllIntegrationsKebabButtons();
   }
 
-}
 
+  // Twitter search specification
+  @then(/^she fills keywords field with random text to configure search action$/)
+  public fillKeywords(): P<any> {
+
+    const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
+    const value = Utils.randomString(20, 'abcdefghijklmnopqrstuvwxyz');
+    return actionConfComponent.fillKeywordsValueB(value);
+
+  }
+
+}
 export = IntegrationSteps;
