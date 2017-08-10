@@ -59,6 +59,7 @@
     "fs-extra": "^2.0.0",
     "ncp": "^2.0.0",
     "protractor": "5.1.1",
+    "protractor-console-plugin": "^0.1.1",
     "protractor-cucumber-framework": "^0.6.0",
     "ts-node": "2.1.0",
     "tslint": "^4.5.1",
