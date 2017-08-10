@@ -2,9 +2,24 @@
 Feature: Test to verify that as a citizen user, search for Tweets using Twitter connection has been added.
   https://app.zenhub.com/workspace/o/syndesisio/syndesis-project/issues/3
 
-  Scenario: First pass at login, homepage
-    When "Camilla" logs into the Syndesis URL for her installation (e.g. rh-syndesis.[openshift online domain].com)
-    Then Camilla is presented with the Syndesis page "Dashboard"
+  //we need to create Twitter Connection first
+  Scenario: Create Twitter connection  
+    Given clean application state
+    
+    # create twitter connection
+    When "Camilla" logs into the Syndesis
+    And "Camilla" navigates to the "Connections" page
+    And click on the "Create Connection" button
+    And Camilla selects the "Twitter" connection
+    Then she is presented with the "Validate" button
+    # fill twitter connection details
+    When she fills "Twitter Listener" connection details
+    And scroll "top" "right"
+    And click on the "Next" button
+    And type "Twitter Listener" into connection name
+    And type "SyndesisQE Twitter listener account" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
 
   Scenario: Create integration with twitter and search settings
 
