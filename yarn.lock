@@ -3726,6 +3726,12 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
+protractor-console-plugin@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/protractor-console-plugin/-/protractor-console-plugin-0.1.1.tgz#749da95b0695dede43b50fef3faf9f0b62a47c96"
+  dependencies:
+    q "^1.4.1"
+
 protractor-cucumber-framework@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/protractor-cucumber-framework/-/protractor-cucumber-framework-0.6.0.tgz#d1259c7836f5ead010df341c0f6de48b640b7c47"
