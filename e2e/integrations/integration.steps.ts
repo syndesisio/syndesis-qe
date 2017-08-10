@@ -223,7 +223,6 @@ class IntegrationSteps {
 
     return saveButton.click();
   }
-}
 
   //Kebab menu test, #553 -> part #548, #549.
   @when(/^clicks on the kebab menu icon of each available Integration and checks whether each kebab menu 1. is visible and 2. has appropriate actions$/)
