@@ -211,6 +211,8 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   static readonly opSelector = 'select[name="op"]';
   static readonly opOptionSelector = 'option[name="op"]';
 
+  static readonly addRuleSelector = 'link[class="add-rule"]';
+
   filterCondition: string;
 
   predicate: number;
@@ -221,45 +223,28 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     super();
     this.filterCondition = filterCondition;
 
-    log.info(`filterConditions ${filterCondition}`);
-
     const filterConditionsArray = filterCondition.split(', ');
 
     this.predicate = BasicFilterPredicates[filterConditionsArray[0]];
 
-    log.info(`predicate ${filterConditionsArray[0]}`);
-    log.info(`predicate number ${this.predicate}`);
-
     this.ruleArray = [];
 
     for (let i = 1; i < (filterConditionsArray.length - 2); i = i + 3) {
-
-      log.info(`filter condition ${filterConditionsArray[i]}`);
-      log.info(`filter condition ${filterConditionsArray[i + 1]}`);
-      log.info(`filter condition ${filterConditionsArray[i + 2]}`);
-
-      let op = filterConditionsArray[i + 1];
-      //op = op.split(' ').join('_');
-      //op = op.toLocaleLowerCase();
-
-      log.info(`filter condition ${op}`);
+      const op = filterConditionsArray[i + 1];
 
       const basicFilterRule = new BasicFilterRule(filterConditionsArray[i], BasicFilterOps[op], filterConditionsArray[i + 2]);
       this.ruleArray.push(basicFilterRule);
-
-      log.info(`filter conditions ` + basicFilterRule.toString());
     }
   }
 
   fillConfiguration(): P<any> {
     log.info(`fillConfiguration`);
 
+    /** TODO add rule, cover multiple rule steps  **/
     for (const rule of this.ruleArray) {
       this.setPath(rule.getPath());
       this.setOp(rule.getOp());
       this.setValue(rule.getValue());
-        
-      /**TODO add rule**/
     }
 
     return this.setPredicate(this.predicate);
@@ -277,21 +262,36 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   }
 
   initialize(): P<any> {
-    let parameter;  
-      
+    let parameter;
+
     return this.getPredicateSelectValue().then((text) => {
       parameter = text;
       return this.getPathInputValue();
     }).then((text) => {
-      parameter = parameter + ", " + text;
-      return this.getOpSelectValue()
+      parameter = parameter + ', ' + text;
+      return this.getOpSelectValue();
     }).then((text) => {
-      parameter = parameter + ", " + text;
-      return this.getValueInputValue()
+      parameter = parameter + ', ' + text;
+      return this.getValueInputValue();
     }).then(((text) => {
-      parameter = parameter + ", " + text;
+      parameter = parameter + ', ' + text;
       return this.setParameter(parameter);
-    }).bind(this));  
+    }).bind(this));
+  }
+
+  async addRule(ruleString: string): P<any> {
+    const ruleStringArray = ruleString.split(', ');
+    const op = ruleStringArray[1];
+    const basicFilterRule = new BasicFilterRule(ruleStringArray[0], BasicFilterOps[op], ruleStringArray[2]);
+
+    const addRuleLink = await this.rootElement().$(IntegrationConfigureBasicFilterStepPage.addRuleSelector);
+    await addRuleLink.click();
+
+    this.setLatestPathInput(basicFilterRule.getPath());
+    this.setLatestOpSelect(basicFilterRule.getOp());
+    this.setLatestValueInput(basicFilterRule.getValue());
+
+    this.ruleArray.push(basicFilterRule);
   }
 
   setParameter(filterCondition: string): void {
@@ -317,7 +317,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   setPath(path: string): P<any> {
     log.info(`setting basic filter step path to ${path}`);
     const pathInput = this.rootElement().$(IntegrationConfigureBasicFilterStepPage.pathSelector);
-    
+
     return pathInput.clear().then(function() {
       pathInput.sendKeys(path);
     });
@@ -326,10 +326,37 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   setValue(value: string): P<any> {
     log.info(`setting basic filter step value to ${value}`);
     const valueInput = this.rootElement().$(IntegrationConfigureBasicFilterStepPage.valueSelector);
-    
+
     return valueInput.clear().then(function() {
       valueInput.sendKeys(value);
     });
+  }
+
+  async setLatestOpSelect(op: number): P<any> {
+    log.info(`setting basic filter step predicate to option number ${op}`);
+    const opSelectArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
+    const opSelect = opSelectArray[opSelectArray.length - 1];
+    const opOptions = await opSelect.all(by.css(IntegrationConfigureBasicFilterStepPage.opOptionSelector));
+
+    return opOptions[op].click();
+  }
+
+  async setLatestPathInput(path: string): P<any> {
+    log.info(`setting basic filter step path to ${path}`);
+    const pathInputArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.pathSelector));
+    const pathInput = pathInputArray[pathInputArray.length - 1];
+
+    await pathInput.clear();
+    return pathInput.sendKeys(path);
+  }
+
+  async setLatestValueInput(value: string): P<any> {
+    log.info(`setting basic filter step value to ${value}`);
+    const valueInputArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.valueSelector));
+    const valueInput = valueInputArray[valueInputArray.length - 1];
+
+    await valueInput.clear();
+    return valueInput.sendKeys(value);
   }
 
   getParameter(): string {
@@ -351,7 +378,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     log.debug(`Searching basic filter path input`);
     return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.pathSelector);
   }
-  
+
   getPathInputValue(): P<any> {
     return this.getPathInput().getAttribute('value');
   }
@@ -363,7 +390,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
 
   getValueInputValue(): P<any> {
     return this.getValueInput().getAttribute('value');
-  }  
+  }
 
   getOpSelect(): ElementFinder {
     log.debug(`Searching basic filter op select`);
@@ -406,15 +433,15 @@ export class BasicFilterRule {
 }
 
 enum BasicFilterPredicates {
-    "ALL of the following",
-    "ANY of the following",
+    'ALL of the following',
+    'ANY of the following',
 }
 
 enum BasicFilterOps {
-    "Contains",
-    "Does Not Contain",
-    "Matches Regex",
-    "Does Not Match Regex",
-    "Starts With",
-    "Ends With",
+    'Contains',
+    'Does Not Contain',
+    'Matches Regex',
+    'Does Not Match Regex',
+    'Starts With',
+    'Ends With',
 }

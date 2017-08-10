@@ -107,100 +107,111 @@ class IntegrationSteps {
   }
 
   @then(/^she adds "([^"]*)" random steps and then check the structure$/)
-  public addRandomStepsAndCheckRest (numberOfSteps: number): void {
+  public async addRandomStepsAndCheckRest (numberOfSteps: number): P<any> {
+    log.info(`Adding random steps`);
 
-    this.getStepsArray().then((array) => {
+    const array = await this.getStepsArray();
+
+    this.world.app.clickButton('Add a Step');
+
+    const links = this.world.app.getLinks('Add a step');
+    const count = await links.count();
+
+    const randomIndexes = [];
+    for (let i = 0; i < numberOfSteps; i++) {
+      randomIndexes.push(Math.floor((Math.random() * count)));
+    }
+
+    const page = new IntegrationAddStepPage();
+
+    for (const randomIndex of randomIndexes) {
+      links.get(randomIndex).click();
+
+      const steType = 'Basic Filter';
+      const stepParameter = 'ANY of the following, path' + randomIndex + ', Does Not Contain, value' + randomIndex;
+
+      page.addStep(steType);
+
+      const stepFactory = new StepFactory();
+      const stepPage = stepFactory.getStep(steType, stepParameter);
+
+      stepPage.fillConfiguration();
+
+      this.world.app.clickButton('Next');
       this.world.app.clickButton('Add a Step');
 
-      const links = this.world.app.getLinks('Add a step');
+      array.splice(randomIndex, 0, stepParameter);
+    }
 
-      links.count().then((count) => {
-        log.info(`links "${count}"`);
+    const array2 = await this.getStepsArray();
 
-        const randomIndexes = [];
-        for (let i = 0; i < numberOfSteps; i++) {
-          randomIndexes.push(Math.floor((Math.random() * count)));
-        }
-        return randomIndexes;
-      }).then((randomIndexes) => {
-        const page = new IntegrationAddStepPage();
+    for (let i = 0; i < array2.length; i++) {
+      log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+      try {
+        expect(array[i]).to.be.equal(array2[i]);
+      } catch (e) {
+        return P.reject(e);
+      }
+    }
 
-        for (const randomIndex of randomIndexes) {
-          links.get(randomIndex).click();
-
-          const steType = 'Basic Filter';
-          const stepParameter = 'ANY of the following, path' + randomIndex + ', Does Not Contain, value' + randomIndex;
-
-          page.addStep(steType);
-          const stepFactory = new StepFactory();
-          const stepPage = stepFactory.getStep(steType, stepParameter);
-          stepPage.fillConfiguration();
-
-          this.world.app.clickButton('Next');
-          this.world.app.clickButton('Add a Step');
-
-          array.splice(randomIndex, 0, stepParameter);
-        }
-        this.getStepsArray().then((array2) => {
-          for (let i = 0; i < array2.length; i++) {
-            log.info(`assserting "${array[i]}" and "${array2[i]}"`);
-            expect(array[i]).to.be.equal(array2[i]);
-          }
-        });
-      });
-    });
+    return P.resolve();
   }
 
   @then(/^she delete "([^"]*)" random steps and check rest$/)
-  public deleteRandomStepsAndCheckRest (numberOfSteps: number): void {
+  public async deleteRandomStepsAndCheckRest (numberOfSteps: number): P<any> {
+    log.info(`Deleting random steps`);
 
-    this.getStepsArray().then((array) => {
-      const trashes = this.world.app.getElementsByClassName('delete-icon');
+    const array = await this.getStepsArray();
+    const trashes = this.world.app.getElementsByClassName('delete-icon');
+    const count = await trashes.count();
 
-      trashes.count().then((count) => {
-        const randomIndexes = [];
-        for (let i = 0; i < numberOfSteps; i++) {
-          randomIndexes.push(Math.floor((Math.random() * (count - 2 - i))));
-        }
-        return randomIndexes;
-      }).then((randomIndexes) => {
-        for (const randomIndex of randomIndexes) {
-          trashes.get(randomIndex + 1).click();
-          this.world.app.getFirstVisibleButton('Delete').click();
-          array.splice(randomIndex, 1);
-        }
-        this.getStepsArray().then((array2) => {
-          for (let i = 0; i < array.length; i++) {
-            log.info(`assserting "${array[i]}" and "${array2[i]}"`);
-            expect(array[i]).to.be.equal(array2[i]);
-          }
-        });
-      });
-    });
+    const randomIndexes = [];
+    for (let i = 0; i < numberOfSteps; i++) {
+      randomIndexes.push(Math.floor(Math.random() * (count - 2 - i)));
+    }
+
+    for (const randomIndex of randomIndexes) {
+      trashes.get(randomIndex + 1).click();
+      this.world.app.getFirstVisibleButton('Delete').click();
+      array.splice(randomIndex, 1);
+    }
+
+    const array2 = await this.getStepsArray();
+
+    for (let i = 0; i < array.length; i++) {
+      log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+      try {
+        expect(array[i]).to.be.equal(array2[i]);
+      } catch (e) {
+        return P.reject(e);
+      }
+    }
+
+    return P.resolve();
   }
 
-  public getStepsArray (): P<any> {
+  public async getStepsArray (): P<any> {
     const stepFactory = new StepFactory();
     const steps = this.world.app.getElementsByClassName('parent-step');
 
-    return steps.count().then((count) => {
-      const stepsArray = new Array();
-      for (let i = 1; i < (count - 1); i++) {
-        steps.get(i).click();
-        const title = this.world.app.getElementByCssSelector("span[class='parent-step active']");
+    const count = await steps.count();
+    const stepsArray = new Array();
 
-        title.getText().then((text) => {
-          const stepPage = stepFactory.getStep(text, '');
+    for (let i = 1; i < (count - 1); i++) {
+      steps.get(i).click();
+      const title = this.world.app.getElementByCssSelector("span[class='parent-step active']");
 
-          stepPage.initialize().then(() => {
-            stepsArray.push(stepPage.getParameter());
-          });
-        });
-      }
-      this.world.app.getFirstVisibleButton('Done').click();
+      const text = await title.getText();
+      const stepPage = stepFactory.getStep(text, '');
 
-      return stepsArray;
-    });
+      await stepPage.initialize();
+
+      stepsArray.push(stepPage.getParameter());
+    }
+
+    this.world.app.getFirstVisibleButton('Done').click();
+
+    return stepsArray;
   }
 
   @then(/^she is presented with an actions list$/)
