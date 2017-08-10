@@ -54,22 +54,20 @@ Feature: Create integration with datamapper step
     And click on the "Next" button
     Then she is presented with the "Add a Step" button
 
-#    # add data mapper step
+    # add data mapper step
     When Camilla click on the "Add a Step" button
     And she selects "Data Mapper" integration step
     Then she is presented with data mapper ui
 
-		# TODO: This part of scenario is currently blocked by issues related to Maven classpath inspection
-		#
-    # When she creates mapping from "User.ScreenName" to "TwitterScreenName__c"
-    # When she creates mapping from "Text" to "Description"
-    # And scroll "top" "right"
-    # And click on the "Next" button
-		#
-    # # finish and save integration
-    # When click on the "Save" button
-    # And she defines integration name "twitter to salesforce"
-    # And click on the "Publish" button
-    # # assert integration is present in list
-    # Then Camilla is presented with the Syndesis page "Integrations"
-    # And Integration "twitter to salesforce" is present in integrations list
+    When she creates mapping from "user.screenName" to "TwitterScreenName__c"
+    When she creates mapping from "text" to "Description"
+    And scroll "top" "right"
+    And click on the "Done" button
+
+    # finish and save integration
+    When click on the "Save as Draft" button
+    And she defines integration name "Twitter to Salesforce E2E"
+    And click on the "Publish" button
+    # assert integration is present in list
+    Then Camilla is presented with the Syndesis page "Integrations"
+    And Integration "Twitter to Salesforce E2E" is present in integrations list
