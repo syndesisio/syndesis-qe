@@ -6,6 +6,20 @@ Feature: Test to verify that as a citizen user, search for Tweets using Twitter 
   Scenario: Create Twitter connection  
     Given clean application state
     
+    # create salesforce connection
+    When "Camilla" navigates to the "Connections" page
+    And click on the "Create Connection" button
+    And Camilla selects the "Salesforce" connection
+    Then she is presented with the "Validate" button
+    # fill salesforce connection details
+    When she fills "QE Salesforce" connection details
+    And scroll "top" "right"
+    And click on the "Next" button
+    And type "QE Salesforce" into connection name
+    And type "SyndesisQE salesforce test" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
+    
     # create twitter connection
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Connections" page
@@ -38,7 +52,7 @@ Feature: Test to verify that as a citizen user, search for Tweets using Twitter 
     When Camilla selects the "QE Salesforce" connection
     And she selects "Create Opportunity" integration action
 
-    When click on the "Save" button
+    Then click on the integration save button
     And she defines integration name "Twitter search integration"
     And click on the "Save as Draft" button
     Then Camilla is presented with the Syndesis page "Integrations"
