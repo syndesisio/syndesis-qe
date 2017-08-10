@@ -53,7 +53,7 @@ export class ListActionsComponent implements SyndesisComponent {
 
   selectAction(name: string): P<any> {
     log.info(`searching for integration action '${name}'`);
-    return this.rootElement().element(by.cssContainingText('div.name', name)).click();
+    return this.rootElement().$(`div.action[title="${name}"]`).click();
   }
 
 }
@@ -124,7 +124,7 @@ export class IntegrationAddStepPage implements SyndesisComponent {
 
   addStep(stepName: string): P<any> {
     log.info(`searching for step ${stepName}`);
-    return this.rootElement().element(by.cssContainingText('div.list-group-item-heading', stepName)).getWebElement().click();
+    return this.rootElement().$(`div.step[title="${stepName}"]`).click();
   }
 }
 

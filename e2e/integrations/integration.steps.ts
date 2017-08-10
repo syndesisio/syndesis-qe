@@ -60,7 +60,7 @@ class IntegrationSteps {
   }
 
   @when(/^she selects "([^"]*)" integration step$/)
-  public addStep (stepName: string): P<any> {
+  public addStep(stepName: string): P<any> {
     log.info(`Adding ${stepName} step to integration`);
     const page = new IntegrationAddStepPage();
     return page.addStep(stepName);
@@ -107,10 +107,9 @@ class IntegrationSteps {
   }
 
   @then(/^she adds "([^"]*)" random steps and then check the structure$/)
-  public addRandomStepsAndCheckRest (numberOfSteps: number): void {
+  public addRandomStepsAndCheckRest(numberOfSteps: number): void {
 
     this.getStepsArray().then((array) => {
-      this.world.app.clickButton('Next');
       this.world.app.clickButton('Add a Step');
 
       const links = this.world.app.getLinks('Add a step');
@@ -153,7 +152,7 @@ class IntegrationSteps {
   }
 
   @then(/^she delete "([^"]*)" random steps and check rest$/)
-  public deleteRandomStepsAndCheckRest (numberOfSteps: number): void {
+  public deleteRandomStepsAndCheckRest(numberOfSteps: number): void {
 
     this.getStepsArray().then((array) => {
       const trashes = this.world.app.getElementsByClassName('delete-icon');
@@ -180,18 +179,9 @@ class IntegrationSteps {
     });
   }
 
-  public getStepsArray (): P<any> {
+  public getStepsArray(): P<any> {
     const stepFactory = new StepFactory();
     const steps = this.world.app.getElementsByClassName('parent-step');
-    const navBar = this.world.app.getElementByClassName('nav-pf-vertical');
-
-    navBar.isDisplayed().then((visible) => {
-      if (visible) {
-        log.warn('Navigation bar is not hidden.');
-        const navBarToggle = this.world.app.getElementByClassName('navbar-toggle');
-        navBarToggle.click();
-      }
-    });
 
     return steps.count().then((count) => {
       const stepsArray = new Array();
@@ -207,13 +197,7 @@ class IntegrationSteps {
           });
         });
       }
-
-      navBar.isDisplayed().then((visible) => {
-        if (!visible) {
-          const navBarToggle = this.world.app.getElementByClassName('navbar-toggle');
-          navBarToggle.click();
-        }
-      });
+      this.world.app.getFirstVisibleButton('Done').click();
 
       return stepsArray;
     });
@@ -221,11 +205,32 @@ class IntegrationSteps {
 
   @then(/^she is presented with an actions list$/)
   public expectActionListIsPresent(): void {
-      const page = new ListActionsComponent();
-      browser.wait(ExpectedConditions.visibilityOf(page.rootElement()), 5000, 'Actions List not loaded');
-      expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
-        .to.eventually.be.true;
+    const page = new ListActionsComponent();
+    browser.wait(ExpectedConditions.visibilityOf(page.rootElement()), 5000, 'Actions List not loaded');
+    expect(page.rootElement().isDisplayed(), 'There must be action list loaded')
+      .to.eventually.be.true;
   }
+
+  @when(/clicks? on the integration save button.*$/)
+  public async clickOnSaveButton(): P<any> {
+    let saveButton = await this.world.app.getButton('Save');
+    const isSaveButtonPresent = await saveButton.isPresent();
+
+    if (!isSaveButtonPresent) {
+      log.warn(`Save button is not present on integration edit.`);
+      saveButton = await this.world.app.getButton('Save as Draft');
+    }
+
+    return saveButton.click();
+  }
+
+  //Kebab menu test, #553 -> part #548, #549.
+  @when(/^clicks on the kebab menu icon of each available Integration and checks whether each kebab menu 1. is visible and 2. has appropriate actions$/)
+  public clickOnAllKebabMenus(): P<any> {
+    const integrationsListComponent = new IntegrationsListComponent();
+    return integrationsListComponent.checkAllIntegrationsKebabButtons();
+  }
+
 
   // Twitter search specification
   @then(/^she fills keywords field with random text to configure search action$/)
@@ -237,6 +242,5 @@ class IntegrationSteps {
 
   }
 
-}
 
 export = IntegrationSteps;

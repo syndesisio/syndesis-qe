@@ -1,4 +1,5 @@
 import {browser} from 'protractor';
+import {log} from '../src/app/logging';
 
 module.exports = function () {
 
@@ -7,12 +8,11 @@ module.exports = function () {
 
   this.setDefaultTimeout(400 * 1000);
 
-  // todo figure out proper browser restart
-  // this.BeforeFeature(function (event, callback) {
-  //   console.log('restarting browser before scenario: ' + event.getPayloadItem('scenario'));
-  //   browser.restart();
-  //   callback();
-  // });
+  this.BeforeFeature(function (event, callback) {
+    // we need to set window size after each browser restart
+    browser.manage().window().setSize(1280, 720)
+      .then(() => callback());
+  });
 
   /**
    * create screenshot after each cucumber scenario
@@ -24,6 +24,11 @@ module.exports = function () {
     }, function (err) {
       next(err);
     });
+  });
+
+  this.AfterFeature(function (event, callback) {
+    log.info(`restarting browser after feature "${event.getName()}"`);
+    browser.restart().then(() => callback());
   });
 
 };
