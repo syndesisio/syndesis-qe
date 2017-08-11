@@ -5,7 +5,7 @@ Feature: Sprint 8 narrative
 
   Scenario: First pass at login, homepage
     When "Camilla" logs into the Syndesis URL for her installation (e.g. rh-syndesis.[openshift online domain].com)
-    Then Camilla is presented with the Syndesis page "Dashboard"
+    Then Camilla is presented with the Syndesis page "Home"
 
   Scenario: Explore connections
     When "Camilla" navigates to the "Connections" page to see what's available in Syndesis
@@ -25,7 +25,7 @@ Feature: Sprint 8 narrative
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
     Then she is presented with the "Add a Step" button
-    And click on the "Save" button
+    And click on the integration save button
 
 #    try to publish without integration name will open basics page
     When Camilla clicks on the "Save as Draft" button

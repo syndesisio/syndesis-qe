@@ -36,17 +36,17 @@ export class ConnectionViewComponent implements SyndesisComponent {
   /**
    * Fill connection details from given connection to ui
    * @param connection <key> : <value> object with data
-   * @param parrentElement fill input[name="<key>"] = <value> here
+   * @param parentElement fill input[name="<key>"] = <value> here
    * @returns {any} resolved promise once all filled
    */
-  fillDetails(connection: any, parrentElement: ElementFinder = this.rootElement()): P<void[]> {
+  fillDetails(connection: any, parentElement: ElementFinder = this.rootElement()): P<void[]> {
     if (!connection) {
       return P.reject(`can't find any connection details in ${connection}`);
     }
     const promises: P<void>[] = [];
     Object.keys(connection).forEach(key => {
       log.info(`fill connection detail ${key} => ${connection[key]}`);
-      promises.push(parrentElement.$(`input[name="${key}"`).sendKeys(connection[key]));
+      promises.push(parentElement.$(`input[name="${key}"`).sendKeys(connection[key]));
     });
     return P.all(promises);
   }

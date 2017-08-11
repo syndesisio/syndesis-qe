@@ -4,8 +4,7 @@ Feature: Connections smoke test
   # Enter feature description here
 
   Background:
-    Given credentials for "Camilla"
-    And clean application state
+    Given clean application state
 
   Scenario: Create connection happy path
     When "Camilla" navigates to the "Connections" page

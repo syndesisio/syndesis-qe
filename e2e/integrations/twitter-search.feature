@@ -1,10 +1,11 @@
-@datamapper
-Feature: Create integration with datamapper step
+@twitter-search-test
+Feature: Test to verify that as a citizen user, search for Tweets using Twitter connection has been added.
+  https://app.zenhub.com/workspace/o/syndesisio/syndesis-project/issues/3
 
-  @datamapper-create-connections
-  Scenario: Create Twitter and Salesforce connection
+  # we need to create Twitter Connection first
+  Scenario: Create Twitter connection  
     Given clean application state
-
+    
     # create salesforce connection
     When "Camilla" navigates to the "Connections" page
     And click on the "Create Connection" button
@@ -18,7 +19,7 @@ Feature: Create integration with datamapper step
     And type "SyndesisQE salesforce test" into connection description
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
-
+    
     # create twitter connection
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Connections" page
@@ -34,40 +35,28 @@ Feature: Create integration with datamapper step
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
+  Scenario: Create integration with twitter and search settings
 
-
-  @datamapper-create-integration
-  Scenario: Create integration from twitter to salesforce
-    # create integration
-    When "Camilla" logs into the Syndesis
-    And "Camilla" navigates to the "Home" page
+    When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
-    # select twitter connection
+
     When Camilla selects the "Twitter Listener" connection
-    And she selects "Mention" integration action
-    Then she is prompted to select a "Finish" connection from a list of available connections
-    # select salesforce connection
-    When Camilla selects the "QE Salesforce" connection
-    And she selects "Create/Update Contact" integration action
+    And she selects "Search" integration action
+    #twitter search test itself:
+    Then she fills keywords field with random text to configure search action
     And click on the "Next" button
-    Then she is presented with the "Add a Step" button
 
-    # add data mapper step
-    When Camilla click on the "Add a Step" button
-    And she selects "Data Mapper" integration step
-    Then she is presented with data mapper ui
+    Then she is prompted to select a "Finish" connection from a list of available connections
+    When Camilla selects the "QE Salesforce" connection
+    And she selects "Create Opportunity" integration action
 
-    When she creates mapping from "user.screenName" to "TwitterScreenName__c"
-    When she creates mapping from "text" to "Description"
-    And scroll "top" "right"
-    And click on the "Done" button
-
-    # finish and save integration
-    When click on the "Save as Draft" button
-    And she defines integration name "Twitter to Salesforce E2E"
-    And click on the "Publish" button
-    # assert integration is present in list
+    Then click on the integration save button
+    And she defines integration name "Twitter search integration"
+    And click on the "Save as Draft" button
     Then Camilla is presented with the Syndesis page "Integrations"
-    And Integration "Twitter to Salesforce E2E" is present in integrations list
+    And Integration "Twitter search integration" is present in integrations list
+
+    When Camilla deletes the "Twitter search integration" integration
+    Then Camilla can not see "Twitter search integration" integration anymore

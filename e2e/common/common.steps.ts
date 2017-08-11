@@ -20,17 +20,8 @@ class CommonSteps {
   constructor(protected world: World) {
   }
 
-  @given(/^credentials for "([^"]*)"$/)
-  public loadCredentials(alias: string, callback: CallbackStepDefinition): void {
-    this.world.user = new User(alias.toLowerCase(), 'asdfadf', null);
-    log.info(`using alias ${alias} with login ${this.world.user.username}`);
-    callback();
-  }
-
   @when(/^"(\w+)" logs into the Syndesis.*$/i)
   public login(alias: string): P<any> {
-    this.world.user = new User(alias.toLowerCase(), 'asdfadf', null);
-    // return this.app.login(this.world.user);
     return this.world.app.login(this.world.user);
   }
 
@@ -109,10 +100,7 @@ class CommonSteps {
 
   @then(/^she is presented with the "([^"]*)" button.*$/)
   public expectButtonPresent(buttonTitle: string, callback: CallbackStepDefinition): void {
-
     const button = this.world.app.getButton(buttonTitle);
-    expect(button.isPresent(), `There must be present a button ${buttonTitle}`)
-      .to.eventually.be.true;
 
     expect(button.isPresent(), `There must be enabled button ${buttonTitle}`)
       .to.eventually.be.true.notify(callback);
@@ -208,14 +196,17 @@ class CommonSteps {
    */
   @when(/^scroll "([^"]*)" "([^"]*)"$/)
   public async scroll(topBottom: string, leftRight: string): P<any> {
+    // get real width and height
+    const width = await browser.executeScript(() => $(document).width());
+    const height = await browser.executeScript(() => $(document).height());
 
-    const size = await browser.manage().window().getSize();
     const directions: Object = {
       top: 0,
-      bottom: size.height,
+      bottom: height,
       left: 0,
-      right: size.width,
+      right: width,
     };
+
     if (!directions.hasOwnProperty(topBottom) || !directions.hasOwnProperty(leftRight)) {
       return P.reject(`unknown directions [${topBottom}, ${leftRight}`);
     }

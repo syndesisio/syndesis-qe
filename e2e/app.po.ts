@@ -81,7 +81,6 @@ export class AppPage {
       });
     });
 
-
   }
 
   currentUrl(): P<string> {
@@ -234,7 +233,14 @@ export class AppPage {
       jQuery.get('/config.json', function (data) {
         callback(data);
       });
-    }).then(jsonString => JSON.parse(<string> jsonString));
+    }).then(jsonSettings => {
+      log.info(`settings string: ${jsonSettings}`);
+      // it may be string or object depending on content-type provided by server
+      if (typeof jsonSettings === 'string') {
+        return JSON.parse(jsonSettings);
+      }
+      return jsonSettings;
+    });
   }
 
   async getApiUrl(): P<string> {

@@ -1,19 +1,14 @@
-def username = System.getenv().get('GITHUB_USERNAME')
-def password = System.getenv().get('GITHUB_PASSWORD')
 def namespace = System.getenv().get('E2E_NAMESPACE')
 
-def users = """
-{
-  \"users\": {
-    \"camilla\": {
-      \"username\": \"${username}\",
-      \"password\": \"${password}\"
+node {
+  //wait for the test namespace to not exist to prevent conflicts
+  timeout(600) {
+    waitUntil {
+      def r = sh script: "oc get project ${namespace}", returnStatus: true
+      return (r == 1);
     }
   }
-}
-"""
 
-node {
   inNamespace(cloud: 'openshift', name: "${namespace}") {
 
           stage 'Prepare test environment'
@@ -29,19 +24,21 @@ node {
 
           slave {
             withOpenshift() {
+              sh "oc policy add-role-to-user admin syndesisqe"    
               def test_config = sh returnStdout: true, script: "oc get cm e2e-test-config -o jsonpath=\"{ .data.test_config }\" -n syndesis-ci"
               withYarn() {
                 inside{
                     stage ('End to End Tests')
                     container(name: 'yarn') {
                       checkout scm
-                      writeFile(file: 'e2e/data/users.json', text: "${users}")
                       writeFile(file: 'test_config.json', text: "${test_config}")
                       try {
-                        sh """
-                        export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
-                        ./e2e-xvfb.sh
-                        """
+                        ansiColor('xterm') {
+                          sh """
+                          export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
+                          ./e2e-xvfb.sh
+                          """
+                        }
                       } catch(err) {
                         echo "E2E tests failed: ${err}"
                         currentBuild.result = 'FAILURE'
