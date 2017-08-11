@@ -230,7 +230,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     super();
     this.filterCondition = filterCondition;
 
-    const filterConditionsArray = filterCondition.split(', ');
+    const filterConditionsArray = this.filterCondition.split(', ');
 
     this.predicate = BasicFilterPredicates[filterConditionsArray[0]];
 
@@ -268,22 +268,15 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return (predicatPresent && pathPresent && valuePresent && opPresent);
   }
 
-  initialize(): P<any> {
-    let parameter;
+  async initialize(): P<any> {
+    const predicateSelectValue = await this.getPredicateSelectValue();
+    const pathInputValue = await this.getPathInputValue();
+    const opSelectValue = await this.getOpSelectValue();
+    const valueInputValue = await this.getValueInputValue();
 
-    return this.getPredicateSelectValue().then((text) => {
-      parameter = text;
-      return this.getPathInputValue();
-    }).then((text) => {
-      parameter = parameter + ', ' + text;
-      return this.getOpSelectValue();
-    }).then((text) => {
-      parameter = parameter + ', ' + text;
-      return this.getValueInputValue();
-    }).then(((text) => {
-      parameter = parameter + ', ' + text;
-      return this.setParameter(parameter);
-    }).bind(this));
+    const parameter = predicateSelectValue + ', ' + pathInputValue + ', ' + opSelectValue + ', ' + valueInputValue;
+
+    return this.setParameter(parameter);
   }
 
   async addRule(ruleString: string): P<any> {
@@ -445,12 +438,20 @@ enum BasicFilterPredicates {
 }
 
 enum BasicFilterOps {
-    'Contains',
-    'Does Not Contain',
-    'Matches Regex',
-    'Does Not Match Regex',
-    'Starts With',
-    'Ends With',
+    'equals',
+    'equals (ignores case)',
+    'not equals',
+    '<',
+    '<=',
+    '>',
+    '=>',
+    'contains',
+    'contains (ignore case)',
+    'not contains',
+    'matches',
+    'not matches',
+    'in',
+    'not in',
 }
 
 /*

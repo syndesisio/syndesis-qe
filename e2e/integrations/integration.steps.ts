@@ -5,8 +5,8 @@ import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage } from '../integrations/edit/edit.po';
-import { ListActionsComponent, StepFactory, ActionConfigureComponent } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, StepFactory } from '../integrations/edit/edit.po';
+import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 
@@ -128,13 +128,13 @@ class IntegrationSteps {
     for (const randomIndex of randomIndexes) {
       links.get(randomIndex).click();
 
-      const steType = 'Basic Filter';
-      const stepParameter = 'ANY of the following, path' + randomIndex + ', Does Not Contain, value' + randomIndex;
+      const stepType = 'Basic Filter';
+      const stepParameter = 'ANY of the following, path' + randomIndex + ', not contains, value' + randomIndex;
 
-      page.addStep(steType);
+      page.addStep(stepType);
 
       const stepFactory = new StepFactory();
-      const stepPage = stepFactory.getStep(steType, stepParameter);
+      const stepPage = stepFactory.getStep(stepType, stepParameter);
 
       stepPage.fillConfiguration();
 
