@@ -22,9 +22,9 @@ Feature: Test to verify advanced integration with multiple steps
     Then she is presented with the "Add a Step" button
 
     When Camilla click on the "Add a Step" button
-    And she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "filter" parameter
+    And she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, contains, value" parameter
     And click on the "Next" button
 
     Then click on the integration save button
@@ -35,7 +35,7 @@ Feature: Test to verify advanced integration with multiple steps
 
     When Camilla deletes the "One step integration" integration
     Then Camilla can not see "One step integration" integration anymore
-
+    
   Scenario: Create integration with two steps
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
@@ -61,9 +61,9 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    And she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "filter" parameter
+    And she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, not equals, value1" parameter
     And click on the "Next" button
 
     When click on the integration save button
@@ -99,25 +99,25 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "filter 1" parameter
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, not matches, value1" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "filter 2" parameter
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path2, matches, value2" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "log 2" parameter
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path3, in, value3" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -139,17 +139,17 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "filter 3" parameter
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path4, not in, value4" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "filter 4" parameter
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path5, not contains, value5" parameter
     And click on the "Next" button
 
     Then she delete "1" random steps and check rest

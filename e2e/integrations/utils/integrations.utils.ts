@@ -11,10 +11,10 @@ export class IntegrationsUtils {
   // to be done: change know types to enum
   static getProperKebabActions(status: string): string[] {
 
-    const edit = "Edit";
-    const deactivate = "Deactivate";
-    const activate = "Activate";
-    const deletee = "Delete";
+    const edit = 'Edit';
+    const deactivate = 'Deactivate';
+    const activate = 'Activate';
+    const deletee = 'Delete';
 
     switch (status) {
       case 'Active': {

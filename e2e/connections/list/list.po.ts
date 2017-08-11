@@ -33,7 +33,7 @@ export class ConnectionsListComponent implements SyndesisComponent {
   }
 
   getAllKebabElements(isOpen: boolean): ElementArrayFinder {
-    const open = isOpen ? ".open" : "";
+    const open = isOpen ? '.open' : '';
     return this.rootElement().all(by.css(`div.dropdown.dropdown-kebab-pf.pull-right${open}`));
   }
 
@@ -43,7 +43,7 @@ export class ConnectionsListComponent implements SyndesisComponent {
 
   async clickOnAllKebabButtons(): P<any> {
     const kebabButtons = await this.getAllKebabButtons();
-    if (kebabButtons.length == 0) {
+    if (kebabButtons.length === 0) {
       throw new Error(`There should be some prepared connections!`);
     }
     const promises: P<any>[] = [];
@@ -58,7 +58,7 @@ export class ConnectionsListComponent implements SyndesisComponent {
   async checkAllKebabElementsAreDisplayed(shoulBeOpen: boolean, properActions: string[]): P<any> {
     const promises: P<any>[] = [];
     const kebabElements = await this.getAllKebabElements(shoulBeOpen);
-    if (kebabElements.length == 0) {
+    if (kebabElements.length === 0) {
       throw new Error(`There should be some prepared connections!`);
     }
     kebabElements.forEach(kebabE => {

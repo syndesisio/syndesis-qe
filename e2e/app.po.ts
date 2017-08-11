@@ -163,7 +163,6 @@ export class AppPage {
 
   clickDeleteIntegration(integrationName: string, rootElement: ElementFinder): P<any> {
     log.info(`clicking delete link for integration ${integrationName}`);
-    log.info(`root element ${rootElement}`);
 
     const parentElement = this.getElementByClassName('integration');
     return browser.wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present').then(function() {

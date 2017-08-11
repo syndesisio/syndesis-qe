@@ -9,4 +9,4 @@ Feature: Test to verify correct function of connections kebab menu
 
   Scenario: Test whether connections kebab menu works as it should
     When "Camilla" navigates to the "Integrations" page
-    And clicks on the kebab menu icon of each available Integration and checks whether each kebab menu 1. is visible and 2. has appropriate actions
+    And clicks on the kebab menu icon of each available Integration and checks whether menu is visible and has appropriate actions
