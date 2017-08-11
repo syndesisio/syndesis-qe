@@ -5,13 +5,13 @@ import {log} from '../../src/app/logging';
 export class Utils {
 
   static randomString(length: number, chars: string): string {
-    var result = '';
-    for (var i = length; i > 0; --i) {
+    let result = '';
+    for (let i = length; i > 0; --i) {
       result += chars[Math.floor(Math.random() * chars.length)];
     }
     return result;
   }
-  
+
     /**
    * Fill form with given data. It will look for ui element for every map entry.
    * @param data key,value data. Key is used for element lookup.

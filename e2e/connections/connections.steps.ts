@@ -100,7 +100,7 @@ class ConnectionSteps {
   //Kebab menu test, #553 -> part #550.
   @then(/^she can see unveiled kebab menu of all connections, each of this menu consist of "([^"]*)", "([^"]*)" and "([^"]*)" actions$/)
   public checkAllVisibleKebabMenus(action1: string, action2: string, action3: string): P<any> {
-    
+
     const actions = [action1, action2, action3];
 
     const connectionsListComp = new ConnectionsListComponent();
