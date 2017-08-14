@@ -24,7 +24,7 @@ node {
 
           slave {
             withOpenshift() {
-              sh "oc policy add-role-to-user admin syndesisqe"    
+              sh "oc policy add-role-to-user admin syndesisqe"
               def test_config = sh returnStdout: true, script: "oc get cm e2e-test-config -o jsonpath=\"{ .data.test_config }\" -n syndesis-ci"
               withYarn() {
                 inside{
@@ -43,7 +43,7 @@ node {
                         echo "E2E tests failed: ${err}"
                         currentBuild.result = 'FAILURE'
                       } finally {
-                        archive includes: 'e2e/cucumber-reports/*'
+                        archive includes: 'e2e/cucumber-reports/**/*'
                       }
                     }
 
