@@ -49,6 +49,10 @@ Define env variable that points to your Syndesis UI web console
 
 ```bash
 export SYNDESIS_UI_URL='https://<SYNDESIS_UI_URL>'
+
+# optionally restart browser after each feature with
+export SYNDESIS_E2E_RESTART=1
+
 yarn e2e:syndesis-qe
 ```
 

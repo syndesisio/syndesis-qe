@@ -36,6 +36,7 @@ node {
                         ansiColor('xterm') {
                           sh """
                           export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
+                          export SYNDESIS_E2E_RESTART=1
                           ./e2e-xvfb.sh
                           """
                         }
