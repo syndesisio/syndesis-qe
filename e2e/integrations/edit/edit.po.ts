@@ -1,6 +1,6 @@
 import { Utils } from '../../common/utils';
 import { SyndesisComponent } from '../../common/common';
-import { by, element, ElementFinder } from 'protractor';
+import { by, element, ElementFinder, ElementArrayFinder } from 'protractor';
 import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
@@ -218,7 +218,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   static readonly opSelector = 'select[name="op"]';
   static readonly opOptionSelector = 'option[name="op"]';
 
-  static readonly addRuleSelector = 'link[class="add-rule"]';
+  static readonly addRuleSelector = 'a[class="add-rule"]';
 
   filterCondition: string;
 
@@ -229,7 +229,6 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   constructor(filterCondition: string) {
     super();
     this.filterCondition = filterCondition;
-
     const filterConditionsArray = this.filterCondition.split(', ');
 
     this.predicate = BasicFilterPredicates[filterConditionsArray[0]];
@@ -244,14 +243,17 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     }
   }
 
-  fillConfiguration(): P<any> {
-    log.info(`fillConfiguration`);
+  async fillConfiguration(): P<any> {
 
-    /** TODO add rule, cover multiple rule steps  **/
-    for (const rule of this.ruleArray) {
-      this.setPath(rule.getPath());
-      this.setOp(rule.getOp());
-      this.setValue(rule.getValue());
+    for (let i = 0; i < this.ruleArray.length; i++) {
+      await this.setLatestPathInput(this.ruleArray[i].getPath());
+      await this.setLatestOpSelect(this.ruleArray[i].getOp());
+      await this.setLatestValueInput(this.ruleArray[i].getValue());
+
+      if (i !== (this.ruleArray.length - 1)) {
+        const addRuleLink = await this.rootElement().$(IntegrationConfigureBasicFilterStepPage.addRuleSelector);
+        await addRuleLink.click();
+      }
     }
 
     return this.setPredicate(this.predicate);
@@ -270,11 +272,22 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
 
   async initialize(): P<any> {
     const predicateSelectValue = await this.getPredicateSelectValue();
-    const pathInputValue = await this.getPathInputValue();
-    const opSelectValue = await this.getOpSelectValue();
-    const valueInputValue = await this.getValueInputValue();
 
-    const parameter = predicateSelectValue + ', ' + pathInputValue + ', ' + opSelectValue + ', ' + valueInputValue;
+    const pathInputValues = await this.getPathInputAllValues();
+    const opSelectValues = await this.getOpSelectAllValues();
+    const valueInputValues = await this.getValueInputAllValues();
+
+    let parameter = predicateSelectValue;
+
+    this.ruleArray = [];
+
+    for (let i = 0; i < pathInputValues.length; i++) {
+      const basicFilterRule = new BasicFilterRule(pathInputValues[i], opSelectValues[i], valueInputValues[i]);
+
+      this.ruleArray.push(basicFilterRule);
+
+      parameter = parameter + ', ' + pathInputValues[i] + ', ' + opSelectValues[i] + ', ' + valueInputValues[i];
+    }
 
     return this.setParameter(parameter);
   }
@@ -379,8 +392,27 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.pathSelector);
   }
 
+  getPathInputs(): ElementArrayFinder {
+    log.debug(`Searching basic filter path input`);
+    return this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.pathSelector));
+  }
+
   getPathInputValue(): P<any> {
     return this.getPathInput().getAttribute('value');
+  }
+
+  async getPathInputAllValues(): P<any> {
+    const pathInputArray = this.getPathInputs();
+    const count = await pathInputArray.count();
+
+    const pathInputValues = new Array();
+
+    for (let i = 0; i < count; i++) {
+      const value = await pathInputArray.get(i).getAttribute('value');
+      pathInputValues.push(value);
+    }
+
+    return pathInputValues;
   }
 
   getValueInput(): ElementFinder {
@@ -388,8 +420,27 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.valueSelector);
   }
 
+  getValueInputs(): ElementArrayFinder {
+    log.debug(`Searching basic filter value input`);
+    return this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.valueSelector));
+  }
+
   getValueInputValue(): P<any> {
     return this.getValueInput().getAttribute('value');
+  }
+
+  async getValueInputAllValues(): P<any> {
+    const valueInputArray = this.getValueInputs();
+    const count = await valueInputArray.count();
+
+    const valueInputValues = new Array();
+
+    for (let i = 0; i < count; i++) {
+      const value = await valueInputArray.get(i).getAttribute('value');
+      valueInputValues.push(value);
+    }
+
+    return valueInputValues;
   }
 
   getOpSelect(): ElementFinder {
@@ -397,10 +448,31 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return this.rootElement().$(IntegrationConfigureBasicFilterStepPage.opSelector);
   }
 
+  getOpSelects(): ElementArrayFinder {
+    log.debug(`Searching basic filter op selects`);
+    return this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
+  }
+
   async getOpSelectValue(): P<any> {
     log.debug(`Searching basic filter op select checked option`);
     const opValue = await this.getOpSelect().$('option:checked').getText();
     return opValue.trim();
+  }
+
+  async getOpSelectAllValues(): P<any> {
+    log.debug(`Searching basic filter op select checked options`);
+
+    const opSelectArray = this.getOpSelects().all(by.css('option:checked'));
+    const count = await opSelectArray.count();
+
+    const opSelectValues = new Array();
+
+    for (let i = 0; i < count; i++) {
+      const value = await opSelectArray.get(i).getText();
+      opSelectValues.push(value.trim());
+    }
+
+    return opSelectValues;
   }
 }
 

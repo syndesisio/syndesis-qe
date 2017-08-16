@@ -156,6 +156,13 @@ export class AppPage {
     return element.all(by.className(elementClassName));
   }
 
+  clickElementRandom(elementClassName: string): P<any> {
+    const elements = this.getElementsByClassName(elementClassName);
+    return elements.count().then(function (count) {
+      elements.get(Math.floor(Math.random() * count)).click();
+    });
+  }
+
   getTitleByText(text: string): ElementFinder {
     log.info(`searching for title ${text}`);
     return element(by.cssContainingText('h2', text));

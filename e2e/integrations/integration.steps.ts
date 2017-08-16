@@ -129,14 +129,14 @@ class IntegrationSteps {
       links.get(randomIndex).click();
 
       const stepType = 'Basic Filter';
-      const stepParameter = 'ANY of the following, path' + randomIndex + ', not contains, value' + randomIndex;
+      const stepParameter = 'ANY of the following, pathx' + randomIndex + ', not contains, valuex' + randomIndex;
 
       page.addStep(stepType);
 
       const stepFactory = new StepFactory();
       const stepPage = stepFactory.getStep(stepType, stepParameter);
 
-      stepPage.fillConfiguration();
+      await stepPage.fillConfiguration();
 
       this.world.app.clickButton('Next');
       this.world.app.clickButton('Add a Step');
@@ -234,6 +234,31 @@ class IntegrationSteps {
     }
 
     return saveButton.click();
+  }
+
+  @then(/^add new basic filter rule with "([^"]*)" parameters$/)
+  public async addBasicFilterRule(rule: string): P<any> {
+    const basicFilterStepPage = new IntegrationConfigureBasicFilterStepPage('');
+    await basicFilterStepPage.initialize();
+    return basicFilterStepPage.addRule(rule);
+  }
+
+  @then(/^delete "([^"]*)" random basic filter rule$/)
+  public deleteRandomFilterRules(numberOfRules: number): P<any>[] {
+    let promiseArray: P<any>[];
+    promiseArray = [];
+
+    for (let i = 0; i < numberOfRules; i++) {
+      promiseArray.push(this.world.app.clickElementRandom('fa-trash-o'));
+    }
+
+    return promiseArray;
+  }
+
+  @then(/^delete basic filter rule on position "([^"]*)"$/)
+  public deleteFilterRuleOnPosition(position: number): P<any> {
+    const trashes = this.world.app.getElementsByClassName('fa-trash-o');
+    return trashes.get(position - 1).click();
   }
 
   //Kebab menu test, #553 -> part #548, #549.
