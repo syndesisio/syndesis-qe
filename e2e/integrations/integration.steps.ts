@@ -254,5 +254,22 @@ class IntegrationSteps {
 
   }
 
+  /**
+   * whether it's start or finish connection
+   * @param type
+   * @param callback
+   */
+  @then(/^she is prompted to select a "([^"]*)" connection from a list of available connections$/)
+  public async verifyTypeOfConnection(type: string): P<any> {
+    // Write code here that turns the phrase above into concrete actions
+
+    const page = new IntegrationEditPage();
+
+    const connection = await page.flowViewComponent().flowConnection(type);
+
+    return expect(connection.isActive(), `${type} connection must be active`)
+      .to.eventually.be.true;
+  }
+
 }
 export = IntegrationSteps;
