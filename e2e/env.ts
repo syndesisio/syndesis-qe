@@ -27,8 +27,14 @@ module.exports = function () {
   });
 
   this.AfterFeature(function (event, callback) {
-    log.info(`restarting browser after feature "${event.getName()}"`);
-    browser.restart().then(() => callback());
+    const shouldRestart = process.env.SYNDESIS_E2E_RESTART || false;
+    if (shouldRestart) {
+      log.warn(`restarting browser after feature "${event.getName()}"`);
+      browser.restart().then(() => callback());
+    } else {
+      log.info('browser restart disabled. use  export SYNDESIS_E2E_RESTART=1 to enable');
+      callback();
+    }
   });
 
 };
