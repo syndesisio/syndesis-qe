@@ -40,7 +40,7 @@ export class FlowViewComponent implements SyndesisComponent {
    */
   async flowConnection(type: string): P<FlowConnection> {
     type = type.toLowerCase();
-    const e = await this.rootElement().element(by.css(`div.row.steps.${type}`));
+    const e = await this.rootElement().element(by.css(`div.row.step.${type}`));
     return new FlowConnection(type, e);
   }
 }
