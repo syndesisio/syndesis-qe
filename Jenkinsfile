@@ -1,3 +1,7 @@
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+])
+
 def namespace = System.getenv().get('E2E_NAMESPACE')
 
 node {
