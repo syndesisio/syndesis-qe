@@ -26,7 +26,6 @@ class IntegrationSteps {
 
   @then(/^she is presented with a visual integration editor$/)
   public editorOpened(): P<any> {
-    // Write code here that turns the phrase above into concrete actions
     const page = new IntegrationEditPage();
     return expect(page.rootElement().isPresent(), 'there must be edit page root element')
       .to.eventually.be.true;
@@ -57,7 +56,7 @@ class IntegrationSteps {
   @when(/^Camilla deletes the "([^"]*)" integration*$/)
   public deleteIntegration(integrationName: string): P<any> {
     const listComponent = new IntegrationsListComponent();
-    return this.world.app.clickDeleteIntegration(integrationName, listComponent.rootElement());
+    return listComponent.clickDeleteIntegration(integrationName);
   }
 
   @when(/^she selects "([^"]*)" integration step$/)

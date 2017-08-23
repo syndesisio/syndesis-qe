@@ -9,6 +9,7 @@ import { expect, World } from './world';
 import { User, UserDetails } from './common';
 import { log } from '../../src/app/logging';
 import { DashboardPage } from '../dashboard/dashboard.po';
+import { IntegrationsListComponent } from '../integrations/list/list.po';
 /**
  * Generic steps that can be used in various features
  * They may change state through world class.
@@ -174,8 +175,8 @@ class CommonSteps {
   @when(/^Camilla deletes the "([^"]*)" integration in top 5 integrations$/)
   public deleteIntegrationOnDashboard(integrationName: string): P<any> {
     log.info(`Trying to delete ${integrationName} on top 5 integrations table`);
-    const dashboard = new DashboardPage();
-    return this.world.app.clickDeleteIntegration(integrationName, dashboard.rootElement());
+    const listComponent = new IntegrationsListComponent();
+    return listComponent.clickDeleteIntegration(integrationName);
   }
 
   @then(/^Camilla can not see "([^"]*)" integration in top 5 integrations anymore$/)
