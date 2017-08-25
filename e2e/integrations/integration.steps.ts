@@ -9,6 +9,7 @@ import { IntegrationAddStepPage, IntegrationEditPage, StepFactory } from '../int
 import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
+import { IntegrationDetailPage } from './detail/detail.po';
 
 import { element, by, ElementFinder, browser, ExpectedConditions } from 'protractor';
 
@@ -26,7 +27,6 @@ class IntegrationSteps {
 
   @then(/^she is presented with a visual integration editor$/)
   public editorOpened(): P<any> {
-    // Write code here that turns the phrase above into concrete actions
     const page = new IntegrationEditPage();
     return expect(page.rootElement().isPresent(), 'there must be edit page root element')
       .to.eventually.be.true;
@@ -40,6 +40,14 @@ class IntegrationSteps {
       return expect(page.flowViewComponent().getIntegrationName(), `editor must display integration name ${integrationName}`)
         .to.eventually.be.equal(integrationName);
     }).catch(e => P.reject(e));
+  }
+
+  @then(/^Camilla is presented with "([^"]*)" integration details$/)
+  public verifyIntegrationDetails(integrationName: string): P<any> {
+    const page = new IntegrationDetailPage();
+    return expect(page.getIntegrationName(), `Integration detail page must show integration name`)
+      .to.eventually.be.equal(integrationName);
+    // todo add more assertion on integration details page
   }
 
   @when(/^Camilla selects the "([^"]*)" integration.*$/)
@@ -57,7 +65,7 @@ class IntegrationSteps {
   @when(/^Camilla deletes the "([^"]*)" integration*$/)
   public deleteIntegration(integrationName: string): P<any> {
     const listComponent = new IntegrationsListComponent();
-    return this.world.app.clickDeleteIntegration(integrationName, listComponent.rootElement());
+    return listComponent.clickDeleteIntegration(integrationName);
   }
 
   @when(/^she selects "([^"]*)" integration step$/)

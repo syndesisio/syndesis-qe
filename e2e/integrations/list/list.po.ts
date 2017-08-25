@@ -1,5 +1,5 @@
 import { SyndesisComponent } from '../../common/common';
-import { $, by, ElementFinder, ElementArrayFinder, element } from 'protractor';
+import { $, browser, ExpectedConditions, by, ElementFinder, ElementArrayFinder, element } from 'protractor';
 import { P } from '../../common/world';
 import { log } from '../../../src/app/logging';
 import { IntegrationsUtils } from '../utils/integrations.utils';
@@ -13,12 +13,13 @@ export class IntegrationsListComponent implements SyndesisComponent {
   }
 
   private integrationEntry(name: string): ElementFinder {
-    return this.rootElement().$(`div.integration[title="${name}"]`);
+    return this.rootElement().element(by.cssContainingText('.list-pf-title', name));
   }
 
-  isIntegrationPresent(name: string): P<boolean> {
+  async isIntegrationPresent(name: string): P<boolean> {
     log.info(`Checking if integration ${name} is present in the list`);
-    return this.integrationEntry(name).isPresent();
+    const integration = this.integrationEntry(name);
+    return integration.isPresent();
   }
 
   goToIntegration(integrationName: string): P<any> {
@@ -29,14 +30,38 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return this.integrationEntry(name).click();
   }
 
-  //kebab
-  getAllIntegrationsItems(): ElementArrayFinder {
-    return this.rootElement().all(by.css(`div.integration.vertical-align.col-xs-12`));
+  async clickDeleteIntegration(integrationName: string): P<any> {
+    log.info(`clicking delete link for integration ${integrationName}`);
+
+    const parentElement = this.rootElement().element(by.className('list-pf-item'));
+
+    try {
+      await browser.wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present');
+
+      const parentElements = this.getAllIntegrations().filter((function(elem, index) {
+        return this.getIntegrationName(elem).getText().then(function(text) {
+          return text === integrationName;
+        });
+      }).bind(this));
+
+      parentElements.first().element(by.className('dropdown-kebab-pf')).click();
+      this.rootElement().element(by.linkText('Delete')).click();
+
+      const modal = this.rootElement().element(by.css('div.modal.fade.in'));
+      browser.wait(ExpectedConditions.visibilityOf(modal), 30000, 'Modal not loaded in time');
+
+      return this.rootElement().element(by.buttonText('Delete')).click();
+    } catch (e) {
+      return P.reject(e);
+    }
   }
 
-  //kebab
-  getIntegrationItemName(item: ElementFinder): P<string> {
-    return item.element(by.css('div.col-xs-5.name')).getText();
+  getAllIntegrations(): ElementArrayFinder {
+    return this.rootElement().all(by.className(`list-pf-item`));
+  }
+
+  getIntegrationName(integration: ElementFinder): P<string> {
+    return integration.element(by.className('name')).getText();
   }
 
   //kebab
@@ -88,14 +113,14 @@ export class IntegrationsListComponent implements SyndesisComponent {
 
   async checkAllIntegrationsKebabButtons(): P<any> {
     const promises: P<any>[] = [];
-    const integrationsItems = await this.getAllIntegrationsItems();
+    const integrationsItems = await this.getAllIntegrations();
     // have to reverse, since expanded kebab of integrations entry hides kebab of the below integration item.
     // and this is problem for selenium.
     integrationsItems.reverse();
     //2. go through elements and:
     //    integrationsTems.forEach(item => { // .forEach doesn't work for await
     for (const item of integrationsItems) {
-      const name = await this.getIntegrationItemName(item);
+      const name = await this.getIntegrationName(item);
       log.info(`INTEGRATION ITEM NAME: *${name}*`);
       //    check whether status is not "Deleted";
       const status = await this.getIntegrationItemStatus(item);
