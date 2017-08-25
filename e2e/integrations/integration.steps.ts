@@ -9,6 +9,7 @@ import { IntegrationAddStepPage, IntegrationEditPage, StepFactory } from '../int
 import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
+import { IntegrationDetailPage } from './detail/detail.po';
 
 import { element, by, ElementFinder, browser, ExpectedConditions } from 'protractor';
 
@@ -39,6 +40,14 @@ class IntegrationSteps {
       return expect(page.flowViewComponent().getIntegrationName(), `editor must display integration name ${integrationName}`)
         .to.eventually.be.equal(integrationName);
     }).catch(e => P.reject(e));
+  }
+
+  @then(/^Camilla is presented with "([^"]*)" integration details$/)
+  public verifyIntegrationDetails(integrationName: string): P<any> {
+    const page = new IntegrationDetailPage();
+    return expect(page.getIntegrationName(), `Integration detail page must show integration name`)
+      .to.eventually.be.equal(integrationName);
+    // todo add more assertion on integration details page
   }
 
   @when(/^Camilla selects the "([^"]*)" integration.*$/)

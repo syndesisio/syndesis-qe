@@ -69,5 +69,6 @@ Feature: Create integration with datamapper step
     And she defines integration name "Twitter to Salesforce E2E"
     And click on the "Publish" button
     # assert integration is present in list
-    Then Camilla is presented with the Syndesis page "Integrations"
+    Then Camilla is presented with "Twitter to Salesforce E2E" integration details
+    And Camilla clicks on the "Done" link
     And Integration "Twitter to Salesforce E2E" is present in integrations list

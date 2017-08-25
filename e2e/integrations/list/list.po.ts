@@ -13,12 +13,13 @@ export class IntegrationsListComponent implements SyndesisComponent {
   }
 
   private integrationEntry(name: string): ElementFinder {
-    return this.rootElement().$(`div.integration[title="${name}"]`);
+    return this.rootElement().element(by.cssContainingText('.list-pf-title', name));
   }
 
-  isIntegrationPresent(name: string): P<boolean> {
+  async isIntegrationPresent(name: string): P<boolean> {
     log.info(`Checking if integration ${name} is present in the list`);
-    return this.integrationEntry(name).isPresent();
+    const integration = this.integrationEntry(name);
+    return integration.isPresent();
   }
 
   goToIntegration(integrationName: string): P<any> {
@@ -32,20 +33,22 @@ export class IntegrationsListComponent implements SyndesisComponent {
   async clickDeleteIntegration(integrationName: string): P<any> {
     log.info(`clicking delete link for integration ${integrationName}`);
 
-    const parentElement = this.rootElement().element(by.className('integration'));
-  
+    const parentElement = this.rootElement().element(by.className('list-pf-item'));
+
     try {
       await browser.wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present');
 
-      const parentElements = this.getAllIntegrations().filter(function(elem, index) {
+      const parentElements = this.getAllIntegrations().filter((function(elem, index) {
         return this.getIntegrationName(elem).getText().then(function(text) {
           return text === integrationName;
         });
-      });
+      }).bind(this));
 
-      parentElements.first().element(by.id('dropdownKebabRight9')).click();
+      parentElements.first().element(by.className('dropdown-kebab-pf')).click();
       this.rootElement().element(by.linkText('Delete')).click();
-      browser.wait(ExpectedConditions.visibilityOf(this.rootElement().element(by.css('div.modal.fade.in'))), 30000, 'Modal not loaded in time');
+
+      const modal = this.rootElement().element(by.css('div.modal.fade.in'));
+      browser.wait(ExpectedConditions.visibilityOf(modal), 30000, 'Modal not loaded in time');
 
       return this.rootElement().element(by.buttonText('Delete')).click();
     } catch (e) {
@@ -54,13 +57,11 @@ export class IntegrationsListComponent implements SyndesisComponent {
   }
 
   getAllIntegrations(): ElementArrayFinder {
-    return this.rootElement().all(by.className(`integration`));
-    //return this.rootElement().all(by.css(`div.integration.vertical-align.col-xs-12`));
+    return this.rootElement().all(by.className(`list-pf-item`));
   }
 
   getIntegrationName(integration: ElementFinder): P<string> {
     return integration.element(by.className('name')).getText();
-    //return item.element(by.css('div.col-xs-5.name')).getText();
   }
 
   //kebab

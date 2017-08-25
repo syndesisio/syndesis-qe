@@ -30,7 +30,8 @@ Feature: Test to verify advanced integration with multiple steps
     Then click on the integration save button
     And she defines integration name "One step integration"
     And click on the "Save as Draft" button
-    Then Camilla is presented with the Syndesis page "Integrations"
+    Then Camilla is presented with "One step integration" integration details
+    And Camilla clicks on the "Done" link
     And Integration "One step integration" is present in integrations list
 
     When Camilla deletes the "One step integration" integration
@@ -69,7 +70,8 @@ Feature: Test to verify advanced integration with multiple steps
     When click on the integration save button
     And she defines integration name "Two steps integration"
     And click on the "Save as Draft" button
-    Then Camilla is presented with the Syndesis page "Integrations"
+    Then Camilla is presented with "Two steps integration" integration details
+    And Camilla clicks on the "Done" link
     And Integration "Two steps integration" is present in integrations list
 
     When Camilla deletes the "Two steps integration" integration
