@@ -181,7 +181,7 @@ class IntegrationSteps {
 
     for (const randomIndex of randomIndexes) {
       trashes.get(randomIndex + 1).click();
-      this.world.app.getFirstVisibleButton('Delete').click();
+      this.world.app.getFirstVisibleButton('OK').click();
       array.splice(randomIndex, 1);
     }
 

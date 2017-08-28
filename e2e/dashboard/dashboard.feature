@@ -46,6 +46,7 @@ Feature: Test to verify Dashboard links
     
     When Camilla clicks on the "View All Connections" link
     Then Camilla deletes the "dashboard verification connection" connection
+    Then she can see success notification
     Then Camilla can not see "dashboard verification connection" connection anymore
     
   Scenario: Verify View "View All Integrations" link
@@ -76,7 +77,7 @@ Feature: Test to verify Dashboard links
     When Camilla clicks on the "Save as Draft" button
     And she defines integration name "dashboard verification integration"
     And click on the "Publish" button
-    Then Camilla is presented with "Awesome integration for delete" integration details
+    Then Camilla is presented with "dashboard verification integration" integration details
     And Camilla clicks on the "Done" link
     And Integration "dashboard verification integration" is present in integrations list
     
@@ -85,4 +86,5 @@ Feature: Test to verify Dashboard links
     And Camilla is presented with the "dashboard verification integration" link
     
     When Camilla deletes the "dashboard verification integration" integration in top 5 integrations
+    Then she can see success notification
     Then Camilla can not see "dashboard verification integration" integration in top 5 integrations anymore

@@ -38,19 +38,18 @@ export class IntegrationsListComponent implements SyndesisComponent {
     try {
       await browser.wait(ExpectedConditions.visibilityOf(parentElement), 6000, 'No integration present');
 
-      const parentElements = this.getAllIntegrations().filter((function(elem, index) {
-        return this.getIntegrationName(elem).getText().then(function(text) {
-          return text === integrationName;
-        });
+      const parentElements = this.getAllIntegrations().filter((async(elem, index) => {
+        const text = await this.getIntegrationName(elem);
+        return text === integrationName;
       }).bind(this));
 
       parentElements.first().element(by.className('dropdown-kebab-pf')).click();
       this.rootElement().element(by.linkText('Delete')).click();
 
-      const modal = this.rootElement().element(by.css('div.modal.fade.in'));
-      browser.wait(ExpectedConditions.visibilityOf(modal), 30000, 'Modal not loaded in time');
+      const okButton = element(by.buttonText('OK'));
+      browser.wait(ExpectedConditions.visibilityOf(okButton), 30000, 'OK button not loaded in time');
 
-      return this.rootElement().element(by.buttonText('Delete')).click();
+      return okButton.click();
     } catch (e) {
       return P.reject(e);
     }
@@ -60,8 +59,18 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return this.rootElement().all(by.className(`list-pf-item`));
   }
 
-  getIntegrationName(integration: ElementFinder): P<string> {
-    return integration.element(by.className('name')).getText();
+  async getIntegrationName(integration: ElementFinder): P<string> {
+    let name: string;
+    const isNamePresent = await integration.element(by.className('name')).isPresent();
+
+    if (isNamePresent) {
+      name = await integration.element(by.className('name')).getText();
+    } else {
+      log.warn('Name is not present!');
+      name = await integration.element(by.className('description')).getText();
+    }
+
+    return name;
   }
 
   //kebab

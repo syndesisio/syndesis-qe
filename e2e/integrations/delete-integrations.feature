@@ -25,4 +25,5 @@ Feature: Test to verify delete action
     And Integration "Awesome integration for delete" is present in integrations list
 
     When Camilla deletes the "Awesome integration for delete" integration
+    Then she can see success notification
     Then Camilla can not see "Awesome integration for delete" integration anymore

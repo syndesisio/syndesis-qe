@@ -1,6 +1,6 @@
 import * as webdriver from 'selenium-webdriver';
 import { Promise as P } from 'es6-promise';
-import { element, by, ElementFinder, ElementArrayFinder } from 'protractor';
+import { element, by, ElementFinder, ElementArrayFinder, browser, ExpectedConditions } from 'protractor';
 import { SyndesisComponent } from '../../common/common';
 import { log } from '../../../src/app/logging';
 
@@ -25,11 +25,15 @@ export class ConnectionsListComponent implements SyndesisComponent {
     return this.getConnection(connectionTitle).getWebElement().click();
   }
 
-  deleteConnection(connectionTitle: string): P<any> {
+  async deleteConnection(connectionTitle: string): P<any> {
     log.info(`searching for delete link for connection ${connectionTitle}`);
-    this.getConnection(connectionTitle).element(by.id('dropdownKebabRight9')).click();
-    this.rootElement().element(by.linkText('Delete')).click();
-    return this.rootElement().element(by.buttonText('Delete')).click();
+    await this.getConnection(connectionTitle).element(by.id('dropdownKebabRight9')).click();
+    await this.rootElement().element(by.linkText('Delete')).click();
+
+    const okButton = element(by.buttonText('OK'));
+    browser.wait(ExpectedConditions.visibilityOf(okButton), 6000, 'No button visible');
+
+    return okButton.click();
   }
 
   getAllKebabElements(isOpen: boolean): ElementArrayFinder {
