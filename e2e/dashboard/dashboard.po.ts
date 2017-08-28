@@ -18,8 +18,9 @@ export class DashboardPage implements SyndesisComponent {
     return this.rootElement().$(`h2.card-pf-title.text-center[title="${connectionTitle}"]`).getWebElement().click();
   }
 
-  isIntegrationPresent(integrationName: string): P<boolean> {
+  async isIntegrationPresent(integrationName: string): P<boolean> {
     log.info(`Checking if integration ${integrationName} is present in the list`);
-    return this.rootElement().element(by.cssContainingText('div.name', integrationName)).isPresent();
+    const integration = this.rootElement().element(by.cssContainingText('div', integrationName));
+    return integration.isPresent();
   }
 }

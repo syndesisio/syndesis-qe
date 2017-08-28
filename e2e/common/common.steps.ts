@@ -2,7 +2,7 @@
  * Created by jludvice on 8.3.17.
  */
 import { CallbackStepDefinition, TableDefinition } from 'cucumber';
-import { browser } from 'protractor';
+import { browser, ExpectedConditions } from 'protractor';
 import { binding, given, then, when } from 'cucumber-tsflow';
 import { Promise as P } from 'es6-promise';
 import { expect, World } from './world';
@@ -185,6 +185,12 @@ class CommonSteps {
     const dashboard = new DashboardPage();
     expect(dashboard.isIntegrationPresent(name), `Integration ${name} must be present`)
       .to.eventually.be.false.notify(callback);
+  }
+
+  @then(/^she can see success notification$/)
+  public successNotificationIsPresent (): P<any> {
+    const allertSucces = this.world.app.getElementByClassName('alert-success');
+    return browser.wait(ExpectedConditions.visibilityOf(allertSucces), 6000, 'OK button not loaded in time');
   }
 
 
