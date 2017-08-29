@@ -2,11 +2,9 @@
 Feature: Test to verify advanced integration with multiple steps
   https://issues.jboss.org/browse/IPAAS-287
 
-  Scenario: First pass at login, homepage
-    When "Camilla" logs into the Syndesis URL for her installation (e.g. rh-syndesis.[openshift online domain].com)
-    Then Camilla is presented with the Syndesis page "Home"
-
   Scenario: Create integration with one step
+    Given clean application state
+
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
@@ -154,9 +152,11 @@ Feature: Test to verify advanced integration with multiple steps
     Then she fill configure page for "Basic Filter" step with "ANY of the following, path5, not contains, value5" parameter
     And click on the "Next" button
 
-    Then she delete "1" random steps and check rest
+    Then she delete step on position "1" and check rest
 
-    Then she delete "3" random steps and check rest
+    Then she delete step on position "3" and check rest
+
+    Then she delete step on position "5" and check rest
 
     Then she adds "2" random steps and then check the structure
 
