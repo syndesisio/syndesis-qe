@@ -2,11 +2,9 @@
 Feature: Test to verify addition of basic filter step to integrations
   https://github.com/syndesisio/syndesis-e2e-tests/issues/13
 
-  Scenario: First pass at login, homepage
-    When "Camilla" logs into the Syndesis URL for her installation (e.g. rh-syndesis.[openshift online domain].com)
-    Then Camilla is presented with the Syndesis page "Home"
-
   Scenario: Create integration with one basic filter step
+    Given clean application state
+
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
@@ -58,7 +56,8 @@ Feature: Test to verify addition of basic filter step to integrations
     And add new basic filter rule with "path1, not equals, value1" parameters
     And add new basic filter rule with "path2, contains, value2" parameters
     And add new basic filter rule with "path3, equals, value3" parameters
-    And delete "2" random basic filter rule
+    And delete basic filter rule on position "1"
+    And delete basic filter rule on position "3"
     And add new basic filter rule with "path4, not equals, value4" parameters
     And add new basic filter rule with "path5, not equals, value5" parameters
     And add new basic filter rule with "path6, not equals, value6" parameters

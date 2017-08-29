@@ -218,7 +218,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   static readonly opSelector = 'select[name="op"]';
   static readonly opOptionSelector = 'option[name="op"]';
 
-  static readonly addRuleSelector = 'a[class="add-rule"]';
+  static readonly addRuleSelector = 'a.add-rule';
 
   filterCondition: string;
 

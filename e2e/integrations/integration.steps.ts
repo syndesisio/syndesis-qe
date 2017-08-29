@@ -191,6 +191,31 @@ class IntegrationSteps {
     return P.resolve();
   }
 
+  @then(/^she delete step on position "([^"]*)" and check rest$/)
+  public async deleteStepOnPositionAndCheckRest(positionOfStep: number): P<any> {
+    log.info(`Deleting step on position "${positionOfStep}"`);
+
+    const array = await this.getStepsArray();
+    const trashes = this.world.app.getElementsByClassName('delete-icon');
+
+    trashes.get(positionOfStep + 1).click();
+    this.world.app.getFirstVisibleButton('Delete').click();
+    array.splice(positionOfStep, 1);
+
+    const array2 = await this.getStepsArray();
+
+    for (let i = 0; i < array.length; i++) {
+      log.info(`assserting "${array[i]}" and "${array2[i]}"`);
+      try {
+        expect(array[i]).to.be.equal(array2[i]);
+      } catch (e) {
+        return P.reject(e);
+      }
+    }
+
+    return P.resolve();
+  }
+
   public async getStepsArray(): P<any> {
     const stepFactory = new StepFactory();
     const steps = this.world.app.getElementsByClassName('parent-step');
