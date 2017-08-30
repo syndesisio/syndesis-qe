@@ -23,6 +23,8 @@ export class FlowConnection {
 
 export class FlowViewComponent implements SyndesisComponent {
   static readonly nameSelector = 'input.form-control.integration-name';
+  static readonly stepSelector = 'parent-step';
+  static readonly activeStepSelector = 'span[class="parent-step active"]';
 
   rootElement(): ElementFinder {
     return element(by.css('syndesis-integrations-flow-view'));
@@ -42,6 +44,37 @@ export class FlowViewComponent implements SyndesisComponent {
     type = type.toLowerCase();
     const e = await this.rootElement().element(by.css(`div.row.step.${type}`));
     return new FlowConnection(type, e);
+  }
+
+  async getStepsArray(): P<any> {
+    const stepFactory = new StepFactory();
+    const steps = this.rootElement().all(by.className(FlowViewComponent.stepSelector));
+
+    const count = await steps.count();
+    const stepsArray = new Array();
+
+    for (let i = 1; i < (count - 1); i++) {
+      steps.get(i).click();
+      const title = this.rootElement().element(by.css(FlowViewComponent.activeStepSelector));
+
+      const text = await title.getText();
+      const stepPage = stepFactory.getStep(text, '');
+
+      await stepPage.initialize();
+
+      stepsArray.push(stepPage.getParameter());
+    }
+
+    const allButtonsByTitle = element.all(by.buttonText('Done'));
+    const doneButton = await allButtonsByTitle.filter(function(elem) {
+      return elem.isDisplayed().then(function(displayedElement){
+        return displayedElement;
+      });
+    }).first();
+
+    doneButton.click();
+
+    return stepsArray;
   }
 }
 

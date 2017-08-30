@@ -33,6 +33,7 @@ Feature: Test to verify advanced integration with multiple steps
     And Integration "One step integration" is present in integrations list
 
     When Camilla deletes the "One step integration" integration
+    Then she can see success notification
     Then Camilla can not see "One step integration" integration anymore
     
   Scenario: Create integration with two steps
@@ -73,6 +74,7 @@ Feature: Test to verify advanced integration with multiple steps
     And Integration "Two steps integration" is present in integrations list
 
     When Camilla deletes the "Two steps integration" integration
+    Then she can see success notification
     Then Camilla can not see "Two steps integration" integration anymore
     
   Scenario: Deleting steps on integration
