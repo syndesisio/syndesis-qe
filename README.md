@@ -23,7 +23,7 @@ or specify `export SYNDESIS_TEST_CONFIG=/path/to/test_config.json`
         "email": "camilla@gmail.com",
         "firstName": "Camilla",
         "lastName": "Syndesio"
-
+      }
     }
   },
   "connection": {
@@ -40,6 +40,12 @@ or specify `export SYNDESIS_TEST_CONFIG=/path/to/test_config.json`
       "userName": "YOUR_SECRET_DATA"
     },
     "Twitter" : "..."
+  },
+  "settings": {
+    "Twitter": {
+      "clientId": "aaaaaaj to je ID",
+      "clientSecret": "aaa to je seeecret"
+    }
   }
 }
 ```
