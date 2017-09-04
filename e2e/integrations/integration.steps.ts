@@ -5,7 +5,7 @@ import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, StepFactory } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent } from '../integrations/edit/edit.po';
 import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
@@ -118,8 +118,9 @@ class IntegrationSteps {
   @then(/^she adds "([^"]*)" random steps and then check the structure$/)
   public async addRandomStepsAndCheckRest(numberOfSteps: number): P<any> {
     log.info(`Adding random steps`);
+    const flowViewComponent = new FlowViewComponent();
 
-    const array = await this.getStepsArray();
+    const array = await flowViewComponent.getStepsArray();
 
     this.world.app.clickButton('Add a Step');
 
@@ -152,7 +153,7 @@ class IntegrationSteps {
       array.splice(randomIndex, 0, stepParameter);
     }
 
-    const array2 = await this.getStepsArray();
+    const array2 = await flowViewComponent.getStepsArray();
 
     for (let i = 0; i < array2.length; i++) {
       log.info(`assserting "${array[i]}" and "${array2[i]}"`);
@@ -169,8 +170,9 @@ class IntegrationSteps {
   @then(/^she delete "([^"]*)" random steps and check rest$/)
   public async deleteRandomStepsAndCheckRest(numberOfSteps: number): P<any> {
     log.info(`Deleting random steps`);
+    const flowViewComponent = new FlowViewComponent();
 
-    const array = await this.getStepsArray();
+    const array = await flowViewComponent.getStepsArray();
     const trashes = this.world.app.getElementsByClassName('delete-icon');
     const count = await trashes.count();
 
@@ -185,7 +187,7 @@ class IntegrationSteps {
       array.splice(randomIndex, 1);
     }
 
-    const array2 = await this.getStepsArray();
+    const array2 = await flowViewComponent.getStepsArray();
 
     for (let i = 0; i < array.length; i++) {
       log.info(`assserting "${array[i]}" and "${array2[i]}"`);
@@ -202,15 +204,17 @@ class IntegrationSteps {
   @then(/^she delete step on position "([^"]*)" and check rest$/)
   public async deleteStepOnPositionAndCheckRest(positionOfStep: number): P<any> {
     log.info(`Deleting step on position "${positionOfStep}"`);
+    const flowViewComponent = new FlowViewComponent();
 
-    const array = await this.getStepsArray();
+    const array = await flowViewComponent.getStepsArray();
     const trashes = this.world.app.getElementsByClassName('delete-icon');
 
-    trashes.get(positionOfStep + 1).click();
-    this.world.app.getFirstVisibleButton('Delete').click();
+    const indexOfStep: number = Number(positionOfStep)  + 1;
+    trashes.get(indexOfStep).click();
+    this.world.app.getFirstVisibleButton('OK').click();
     array.splice(positionOfStep, 1);
 
-    const array2 = await this.getStepsArray();
+    const array2 = await flowViewComponent.getStepsArray();
 
     for (let i = 0; i < array.length; i++) {
       log.info(`assserting "${array[i]}" and "${array2[i]}"`);
@@ -222,30 +226,6 @@ class IntegrationSteps {
     }
 
     return P.resolve();
-  }
-
-  public async getStepsArray(): P<any> {
-    const stepFactory = new StepFactory();
-    const steps = this.world.app.getElementsByClassName('parent-step');
-
-    const count = await steps.count();
-    const stepsArray = new Array();
-
-    for (let i = 1; i < (count - 1); i++) {
-      steps.get(i).click();
-      const title = this.world.app.getElementByCssSelector("span[class='parent-step active']");
-
-      const text = await title.getText();
-      const stepPage = stepFactory.getStep(text, '');
-
-      await stepPage.initialize();
-
-      stepsArray.push(stepPage.getParameter());
-    }
-
-    this.world.app.getFirstVisibleButton('Done').click();
-
-    return stepsArray;
   }
 
   @then(/^she is presented with an actions list$/)
