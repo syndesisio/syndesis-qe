@@ -21,7 +21,7 @@ Feature: Test to verify delete action
     And she defines integration name "Awesome integration for delete"
     And click on the "Save as Draft" button
     Then Camilla is presented with "Awesome integration for delete" integration details
-    And Camilla clicks on the "Done" link
+    And Camilla clicks on the "Done" button
     And Integration "Awesome integration for delete" is present in integrations list
 
     When Camilla deletes the "Awesome integration for delete" integration

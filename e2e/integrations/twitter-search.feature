@@ -56,7 +56,7 @@ Feature: Test to verify that as a citizen user, search for Tweets using Twitter 
     And she defines integration name "Twitter search integration"
     And click on the "Save as Draft" button
     Then Camilla is presented with "Twitter search integration" integration details
-    And Camilla clicks on the "Done" link
+    And Camilla clicks on the "Done" button
     And Integration "Twitter search integration" is present in integrations list
 
     When Camilla deletes the "Twitter search integration" integration
