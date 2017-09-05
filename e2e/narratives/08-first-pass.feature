@@ -32,5 +32,5 @@ Feature: Sprint 8 narrative
     And she defines integration name "My awesome first integration"
     And click on the "Publish" button
     Then Camilla is presented with "My awesome first integration" integration details
-    And Camilla clicks on the "Done" link
+    And Camilla clicks on the "Done" button
     And Integration "My awesome first integration" is present in integrations list

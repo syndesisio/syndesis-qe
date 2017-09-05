@@ -78,7 +78,7 @@ Feature: Test to verify Dashboard links
     And she defines integration name "dashboard verification integration"
     And click on the "Publish" button
     Then Camilla is presented with "dashboard verification integration" integration details
-    And Camilla clicks on the "Done" link
+    And Camilla clicks on the "Done" button
     And Integration "dashboard verification integration" is present in integrations list
     
     When "Camilla" navigates to the "Home" page to see what's available in the Syndesis

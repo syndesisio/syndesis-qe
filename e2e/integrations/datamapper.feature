@@ -70,5 +70,5 @@ Feature: Create integration with datamapper step
     And click on the "Publish" button
     # assert integration is present in list
     Then Camilla is presented with "Twitter to Salesforce E2E" integration details
-    And Camilla clicks on the "Done" link
+    And Camilla clicks on the "Done" button
     And Integration "Twitter to Salesforce E2E" is present in integrations list
