@@ -29,11 +29,12 @@ Feature: Test to verify addition of basic filter step to integrations
     And she defines integration name "One step integration"
     And click on the "Save as Draft" button
     Then Camilla is presented with "One step integration" integration details
-    And Camilla clicks on the "Done" link
+    And click on the "Done" button
     Then Camilla is presented with the Syndesis page "Integrations"
     And Integration "One step integration" is present in integrations list
 
     When Camilla deletes the "One step integration" integration
+    Then she can see success notification
     Then Camilla can not see "One step integration" integration anymore
 
   Scenario: Create integration with one basic filter step add and remove rules
