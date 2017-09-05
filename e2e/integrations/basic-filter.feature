@@ -28,10 +28,13 @@ Feature: Test to verify addition of basic filter step to integrations
     Then click on the integration save button
     And she defines integration name "One step integration"
     And click on the "Save as Draft" button
+    Then Camilla is presented with "One step integration" integration details
+    And click on the "Done" button
     Then Camilla is presented with the Syndesis page "Integrations"
     And Integration "One step integration" is present in integrations list
 
     When Camilla deletes the "One step integration" integration
+    Then she can see success notification
     Then Camilla can not see "One step integration" integration anymore
 
   Scenario: Create integration with one basic filter step add and remove rules
@@ -56,8 +59,8 @@ Feature: Test to verify addition of basic filter step to integrations
     And add new basic filter rule with "path1, not equals, value1" parameters
     And add new basic filter rule with "path2, contains, value2" parameters
     And add new basic filter rule with "path3, equals, value3" parameters
-    And delete basic filter rule on position "1"
     And delete basic filter rule on position "3"
+    And delete basic filter rule on position "1"
     And add new basic filter rule with "path4, not equals, value4" parameters
     And add new basic filter rule with "path5, not equals, value5" parameters
     And add new basic filter rule with "path6, not equals, value6" parameters
