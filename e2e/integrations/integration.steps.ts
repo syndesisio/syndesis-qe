@@ -138,7 +138,7 @@ class IntegrationSteps {
       links.get(randomIndex).click();
 
       const stepType = 'Basic Filter';
-      const stepParameter = 'ANY of the following, pathx' + randomIndex + ', not contains, valuex' + randomIndex;
+      const stepParameter = 'ANY of the following, pathx' + randomIndex + ', Contains, valuex' + randomIndex;
 
       page.addStep(stepType);
 
