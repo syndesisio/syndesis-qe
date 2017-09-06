@@ -22,7 +22,7 @@ Feature: Test to verify addition of basic filter step to integrations
     When Camilla click on the "Add a Step" button
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, not contains, value, path1, equals, value1" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, Does Not Match Regex, value, path1, Does Not Contain, value1" parameter
     And click on the "Next" button
 
     Then click on the integration save button
@@ -55,7 +55,7 @@ Feature: Test to verify addition of basic filter step to integrations
     When Camilla click on the "Add a Step" button
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, not contains, value" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, Contains, value" parameter
     And add new basic filter rule with "path1, not equals, value1" parameters
     And add new basic filter rule with "path2, contains, value2" parameters
     And add new basic filter rule with "path3, equals, value3" parameters

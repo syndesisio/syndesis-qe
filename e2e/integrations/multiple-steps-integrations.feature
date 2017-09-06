@@ -22,7 +22,7 @@ Feature: Test to verify advanced integration with multiple steps
     When Camilla click on the "Add a Step" button
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, contains, value" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path, Contains, value" parameter
     And click on the "Next" button
 
     Then click on the integration save button
@@ -63,7 +63,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, not equals, value1" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, Matches Regex, value1" parameter
     And click on the "Next" button
 
     When click on the integration save button
@@ -103,7 +103,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, not matches, value1" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, Does Not Match Regex, value1" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -111,7 +111,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path2, matches, value2" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path2, Starts With, value2" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -119,7 +119,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path3, in, value3" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path3, Ends With, value3" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -143,7 +143,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path4, not in, value4" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path4, Does Not Contain, value4" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -151,7 +151,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path5, not contains, value5" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path5, Does Not Contain, value5" parameter
     And click on the "Next" button
 
     Then she delete step on position "1" and check rest

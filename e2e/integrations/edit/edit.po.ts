@@ -543,20 +543,12 @@ enum BasicFilterPredicates {
 }
 
 enum BasicFilterOps {
-    'equals',
-    'equals (ignores case)',
-    'not equals',
-    '<',
-    '<=',
-    '>',
-    '=>',
-    'contains',
-    'contains (ignore case)',
-    'not contains',
-    'matches',
-    'not matches',
-    'in',
-    'not in',
+    'Contains',
+    'Does Not Contain',
+    'Matches Regex',
+    'Does Not Match Regex',
+    'Starts With',
+    'Ends With',
 }
 
 /*
