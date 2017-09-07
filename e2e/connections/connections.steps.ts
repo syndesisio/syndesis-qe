@@ -4,7 +4,7 @@ import { CallbackStepDefinition } from 'cucumber';
 import { ConnectionDetailPage } from './detail/detail.po';
 import { ConnectionsListComponent } from './list/list.po';
 import { ConnectionCreatePage, ConnectionViewComponent } from './edit/edit.po';
-import util = require('util');
+import {log} from '../../src/app/logging';
 
 // let http = require('http');
 
@@ -95,6 +95,16 @@ class ConnectionSteps {
 
     return connectionsListComp.clickOnAllKebabButtons();
 
+  }
+
+  @then(/^she is presented with at least "(\d+)" connections$/)
+  public connectionCount(connectionCount: number, callback: CallbackStepDefinition): void {
+    // Write code here that turns the phrase above into concrete actions
+    log.info(`should assert ${connectionCount}`);
+
+    const page = new ConnectionsListComponent();
+    expect(page.countConnections(), `There should be ${connectionCount} available`)
+      .to.eventually.be.least(Number(connectionCount)).notify(callback);
   }
 
   //Kebab menu test, #553 -> part #550.
