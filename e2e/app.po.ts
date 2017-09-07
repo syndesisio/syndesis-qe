@@ -100,14 +100,17 @@ export class AppPage {
     return element(by.buttonText(buttonTitle));
   }
 
-  getFirstVisibleButton(buttonTitle: string): ElementFinder {
+  clickOnFirstVisibleButton(buttonTitle: string): P<any> {
     log.info(`searching for first visible button ${buttonTitle}`);
-    const allButtonsByTitle = element.all(by.buttonText(buttonTitle));
-    return allButtonsByTitle.filter(function(elem) {
-      return elem.isDisplayed().then(function(displayedElement){
-        return displayedElement;
-      });
-    }).first();
+    const buttonElement = this.getButton(buttonTitle);
+    return browser.wait(ExpectedConditions.visibilityOf(buttonElement), 6000, 'No expected button visible').then(() => {
+      const allButtonsByTitle = element.all(by.buttonText(buttonTitle));
+      return allButtonsByTitle.filter(function(elem) {
+        return elem.isDisplayed().then(function(displayedElement){
+          return displayedElement;
+        });
+      }).first().click();
+    }).catch((e) => P.reject(e) );
   }
 
   clickButton(buttonTitle: string): P<any> {

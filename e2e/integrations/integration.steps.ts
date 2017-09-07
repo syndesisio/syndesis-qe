@@ -183,7 +183,11 @@ class IntegrationSteps {
 
     for (const randomIndex of randomIndexes) {
       trashes.get(randomIndex + 1).click();
-      this.world.app.getFirstVisibleButton('OK').click();
+      try {
+        await this.world.app.clickOnFirstVisibleButton('OK');
+      } catch (e) {
+        return P.reject(e);
+      }
       array.splice(randomIndex, 1);
     }
 
@@ -211,7 +215,11 @@ class IntegrationSteps {
 
     const indexOfStep: number = Number(positionOfStep)  + 1;
     trashes.get(indexOfStep).click();
-    this.world.app.getFirstVisibleButton('OK').click();
+    try {
+      await this.world.app.clickOnFirstVisibleButton('OK');
+    } catch (e) {
+      return P.reject(e);
+    }
     array.splice(positionOfStep, 1);
 
     const array2 = await flowViewComponent.getStepsArray();
