@@ -1,4 +1,5 @@
 // export enum IntegrationStatus {
+//   'View',  
 //   'Active',
 //   'Inactive',
 //   'Draft',
@@ -11,21 +12,24 @@ export class IntegrationsUtils {
   // to be done: change know types to enum
   static getProperKebabActions(status: string): string[] {
 
+    const view = 'View';
     const edit = 'Edit';
     const deactivate = 'Deactivate';
     const activate = 'Activate';
-    const deletee = 'Delete';
+    const deleteAction = 'Delete';
 
     switch (status) {
       case 'Active': {
-        return [edit, deactivate, deletee];
+        return [view, edit, deactivate, deleteAction];
       }
       case 'Inactive': {
-        return [edit, activate, deletee];
+        return [view, edit, activate, deleteAction];
       }
-      case 'Draft':
+      case 'Draft': {
+        return [view, edit, activate, deleteAction];
+      }
       case 'In Progress': {
-        return [edit, deletee];
+        return [view, edit, deleteAction];
       }
       default: {
         return [];
