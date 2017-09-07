@@ -75,14 +75,7 @@ export class IntegrationsListComponent implements SyndesisComponent {
 
   //kebab
   async getIntegrationItemStatus(item: ElementFinder): P<string> {
-    // 1. check whether not in progress:
-    const inprogress: boolean = await item.element(by.css('div.spinner.spinner-sm.spinner-inline')).isPresent();
-    if (inprogress) {
-      return item.element(by.css('h3')).getText(); //this is not very good specified, but that h3 didnt have any class spec.
-      //  return "In Progress";
-    } else {
-      return item.element(by.css('span.label')).getText();
-    }
+    return item.element(by.css('syndesis-integration-status')).getText();
   }
   //kebab
   getKebabButtonFromItem(item: ElementFinder): ElementFinder {
@@ -94,12 +87,8 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return item.element(by.css(`div.dropdown.dropdown-kebab-pf.pull-right${open}`));
   }
 
-  async checkIfThereIsKebabButtonInItem(item: ElementFinder): P<boolean> {
-    const isPresent = await item.element(by.css('button.btn.btn-link')).isPresent();
-    if (isPresent) {
-      throw new Error(`There shouldn't be any kebab button here!`);
-    }
-    return true;
+  async isKebabButtonHidden(item: ElementFinder): P<boolean> {
+    return await this.getKebabButtonFromItem(item).getAttribute('visibility') === 'hidden';
   }
 
 
@@ -137,7 +126,9 @@ export class IntegrationsListComponent implements SyndesisComponent {
       if (status === 'Deleted') {
 
         //check whether it dont have any kebab
-        promises.push(this.checkIfThereIsKebabButtonInItem(item).catch((e) => P.reject(e)));
+        if (!this.isKebabButtonHidden(item)) {
+          promises.push(P.reject('Kebab button should be hidden'));
+        }
       } else {
         log.info(`clicking on kebab button`);
         const kebabB = await this.getKebabButtonFromItem(item);
