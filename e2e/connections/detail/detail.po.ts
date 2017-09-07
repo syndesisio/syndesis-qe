@@ -6,10 +6,10 @@ import { P } from '../../common/world';
  */
 export class ConnectionDetailPage {
   connectionDetailElem(): ElementFinder {
-    return element(by.css('syndesis-connection-view'));
+    return element(by.css('syndesis-connection-detail-info'));
   }
 
   connectionName(): P<string> {
-    return this.connectionDetailElem().element(by.css('div.name > h2')).getText();
+    return this.connectionDetailElem().$('syndesis-editable-text').getText();
   }
 }
