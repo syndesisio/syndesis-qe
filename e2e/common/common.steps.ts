@@ -52,7 +52,7 @@ class CommonSteps {
     // const link = await this.app.link(linkTitle);
     log.info(`navigating ${alias} to ${linkTitle} page`);
     if (linkTitle === 'Home') {
-      return this.world.app.goHome();
+      return await this.world.app.goHome();
     }
     const link = await this.world.app.link(linkTitle);
     expect(link, `Navigation link ${linkTitle} should exist`).to.exist;
@@ -121,9 +121,9 @@ class CommonSteps {
 
     const table = this.world.app.getTitleByText(tableTitle);
     expect(table.isPresent(), `There must be present a table ${tableTitle}`)
-      .to.eventually.be.true;
+      .to.eventually.be.true.notify(callback);
 
-    expect(table.isPresent(), `There must be enabled table ${tableTitle}`)
+    expect(table.isEnabled(), `There must be enabled table ${tableTitle}`)
       .to.eventually.be.true.notify(callback);
   }
 

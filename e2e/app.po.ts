@@ -92,7 +92,7 @@ export class AppPage {
   }
 
   goHome(): P<any> {
-    return this.rootElement.element(by.css('a.navbar-brand')).click();
+    return this.goToUrl(AppPage.baseurl);
   }
 
   getButton(buttonTitle: string): ElementFinder {
