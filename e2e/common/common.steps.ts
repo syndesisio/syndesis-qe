@@ -52,7 +52,7 @@ class CommonSteps {
     // const link = await this.app.link(linkTitle);
     log.info(`navigating ${alias} to ${linkTitle} page`);
     if (linkTitle === 'Home') {
-      return this.world.app.goHome();
+      return await this.world.app.goHome();
     }
     const link = await this.world.app.link(linkTitle);
     expect(link, `Navigation link ${linkTitle} should exist`).to.exist;
