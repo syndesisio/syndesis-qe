@@ -121,9 +121,9 @@ class CommonSteps {
 
     const table = this.world.app.getTitleByText(tableTitle);
     expect(table.isPresent(), `There must be present a table ${tableTitle}`)
-      .to.eventually.be.true;
+      .to.eventually.be.true.notify(callback);
 
-    expect(table.isPresent(), `There must be enabled table ${tableTitle}`)
+    expect(table.isEnabled(), `There must be enabled table ${tableTitle}`)
       .to.eventually.be.true.notify(callback);
   }
 
