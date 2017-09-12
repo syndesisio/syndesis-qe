@@ -46,7 +46,7 @@ Feature: Test to verify that as a citizen user, search for Tweets using Twitter 
     And she selects "Search" integration action
     #twitter search test itself:
     Then she fills keywords field with random text to configure search action
-    And click on the "Next" button
+    And click on the "Done" button
 
     Then she is prompted to select a "Finish" connection from a list of available connections
     When Camilla selects the "QE Salesforce" connection

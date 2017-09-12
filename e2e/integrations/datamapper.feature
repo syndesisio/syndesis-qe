@@ -51,7 +51,7 @@ Feature: Create integration with datamapper step
     # select salesforce connection
     When Camilla selects the "QE Salesforce" connection
     And she selects "Create/Update Contact" integration action
-    And click on the "Next" button
+    And click on the "Done" button
     Then she is presented with the "Add a Step" button
 
     # add data mapper step
