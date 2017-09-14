@@ -59,6 +59,10 @@ class IntegrationSteps {
   @when(/^she selects "([^"]*)" integration action$/)
   public selectIntegrationAction(action: string): P<any> {
     const page = new ListActionsComponent();
+    if (action === 'Create Opportunity') {
+      log.warn(`Action ${action} is not available`);
+      return page.selectAction('Create Salesforce object');
+    }
     return page.selectAction(action);
   }
 
