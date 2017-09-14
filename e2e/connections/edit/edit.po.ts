@@ -7,7 +7,6 @@ import Promise = promise.Promise;
  * Created by jludvice on 4.4.17.
  */
 
-
 export class TextEntity {
   readonly selector: ElementFinder;
 
@@ -24,13 +23,10 @@ export class TextEntity {
   }
 }
 
-
-export class ConnectionViewComponent implements SyndesisComponent {
-  name = new TextEntity(this.rootElement().$('input[name="nameInput"]'));
-  description = new TextEntity(this.rootElement().$('textarea[name="descriptionInput"]'));
+export class ConnectionConfigurationComponent implements SyndesisComponent {
 
   rootElement(): ElementFinder {
-    return $('syndesis-connection-view');
+    return $('syndesis-connections-configure-fields');
   }
 
   /**
@@ -52,6 +48,15 @@ export class ConnectionViewComponent implements SyndesisComponent {
   }
 }
 
+export class ConnectionDetailsComponent implements SyndesisComponent {
+
+  name = new TextEntity(this.rootElement().$('input[data-id="nameInput"]'));
+  description = new TextEntity(this.rootElement().$('textarea[data-id="descriptionInput"]'));
+
+  rootElement(): ElementFinder {
+    return $('syndesis-connections-review');
+  }
+}
 
 export class ConnectionCreatePage implements SyndesisComponent {
 
