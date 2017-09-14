@@ -3,7 +3,7 @@ import { expect, P, World } from '../common/world';
 import { CallbackStepDefinition } from 'cucumber';
 import { ConnectionDetailPage } from './detail/detail.po';
 import { ConnectionsListComponent } from './list/list.po';
-import { ConnectionCreatePage, ConnectionViewComponent } from './edit/edit.po';
+import { ConnectionCreatePage, ConnectionConfigurationComponent, ConnectionDetailsComponent } from './edit/edit.po';
 import {log} from '../../src/app/logging';
 
 // let http = require('http');
@@ -68,33 +68,29 @@ class ConnectionSteps {
   @when(/^type "([^"]*)" into connection name$/)
   public typeConnectionName(name: string): P<void> {
     // Write code here that turns the phrase above into concrete actions
-    const connectionView = new ConnectionViewComponent();
-    return connectionView.name.set(name);
+    const connectionDetails = new ConnectionDetailsComponent();
+    return connectionDetails.name.set(name);
   }
 
   @when(/^type "([^"]*)" into connection description/)
   public typeConnectionDescription(description: string): P<void> {
     // Write code here that turns the phrase above into concrete actions
-    const connectionView = new ConnectionViewComponent();
-    return connectionView.description.set(description);
+    const connectionDetails = new ConnectionDetailsComponent();
+    return connectionDetails.description.set(description);
   }
 
   @when(/^she fills "([^"]*)" connection details$/)
   public fillConnectionDetails(connectionName: string): P<any> {
-    const connectionView = new ConnectionViewComponent();
+    const connectionConfiguration = new ConnectionConfigurationComponent();
     // return connectionView.fillForm(this.world.connectionDetails.get(connectionName));
-    return connectionView.fillDetails(this.world.testConfig.connection[connectionName]);
-
+    return connectionConfiguration.fillDetails(this.world.testConfig.connection[connectionName]);
   }
 
   //Kebab menu test, #553 -> part #550.
   @when(/^clicks on the kebab menu icon of each available connection$/)
   public clickOnAllKebabMenus(): P<any> {
-
     const connectionsListComp = new ConnectionsListComponent();
-
     return connectionsListComp.clickOnAllKebabButtons();
-
   }
 
   @then(/^she is presented with at least "(\d+)" connections$/)
@@ -110,15 +106,10 @@ class ConnectionSteps {
   //Kebab menu test, #553 -> part #550.
   @then(/^she can see unveiled kebab menu of all connections, each of this menu consist of "([^"]*)", "([^"]*)" and "([^"]*)" actions$/)
   public checkAllVisibleKebabMenus(action1: string, action2: string, action3: string): P<any> {
-
     const actions = [action1, action2, action3];
-
     const connectionsListComp = new ConnectionsListComponent();
-
     return connectionsListComp.checkAllKebabElementsAreDisplayed(true, actions);
-
   }
 }
-
 
 export = ConnectionSteps;
