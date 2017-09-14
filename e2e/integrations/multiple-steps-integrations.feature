@@ -17,6 +17,7 @@ Feature: Test to verify advanced integration with multiple steps
 
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
+    And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
 
     When Camilla click on the "Add a Step" button
@@ -49,6 +50,7 @@ Feature: Test to verify advanced integration with multiple steps
 
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
+    And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
 
     When Camilla click on the "Add a Step" button
@@ -89,6 +91,7 @@ Feature: Test to verify advanced integration with multiple steps
 
     When Camilla selects the "Salesforce Example" connection
     And she selects "Create Opportunity" integration action
+    And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
 
     When Camilla click on the "Add a Step" button
