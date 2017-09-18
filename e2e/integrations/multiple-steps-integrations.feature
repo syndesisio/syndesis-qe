@@ -163,6 +163,6 @@ Feature: Test to verify advanced integration with multiple steps
 
     Then she delete step on position "5" and check rest
 
-    Then she adds "2" random steps and then check the structure
+    # Then she adds "2" random steps and then check the structure
 
     Then "Camilla" navigates to the "Home" page
