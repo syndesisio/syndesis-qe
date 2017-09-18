@@ -3,6 +3,7 @@ Feature: Test to verify Dashboard links
   https://issues.jboss.org/browse/IPAAS-289
   
   Scenario: First pass at login, homepage
+    Given clean application state
     When "Camilla" logs into the Syndesis URL for her installation (e.g. rh-syndesis.[openshift online domain].com)
     Then Camilla is presented with the Syndesis page "Home"
     
@@ -77,9 +78,9 @@ Feature: Test to verify Dashboard links
 
     When Camilla clicks on the "Save as Draft" button
     And she defines integration name "dashboard verification integration"
-    And click on the "Publish" button
-    Then Camilla is presented with "dashboard verification integration" integration details
-    And Camilla clicks on the "Done" button
+    Then Camilla clicks on the "Save as Draft" button
+    And Camilla is presented with "dashboard verification integration" integration details
+    Then Camilla clicks on the "Done" button
     And Integration "dashboard verification integration" is present in integrations list
     
     When "Camilla" navigates to the "Home" page to see what's available in the Syndesis
