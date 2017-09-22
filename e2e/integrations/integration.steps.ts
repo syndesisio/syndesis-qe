@@ -9,7 +9,7 @@ import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewCompo
 import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
-import { IntegrationDetailPage } from './detail/detail.po';
+import { IntegrationDetailPage, IntegrationDetailPageFactory } from './detail/detail.po';
 
 import { element, by, ElementFinder, browser, ExpectedConditions } from 'protractor';
 
@@ -44,8 +44,8 @@ class IntegrationSteps {
 
   @then(/^Camilla is presented with "([^"]*)" integration details$/)
   public verifyIntegrationDetails(integrationName: string): P<any> {
-    const page = new IntegrationDetailPage();
-    return expect(page.getIntegrationName(), `Integration detail page must show integration name`)
+    const detailPage = new IntegrationDetailPage();
+    return expect(detailPage.getIntegrationName(), `Integration detail page must show integration name`)
       .to.eventually.be.equal(integrationName);
     // todo add more assertion on integration details page
   }
@@ -70,6 +70,93 @@ class IntegrationSteps {
   public deleteIntegration(integrationName: string): P<any> {
     const listComponent = new IntegrationsListComponent();
     return listComponent.clickDeleteIntegration(integrationName);
+  }
+
+  @when(/^Camilla deletes the integration on detail page*$/)
+  public async deleteIntegrationOnDetailPage(): P<any> {
+    const detailPage = new IntegrationDetailPage();
+    return detailPage.deleteIntegration();
+  }
+
+  @then(/^she can see on detail page that integration is "([^"]*)" status$/)
+  public async checkStatus(expectedStatus: string): P<any> {
+    const detailPage = new IntegrationDetailPage();
+    const status = await detailPage.getStatus();
+    log.info(`Status: ${status}`);
+    return expect(detailPage.getStatus(), `Status on integration detail page should be equal to expected status`)
+      .to.eventually.be.equal(expectedStatus);
+  }
+
+  @then(/^she clicks on integration in "([^"]*)" status and check on detail if status match and appropriate actions are available$/)
+  public async clickOnIntegrationInStatus(status: string): P<any> {
+    const listComponent = new IntegrationsListComponent();
+    const integrationByStatus = listComponent.getIntegrationByStatus(status);
+
+    const isPresent = await integrationByStatus.isPresent();
+    if (!isPresent) {
+      log.warn(`No integration for status ${status} is present in integration list.`);
+      return P.resolve();
+    }
+
+    integrationByStatus.click();
+
+    const integrationDetailPageFactory = new IntegrationDetailPageFactory();
+    const detailPage = integrationDetailPageFactory.getDetailPage(status);
+
+    for (const action of detailPage.actionsSet) {
+      log.info(`Action: ${action}`);
+      const actionButton = detailPage.getActionButton(action);
+
+      try {
+        await expect(actionButton.isPresent(), `There should by button for ${action} action on ${status} status`).to.eventually.be.true;
+      } catch (e) {
+        log.info(`Error catched: ${e}`);
+        return P.reject(e);
+      }
+    }
+
+    return expect(detailPage.getStatus(), `Status on detail page should be equal to expected status`).to.eventually.be.equal(status);
+  }
+
+  @then(/^she go trough whole list of integrations and check on detail if status match and appropriate actions are available$/)
+  public async goTrouhListAndCheckDetails(): P<any> {
+    const listComponent = new IntegrationsListComponent();
+    const integrations = await listComponent.getAllIntegrations();
+
+    for (let i = 0; i < integrations.length - 1; i++) {
+      const integration = await listComponent.getAllIntegrations().get(i);
+
+      const status = await listComponent.getIntegrationItemStatus(integration);
+      log.info(`Status: ${status}`);
+
+      integration.click();
+
+      const integrationDetailPageFactory = new IntegrationDetailPageFactory();
+      const detailPage = integrationDetailPageFactory.getDetailPage(status);
+
+      for (const action of detailPage.actionsSet) {
+        log.info(`Action: ${action}`);
+        const actionButton = detailPage.getActionButton(action);
+
+        try {
+          await expect(actionButton.isPresent(), `There should by button for ${action} action on ${status} status`).to.eventually.be.true;
+        } catch (e) {
+          log.info(`Error catched: ${e}`);
+          return P.reject(e);
+        }
+      }
+
+      try {
+        await expect(detailPage.getStatus(), `Status on detail page should be equal to expected status`).to.eventually.be.equal(status);
+      } catch (e) {
+        log.info(`Error catched: ${e}`);
+        return P.reject(e);
+      }
+
+      await detailPage.done();
+    }
+
+    return P.resolve();
   }
 
   @when(/^she selects "([^"]*)" integration step$/)

@@ -30,6 +30,11 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return this.integrationEntry(name).click();
   }
 
+  getIntegrationByStatus(status: string): ElementFinder {
+    const integrationByStatus = this.rootElement().element(by.cssContainingText('syndesis-integration-status', status));
+    return integrationByStatus;
+  }
+
   async clickDeleteIntegration(integrationName: string): P<any> {
     log.info(`clicking delete link for integration ${integrationName}`);
 
