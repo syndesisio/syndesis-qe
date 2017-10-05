@@ -1,4 +1,4 @@
-@multiple-steps-integrations
+@integrations-multiple-steps
 Feature: Test to verify advanced integration with multiple steps
   https://issues.jboss.org/browse/IPAAS-287
 
@@ -15,9 +15,11 @@ Feature: Test to verify advanced integration with multiple steps
     When she selects "Mention" integration action
     Then she is prompted to select a "Finish" connection from a list of available connections
 
-    When Camilla selects the "Salesforce Example" connection
-    And she selects "Create Opportunity" integration action
-    And Camilla clicks on the "Done" button
+    When Camilla selects the "HTTP Example" connection
+    Then she is presented with an actions list
+    And she selects "HTTP POST" integration action
+    Then she fills "httpUri" action configure component input with "mock" value
+    And click on the "Done" button
     Then she is presented with the "Add a Step" button
 
     When Camilla click on the "Add a Step" button
@@ -48,16 +50,17 @@ Feature: Test to verify advanced integration with multiple steps
     When she selects "Mention" integration action
     Then she is prompted to select a "Finish" connection from a list of available connections
 
-    When Camilla selects the "Salesforce Example" connection
-    And she selects "Create Opportunity" integration action
-    And Camilla clicks on the "Done" button
+    When Camilla selects the "HTTP Example" connection
+    Then she is presented with an actions list
+    And she selects "HTTP POST" integration action
+    Then she fills "httpUri" action configure component input with "mock" value
+    And click on the "Done" button
     Then she is presented with the "Add a Step" button
 
-    When Camilla click on the "Add a Step" button
-    Then she is presented with a add step page
-    And she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "log" parameter
+    When Camilla clicks on the "Add a Step" button
+    And she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, Matches Regex, value1" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -65,7 +68,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, Matches Regex, value1" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path2, Matches Regex, value2" parameter
     And click on the "Next" button
 
     When click on the integration save button
@@ -89,21 +92,14 @@ Feature: Test to verify advanced integration with multiple steps
     And she selects "Mention" integration action
     Then she is prompted to select a "Finish" connection from a list of available connections
 
-    When Camilla selects the "Salesforce Example" connection
-    And she selects "Create Opportunity" integration action
-    And Camilla clicks on the "Done" button
+    When Camilla selects the "HTTP Example" connection
+    Then she is presented with an actions list
+    And she selects "HTTP POST" integration action
+    Then she fills "httpUri" action configure component input with "mock" value
+    And click on the "Done" button
     Then she is presented with the "Add a Step" button
 
-    When Camilla click on the "Add a Step" button
-    Then she is presented with a add step page
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "log 1" parameter
-    And click on the "Next" button
-
     When Camilla clicks on the "Add a Step" button
-    Then Camilla is presented with the "Add a step" link
-    And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
     Then she fill configure page for "Basic Filter" step with "ANY of the following, path1, Does Not Match Regex, value1" parameter
@@ -114,7 +110,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path2, Starts With, value2" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path2, Does Not Match Regex, value2" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -122,23 +118,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path3, Ends With, value3" parameter
-    And click on the "Next" button
-
-    When Camilla clicks on the "Add a Step" button
-    Then Camilla is presented with the "Add a step" link
-    And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "log 3" parameter
-    And click on the "Next" button
-
-    When Camilla clicks on the "Add a Step" button
-    Then Camilla is presented with the "Add a step" link
-    And clicks on the random "Add a step" link
-    Then she selects "Log" integration step
-    And she is presented with a "Log" step configure page
-    Then she fill configure page for "Log" step with "log 4" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path3, Starts With, value3" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -146,7 +126,7 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path4, Does Not Contain, value4" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path4, Ends With, value4" parameter
     And click on the "Next" button
 
     When Camilla clicks on the "Add a Step" button
@@ -154,7 +134,31 @@ Feature: Test to verify advanced integration with multiple steps
     And clicks on the random "Add a step" link
     Then she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, path5, Does Not Contain, value5" parameter
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path5, Starts With, value5" parameter
+    And click on the "Next" button
+
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path6, Starts With, value6" parameter
+    And click on the "Next" button
+
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path7, Does Not Contain, value7" parameter
+    And click on the "Next" button
+
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    Then she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, path8, Does Not Contain, value8" parameter
     And click on the "Next" button
 
     Then she delete step on position "1" and check rest

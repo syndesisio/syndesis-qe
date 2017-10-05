@@ -1,5 +1,5 @@
 // export enum IntegrationStatus {
-//   'View',  
+//   'View',
 //   'Active',
 //   'Inactive',
 //   'Draft',

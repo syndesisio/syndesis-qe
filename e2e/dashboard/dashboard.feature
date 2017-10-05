@@ -70,9 +70,11 @@ Feature: Test to verify Dashboard links
     And she selects "Mention" integration action
     Then she is prompted to select a "Finish" connection from a list of available connections
 
-    When Camilla selects the "Salesforce Example" connection
-    And she selects "Create Opportunity" integration action
-    And Camilla clicks on the "Done" button
+    When Camilla selects the "HTTP Example" connection
+    Then she is presented with an actions list
+    And she selects "HTTP POST" integration action
+    Then she fills "httpUri" action configure component input with "mock" value
+    And click on the "Done" button
     Then she is presented with the "Add a Step" button
     And click on the integration save button
 

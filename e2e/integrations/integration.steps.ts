@@ -5,8 +5,9 @@ import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent } from '../integrations/edit/edit.po';
-import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent} from '../integrations/edit/edit.po';
+import { ActionConfigureComponent, TwitterSearchActionConfigureComponent} from '../integrations/edit/edit.po';
+import { ListActionsComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 import { IntegrationDetailPage, IntegrationDetailPageFactory } from './detail/detail.po';
@@ -115,7 +116,14 @@ class IntegrationSteps {
       }
     }
 
-    return expect(detailPage.getStatus(), `Status on detail page should be equal to expected status`).to.eventually.be.equal(status);
+    try {
+      await expect(detailPage.getStatus(), `Status on detail page should be equal to expected status`).to.eventually.be.equal(status);
+    } catch (e) {
+      log.info(`Error catched: ${e}`);
+      return P.reject(e);
+    }
+
+    return detailPage.getActionButton('Done').click();
   }
 
   @then(/^she go trough whole list of integrations and check on detail if status match and appropriate actions are available$/)
@@ -380,15 +388,19 @@ class IntegrationSteps {
     return integrationsListComponent.checkAllIntegrationsKebabButtons();
   }
 
-
   // Twitter search specification
   @then(/^she fills keywords field with random text to configure search action$/)
   public fillKeywords(): P<any> {
-
-    const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
+    const actionConfComponent = new TwitterSearchActionConfigureComponent();
     const value = Utils.randomString(20, 'abcdefghijklmnopqrstuvwxyz');
-    return actionConfComponent.fillKeywordsValueB(value);
+    return actionConfComponent.fillKeywordsValue(value);
+  }
 
+  @then(/^she fills "([^"]*)" action configure component input with "([^"]*)" value$/)
+  public async fillActionConfigureField(fieldId: string, value: string): P<any> {
+    const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
+    await browser.wait(ExpectedConditions.visibilityOf(actionConfComponent.getInput(fieldId)), 5000, 'Input is not visible');
+    return actionConfComponent.fillInput(fieldId, value);
   }
 
   /**

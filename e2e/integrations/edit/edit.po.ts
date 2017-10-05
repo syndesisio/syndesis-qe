@@ -24,7 +24,7 @@ export class FlowConnection {
 export class FlowViewComponent implements SyndesisComponent {
   static readonly nameSelector = 'input.form-control.integration-name';
   static readonly stepSelector = 'parent-step';
-  static readonly activeStepSelector = 'span[class="parent-step active"]';
+  static readonly activeStepSelector = 'div[class="parent-step active"]';
 
   rootElement(): ElementFinder {
     return element(by.css('syndesis-integrations-flow-view'));
@@ -42,7 +42,7 @@ export class FlowViewComponent implements SyndesisComponent {
    */
   async flowConnection(type: string): P<FlowConnection> {
     type = type.toLowerCase();
-    const e = await this.rootElement().element(by.css(`div.row.step.${type}`));
+    const e = await this.rootElement().element(by.css(`div.step.${type}`));
     return new FlowConnection(type, e);
   }
 
@@ -551,25 +551,32 @@ enum BasicFilterOps {
     'Ends With',
 }
 
-/*
- * Element for keywords value fill.
- */
 export class ActionConfigureComponent implements SyndesisComponent {
-  static readonly idSelector = 'keywords';
-
   rootElement(): ElementFinder {
     return element(by.css('syndesis-integrations-action-configure'));
   }
 
-  keywordsElement(): ElementFinder {
-    return element(by.id(ActionConfigureComponent.idSelector));
+  fillInput(inputId: string, value: string): P<any> {
+    const input = this.getInput(inputId);
+    return input.sendKeys(value);
   }
 
-  fillKeywordsValueB(value: string): P<any> {
+  getInput(inputId: string): ElementFinder {
+    return this.rootElement().element(by.id(inputId));
+  }
+}
+
+export class TwitterSearchActionConfigureComponent extends ActionConfigureComponent {
+  static readonly idSelector = 'keywords';
+
+  keywordsElement(): ElementFinder {
+    return element(by.id(TwitterSearchActionConfigureComponent.idSelector));
+  }
+
+  fillKeywordsValue(value: string): P<any> {
     log.debug(`setting keywords element of twitter search with value: ${value}`);
     const fillMap = new Map();
-    fillMap.set(ActionConfigureComponent.idSelector, value);
+    fillMap.set(TwitterSearchActionConfigureComponent.idSelector, value);
     return Utils.fillForm(fillMap, this.rootElement(), 'id');
   }
-
 }
