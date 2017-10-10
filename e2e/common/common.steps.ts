@@ -71,7 +71,8 @@ class CommonSteps {
   public async verifyLink(alias: string, linkTitle: string): P<any> {
     const currentLink = await this.world.app.getLink(linkTitle);
 
-    expect(currentLink.isPresent(), `There must be present a link ${linkTitle}`)
+    await browser.wait(ExpectedConditions.visibilityOf(currentLink), 5000, 'Link is not present.');
+    return expect(currentLink.isPresent(), `There must be present a link ${linkTitle}`)
       .to.eventually.be.true;
   }
 
@@ -108,23 +109,21 @@ class CommonSteps {
   }
 
   @then(/^she is presented with the "([^"]*)" tables*$/)
-  public expectTableTitlesPresent(tableTitles: string, callback: CallbackStepDefinition): void {
+  public async expectTableTitlesPresent(tableTitles: string): P<any> {
 
     const tableTitlesArray = tableTitles.split(', ');
 
     for (const tableTitle of tableTitlesArray) {
-      this.expectTableTitlePresent(tableTitle, callback);
+      const table = this.world.app.getTitleByText(tableTitle);
+      try {
+        await browser.wait(ExpectedConditions.visibilityOf(table), 5000, 'Table is not present.');
+        expect(table.isPresent(), `There must be present a table ${tableTitle}`).to.eventually.be.true;
+      } catch (e) {
+        return P.reject(e);
+      }
     }
-  }
 
-  public expectTableTitlePresent(tableTitle: string, callback: CallbackStepDefinition): void {
-
-    const table = this.world.app.getTitleByText(tableTitle);
-    expect(table.isPresent(), `There must be present a table ${tableTitle}`)
-      .to.eventually.be.true;
-
-    expect(table.isPresent(), `There must be enabled table ${tableTitle}`)
-      .to.eventually.be.true.notify(callback);
+    return P.resolve();
   }
 
   @then(/^she is presented with the "([^"]*)" elements*$/)

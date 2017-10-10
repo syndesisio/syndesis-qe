@@ -1,6 +1,6 @@
 import { Utils } from '../../common/utils';
 import { SyndesisComponent } from '../../common/common';
-import { by, element, ElementFinder, ElementArrayFinder } from 'protractor';
+import { by, element, browser, ElementFinder, ElementArrayFinder, ExpectedConditions } from 'protractor';
 import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
@@ -55,10 +55,17 @@ export class FlowViewComponent implements SyndesisComponent {
 
     for (let i = 1; i < (count - 1); i++) {
       steps.get(i).click();
+
       const title = this.rootElement().element(by.css(FlowViewComponent.activeStepSelector));
 
       const text = await title.getText();
       const stepPage = stepFactory.getStep(text, '');
+
+      try {
+        await browser.wait(ExpectedConditions.visibilityOf(stepPage.rootElement()), 6000, 'No root element');
+      } catch (e) {
+        return P.reject(e);
+      }
 
       await stepPage.initialize();
 

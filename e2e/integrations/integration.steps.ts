@@ -7,7 +7,7 @@ import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
 import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent} from '../integrations/edit/edit.po';
 import { ActionConfigureComponent, TwitterSearchActionConfigureComponent} from '../integrations/edit/edit.po';
-import { ListActionsComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
+import { ListActionsComponent, IntegrationConfigureBasicFilterStepPage, ConnectionSelectComponent } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 import { IntegrationDetailPage, IntegrationDetailPageFactory } from './detail/detail.po';
@@ -27,10 +27,23 @@ class IntegrationSteps {
   }
 
   @then(/^she is presented with a visual integration editor$/)
-  public editorOpened(): P<any> {
-    const page = new IntegrationEditPage();
-    return expect(page.rootElement().isPresent(), 'there must be edit page root element')
-      .to.eventually.be.true;
+  public async editorOpened(): P<any> {
+    const editPage = new IntegrationEditPage();
+    const selectConnectionPage = new ConnectionSelectComponent();
+    const flowViewComponent = new FlowViewComponent();
+
+    try {
+      await expect(editPage.rootElement().isPresent(), 'there must be edit page root element')
+        .to.eventually.be.true;
+      await expect(selectConnectionPage.rootElement().isPresent(), 'there must be select connection page page root element')
+        .to.eventually.be.true;
+      await expect(flowViewComponent.rootElement().isPresent(), 'there must be flow view component root element')
+        .to.eventually.be.true;
+    } catch (e) {
+      P.reject(e);
+    }
+
+    return P.resolve();
   }
 
   @then(/^she is presented with a visual integration editor for "([^"]*)"$/)
@@ -410,11 +423,14 @@ class IntegrationSteps {
    */
   @then(/^she is prompted to select a "([^"]*)" connection from a list of available connections$/)
   public async verifyTypeOfConnection(type: string): P<any> {
-    // Write code here that turns the phrase above into concrete actions
-
     const page = new IntegrationEditPage();
-
     const connection = await page.flowViewComponent().flowConnection(type);
+    const isActive: boolean = await connection.isActive();
+
+    if (!isActive) {
+      log.warn(`Connection is not active! Refreshingk"`);
+      await browser.refresh();
+    }
 
     return expect(connection.isActive(), `${type} connection must be active`)
       .to.eventually.be.true;

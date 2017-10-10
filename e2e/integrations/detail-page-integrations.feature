@@ -1,9 +1,32 @@
 @integrations-detail-page
 Feature: Test to verify integration detail page functionality
 
-  Scenario: Create integration as draft and delete it on detail page
+  Scenario: Create connection happy path
     Given clean application state
 
+    When "Camilla" navigates to the "Connections" page
+    And click on the "Create Connection" button
+    And Camilla selects the "Twitter" connection
+    Then she is presented with the "Validate" button
+
+    When she fills "Twitter" connection details
+    And scroll "top" "right"
+    And click on the "Next" button
+    And type "Twitter Test" into connection name
+    And type "Connection for testing purpose" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
+
+    And click on the "Create Connection" button
+    And Camilla selects the "HTTP" connection
+
+    And click on the "Next" button
+    And type "HTTP Test" into connection name
+    And type "Connection for testing purpose" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections" 
+
+  Scenario: Create integration as draft and delete it on detail page
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
@@ -41,3 +64,15 @@ Feature: Test to verify integration detail page functionality
 Scenario: Go trough integrations on list get its status and check it on detail
     When "Camilla" navigates to the "Integrations" page
     Then she go trough whole list of integrations and check on detail if status match and appropriate actions are available
+
+  Scenario: Delete connection
+    When "Camilla" navigates to the "Home" page to see what's available in the Syndesis
+    Then Camilla clicks on the "View All Connections" link
+
+    When Camilla deletes the "Twitter Test" connection
+    Then she can see success notification
+    And Camilla can not see "Twitter Test" connection anymore
+
+    When Camilla deletes the "HTTP Test" connection
+    Then she can see success notification
+    And Camilla can not see "HTTP Test" connection anymore

@@ -2,20 +2,43 @@
 Feature: Test to verify addition of basic filter step to integrations
   https://github.com/syndesisio/syndesis-e2e-tests/issues/13
 
-  Scenario: Create integration with one basic filter step
+  Scenario: Create connection happy path
     Given clean application state
 
+    When "Camilla" navigates to the "Connections" page
+    And click on the "Create Connection" button
+    And Camilla selects the "Twitter" connection
+    Then she is presented with the "Validate" button
+
+    When she fills "Twitter" connection details
+    And scroll "top" "right"
+    And click on the "Next" button
+    And type "Twitter Test" into connection name
+    And type "Connection for testing purpose" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
+
+    And click on the "Create Connection" button
+    And Camilla selects the "HTTP" connection
+
+    And click on the "Next" button
+    And type "HTTP Test" into connection name
+    And type "Connection for testing purpose" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
+
+  Scenario: Create integration with one basic filter step
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
 
-    When Camilla selects the "Twitter Example" connection
+    When Camilla selects the "Twitter Test" connection
     Then she is presented with an actions list
     When she selects "Mention" integration action
     Then she is prompted to select a "Finish" connection from a list of available connections
 
-    When Camilla selects the "HTTP Example" connection
+    When Camilla selects the "HTTP Test" connection
     Then she is presented with an actions list
     And she selects "HTTP POST" integration action
     Then she fills "httpUri" action configure component input with "mock" value
@@ -46,7 +69,7 @@ Feature: Test to verify addition of basic filter step to integrations
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
 
-    When Camilla selects the "Twitter Example" connection
+    When Camilla selects the "Twitter Test" connection
     Then she is presented with an actions list
     When she selects "Mention" integration action
     Then she is prompted to select a "Finish" connection from a list of available connections
@@ -73,3 +96,15 @@ Feature: Test to verify addition of basic filter step to integrations
     And delete basic filter rule on position "2"
     
     And click on the "Next" button
+
+  Scenario: Delete connection
+    When "Camilla" navigates to the "Home" page to see what's available in the Syndesis
+    Then Camilla clicks on the "View All Connections" link
+
+    When Camilla deletes the "Twitter Test" connection
+    Then she can see success notification
+    And Camilla can not see "Twitter Test" connection anymore
+
+    When Camilla deletes the "HTTP Test" connection
+    Then she can see success notification
+    And Camilla can not see "HTTP Test" connection anymore
