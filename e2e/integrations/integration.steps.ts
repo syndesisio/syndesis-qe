@@ -5,8 +5,9 @@ import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent } from '../integrations/edit/edit.po';
-import { ListActionsComponent, ActionConfigureComponent, IntegrationConfigureBasicFilterStepPage } from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent} from '../integrations/edit/edit.po';
+import { ActionConfigureComponent, TwitterSearchActionConfigureComponent} from '../integrations/edit/edit.po';
+import { ListActionsComponent, IntegrationConfigureBasicFilterStepPage, ConnectionSelectComponent } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
 import { IntegrationDetailPage, IntegrationDetailPageFactory } from './detail/detail.po';
@@ -26,10 +27,23 @@ class IntegrationSteps {
   }
 
   @then(/^she is presented with a visual integration editor$/)
-  public editorOpened(): P<any> {
-    const page = new IntegrationEditPage();
-    return expect(page.rootElement().isPresent(), 'there must be edit page root element')
-      .to.eventually.be.true;
+  public async editorOpened(): P<any> {
+    const editPage = new IntegrationEditPage();
+    const selectConnectionPage = new ConnectionSelectComponent();
+    const flowViewComponent = new FlowViewComponent();
+
+    try {
+      await expect(editPage.rootElement().isPresent(), 'there must be edit page root element')
+        .to.eventually.be.true;
+      await expect(selectConnectionPage.rootElement().isPresent(), 'there must be select connection page page root element')
+        .to.eventually.be.true;
+      await expect(flowViewComponent.rootElement().isPresent(), 'there must be flow view component root element')
+        .to.eventually.be.true;
+    } catch (e) {
+      P.reject(e);
+    }
+
+    return P.resolve();
   }
 
   @then(/^she is presented with a visual integration editor for "([^"]*)"$/)
@@ -115,7 +129,14 @@ class IntegrationSteps {
       }
     }
 
-    return expect(detailPage.getStatus(), `Status on detail page should be equal to expected status`).to.eventually.be.equal(status);
+    try {
+      await expect(detailPage.getStatus(), `Status on detail page should be equal to expected status`).to.eventually.be.equal(status);
+    } catch (e) {
+      log.info(`Error catched: ${e}`);
+      return P.reject(e);
+    }
+
+    return detailPage.getActionButton('Done').click();
   }
 
   @then(/^she go trough whole list of integrations and check on detail if status match and appropriate actions are available$/)
@@ -380,15 +401,19 @@ class IntegrationSteps {
     return integrationsListComponent.checkAllIntegrationsKebabButtons();
   }
 
-
   // Twitter search specification
   @then(/^she fills keywords field with random text to configure search action$/)
   public fillKeywords(): P<any> {
-
-    const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
+    const actionConfComponent = new TwitterSearchActionConfigureComponent();
     const value = Utils.randomString(20, 'abcdefghijklmnopqrstuvwxyz');
-    return actionConfComponent.fillKeywordsValueB(value);
+    return actionConfComponent.fillKeywordsValue(value);
+  }
 
+  @then(/^she fills "([^"]*)" action configure component input with "([^"]*)" value$/)
+  public async fillActionConfigureField(fieldId: string, value: string): P<any> {
+    const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
+    await browser.wait(ExpectedConditions.visibilityOf(actionConfComponent.getInput(fieldId)), 5000, 'Input is not visible');
+    return actionConfComponent.fillInput(fieldId, value);
   }
 
   /**
@@ -398,11 +423,14 @@ class IntegrationSteps {
    */
   @then(/^she is prompted to select a "([^"]*)" connection from a list of available connections$/)
   public async verifyTypeOfConnection(type: string): P<any> {
-    // Write code here that turns the phrase above into concrete actions
-
     const page = new IntegrationEditPage();
-
     const connection = await page.flowViewComponent().flowConnection(type);
+    const isActive: boolean = await connection.isActive();
+
+    if (!isActive) {
+      log.warn(`Connection is not active! Refreshingk"`);
+      await browser.refresh();
+    }
 
     return expect(connection.isActive(), `${type} connection must be active`)
       .to.eventually.be.true;
