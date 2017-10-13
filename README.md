@@ -62,6 +62,14 @@ export SYNDESIS_E2E_RESTART=1
 yarn e2e:syndesis-qe
 ```
 
+For executing tests on local minishift instance: 
+
+```bash
+export SYNDESIS_UI_URL=https://syndesis.$(minishift ip).nip.io
+
+yarn e2e
+``` 
+
 Alternatively execute tests in Docker container with Xvfb
 
 ```bash
