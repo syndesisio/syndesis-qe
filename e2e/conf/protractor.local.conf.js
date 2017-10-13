@@ -6,10 +6,14 @@ let merge = require('merge');
 // load base config
 let baseConfig = require('./protractor.base.conf').config;
 
-
+let syndesisUrl = process.env.SYNDESIS_UI_URL || null;
+if (syndesisUrl === null) {
+  throw new Error("Please type:  export SYNDESIS_UI_URL=https://syndesis.$(minishift ip).nip.io");
+}
+console.log(`Using syndesis ui on url ${syndesisUrl}`);
 // changes specific to local testing
 exports.config = merge(baseConfig, {
 
-  baseUrl: 'http://localhost:4200/',
+  baseUrl: syndesisUrl,
 
 });
