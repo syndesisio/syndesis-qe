@@ -12,4 +12,4 @@ Feature: Set oauth app credentials
     When "Camilla" clicks to the "Twitter" item "Register" button
     And fill form in "Twitter" settings item
     And "Camilla" clicks to the "Twitter" item "Save" button
-    Then settings item "Twitter" must have alert with text "Registration Successful!"
+    Then settings item "Twitter" must have alert with text "Registration successful!"

@@ -50,7 +50,8 @@ Feature: Test to verify that as a citizen user, search for Tweets using Twitter 
 
     Then she is prompted to select a "Finish" connection from a list of available connections
     When Camilla selects the "QE Salesforce" connection
-    And she selects "Create Opportunity" integration action
+    And she selects "Create or update record" integration action
+    And Camilla clicks on the "Next" button
     And Camilla clicks on the "Done" button
 
     Then click on the integration save button
