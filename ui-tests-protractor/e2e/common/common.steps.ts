@@ -6,6 +6,7 @@ import { browser, ExpectedConditions } from 'protractor';
 import { binding, given, then, when } from 'cucumber-tsflow';
 import { Promise as P } from 'es6-promise';
 import { expect, World } from './world';
+import { Utils } from './utils';
 import { User, UserDetails } from './common';
 import { log } from '../../src/app/logging';
 import { DashboardPage } from '../dashboard/dashboard.po';
@@ -156,7 +157,7 @@ class CommonSteps {
   }
 
   @then(/^Camilla can see "([^"]*)" connection on dashboard page$/)
-  public expectConnectionTitlePresent (connectionName: string, callback: CallbackStepDefinition): void {
+  public expectConnectionTitlePresent(connectionName: string, callback: CallbackStepDefinition): void {
     const dashboard = new DashboardPage();
     const connection = dashboard.getConnection(connectionName);
     expect(connection.isPresent(), `There should be present connection ${connectionName}`)
@@ -164,7 +165,7 @@ class CommonSteps {
   }
 
   @then(/^Camilla can not see "([^"]*)" connection on dashboard page anymore$/)
-  public expectConnectionTitleNonPresent (connectionName: string, callback: CallbackStepDefinition): void {
+  public expectConnectionTitleNonPresent(connectionName: string, callback: CallbackStepDefinition): void {
     const dashboard = new DashboardPage();
     const connection = dashboard.getConnection(connectionName);
     expect(connection.isPresent(), `There shouldnt be a present connection ${connectionName}`)
@@ -187,7 +188,7 @@ class CommonSteps {
   }
 
   @then(/^she can see success notification$/)
-  public successNotificationIsPresent (): P<any> {
+  public successNotificationIsPresent(): P<any> {
     const allertSucces = this.world.app.getElementByClassName('alert-success');
     return browser.wait(ExpectedConditions.visibilityOf(allertSucces), 6000, 'OK button not loaded in time');
   }
@@ -222,6 +223,12 @@ class CommonSteps {
     log.info(`scrolling to [x=${x},y=${y}]`);
     return browser.driver.executeScript((browserX, browserY) => window.scrollTo(browserX, browserY), x, y);
   }
+
+  @then(/^she stays there for "(\d+)" ms$/)
+  public async sleep(ms: number): P<any> {
+    await Utils.delay(ms);
+  }
+
 }
 
 export = CommonSteps;

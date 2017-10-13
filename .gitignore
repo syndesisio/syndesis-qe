@@ -5,7 +5,7 @@
 /tmp
 
 # dependencies
-/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
@@ -41,7 +41,8 @@ package-lock.json
 # e2e
 /e2e/*.js
 /e2e/*.map
-/e2e/cucumber-reports
+ui-tests-protractor/e2e/cucumber-reports/
+
 
 # test config with login credentials and other stuff
 test_config.json
@@ -50,7 +51,7 @@ test_config.json
 .DS_Store
 Thumbs.db
 /.history
-/yarn-error.log
+yarn-error.log
 
 src/config.json
 users.json
