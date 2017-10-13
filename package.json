@@ -6,7 +6,7 @@
     "lint": "yarn ng lint",
     "lint:fix": "yarn ng lint -- --fix",
     "test:xvfb": "docker run --rm -v `pwd`:/syndesis-ui:z -w /syndesis-ui -u `id -u` docker.io/syndesis/karma-xvfb ./karma-xvfb.sh",
-    "pree2e": "webdriver-manager update --versions.chrome 2.30",
+    "pree2e": "webdriver-manager update --versions.chrome 2.30 --ignore_ssl",
     "e2e": "better-npm-run e2e:local",
     "pree2e:syndesis-qe": "webdriver-manager update --versions.chrome 2.30",
     "e2e:syndesis-qe": "better-npm-run e2e:syndesis-qe",

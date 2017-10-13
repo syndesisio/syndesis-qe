@@ -3,7 +3,7 @@ import * as webdriver from 'selenium-webdriver';
 import { Promise as P } from 'es6-promise';
 import { User, UserDetails } from './common/common';
 import { contains } from './common/world';
-import { GithubLogin, KeycloakDetails, OpenShiftAuthorize } from './login/login.po';
+import { MinishiftLogin, GithubLogin, KeycloakDetails, OpenShiftAuthorize } from './login/login.po';
 import { log } from '../src/app/logging';
 import * as jQuery from 'jquery';
 import WebElement = webdriver.WebElement;
@@ -182,11 +182,19 @@ export class AppPage {
     await this.goToUrl(AppPage.baseurl);
 
     let currentUrl = await browser.getCurrentUrl();
-    const isAppLoaded = await this.rootElement.element(by.css('span.username')).isPresent();
-    if (contains(currentUrl, 'github.com/login') || !isAppLoaded) {
-      log.info('GitHub login page');
-      await new GithubLogin().login(user);
+    if (process.env.TEST_ENV !== 'local') {
+      const isAppLoaded = await this.rootElement.element(by.css('span.username')).isPresent();
+      if (contains(currentUrl, 'github.com/login') || !isAppLoaded) {
+        log.info('GitHub login page');
+        await new GithubLogin().login(user);
+      }
     }
+
+    if (contains(currentUrl, ':8443/login')) {
+      log.info('Minishift login page');
+      await new MinishiftLogin().login(user);
+    }
+
     currentUrl = await browser.getCurrentUrl();
     if (contains(currentUrl, 'oauth/authorize/approve')) {
       log.info('Authorize access login page');
