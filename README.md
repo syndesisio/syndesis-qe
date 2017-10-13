@@ -2,9 +2,12 @@
 
 Before test execution you should have Syndesis UI running, follow [the documentation](https://github.com/syndesisio/syndesis-ui#running).
 
+Test are located in `ui-tests-protractor`
+
 Download test dependencies
 
 ```bash
+cd ui-tests-protractor
 yarn
 yarn webdriver-manager update
 ```
