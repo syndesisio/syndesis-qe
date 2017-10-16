@@ -35,12 +35,13 @@ node {
                     stage ('End to End Tests')
                     container(name: 'yarn') {
                       checkout scm
-                      writeFile(file: 'test_config.json', text: "${test_config}")
+                      writeFile(file: './ui-tests-protractor/test_config.json', text: "${test_config}")
                       try {
                         ansiColor('xterm') {
                           sh """
                           export SYNDESIS_UI_URL=https://${KUBERNETES_NAMESPACE}.b6ff.rh-idev.openshiftapps.com
                           export SYNDESIS_E2E_RESTART=1
+                          cd ui-tests-protractor
                           ./e2e-xvfb.sh
                           """
                         }
@@ -48,7 +49,7 @@ node {
                         echo "E2E tests failed: ${err}"
                         currentBuild.result = 'FAILURE'
                       } finally {
-                        archive includes: 'e2e/cucumber-reports/**/*'
+                        archive includes: 'ui-tests-protractor/e2e/cucumber-reports/**/*'
                       }
                     }
 
