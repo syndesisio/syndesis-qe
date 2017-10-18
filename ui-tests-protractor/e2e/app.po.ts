@@ -171,6 +171,18 @@ export class AppPage {
     return element(by.cssContainingText('h2', text));
   }
 
+  async selectFromDropDown(input: ElementFinder, optionNumber: number): P<any> {
+    const inputGroup = await input.element(by.xpath('..'));
+    const dropDownToggle = await inputGroup.element(by.className('dropdown-toggle'));
+
+    await dropDownToggle.click();
+    await dropDownToggle.click();
+
+    const opSelectArray = await inputGroup.all(by.css('li'));
+
+    return opSelectArray[optionNumber].click();
+  }
+
   async link(title: String): P<NavLink> {
     const links = await this.findNavLinks();
     return links.filter(l => l.text === title)[0];
