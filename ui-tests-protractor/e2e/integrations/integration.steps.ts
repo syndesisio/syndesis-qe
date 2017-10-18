@@ -211,13 +211,19 @@ class IntegrationSteps {
   }
 
   @then(/^she is presented with a "([^"]*)" step configure page$/)
-  public configureStepPageOpen(stepType: string): void {
+  public async configureStepPageOpen(stepType: string): P<any> {
     const stepFactory = new StepFactory();
     const page = stepFactory.getStep(stepType, '');
-    expect(page.rootElement().isPresent(), 'there must be add step page root element')
-      .to.eventually.be.true;
-    expect(page.validate(), 'page must contain certain elements')
-      .to.eventually.be.true;
+    try {
+      await expect(page.rootElement().isPresent(), 'there must be add step page root element')
+        .to.eventually.be.true;
+      await expect(page.validate(), `${stepType} page must contain certain elements`)
+        .to.eventually.be.true;
+    } catch (e) {
+      return P.reject(e);
+    }
+
+    return P.resolve();
   }
 
   @then(/^she fill configure page for "([^"]*)" step with "([^"]*)" parameter$/)

@@ -4,6 +4,7 @@ import { by, element, browser, ElementFinder, ElementArrayFinder, ExpectedCondit
 import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
+import { AppPage } from '../../app.po';
 
 
 export class FlowConnection {
@@ -185,6 +186,12 @@ export class StepFactory {
 }
 
 export abstract class IntegrationConfigureStepPage implements SyndesisComponent {
+  app: AppPage;
+
+  constructor() {
+    this.app = new AppPage();
+  }
+
   rootElement(): ElementFinder {
     log.debug(`getting root element for step configuration page`);
     return element(by.css('syndesis-integrations-step-configure'));
@@ -250,13 +257,15 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
 }
 
 export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigureStepPage {
-  static readonly predicateSelector = 'select[id="predicate"]';
+  static readonly predicateSelector = 'input[id="predicateundefined"]';
   static readonly predicateOptionSelector = 'option[name="predicate"]';
 
   static readonly pathSelector = 'input[name="path"]';
   static readonly valueSelector = 'input[name="value"]';
-  static readonly opSelector = 'select[name="op"]';
+  static readonly opSelector = 'input[id="NaN"]';
   static readonly opOptionSelector = 'option[name="op"]';
+
+  static readonly dropDownToggleSelector = 'span[class="input-group-addon"]';
 
   static readonly addRuleSelector = 'a.add-rule';
 
@@ -351,20 +360,18 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     this.filterCondition = filterCondition;
   }
 
-  setPredicate(predicate: number): P<any> {
+  async setPredicate(predicate: number): P<any> {
     log.info(`setting basic filter step predicate to option number ${predicate}`);
-    const predicateOptions = this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.predicateOptionSelector));
-    return predicateOptions.then((options) => {
-      options[this.predicate].click();
-    });
+    const predicateInput = await this.rootElement().element(by.css(IntegrationConfigureBasicFilterStepPage.predicateSelector));
+
+    return this.app.selectFromDropDown(predicateInput, predicate);
   }
 
-  setOp(op: number): P<any> {
-    log.info(`setting basic filter step predicate to option number ${op}`);
-    const opOptions = this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opOptionSelector));
-    return opOptions.then((options) => {
-      options[op].click();
-    });
+  async setOp(op: number): P<any> {
+    log.info(`setting basic filter step op to option number ${op}`);
+    const opInput = await this.rootElement().element(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
+
+    return this.app.selectFromDropDown(opInput, op);
   }
 
   setPath(path: string): P<any> {
@@ -386,12 +393,11 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
   }
 
   async setLatestOpSelect(op: number): P<any> {
-    log.info(`setting basic filter step predicate to option number ${op}`);
-    const opSelectArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
-    const opSelect = opSelectArray[opSelectArray.length - 1];
-    const opOptions = await opSelect.all(by.css(IntegrationConfigureBasicFilterStepPage.opOptionSelector));
+    log.info(`setting basic filter step op to option number ${op}`);
+    const opInputArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
+    const opInput = opInputArray[opInputArray.length - 1];
 
-    return opOptions[op].click();
+    return this.app.selectFromDropDown(opInput, op);
   }
 
   async setLatestPathInput(path: string): P<any> {
@@ -423,7 +429,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
 
   async getPredicateSelectValue(): P<any> {
     log.debug(`Searching basic filter predicate select checked option`);
-    const predicateValue = await this.getPredicateSelect().$('option:checked').getText();
+    const predicateValue = await this.getPredicateSelect().getText();
     return predicateValue.trim();
   }
 
@@ -495,14 +501,14 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
 
   async getOpSelectValue(): P<any> {
     log.debug(`Searching basic filter op select checked option`);
-    const opValue = await this.getOpSelect().$('option:checked').getText();
+    const opValue = await this.getOpSelect().getText();
     return opValue.trim();
   }
 
   async getOpSelectAllValues(): P<any> {
     log.debug(`Searching basic filter op select checked options`);
 
-    const opSelectArray = this.getOpSelects().all(by.css('option:checked'));
+    const opSelectArray = this.getOpSelects();
     const count = await opSelectArray.count();
 
     const opSelectValues = new Array();
