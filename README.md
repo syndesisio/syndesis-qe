@@ -1,5 +1,17 @@
 # Syndesis E2E tests
 
+### CI job
+
+To check the report of automated tests, you need to have access to our Jenkins instance inside Dedicated cluster.
+
+https://jenkins-syndesis-ci.b6ff.rh-idev.openshiftapps.com/job/syndesis-e2e-tests/
+
+Currently the job are executed manually on demand and with every PR to this repository.
+
+
+
+### Execute locally
+
 Before test execution you should have Syndesis UI running, follow [the documentation](https://github.com/syndesisio/syndesis-ui#running).
 
 Test are located in `ui-tests-protractor`
