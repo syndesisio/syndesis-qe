@@ -2,7 +2,7 @@ properties([
     buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
 ])
 
-def namespace = System.getenv().get('E2E_NAMESPACE')
+def namespace = 'syndesis-e2e-tests'
 
 node {
   //wait for the test namespace to not exist to prevent conflicts
@@ -14,7 +14,7 @@ node {
   }
 
   inNamespace(cloud: 'openshift', name: "${namespace}") {
-
+        
           stage 'Prepare test environment'
           createEnvironment(
                 cloud: 'openshift',
