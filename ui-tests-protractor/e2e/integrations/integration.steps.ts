@@ -5,8 +5,8 @@ import { Utils } from '../common/utils';
 import { binding, then, when } from 'cucumber-tsflow';
 import { CallbackStepDefinition } from 'cucumber';
 import { expect, P, World } from '../common/world';
-import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent} from '../integrations/edit/edit.po';
-import { ActionConfigureComponent, TwitterSearchActionConfigureComponent} from '../integrations/edit/edit.po';
+import { IntegrationAddStepPage, IntegrationEditPage, StepFactory, FlowViewComponent } from '../integrations/edit/edit.po';
+import { ActionConfigureComponent, TwitterSearchActionConfigureComponent } from '../integrations/edit/edit.po';
 import { ListActionsComponent, IntegrationConfigureBasicFilterStepPage, ConnectionSelectComponent } from '../integrations/edit/edit.po';
 import { log } from '../../src/app/logging';
 import { IntegrationsListComponent, IntegrationsListPage } from '../integrations/list/list.po';
@@ -331,7 +331,7 @@ class IntegrationSteps {
     const array = await flowViewComponent.getStepsArray();
     const trashes = this.world.app.getElementsByClassName('delete-icon');
 
-    const indexOfStep: number = Number(positionOfStep)  + 1;
+    const indexOfStep: number = Number(positionOfStep) + 1;
     trashes.get(indexOfStep).click();
     try {
       await this.world.app.clickOnFirstVisibleButton('OK');
@@ -441,6 +441,6 @@ class IntegrationSteps {
     return expect(connection.isActive(), `${type} connection must be active`)
       .to.eventually.be.true;
   }
-
 }
+
 export = IntegrationSteps;
