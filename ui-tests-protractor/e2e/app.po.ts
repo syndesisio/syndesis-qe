@@ -3,7 +3,7 @@ import * as webdriver from 'selenium-webdriver';
 import { Promise as P } from 'es6-promise';
 import { User, UserDetails } from './common/common';
 import { contains } from './common/world';
-import { MinishiftLogin, GithubLogin, KeycloakDetails, OpenShiftAuthorize } from './login/login.po';
+import { MinishiftLogin, RHLogin, GithubLogin, KeycloakDetails, OpenShiftAuthorize } from './login/login.po';
 import { log } from '../src/app/logging';
 import * as jQuery from 'jquery';
 import WebElement = webdriver.WebElement;
@@ -196,12 +196,21 @@ export class AppPage {
     let currentUrl = await browser.getCurrentUrl();
     if (process.env.TEST_ENV !== 'local') {
       const isAppLoaded = await this.rootElement.element(by.css('span.username')).isPresent();
-      if (contains(currentUrl, 'github.com/login') || !isAppLoaded) {
+      if (contains(currentUrl, 'github.com/login') && !isAppLoaded) {
         log.info('GitHub login page');
         await new GithubLogin().login(user);
       }
     }
 
+    currentUrl = await browser.getCurrentUrl();
+    if (contains(currentUrl, 'api.fuse-ignite.openshift.com')) {
+      log.info('Ignite custer login page');
+      const loginLink = await this.getElementByClassName('login-redhat');
+      await loginLink.click();
+      await new RHLogin().login(user);
+    }
+
+    currentUrl = await browser.getCurrentUrl();
     if (contains(currentUrl, ':8443/login')) {
       log.info('Minishift login page');
       await new MinishiftLogin().login(user);
@@ -212,17 +221,18 @@ export class AppPage {
       log.info('Authorize access login page');
       await new OpenShiftAuthorize().authorizeAccess();
     }
-    currentUrl = await browser.getCurrentUrl();
-    if (contains(currentUrl, 'auth/realms')) {
-      log.info('Keycloak login page');
-      await new KeycloakDetails().submitUserDetails(user.userDetails);
-    }
+    //TODO: remove during refactor
+    // currentUrl = await browser.getCurrentUrl();
+    // if (contains(currentUrl, 'auth/realms')) {
+    //   log.info('Keycloak login page');
+    //   await new KeycloakDetails().submitUserDetails(user.userDetails);
+    // }
     //We get authorize app request upon first clean login
-    currentUrl = await browser.getCurrentUrl();
-    if (contains(currentUrl, 'github.com/login/oauth')) {
-      log.info('Second GitHub AuthPage page');
-      await new GithubLogin().authorizeApp();
-    }
+    // currentUrl = await browser.getCurrentUrl();
+    // if (contains(currentUrl, 'github.com/login/oauth')) {
+    //   log.info('Second GitHub AuthPage page');
+    //   await new GithubLogin().authorizeApp();
+    // }
 
     await browser.wait(ExpectedConditions.presenceOf(this.rootElement), 30 * 1000,
     'syndesis root element - assuming we are already logged in');
