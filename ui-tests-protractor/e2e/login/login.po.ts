@@ -28,6 +28,25 @@ export class MinishiftLogin implements LoginPage {
     return P.resolve();
   }
 }
+
+export class RHLogin implements LoginPage {
+  loginSelector = 'username';
+  passwordSelector = 'password';
+  submitSelector = 'kc-login';
+
+  async login(user: User): P<any> {
+    const login = element(by.id(this.loginSelector));
+    const password = element(by.id(this.passwordSelector));
+    const submit = element(by.id(this.submitSelector));
+
+    login.getWebElement().sendKeys(user.username);
+    password.getWebElement().sendKeys(user.password);
+    await submit.getWebElement().click();
+
+    return P.resolve();
+  }
+}
+
 export class GithubLogin implements LoginPage {
 
   loginSelector = '#login_field';
