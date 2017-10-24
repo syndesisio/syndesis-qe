@@ -171,6 +171,27 @@ export class AppPage {
     return element(by.cssContainingText('h2', text));
   }
 
+  /**
+   * Fill form with given data. It will look for ui element for every map entry.
+   * @param data key,value data. Key is used for element lookup.
+   * @param parrentElement search inputs in child elements of this one
+   * @param using means what kind of identificator.it is.
+   * @returns {Promise<[void,T2,T3,T4,T5,T6,T7,T8,T9,T10]>}
+   */
+  fillForm(data: Map<string, string>, parrentElement: ElementFinder, using: string): P<void[]> {
+
+    const promises: P<void>[] = [];
+
+    data.forEach((value, key) => {
+      log.debug(`filling form item ${key} => ${value}`);
+      promises.push(
+        browser.wait(ExpectedConditions.visibilityOf(parrentElement.$(`input[${using}="${key}"`)), 5000, 'Input isnt visible').then(() => {
+          return parrentElement.$(`input[${using}="${key}"`).sendKeys(value);
+      }));
+    });
+    return P.all(promises);
+  }
+
   async selectFromDropDown(input: ElementFinder, optionNumber: number): P<any> {
     const inputGroup = await input.element(by.xpath('..'));
     const dropDownToggle = await inputGroup.element(by.className('dropdown-toggle'));
