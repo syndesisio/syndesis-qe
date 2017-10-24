@@ -231,6 +231,16 @@ export class AppPage {
     return this.goToUrl(AppPage.baseurl);
   }
 
+  async resetState(): P<boolean> {
+    const link = await this.getApiUrl();
+    log.info('resetting application state');
+
+    browser.waitForAngularEnabled(false);
+    this.goToUrl(`${link}/test-support/reset-db`);
+    browser.waitForAngularEnabled(true);
+    return true;
+  }
+
 
   /**
    * Hook into browser and fetch config.json

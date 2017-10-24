@@ -32,7 +32,7 @@ class CommonSteps {
     // user must be logged in (we need his token)
     const result = await this.world.app.login(this.world.user);
     // reset state or fail this step
-    return this.world.resetState();
+    return this.world.app.resetState();
   }
 
   @given(/^application state "([^"]*)"$/)
