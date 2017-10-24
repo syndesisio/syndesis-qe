@@ -137,6 +137,7 @@ class CommonSteps {
     }
   }
 
+  //unused
   @then(/^she is presented with the "([^"]*)"$/)
   public expectElementPresent(elementClassName: string, callback: CallbackStepDefinition): void {
 

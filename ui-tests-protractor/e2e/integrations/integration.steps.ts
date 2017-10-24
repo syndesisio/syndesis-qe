@@ -441,6 +441,34 @@ class IntegrationSteps {
     return expect(connection.isActive(), `${type} connection must be active`)
       .to.eventually.be.true;
   }
+
+  /**
+   * check you are on the correct page
+   * @param text
+   */
+  @then(/^she is presented with "([^"]*)" (page|editor)$/)
+  public verifyPageByText(text: string, callback: CallbackStepDefinition): void {
+    // 1. :
+    const editPage = new IntegrationEditPage();
+    let elementName;
+    let element: ElementFinder;
+
+    switch (text) {
+      case 'Choose a Finish Connection': {
+        elementName = 'h1';
+        element = editPage.rootElement().element(by.cssContainingText(elementName, text));
+        expect(element.isPresent(), `there must be edit page root element`).to.eventually.be.true;
+      }
+      case 'Add to Integration': {
+        elementName = 'h1';
+        element = editPage.rootElement().element(by.cssContainingText(elementName, text));
+        expect(element.isPresent(), `there must be edit page root element`).to.eventually.be.true;
+      }
+      default: {
+        P.reject(`Page ${text} doesn't exist`);
+      }
+    }
+  }
 }
 
 export = IntegrationSteps;

@@ -11,7 +11,9 @@ https://app.zenhub.com/workspace/o/syndesisio/syndesis-project/issues/3
     # And she stays there for "3000" ms
     And clicks on the "Create Connection" button
     And Camilla selects the "Salesforce" connection
-        Then she is presented with the "Validate" button 
+    Then she is presented with the "Validate" button
+    # And she stays there for "3000" ms
+    
     # fill salesforce connection details
     When she fills "QE Salesforce" connection details
     And scroll "top" "right"
