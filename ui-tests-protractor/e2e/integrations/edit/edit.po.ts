@@ -364,14 +364,14 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     log.info(`setting basic filter step predicate to option number ${predicate}`);
     const predicateInput = await this.rootElement().element(by.css(IntegrationConfigureBasicFilterStepPage.predicateSelector));
 
-    return this.app.selectFromDropDown(predicateInput, predicate);
+    return this.app.selectFromDropDownByOptionNumber(predicateInput, predicate);
   }
 
   async setOp(op: number): P<any> {
     log.info(`setting basic filter step op to option number ${op}`);
     const opInput = await this.rootElement().element(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
 
-    return this.app.selectFromDropDown(opInput, op);
+    return this.app.selectFromDropDownByOptionNumber(opInput, op);
   }
 
   setPath(path: string): P<any> {
@@ -397,7 +397,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     const opInputArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
     const opInput = opInputArray[opInputArray.length - 1];
 
-    return this.app.selectFromDropDown(opInput, op);
+    return this.app.selectFromDropDownByOptionNumber(opInput, op);
   }
 
   async setLatestPathInput(path: string): P<any> {
