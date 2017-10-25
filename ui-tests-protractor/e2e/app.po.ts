@@ -192,7 +192,7 @@ export class AppPage {
     return P.all(promises);
   }
 
-  async selectFromDropDown(input: ElementFinder, optionNumber: number): P<any> {
+  async selectFromDropDownByOptionNumber(input: ElementFinder, optionNumber: number): P<any> {
     const inputGroup = await input.element(by.xpath('..'));
     const dropDownToggle = await inputGroup.element(by.className('dropdown-toggle'));
 
@@ -202,6 +202,18 @@ export class AppPage {
     const opSelectArray = await inputGroup.all(by.css('li'));
 
     return opSelectArray[optionNumber].click();
+  }
+
+  async selectFromDropDown(input: ElementFinder, option: string): P<any> {
+    const inputGroup = await input.element(by.xpath('..'));
+    const dropDownToggle = await inputGroup.element(by.className('dropdown-toggle'));
+
+    await dropDownToggle.click();
+    await dropDownToggle.click();
+
+    const optionInput = await inputGroup.element(by.css(`li[data-value="${option}"]`));
+
+    return optionInput.click();
   }
 
   async link(title: String): P<NavLink> {
