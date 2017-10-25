@@ -565,6 +565,12 @@ enum BasicFilterOps {
 }
 
 export class ActionConfigureComponent implements SyndesisComponent {
+  app: AppPage;
+
+  constructor() {
+    this.app = new AppPage();
+  }
+
   rootElement(): ElementFinder {
     return element(by.css('syndesis-integrations-action-configure'));
   }
@@ -590,6 +596,6 @@ export class TwitterSearchActionConfigureComponent extends ActionConfigureCompon
     log.debug(`setting keywords element of twitter search with value: ${value}`);
     const fillMap = new Map();
     fillMap.set(TwitterSearchActionConfigureComponent.idSelector, value);
-    return Utils.fillForm(fillMap, this.rootElement(), 'id');
+    return this.app.fillForm(fillMap, this.rootElement(), 'id');
   }
 }
