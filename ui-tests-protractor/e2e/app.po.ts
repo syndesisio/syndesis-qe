@@ -216,6 +216,12 @@ export class AppPage {
     return optionInput.click();
   }
 
+  async selectOption(select: ElementFinder, option: string): P<any> {
+    const optionSelect = await select.element(by.cssContainingText('option', option));
+
+    return optionSelect.click();
+  }
+
   async link(title: String): P<NavLink> {
     const links = await this.findNavLinks();
     return links.filter(l => l.text === title)[0];
