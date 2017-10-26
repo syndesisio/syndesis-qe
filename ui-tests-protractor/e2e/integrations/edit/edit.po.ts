@@ -1,6 +1,6 @@
 import { Utils } from '../../common/utils';
 import { SyndesisComponent } from '../../common/common';
-import { by, element, browser, ElementFinder, ElementArrayFinder, ExpectedConditions } from 'protractor';
+import { by, element, browser, ElementFinder, ElementArrayFinder, ExpectedConditions, protractor } from 'protractor';
 import { P } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
@@ -575,9 +575,11 @@ export class ActionConfigureComponent implements SyndesisComponent {
     return element(by.css('syndesis-integrations-action-configure'));
   }
 
-  fillInput(inputId: string, value: string): P<any> {
+  async fillInput(inputId: string, value: string): P<any> {
     const input = this.getInput(inputId);
-    return input.sendKeys(value);
+    await input.clear();
+    input.sendKeys(value);
+    return browser.actions().sendKeys(protractor.Key.ENTER).perform();
   }
 
   getInput(inputId: string): ElementFinder {

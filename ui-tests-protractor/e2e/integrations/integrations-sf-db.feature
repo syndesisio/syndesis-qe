@@ -4,12 +4,8 @@ Feature: Test to verify correct function of connections kebab menu
 https://app.zenhub.com/workspace/o/syndesisio/syndesis-qe/issues/102
 https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
 
-    Background:
-        Given clean application state
-        #   Given "QE Salesforce" connection # - this does not work. step methods cannot be called as methods, only via annotations. 
-        # # Given "PostgresDB" connection #it is supposed, this connection is prepared by default
-
     Scenario: Create salesforce connection
+        Given clean application state
         # create salesforce connection
         When "Camilla" navigates to the "Connections" page
         And clicks on the "Create Connection" button
@@ -23,6 +19,7 @@ https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
         And type "SyndesisQE salesforce test" into connection description
         And clicks on the "Create" button
         Then Camilla is presented with the Syndesis page "Connections"
+        # And she stays there for "3000" ms
 
     @create-sf-db-integration
     Scenario: Create integration from salesforce to postgresDB
@@ -34,33 +31,37 @@ https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
         # select salesforce connection as 'from' point
         When Camilla selects the "QE Salesforce" connection 
         And she selects "On create" integration action 
-        Then she fills "sObjectNameundefined" action configure component input with "Lead" value
-        And click "Done" button
+        And she selects "Lead" from "sObjectName" dropdown
+        And clicks on the "Done" button
 
         # select postgresDB connection as 'to' point
-        Then she is presented with a "Choose a Finish Connection" page
-        When Camilla selects the "PostrgresDB" connection  
+        Then she is presented with "Choose a Finish Connection" page
+        When Camilla selects the "PostgresDB" connection
         And she selects "Invoke SQL stored procedure" integration action 
-        Then she fills "sObjectNameundefined" action configure component input with "add_todo" value
-        And click "Done" button 
-        Then she is presented with "Specify SQL stored procedure parameters" editor
-        # keeps default, i.e. do nothing.
+        And she selects "add_lead" from "procedureName" dropdown
         And clicks on the "Done" button 
 
         # add data mapper step
         Then she is presented with "Add to Integration" page
-        When Camilla clicks on the "Add a Step" button 
-        And she selects "Data Mapper" integration step 
-        Then she is presented with data mapper ui 
-
-        When she creates mapping from "LastName" to "task"
+        When Camilla clicks on the "Add a Step" button
+        And she selects "Data Mapper" integration step
+        Then she is presented with data mapper ui
+        # And she stays there for "5000" ms
+        When she creates mapping from "Company" to "company"
+        And she creates mapping from "Email" to "email"
+        And she creates mapping from "FirstName" to "first_and_last_name"
+        And she creates mapping from "LastName" to "first_and_last_name"
+        And she creates mapping from "LeadSource" to "lead_source"
+        And she creates mapping from "Phone" to "phone"
+        And she creates mapping from "Status" to "lead_status"
+        And she creates mapping from "Rating" to "rating"
         And scroll "top" "right"
         And clicks on the "Done" button
 
         # finish and save integration
-        Then click on the integration save button
-        And she defines integration name "Salesforce to PostresDB E2E"  
+        Then clicks on the integration save button
+        And she defines integration name "Salesforce to PostresDB E2E" 
         And clicks on the "Publish" button 
         # assert integration is present in list
-        Then Camilla is presented with "Salesforce to PostresDB E2E" integration details 
-        And Camilla clicks on the "Done" button  
+        Then Camilla is presented with "Salesforce to PostresDB E2E" integration details
+        And she clicks on the "Done" button
