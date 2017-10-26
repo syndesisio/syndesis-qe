@@ -55,6 +55,7 @@ Feature: Create integration with datamapper step
     And she selects "Create or update record" integration action
     And she selects "Contact" from "sObjectName" dropdown
     And Camilla clicks on the "Next" button
+    And she selects "TwitterScreenName" from "sObjectIdName" dropdown
     And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
 
