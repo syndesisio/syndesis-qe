@@ -130,7 +130,6 @@ export class World {
         };
         deferred.resolve(result);
       });
-
     });
 
     if (data !== null) {
@@ -191,4 +190,3 @@ export function filterAsync(array: any[], filter: (any) => P<boolean>): P<any[]>
   return P.all(array.map(entry => filter(entry)))
     .then(bits => array.filter(entry => bits.shift()));
 }
-
