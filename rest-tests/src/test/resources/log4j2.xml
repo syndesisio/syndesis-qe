@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+					pattern="%highlight{[%-5p]} [%d{ABSOLUTE}] [%t] [%c{1.}:%L]  %m%n{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=blue}"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="Console"/>
+		</Root>
+		<!-- hide apache httpclient logs from jira client -->
+		<logger name="org.apache.http" level="error">
+		</logger>
+		<!-- hide force-api logs (it generetes info statement on every 4xx return code -->
+		<logger name="com.force.api" level="warn">
+		</logger>
+		<!-- Hide info logs from hibernate validator -->
+		<logger name="org.hibernate.validator.engine" level="warn">
+		</logger>
+		<!--Set logging for JSCH to trace if you want to see SSH logging-->
+		<logger name="org.jboss.fuse.qa.fafram8.ssh.JSCHLogger" level="debug"/>
+	</Loggers>
+</Configuration>

@@ -1,0 +1,107 @@
+{
+  "AtlasMapping": {
+    "jsonType": "io.atlasmap.v2.AtlasMapping",
+    "dataSource": [
+      {
+        "jsonType": "io.atlasmap.v2.DataSource",
+        "id": "twitter4j.Status",
+        "uri": "atlas:java?className=twitter4j.Status",
+        "dataSourceType": "SOURCE"
+      },
+      {
+        "jsonType": "io.atlasmap.v2.DataSource",
+        "id": "io.syndesis.connector.salesforce.Contact",
+        "uri": "atlas:java?className=io.syndesis.connector.salesforce.Contact",
+        "dataSourceType": "TARGET"
+      }
+    ],
+    "mappings": {
+      "mapping": [
+        {
+          "jsonType": "io.atlasmap.v2.Mapping",
+          "mappingType": "MAP",
+          "inputField": [
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "screenName",
+              "path": "/user/screenName",
+              "fieldType": "STRING",
+              "docId": "twitter4j.Status"
+            }
+          ],
+          "outputField": [
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "TwitterScreenName__c",
+              "path": "/TwitterScreenName__c",
+              "fieldType": "STRING",
+              "docId": "io.syndesis.connector.salesforce.Contact"
+            }
+          ]
+        },
+        {
+          "jsonType": "io.atlasmap.v2.Mapping",
+          "mappingType": "SEPARATE",
+          "inputField": [
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "name",
+              "path": "/user/name",
+              "fieldType": "STRING",
+              "docId": "twitter4j.Status"
+            }
+          ],
+          "outputField": [
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "FirstName",
+              "path": "/FirstName",
+              "fieldType": "STRING",
+              "docId": "io.syndesis.connector.salesforce.Contact",
+              "index": 0
+            },
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "LastName",
+              "path": "/LastName",
+              "fieldType": "STRING",
+              "docId": "io.syndesis.connector.salesforce.Contact",
+              "index": 1
+            }
+          ],
+          "strategy": "Space"
+        },
+        {
+          "jsonType": "io.atlasmap.v2.Mapping",
+          "mappingType": "MAP",
+          "inputField": [
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "text",
+              "path": "/text",
+              "fieldType": "STRING",
+              "docId": "twitter4j.Status"
+            }
+          ],
+          "outputField": [
+            {
+              "jsonType": "io.atlasmap.java.v2.JavaField",
+              "name": "Description",
+              "path": "/Description",
+              "fieldType": "STRING",
+              "docId": "io.syndesis.connector.salesforce.Contact"
+            }
+          ]
+        }
+      ]
+    },
+    "name": "UI.754872",
+    "lookupTables": {
+      "lookupTable": []
+    },
+    "properties": {
+      "property": []
+    }
+  }
+}
+
