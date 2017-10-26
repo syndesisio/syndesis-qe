@@ -195,7 +195,8 @@ class CommonSteps {
 
   @when(/^she selects "([^"]*)" from "([^"]*)" dropdown$/)
   public async selectFromDropDown(option: string, selectId: string): P<any> {
-    const inputElement = await this.world.app.getElementByCssSelector(`select[id="${selectId}"]`);
+    const selectSelector = `select[id="${selectId}"]`;
+    const inputElement = await this.world.app.getElementByCssSelector(selectSelector);
     return this.world.app.selectOption(inputElement, option);
   }
 
