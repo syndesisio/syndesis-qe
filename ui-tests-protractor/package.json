@@ -9,7 +9,7 @@
     "pree2e": "webdriver-manager update --ignore_ssl",
     "e2e": "better-npm-run e2e:local",
     "pree2e:syndesis-qe": "webdriver-manager update",
-    "e2e:syndesis-qe": "better-npm-run e2e:syndesis-qe",
+    "e2e:syndesis-qe": "better-npm-run e2e:syndesis-qe --versions.chrome 2.30",
     "e2e:xvfb": "docker run -e SYNDESIS_UI_URL=$SYNDESIS_UI_URL --rm -v `pwd`:/syndesis-ui:z -w /syndesis-ui -u `id -u` docker.io/syndesis/karma-xvfb ./e2e-xvfb.sh"
   },
   "betterScripts": {
