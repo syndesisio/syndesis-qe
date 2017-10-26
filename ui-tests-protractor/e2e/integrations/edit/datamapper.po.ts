@@ -100,7 +100,7 @@ export class DataMapperComponent implements SyndesisComponent {
       // click on it to expand or select
       // find correct field from list
       log.info(`Clicking on field ${p}`);
-      await nextField.click();
+      await nextField.$('label').click();
       // find all subfields for next iteration
       fields = await nextField.$$('document-field-detail');
     }
