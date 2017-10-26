@@ -1,24 +1,12 @@
-@datamapper
+@integrations-twitter-to-salesforce
 Feature: Create integration with datamapper step
 
-  @datamapper-create-connections
-  Scenario: Create Twitter and Salesforce connection
+  @integrations-twitter-to-salesforce-clean-application-state
+  Scenario: Clean application state
     Given clean application state
 
-    # create salesforce connection
-    When "Camilla" navigates to the "Connections" page
-    And click on the "Create Connection" button
-    And Camilla selects the "Salesforce" connection
-    Then she is presented with the "Validate" button
-    # fill salesforce connection details
-    When she fills "QE Salesforce" connection details
-    And scroll "top" "right"
-    And click on the "Next" button
-    And type "QE Salesforce" into connection name
-    And type "SyndesisQE salesforce test" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
-
+  @integrations-twitter-to-salesforce-create-twitter-connection
+  Scenario: Create Twitter connection
     # create twitter connection
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Connections" page
@@ -34,9 +22,23 @@ Feature: Create integration with datamapper step
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
+  @integrations-twitter-to-salesforce-create-salesforce-connection
+  Scenario: Create Salesforce connection
+    # create salesforce connection
+    When "Camilla" navigates to the "Connections" page
+    And click on the "Create Connection" button
+    And Camilla selects the "Salesforce" connection
+    Then she is presented with the "Validate" button
+    # fill salesforce connection details
+    When she fills "QE Salesforce" connection details
+    And scroll "top" "right"
+    And click on the "Next" button
+    And type "QE Salesforce" into connection name
+    And type "SyndesisQE salesforce test" into connection description
+    And click on the "Create" button
+    Then Camilla is presented with the Syndesis page "Connections"
 
-
-  @datamapper-create-integration
+  @integrations-twitter-to-salesforce-create-integration
   Scenario: Create integration from twitter to salesforce
     # create integration
     When "Camilla" logs into the Syndesis
@@ -51,6 +53,7 @@ Feature: Create integration with datamapper step
     # select salesforce connection
     When Camilla selects the "QE Salesforce" connection
     And she selects "Create or update record" integration action
+    And she selects "Contact" from "sObjectName" dropdown
     And Camilla clicks on the "Next" button
     And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
@@ -64,6 +67,15 @@ Feature: Create integration with datamapper step
     When she creates mapping from "text" to "Description"
     And scroll "top" "right"
     And click on the "Done" button
+
+    # add a filter step
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    And she selects "Basic Filter" integration step
+    And she is presented with a "Basic Filter" step configure page
+    Then she fill configure page for "Basic Filter" step with "ANY of the following, text, Contains, #syndesis4ever" parameter
+    And click on the "Next" button
 
     # finish and save integration
     When click on the "Save as Draft" button
