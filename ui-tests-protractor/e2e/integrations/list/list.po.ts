@@ -16,6 +16,10 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return this.rootElement().element(by.cssContainingText('.list-pf-title', name));
   }
 
+  getIntegration(name: string): ElementFinder {
+    return this.rootElement().element(by.cssContainingText('.list-pf-item', name));
+  }
+
   async isIntegrationPresent(name: string): P<boolean> {
     log.info(`Checking if integration ${name} is present in the list`);
     const integration = this.integrationEntry(name);

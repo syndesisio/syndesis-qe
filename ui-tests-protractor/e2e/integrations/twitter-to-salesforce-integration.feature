@@ -86,3 +86,5 @@ Feature: Create integration with datamapper step
     Then Camilla is presented with "Twitter to Salesforce E2E" integration details
     And Camilla clicks on the "Done" button
     And Integration "Twitter to Salesforce E2E" is present in integrations list
+    # wait for integration to get in active state
+    Then she wait until integration "Twitter to Salesforce E2E" get into "Active" state
