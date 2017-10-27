@@ -203,6 +203,19 @@ class IntegrationSteps {
       .to.eventually.be.false.notify(callback);
   }
 
+  @then(/^she wait until integration "([^"]*)" get into "([^"]*)" state$/)
+  public async waitForIntegrationState(integrationName: string, integrationState: string): P<any> {
+    const page = new IntegrationsListPage();
+
+    const integration = await page.listComponent().getIntegration(integrationName);
+    const integrationActiveState = integration.element(by.cssContainingText('syndesis-integration-status', integrationState));
+
+    await browser.wait(ExpectedConditions.visibilityOf(integrationActiveState), 300000, `Integration didnt get into ${integrationState}.`);
+
+    return P.resolve();
+  }
+
+
   @then(/^she is presented with a add step page$/)
   public addStepPageOpened(callback: CallbackStepDefinition): void {
     const page = new IntegrationAddStepPage();
