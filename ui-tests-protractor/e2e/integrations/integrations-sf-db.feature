@@ -46,7 +46,6 @@ https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
         When Camilla clicks on the "Add a Step" button
         And she selects "Data Mapper" integration step
         Then she is presented with data mapper ui
-        # And she stays there for "5000" ms
         When she creates mapping from "Company" to "company"
         And she creates mapping from "Email" to "email"
         And she creates mapping from "FirstName" to "first_and_last_name"
@@ -65,3 +64,5 @@ https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
         # assert integration is present in list
         Then Camilla is presented with "Salesforce to PostresDB E2E" integration details
         And she clicks on the "Done" button
+        # wait for integration to get in active state
+        Then she wait until integration "Salesforce to PostresDB E2E" get into "Active" state
