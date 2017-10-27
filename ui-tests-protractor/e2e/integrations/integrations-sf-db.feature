@@ -4,8 +4,10 @@ Feature: Test to verify correct function of connections kebab menu
 https://app.zenhub.com/workspace/o/syndesisio/syndesis-qe/issues/102
 https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
 
-    Scenario: Create salesforce connection
+    Scenario: Clean application state
         Given clean application state
+
+    Scenario: Create salesforce connection
         # create salesforce connection
         When "Camilla" navigates to the "Connections" page
         And clicks on the "Create Connection" button
