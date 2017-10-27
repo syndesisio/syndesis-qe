@@ -194,6 +194,21 @@ class CommonSteps {
     return browser.wait(ExpectedConditions.visibilityOf(allertSucces), 6000, 'OK button not loaded in time');
   }
 
+  @then(/^she can see "([^"]*)" in alert\-success notification$/)
+  async successNotificationIsPresentWithError(textMessage: string): P<any> {
+    try {
+      const allertSucces = this.world.app.getElementByClassName('alert-success');      
+      await browser.wait(ExpectedConditions.visibilityOf(allertSucces), 6000, 'alert-success element not found');
+      await expect(allertSucces.getText(), 'Text message was different!').to.eventually.be.equal(textMessage);      
+
+    } catch (error) {
+      return P.reject(error);
+    }
+
+    log.info(`Text message "${textMessage}" was found.`);
+    return P.resolve();
+  }
+
   @when(/^she selects "([^"]*)" from "([^"]*)" dropdown$/)
   public async selectFromDropDown(option: string, selectId: string): P<any> {
     const selectSelector = `select[id="${selectId}"]`;
