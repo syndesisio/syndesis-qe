@@ -217,9 +217,12 @@ export class AppPage {
   }
 
   async selectOption(select: ElementFinder, option: string): P<any> {
-    const optionSelect = await select.element(by.cssContainingText('option', option));
-
-    return optionSelect.click();
+    return select.all(by.tagName('option')).filter((elem) =>  {
+      return elem.getText().then( (text) => {
+        //match exact String
+        return text === option;
+      });
+    }).click();
   }
 
   async link(title: String): P<NavLink> {
