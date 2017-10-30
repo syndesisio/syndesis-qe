@@ -21,7 +21,7 @@ https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
         And type "SyndesisQE salesforce test" into connection description
         And clicks on the "Create" button
         Then Camilla is presented with the Syndesis page "Connections"
-        # And she stays there for "3000" ms
+    # And she stays there for "3000" ms
 
     @create-sf-db-integration
     Scenario: Create integration from salesforce to postgresDB
@@ -50,17 +50,34 @@ https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
         Then she is presented with data mapper ui
         When she creates mapping from "Company" to "company"
         And she creates mapping from "Email" to "email"
-        And she creates mapping from "FirstName" to "first_and_last_name"
-        And she creates mapping from "LastName" to "first_and_last_name"
         And she creates mapping from "LeadSource" to "lead_source"
         And she creates mapping from "Phone" to "phone"
         And she creates mapping from "Status" to "lead_status"
         And she creates mapping from "Rating" to "rating"
+
+        #   A. ONE STEP:        
+        And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
+
+        #   B. Many steps: --START
+        # # And she creates mapping from "FirstName" to "first_and_last_name"
+        # Then she fills "FirstCombine" selector-input with "FirstName" value
+        # And she selects "Combine" from "ActionSelect" selector-dropdown
+        # And she selects "Space" from "SeparatorSelect" selector-dropdown
+        # # Then she is presented with the "Add Source" button #this 'button' is 'link' in fact, see issue: 1156.
+        # # And clicks on the "Add Source" button #for the time being keep 'link', see issue 1156
+        # And clicks on the "Add Source" link 
+        # Then she fills "SecondCombine" selector-input with "LastName" value
+        # And she fills "FirstCombinePosition" selector-input with "2" value
+        # And she fills "SecondCombinePosition" selector-input with "1" value
+        # Then she fills "TargetCombine" selector-input with "first_and_last_name" value
+        #   B. Many steps: --END
+
+        # And she stays there for "12000" ms
         And scroll "top" "right"
         And clicks on the "Done" button
-
         # finish and save integration
         Then clicks on the integration save button
+
         And she defines integration name "Salesforce to PostresDB E2E" 
         And clicks on the "Publish" button 
         # assert integration is present in list
