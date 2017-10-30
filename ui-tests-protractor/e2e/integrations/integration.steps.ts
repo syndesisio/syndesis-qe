@@ -430,8 +430,8 @@ class IntegrationSteps {
   @then(/^she fills "([^"]*)" action configure component input with "([^"]*)" value$/)
   public async fillActionConfigureField(fieldId: string, value: string): P<any> {
     const actionConfComponent = new IntegrationEditPage().actionConfigureComponent();
-    await browser.wait(ExpectedConditions.visibilityOf(actionConfComponent.getInput(fieldId)), 5000, 'Input is not visible');
-    return actionConfComponent.fillInput(fieldId, value);
+    await browser.wait(ExpectedConditions.visibilityOf(actionConfComponent.getInputById(fieldId)), 5000, 'Input is not visible');
+    return actionConfComponent.fillInputById(fieldId, value);
   }
 
   /**
@@ -470,11 +470,13 @@ class IntegrationSteps {
         elementName = 'h1';
         element = editPage.rootElement().element(by.cssContainingText(elementName, text));
         expect(element.isPresent(), `there must be edit page root element`).to.eventually.be.true;
+        break;
       }
       case 'Add to Integration': {
         elementName = 'h1';
         element = editPage.rootElement().element(by.cssContainingText(elementName, text));
         expect(element.isPresent(), `there must be edit page root element`).to.eventually.be.true;
+        break; 
       }
       default: {
         P.reject(`Page ${text} doesn't exist`);

@@ -11,6 +11,8 @@ import { User, UserDetails } from './common';
 import { log } from '../../src/app/logging';
 import { DashboardPage } from '../dashboard/dashboard.po';
 import { IntegrationsListComponent } from '../integrations/list/list.po';
+
+
 /**
  * Generic steps that can be used in various features
  * They may change state through world class.
@@ -210,7 +212,7 @@ class CommonSteps {
   }
 
   @when(/^she selects "([^"]*)" from "([^"]*)" dropdown$/)
-  public async selectFromDropDown(option: string, selectId: string): P<any> {
+  public async selectFromDropDownById(option: string, selectId: string): P<any> {
     const selectSelector = `select[id="${selectId}"]`;
     const selectElement = await this.world.app.getElementByCssSelector(selectSelector);
     await browser.wait(ExpectedConditions.visibilityOf(selectElement), 30 * 1000, `Input ${selectId} not loaded in time`);
