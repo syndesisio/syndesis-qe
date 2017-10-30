@@ -198,7 +198,7 @@ class CommonSteps {
   public async selectFromDropDown(option: string, selectId: string): P<any> {
     const selectSelector = `select[id="${selectId}"]`;
     const selectElement = await this.world.app.getElementByCssSelector(selectSelector);
-    await browser.wait(ExpectedConditions.visibilityOf(selectElement), 6000, `Input ${selectId} not loaded in time`);
+    await browser.wait(ExpectedConditions.visibilityOf(selectElement), 30 * 1000, `Input ${selectId} not loaded in time`);
     return this.world.app.selectOption(selectElement, option);
   }
 
