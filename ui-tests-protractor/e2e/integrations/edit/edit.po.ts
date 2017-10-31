@@ -1,7 +1,7 @@
 import { Utils } from '../../common/utils';
 import { SyndesisComponent } from '../../common/common';
 import { by, element, browser, ElementFinder, ElementArrayFinder, ExpectedConditions, protractor } from 'protractor';
-import { P } from '../../common/world';
+import { P, expect } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
 import { AppPage } from '../../app.po';
@@ -257,15 +257,17 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
 }
 
 export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigureStepPage {
-  static readonly predicateSelector = 'input[id="predicateundefined"]';
+  static readonly predicateSelector = 'select[id="predicate"]';
   static readonly predicateOptionSelector = 'option[name="predicate"]';
 
   static readonly pathSelector = 'input[name="path"]';
+
   static readonly valueSelector = 'input[name="value"]';
-  static readonly opSelector = 'input[id="NaN"]';
+
+  static readonly opSelector = 'select[name="op"]';
   static readonly opOptionSelector = 'option[name="op"]';
 
-  static readonly dropDownToggleSelector = 'span[class="input-group-addon"]';
+  //static readonly dropDownToggleSelector = 'span[class="input-group-addon"]';
 
   static readonly addRuleSelector = 'a.add-rule';
 
@@ -308,15 +310,33 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     return this.setPredicate(this.predicate);
   }
 
-  validate(): P<any> {
+  async validate(): P<any> {
     log.debug(`validating configuration page`);
 
-    const predicatPresent = this.getPredicateSelect().isPresent();
-    const pathPresent = this.getPathInput().isPresent();
-    const valuePresent = this.getValueInput().isPresent();
-    const opPresent = this.getOpSelect().isPresent();
+    const predicateSelect = this.getPredicateSelect();
+    const pathInput = this.getPathInput();
+    const valueInput = this.getValueInput();
+    const opSelect = this.getOpSelect();
 
-    return (predicatPresent && pathPresent && valuePresent && opPresent);
+    try {
+      await browser.wait(ExpectedConditions.visibilityOf(predicateSelect), 5000, 'Predicate input is not visible');
+
+      await expect(predicateSelect.isPresent(), 'Predicate select must be present.')
+          .to.eventually.be.true;
+
+      await expect(pathInput.isPresent(), 'Path input must be present.')
+          .to.eventually.be.true;
+
+      await expect(valueInput.isPresent(), 'Value input must be present.')
+          .to.eventually.be.true;
+
+      await expect(opSelect.isPresent(), 'Op select must be present.')
+          .to.eventually.be.true;
+    } catch (e) {
+      return P.reject(e);
+    }
+
+    return P.resolve();
   }
 
   async initialize(): P<any> {
@@ -364,14 +384,14 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     log.info(`setting basic filter step predicate to option number ${predicate}`);
     const predicateInput = await this.rootElement().element(by.css(IntegrationConfigureBasicFilterStepPage.predicateSelector));
 
-    return this.app.selectFromDropDownByOptionNumber(predicateInput, predicate);
+    return this.app.selectOption(predicateInput, BasicFilterPredicates[predicate]);
   }
 
   async setOp(op: number): P<any> {
     log.info(`setting basic filter step op to option number ${op}`);
     const opInput = await this.rootElement().element(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
 
-    return this.app.selectFromDropDownByOptionNumber(opInput, op);
+    return this.app.selectOption(opInput, BasicFilterOps[op]);
   }
 
   setPath(path: string): P<any> {
@@ -397,7 +417,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     const opInputArray = await this.rootElement().all(by.css(IntegrationConfigureBasicFilterStepPage.opSelector));
     const opInput = opInputArray[opInputArray.length - 1];
 
-    return this.app.selectFromDropDownByOptionNumber(opInput, op);
+    return this.app.selectOption(opInput, BasicFilterOps[op]);
   }
 
   async setLatestPathInput(path: string): P<any> {
@@ -555,6 +575,7 @@ enum BasicFilterPredicates {
     'ANY of the following',
 }
 
+/* Older version
 enum BasicFilterOps {
     'Contains',
     'Does Not Contain',
@@ -562,6 +583,24 @@ enum BasicFilterOps {
     'Does Not Match Regex',
     'Starts With',
     'Ends With',
+}
+*/
+
+enum BasicFilterOps {
+    'equals',
+    'equals (ignore case)',
+    'not equals',
+    '<',
+    'not in',
+    '<=',
+    '>',
+    '>=',
+    'contains',
+    'contains (ignore case)',
+    'not contains',
+    'matches',
+    'not matches',
+    'in',
 }
 
 export class ActionConfigureComponent implements SyndesisComponent {
