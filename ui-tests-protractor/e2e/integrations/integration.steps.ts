@@ -230,8 +230,7 @@ class IntegrationSteps {
     try {
       await expect(page.rootElement().isPresent(), 'there must be add step page root element')
         .to.eventually.be.true;
-      await expect(page.validate(), `${stepType} page must contain certain elements`)
-        .to.eventually.be.true;
+      await page.validate();
     } catch (e) {
       return P.reject(e);
     }
