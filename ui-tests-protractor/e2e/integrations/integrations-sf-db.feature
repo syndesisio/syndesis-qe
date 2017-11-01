@@ -1,4 +1,4 @@
-# Created by sveres at 12.10.17
+@tp2
 @integrations-sf-db-test
 Feature: Test to verify correct function of connections kebab menu
 https://app.zenhub.com/workspace/o/syndesisio/syndesis-qe/issues/102
