@@ -1,3 +1,4 @@
+@tp2
 @integrations-twitter-to-salesforce
 Feature: Create integration with datamapper step
 
