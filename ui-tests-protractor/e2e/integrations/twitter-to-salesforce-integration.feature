@@ -70,13 +70,22 @@ Feature: Create integration with datamapper step
     And scroll "top" "right"
     And click on the "Done" button
 
-    # add a filter step
+    # add basic filter step
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the random "Add a step" link
     And she selects "Basic Filter" integration step
     And she is presented with a "Basic Filter" step configure page
     Then she fill configure page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
+    And click on the "Next" button
+
+     # add advanced filter step
+    When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the random "Add a step" link
+    And she selects "Advanced Filter" integration step
+    And she is presented with a "Advanced Filter" step configure page
+    Then she fill configure page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
     And click on the "Next" button
 
     # finish and save integration
