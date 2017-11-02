@@ -179,6 +179,8 @@ export class StepFactory {
       return new IntegrationConfigureLogStepPage(parameter);
     } else if (stepType.toUpperCase() === 'BASIC FILTER') {
       return new IntegrationConfigureBasicFilterStepPage(parameter);
+    } else if (stepType.toUpperCase() === 'ADVANCED FILTER') {
+      return new IntegrationConfigureAdvancedFilterStepPage(parameter);
     }
 
     return null;
@@ -253,6 +255,54 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
 
   getParameter(): string {
     return this.logMessage;
+  }
+}
+
+export class IntegrationConfigureAdvancedFilterStepPage extends IntegrationConfigureStepPage {
+  static readonly filterTextAreaSelector = 'textarea[id="filter"]';
+
+  filterString: string;
+
+  constructor(filterString: string) {
+    super();
+    this.filterString = filterString;
+  }
+
+  fillConfiguration(): P<any> {
+    return this.setFilter(this.filterString);
+  }
+
+  validate(): P<any> {
+    log.debug(`validating advanced filter configuration page`);
+    return this.getFilterTextarea().isPresent();
+  }
+
+  initialize(): P<any> {
+    return this.getFilterTextareaValue().then((function(text) {
+      this.setParameter(text);
+    }).bind(this));
+  }
+
+  setFilter(filter: string): P<any> {
+    log.info(`setting integration step filter to ${filter}`);
+    return this.getFilterTextarea().sendKeys(filter);
+  }
+
+  setParameter(filterString: string): void {
+    this.filterString = filterString;
+  }
+
+  getFilterTextarea(): ElementFinder {
+    log.debug(`searching for filter text area`);
+    return this.rootElement().$(IntegrationConfigureAdvancedFilterStepPage.filterTextAreaSelector);
+  }
+
+  getFilterTextareaValue(): P<any> {
+    return this.getFilterTextarea().getText();
+  }
+
+  getParameter(): string {
+    return this.filterString;
   }
 }
 
