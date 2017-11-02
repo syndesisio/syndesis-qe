@@ -10,10 +10,13 @@ Feature: Connections smoke test
     When "Camilla" navigates to the "Connections" page
     And click on the "Create Connection" button
     And Camilla selects the "Twitter" connection
-    Then she is presented with the "Validate" button
+    Then she is presented with the "Validate" button    
 
-    When she fills "Twitter" connection details
-    And scroll "top" "right"
+    When she fills "Twitter Listener" connection details
+    Then click on the "Validate" button
+    Then she can see "Twitter has been successfully validated" in alert-success notification
+
+    Then scroll "top" "right"
     And click on the "Next" button
     And type "my sample twitter connection" into connection name
     And type "this connection is awesome" into connection description
