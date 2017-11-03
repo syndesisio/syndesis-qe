@@ -285,8 +285,8 @@ export class AppPage {
 
   async resetState(): P<any> {
     log.info('Resetting application state');
-    return browser.driver.executeAsyncScript( (callback) => {
-      jQuery.get(`/api/v1/test-support/reset-db`, function(data, textStatus, jqXHR) {
+    return browser.driver.executeScript( (callback) => {
+      jQuery.get('/api/v1/test-support/reset-db', function(data, textStatus, jqXHR) {
         callback(jqXHR.status);
       });
     }).then( (status) => {
