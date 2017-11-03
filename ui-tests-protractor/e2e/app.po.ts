@@ -283,14 +283,16 @@ export class AppPage {
     return this.goToUrl(AppPage.baseurl);
   }
 
-  async resetState(): P<boolean> {
-    const link = await this.getApiUrl();
-    log.info('resetting application state');
-
-    browser.waitForAngularEnabled(false);
-    this.goToUrl(`${link}/test-support/reset-db`);
-    browser.waitForAngularEnabled(true);
-    return true;
+  async resetState(): P<any> {
+    log.info('Resetting application state');
+    return browser.driver.executeAsyncScript( (callback) => {
+      jQuery.get(`/api/v1/test-support/reset-db`, function(data, textStatus, jqXHR) {
+        callback(jqXHR.status);
+      });
+    }).then( (status) => {
+      log.info(`Reset returned status code ${status}`);
+      status === 204;
+    });
   }
 
 
