@@ -11,7 +11,6 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import io.syndesis.model.ListResult;
-import io.syndesis.model.WithName;
 import io.syndesis.qe.rest.utils.RestUtils;
 import io.syndesis.qe.rest.utils.SyndesisRestConstants;
 
@@ -20,7 +19,7 @@ import io.syndesis.qe.rest.utils.SyndesisRestConstants;
  *
  * @author jknetl
  */
-public abstract class AbstractEndpoint<T extends WithName> {
+public abstract class AbstractEndpoint<T> {
 
 	protected String endpointName;
 	protected String syndesisUrl;
@@ -70,6 +69,17 @@ public abstract class AbstractEndpoint<T extends WithName> {
 		final T result = response.readEntity(type);
 
 		return result;
+	}
+
+	public T update(String id, T obj) {
+		final Invocation.Builder invocation = client
+				.target(getEndpointUrl() + "/" + id)
+				.request(MediaType.APPLICATION_JSON)
+				.header("X-Forwarded-User", "pista")
+				.header("X-Forwarded-Access-Token", "kral");
+		final Response response = invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON));
+
+		return response.readEntity(type);
 	}
 
 	public List<T> list() {
