@@ -1,6 +1,6 @@
 import { SyndesisComponent } from '../../common/common';
 import { $, browser, ElementFinder, ExpectedConditions } from 'protractor';
-import { P } from '../../common/world';
+import { P, World } from '../../common/world';
 import { log } from '../../../src/app/logging';
 
 export class DataMapperComponent implements SyndesisComponent {
@@ -134,5 +134,76 @@ export class DataMapperComponent implements SyndesisComponent {
     log.info(`field ${field} has ${children.length} child fields`);
 
     return children;
+  }
+
+  async getInputByAlias(inputAlias: string): P<ElementFinder | any> {
+
+    let inputSelector;
+    let xpathSelector;
+    let inputElement;
+    const world: World = new World();
+
+    switch (inputAlias) {
+      case 'FirstCombine': {
+        //to be replaced by id
+        inputSelector = 'div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid';
+        inputElement = await world.app.getElementByCssSelector(inputSelector);
+        return inputElement;
+      }
+      case 'SecondCombine': {
+        //to be replaced by id
+        inputSelector = 'div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid';
+        inputElement = await world.app.getElementByCssSelector(inputSelector);
+        return inputElement;
+      }
+      case 'TargetCombine': {
+        //to be replaced by id
+        inputSelector = 'simple-mapping:nth-child(6) > div > div > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid';
+        inputElement = await world.app.getElementByCssSelector(inputSelector);
+        return inputElement;
+      }
+      case 'FirstCombinePosition': {
+        xpathSelector = "(//mapping-field-action//label[text()='Index']/following-sibling::input)[1]";
+        inputElement = await world.app.getElementByXpath(xpathSelector);
+        return inputElement;
+      }
+      case 'SecondCombinePosition': {
+        xpathSelector = "(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]";
+        inputElement = await world.app.getElementByXpath(xpathSelector);
+        return inputElement;
+      }
+      default: {
+        P.reject(`Input ${inputAlias} doesn't exist`);
+      }
+    }
+  }
+
+  async getSelectByAlias(selectAlias: string): P<ElementFinder | any> {
+
+    let xpathSelector;
+    const world: World = new World();
+
+    switch (selectAlias) {
+
+      case 'ActionSelect': {
+        xpathSelector = "//label[text()='Action']/following-sibling::select";
+        break;
+      }
+      case 'SeparatorSelect': {
+        xpathSelector = "//label[text()='Separator:']/following-sibling::select";
+        break;
+      }
+      case 'TransformationSelect': {
+        xpathSelector = "//label[text() = 'Transformation']/following-sibling::select";
+        break;
+      }
+      default: {
+        P.reject(`Select ${selectAlias} doesn't exist`);
+        break;
+      }
+    }
+    log.info("SELECTOR: *" + xpathSelector + "*");
+    const selectElement = await world.app.getElementByXpath(xpathSelector);
+    return selectElement;
   }
 }
