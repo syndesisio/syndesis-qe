@@ -149,6 +149,11 @@ export class AppPage {
     return element(by.css(cssSelector));
   }
 
+  getElementByXpath(xpathSelector: string): ElementFinder {
+    log.info(`searching for element by ${xpathSelector}`);
+    return element(by.xpath(xpathSelector));
+  }
+
   getElementByClassName(elementClassName: string): ElementFinder {
     log.info(`searching for element ${elementClassName}`);
     return element(by.className(elementClassName));

@@ -1,7 +1,7 @@
 import { Utils } from '../../common/utils';
 import { SyndesisComponent } from '../../common/common';
 import { by, element, browser, ElementFinder, ElementArrayFinder, ExpectedConditions, protractor } from 'protractor';
-import { P, expect } from '../../common/world';
+import { expect, P, World } from '../../common/world';
 import { ConnectionsListComponent } from '../../connections/list/list.po';
 import { log } from '../../../src/app/logging';
 import { AppPage } from '../../app.po';
@@ -74,8 +74,8 @@ export class FlowViewComponent implements SyndesisComponent {
     }
 
     const allButtonsByTitle = element.all(by.buttonText('Done'));
-    const doneButton = await allButtonsByTitle.filter(function(elem) {
-      return elem.isDisplayed().then(function(displayedElement){
+    const doneButton = await allButtonsByTitle.filter(function (elem) {
+      return elem.isDisplayed().then(function (displayedElement) {
         return displayedElement;
       });
     }).first();
@@ -230,7 +230,7 @@ export class IntegrationConfigureLogStepPage extends IntegrationConfigureStepPag
   }
 
   initialize(): P<any> {
-    return this.getMessageInputValue().then((function(text) {
+    return this.getMessageInputValue().then((function (text) {
       this.setParameter(text);
     }).bind(this));
   }
@@ -448,7 +448,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     log.info(`setting basic filter step path to ${path}`);
     const pathInput = this.rootElement().$(IntegrationConfigureBasicFilterStepPage.pathSelector);
 
-    return pathInput.clear().then(function() {
+    return pathInput.clear().then(function () {
       pathInput.sendKeys(path);
     });
   }
@@ -457,7 +457,7 @@ export class IntegrationConfigureBasicFilterStepPage extends IntegrationConfigur
     log.info(`setting basic filter step value to ${value}`);
     const valueInput = this.rootElement().$(IntegrationConfigureBasicFilterStepPage.valueSelector);
 
-    return valueInput.clear().then(function() {
+    return valueInput.clear().then(function () {
       valueInput.sendKeys(value);
     });
   }
@@ -621,18 +621,18 @@ export class BasicFilterRule {
 }
 
 enum BasicFilterPredicates {
-    'ALL of the following',
-    'ANY of the following',
+  'ALL of the following',
+  'ANY of the following',
 }
 
 /* Older version
 enum BasicFilterOps {
-    'Contains',
-    'Does Not Contain',
-    'Matches Regex',
-    'Does Not Match Regex',
-    'Starts With',
-    'Ends With',
+  'Contains',
+  'Does Not Contain',
+  'Matches Regex',
+  'Does Not Match Regex',
+  'Starts With',
+  'Ends With',
 }
 */
 
@@ -664,16 +664,27 @@ export class ActionConfigureComponent implements SyndesisComponent {
     return element(by.css('syndesis-integrations-action-configure'));
   }
 
-  async fillInput(inputId: string, value: string): P<any> {
-    const input = this.getInput(inputId);
+  async fillInputById(inputId: string, value: string): P<any> {
+    const input = this.getInputById(inputId);
     await input.clear();
     input.sendKeys(value);
     return browser.actions().sendKeys(protractor.Key.ENTER).perform();
   }
 
-  getInput(inputId: string): ElementFinder {
+  async fillInputByElement(element: ElementFinder, value: string): P<any> {
+    await element.clear();
+    element.sendKeys(value);
+    return browser.actions().sendKeys(protractor.Key.ENTER).perform();
+  }
+
+  getInputById(inputId: string): ElementFinder {
     return this.rootElement().element(by.id(inputId));
   }
+  getInputBySelector(selector: string): ElementFinder {
+    return this.rootElement().element(by.css(selector));
+  }
+
+
 }
 
 export class TwitterSearchActionConfigureComponent extends ActionConfigureComponent {
