@@ -7,9 +7,9 @@ import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
 import io.restassured.RestAssured;
-import io.syndesis.qe.rest.accounts.Account;
-import io.syndesis.qe.rest.accounts.AccountsDirectory;
-import io.syndesis.qe.rest.utils.SyndesisRestConstants;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.utils.SyndesisRestConstants;
 
 /**
  * Abstract base for syndesis rest tests.
