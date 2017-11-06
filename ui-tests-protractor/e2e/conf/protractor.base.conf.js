@@ -5,6 +5,7 @@ let reporter = require('cucumber-html-reporter');
 let fse = require('fs-extra');
 let path = require('path');
 const os = require('os');
+let merge = require('merge');
 
 // define paths for cucumber test framework
 let testPath = path.resolve('e2e/');
@@ -12,18 +13,35 @@ let reportsPath = path.join(testPath, 'cucumber-reports/');
 let cucumberJsonPath = path.join(reportsPath, 'cucumber-report.json');
 let cucumberHtmlPath = path.join(reportsPath, 'cucumber-report.html');
 
+let useBrowser = process.env.BROWSER || null;
 
-exports.config = {
+if (useBrowser === 'Firefox') {
+
+  console.log('Using Firefox browser.');
+  config = { 
+    capabilities: {
+      'browserName': 'firefox'
+    }
+  };
+  
+} else {
+  
+  console.log('Using Chrome as default browser. Run \`export BROWSER=Firefox\` to use Firefox.');  
+  config = { 
+    capabilities: {
+      'browserName': 'chrome',
+      'chromeOptions': {
+        'args': ['--no-sandbox']
+      }
+    },    
+  };
+}
+
+exports.config = merge(config, {
   allScriptsTimeout: 11000,
   specs: [
     testPath + '/**/*.feature'
   ],
-  capabilities: {
-    'browserName': 'chrome',
-    'chromeOptions': {
-      'args': ['--no-sandbox']
-    }
-  },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',
   framework: 'custom',
@@ -67,6 +85,5 @@ exports.config = {
       }
     };
     reporter.generate(options);
-
-  }
-};
+  }  
+});
