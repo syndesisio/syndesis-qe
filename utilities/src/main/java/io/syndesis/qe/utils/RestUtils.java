@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.utils;
+package io.syndesis.qe.utils;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -21,7 +21,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-import io.syndesis.qe.rest.exceptions.RestClientException;
+import io.syndesis.qe.exceptions.RestClientException;
 
 /**
  * Utility class for Rest client (RestEasy).
