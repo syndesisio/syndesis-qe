@@ -9,7 +9,6 @@ import static org.infinispan.util.ByteString.emptyString;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.force.api.ApiConfig;
@@ -26,6 +25,9 @@ import java.util.concurrent.TimeUnit;
 
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
+import io.syndesis.model.filter.FilterPredicate;
+import io.syndesis.model.filter.FilterRule;
+import io.syndesis.model.filter.RuleFilterStep;
 import io.syndesis.model.integration.Integration;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
@@ -37,6 +39,7 @@ import io.syndesis.qe.rest.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.rest.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.rest.endpoints.TestSupport;
 import io.syndesis.qe.rest.tests.AbstractSyndesisRestTest;
+import io.syndesis.qe.rest.utils.FilterRulesBuilder;
 import io.syndesis.qe.rest.utils.SyndesisRestConstants;
 import io.syndesis.qe.rest.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +56,6 @@ import twitter4j.conf.ConfigurationBuilder;
  * @author jknetl
  */
 @Slf4j
-@Ignore
 public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 
 	public static final String TWITTER_CONNECTION_ID = "fuseqe-twitter";
@@ -61,6 +63,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 	public static final String INTEGRATION_NAME = "Twitter to salesforce contact rest test";
 	public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
 	private String mapping;
+	private FilterRule filter;
 	private AccountsDirectory accountsDirectory;
 	private Connector twitterConnector;
 	private Connector salesforceConnector;
@@ -122,26 +125,31 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 
 	private void createConnections() {
 		final Account twitterAccount = accountsDirectory.getAccount("twitter_listen").get();
+
 		final Connection twitterConnection = new Connection.Builder()
 				.connector(twitterConnector)
 				.connectorId(twitterConnector.getId())
 				.id(TWITTER_CONNECTION_ID)
-				.name("Fuse QE twitter listen")
-				.configuredProperties(Utils.map("accessToken", twitterAccount.getProperty("accessToken"),
+				.name("New Fuse QE twitter listen")
+				.configuredProperties(Utils.map(
+						"accessToken", twitterAccount.getProperty("accessToken"),
 						"accessTokenSecret", twitterAccount.getProperty("accessTokenSecret"),
 						"consumerKey", twitterAccount.getProperty("consumerKey"),
-						"consumerSecret", twitterAccount.getProperty("consumerSecret")))
+						"consumerSecret", twitterAccount.getProperty("consumerSecret")
+				))
 				.build();
 
 		final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
+
 		final Connection salesforceConnection = new Connection.Builder()
 				.connector(salesforceConnector)
 				.connectorId(salesforceConnector.getId())
 				.id(SALESFORCE_CONNECTION_ID)
-				.name("Fuse QE salesforce")
-				.configuredProperties(Utils.map("clientId", salesforceAccount.getProperty("clientId"),
+				.icon("fa-puzzle-piece")
+				.name("New Fuse QE salesforce")
+				.configuredProperties(Utils.map(
+						"clientId", salesforceAccount.getProperty("clientId"),
 						"clientSecret", salesforceAccount.getProperty("clientSecret"),
-						"instanceUrl", salesforceAccount.getProperty("instanceUrl"),
 						"loginUrl", salesforceAccount.getProperty("loginUrl"),
 						"userName", salesforceAccount.getProperty("userName"),
 						"password", salesforceAccount.getProperty("password")))
@@ -161,7 +169,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 		final Step twitterStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(twitterConnection)
-				.action(Utils.findAction(twitterConnector, "twitter-mention"))
+				.action(Utils.findAction(twitterConnector, "twitter-mention-connector"))
 				.build();
 
 		final Step mapperStep = new SimpleStep.Builder()
@@ -169,14 +177,21 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 				.configuredProperties(Utils.map("atlasmapping", mapping))
 				.build();
 
+		final Step basicFilter = new RuleFilterStep.Builder()
+				.configuredProperties(Utils.map(
+						"predicate", FilterPredicate.AND.toString(),
+						"rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
+				))
+				.build();
+
 		final Step salesforceStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(salesforceConnection)
-				.action(Utils.findAction(salesforceConnector, "salesforce-upsert-contact"))
+				.action(Utils.findAction(salesforceConnector, "salesforce-upsert-sobject"))
 				.build();
 
 		Integration integration = new Integration.Builder()
-				.steps(Arrays.asList(twitterStep, mapperStep, salesforceStep))
+				.steps(Arrays.asList(twitterStep, basicFilter, mapperStep, salesforceStep))
 				.name(INTEGRATION_NAME)
 				.desiredStatus(Integration.Status.Activated)
 				.build();
@@ -195,7 +210,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 	private void validateIntegration() throws TwitterException {
 		assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(SYNDESIS_TALKY_ACCOUNT).get().getProperty("screenName")).isPresent(), is(false));
 
-		final String message = "Have you heard about Syndesis project? It is pretty amazing... @"
+		final String message = "#backendTest Have you heard about Syndesis project? It is pretty amazing... @"
 				+ accountsDirectory.getAccount("twitter_listen").get().getProperty("screenName");
 		log.info("Sending a tweet from {}. Message: {}", accountsDirectory.getAccount(SYNDESIS_TALKY_ACCOUNT).get().getProperty("screenName"), message);
 		twitter.updateStatus(message);

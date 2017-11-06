@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.syndesis.qe</groupId>
 	<artifactId>syndesis-qe-parent</artifactId>
@@ -9,25 +9,25 @@
 	<name>syndesis-qe</name>
 
 	<properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <syndesis.version>0.1-SNAPSHOT</syndesis.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<syndesis.version>1.1.3</syndesis.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.version>3.3</maven.compiler.version>
-    <surefire.version>2.19.1</surefire.version>
+		<maven.compiler.version>3.3</maven.compiler.version>
+		<surefire.version>2.19.1</surefire.version>
 	</properties>
 
-  	<description>Test suite for syndesis project</description>
-  	<url>https://syndesis.io</url>
+	<description>Test suite for syndesis project</description>
+	<url>https://syndesis.io</url>
 
-  <licenses>
+	<licenses>
 		<license>
 			<name>The Apache License, Version 2.0</name>
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 
-  <developers>
+	<developers>
 		<developer>
 			<name>Tomas Plevko</name>
 			<email>tplevko@redhat.com</email>
@@ -36,40 +36,40 @@
 		</developer>
 	</developers>
 
-  <scm>
+	<scm>
 		<url>https://github.com/syndesisio/syndesis-qe/tree/master</url>
 	</scm>
 
 	<profiles>
-    		<profile>
-    			<id>rest</id>
-    			<activation>
-    				<property>
-    					<name>rest</name>
-    				</property>
-    			</activation>
-    			<modules>
-    				<module>rest-tests</module>
-    			</modules>
-    		</profile>
-  </profiles>
+		<profile>
+			<id>rest</id>
+			<activation>
+				<property>
+					<name>rest</name>
+				</property>
+			</activation>
+			<modules>
+				<module>rest-tests</module>
+			</modules>
+		</profile>
+	</profiles>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${maven.compiler.version}</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire.version}</version>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.version}</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire.version}</version>
+			</plugin>
+		</plugins>
+	</build>
 </project>
