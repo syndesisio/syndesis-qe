@@ -31,7 +31,7 @@ class DataMapperSteps {
   @when(/^she selects "([^"]*)" from "([^"]*)" selector-dropdown$/)
   public async selectFromDropDownByElement(option: string, selectAlias: string): P<any> {
     const datamapperCommon = new DataMapperComponent();
-    const selectElement = await datamapperCommon.getSelectByAlias(selectAlias);
+    const selectElement = await datamapperCommon.getElementByAlias(selectAlias);
     await browser.wait(ExpectedConditions.visibilityOf(selectElement), 6000, `Input ${selectAlias} not loaded in time`);
     return this.world.app.selectOption(selectElement, option);
   }
@@ -42,7 +42,7 @@ class DataMapperSteps {
     const actionConf = new ActionConfigureComponent();
     // const datamapperComponent = new DataMapperComponent();
     const datamapperCommon = new DataMapperComponent();
-    const inputElement = await datamapperCommon.getInputByAlias(selectorAlias);
+    const inputElement = await datamapperCommon.getElementByAlias(selectorAlias);
     await browser.wait(ExpectedConditions.visibilityOf(inputElement), 6000, 'Input is not visible');
     return actionConf.fillInputByElement(inputElement, value);
   }
@@ -67,17 +67,17 @@ class DataMapperSteps {
     // Then she fills "FirstCombine" selector-input with "FirstName" value
     const actionConf = new ActionConfigureComponent();
     const datamapperCommon = new DataMapperComponent();
-    inputElement = await datamapperCommon.getInputByAlias('FirstCombine');
+    inputElement = await datamapperCommon.getElementByAlias('FirstCombine');
     await browser.wait(ExpectedConditions.visibilityOf(inputElement), 6000, 'Input FirstCombineis not visible');
     await actionConf.fillInputByElement(inputElement, first);
 
     // And she selects "Combine" from "ActionSelect" selector-dropdown
-    selectElement = await datamapperCommon.getSelectByAlias('ActionSelect');
+    selectElement = await datamapperCommon.getElementByAlias('ActionSelect');
     await browser.wait(ExpectedConditions.visibilityOf(selectElement), 6000, `Select ActionSelect not loaded in time`);
     await this.world.app.selectOption(selectElement, 'Combine');
 
     // And she selects "Space" from "SeparatorSelect" selector-dropdown
-    selectElement = await datamapperCommon.getSelectByAlias('SeparatorSelect');
+    selectElement = await datamapperCommon.getElementByAlias('SeparatorSelect');
     await browser.wait(ExpectedConditions.visibilityOf(selectElement), 6000, `Select SeparatorSelect not loaded in time`);
     await this.world.app.selectOption(selectElement, separator);
 
@@ -85,22 +85,22 @@ class DataMapperSteps {
     await world.app.clickLink('Add Source');
 
     // Then she fills "SecondCombine" selector-input with "LastName" value
-    inputElement = await datamapperCommon.getInputByAlias('SecondCombine');
+    inputElement = await datamapperCommon.getElementByAlias('SecondCombine');
     await browser.wait(ExpectedConditions.visibilityOf(inputElement), 6000, 'Input SecondCombine is not visible');
     await actionConf.fillInputByElement(inputElement, second);
 
     // And she fills "FirstCombinePosition" selector-input with "2" value
-    inputElement = await datamapperCommon.getInputByAlias('FirstCombinePosition');
+    inputElement = await datamapperCommon.getElementByAlias('FirstCombinePosition');
     await browser.wait(ExpectedConditions.visibilityOf(inputElement), 6000, 'Input FirstCombinePosition is not visible');
     await actionConf.fillInputByElement(inputElement, first_pos);
 
     // And she fills "SecondCombinePosition" selector-input with "1" value
-    inputElement = await datamapperCommon.getInputByAlias('SecondCombinePosition');
+    inputElement = await datamapperCommon.getElementByAlias('SecondCombinePosition');
     await browser.wait(ExpectedConditions.visibilityOf(inputElement), 6000, 'Input SecondCombinePosition is not visible');
     await actionConf.fillInputByElement(inputElement, sec_pos);
 
     // Then she fills "TargetCombine" selector-input with "first_and_last_name" value
-    inputElement = await datamapperCommon.getInputByAlias('TargetCombine');
+    inputElement = await datamapperCommon.getElementByAlias('TargetCombine');
     await browser.wait(ExpectedConditions.visibilityOf(inputElement), 6000, 'Input TargetCombine is not visible');
     return actionConf.fillInputByElement(inputElement, combined);
 

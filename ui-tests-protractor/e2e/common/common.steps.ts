@@ -130,25 +130,21 @@ class CommonSteps {
   }
 
   @then(/^she is presented with the "([^"]*)" elements*$/)
-  public expectElementsPresent(elementClassNames: string, callback: CallbackStepDefinition): void {
+  public async expectElementsPresent(elementClassNames: string): P<any> {
 
     const elementClassNamesArray = elementClassNames.split(',');
 
     for (const elementClassName of elementClassNamesArray) {
-      this.expectElementPresent(elementClassName, callback);
+      const element = this.world.app.getElementByClassName(elementClassName);
+      try {
+        await browser.wait(ExpectedConditions.visibilityOf(element), 5000, `Element ${elementClassName} is not present.`);
+        expect(element.isPresent(), `There must be present a element ${elementClassName}`).to.eventually.be.true;
+      } catch (e) {
+        return P.reject(e);
+      }
     }
-  }
 
-  //unused
-  @then(/^she is presented with the "([^"]*)"$/)
-  public expectElementPresent(elementClassName: string, callback: CallbackStepDefinition): void {
-
-    const element = this.world.app.getElementByClassName(elementClassName);
-    expect(element.isPresent(), `There must be present a element ${elementClassName}`)
-      .to.eventually.be.true;
-
-    expect(element.isPresent(), `There must be enabled element ${elementClassName}`)
-      .to.eventually.be.true.notify(callback);
+    return P.resolve();
   }
 
   @then(/^Integration "([^"]*)" is present in top 5 integrations$/)

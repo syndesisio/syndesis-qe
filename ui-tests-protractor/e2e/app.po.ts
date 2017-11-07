@@ -159,6 +159,11 @@ export class AppPage {
     return element(by.className(elementClassName));
   }
 
+  getElementByLocator(elementLocator: Function): ElementFinder {
+    log.info(`searching for element ${elementLocator}`);
+    return element(elementLocator);
+  }
+
   getElementsByClassName(elementClassName: string): ElementArrayFinder {
     log.info(`searching for elements by class name ${elementClassName}`);
     return element.all(by.className(elementClassName));
