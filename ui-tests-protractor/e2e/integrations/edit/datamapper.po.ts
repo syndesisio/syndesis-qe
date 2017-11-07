@@ -1,6 +1,7 @@
 import { SyndesisComponent } from '../../common/common';
-import { $, browser, ElementFinder, ExpectedConditions } from 'protractor';
-import { P, World } from '../../common/world';
+import { $, by, browser, ElementFinder, ExpectedConditions } from 'protractor';
+import { P } from '../../common/world';
+import { AppPage } from '../../app.po';
 import { log } from '../../../src/app/logging';
 
 export class DataMapperComponent implements SyndesisComponent {
@@ -136,74 +137,52 @@ export class DataMapperComponent implements SyndesisComponent {
     return children;
   }
 
-  async getInputByAlias(inputAlias: string): P<ElementFinder | any> {
+  async getElementByAlias(alias: string): P<ElementFinder> {
 
-    let inputSelector;
-    let xpathSelector;
+    let locator;
     let inputElement;
-    const world: World = new World();
+    const app: AppPage = new AppPage();
 
-    switch (inputAlias) {
+    switch (alias) {
       case 'FirstCombine': {
-        //to be replaced by id
-        inputSelector = 'div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid';
-        inputElement = await world.app.getElementByCssSelector(inputSelector);
-        return inputElement;
+        locator = by.css('div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid');
+        break;
       }
       case 'SecondCombine': {
-        //to be replaced by id
-        inputSelector = 'div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid';
-        inputElement = await world.app.getElementByCssSelector(inputSelector);
-        return inputElement;
+        locator = by.css('div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid');
+        break;
       }
       case 'TargetCombine': {
-        //to be replaced by id
-        inputSelector = 'simple-mapping:nth-child(6) > div > div > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid';
-        inputElement = await world.app.getElementByCssSelector(inputSelector);
-        return inputElement;
+        locator = by.css('simple-mapping:nth-child(6) > div > div > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid');
+        break;
       }
       case 'FirstCombinePosition': {
-        xpathSelector = "(//mapping-field-action//label[text()='Index']/following-sibling::input)[1]";
-        inputElement = await world.app.getElementByXpath(xpathSelector);
-        return inputElement;
+        locator = by.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[1]");
+        break;
       }
       case 'SecondCombinePosition': {
-        xpathSelector = "(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]";
-        inputElement = await world.app.getElementByXpath(xpathSelector);
-        return inputElement;
+        locator = by.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]");
+        break;
       }
-      default: {
-        P.reject(`Input ${inputAlias} doesn't exist`);
-      }
-    }
-  }
-
-  async getSelectByAlias(selectAlias: string): P<ElementFinder | any> {
-
-    let xpathSelector;
-    const world: World = new World();
-
-    switch (selectAlias) {
-
       case 'ActionSelect': {
-        xpathSelector = "//label[text()='Action']/following-sibling::select";
+        locator = by.xpath("//label[text()='Action']/following-sibling::select");
         break;
       }
       case 'SeparatorSelect': {
-        xpathSelector = "//label[text()='Separator:']/following-sibling::select";
+        locator = by.xpath("//label[text()='Separator:']/following-sibling::select");
         break;
       }
       case 'TransformationSelect': {
-        xpathSelector = "//label[text() = 'Transformation']/following-sibling::select";
+        locator = by.xpath("//label[text() = 'Transformation']/following-sibling::select");
         break;
       }
       default: {
-        P.reject(`Select ${selectAlias} doesn't exist`);
-        break;
+        P.reject(`Alias ${alias} doesn't exist`);
       }
     }
-    log.info("SELECTOR: *" + xpathSelector + "*");
-    const selectElement = await world.app.getElementByXpath(xpathSelector);
-    return selectElement;
+
+    inputElement = await app.getElementByLocator(locator);
+ 
+    return inputElement;
   }
 }
