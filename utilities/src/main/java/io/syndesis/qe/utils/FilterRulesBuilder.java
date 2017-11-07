@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.utils;
+package io.syndesis.qe.utils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

@@ -5,8 +5,8 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import static io.syndesis.qe.rest.utils.Utils.findAction;
-import static io.syndesis.qe.rest.utils.Utils.map;
+import static io.syndesis.qe.utils.TestUtils.findAction;
+import static io.syndesis.qe.utils.TestUtils.map;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -69,9 +69,9 @@ import io.syndesis.project.converter.visitor.EndpointStepVisitor;
 import io.syndesis.project.converter.visitor.ExpressionFilterStepVisitor;
 import io.syndesis.project.converter.visitor.RuleFilterStepVisitor;
 import io.syndesis.project.converter.visitor.StepVisitorFactoryRegistry;
-import io.syndesis.qe.rest.accounts.Account;
-import io.syndesis.qe.rest.accounts.AccountsDirectory;
-import io.syndesis.qe.rest.utils.SyndesisRestConstants;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.utils.SyndesisRestConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**

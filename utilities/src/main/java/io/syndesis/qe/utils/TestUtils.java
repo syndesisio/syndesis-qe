@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.utils;
+package io.syndesis.qe.utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,16 +10,17 @@ import java.util.function.Supplier;
 import io.syndesis.model.connection.Action;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.Integration;
-import io.syndesis.qe.rest.endpoints.IntegrationsEndpoint;
+
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author jknetl
  */
 @Slf4j
-public final class Utils {
+public final class TestUtils {
 
-	private Utils() {
+	private TestUtils() {
 	}
 
 	/**

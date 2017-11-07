@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.endpoints;
+package io.syndesis.qe.endpoints;
 
 import static io.restassured.RestAssured.given;
 

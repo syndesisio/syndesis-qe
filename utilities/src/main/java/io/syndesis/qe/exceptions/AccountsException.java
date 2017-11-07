@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.exceptions;
+package io.syndesis.qe.exceptions;
 
 /**
  * Exception indicating problem with a third party service account.

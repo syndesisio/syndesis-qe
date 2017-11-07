@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.utils;
+package io.syndesis.qe.utils;
 
 import java.util.Arrays;
 import java.util.Date;

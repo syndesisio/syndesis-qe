@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.utils;
+package io.syndesis.qe.utils;
 
 /**
  * Constants used by syndesis REST test suite.
