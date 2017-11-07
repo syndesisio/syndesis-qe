@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.endpoints;
+package io.syndesis.qe.endpoints;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
@@ -11,8 +11,8 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import io.syndesis.model.ListResult;
-import io.syndesis.qe.rest.utils.RestUtils;
-import io.syndesis.qe.rest.utils.SyndesisRestConstants;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.SyndesisRestConstants;
 
 /**
  * Implements a client endpoint for syndesis REST.

@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.accounts;
+package io.syndesis.qe.accounts;
 
 import java.util.Map;
 

@@ -31,17 +31,17 @@ import io.syndesis.model.filter.RuleFilterStep;
 import io.syndesis.model.integration.Integration;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
-import io.syndesis.qe.rest.accounts.Account;
-import io.syndesis.qe.rest.accounts.AccountsDirectory;
-import io.syndesis.qe.rest.dto.salesforce.Contact;
-import io.syndesis.qe.rest.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.rest.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.rest.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.rest.endpoints.TestSupport;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.salesforce.Contact;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.rest.tests.AbstractSyndesisRestTest;
-import io.syndesis.qe.rest.utils.FilterRulesBuilder;
-import io.syndesis.qe.rest.utils.SyndesisRestConstants;
-import io.syndesis.qe.rest.utils.Utils;
+import io.syndesis.qe.utils.FilterRulesBuilder;
+import io.syndesis.qe.utils.SyndesisRestConstants;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -131,7 +131,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 				.connectorId(twitterConnector.getId())
 				.id(TWITTER_CONNECTION_ID)
 				.name("New Fuse QE twitter listen")
-				.configuredProperties(Utils.map(
+				.configuredProperties(TestUtils.map(
 						"accessToken", twitterAccount.getProperty("accessToken"),
 						"accessTokenSecret", twitterAccount.getProperty("accessTokenSecret"),
 						"consumerKey", twitterAccount.getProperty("consumerKey"),
@@ -147,7 +147,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 				.id(SALESFORCE_CONNECTION_ID)
 				.icon("fa-puzzle-piece")
 				.name("New Fuse QE salesforce")
-				.configuredProperties(Utils.map(
+				.configuredProperties(TestUtils.map(
 						"clientId", salesforceAccount.getProperty("clientId"),
 						"clientSecret", salesforceAccount.getProperty("clientSecret"),
 						"loginUrl", salesforceAccount.getProperty("loginUrl"),
@@ -169,16 +169,16 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 		final Step twitterStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(twitterConnection)
-				.action(Utils.findAction(twitterConnector, "twitter-mention-connector"))
+				.action(TestUtils.findAction(twitterConnector, "twitter-mention-connector"))
 				.build();
 
 		final Step mapperStep = new SimpleStep.Builder()
 				.stepKind("mapper")
-				.configuredProperties(Utils.map("atlasmapping", mapping))
+				.configuredProperties(TestUtils.map("atlasmapping", mapping))
 				.build();
 
 		final Step basicFilter = new RuleFilterStep.Builder()
-				.configuredProperties(Utils.map(
+				.configuredProperties(TestUtils.map(
 						"predicate", FilterPredicate.AND.toString(),
 						"rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
 				))
@@ -187,7 +187,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 		final Step salesforceStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(salesforceConnection)
-				.action(Utils.findAction(salesforceConnector, "salesforce-upsert-sobject"))
+				.action(TestUtils.findAction(salesforceConnector, "salesforce-upsert-sobject"))
 				.build();
 
 		Integration integration = new Integration.Builder()
@@ -202,7 +202,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 		final long start = System.currentTimeMillis();
 		//wait for activation
 		log.info("Waiting until integration becomes active. This may take a while...");
-		final boolean activated = Utils.waitForActivation(integrationsEndpoint, integration, TimeUnit.MINUTES, 10);
+		final boolean activated = TestUtils.waitForActivation(integrationsEndpoint, integration, TimeUnit.MINUTES, 10);
 		assertThat(activated, is(true));
 		log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 	}
@@ -217,7 +217,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 
 		log.info("Waiting until a contact appears in salesforce...");
 		final long start = System.currentTimeMillis();
-		final boolean contactCreated = Utils.waitForEvent(contact -> contact.isPresent(),
+		final boolean contactCreated = TestUtils.waitForEvent(contact -> contact.isPresent(),
 				() -> getSalesforceContact(salesforce, accountsDirectory.getAccount(SYNDESIS_TALKY_ACCOUNT).get().getProperty("screenName")),
 				TimeUnit.MINUTES,
 				2,
