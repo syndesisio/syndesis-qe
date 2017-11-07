@@ -1,10 +1,7 @@
-package pages;
+package io.syndesis.qe.pages;
 
 import org.openqa.selenium.By;
 
-/**
- * Created by mastepan on 10/31/17.
- */
 public abstract class MainPage {
 
 	public static final class Tab {

@@ -1,8 +1,5 @@
-package properties;
+package io.syndesis.qe.configuration;
 
-/**
- * Created by mastepan on 10/31/17.
- */
 public class Utils {
 	public static void sleep(long millis) {
 		try {

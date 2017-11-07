@@ -1,4 +1,4 @@
-package properties;
+package io.syndesis.qe.configuration;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -7,17 +7,14 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
-/**
- * Created by mastepan on 10/30/17.
- */
 public final class PropertiesLoader {
 
-	private PropertiesLoader() {
+	public PropertiesLoader() {
 	}
 
-	private static Properties properties = new Properties();
+	private Properties properties = new Properties();
 
-	public static void load(String absolutePath) {
+	public void load(String absolutePath) {
 		InputStream input = null;
 		final String defaultFileName = "default.properties";
 
@@ -28,7 +25,7 @@ public final class PropertiesLoader {
 				input = new FileInputStream(absolutePath);
 			}
 
-			// load a properties file
+			// load a io.syndesis.qe.configuration file
 			properties.load(input);
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
@@ -47,7 +44,7 @@ public final class PropertiesLoader {
 		}
 	}
 
-	public static String get(String key) {
+	public String get(String key) {
 		final String value = properties.getProperty(key);
 
 		if (value == null) {
