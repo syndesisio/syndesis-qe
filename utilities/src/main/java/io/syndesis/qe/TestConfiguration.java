@@ -15,7 +15,13 @@ public class TestConfiguration {
 	public static final String OPENSHIFT_URL = "syndesis.config.openshift.url";
 	public static final String OPENSHIFT_TOKEN = "syndesis.config.openshift.token";
 	public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
+	public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
 
+	public static final String SYNDESIS_UI_USERNAME = "syndesis.config.ui.username";
+	public static final String SYNDESIS_UI_PASSWORD = "syndesis.config.ui.password";
+	public static final String SYNDESIS_UI_URL = "syndesis.config.ui.url";
+
+	public static final String SYNDESIS_UI_BROWSER = "syndesis.config.ui.browser";
 
 	private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -50,6 +56,13 @@ public class TestConfiguration {
 
 	public static String openShiftNamespace() { return get().readValue(OPENSHIFT_NAMESPACE); }
 
+	public static String openShiftRouteSuffix() { return get().readValue(OPENSHIFT_ROUTE_SUFFIX); }
+
+	public static String syndesisUsername() { return get().readValue(SYNDESIS_UI_USERNAME); }
+
+	public static String syndesisPassword() { return get().readValue(SYNDESIS_UI_PASSWORD); }
+
+	public static String syndesisUrl() { return get().readValue(SYNDESIS_UI_URL); }
 
 	private Properties defaultValues() {
 		final Properties props = new Properties();
