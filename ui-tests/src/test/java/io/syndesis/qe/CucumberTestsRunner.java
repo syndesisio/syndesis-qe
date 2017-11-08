@@ -11,7 +11,6 @@ import com.codeborne.selenide.Configuration;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
-import io.syndesis.qe.configuration.TestConfiguration;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
@@ -24,8 +23,6 @@ public class CucumberTestsRunner {
 	// setup
 	@BeforeClass
 	public static void setup() {
-		//load test configuration properties
-		TestConfiguration.loadFromFile(System.getProperty("propertiesFileAbsolutePath"));
 		//set up Selenide
 		Configuration.timeout = 60000;
 		getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
