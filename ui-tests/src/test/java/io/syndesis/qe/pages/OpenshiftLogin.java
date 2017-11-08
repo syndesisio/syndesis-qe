@@ -1,4 +1,4 @@
-package proofofconcept.pages;
+package io.syndesis.qe.pages;
 
 import static com.codeborne.selenide.Selenide.$;
 
