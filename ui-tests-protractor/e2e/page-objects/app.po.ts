@@ -24,7 +24,6 @@ class NavLink {
   public toString = (): string => {
     return `NavLink{${this.text} => ${this.href}, active=${this.active}`;
   }
-
 }
 
 /**
