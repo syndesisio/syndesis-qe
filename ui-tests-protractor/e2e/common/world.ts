@@ -1,6 +1,6 @@
 import { User } from './common';
 import { Promise as P } from 'es6-promise';
-import { AppPage } from '../app.po';
+import { AppPage } from '../page-objects/app.po';
 import { log } from '../../src/app/logging';
 import https = require('https');
 import http = require('http');
