@@ -143,7 +143,7 @@
 		</dependency>
 		<dependency>
 			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-java8</artifactId>
+			<artifactId>cucumber-java</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -151,7 +151,6 @@
 			<artifactId>cucumber-junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 
 		<!-- Third party services dependencies -->
 		<dependency>
