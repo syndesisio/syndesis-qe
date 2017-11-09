@@ -6,6 +6,7 @@ import { ConnectionsListComponent } from '../../page-objects/connections/list/li
 import { ConnectionCreatePage, ConnectionConfigurationComponent } from '../../page-objects/connections/edit/edit.po';
 import { ConnectionDetailsComponent } from '../../page-objects/connections/edit/edit.po';
 import {log} from '../../../src/app/logging';
+import { element, by, ElementFinder, ExpectedConditions, browser } from 'protractor';
 
 // let http = require('http');
 
@@ -110,6 +111,31 @@ class ConnectionSteps {
     const actions = [action1, action2, action3];
     const connectionsListComp = new ConnectionsListComponent();
     return connectionsListComp.checkAllKebabElementsAreDisplayed(true, actions);
+  }
+
+  @when(/^clicks on the "([^"]*)" kebab menu button of "([^"]*)"$/)
+  async clickOnKebabMenuButton(button: string, connectionName: string): P<any> {
+    const conn = new ConnectionsListComponent()
+    return conn.clickKebabMenuButton(button, connectionName)
+  }
+
+  @then(/^she is presented with connection details page$/)
+  async connectionDetailPage(): P<any> {
+    return browser.wait(ExpectedConditions.visibilityOf
+      (element(by.xpath(`.//*[.="Connection Details"]`))), 6000,
+       'Page Connection Details is not visible')
+  }
+
+  @then(/^she is presented with help block with text "([^"]*)"$/)
+  async helpBlockVisible(helpText: string): P<any> {
+    let helpBlock = element(by.className('help-block'))
+
+    return browser.wait(ExpectedConditions.visibilityOf
+      (helpBlock), 6000,
+       'Help block should be visible').then(() => {
+          return expect(helpBlock.getText(), 'Help text is not what we expected!')
+          .to.eventually.be.equal(helpText)
+       })
   }
 }
 
