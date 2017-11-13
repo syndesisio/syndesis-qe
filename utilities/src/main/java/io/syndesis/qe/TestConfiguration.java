@@ -20,8 +20,13 @@ public class TestConfiguration {
 	public static final String SYNDESIS_UI_USERNAME = "syndesis.config.ui.username";
 	public static final String SYNDESIS_UI_PASSWORD = "syndesis.config.ui.password";
 	public static final String SYNDESIS_UI_URL = "syndesis.config.ui.url";
-
 	public static final String SYNDESIS_UI_BROWSER = "syndesis.config.ui.browser";
+
+	public static final String SYNDESIS_REST_URL = "syndesis.config.rest.url";
+	public static final String SYNDESIS_REST_API_PATH = "syndesis.config.rest.api.path";
+
+	public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
+	public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
 
 	private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -64,11 +69,23 @@ public class TestConfiguration {
 
 	public static String syndesisUrl() { return get().readValue(SYNDESIS_UI_URL); }
 
+	public static String syndesisRestUrl() { return get().readValue(SYNDESIS_REST_URL); }
+
+	public static String syndesisRestApiPath() { return get().readValue(SYNDESIS_REST_API_PATH); }
+
+	public static String syndesisCredentialsFile() { return get().readValue(SYNDESIS_CREDENTIALS_FILE); }
+
+	public static String syndesisVersionsFile() { return get().readValue(SYNDESIS_VERSIONS_FILE); }
+
 	private Properties defaultValues() {
 		final Properties props = new Properties();
 
 		props.setProperty(OPENSHIFT_URL, "");
 		props.setProperty(OPENSHIFT_TOKEN, "");
+		props.setProperty(SYNDESIS_REST_API_PATH, "/api/v1");
+
+		props.setProperty(SYNDESIS_CREDENTIALS_FILE, "../credentials.json");
+		props.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
 
 		return props;
 	}
