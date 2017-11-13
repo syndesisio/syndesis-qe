@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages;
+package io.syndesis.qe.pages.integrations.list;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -7,16 +7,14 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-public class SyndesisRootPage extends SyndesisPageObject {
+import io.syndesis.qe.pages.SyndesisPageObject;
+
+public class IntegrationsListPage extends SyndesisPageObject {
 	
-	private static final class Link {
-		public static final By HOME = By.cssSelector("a.navbar-brand");
-	}	
-
 	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-root");
+		public static final By ROOT = By.cssSelector("syndesis-integrations-list-page");
 	}
-
+	
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
 		return elementRoot;
@@ -25,8 +23,8 @@ public class SyndesisRootPage extends SyndesisPageObject {
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
-	
-	public void goHome() {
-		this.getRootElement().find(Link.HOME).shouldBe(visible).click();
+
+	public IntegrationsListComponent listComponent() {
+		return new IntegrationsListComponent();
 	}
 }
