@@ -69,9 +69,9 @@ import io.syndesis.project.converter.visitor.EndpointStepVisitor;
 import io.syndesis.project.converter.visitor.ExpressionFilterStepVisitor;
 import io.syndesis.project.converter.visitor.RuleFilterStepVisitor;
 import io.syndesis.project.converter.visitor.StepVisitorFactoryRegistry;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.utils.SyndesisRestConstants;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -132,7 +132,7 @@ public class ProjectGeneratorTest {
 
 	@BeforeClass
 	public static void beforeClass() throws IOException {
-		accountsDirectory = new AccountsDirectory(Paths.get(SyndesisRestConstants.ACCOUNT_CONFIG_PATH));
+		accountsDirectory = new AccountsDirectory();
 		tarPath = createTwitterToSalesforceIntegration();
 	}
 
@@ -196,7 +196,7 @@ public class ProjectGeneratorTest {
 
 	@Test
 	public void testDependencyVersions() throws ParserConfigurationException, IOException, SAXException {
-		versions = new VersionsDirectory(Paths.get(SyndesisRestConstants.VERSIONS_CONFIG_PATH));
+		versions = new VersionsDirectory(Paths.get(TestConfiguration.syndesisVersionsFile()));
 
 		final File pomFile = tarPath.resolve("pom.xml").toFile();
 		assertThat(pomFile, notNullValue());
