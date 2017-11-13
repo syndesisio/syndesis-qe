@@ -1,7 +1,7 @@
 package io.syndesis.qe.pages;
 
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 import org.openqa.selenium.By;
@@ -11,14 +11,10 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 public abstract class SyndesisPageObject {
-	
-	private static final class Link {
-		public static final By HOME = By.cssSelector("a.navbar-brand");
-	}
 
-	abstract SelenideElement getRootElement();
+	public abstract SelenideElement getRootElement();
 
-	abstract boolean validate();
+	public abstract boolean validate();
 
 	public String getCurrentUrl() {
 		return getWebDriver().getCurrentUrl();
@@ -26,10 +22,6 @@ public abstract class SyndesisPageObject {
 
 	public void goToUrl(String url) {
 		getWebDriver().get(url);
-	}
-
-	public void goHome() {
-		this.getRootElement().find(Link.HOME).shouldBe(visible).click();
 	}
 
 	public SelenideElement getLink(String linkTitle) {
@@ -73,9 +65,14 @@ public abstract class SyndesisPageObject {
 	}
 
 	public void selectOption(SelenideElement selectElement, String option) {
-		ElementsCollection optionElements = selectElement.findAll(By.tagName("option"));
-		optionElements = optionElements.filter(Condition.exactText(option));
-		SelenideElement optionElement = optionElements.shouldBe(sizeGreaterThan(0)).first();
+		SelenideElement optionElement = getElementContainingText(By.tagName("option"), option);
 		optionElement.shouldBe(visible).click();
+	}
+	
+	public SelenideElement getElementContainingText (By by, String text) {
+		ElementsCollection elements = getRootElement().findAll(by);
+		elements = elements.filter(Condition.exactText(text));
+		SelenideElement element = elements.shouldBe(sizeGreaterThan(0)).first();
+		return element;
 	}
 }
