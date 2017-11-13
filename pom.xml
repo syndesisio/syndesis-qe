@@ -28,6 +28,8 @@
 		<jackson.version>2.8.6</jackson.version>
 		<twitter4j.version>[4.0,)</twitter4j.version>
 		<log4j.version>2.9.0</log4j.version>
+		<log4j.over.slf4j.version>1.7.25</log4j.over.slf4j.version>
+		<logback.classic.version>1.2.3</logback.classic.version>
 		<force.rest.api.version>0.0.37</force.rest.api.version>
 		<openshift.version>5.6.0.Final</openshift.version>
 		<selenide.version>4.8.0</selenide.version>
@@ -168,11 +170,18 @@
 				<version>${rest.assured.version}</version>
 				<scope>test</scope>
 			</dependency>
+
 			<dependency>
 				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${org.slfj.version}</version>
+				<artifactId>log4j-over-slf4j</artifactId>
+				<version>${log4j.over.slf4j.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.classic.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.json</groupId>
 				<artifactId>json</artifactId>
@@ -197,11 +206,6 @@
 				<groupId>com.fasterxml.jackson.datatype</groupId>
 				<artifactId>jackson-datatype-jsr310</artifactId>
 				<version>${jackson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
-				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.codeborne</groupId>
