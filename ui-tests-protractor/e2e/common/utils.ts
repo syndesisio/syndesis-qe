@@ -20,4 +20,3 @@ export class Utils {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
-

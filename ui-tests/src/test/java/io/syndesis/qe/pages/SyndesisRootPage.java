@@ -8,10 +8,10 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 public class SyndesisRootPage extends SyndesisPageObject {
-	
+
 	private static final class Link {
 		public static final By HOME = By.cssSelector("a.navbar-brand");
-	}	
+	}
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-root");
@@ -25,7 +25,7 @@ public class SyndesisRootPage extends SyndesisPageObject {
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
-	
+
 	public void goHome() {
 		this.getRootElement().find(Link.HOME).shouldBe(visible).click();
 	}

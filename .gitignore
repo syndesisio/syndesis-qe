@@ -211,6 +211,7 @@ ui-tests-protractor/e2e/cucumber-reports/
 
 # test config with login credentials and other stuff
 test_config.json
+default.properties
 
 #System Files
 .DS_Store
