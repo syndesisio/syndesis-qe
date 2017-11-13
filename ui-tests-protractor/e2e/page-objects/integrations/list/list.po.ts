@@ -11,26 +11,18 @@ export class IntegrationsListComponent implements SyndesisComponent {
     return $('syndesis-integrations-list');
   }
 
-  private integrationEntry(name: string): ElementFinder {
-    return this.rootElement().element(by.cssContainingText('.list-pf-title', name));
-  }
-
   getIntegration(name: string): ElementFinder {
     return this.rootElement().element(by.cssContainingText('.list-pf-item', name));
   }
 
   async isIntegrationPresent(name: string): P<boolean> {
     log.info(`Checking if integration ${name} is present in the list`);
-    const integration = this.integrationEntry(name);
+    const integration = this.getIntegration(name);
     return integration.isPresent();
   }
 
-  goToIntegration(integrationName: string): P<any> {
-    return this.integrationEntry(integrationName).getWebElement().click();
-  }
-
-  editIntegration(name: string): P<any> {
-    return this.integrationEntry(name).click();
+  goToIntegrationDetail(integrationName: string): P<any> {
+    return this.getIntegration(integrationName).getWebElement().click();
   }
 
   getIntegrationByStatus(status: string): ElementFinder {
