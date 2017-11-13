@@ -68,7 +68,7 @@ class IntegrationSteps {
   @when(/^Camilla selects the "([^"]*)" integration.*$/)
   public selectConnection(itegrationName: string): P<any> {
     const page = new IntegrationsListPage();
-    return page.listComponent().goToIntegration(itegrationName);
+    return page.listComponent().goToIntegrationDetail(itegrationName);
   }
 
   @when(/^she selects "([^"]*)" integration action$/)

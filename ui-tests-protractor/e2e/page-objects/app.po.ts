@@ -49,7 +49,6 @@ class SessionStorage {
 export class AppPage {
   static baseurl = '/';
   rootElement = element(by.css('syndesis-root'));
-  // rootElement = element(by.css('syndesis-root'));
 
   sessionStorage = new SessionStorage();
 
