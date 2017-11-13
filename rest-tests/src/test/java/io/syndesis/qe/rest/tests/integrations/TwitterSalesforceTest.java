@@ -40,7 +40,6 @@ import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.rest.tests.AbstractSyndesisRestTest;
 import io.syndesis.qe.utils.FilterRulesBuilder;
-import io.syndesis.qe.utils.SyndesisRestConstants;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import twitter4j.ResponseList;
@@ -75,7 +74,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 
 	@Before
 	public void before() throws IOException, TwitterException {
-		accountsDirectory = new AccountsDirectory(Paths.get(SyndesisRestConstants.ACCOUNT_CONFIG_PATH));
+		accountsDirectory = new AccountsDirectory();
 		final Account twitterTalky = accountsDirectory.getAccount(SYNDESIS_TALKY_ACCOUNT).get();
 		final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()
 				.setOAuthConsumerKey(twitterTalky.getProperty("consumerKey"))

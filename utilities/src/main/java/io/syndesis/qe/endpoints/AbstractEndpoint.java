@@ -11,8 +11,8 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 
 import io.syndesis.model.ListResult;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.SyndesisRestConstants;
 
 /**
  * Implements a client endpoint for syndesis REST.
@@ -23,7 +23,7 @@ public abstract class AbstractEndpoint<T> {
 
 	protected String endpointName;
 	protected String syndesisUrl;
-	protected String apiPath = SyndesisRestConstants.API_PATH;
+	protected String apiPath = TestConfiguration.syndesisRestApiPath();
 	private Class<T> type;
 	private final Client client;
 

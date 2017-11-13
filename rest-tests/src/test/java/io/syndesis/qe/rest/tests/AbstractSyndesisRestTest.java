@@ -2,7 +2,6 @@ package io.syndesis.qe.rest.tests;
 
 import io.restassured.RestAssured;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.utils.SyndesisRestConstants;
 
 /**
  * Abstract base for syndesis rest tests.
@@ -19,7 +18,7 @@ public abstract class AbstractSyndesisRestTest {
 
 		syndesisURL = TestConfiguration.syndesisUrl();
 
-		RestAssured.baseURI = syndesisURL;
-		RestAssured.basePath = SyndesisRestConstants.API_PATH;
+		RestAssured.baseURI = TestConfiguration.syndesisRestUrl();
+		RestAssured.basePath = TestConfiguration.syndesisRestApiPath();
 	}
 }
