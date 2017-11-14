@@ -69,8 +69,13 @@ public final class OpenShiftUtils {
 					.withMasterUrl(TestConfiguration.openShiftUrl())
 					.withTrustCerts(true)
 					.withRequestTimeout(120_000)
-					.withNamespace(TestConfiguration.openShiftNamespace())
-					.withOauthToken(TestConfiguration.openShiftToken());
+					.withNamespace(TestConfiguration.openShiftNamespace());
+
+			if (!TestConfiguration.openShiftToken().isEmpty()) {
+				//if token is provided, lets use it
+				//otherwise f8 client should be able to leverage ~/.kube/config or mounted secrets
+				openShiftConfigBuilder.withOauthToken(TestConfiguration.openShiftToken());
+			}
 
 			client = new DefaultOpenShiftClient(openShiftConfigBuilder.build());
 		}
