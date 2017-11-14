@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.connections;
+package io.syndesis.qe.pages.connections.detail;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -24,7 +24,7 @@ public class ConnectionDetailPage extends SyndesisPageObject {
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
+		return $(Element.ROOT);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ConnectionDetailPage extends SyndesisPageObject {
 	}
 
 	public SelenideElement connectionDetailElem() {
-		return $(Element.CONNECTION_DETAIL).shouldBe(visible);
+		return $(Element.CONNECTION_DETAIL);
 	}
 
 	public String connectionName() {

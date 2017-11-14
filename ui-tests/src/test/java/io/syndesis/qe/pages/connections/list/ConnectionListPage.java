@@ -1,11 +1,10 @@
-package io.syndesis.qe.pages.connections;
+package io.syndesis.qe.pages.connections.list;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
@@ -25,7 +24,7 @@ public class ConnectionListPage extends SyndesisPageObject {
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(Condition.visible);
+		return $(Element.ROOT);
 	}
 
 	@Override
