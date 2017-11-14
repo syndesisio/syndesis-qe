@@ -25,6 +25,34 @@ export class ConnectionsListComponent implements SyndesisComponent {
     return this.getConnection(connectionTitle).getWebElement().click();
   }
 
+  getConnectionElement(connectionName: string): ElementFinder {
+    return this.getConnection(connectionName);
+  }
+
+  public getKebabMenuButtons(connectionName: string) : ElementArrayFinder {
+    let conObj = this.getConnectionElement(connectionName);        
+    conObj.element(by.id('dropdownKebabRight9')).click();
+    return this.getConnectionElement(connectionName).all(by.className('dropdown-item'))
+  }  
+
+  public async clickKebabMenuButton(button: string, connectionName: string) : P<any> {
+    return this.getKebabMenuButtons(connectionName).filter((elem) =>  {
+      return elem.getText().then( (text) => {
+          log.debug(`text is ${text}`)
+          return text === button;
+        });
+
+      }).then((whereToClick) => {
+
+      log.debug(`Number of elements with text ${button} found: ${whereToClick.length}`)
+
+      if(whereToClick.length !== 1) {
+          return P.reject(new Error(`Button ${button} was not found or there were multiple buttons with the same text.`));            
+      }
+      return whereToClick[0].click()
+    });
+  }
+
   async deleteConnection(connectionTitle: string): P<any> {
     log.info(`searching for delete link for connection ${connectionTitle}`);
     await this.getConnection(connectionTitle).element(by.id('dropdownKebabRight9')).click();
