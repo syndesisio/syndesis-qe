@@ -1,0 +1,93 @@
+package io.syndesis.qe.steps.integrations;
+
+import static com.codeborne.selenide.Condition.visible;
+
+import com.codeborne.selenide.SelenideElement;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.syndesis.qe.pages.integrations.detail.DataMapperComponent;
+import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponent;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * Created by sveres on 11/15/17.
+ */
+@Slf4j
+public class DataMapperSteps {
+
+	private DataMapperComponent mapper = new DataMapperComponent();
+
+	@When("^she creates mapping from \"(\\w+)\" to \"(\\w+)\"$")
+	public void createMapping(String source, String target) throws Exception {
+		mapper.createMapping(source, target);
+	}
+
+	@Then("^she is presented with data mapper ui$")
+	public void dataMapperUIpresent() throws Exception {
+		assert (mapper.fieldsCount() > 5) : "data mapper ui must load and show fields count";
+	}
+
+	@When("^she selects \"(\\w+)\" from \"(\\w+)\" selector-dropdown$")
+	public void selectFromDropDownByElement(String option, String selectAlias) throws Exception {
+		log.info(option);
+		SelenideElement selectElement = mapper.getElementByAlias(selectAlias).shouldBe(visible);
+		mapper.selectOption(selectElement, option);
+	}
+
+	@Then("^she fills \"(\\w+)\" selector-input with \"(\\w+)\" value$")
+	public void fillActionConfigureField(String selectorAlias, String value) throws Exception {
+		ActionConfigureComponent actionConf = new ActionConfigureComponent();
+		SelenideElement inputElement = mapper.getElementByAlias(selectorAlias).shouldBe(visible);
+		actionConf.fillInputByElement(inputElement, value);
+	}
+
+	/**
+	 * @param first parameter to be combined.
+	 * @param first_pos position of the first parameter in the final string
+	 * @param second parameter to be combined.
+	 * @param sec_pos position of the second parameter in the final string.
+	 * @param combined above two into this parameter.
+	 * @param separator used to estethically join first and second parameter.
+	 */
+	// And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
+	@Then("^she combines \"(\\w+)\" as \"(\\w+)\" with \"(\\w+)\" as \"(\\w+)\" to \"(\\w+)\" using \"(\\w+)\" separator$")
+	public void combinePresentFielsWithAnother(String first, String first_pos,
+			String second, String sec_pos, String combined, String separator) throws Exception {
+
+		SelenideElement inputElement;
+		SelenideElement selectElement;
+
+		// Then she fills "FirstCombine" selector-input with "FirstName" value
+		ActionConfigureComponent actionConf = new ActionConfigureComponent();
+		inputElement = mapper.getElementByAlias("FirstCombine").shouldBe(visible);
+		actionConf.fillInputByElement(inputElement, first);
+
+		// And she selects "Combine" from "ActionSelect" selector-dropdown
+		selectElement = mapper.getElementByAlias("ActionSelect").shouldBe(visible);
+		mapper.selectOption(selectElement, "Combine");
+
+		// And she selects "Space" from "SeparatorSelect" selector-dropdown
+		selectElement = mapper.getElementByAlias("SeparatorSelect").shouldBe(visible);
+		mapper.selectOption(selectElement, separator);
+
+		// And clicks on the "Add Source" link
+		mapper.clickLink("Add Source");
+
+		// Then she fills "SecondCombine" selector-input with "LastName" value
+		inputElement = mapper.getElementByAlias("SecondCombine").shouldBe(visible);
+		actionConf.fillInputByElement(inputElement, second);
+
+		// And she fills "FirstCombinePosition" selector-input with "2" value
+		inputElement = mapper.getElementByAlias("FirstCombinePosition").shouldBe(visible);
+		actionConf.fillInputByElement(inputElement, first_pos);
+
+		// And she fills "SecondCombinePosition" selector-input with "1" value
+		inputElement = mapper.getElementByAlias("SecondCombinePosition").shouldBe(visible);
+		actionConf.fillInputByElement(inputElement, sec_pos);
+
+		// Then she fills "TargetCombine" selector-input with "first_and_last_name" value
+		inputElement = mapper.getElementByAlias("TargetCombine").shouldBe(visible);
+		actionConf.fillInputByElement(inputElement, combined);
+	}
+}
