@@ -31,9 +31,9 @@ public class DbUtils {
 	/**
 	 * Execute given SQL command on sampledb in syndesis-db pod
 	 * @param sqlCommnad
-	 * @return
+	 * @return resultSet
 	 */
-	public ResultSet executeSqlOnSampleDb(String sqlCommnad) {
+	public ResultSet executeQuery(String sqlCommnad) {
 		Pod dbPod = OpenShiftUtils.getInstance().findComponentPod("syndesis-db");
 		ResultSet resultSet = null;
 		try (LocalPortForward localPortForward = OpenShiftUtils.getInstance().portForward(dbPod, 5432, 5432) ) {
@@ -47,7 +47,7 @@ public class DbUtils {
 				resultSet = preparedStatement.executeQuery();
 
 			} catch (SQLException e) {
-				log.info("Error: ", e);
+				log.error("Error: ", e);
 			}
 
 		} catch (IOException ex) {
@@ -56,6 +56,31 @@ public class DbUtils {
 		return resultSet;
 	}
 
+	/**
+	 * Execute update command like DROP on sampledb
+	 * @param sqlCommnad
+	 * @return
+	 */
+	public int executeUpdate(String sqlCommnad) {
+		Pod dbPod = OpenShiftUtils.getInstance().findComponentPod("syndesis-db");
+		int result = 0;
+		try (LocalPortForward localPortForward = OpenShiftUtils.getInstance().portForward(dbPod, 5432, 5432) ) {
+			String url = "jdbc:postgresql://" + localPortForward.getLocalAddress().getHostAddress() +":" + localPortForward.getLocalPort() + "/sampledb";
+			Properties props = new Properties();
+			props.setProperty("user", "sampledb");
 
+			try (Connection conn = DriverManager.getConnection(url, props)){
+				log.info("Starting JDBC connection");
+				PreparedStatement preparedStatement = conn.prepareStatement(sqlCommnad);
+				result = preparedStatement.executeUpdate();
+			} catch (SQLException e) {
+				log.error("Error: ", e);
+			}
+
+		} catch (IOException ex) {
+			log.error("Error: ", ex);
+		}
+		return result;
+	}
 
 }
