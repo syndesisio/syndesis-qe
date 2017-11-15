@@ -11,6 +11,7 @@ import com.codeborne.selenide.WebDriverRunner;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.login.GitHubLoginPage;
 import io.syndesis.qe.pages.login.MinishiftLoginPage;
@@ -57,5 +58,11 @@ public class CommonSteps {
 	public void checkHomePageVisibility(String username) {
 		SyndesisRootPage syndesisRootPage = new SyndesisRootPage();
 		syndesisRootPage.getRootElement().shouldBe(Condition.visible);
+	}
+
+	@Then("^(\\w+)? is presented with the Syndesis page \"([^\"]*)\"$/")
+
+	public void validatePage(String pageName) {
+		SyndesisPage.get(pageName).validate();
 	}
 }
