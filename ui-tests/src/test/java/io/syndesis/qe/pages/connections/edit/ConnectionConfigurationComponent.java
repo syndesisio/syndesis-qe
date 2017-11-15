@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.connections;
+package io.syndesis.qe.pages.connections.edit;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -18,19 +18,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConnectionConfigurationComponent extends SyndesisPageObject {
 
+	private static final class Element {
+		public static final By ROOT = By.cssSelector("syndesis-connections-configure-fields");
+	}
+
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
+		return $(Element.ROOT);
 	}
 
 	@Override
 	public boolean validate() {
 		return $(Element.ROOT).is(visible);
-	}
-
-	private static final class Element {
-
-		public static final By ROOT = By.cssSelector("syndesis-connections-configure-fields");
 	}
 
 	/**
@@ -42,10 +41,10 @@ public class ConnectionConfigurationComponent extends SyndesisPageObject {
 	public void fillDetails(Map<String, String> conneDetails) throws Exception {
 
 		if (conneDetails.isEmpty()) {
-			throw new Exception(String.format("can't find any connection details in %s", "d"));
+			throw new Exception("can't find any connection details in connection");
 		}
 		for (String key : conneDetails.keySet()) {
-			log.info(String.format("fill conneDetails detail %s => %s", key, conneDetails.get(key)));
+			log.info("fill conneDetails detail {} => {}", key, conneDetails.get(key));
 			getRootElement().$(String.format("input[name=\"%s\"")).shouldBe(visible).sendKeys(conneDetails.get(key));
 		}
 	}
