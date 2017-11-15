@@ -22,18 +22,18 @@ public abstract class SyndesisPageObject {
 	public abstract boolean validate();
 
 	public SelenideElement getButton(String buttonTitle) {
-		log.info(String.format("searching for button %s", buttonTitle));
+		log.info("searching for button {}", buttonTitle);
 		return this.getRootElement().find(By.xpath(String.format("//button[contains(text(), '%s')]", buttonTitle)));
 	}
 
 	public void clickOnFirstVisibleButton(String buttonTitle) {
-		log.info(String.format("searching for first visible button %s", buttonTitle));
+		log.info("searching for first visible button {}", buttonTitle);
 		ElementsCollection buttonElements = this.getRootElement().findAll(By.linkText(buttonTitle)).filter(visible);
 		buttonElements.get(0).click();
 	}
 
 	public void clickButton(String buttonTitle) {
-		log.info(String.format("clicking button %s", buttonTitle));
+		log.info("clicking button {}", buttonTitle);
 		SelenideElement buttonElement = this.getButton(buttonTitle).shouldBe(visible);
 		buttonElement.click();
 	}
@@ -50,7 +50,7 @@ public abstract class SyndesisPageObject {
 		String value;
 		for (String key : data.keySet()) {
 			value = data.get(key);
-			log.info(String.format("filling form item %s => %s", key, value));
+			log.info("filling form item {} => {}", key, value);
 			SelenideElement inputElement = parrentElement.find(By.cssSelector(String.format("input[%s=\"%s\"", using, key))).shouldBe(visible);
 			inputElement.sendKeys(value);
 		}
@@ -106,6 +106,17 @@ public abstract class SyndesisPageObject {
 	public SelenideElement getElementByClassName(String elementClassName) {
 		return this.getRootElement().find(By.className(elementClassName));
 	}
+
+	public SelenideElement getElementByLocator(By elementLocator) {
+		log.info("searching for element {}", elementLocator.toString());
+		return this.getRootElement().$(elementLocator);
+	}
+
+	SelenideElement getTitleByText(String text){
+		log.info("searching for title {}", text);
+		return this.getRootElement().find(By.cssSelector(String.format("h2:contains('%s')", text)));
+	}
+
 
 	public ElementsCollection getElementsByClassName(String elementClassName) {
 		return this.getRootElement().findAll(By.className(elementClassName));

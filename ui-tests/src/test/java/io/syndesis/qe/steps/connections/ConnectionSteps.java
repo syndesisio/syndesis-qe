@@ -13,11 +13,11 @@ import java.util.List;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.common.World;
-import io.syndesis.qe.pages.connections.ConnectionConfigurationComponent;
-import io.syndesis.qe.pages.connections.ConnectionCreatePage;
-import io.syndesis.qe.pages.connections.ConnectionDetailPage;
-import io.syndesis.qe.pages.connections.ConnectionsDetailsComponent;
-import io.syndesis.qe.pages.connections.ConnectionsListComponent;
+import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponent;
+import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
+import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
+import io.syndesis.qe.pages.connections.edit.ConnectionsDetailsComponent;
+import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -97,7 +97,7 @@ public class ConnectionSteps {
 
 	@Then("^she is presented with at least \"(\\d+)\" connections")
 	public void connectionCount(Integer connectionCount) {
-		log.info(String.format("should assert %d", connectionCount));
+		log.info("should assert {}", connectionCount);
 
 		ConnectionsListComponent listComponent = new ConnectionsListComponent();
 		assert (listComponent.countConnections().equals(connectionCount)) : String.format("There should be %d available", connectionCount);
