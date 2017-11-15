@@ -9,6 +9,7 @@ import com.codeborne.selenide.Condition;
 public class GitHubLoginPage implements LoginPage {
 	private static final class Button {
 		public static final By SIGNIN = By.xpath("//input[@type='submit']");
+		public static final By REAUTH = By.id("js-oauth-authorize-btn");
 	}
 
 	private static final class Input {
@@ -21,5 +22,9 @@ public class GitHubLoginPage implements LoginPage {
 		$(Input.USERNAME).shouldBe(Condition.visible).setValue(username);
 		$(Input.PASSWORD).shouldBe(Condition.visible).setValue(password);
 		$(Button.SIGNIN).shouldBe(Condition.visible).click();
+		//after too many same login attempts GH asks for re-authorization
+		if ($(Button.REAUTH).isDisplayed()) {
+			$(Button.REAUTH).shouldBe(Condition.enabled).click();
+		}
 	}
 }
