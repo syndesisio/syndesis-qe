@@ -32,7 +32,7 @@
 					],
 					"outputField": [
 						{
-							"jsonType": "io.atlasmap.json.v2.JsonComplexType",
+							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "FirstName",
 							"path": "/FirstName",
 							"fieldType": "STRING",
@@ -41,7 +41,7 @@
 							"index": 0
 						},
 						{
-							"jsonType": "io.atlasmap.json.v2.JsonComplexType",
+							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "LastName",
 							"path": "/LastName",
 							"fieldType": "STRING",
@@ -66,7 +66,7 @@
 					],
 					"outputField": [
 						{
-							"jsonType": "io.atlasmap.json.v2.JsonComplexType",
+							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "Title",
 							"path": "/Title",
 							"fieldType": "STRING",
@@ -82,14 +82,14 @@
 						{
 							"jsonType": "io.atlasmap.java.v2.JavaField",
 							"name": "text",
-							"path": "/user/status/text",
+							"path": "/text",
 							"fieldType": "STRING",
 							"docId": "twitter4j.Status"
 						}
 					],
 					"outputField": [
 						{
-							"jsonType": "io.atlasmap.json.v2.JsonComplexType",
+							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "Description",
 							"path": "/Description",
 							"fieldType": "STRING",
@@ -100,7 +100,7 @@
 				}
 			]
 		},
-		"name": "UI.657742",
+		"name": "UI.809874",
 		"lookupTables": {
 			"lookupTable": []
 		},
