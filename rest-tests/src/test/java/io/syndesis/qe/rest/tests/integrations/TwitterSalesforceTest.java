@@ -26,19 +26,18 @@ import java.util.concurrent.TimeUnit;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.filter.FilterPredicate;
-import io.syndesis.model.filter.FilterRule;
 import io.syndesis.model.filter.RuleFilterStep;
 import io.syndesis.model.integration.Integration;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.salesforce.Contact;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.rest.tests.AbstractSyndesisRestTest;
+import io.syndesis.qe.salesforce.Contact;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +61,6 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 	public static final String INTEGRATION_NAME = "Twitter to salesforce contact rest test";
 	public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
 	private String mapping;
-	private FilterRule filter;
 	private AccountsDirectory accountsDirectory;
 	private Connector twitterConnector;
 	private Connector salesforceConnector;
@@ -186,7 +184,7 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 		final Step salesforceStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(salesforceConnection)
-				.action(TestUtils.findAction(salesforceConnector, "salesforce-upsert-sobject"))
+				.action(TestUtils.findAction(salesforceConnector, "salesforce-create-sobject"))
 				.build();
 
 		Integration integration = new Integration.Builder()
@@ -254,7 +252,8 @@ public class TwitterSalesforceTest extends AbstractSyndesisRestTest {
 	}
 
 	private Optional<Contact> getSalesforceContact(ForceApi salesforce, String twitterName) {
-		final QueryResult<Contact> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Description,TwitterScreenName__c FROM contact where TwitterScreenName__c = '" + twitterName + "'", Contact.class);
+		final QueryResult<Contact> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Description,Title FROM contact where Title='"
+				+ twitterName + "'", Contact.class);
 		final Optional<Contact> contact = queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
 		return contact;
 	}

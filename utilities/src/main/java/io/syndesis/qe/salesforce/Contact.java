@@ -10,9 +10,7 @@ import lombok.Data;
  *
  * @author jknetl
  */
-
-
-@JsonIgnoreProperties(ignoreUnknown =  true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class Contact {
 
@@ -24,6 +22,6 @@ public class Contact {
 	private String lastname;
 	@JsonProperty(value = "Description")
 	private String description;
-	@JsonProperty(value = "TwitterScreenName__c")
-	private String twitterScreenName;
+	@JsonProperty(value = "Title")
+	private String title;
 }
