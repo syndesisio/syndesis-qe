@@ -15,10 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FilterRulesBuilder {
 
-	private JSONArray myArray;
+	private final JSONArray myArray;
+	private final JSONObject json;
 
 	public FilterRulesBuilder() {
 		myArray = new JSONArray();
+		json = new JSONObject();
 	}
 
 	public FilterRulesBuilder addPath(String path) {
@@ -34,13 +36,12 @@ public class FilterRulesBuilder {
 	}
 
 	private FilterRulesBuilder addField(String name, String value) {
-		final JSONObject json = new JSONObject();
 		json.put(name, value);
-		myArray.put(json);
 		return this;
 	}
 
 	public String build() {
+		myArray.put(json);
 		return myArray.toString();
 	}
 }
