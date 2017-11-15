@@ -2,7 +2,9 @@ package io.syndesis.qe.steps;
 
 import static com.codeborne.selenide.Selenide.$;
 
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
@@ -51,6 +53,15 @@ public class CommonSteps {
 			log.info("Authorize access login page");
 			$("input[name=\"approve\"]").shouldBe(Condition.visible).click();
 		}
+	}
+
+	@Given("^clean application state$")
+	public void resetState() {
+		Long result = (Long) ((JavascriptExecutor) WebDriverRunner.getWebDriver())
+				.executeAsyncScript("var callback = arguments[arguments.length - 1]; " +
+						"$.get('/api/v1/test-support/reset-db', function(data, textStatus, jqXHR) { callback(jqXHR.status); })");
+
+		Assertions.assertThat(String.valueOf(result)).isEqualTo("204");
 	}
 
 	@Then("^\"(\\w+)\" is presented with the Syndesis home page.")
