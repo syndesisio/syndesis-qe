@@ -114,7 +114,6 @@ public abstract class SyndesisPageObject {
 		return this.getRootElement().find(By.cssSelector(String.format("h2:contains('%s')", text)));
 	}
 
-
 	public ElementsCollection getElementsByClassName(String elementClassName) {
 		return this.getRootElement().findAll(By.className(elementClassName));
 	}
@@ -129,7 +128,7 @@ public abstract class SyndesisPageObject {
 		SelenideElement optionElement = getElementContainingText(By.tagName("option"), option);
 		optionElement.shouldBe(visible).click();
 	}
-	
+
 	public SelenideElement getInputById(String inputId) {
 		return this.getRootElement().find(By.id(inputId));
 	}
