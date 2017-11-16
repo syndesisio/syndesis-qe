@@ -10,7 +10,9 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class IntegrationsListComponent extends SyndesisPageObject {
 	
 	private static final class Element {
@@ -47,7 +49,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 	}
 
 	public boolean isIntegrationPresent(String name) {
-		//log.info(`Checking if integration ${name} is present in the list`);
+		log.info("Checking if integration {} is present in the list", name);
 		SelenideElement integration = this.getIntegration(name);
 		return integration.is(visible);
 	}
@@ -62,7 +64,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 	}
 
 	public void clickDeleteIntegration(String integrationName) {
-		//log.info(`clicking delete link for integration ${integrationName}`);
+		log.info("clicking delete link for integration {}", integrationName);
 
 		this.getRootElement().find(Element.ITEM).shouldBe(visible);
 
@@ -100,7 +102,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 		if (isNamePresent) {
 			name = nameElement.getText();
 		} else {
-			//log.warn('Name is not present!');
+			log.warn("Name is not present!");
 			name = integration.find(Element.ITEM_DESCRIPTION).shouldBe(visible).getText();
 		}
 
@@ -126,8 +128,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 		if (properActions.length == 0) {
 			throw new Error("Wrong status!");
 		}
-		
-		//log.debug(`checking kebab menu of kebab element:`);
+
 		SelenideElement kebabE = this.getKebabElement(true, item);
 		kebabE.shouldBe(visible);
 		

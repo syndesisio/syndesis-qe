@@ -41,17 +41,14 @@ public abstract class SyndesisPageObject {
 	/**
 	 * Fill form with given data. It will look for ui element for every map entry.
 	 *
-	 * @param data key,value data. Key is used for element lookup.
+	 * @param data key,value data. Key is used for element lookup
 	 * @param parrentElement search inputs in child elements of this one
-	 * @param using means what kind of identificator.it is.
-	 * @returns {Promise<[void,T2,T3,T4,T5,T6,T7,T8,T9,T10]>}
 	 */
-	public void fillForm(Map<String, String> data, SelenideElement parrentElement, String using) {
+	public void fillForm(Map<By, String> data, SelenideElement parrentElement) {
 		String value;
-		for (String key : data.keySet()) {
-			value = data.get(key);
-			log.info("filling form item {} => {}", key, value);
-			SelenideElement inputElement = parrentElement.find(By.cssSelector(String.format("input[%s=\"%s\"", using, key))).shouldBe(visible);
+		for (By locator : data.keySet()) {
+			value = data.get(locator);
+			SelenideElement inputElement = parrentElement.find(locator).shouldBe(visible);
 			inputElement.sendKeys(value);
 		}
 	}
@@ -131,6 +128,14 @@ public abstract class SyndesisPageObject {
 	public void selectOption(SelenideElement selectElement, String option) {
 		SelenideElement optionElement = getElementContainingText(By.tagName("option"), option);
 		optionElement.shouldBe(visible).click();
+	}
+	
+	public SelenideElement getInputById(String inputId) {
+		return this.getRootElement().find(By.id(inputId));
+	}
+
+	public SelenideElement getInputBySelector(String selector) {
+		return this.getRootElement().find(By.cssSelector(selector));
 	}
 
 	public SelenideElement getElementContainingText(By by, String text) {
