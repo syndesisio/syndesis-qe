@@ -6,8 +6,8 @@ import com.codeborne.selenide.SelenideElement;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.integrations.detail.DataMapperComponent;
 import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponent;
+import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import lombok.extern.slf4j.Slf4j;
 
 /**
