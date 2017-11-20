@@ -138,6 +138,17 @@ public abstract class SyndesisPageObject {
 		return this.getRootElement().find(By.cssSelector(selector));
 	}
 
+	public void fillInput(String inputId, String value) {
+		SelenideElement input = this.getInputById(inputId);
+		input.shouldBe(visible).clear();
+		input.shouldBe(visible).sendKeys(value);
+	}
+
+	public void fillInput(SelenideElement element, String value) {
+		element.shouldBe(visible).clear();
+		element.shouldBe(visible).sendKeys(value);
+	}
+
 	public SelenideElement getElementContainingText(By by, String text) {
 		ElementsCollection elements = getRootElement().findAll(by);
 		elements = elements.filter(exactText(text));

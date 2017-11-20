@@ -23,15 +23,4 @@ public class ActionConfigureComponent extends SyndesisPageObject {
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
-
-	public void fillInput(String inputId, String value) {
-		SelenideElement input = this.getInputById(inputId);
-		input.shouldBe(visible).clear();
-		input.shouldBe(visible).sendKeys(value);
-	}
-
-	public void fillInput(SelenideElement element, String value) {
-		element.shouldBe(visible).clear();
-		element.shouldBe(visible).sendKeys(value);
-	}
 }
