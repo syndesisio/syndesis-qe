@@ -68,7 +68,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 *
 	 * @returns count of fields
 	 */
-	Integer fieldsCount() throws Exception {
+	public Integer fieldsCount() throws Exception {
 		ElementsCollection dmColumns = this.dataMapperColumns();
 		SelenideElement countElement = dmColumns.get(0).$(Element.LOADER_SELECTOR).shouldBe(visible);
 		String countText = countElement.getText();
@@ -80,7 +80,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 		return Integer.parseInt(found[0]);
 	}
 
-	void createMapping(String source, String target) throws Exception {
+	public void createMapping(String source, String target) throws Exception {
 		log.info("creating mapping from {} to {}", source, target);
 		ElementsCollection dmColumns = this.dataMapperColumns();
 		SelenideElement src = dmColumns.get(0);
@@ -97,7 +97,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 * @param fields fields ElementsCollection
 	 * @returns SelenideElement field element
 	 */
-	SelenideElement findFieldByName(String name, ElementsCollection fields) throws Exception {
+	public SelenideElement findFieldByName(String name, ElementsCollection fields) throws Exception {
 		log.info("searching field named {}", name);
 		for (SelenideElement f : fields) {
 			String fieldName = this.fieldName(f);
@@ -114,7 +114,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 * @param mappingName for instance "User.ScreenName"
 	 * @param containerElement start searching mapping fields from here
 	 */
-	void selectMapping(String mappingName, SelenideElement containerElement) throws Exception {
+	public void selectMapping(String mappingName, SelenideElement containerElement) throws Exception {
 		//split and trim in one step:
 		String[] path = mappingName.trim().split("\\s*,\\s*");
 
@@ -138,7 +138,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 * @param fieldElement element to capture name
 	 * @returns String field name
 	 */
-	String fieldName(SelenideElement fieldElement) {
+	public String fieldName(SelenideElement fieldElement) {
 		SelenideElement nameElement = fieldElement.$(Element.NAME).shouldBe(visible);
 		return nameElement.getText();
 	}
@@ -149,7 +149,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 * @param field
 	 * @returns ElementsCollection list of child elements or empty
 	 */
-	ElementsCollection expandField(SelenideElement field) {
+	public ElementsCollection expandField(SelenideElement field) {
 		//should be parent element:
 		field.$(Element.PARENT).shouldBe(visible);
 		field.click();
@@ -158,7 +158,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 		return children;
 	}
 
-	SelenideElement getElementByAlias(String alias) throws Exception {
+	public SelenideElement getElementByAlias(String alias) throws Exception {
 
 		By locator;
 		SelenideElement inputElement;
