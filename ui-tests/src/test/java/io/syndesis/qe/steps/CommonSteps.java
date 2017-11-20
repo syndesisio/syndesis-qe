@@ -6,8 +6,10 @@ import static com.codeborne.selenide.Selenide.$;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
 import cucumber.api.java.en.Given;
@@ -16,6 +18,8 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
+import io.syndesis.qe.pages.dashboard.DashboardPage;
+import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
 import io.syndesis.qe.pages.login.GitHubLoginPage;
 import io.syndesis.qe.pages.login.MinishiftLoginPage;
 import io.syndesis.qe.pages.login.RHDevLoginPage;
@@ -78,130 +82,95 @@ public class CommonSteps {
 	}
 
 	@When("clicks? on the \"([^\"]*)\" button.*$/")
-	public void clickOnButton(String buttonTitle, String callback) {
+	public void clickOnButton(String buttonTitle) {
 		new SyndesisRootPage().clickButton(buttonTitle);
 	}
 
 	@When("clicks? on the \"([^\"]*)\" link.*$/")
-	public void clickOnLink(String linkTitle, String callback) {
+	public void clickOnLink(String linkTitle) {
 		new SyndesisRootPage().clickLink(linkTitle);
 	}
 
 	@When("clicks? on the random \"([^\"]*)\" link.*$/")
-	public void clickOnLinkRandom(String linkTitle, String callback) {
+	public void clickOnLinkRandom(String linkTitle) {
 		new SyndesisRootPage().clickLinkRandom(linkTitle);
 	}
 
 	@Then("^she is presented with the \"([^\"]*)\" button.*$/")
-	public void checkButtonIsVisible(String buttonTitle, String callback) {
+	public void checkButtonIsVisible(String buttonTitle) {
 		new SyndesisRootPage().getButton(buttonTitle).shouldBe(visible);
 	}
 
 	@Then("^she is presented with the \"([^\"]*)\" tables*$/")
-	public void checkTableTitlesArePresent(String tableTitles, String callback) {
+	public void checkTableTitlesArePresent(String tableTitles) {
 
-		throw new UnsupportedOperationException();
-//
-//		String[] titles = tableTitles.split(",");
-//
-//		for(String title: titles) {
-//			new SyndesisRootPage().getElementContainingText()
-//		}
-//		.getElementContainingText()
-//		for (const tableTitle of tableTitlesArray) {
-//			this.expectTableTitlePresent(tableTitle, callback);
-//		}
+		String[] titles = tableTitles.split(",");
+
+		for(String title: titles) {
+			new SyndesisRootPage().getTitleByText(title).shouldBe(visible);
+		}
 	}
 
-	public void expectTableTitlePresent(String tableTitle, String callback) {
-
-		throw new UnsupportedOperationException();
-//    const table = this.world.app.getTitleByText(tableTitle);
-//		expect(table.isPresent(), `There must be present a table ${tableTitle}`)
-//      .to.eventually.be.true;
-//
-//		expect(table.isPresent(), `There must be enabled table ${tableTitle}`)
-//      .to.eventually.be.true.notify(callback);
+	public void expectTableTitlePresent(String tableTitle) {
+		SelenideElement table = new SyndesisRootPage().getTitleByText(tableTitle);
+		table.shouldBe(visible);
 	}
 
 	@Then("^she is presented with the \"([^\"]*)\" elements*$/")
-	public void expectElementsPresent(String elementClassNames, String callback) {
+	public void expectElementsPresent(String elementClassNames) {
+		String[] elementClassNamesArray = elementClassNames.split(",");
 
-		throw new UnsupportedOperationException();
-//    const elementClassNamesArray = elementClassNames.split(',');
-//
-//		for (const elementClassName of elementClassNamesArray) {
-//			this.expectElementPresent(elementClassName, callback);
-//		}
+		for (String elementClassName : elementClassNamesArray) {
+			SelenideElement element = new SyndesisRootPage().getElementByClassName(elementClassName);
+			element.shouldBe(visible);
+		}
 	}
 
 	@Then("^she is presented with the \"([^\"]*)\"$/")
-	public void expectElementPresent(String elementClassName, String callback) {
-
-		throw new UnsupportedOperationException();
-//    const element = this.world.app.getElementByClassName(elementClassName);
-//		expect(element.isPresent(), `There must be present a element ${elementClassName}`)
-//      .to.eventually.be.true;
-//
-//		expect(element.isPresent(), `There must be enabled element ${elementClassName}`)
-//      .to.eventually.be.true.notify(callback);
+	public void expectElementPresent(String elementClassName) {
+		SelenideElement element = new SyndesisRootPage().getElementByClassName(elementClassName);
+		element.shouldBe(visible);
 	}
 
 	@Then("^Integration \"([^\"]*)\" is present in top 5 integrations$/")
-	public void expectIntegrationPresentinTopFive(String name, String callback) {
-
-		throw new UnsupportedOperationException();
-//		log.info(`Verifying integration ${name} is present in top 5 integrations`);
-//    const page = new DashboardPage();
-//		expect(page.isIntegrationPresent(name), `Integration ${name} must be present`)
-//      .to.eventually.be.true.notify(callback);
+	public void expectIntegrationPresentinTopFive(String name) {
+		log.info("Verifying integration {} is present in top 5 integrations", name);
+		DashboardPage dashboardPage = new DashboardPage();
+		Assertions.assertThat(dashboardPage.isIntegrationPresent(name));
 	}
 
 	@Then("^Camilla can see \"([^\"]*)\" connection on dashboard page$/")
-	public void expectConnectionTitlePresent (String connectionName, String callback) {
-
-		throw new UnsupportedOperationException();
-//    const dashboard = new DashboardPage();
-//    const connection = dashboard.getConnection(connectionName);
-//		expect(connection.isPresent(), `There should be present connection ${connectionName}`)
-//      .to.eventually.be.true.notify(callback);
+	public void expectConnectionTitlePresent (String connectionName) {
+		DashboardPage dashboardPage = new DashboardPage();
+		SelenideElement connection = dashboardPage.getConnection(connectionName);
+		connection.shouldBe(visible);
 	}
 
 	@Then("^Camilla can not see \"([^\"]*)\" connection on dashboard page anymore$/")
-	public void expectConnectionTitleNonPresent (String connectionName, String callback) {
-
-		throw new UnsupportedOperationException();
-//    const dashboard = new DashboardPage();
-//    const connection = dashboard.getConnection(connectionName);
-//		expect(connection.isPresent(), `There shouldnt be a present connection ${connectionName}`)
-//      .to.eventually.be.false.notify(callback);
+	public void expectConnectionTitleNonPresent (String connectionName) {
+		DashboardPage dashboardPage = new DashboardPage();
+		SelenideElement connection = dashboardPage.getConnection(connectionName);
+		connection.shouldNotBe(visible);
 	}
 
 	@When("^Camilla deletes the \"([^\"]*)\" integration in top 5 integrations$/")
 	public void deleteIntegrationOnDashboard(String integrationName) {
-
-		throw new UnsupportedOperationException();
-//		log.info(`Trying to delete ${integrationName} on top 5 integrations table`);
-//    const listComponent = new IntegrationsListComponent();
-//		return listComponent.clickDeleteIntegration(integrationName);
+		log.info("Trying to delete {} on top 5 integrations table");
+		IntegrationsListComponent listComponent = new IntegrationsListComponent();
+		listComponent.clickDeleteIntegration(integrationName);
 	}
 
 	@Then("^Camilla can not see \"([^\"]*)\" integration in top 5 integrations anymore$/")
-	public void expectIntegrationPresentOnDashboard(String name, String callback) {
-
-		throw new UnsupportedOperationException();
-//		log.info(`Verifying if integration ${name} is present`);
-//    const dashboard = new DashboardPage();
-//		expect(dashboard.isIntegrationPresent(name), `Integration ${name} must be present`)
-//      .to.eventually.be.false.notify(callback);
+	public void expectIntegrationNotPresentOnDashboard(String name) {
+		log.info("Verifying if integration {} is present", name);
+		DashboardPage dashboardPage = new DashboardPage();
+		Assertions.assertThat(dashboardPage.isIntegrationPresent(name)).isFalse();
 	}
 
 	@Then("^she can see success notification$/")
 	public void successNotificationIsPresent() {
-
-		throw new UnsupportedOperationException();
-//    const allertSucces = this.world.app.getElementByClassName('alert-success');
-//		return browser.wait(ExpectedConditions.visibilityOf(allertSucces), 6000, 'OK button not loaded in time');
+		SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-success");
+		allertSucces.shouldBe(visible);
 	}
 
 	/**
@@ -213,32 +182,27 @@ public class CommonSteps {
 	 */
 	@When("^scroll \"([^\"]*)\" \"([^\"]*)\"$/")
 	public void scrollTo(String topBottom, String leftRight) {
+		WebDriver driver = WebDriverRunner.getWebDriver();
+		JavascriptExecutor jse = (JavascriptExecutor) driver;
 
-		throw new UnsupportedOperationException();
-//		// get real width and height
-//    const width = await browser.executeScript(() => $(document).width());
-//    const height = await browser.executeScript(() => $(document).height());
-//
-//    const directions: Object = {
-//				top: 0,
-//				bottom: height,
-//				left: 0,
-//				right: width,
-//    };
-//
-//		if (!directions.hasOwnProperty(topBottom) || !directions.hasOwnProperty(leftRight)) {
-//			return P.reject(`unknown directions [${topBottom}, ${leftRight}`);
-//		}
-//    const x = directions[leftRight];
-//    const y = directions[topBottom];
-//
-//		log.info(`scrolling to [x=${x},y=${y}]`);
-//		return browser.driver.executeScript((browserX, browserY) => window.scrollTo(browserX, browserY), x, y);
-//	}
+		int x = 0;
+		int y = 0;
+
+		int width = (int) jse.executeScript("return $(document).width()");
+		int height = (int) jse.executeScript("return $(document).height()");
+	
+		if (leftRight.equals("right")) {
+			y = width;
+		}
+
+		if (topBottom.equals("bottom")) {
+			x = height;
+		}
+	
+		jse.executeScript("(browserX, browserY) => window.scrollTo(browserX, browserY)", x, y);
 	}
 
 	@Then("^(\\w+)? is presented with the Syndesis page \"([^\"]*)\"$/")
-
 	public void validatePage(String pageName) {
 		SyndesisPage.get(pageName).validate();
 	}

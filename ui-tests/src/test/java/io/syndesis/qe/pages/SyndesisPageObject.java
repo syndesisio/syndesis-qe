@@ -109,7 +109,7 @@ public abstract class SyndesisPageObject {
 		return this.getRootElement().$(elementLocator);
 	}
 
-	SelenideElement getTitleByText(String text){
+	public SelenideElement getTitleByText(String text){
 		log.info("searching for title {}", text);
 		return this.getRootElement().find(By.cssSelector(String.format("h2:contains('%s')", text)));
 	}
