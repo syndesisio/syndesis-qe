@@ -1,24 +1,31 @@
 package io.syndesis.qe.endpoints;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.syndesis.model.ListResult;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.RestUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implements a client endpoint for syndesis REST.
  *
  * @author jknetl
  */
+@Slf4j
 public abstract class AbstractEndpoint<T> {
 
 	protected String endpointName;
@@ -83,6 +90,10 @@ public abstract class AbstractEndpoint<T> {
 	}
 
 	public List<T> list() {
+		final ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
+		final ObjectWriter ow = mapper.writer();
+		final Class<ListResult<T>> listtype = (Class) ListResult.class;
+
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl())
 				.request(MediaType.APPLICATION_JSON)
@@ -92,10 +103,22 @@ public abstract class AbstractEndpoint<T> {
 		final Response response = invocation
 				.get();
 
-		final ListResult<T> ts = response.readEntity(new GenericType<ListResult<T>>() {
-		});
+		//TODO(tplevko): nasty hack... Change this
+		final ListResult<T> result = response.readEntity(listtype);
+		final List<T> ts = new ArrayList<>();
 
-		return ts.getItems();
+		for (int i = 0; i < result.getTotalCount(); i++) {
+			T con = null;
+			try {
+				final String json = ow.writeValueAsString(result.getItems().get(i));
+				con = (T) mapper.readValue(json, type);
+			} catch (IOException ex) {
+				log.error(ex.toString());
+			}
+			ts.add(con);
+		}
+
+		return ts;
 	}
 
 	public String getEndpointUrl() {
