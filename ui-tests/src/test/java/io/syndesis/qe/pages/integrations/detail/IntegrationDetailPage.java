@@ -3,19 +3,19 @@ package io.syndesis.qe.pages.integrations.detail;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class IntegrationDetailPage extends SyndesisPageObject {
-	
+
 	public final List<String> actionsSet = new ArrayList<String>();
 
 	private static final class Element {
@@ -57,7 +57,7 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
 	public void performAction(String action) {
 		if (this.actionsSet.contains(action)) {
-			this.clickButton(action);			
+			this.clickButton(action);
 		} else {
 			log.error("Action {} is not available on detail page!", action);
 		}

@@ -11,7 +11,7 @@ public class FlowConnection {
 	private static final class Element {
 		public static final By ACTIVE = By.cssSelector("p.icon.active");
 	}
-	
+
 	private String type;
 	private SelenideElement element;
 
@@ -38,6 +38,7 @@ public class FlowConnection {
 
 	/**
 	 * Check if this element is active
+	 *
 	 * @returns boolean
 	 */
 	boolean isActive() {

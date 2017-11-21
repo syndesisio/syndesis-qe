@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class IntegrationsListComponent extends SyndesisPageObject {
-	
+
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-list");
 
@@ -24,16 +24,16 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 		public static final By ITEM_NAME = By.className("name");
 		public static final By ITEM_DESCRIPTION = By.className("description");
 	}
-	
+
 	private static final class Link {
 		public static final By KEBAB_DELETE = By.linkText("Delete");
 	}
-	
+
 	private static final class Button {
 		public static final By OK = By.xpath("//button[.='OK']");
 		public static final By KEBAB_DROPDOWN = By.cssSelector("button.dropdown-toggle");
 	}
-	
+
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
 		return elementRoot;
@@ -48,12 +48,18 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 		return entryElement;
 	}
 
+	public SelenideElement getIntegrationActiveState(String integrationName, String integrationState) {
+		SelenideElement integration = this.getIntegration(integrationName);
+		SelenideElement integrationActiveState = integration.find(By.cssSelector(String.format("syndesis-integration-status[innertext='%s']", integrationState)));
+		return integrationActiveState;
+	}
+
 	public boolean isIntegrationPresent(String name) {
 		log.info("Checking if integration {} is present in the list", name);
 		SelenideElement integration = this.getIntegration(name);
 		return integration.is(visible);
 	}
-	
+
 	public void goToIntegrationDetail(String integrationName) {
 		this.getIntegration(integrationName).shouldBe(visible).click();
 	}
@@ -70,15 +76,15 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
 		SelenideElement parentElement = null;
 		ElementsCollection parentElements = this.getAllIntegrations();
-		
+
 		for (SelenideElement element : parentElements) {
 			String name = getIntegrationName(element);
-			if (name.equals(integrationName)){
+			if (name.equals(integrationName)) {
 				parentElement = element;
 				break;
 			}
 		}
-				
+
 		if (parentElement != null) {
 			parentElement.find(Button.KEBAB_DROPDOWN).shouldBe(visible).click();
 		}
@@ -129,9 +135,10 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 			throw new Error("Wrong status!");
 		}
 
+		//log.debug(`checking kebab menu of kebab element:`);
 		SelenideElement kebabE = this.getKebabElement(true, item);
 		kebabE.shouldBe(visible);
-		
+
 		for (String action : properActions) {
 			kebabE.find(By.linkText(action)).isDisplayed();
 		}
@@ -139,29 +146,29 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
 	public String[] getKebabActionsByStatus(String status) {
 		String[] actions;
-		
+
 		String view = "View";
 		String edit = "Edit";
 		String deactivate = "Deactivate";
 		String activate = "Activate";
 		String deleteAction = "Delete";
-		
+
 		switch (status) {
-			case "Active": 
+			case "Active":
 				actions = new String[] {view, edit, deactivate, deleteAction};
 				break;
-			case "Inactive": 
-			case "Draft": 
+			case "Inactive":
+			case "Draft":
 				actions = new String[] {view, edit, activate, deleteAction};
 				break;
-			case "In Progress": 
+			case "In Progress":
 				actions = new String[] {view, edit, deleteAction};
 				break;
-			default: 
+			default:
 				actions = new String[] {};
 				break;
 		}
-		
+
 		return actions;
 	}
 

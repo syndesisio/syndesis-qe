@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ConnectionDetailPage extends SyndesisPageObject {
 
 	private static final class Element {
-		public static final By ROOT = By.xpath("//button[@type='submit']");
+		public static final By ROOT = By.cssSelector("syndesis-connection-detail-info");
 		public static final By CONNECTION_DETAIL = By.cssSelector("syndesis-connection-detail-info");
 		public static final By CONNECTION_NAME = By.cssSelector("syndesis-editable-text");
 	}

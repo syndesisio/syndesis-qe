@@ -8,7 +8,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.connections.ConnectionsListComponent;
+import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
 
 public class ConnectionSelectComponent extends SyndesisPageObject {
 	
