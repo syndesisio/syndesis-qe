@@ -1,8 +1,8 @@
 package io.syndesis.qe.pages;
 
-import io.syndesis.qe.pages.connections.ConnectionCreatePage;
-import io.syndesis.qe.pages.connections.ConnectionDetailPage;
-import io.syndesis.qe.pages.connections.ConnectionListPage;
+import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
+import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
+import io.syndesis.qe.pages.connections.list.ConnectionListPage;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
 
 /**

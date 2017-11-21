@@ -17,9 +17,7 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-		features = "src/test/java/io/syndesis/qe/features",
-		glue = {"io/syndesis/qe/steps"},
-		monochrome = true,
+		features = "classpath:features",
 		format = {"pretty"}
 )
 public class CucumberTest {
