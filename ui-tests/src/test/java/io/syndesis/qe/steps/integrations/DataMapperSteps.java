@@ -37,9 +37,8 @@ public class DataMapperSteps {
 
 	@Then("^she fills \"(\\w+)\" selector-input with \"(\\w+)\" value$")
 	public void fillActionConfigureField(String selectorAlias, String value) throws Exception {
-		ActionConfigureComponent actionConf = new ActionConfigureComponent();
 		SelenideElement inputElement = mapper.getElementByAlias(selectorAlias).shouldBe(visible);
-		actionConf.fillInputByElement(inputElement, value);
+		mapper.fillInput(inputElement, value);
 	}
 
 	/**
@@ -61,7 +60,7 @@ public class DataMapperSteps {
 		// Then she fills "FirstCombine" selector-input with "FirstName" value
 		ActionConfigureComponent actionConf = new ActionConfigureComponent();
 		inputElement = mapper.getElementByAlias("FirstCombine").shouldBe(visible);
-		actionConf.fillInputByElement(inputElement, first);
+		mapper.fillInput(inputElement, first);
 
 		// And she selects "Combine" from "ActionSelect" selector-dropdown
 		selectElement = mapper.getElementByAlias("ActionSelect").shouldBe(visible);
@@ -76,18 +75,18 @@ public class DataMapperSteps {
 
 		// Then she fills "SecondCombine" selector-input with "LastName" value
 		inputElement = mapper.getElementByAlias("SecondCombine").shouldBe(visible);
-		actionConf.fillInputByElement(inputElement, second);
+		mapper.fillInput(inputElement, second);
 
 		// And she fills "FirstCombinePosition" selector-input with "2" value
 		inputElement = mapper.getElementByAlias("FirstCombinePosition").shouldBe(visible);
-		actionConf.fillInputByElement(inputElement, first_pos);
+		mapper.fillInput(inputElement, first_pos);
 
 		// And she fills "SecondCombinePosition" selector-input with "1" value
 		inputElement = mapper.getElementByAlias("SecondCombinePosition").shouldBe(visible);
-		actionConf.fillInputByElement(inputElement, sec_pos);
+		mapper.fillInput(inputElement, sec_pos);
 
 		// Then she fills "TargetCombine" selector-input with "first_and_last_name" value
 		inputElement = mapper.getElementByAlias("TargetCombine").shouldBe(visible);
-		actionConf.fillInputByElement(inputElement, combined);
+		mapper.fillInput(inputElement, combined);
 	}
 }

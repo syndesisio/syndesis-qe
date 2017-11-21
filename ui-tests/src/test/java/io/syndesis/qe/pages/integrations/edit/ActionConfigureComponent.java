@@ -15,11 +15,13 @@ public class ActionConfigureComponent extends SyndesisPageObject {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-action-configure");
 	}
 
+	@Override
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
 		return elementRoot;
 	}
 
+	@Override
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
