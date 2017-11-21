@@ -21,7 +21,7 @@ public class DataMapperSteps {
 
 	private DataMapperComponent mapper = new DataMapperComponent();
 
-	@When("^she creates mapping from \"(\\w+)\" to \"(\\w+)\"$")
+	@When("^she creates mapping from \"([^\"]*)\" to \"([^\"]*)\"$")
 	public void createMapping(String source, String target) throws Exception {
 		mapper.createMapping(source, target);
 	}
@@ -32,14 +32,14 @@ public class DataMapperSteps {
 		assertThat(mapper.fieldsCount(), greaterThan(5));
 	}
 
-	@When("^she selects \"(\\w+)\" from \"(\\w+)\" selector-dropdown$")
+	@When("^she selects \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
 	public void selectFromDropDownByElement(String option, String selectAlias) throws Exception {
 		log.info(option);
 		SelenideElement selectElement = mapper.getElementByAlias(selectAlias).shouldBe(visible);
 		mapper.selectOption(selectElement, option);
 	}
 
-	@Then("^she fills \"(\\w+)\" selector-input with \"(\\w+)\" value$")
+	@Then("^she fills \"([^\"]*)\" selector-input with \"([^\"]*)\" value$")
 	public void fillActionConfigureField(String selectorAlias, String value) throws Exception {
 		SelenideElement inputElement = mapper.getElementByAlias(selectorAlias).shouldBe(visible);
 		mapper.fillInput(inputElement, value);
