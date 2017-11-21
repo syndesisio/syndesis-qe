@@ -30,17 +30,17 @@ public class DashboardPage extends SyndesisPageObject {
 		return $(Element.ROOT).is(visible);
 	}
 
-	SelenideElement getConnection(String connectionTitle) {
+	public SelenideElement getConnection(String connectionTitle) {
 		log.info("searching for connection {}", connectionTitle);
 		return this.getRootElement().$(String.format("h2.card-pf-title.text-center[title=\"%s\"]", connectionTitle));
 	}
 
-	void goToConnection(String connectionTitle) {
+	public void goToConnection(String connectionTitle) {
 		log.info("searching for connection {}", connectionTitle);
 		this.getConnection(connectionTitle).shouldBe(visible).click();
 	}
 
-	boolean isIntegrationPresent(String integrationName) {
+	public boolean isIntegrationPresent(String integrationName) {
 		log.info("Checking if integration {} is present in the list", integrationName);
 		SelenideElement integration = this.getRootElement().find(By.cssSelector(String.format("div[innertext='%s']", integrationName)));
 		return integration.is(visible);
