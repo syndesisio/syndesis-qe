@@ -41,8 +41,8 @@ public class SettingsSteps {
 	@When("^fill form in \"(\\w+)\" settings item$")
 	public void fillSettingsItemForm(String itemTitle) throws Exception {
 		//TODO(dsimansk: )
-		Map<String, String> toFill = this.world.testConfig.settings[itemTitle];
-		settings.fillSettingsItemForm(itemTitle, toFill);
+		//Map<String, String> toFill = this.world.testConfig.settings[itemTitle];
+		//settings.fillSettingsItemForm(itemTitle, toFill);
 	}
 
 	@Then("^settings item \"(\\w+)\" must have alert with text \"(\\w+)\"$")

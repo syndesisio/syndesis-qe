@@ -46,7 +46,7 @@ public class FlowViewComponent extends SyndesisPageObject {
 	 * @param type (start|finish)
 	 */
 	public FlowConnection flowConnection(String type) {
-		By stepLocator = By.cssSelector(String.format("div.step.%s", type));
+		By stepLocator = By.cssSelector(String.format("div.parent-step.%s", type));
 
 		type = type.toLowerCase();
 		SelenideElement stepElement = this.getRootElement().find(stepLocator).shouldBe(visible);

@@ -38,14 +38,14 @@ public class ConnectionConfigurationComponent extends SyndesisPageObject {
 	 * @param conneDetails <key> : <value> object with data
 	 * @returns {any} resolved promise once all filled
 	 */
-	public void fillDetails(Map<String, String> conneDetails) throws Exception {
+	public void fillDetails(Map<String, String> conneDetails) {
 
 		if (conneDetails.isEmpty()) {
-			throw new Exception("can't find any connection details in connection");
+			throw new IllegalArgumentException("can't find any connection details in connection");
 		}
 		for (String key : conneDetails.keySet()) {
 			log.info("fill conneDetails detail {} => {}", key, conneDetails.get(key));
-			getRootElement().$(String.format("input[name=\"%s\"")).shouldBe(visible).sendKeys(conneDetails.get(key));
+			getRootElement().$(String.format("input[name=\"%s\"", key)).shouldBe(visible).sendKeys(conneDetails.get(key));
 		}
 	}
 }

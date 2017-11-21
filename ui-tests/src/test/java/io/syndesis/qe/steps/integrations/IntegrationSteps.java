@@ -13,6 +13,8 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.ArrayList;
 import java.util.List;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
@@ -56,7 +58,7 @@ public class IntegrationSteps {
 	private ListActionsComponent listActions = new ListActionsComponent();
 	private TwitterSearchActionConfigureComponent twitterSearchComponent = new TwitterSearchActionConfigureComponent();
 
-	@When("defines integration name \"(\\w+)\"$")
+	@When("^she defines integration name \"([^\"]*)\"$")
 	public void defineIntegrationName(String integrationName) {
 		editPage.basicsComponent().setName(integrationName);
 	}
@@ -68,25 +70,25 @@ public class IntegrationSteps {
 		flowViewComponent.getRootElement().shouldBe(visible);
 	}
 
-	@Then("^she is presented with a visual integration editor for \"(\\w+)\"$")
+	@Then("^she is presented with a visual integration editor for \"([^\"]*)\"$")
 	public void editorOpenedFor(String integrationName) {
 		this.editorOpened();
 		log.info("editor must display integration name {}", integrationName);
 		assertThat(editPage.flowViewComponent().getIntegrationName(), is(integrationName));
 	}
 
-	@Then("^Camilla is presented with \"(\\w+)\" integration details$")
+	@Then("^Camilla is presented with \"([^\"]*)\" integration details$")
 	public void verifyIntegrationDetails(String integrationName) {
 		log.info("Integration detail editPage must show integration name");
 		assertThat(detailPage.getIntegrationName(), is(integrationName));
 	}
 
-	@When("^Camilla selects the \"(\\w+)\" integration.*$")
+	@When("^Camilla selects the \"([^\"]*)\" integration.*$")
 	public void selectConnection(String itegrationName) {
 		listPage.listComponent().goToIntegrationDetail(itegrationName);
 	}
 
-	@When("^she selects \"(\\w+)\" integration action$")
+	@When("^she selects \"([^\"]*)\" integration action$")
 	public void selectIntegrationAction(String action) {
 		if ("Create Opportunity".equals(action)) {
 			log.warn("Action {} is not available", action);
@@ -95,7 +97,7 @@ public class IntegrationSteps {
 		listActions.selectAction(action);
 	}
 
-	@When("^Camilla deletes the \"(\\w+)\" integration*$")
+	@When("^Camilla deletes the \"([^\"]*)\" integration*$")
 	public void deleteIntegration(String integrationName) {
 		listComponent.clickDeleteIntegration(integrationName);
 	}
@@ -105,14 +107,14 @@ public class IntegrationSteps {
 		detailPage.deleteIntegration();
 	}
 
-	@Then("^she can see on detail editPage that integration is \"(\\w+)\" status$")
+	@Then("^she can see on detail editPage that integration is \"([^\"]*)\" status$")
 	public void checkStatus(String expectedStatus) {
 		String status = detailPage.getStatus();
 		log.info("Status: {}", status);
 		assertThat(expectedStatus, is(status));
 	}
 
-	@Then("^she clicks on integration in \"(\\w+)\" status and check on detail if status match and appropriate actions are available$")
+	@Then("^she clicks on integration in \"([^\"]*)\" status and check on detail if status match and appropriate actions are available$")
 	public void clickOnIntegrationInStatus(String status) {
 		SelenideElement integrationByStatus = listComponent.getIntegrationByStatus(status);
 		integrationByStatus.shouldBe(visible).click();
@@ -148,25 +150,25 @@ public class IntegrationSteps {
 		}
 	}
 
-	@When("^she selects \"(\\w+)\" integration step$")
+	@When("^she selects \"([^\"]*)\" integration step$")
 	public void addStep(String stepName) {
 		log.info("Adding {} step to integration", stepName);
 		addStepPage.addStep(stepName);
 	}
 
-	@Then("^Integration \"(\\w+)\" is present in integrations list$")
+	@Then("^Integration \"([^\"]*)\" is present in integrations list$")
 	public void expectIntegrationPresent(String name) {
 		log.info("Verifying integration {} is present", name);
 		assertThat(listPage.listComponent().isIntegrationPresent(name), is(true));
 	}
 
-	@Then("^Camilla can not see \"(\\w+)\" integration anymore$")
+	@Then("^Camilla can not see \"([^\"]*)\" integration anymore$")
 	public void expectIntegrationNotPresent(String name) {
 		log.info("Verifying if integration {} is present", name);
 		assertThat(listPage.listComponent().isIntegrationPresent(name), is(false));
 	}
 
-	@Then("^she wait until integration \"(\\w+)\" get into \"(\\w+)\" state$")
+	@Then("^she wait until integration \"([^\"]*)\" get into \"([^\"]*)\" state$")
 	public void waitForIntegrationState(String integrationName, String integrationState) {
 		SelenideElement integrationActiveState = listPage.listComponent().getIntegrationActiveState(integrationName, integrationState);
 		log.info("Integration should get into {}.", integrationState);
@@ -179,7 +181,7 @@ public class IntegrationSteps {
 		addStepPage.getRootElement().shouldBe(visible);
 	}
 
-	@Then("^she is presented with a \"(\\w+)\" step configure page$")
+	@Then("^she is presented with a \"([^\"]*)\" step configure page$")
 	public void configureStepPageOpen(String stepType) {
 		StepPage page = stepFactory.getStep(stepType, "");
 		log.info("there must be add step editPage root element");
@@ -187,7 +189,7 @@ public class IntegrationSteps {
 		assertThat(page.validate(), is(true));
 	}
 
-	@Then("^she fill configure page for \"(\\w+)\" step with \"(\\w+)\" parameter$")
+	@Then("^she fill configure page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
 	public void fillStepConfiguration(String stepType, String parameter) {
 		StepPage page = stepFactory.getStep(stepType, parameter);
 		page.fillConfiguration();
@@ -267,7 +269,7 @@ public class IntegrationSteps {
 		listActions.getRootElement().shouldBe(visible);
 	}
 
-	@Then("^add new basic filter rule with \"(\\w+)\" parameters$")
+	@Then("^add new basic filter rule with \"([^\"]*)\" parameters$")
 	public void addBasicFilterRule(String rule) {
 		BasicFilterStepPage basicFilterStepPage = (BasicFilterStepPage) stepFactory.getStep("BASIC FILTER", "");
 		basicFilterStepPage.initialize();
@@ -301,7 +303,7 @@ public class IntegrationSteps {
 		twitterSearchComponent.fillKeywordsValue(value);
 	}
 
-	@Then("^she fills \"(\\w+)\" action configure component input with \"(\\w+)\" value$")
+	@Then("^she fills \"(\\w+)\" action configure component input with \"([^\"]*)\" value$")
 	public void fillActionConfigureField(String fieldId, String value) {
 		ActionConfigureComponent actionConfComponent = editPage.actionConfigureComponent();
 		log.info("Input skould be visible");
@@ -313,7 +315,7 @@ public class IntegrationSteps {
 	 *
 	 * @param type
 	 */
-	@Then("^she is prompted to select a \"(\\w+)\" connection from a list of available connections$")
+	@Then("^she is prompted to select a \"([^\"]*)\" connection from a list of available connections$")
 	public void verifyTypeOfConnection(String type) {
 		SelenideElement connection = editPage.flowViewComponent().flowConnection(type).getElement().shouldBe(visible);
 		log.info("{} connection must be active", type);
@@ -324,7 +326,7 @@ public class IntegrationSteps {
 	 *
 	 * @param text
 	 */
-	@Then("^she is presented with \"(\\w+)\" (page|editor)$")
+	@Then("^she is presented with \"([^\"]*)\" (page|editor)$")
 	public void verifyPageByText(String text) {
 		editPage.checkPageIsPresent(text);
 	}

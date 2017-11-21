@@ -77,7 +77,7 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 		return $(Element.ROOT).findAll(Button.KEBAB);
 	}
 
-	public void clickOnAllKebabButtons() throws Exception {
+	public void clickOnAllKebabButtons() {
 		ElementsCollection kebabButtons = this.getAllKebabButtons().shouldBe(sizeGreaterThanOrEqual(1));
 		for (SelenideElement kebabButton : kebabButtons) {
 			log.debug("clicking on kebab button {}", kebabButton.getText());

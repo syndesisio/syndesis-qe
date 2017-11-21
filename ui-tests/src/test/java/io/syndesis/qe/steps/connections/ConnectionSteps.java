@@ -16,6 +16,7 @@ import java.util.List;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponent;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
@@ -40,55 +41,60 @@ public class ConnectionSteps {
 		assertThat(detailPage.connectionName(), is(connectionName));
 	}
 
-	@Then("/^Camilla can see \"(\\w+)\" connection")
+	@Then("^Camilla can see \"(\\w+)\" connection$")
 	public void expectConnectionTitlePresent(String connectionName) {
 		SelenideElement connection = listComponent.getConnectionByTitle(connectionName).shouldBe(visible);
 	}
 
-	@Then("^Camilla can not see \"(\\w+)\" connection anymore")
+	@Then("^Camilla can not see \"(\\w+)\" connection anymore$")
 	public void expectConnectionTitleNonPresent(String connectionName) {
 		SelenideElement connection = listComponent.getConnectionByTitle(connectionName).shouldBe(not(exist));
 	}
 
-	@Then("^she is presented with a connection create page")
+	@Then("^she is presented with a connection create page$")
 	public void editorOpened() {
 		ConnectionCreatePage connPage = new ConnectionCreatePage();
 		connPage.getRootElement();
 	}
 
-	@When("^Camilla deletes the \"(\\w+)\" connection")
+	@When("^Camilla deletes the \"(\\w+)\" connection$")
 	public void deleteConnection(String connectionName) {
+		ConnectionsListComponent listComponent = new ConnectionsListComponent();
 		listComponent.deleteConnection(connectionName);
 	}
 
-	@When("^Camilla selects the \"(\\w+)\" connection.*")
+	@When("^Camilla selects the \"([^\"]*)\" connection$")
 	public void selectConnection(String connectionName) {
+		ConnectionsListComponent listComponent = new ConnectionsListComponent();
 		listComponent.goToConnection(connectionName);
 	}
 
-	@When("^type \"(\\w+)\" into connection name")
+	@When("^types? \"([^\"]*)\" into connection name$")
 	public void typeConnectionName(String name) {
+		ConnectionsDetailsComponent connectionDetails = new ConnectionsDetailsComponent();
 		connectionDetails.getInputName().shouldBe(visible).sendKeys(name);
 	}
 
-	@When("^type \"(\\w+)\" into connection description")
+	@When("^types? \"([^\"]*)\" into connection description$")
 	public void typeConnectionDescription(String description) {
+		ConnectionsDetailsComponent connectionDetails = new ConnectionsDetailsComponent();
 		connectionDetails.getDescription().shouldBe(visible).sendKeys(description);
 	}
 
-	@When("^she fills \"(\\w+)\" connection details")
-	public void fillConnectionDetails(String connectionName) throws Exception {
-		//TODO(dsimansk) method for retrieving map of connection credentials.
-		connectionConfiguration.fillDetails(this.world.getTestConfigConnection(connectionName));
+	@When("^she fills \"([^\"]*)\" connection details$")
+	public void fillConnectionDetails(String connectionName) {
+		ConnectionConfigurationComponent connectionConfiguration = new ConnectionConfigurationComponent();
+		new AccountsDirectory().getAccount(connectionName).ifPresent(account -> connectionConfiguration.fillDetails(account.getProperties()));
+		//connectionConfiguration.fillDetails(this.world.getTestConfigConnection(connectionName));
 	}
 
-	//Kebab menu test, #553 -> part #550.
-	@When("^clicks on the kebab menu icon of each available connection")
-	public void clickOnAllKebabMenus() throws Exception {
+	@When("^clicks? on the kebab menu icon of each available connection$")
+	public void clickOnAllKebabMenus() {
+		ConnectionsListComponent listComponent = new ConnectionsListComponent();
 		listComponent.clickOnAllKebabButtons();
 	}
 
-	@Then("^she is presented with at least \"(\\d+)\" connections")
+	@Then("^she is presented with at least \"(\\d+)\" connections$")
 	public void connectionCount(Integer connectionCount) {
 		log.info("There should be {} available", connectionCount);
 		assertThat(listComponent.countConnections(), is(connectionCount));
