@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TwitterSearchActionConfigureComponent extends ActionConfigureComponent {
-	
+
 	private static final class Input {
 		public static final By KEYWORLDS = By.id("keywords");
 	}

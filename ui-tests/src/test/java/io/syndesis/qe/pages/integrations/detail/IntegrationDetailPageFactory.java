@@ -16,7 +16,6 @@ public class IntegrationDetailPageFactory {
 		} else if (integrationStatus.toUpperCase().equals("IN PROGRESS")) {
 			return new IntegrationDetailPageInProgress();
 		}
-
 		return null;
-  }
+	}
 }

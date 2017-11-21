@@ -1,12 +1,15 @@
 package io.syndesis.qe.steps.integrations;
 
+import static org.junit.Assert.assertThat;
+
+import static org.hamcrest.Matchers.greaterThan;
+
 import static com.codeborne.selenide.Condition.visible;
 
 import com.codeborne.selenide.SelenideElement;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +28,8 @@ public class DataMapperSteps {
 
 	@Then("^she is presented with data mapper ui$")
 	public void dataMapperUIpresent() throws Exception {
-		assert (mapper.fieldsCount() > 5) : "data mapper ui must load and show fields count";
+		log.info("data mapper ui must load and show fields count");
+		assertThat(mapper.fieldsCount(), greaterThan(5));
 	}
 
 	@When("^she selects \"(\\w+)\" from \"(\\w+)\" selector-dropdown$")
@@ -53,12 +57,10 @@ public class DataMapperSteps {
 	@Then("^she combines \"(\\w+)\" as \"(\\w+)\" with \"(\\w+)\" as \"(\\w+)\" to \"(\\w+)\" using \"(\\w+)\" separator$")
 	public void combinePresentFielsWithAnother(String first, String first_pos,
 			String second, String sec_pos, String combined, String separator) throws Exception {
-
 		SelenideElement inputElement;
 		SelenideElement selectElement;
 
 		// Then she fills "FirstCombine" selector-input with "FirstName" value
-		ActionConfigureComponent actionConf = new ActionConfigureComponent();
 		inputElement = mapper.getElementByAlias("FirstCombine").shouldBe(visible);
 		mapper.fillInput(inputElement, first);
 

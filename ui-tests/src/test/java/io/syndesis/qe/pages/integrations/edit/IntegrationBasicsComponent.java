@@ -12,15 +12,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class IntegrationBasicsComponent extends SyndesisPageObject {
-	
+
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-integration-basics");
 	}
-	
+
 	private static final class Input {
 		public static final By NAME = By.cssSelector("input[name='nameInput']");
 	}
-	
+
 	private static final class TextArea {
 		public static final By DESCRIPTION = By.cssSelector("textarea[name='descriptionInput']");
 	}
@@ -42,5 +42,5 @@ public class IntegrationBasicsComponent extends SyndesisPageObject {
 	public void setDescription(String description) {
 		log.debug("Setting integration description to {}", description);
 		this.getRootElement().find(TextArea.DESCRIPTION).shouldBe(visible).sendKeys(description);
-	}	
+	}
 }

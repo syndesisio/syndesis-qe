@@ -3,13 +3,13 @@ package io.syndesis.qe.pages.integrations.edit;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.edit.steps.StepFactory;
@@ -25,12 +25,14 @@ public class FlowViewComponent extends SyndesisPageObject {
 		public static final By STEP = By.cssSelector("parent-step");
 		public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
 	}
-  
+
+	@Override
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
 		return elementRoot;
 	}
 
+	@Override
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
