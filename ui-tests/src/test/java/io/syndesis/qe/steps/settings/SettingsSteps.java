@@ -16,7 +16,6 @@ import io.syndesis.qe.pages.settings.SettingsPage;
 public class SettingsSteps {
 
 	private SettingsPage settingsPage = new SettingsPage();
-	private OAuthSettingsComponent settings = new OAuthSettingsComponent();
 
 	@Then("^\"(\\w+)\" is presented with \"(\\w+)\" settings tab$")
 	public void activeTab(String user, String tabName) {
@@ -27,12 +26,12 @@ public class SettingsSteps {
 
 	@Then("^settings item \"(\\w+)\" has button \"(\\w+)\"$")
 	public void settingsItemHasButton(String itemTitle, String buttonTitle) {
-		assertThat(settingsPage.checkButtonOfItem(itemTitle, buttonTitle), is(true));
+		assertThat(settingsPage.getOauthSettingsComponent().checkButtonOfItem(itemTitle, buttonTitle), is(true));
 	}
 
 	@When("^\"(\\w+)\" clicks to the \"(\\w+)\" item \"(\\w+)\" button$")
 	public void clickSettingsButton(String userAlias, String itemTitle, String buttonTitle) {
-		settingsPage.clickButton(itemTitle, buttonTitle);
+		settingsPage.getOauthSettingsComponent().clickButton(itemTitle, buttonTitle);
 	}
 
 	@When("^fill form in \"(\\w+)\" settings item$")
@@ -44,7 +43,7 @@ public class SettingsSteps {
 
 	@Then("^settings item \"(\\w+)\" must have alert with text \"(\\w+)\"$")
 	public void assertSettingsAlertText(String itemTitle, String alertText) {
-		OAuthSettingsComponent settings = settingsPage.getSettingsComponent();
+		OAuthSettingsComponent settings = settingsPage.getOauthSettingsComponent();
 		assertThat(settings.getAlertText(itemTitle), containsString(alertText));
 	}
 }

@@ -20,10 +20,12 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integration-detail-page");
-
 		public static final By STATUS = By.cssSelector("syndesis-integration-status");
 		public static final By TITLE = By.cssSelector("h1");
 	}
+
+	private IntegrationDetailPageFactory detailPageFactory = new IntegrationDetailPageFactory();
+	private IntegrationDetailPage detailPage;
 
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
@@ -65,5 +67,10 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
 	public SelenideElement getActionButton(String action) {
 		return this.getButton(action);
+	}
+
+	public IntegrationDetailPage getDetailPage(String integrationStatus) {
+		detailPage = detailPageFactory.getDetailPage(integrationStatus);
+		return detailPage;
 	}
 }

@@ -39,7 +39,7 @@ public class FlowConnection {
 	 *
 	 * @returns boolean
 	 */
-	boolean isActive() {
+	public boolean isActive() {
 		return this.element.find(Element.ACTIVE).isDisplayed();
 	}
 }

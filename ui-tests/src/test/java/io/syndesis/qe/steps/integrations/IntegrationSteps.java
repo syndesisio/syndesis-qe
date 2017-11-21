@@ -13,25 +13,14 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
-import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPageFactory;
-import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponent;
-import io.syndesis.qe.pages.integrations.edit.ConnectionSelectComponent;
-import io.syndesis.qe.pages.integrations.edit.FlowViewComponent;
-import io.syndesis.qe.pages.integrations.edit.IntegrationAddStepPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
-import io.syndesis.qe.pages.integrations.edit.ListActionsComponent;
-import io.syndesis.qe.pages.integrations.edit.TwitterSearchActionConfigureComponent;
-import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepPage;
-import io.syndesis.qe.pages.integrations.edit.steps.StepFactory;
-import io.syndesis.qe.pages.integrations.edit.steps.StepPage;
-import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
+import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
+import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,40 +30,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationSteps {
 
-	//FACTORIES:
-	private StepFactory stepFactory = new StepFactory();
-	private IntegrationDetailPageFactory detailPageFactory = new IntegrationDetailPageFactory();
-	//PAGES:
 	private SyndesisRootPage rootPage = new SyndesisRootPage();
 	private IntegrationEditPage editPage = new IntegrationEditPage();
 	private IntegrationDetailPage detailPage = new IntegrationDetailPage();
 	private IntegrationsListPage listPage = new IntegrationsListPage();
-	private IntegrationAddStepPage addStepPage = new IntegrationAddStepPage();
-	//PAGE COMPONENTS:
-	//TODO(sveres): unify access to Components objects through Page objects strictly
-	private FlowViewComponent flowViewComponent = new FlowViewComponent();
-	private ConnectionSelectComponent selectComponent = new ConnectionSelectComponent();
-	private IntegrationsListComponent listComponent = new IntegrationsListComponent();
-	private ListActionsComponent listActions = new ListActionsComponent();
-	private TwitterSearchActionConfigureComponent twitterSearchComponent = new TwitterSearchActionConfigureComponent();
 
 	@When("^she defines integration name \"([^\"]*)\"$")
 	public void defineIntegrationName(String integrationName) {
-		editPage.basicsComponent().setName(integrationName);
+		editPage.getIntegrationBasicsComponent().setName(integrationName);
 	}
 
 	@Then("^she is presented with a visual integration editor$")
 	public void editorOpened() {
 		editPage.getRootElement().shouldBe(visible);
-		selectComponent.getRootElement().shouldBe(visible);
-		flowViewComponent.getRootElement().shouldBe(visible);
+		editPage.getIntegrationConnectionSelectComponent().getRootElement().shouldBe(visible);
+		editPage.getFlowViewComponent().getRootElement().shouldBe(visible);
 	}
 
 	@Then("^she is presented with a visual integration editor for \"([^\"]*)\"$")
 	public void editorOpenedFor(String integrationName) {
 		this.editorOpened();
 		log.info("editor must display integration name {}", integrationName);
-		assertThat(editPage.flowViewComponent().getIntegrationName(), is(integrationName));
+		assertThat(editPage.getFlowViewComponent().getIntegrationName(), is(integrationName));
 	}
 
 	@Then("^Camilla is presented with \"([^\"]*)\" integration details$")
@@ -85,21 +62,21 @@ public class IntegrationSteps {
 
 	@When("^Camilla selects the \"([^\"]*)\" integration.*$")
 	public void selectConnection(String itegrationName) {
-		listPage.listComponent().goToIntegrationDetail(itegrationName);
+		listPage.getListComponent().goToIntegrationDetail(itegrationName);
 	}
 
 	@When("^she selects \"([^\"]*)\" integration action$")
 	public void selectIntegrationAction(String action) {
 		if ("Create Opportunity".equals(action)) {
 			log.warn("Action {} is not available", action);
-			listActions.selectAction("Create Salesforce object");
+			editPage.getListActionsComponent().selectAction("Create Salesforce object");
 		}
-		listActions.selectAction(action);
+		editPage.getListActionsComponent().selectAction(action);
 	}
 
 	@When("^Camilla deletes the \"([^\"]*)\" integration*$")
 	public void deleteIntegration(String integrationName) {
-		listComponent.clickDeleteIntegration(integrationName);
+		listPage.getListComponent().clickDeleteIntegration(integrationName);
 	}
 
 	@When("^Camilla deletes the integration on detail page*$")
@@ -116,9 +93,9 @@ public class IntegrationSteps {
 
 	@Then("^she clicks on integration in \"([^\"]*)\" status and check on detail if status match and appropriate actions are available$")
 	public void clickOnIntegrationInStatus(String status) {
-		SelenideElement integrationByStatus = listComponent.getIntegrationByStatus(status);
+		SelenideElement integrationByStatus = listPage.getListComponent().getIntegrationByStatus(status);
 		integrationByStatus.shouldBe(visible).click();
-		IntegrationDetailPage detailPageSpecific = detailPageFactory.getDetailPage(status);
+		IntegrationDetailPage detailPageSpecific = detailPage.getDetailPage(status);
 		for (String action : detailPageSpecific.actionsSet) {
 			log.info("Action: {}", action);
 			SelenideElement actionButton = detailPageSpecific.getActionButton(action);
@@ -132,13 +109,13 @@ public class IntegrationSteps {
 
 	@Then("^she go trough whole list of integrations and check on detail if status match and appropriate actions are available$")
 	public void goTrouhListAndCheckDetails() {
-		ElementsCollection integrations = listComponent.getAllIntegrations();
+		ElementsCollection integrations = listPage.getListComponent().getAllIntegrations();
 
 		for (SelenideElement integration : integrations) {
-			String status = listComponent.getIntegrationItemStatus(integration);
+			String status = listPage.getListComponent().getIntegrationItemStatus(integration);
 			log.info("Status: {}", status);
 			integration.shouldBe(visible).click();
-			IntegrationDetailPage detailPageSpecific = detailPageFactory.getDetailPage(status);
+			IntegrationDetailPage detailPageSpecific = detailPage.getDetailPage(status);
 			for (String action : detailPageSpecific.actionsSet) {
 				log.info("Action: {}", action);
 				log.info("There should by button for {} action on {} status", action, status);
@@ -153,24 +130,24 @@ public class IntegrationSteps {
 	@When("^she selects \"([^\"]*)\" integration step$")
 	public void addStep(String stepName) {
 		log.info("Adding {} step to integration", stepName);
-		addStepPage.addStep(stepName);
+		editPage.getAddStepComponent().addStep(stepName);
 	}
 
 	@Then("^Integration \"([^\"]*)\" is present in integrations list$")
 	public void expectIntegrationPresent(String name) {
 		log.info("Verifying integration {} is present", name);
-		assertThat(listPage.listComponent().isIntegrationPresent(name), is(true));
+		assertThat(listPage.getListComponent().isIntegrationPresent(name), is(true));
 	}
 
 	@Then("^Camilla can not see \"([^\"]*)\" integration anymore$")
 	public void expectIntegrationNotPresent(String name) {
 		log.info("Verifying if integration {} is present", name);
-		assertThat(listPage.listComponent().isIntegrationPresent(name), is(false));
+		assertThat(listPage.getListComponent().isIntegrationPresent(name), is(false));
 	}
 
 	@Then("^she wait until integration \"([^\"]*)\" get into \"([^\"]*)\" state$")
 	public void waitForIntegrationState(String integrationName, String integrationState) {
-		SelenideElement integrationActiveState = listPage.listComponent().getIntegrationActiveState(integrationName, integrationState);
+		SelenideElement integrationActiveState = listPage.getListComponent().getIntegrationActiveState(integrationName, integrationState);
 		log.info("Integration should get into {}.", integrationState);
 		integrationActiveState.shouldBe(visible);
 	}
@@ -178,27 +155,27 @@ public class IntegrationSteps {
 	@Then("^she is presented with a add step page$")
 	public void addStepPageOpened() {
 		log.info("there must be add step page root element");
-		addStepPage.getRootElement().shouldBe(visible);
+		editPage.getAddStepComponent().getRootElement().shouldBe(visible);
 	}
 
 	@Then("^she is presented with a \"([^\"]*)\" step configure page$")
 	public void configureStepPageOpen(String stepType) {
-		StepPage page = stepFactory.getStep(stepType, "");
+		StepComponent stepComponent = editPage.getStepComponent(stepType, "");
 		log.info("there must be add step editPage root element");
-		page.getRootElement().shouldBe(visible);
-		assertThat(page.validate(), is(true));
+		stepComponent.getRootElement().shouldBe(visible);
+		assertThat(stepComponent.validate(), is(true));
 	}
 
 	@Then("^she fill configure page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
 	public void fillStepConfiguration(String stepType, String parameter) {
-		StepPage page = stepFactory.getStep(stepType, parameter);
-		page.fillConfiguration();
+		StepComponent stepComponent = editPage.getStepComponent(stepType, parameter);
+		stepComponent.fillConfiguration();
 	}
 
 	@Then("^she adds \"(\\d+)\" random steps and then check the structure$")
 	public void addRandomStepsAndCheckRest(Integer numberOfSteps) {
 		log.info("Adding random steps");
-		List<String> list = flowViewComponent.getStepsArray();
+		List<String> list = editPage.getFlowViewComponent().getStepsArray();
 		editPage.clickButton("Add a Step");
 		ElementsCollection links = editPage.getLinks("Add a step");
 		Integer count = links.size();
@@ -210,14 +187,14 @@ public class IntegrationSteps {
 			links.get(randomIndex).click();
 			String stepType = "Basic Filter";
 			String stepParameter = "ANY of the following, pathx " + randomIndex + ", Contains, valuex " + randomIndex;
-			addStepPage.addStep(stepType);
-			StepPage stepPage = stepFactory.getStep(stepType, stepParameter);
-			stepPage.fillConfiguration();
+			editPage.getAddStepComponent().addStep(stepType);
+			StepComponent stepComponent = editPage.getStepComponent(stepType, stepParameter);
+			stepComponent.fillConfiguration();
 			editPage.clickButton("Next");
 			editPage.clickButton("Add a Step");
 			list.add(randomIndex, stepParameter);
 		}
-		List<String> list2 = flowViewComponent.getStepsArray();
+		List<String> list2 = editPage.getFlowViewComponent().getStepsArray();
 		for (int i = 0; i < list2.size(); i++) {
 			log.info("assserting {} and {}", list.get(i), list2.get(i));
 			assertThat(list.get(i), is(list2.get(i)));
@@ -227,8 +204,8 @@ public class IntegrationSteps {
 	@Then("^she delete \"(\\d+)\" random steps and check rest$")
 	public void deleteRandomStepsAndCheckRest(Integer numberOfSteps) {
 		log.info("Deleting random steps");
-		List<String> list = flowViewComponent.getStepsArray();
-		ElementsCollection deletes = editPage.getAllDeletes().shouldBe(sizeGreaterThanOrEqual(1));
+		List<String> list = editPage.getFlowViewComponent().getStepsArray();
+		ElementsCollection deletes = editPage.getFlowViewComponent().getAllTrashes().shouldBe(sizeGreaterThanOrEqual(1));
 		int count = deletes.size();
 		List<Integer> randomIndexes = new ArrayList<>();
 		for (int i = 0; i < numberOfSteps; i++) {
@@ -239,7 +216,7 @@ public class IntegrationSteps {
 			editPage.clickOnFirstVisibleButton("OK");
 			list.remove(randomIndex);
 		}
-		List<String> list2 = flowViewComponent.getStepsArray();
+		List<String> list2 = editPage.getFlowViewComponent().getStepsArray();
 		for (int i = 0; i < list.size(); i++) {
 			log.info("assserting {} and {", list.get(i), list2.get(i));
 			assertThat(list.get(i), is(list2.get(i)));
@@ -249,14 +226,14 @@ public class IntegrationSteps {
 	@Then("^she delete step on position \"(\\d+)\" and check rest$")
 	public void deleteStepOnPositionAndCheckRest(Integer positionOfStep) {
 		log.info("Deleting step on position {}", positionOfStep);
-		List<String> list = flowViewComponent.getStepsArray();
-		ElementsCollection deletes = this.editPage.getAllDeletes().shouldBe(sizeGreaterThanOrEqual(1));
+		List<String> list = editPage.getFlowViewComponent().getStepsArray();
+		ElementsCollection deletes = this.editPage.getFlowViewComponent().getAllTrashes().shouldBe(sizeGreaterThanOrEqual(1));
 		Integer indexOfStep = positionOfStep + 1;
 		deletes.get(indexOfStep).click();
 		editPage.clickOnFirstVisibleButton("OK");
 		list.remove(positionOfStep);
 		//NOW CHECK:
-		List<String> list2 = flowViewComponent.getStepsArray();
+		List<String> list2 = editPage.getFlowViewComponent().getStepsArray();
 		for (int i = 0; i < list.size(); i++) {
 			log.info("assserting {} and {}", list.get(i), list2.get(i));
 			assertThat(list.get(i), is(list2.get(i)));
@@ -266,12 +243,12 @@ public class IntegrationSteps {
 	@Then("^she is presented with an actions list$")
 	public void expectActionListIsPresent() {
 		log.info("There must be action list loaded");
-		listActions.getRootElement().shouldBe(visible);
+		editPage.getListActionsComponent().getRootElement().shouldBe(visible);
 	}
 
 	@Then("^add new basic filter rule with \"([^\"]*)\" parameters$")
 	public void addBasicFilterRule(String rule) {
-		BasicFilterStepPage basicFilterStepPage = (BasicFilterStepPage) stepFactory.getStep("BASIC FILTER", "");
+		BasicFilterStepComponent basicFilterStepPage = (BasicFilterStepComponent) editPage.getStepComponent("BASIC FILTER", "");
 		basicFilterStepPage.initialize();
 		basicFilterStepPage.addRule(rule);
 	}
@@ -279,35 +256,33 @@ public class IntegrationSteps {
 	@Then("^delete \"(\\d+)\" random basic filter rule$")
 	public void deleteRandomFilterRules(Integer numberOfRules) {
 		for (int i = 0; i < numberOfRules; i++) {
-			editPage.clickRandomTrash();
+			editPage.getFlowViewComponent().clickRandomTrash();
 		}
 	}
 
 	@Then("^delete basic filter rule on position \"(\\d+)\"$")
 	public void deleteFilterRuleOnPosition(Integer position) {
-		ElementsCollection trashes = editPage.getAllTrashes();
+		ElementsCollection trashes = editPage.getFlowViewComponent().getAllTrashes();
 		trashes.get(position - 1).click();
 	}
 
 	//Kebab menu test, #553 -> part #548, #549.
 	@When("^clicks on the kebab menu icon of each available Integration and checks whether menu is visible and has appropriate actions$")
 	public void clickOnAllKebabMenus() {
-		IntegrationsListComponent integrationsListComponent = new IntegrationsListComponent();
-		integrationsListComponent.checkAllIntegrationsKebabButtons();
+		listPage.getListComponent().checkAllIntegrationsKebabButtons();
 	}
 
 	// Twitter search specification
 	@Then("^she fills keywords field with random text to configure search action$")
 	public void fillKeywords() {
 		String value = Utils.randomString(20);
-		twitterSearchComponent.fillKeywordsValue(value);
+		editPage.getTwitterSearchComponent().fillKeywordsValue(value);
 	}
 
 	@Then("^she fills \"(\\w+)\" action configure component input with \"([^\"]*)\" value$")
 	public void fillActionConfigureField(String fieldId, String value) {
-		ActionConfigureComponent actionConfComponent = editPage.actionConfigureComponent();
 		log.info("Input skould be visible");
-		actionConfComponent.fillInput(fieldId, value);
+		editPage.getActionConfigureComponent().fillInput(fieldId, value);
 	}
 
 	/**
@@ -317,7 +292,8 @@ public class IntegrationSteps {
 	 */
 	@Then("^she is prompted to select a \"([^\"]*)\" connection from a list of available connections$")
 	public void verifyTypeOfConnection(String type) {
-		SelenideElement connection = editPage.flowViewComponent().flowConnection(type).getElement().shouldBe(visible);
+		editPage.getFlowViewComponent().flowConnection(type).getElement().shouldBe(visible);
 		log.info("{} connection must be active", type);
+		assertThat(editPage.getFlowViewComponent().flowConnection(type).isActive(), is(true));
 	}
 }

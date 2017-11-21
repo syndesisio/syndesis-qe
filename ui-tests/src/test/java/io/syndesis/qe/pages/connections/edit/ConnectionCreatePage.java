@@ -8,11 +8,13 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by sveres on 11/12/17.
  */
+@Getter
 @Slf4j
 public class ConnectionCreatePage extends SyndesisPageObject {
 
@@ -20,9 +22,12 @@ public class ConnectionCreatePage extends SyndesisPageObject {
 		public static final By ROOT = By.cssSelector("syndesis-connection-create-page");
 	}
 
+	private ConnectionConfigurationComponent connectionConfiguration = new ConnectionConfigurationComponent();
+	private ConnectionsDetailsComponent connectionDetails = new ConnectionsDetailsComponent();
+
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT);
+		return $(Element.ROOT).shouldBe(visible);
 	}
 
 	@Override

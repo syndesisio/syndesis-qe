@@ -4,10 +4,10 @@ import static com.codeborne.selenide.Condition.visible;
 
 import org.openqa.selenium.By;
 
-public class FinishConnectionSelectComponent extends ConnectionSelectComponent {
+public class IntegrationConnectionSelectComponentStart extends IntegrationConnectionSelectComponent {
 	
 	private static final class Element {
-		public static final By TITLE = By.cssSelector("h1[innertext='Choose a Finish Connection']");
+		public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
 	}
 
 	public boolean validate() {

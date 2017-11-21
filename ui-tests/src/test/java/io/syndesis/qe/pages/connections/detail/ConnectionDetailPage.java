@@ -17,14 +17,14 @@ import lombok.extern.slf4j.Slf4j;
 public class ConnectionDetailPage extends SyndesisPageObject {
 
 	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-connection-detail-info");
+		public static final By ROOT = By.cssSelector("syndesis-connection-detail-page");
 		public static final By CONNECTION_DETAIL = By.cssSelector("syndesis-connection-detail-info");
 		public static final By CONNECTION_NAME = By.cssSelector("syndesis-editable-text");
 	}
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT);
+		return $(Element.ROOT).shouldBe(visible);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ConnectionDetailPage extends SyndesisPageObject {
 		return $(Element.ROOT).is(visible);
 	}
 
-	public SelenideElement connectionDetailElem() {
+	public SelenideElement connectionDetailElement() {
 		return $(Element.CONNECTION_DETAIL);
 	}
 

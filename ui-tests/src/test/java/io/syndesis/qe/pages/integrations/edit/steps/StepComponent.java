@@ -3,13 +3,13 @@ package io.syndesis.qe.pages.integrations.edit.steps;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import com.codeborne.selenide.SelenideElement;
-
 import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 
-public abstract class StepPage extends SyndesisPageObject {
+public abstract class StepComponent extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-step-configure");

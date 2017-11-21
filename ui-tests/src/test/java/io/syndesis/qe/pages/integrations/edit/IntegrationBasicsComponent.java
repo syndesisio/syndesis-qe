@@ -25,11 +25,13 @@ public class IntegrationBasicsComponent extends SyndesisPageObject {
 		public static final By DESCRIPTION = By.cssSelector("textarea[name='descriptionInput']");
 	}
 
+	@Override
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
 		return elementRoot;
 	}
 
+	@Override
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
