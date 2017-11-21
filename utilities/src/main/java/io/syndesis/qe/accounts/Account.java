@@ -3,12 +3,14 @@ package io.syndesis.qe.accounts;
 import java.util.Map;
 
 import lombok.Data;
+import lombok.Getter;
 
 /**
  * Contains information about a third party service account.
  * @author jknetl
  */
 @Data
+@Getter
 public class Account {
 
 	private String service;
