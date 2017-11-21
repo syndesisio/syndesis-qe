@@ -5,12 +5,12 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
+import java.util.Map;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
-import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -154,5 +154,10 @@ public abstract class SyndesisPageObject {
 		elements = elements.filter(exactText(text));
 		SelenideElement element = elements.shouldBe(sizeGreaterThan(0)).first();
 		return element;
+	}
+
+	public String getElementText(By locator) {
+		SelenideElement element = this.getRootElement().find(locator);
+		return element.shouldBe(visible).getText();
 	}
 }

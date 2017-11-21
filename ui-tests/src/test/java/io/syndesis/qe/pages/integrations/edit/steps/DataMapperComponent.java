@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.integrations.detail;
+package io.syndesis.qe.pages.integrations.edit.steps;
 
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
@@ -161,7 +161,6 @@ public class DataMapperComponent extends SyndesisPageObject {
 	public SelenideElement getElementByAlias(String alias) throws Exception {
 
 		By locator;
-		SelenideElement inputElement;
 
 		switch (alias) {
 			case "FirstCombine": {
