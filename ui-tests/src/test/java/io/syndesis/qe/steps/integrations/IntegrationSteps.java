@@ -320,14 +320,4 @@ public class IntegrationSteps {
 		SelenideElement connection = editPage.flowViewComponent().flowConnection(type).getElement().shouldBe(visible);
 		log.info("{} connection must be active", type);
 	}
-
-	/**
-	 * check you are on the correct editPage
-	 *
-	 * @param text
-	 */
-	@Then("^she is presented with \"([^\"]*)\" (page|editor)$")
-	public void verifyPageByText(String text) {
-		editPage.checkPageIsPresent(text);
-	}
 }
