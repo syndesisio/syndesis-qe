@@ -9,6 +9,7 @@ import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
  * Created by mastepan on 11/15/17.
  */
 public enum SyndesisPage {
+	CONNECTIONS(new ConnectionListPage()),
 	CONNECTION_CREATE(new ConnectionCreatePage()),
 	CONNECTION_DETAIL(new ConnectionDetailPage()),
 	CONNECTION_LIST(new ConnectionListPage()),
