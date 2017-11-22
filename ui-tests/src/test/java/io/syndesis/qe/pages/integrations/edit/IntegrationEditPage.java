@@ -1,9 +1,5 @@
 package io.syndesis.qe.pages.integrations.edit;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
-
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -20,27 +16,9 @@ public class IntegrationEditPage extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-edit-page");
-	}
 
-	private static final class CssClasses {
-		public static final String TRASH_CLASS = "fa-trash";
-		public static final String DELETE_CLASS = "delete-icon";
-	}
-
-	public void checkPageIsPresent(String alias) {
-		String elementName = "";
-		switch (alias) {
-			case "Choose a Finish Connection":
-			case "Add to Integration": {
-				elementName = "h1";
-				break;
-			}
-			default: {
-				log.info("Page {} text doesn't exist", alias);
-				assertThat(true, is(false));
-			}
-		}
-		this.getRootElement().shouldBe(visible).find(By.cssSelector(String.format("%s[innertext='%s']", elementName, alias))).shouldBe(visible);
+		public static final By TRASH = By.className("fa-trash");
+		public static final By DELETE = By.className("delete-icon");
 	}
 
 	@Override
@@ -71,13 +49,13 @@ public class IntegrationEditPage extends SyndesisPageObject {
 	}
 
 	public ElementsCollection getAllTrashes() {
-		return getElementsByClassName(CssClasses.TRASH_CLASS);
+		return this.getRootElement().findAll(Element.TRASH);
 	}
 	public ElementsCollection getAllDeletes() {
-		return getElementsByClassName(CssClasses.DELETE_CLASS);
+		return this.getRootElement().findAll(Element.DELETE);
 	}
 	public void clickRandomTrash() {
-		clickElementRandom(CssClasses.TRASH_CLASS);
+		this.clickElementRandom(Element.TRASH);
 	}
 
 }
