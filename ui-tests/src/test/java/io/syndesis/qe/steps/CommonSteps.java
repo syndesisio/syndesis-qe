@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
@@ -15,7 +16,6 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -38,6 +38,8 @@ public class CommonSteps {
 	@Given("^\"([^\"]*)\" logs into the Syndesis$")
 	public void login(String username) throws Throwable {
 		Selenide.open(TestConfiguration.syndesisUrl());
+		
+		WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
 
 		String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
@@ -184,6 +186,15 @@ public class CommonSteps {
 		allertSucces.shouldBe(visible);
 	}
 
+	@Then("^she can see \"([^\"]*)\" in alert-success notification$")
+	public void successNotificationIsPresentWithError(String textMessage) {
+		SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-success");
+		allertSucces.shouldBe(visible);
+		Assertions.assertThat(allertSucces.getText().equals(textMessage)).isTrue();
+
+		log.info("Text message {} was found.", textMessage);
+	  }
+
 	/**
 	 * Scroll the webpage.
 	 *
@@ -214,7 +225,7 @@ public class CommonSteps {
 	}
 
 	@Then("^(\\w+) is presented with the Syndesis page \"([^\"]*)\"$")
-	public void validatePage(String pageName) {
+	public void validatePage(String userName, String pageName) {
 		SyndesisPage.get(pageName).validate();
 	}
 

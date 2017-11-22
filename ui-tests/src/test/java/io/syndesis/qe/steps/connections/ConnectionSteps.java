@@ -1,25 +1,27 @@
 package io.syndesis.qe.steps.connections;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
-
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.visible;
-
-import com.codeborne.selenide.SelenideElement;
+import static com.codeborne.selenide.Selenide.$;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponent;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
-import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionsDetailsComponent;
 import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
 import lombok.extern.slf4j.Slf4j;
@@ -105,5 +107,12 @@ public class ConnectionSteps {
 	public void checkAllVisibleKebabMenus(String action1, String action2, String action3) {
 		List<String> actions = new ArrayList<>(Arrays.asList(action1, action2, action3));
 		listComponent.checkAllKebabElementsAreDisplayed(true, actions);
+	}
+
+	@Then("^she is presented with help block with text \"([^\"]*)\"$")
+	public void helpBlockVisible(String helpText) {
+		SelenideElement helpBlock = $(By.className("help-block"));
+		helpBlock.shouldBe(visible);
+		Assertions.assertThat(helpBlock.getText().equals(helpText)).isTrue();
 	}
 }

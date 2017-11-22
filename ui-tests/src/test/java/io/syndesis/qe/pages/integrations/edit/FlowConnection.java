@@ -1,7 +1,5 @@
 package io.syndesis.qe.pages.integrations.edit;
 
-import static com.codeborne.selenide.Selenide.$;
-
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -42,6 +40,6 @@ public class FlowConnection {
 	 * @returns boolean
 	 */
 	boolean isActive() {
-		return $(Element.ACTIVE).isDisplayed();
+		return this.element.find(Element.ACTIVE).isDisplayed();
 	}
 }
