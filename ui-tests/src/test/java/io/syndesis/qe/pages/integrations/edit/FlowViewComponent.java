@@ -24,6 +24,7 @@ public class FlowViewComponent extends SyndesisPageObject {
 		public static final By NAME = By.cssSelector("input.form-control.integration-name");
 		public static final By STEP = By.cssSelector("parent-step");
 		public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
+		public static final By PARENT_STEP = By.cssSelector("div.parent-step");
 	}
 
 	@Override
@@ -46,10 +47,9 @@ public class FlowViewComponent extends SyndesisPageObject {
 	 * @param type (start|finish)
 	 */
 	public FlowConnection flowConnection(String type) {
-		By stepLocator = By.cssSelector(String.format("div.parent-step.%s", type));
+		SelenideElement stepElement = this.getElementContainingText(Element.PARENT_STEP, type).shouldBe(visible);
 
 		type = type.toLowerCase();
-		SelenideElement stepElement = this.getRootElement().find(stepLocator).shouldBe(visible);
 		return new FlowConnection(type, stepElement);
 	}
 
