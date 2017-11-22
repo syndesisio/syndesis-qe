@@ -124,6 +124,12 @@ public abstract class SyndesisPageObject {
 		elements.get(index).shouldBe(visible).click();
 	}
 
+	public void clickElementRandom(By locator) {
+		ElementsCollection elements = this.getRootElement().findAll(locator);
+		int index = (int) Math.floor(Math.random() * elements.size());
+		elements.get(index).shouldBe(visible).click();
+	}
+
 	public void selectOption(SelenideElement selectElement, String option) {
 		SelenideElement optionElement = getElementContainingText(By.tagName("option"), option);
 		optionElement.shouldBe(visible).click();
