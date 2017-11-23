@@ -22,25 +22,25 @@ public class DataMapperSteps {
 	private DataMapperComponent mapper = new DataMapperComponent();
 
 	@When("^she creates mapping from \"([^\"]*)\" to \"([^\"]*)\"$")
-	public void createMapping(String source, String target) throws Exception {
+	public void createMapping(String source, String target) {
 		mapper.createMapping(source, target);
 	}
 
 	@Then("^she is presented with data mapper ui$")
-	public void dataMapperUIpresent() throws Exception {
+	public void dataMapperUIpresent() {
 		log.info("data mapper ui must load and show fields count");
 		assertThat(mapper.fieldsCount(), greaterThan(5));
 	}
 
 	@When("^she selects \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
-	public void selectFromDropDownByElement(String option, String selectAlias) throws Exception {
+	public void selectFromDropDownByElement(String option, String selectAlias) {
 		log.info(option);
 		SelenideElement selectElement = mapper.getElementByAlias(selectAlias).shouldBe(visible);
 		mapper.selectOption(selectElement, option);
 	}
 
 	@Then("^she fills \"([^\"]*)\" selector-input with \"([^\"]*)\" value$")
-	public void fillActionConfigureField(String selectorAlias, String value) throws Exception {
+	public void fillActionConfigureField(String selectorAlias, String value) {
 		SelenideElement inputElement = mapper.getElementByAlias(selectorAlias).shouldBe(visible);
 		mapper.fillInput(inputElement, value);
 	}
@@ -56,7 +56,7 @@ public class DataMapperSteps {
 	// And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
 	@Then("^she combines \"(\\w+)\" as \"(\\w+)\" with \"(\\w+)\" as \"(\\w+)\" to \"(\\w+)\" using \"(\\w+)\" separator$")
 	public void combinePresentFielsWithAnother(String first, String first_pos,
-			String second, String sec_pos, String combined, String separator) throws Exception {
+			String second, String sec_pos, String combined, String separator) {
 		SelenideElement inputElement;
 		SelenideElement selectElement;
 

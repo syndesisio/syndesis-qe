@@ -67,7 +67,7 @@ public class SettingsPage extends SyndesisPageObject {
 	 * @param name name of settings item
 	 * @returns element
 	 */
-	public SelenideElement getSettingsItem(String name) throws Exception {
+	public SelenideElement getSettingsItem(String name) {
 		ElementsCollection items = this.listSettingsItems(null).shouldBe(sizeGreaterThan(1));
 		log.info("searching for {} in {} items", name, items.size());
 		for (SelenideElement item : items) {
@@ -76,7 +76,7 @@ public class SettingsPage extends SyndesisPageObject {
 				return item;
 			}
 		}
-		throw new Exception(String.format("item%s not found", name));
+		throw new IllegalArgumentException(String.format("item%s not found", name));
 	}
 
 	/**
@@ -86,15 +86,15 @@ public class SettingsPage extends SyndesisPageObject {
 	 * @param buttonTitle title of button
 	 * @returns resolved once clicked
 	 */
-	public void clickButton(String settingsItemName, String buttonTitle) throws Exception {
+	public void clickButton(String settingsItemName, String buttonTitle) {
 		this.getButtonFromItem(settingsItemName, buttonTitle).shouldBe(visible).click();
 	}
 
-	public boolean checkButtonOfItem(String itemTitle, String buttonTitle) throws Exception {
+	public boolean checkButtonOfItem(String itemTitle, String buttonTitle) {
 		return this.getButtonFromItem(itemTitle, buttonTitle).is(visible);
 	}
 
-	public SelenideElement getButtonFromItem(String settingsItemName, String buttonTitle) throws Exception {
+	public SelenideElement getButtonFromItem(String settingsItemName, String buttonTitle) {
 		SelenideElement item = this.getSettingsItem(settingsItemName).shouldBe(visible);
 		return item.find(By.cssSelector(String.format("button:contains('%s')", buttonTitle)));
 	}

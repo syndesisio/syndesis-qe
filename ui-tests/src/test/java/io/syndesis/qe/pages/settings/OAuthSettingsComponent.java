@@ -30,7 +30,7 @@ public class OAuthSettingsComponent extends SettingsPage {
 	 * @param itemTitle title of settings entry
 	 * @param formData object where key is name of input field and value it's content
 	 */
-	public void fillSettingsItemForm(String itemTitle, Map<String, String> formData) throws Exception {
+	public void fillSettingsItemForm(String itemTitle, Map<String, String> formData) {
 		log.info("filling {} with data '{}'", itemTitle, formData.toString());
 		SelenideElement item = this.getSettingsItem(itemTitle);
 		for (String key : formData.keySet()){
@@ -45,7 +45,7 @@ public class OAuthSettingsComponent extends SettingsPage {
 	 * @param itemTitle title of settings item (like Twitter)
 	 * @returns string content of alert
 	 */
-	public String getAlertText(String itemTitle) throws Exception {
+	public String getAlertText(String itemTitle) {
 		SelenideElement item = this.getSettingsItem(itemTitle).shouldBe(visible);
 		return item.$(Element.ALERT).shouldBe(visible).getText();
 	}
