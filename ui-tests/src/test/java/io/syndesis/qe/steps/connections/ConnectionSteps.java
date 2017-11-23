@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
@@ -18,6 +19,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponent;
@@ -32,10 +34,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConnectionSteps {
 
-	private ConnectionConfigurationComponent connectionConfiguration = new ConnectionConfigurationComponent();
 	private ConnectionDetailPage detailPage = new ConnectionDetailPage();
 	private ConnectionsListComponent listComponent = new ConnectionsListComponent();
-	private ConnectionsDetailsComponent connectionDetails = new ConnectionsDetailsComponent();
 
 	@Then("^Camilla is presented with \"(\\w+)\" connection details")
 	public void verifyConnectionDetails(String connectionName) {
@@ -45,12 +45,12 @@ public class ConnectionSteps {
 
 	@Then("^Camilla can see \"(\\w+)\" connection$")
 	public void expectConnectionTitlePresent(String connectionName) {
-		SelenideElement connection = listComponent.getConnectionByTitle(connectionName).shouldBe(visible);
+		listComponent.getConnectionByTitle(connectionName).shouldBe(visible);
 	}
 
 	@Then("^Camilla can not see \"(\\w+)\" connection anymore$")
 	public void expectConnectionTitleNonPresent(String connectionName) {
-		SelenideElement connection = listComponent.getConnectionByTitle(connectionName).shouldBe(not(exist));
+		listComponent.getConnectionByTitle(connectionName).shouldBe(not(exist));
 	}
 
 	@Then("^she is presented with a connection create page$")
@@ -86,8 +86,14 @@ public class ConnectionSteps {
 	@When("^she fills \"([^\"]*)\" connection details$")
 	public void fillConnectionDetails(String connectionName) {
 		ConnectionConfigurationComponent connectionConfiguration = new ConnectionConfigurationComponent();
-		new AccountsDirectory().getAccount(connectionName).ifPresent(account -> connectionConfiguration.fillDetails(account.getProperties()));
-		//connectionConfiguration.fillDetails(this.world.getTestConfigConnection(connectionName));
+
+		Optional<Account> optional = new AccountsDirectory().getAccount(connectionName);
+		if (optional.isPresent()) {
+			connectionConfiguration.fillDetails(optional.get().getProperties());
+		} else {
+			String nameTransformed = connectionName.toLowerCase().replaceAll(" ", "_");
+			new AccountsDirectory().getAccount(nameTransformed).ifPresent(account -> connectionConfiguration.fillDetails(account.getProperties()));
+		}
 	}
 
 	@When("^clicks? on the kebab menu icon of each available connection$")
@@ -102,7 +108,6 @@ public class ConnectionSteps {
 		assertThat(listComponent.countConnections(), is(connectionCount));
 	}
 
-	//Kebab menu test, #553 -> part #550.
 	@Then("^she can see unveiled kebab menu of all connections, each of this menu consist of \"(\\w+)\", \"(\\w+)\" and \"(\\w+)\" actions$")
 	public void checkAllVisibleKebabMenus(String action1, String action2, String action3) {
 		List<String> actions = new ArrayList<>(Arrays.asList(action1, action2, action3));
