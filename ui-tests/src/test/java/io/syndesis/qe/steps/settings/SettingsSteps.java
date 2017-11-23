@@ -3,10 +3,7 @@ package io.syndesis.qe.steps.settings;
 import static org.junit.Assert.assertThat;
 
 import static org.hamcrest.core.Is.is;
-
 import static org.hamcrest.core.StringContains.containsString;
-
-import java.util.Map;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -29,24 +26,24 @@ public class SettingsSteps {
 	}
 
 	@Then("^settings item \"(\\w+)\" has button \"(\\w+)\"$")
-	public void settingsItemHasButton(String itemTitle, String buttonTitle) throws Exception {
+	public void settingsItemHasButton(String itemTitle, String buttonTitle) {
 		assertThat(settingsPage.checkButtonOfItem(itemTitle, buttonTitle), is(true));
 	}
 
 	@When("^\"(\\w+)\" clicks to the \"(\\w+)\" item \"(\\w+)\" button$")
-	public void clickSettingsButton(String userAlias, String itemTitle, String buttonTitle) throws Exception {
+	public void clickSettingsButton(String userAlias, String itemTitle, String buttonTitle) {
 		settingsPage.clickButton(itemTitle, buttonTitle);
 	}
 
 	@When("^fill form in \"(\\w+)\" settings item$")
-	public void fillSettingsItemForm(String itemTitle) throws Exception {
+	public void fillSettingsItemForm(String itemTitle) {
 		//TODO(dsimansk: )
 		//Map<String, String> toFill = this.world.testConfig.settings[itemTitle];
 		//settings.fillSettingsItemForm(itemTitle, toFill);
 	}
 
 	@Then("^settings item \"(\\w+)\" must have alert with text \"(\\w+)\"$")
-	public void assertSettingsAlertText(String itemTitle, String alertText) throws Exception {
+	public void assertSettingsAlertText(String itemTitle, String alertText) {
 		OAuthSettingsComponent settings = settingsPage.getSettingsComponent();
 		assertThat(settings.getAlertText(itemTitle), containsString(alertText));
 	}
