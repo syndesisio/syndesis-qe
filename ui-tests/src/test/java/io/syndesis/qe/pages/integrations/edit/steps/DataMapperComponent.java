@@ -68,19 +68,19 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 *
 	 * @returns count of fields
 	 */
-	public Integer fieldsCount() throws Exception {
+	public Integer fieldsCount() {
 		ElementsCollection dmColumns = this.dataMapperColumns();
 		SelenideElement countElement = dmColumns.get(0).$(Element.LOADER_SELECTOR).shouldBe(visible);
 		String countText = countElement.getText();
 		// "77 fields" -> 77
 		String[] found = countText.split(" ");
 		if (found.length != 2) {
-			throw new Exception(String.format("failed to get files number from %s", countText));
+			throw new IllegalArgumentException(String.format("failed to get files number from %s", countText));
 		}
 		return Integer.parseInt(found[0]);
 	}
 
-	public void createMapping(String source, String target) throws Exception {
+	public void createMapping(String source, String target) {
 		log.info("creating mapping from {} to {}", source, target);
 		ElementsCollection dmColumns = this.dataMapperColumns();
 		SelenideElement src = dmColumns.get(0);
@@ -97,7 +97,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 * @param fields fields ElementsCollection
 	 * @returns SelenideElement field element
 	 */
-	public SelenideElement findFieldByName(String name, ElementsCollection fields) throws Exception {
+	public SelenideElement findFieldByName(String name, ElementsCollection fields) {
 		log.info("searching field named {}", name);
 		for (SelenideElement f : fields) {
 			String fieldName = this.fieldName(f);
@@ -107,14 +107,14 @@ public class DataMapperComponent extends SyndesisPageObject {
 			}
 		}
 		log.warn("field {} not found between {} fields.length fields, rejecting", name, fields.size());
-		throw new Exception(String.format("Field %s not found in given %d fields", name, fields.size()));
+		throw new IllegalArgumentException(String.format("Field %s not found in given %d fields", name, fields.size()));
 	}
 
 	/**
 	 * @param mappingName for instance "User.ScreenName"
 	 * @param containerElement start searching mapping fields from here
 	 */
-	public void selectMapping(String mappingName, SelenideElement containerElement) throws Exception {
+	public void selectMapping(String mappingName, SelenideElement containerElement) {
 		//split and trim in one step:
 		String[] path = mappingName.trim().split("\\.");
 
@@ -158,7 +158,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 		return children;
 	}
 
-	public SelenideElement getElementByAlias(String alias) throws Exception {
+	public SelenideElement getElementByAlias(String alias) {
 
 		By locator;
 
@@ -196,7 +196,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 				break;
 			}
 			default: {
-				throw new Exception(String.format("Alias %s doesnt exist", alias));
+				throw new IllegalArgumentException(String.format("Alias %s doesnt exist", alias));
 			}
 		}
 
