@@ -116,7 +116,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 	 */
 	public void selectMapping(String mappingName, SelenideElement containerElement) throws Exception {
 		//split and trim in one step:
-		String[] path = mappingName.trim().split("\\s*,\\s*");
+		String[] path = mappingName.trim().split("\\.");
 
 		ElementsCollection fields = containerElement.findAll(Element.FIELD_DETAIL).shouldBe(sizeGreaterThanOrEqual(1));
 		log.info("source has {} fields.length fields", fields.size());
@@ -128,7 +128,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 			log.info("Clicking on field {}", p);
 			nextField.$(Element.LABEL).shouldBe(visible).click();
 			// find all subfields for next iteration
-			fields = nextField.$$(Element.FIELD_DETAIL).shouldBe(sizeGreaterThanOrEqual(1));
+			fields = nextField.$$(Element.FIELD_DETAIL);
 		}
 	}
 
