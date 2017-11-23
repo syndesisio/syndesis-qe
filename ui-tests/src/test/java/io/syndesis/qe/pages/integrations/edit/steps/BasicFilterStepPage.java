@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class BasicFilterStepPage extends StepPage {
 
 	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-integration-basics");
+		public static final By ROOT = By.cssSelector("syndesis-basic-filter");
 	}
 
 	private static final class Input {

@@ -53,7 +53,7 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 
 	public SelenideElement getConnectionByTitle(String title) {
 		log.info("searching for connection {}", title);
-		return $(Element.ROOT).find(By.cssSelector(String.format("div.connection[title = \"%s\"]", title)));
+		return getElementContainingText(Element.CONNECTION, title);
 	}
 
 	public void goToConnection(String title) {

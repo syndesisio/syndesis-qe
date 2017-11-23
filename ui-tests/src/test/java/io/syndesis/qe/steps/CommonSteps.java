@@ -1,5 +1,6 @@
 package io.syndesis.qe.steps;
 
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.matchesText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -38,9 +39,11 @@ public class CommonSteps {
 	@Given("^\"([^\"]*)\" logs into the Syndesis$")
 	public void login(String username) throws Throwable {
 		Selenide.open(TestConfiguration.syndesisUrl());
-		
-		WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
 
+		if (!WebDriverRunner.isChrome()) {
+			WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
+		}
+		
 		String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
 		if (currentUrl.contains("api.fuse-ignite.openshift.com")) {
@@ -58,8 +61,6 @@ public class CommonSteps {
 
 			GitHubLoginPage gitHubLoginPage = new GitHubLoginPage();
 			gitHubLoginPage.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-		} else {
-			log.error("No suitable login method found");
 		}
 
 		currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
@@ -232,9 +233,6 @@ public class CommonSteps {
 	@And("^she selects \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
 	public void selectsFromDropdown(String option, String selectId) throws Throwable {
 		SelenideElement selectElement = $(String.format("select[id=\"%s\"]", selectId)).shouldBe(visible);
-		selectElement.findAll(By.tagName("option"))
-				.filter(matchesText(option))
-				.shouldHaveSize(1).first()
-				.shouldBe(visible).click();
+		selectElement.selectOption(option);
 	}
 }
