@@ -47,8 +47,12 @@ public class CommonSteps {
 		String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
 		if (currentUrl.contains("api.fuse-ignite.openshift.com")) {
-			log.info("Ignite cluster login page");
-			$(By.className("login-redhat")).shouldBe(visible).click();
+
+			//click only if there is Ignite cluster login page
+			SelenideElement login = $(By.className("login-redhat"));
+			if(login.isDisplayed()) {
+				login.click();
+			}
 
 			RHDevLoginPage rhDevLoginPage = new RHDevLoginPage();
 			rhDevLoginPage.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
