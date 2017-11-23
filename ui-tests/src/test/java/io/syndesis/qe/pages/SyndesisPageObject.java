@@ -23,7 +23,7 @@ public abstract class SyndesisPageObject {
 
 	public SelenideElement getButton(String buttonTitle) {
 		log.info("searching for button {}", buttonTitle);
-		return this.getRootElement().find(By.xpath(String.format("//button[contains(text(), '%s')]", buttonTitle)));
+		return getRootElement().findAll(By.tagName("button")).filter(exactText(buttonTitle)).first();
 	}
 
 	public void clickOnFirstVisibleButton(String buttonTitle) {

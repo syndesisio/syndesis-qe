@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import lombok.extern.slf4j.Slf4j;
