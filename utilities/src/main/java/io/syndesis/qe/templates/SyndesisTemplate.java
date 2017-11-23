@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.api.model.KubernetesList;
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.openshift.api.model.Template;
@@ -23,7 +21,6 @@ public class SyndesisTemplate {
 
 	private static final String SUPPORT_SA_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-openshift-templates/master/support/serviceaccount-as-oauthclient-restricted.yml";
 	private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-openshift-templates/master/syndesis-restricted.yml";
-
 
 	public static Template getTemplate() {
 		try (InputStream is = new URL(TEMPLATE_URL).openStream()) {
@@ -41,7 +38,6 @@ public class SyndesisTemplate {
 		}
 	}
 
-
 	public static void deploy() {
 		OpenShiftUtils.getInstance().cleanProject();
 
@@ -56,7 +52,7 @@ public class SyndesisTemplate {
 		Template template = getTemplate();
 		// set params
 		Map<String, String> templateParams = new HashMap<>();
-		templateParams.put("ROUTE_HOSTNAME", TestConfiguration.openShiftNamespace() + ".b6ff.rh-idev.openshiftapps.com");
+		templateParams.put("ROUTE_HOSTNAME", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.syndesisUrlSuffix());
 		templateParams.put("OPENSHIFT_MASTER", TestConfiguration.openShiftUrl());
 		templateParams.put("OPENSHIFT_PROJECT", TestConfiguration.openShiftNamespace());
 		templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
@@ -64,12 +60,11 @@ public class SyndesisTemplate {
 		// process & create
 		KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
 		OpenShiftUtils.getInstance().createResources(processedTemplate);
-
+		OpenShiftUtils.getInstance().createRestRoute();
 		try {
 			OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("component", "syndesis-rest"));
 		} catch (InterruptedException | TimeoutException e) {
-			log.debug("Wait for syndesis-rest failed ", e);
+			log.error("Wait for syndesis-rest failed ", e);
 		}
 	}
-
 }
