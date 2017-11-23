@@ -21,6 +21,7 @@ public class TestConfiguration {
 	public static final String SYNDESIS_UI_PASSWORD = "syndesis.config.ui.password";
 	public static final String SYNDESIS_UI_URL = "syndesis.config.ui.url";
 	public static final String SYNDESIS_UI_BROWSER = "syndesis.config.ui.browser";
+	public static final String SYNDESIS_URL_SUFFIX = "syndesis.config.url.suffix";
 
 	public static final String SYNDESIS_REST_URL = "syndesis.config.rest.url";
 	public static final String SYNDESIS_REST_API_PATH = "syndesis.config.rest.api.path";
@@ -76,6 +77,8 @@ public class TestConfiguration {
 	public static String syndesisCredentialsFile() { return get().readValue(SYNDESIS_CREDENTIALS_FILE); }
 
 	public static String syndesisVersionsFile() { return get().readValue(SYNDESIS_VERSIONS_FILE); }
+
+	public static String syndesisUrlSuffix() { return get().readValue(SYNDESIS_URL_SUFFIX); }
 
 	private Properties defaultValues() {
 		final Properties props = new Properties();

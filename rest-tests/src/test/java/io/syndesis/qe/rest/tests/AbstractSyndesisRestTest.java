@@ -16,7 +16,7 @@ public abstract class AbstractSyndesisRestTest {
 
 	public AbstractSyndesisRestTest() {
 
-		syndesisURL = TestConfiguration.syndesisUrl();
+		syndesisURL = TestConfiguration.syndesisRestUrl();
 
 		RestAssured.baseURI = TestConfiguration.syndesisRestUrl();
 		RestAssured.basePath = TestConfiguration.syndesisRestApiPath();

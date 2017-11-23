@@ -26,6 +26,7 @@ import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.RoleBinding;
 import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.api.model.Template;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -171,6 +172,27 @@ public final class OpenShiftUtils {
 		withDefaultUser(client -> client.resource(route).delete());
 	}
 
+	public Route createRestRoute() {
+
+		final Route route = new RouteBuilder()
+					.withNewMetadata()
+						.withName("syndesis-rest")
+					.endMetadata()
+					.withNewSpec()
+						.withPath("/api").withHost("rest-" + TestConfiguration.openShiftNamespace() + "." + TestConfiguration.syndesisUrlSuffix())
+						.withWildcardPolicy("None")
+						.withNewTls()
+							.withTermination("edge")
+						.endTls()
+						.withNewTo()
+							.withKind("Service").withName("syndesis-rest")
+						.endTo()
+					.endSpec()
+				.build();
+
+		return withDefaultUser(client -> client.resource(route).createOrReplace());
+	}
+
 	public Collection<PersistentVolumeClaim> getPersistentVolumeClaims() {
 		return withDefaultUser(client -> client.persistentVolumeClaims().list()
 				.getItems());
@@ -260,7 +282,7 @@ public final class OpenShiftUtils {
 
 	public KubernetesList createResources(KubernetesList list) {
 		return (KubernetesList) this.withDefaultUser((client) -> {
-			return (KubernetesList) client.lists().create(new KubernetesList[] {list});
+			return (KubernetesList) client.lists().create(new KubernetesList[]{list});
 		});
 	}
 
