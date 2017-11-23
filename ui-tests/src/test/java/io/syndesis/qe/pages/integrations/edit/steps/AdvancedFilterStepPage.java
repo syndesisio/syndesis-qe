@@ -4,7 +4,6 @@ import static com.codeborne.selenide.Condition.visible;
 
 import org.openqa.selenium.By;
 
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ public class AdvancedFilterStepPage extends StepPage {
 
 	public boolean validate() {
 		log.debug("Validating advanced filter configuration page");
-		return this.getFilterTextarea().is(visible);
+		return this.getFilterTextarea().shouldBe(visible).isDisplayed();
 	}
 
 	public void initialize() {
