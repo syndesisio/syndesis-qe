@@ -5,8 +5,11 @@ import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
@@ -43,9 +46,24 @@ public class ConnectionConfigurationComponent extends SyndesisPageObject {
 		if (conneDetails.isEmpty()) {
 			throw new IllegalArgumentException("can't find any connection details in connection");
 		}
+
+		ElementsCollection inputs = getRootElement().findAll(By.cssSelector("input"));
+		List<String> keys = new ArrayList<String>();
+
+		for (SelenideElement input : inputs) {
+			String name = input.getAttribute("name");
+			keys.add(name);
+		}
+
 		for (String key : conneDetails.keySet()) {
-			log.info("fill conneDetails detail {} => {}", key, conneDetails.get(key));
-			getRootElement().$(String.format("input[name=\"%s\"", key)).shouldBe(visible).sendKeys(conneDetails.get(key));
+			if (keys.contains(key)) {
+				log.info("fill conneDetails detail {} => {}", key, conneDetails.get(key));
+				SelenideElement input = getRootElement().$(String.format("input[name=\"%s\"", key)).shouldBe(visible);
+				input.clear();
+				input.sendKeys(conneDetails.get(key));
+			} else {
+				log.info("Input {} is not present on form!", key);
+			}
 		}
 	}
 }
