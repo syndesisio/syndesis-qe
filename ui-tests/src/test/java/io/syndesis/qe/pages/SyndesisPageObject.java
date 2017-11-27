@@ -155,8 +155,11 @@ public abstract class SyndesisPageObject {
 	}
 
 	public SelenideElement getElementContainingText(By by, String text) {
-		ElementsCollection elements = getRootElement().findAll(by);
+		ElementsCollection elements = getRootElement().findAll(by).shouldBe(sizeGreaterThan(0));
+		log.info("I found " + elements.size() + " elements.");
+
 		elements = elements.filter(exactText(text));
+		log.info("Elements after filter: " + elements.size());
 		SelenideElement element = elements.shouldBe(sizeGreaterThan(0)).first();
 		return element;
 	}
