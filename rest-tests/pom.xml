@@ -12,26 +12,6 @@
 	<artifactId>rest-tests</artifactId>
 	<name>syndesis rest tests</name>
 
-	<properties>
-		<rest.assured.version>3.0.3</rest.assured.version>
-		<lombok.version>1.16.6</lombok.version>
-		<org.slfj.version>1.7.6</org.slfj.version>
-		<hibernate.version>4.1.0.Final</hibernate.version>
-		<junit.version>4.12</junit.version>
-		<hamcrest.version>1.3</hamcrest.version>
-		<org.json.version>20160810</org.json.version>
-		<commons.io.version>2.5</commons.io.version>
-		<resteasy.version>3.1.4.Final</resteasy.version>
-		<jackson.version>2.8.6</jackson.version>
-		<twitter4j.version>[4.0,)</twitter4j.version>
-		<log4j.version>2.9.0</log4j.version>
-		<force.rest.api.version>0.0.37</force.rest.api.version>
-		<openshift.version>5.6.0.Final</openshift.version>
-		<selenide.version>4.5.1</selenide.version>
-		<guava.version>21.0</guava.version>
-		<cucumber.version>1.2.2</cucumber.version>
-	</properties>
-
 	<dependencies>
 
 		<dependency>
@@ -131,26 +111,17 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.codeborne</groupId>
-			<artifactId>selenide</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
+
 		<dependency>
-			<groupId>info.cukes</groupId>
+			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-java</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>info.cukes</groupId>
+			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-junit</artifactId>
 			<scope>test</scope>
 		</dependency>
