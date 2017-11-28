@@ -28,11 +28,14 @@ public class DataMapperComponent extends SyndesisPageObject {
 		public static final By NAME = By.cssSelector("div.fieldDetail > div > label");
 		public static final By PARENT = By.cssSelector("div.parentField");
 		public static final By CHILDREN = By.cssSelector("div.childrenFields");
-		public static final By FIRST_COMBINE = By.cssSelector("div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
-		public static final By SECOND_COMBINE = By.cssSelector("div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
-		public static final By TARGET_COMBINE = By.cssSelector("simple-mapping:nth-child(6)>div>div>mapping-field-detail>div>div>input.ng-untouched.ng-pristine.ng-valid");
-		public static final By FIRST_COMBINE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[1]");
-		public static final By SECOND_COMBINE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]");
+		public static final By FIRST_SOURCE = By.cssSelector("div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
+		public static final By SECOND_SOURCE = By.cssSelector("div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
+		public static final By FIRST_TARGET = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-detail > div > div > input");
+		public static final By SECOND_TARGET = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-detail > div > div > input");
+		public static final By FIRST_SOURCE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[1]");
+		public static final By SECOND_SOURCE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]");
+		public static final By FIRST_TARGET_POSITION = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-action > div > div.actionContainer > div.form-group.argument > input");
+		public static final By SECOND_TARGET_POSITION = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-action > div > div > div.form-group.argument > input");
 		public static final By ACTION_SELECT = By.xpath("//label[text()='Action']/following-sibling::select");
 		public static final By SEPARATOR_SELECT = By.xpath("//label[text()='Separator:']/following-sibling::select");
 		public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
@@ -40,7 +43,7 @@ public class DataMapperComponent extends SyndesisPageObject {
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT);
+		return $(Element.ROOT).shouldBe(visible);
 	}
 
 	@Override
@@ -163,24 +166,36 @@ public class DataMapperComponent extends SyndesisPageObject {
 		By locator;
 
 		switch (alias) {
-			case "FirstCombine": {
-				locator = Element.FIRST_COMBINE;
+			case "FirstSource": {
+				locator = Element.FIRST_SOURCE;
 				break;
 			}
-			case "SecondCombine": {
-				locator = Element.SECOND_COMBINE;
+			case "SecondSource": {
+				locator = Element.SECOND_SOURCE;
 				break;
 			}
-			case "TargetCombine": {
-				locator = Element.TARGET_COMBINE;
+			case "FirstTarget": {
+				locator = Element.FIRST_TARGET;
 				break;
 			}
-			case "FirstCombinePosition": {
-				locator = Element.FIRST_COMBINE_POSITION;
+			case "SecondTarget": {
+				locator = Element.SECOND_TARGET;
 				break;
 			}
-			case "SecondCombinePosition": {
-				locator = Element.SECOND_COMBINE_POSITION;
+			case "FirstSourcePosition": {
+				locator = Element.FIRST_SOURCE_POSITION;
+				break;
+			}
+			case "SecondSourcePosition": {
+				locator = Element.SECOND_SOURCE_POSITION;
+				break;
+			}
+			case "FirstTargetPosition": {
+				locator = Element.FIRST_TARGET_POSITION;
+				break;
+			}
+			case "SecondTargetPosition": {
+				locator = Element.SECOND_TARGET_POSITION;
 				break;
 			}
 			case "ActionSelect": {

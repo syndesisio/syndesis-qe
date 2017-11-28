@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponentFactory;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public class IntegrationEditPage extends SyndesisPageObject {
 	private IntegrationConnectionSelectComponent integrationConnectionSelectComponent = new IntegrationConnectionSelectComponent();
 	@Getter
 	private IntegrationAddStepComponent addStepComponent = new IntegrationAddStepComponent();
+	@Getter
+	private DataMapperComponent dataMapperComponent = new DataMapperComponent();
 
 	private StepComponentFactory stepComponentFactory = new StepComponentFactory();
 	private StepComponent stepComponent;
