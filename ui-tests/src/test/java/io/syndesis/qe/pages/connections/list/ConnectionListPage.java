@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -20,11 +21,12 @@ public class ConnectionListPage extends SyndesisPageObject {
 		public static final By ROOT = By.cssSelector("syndesis-connections-list-page");
 	}
 
+	@Getter
 	private ConnectionsListComponent listComponent = new ConnectionsListComponent();
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT);
+		return $(Element.ROOT).shouldBe(visible);
 	}
 
 	@Override
@@ -32,8 +34,4 @@ public class ConnectionListPage extends SyndesisPageObject {
 		return $(Element.ROOT).is(visible);
 	}
 
-	//why everytime new instance? (return new new ConnectionsListComponent())
-	public ConnectionsListComponent listComponent() {
-		return this.listComponent;
-	}
 }

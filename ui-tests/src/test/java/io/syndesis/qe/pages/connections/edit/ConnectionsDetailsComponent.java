@@ -24,7 +24,7 @@ public class ConnectionsDetailsComponent extends SyndesisPageObject {
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT);
+		return $(Element.ROOT).shouldBe(visible);
 	}
 
 	@Override

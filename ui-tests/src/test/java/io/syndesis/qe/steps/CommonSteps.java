@@ -1,7 +1,5 @@
 package io.syndesis.qe.steps;
 
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.matchesText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -26,9 +24,9 @@ import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.dashboard.DashboardPage;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
-import io.syndesis.qe.pages.login.GitHubLoginPage;
-import io.syndesis.qe.pages.login.MinishiftLoginPage;
-import io.syndesis.qe.pages.login.RHDevLoginPage;
+import io.syndesis.qe.pages.login.GitHubLogin;
+import io.syndesis.qe.pages.login.MinishiftLogin;
+import io.syndesis.qe.pages.login.RHDevLogin;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -54,17 +52,17 @@ public class CommonSteps {
 				login.click();
 			}
 
-			RHDevLoginPage rhDevLoginPage = new RHDevLoginPage();
-			rhDevLoginPage.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+			RHDevLogin rhDevLogin = new RHDevLogin();
+			rhDevLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
 		} else if (currentUrl.contains(":8443/login")) {
 			log.info("Minishift cluster login page");
 
-			MinishiftLoginPage minishiftLoginPage = new MinishiftLoginPage();
-			minishiftLoginPage.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+			MinishiftLogin minishiftLogin = new MinishiftLogin();
+			minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
 		} else if (currentUrl.contains("github.com/login")) {
 
-			GitHubLoginPage gitHubLoginPage = new GitHubLoginPage();
-			gitHubLoginPage.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+			GitHubLogin gitHubLogin = new GitHubLogin();
+			gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
 		}
 
 		currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();

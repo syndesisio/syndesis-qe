@@ -12,20 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.integrations.edit.steps.StepFactory;
-import io.syndesis.qe.pages.integrations.edit.steps.StepPage;
+import io.syndesis.qe.pages.integrations.edit.steps.StepComponentFactory;
+import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 
-public class FlowViewComponent extends SyndesisPageObject {
-	
-	  
+public class IntegrationFlowViewComponent extends SyndesisPageObject {
+
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-flow-view");
 
 		public static final By NAME = By.cssSelector("input.form-control.integration-name");
-		public static final By STEP = By.cssSelector("parent-step");
+		public static final By STEP = By.cssSelector("div.parent-step");
 		public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
-		public static final By PARENT_STEP = By.cssSelector("div.parent-step");
+		//DELETE AND DELETE ARE IDENTICAL
+		public static final By DELETE = By.className("delete-icon");
 	}
+
+	private StepComponentFactory stepComponentFactory = new StepComponentFactory();
 
 	@Override
 	public SelenideElement getRootElement() {
@@ -44,17 +46,17 @@ public class FlowViewComponent extends SyndesisPageObject {
 
 	/**
 	 * Get div
+	 *
 	 * @param type (start|finish)
 	 */
 	public FlowConnection flowConnection(String type) {
-		SelenideElement stepElement = this.getElementContainingText(Element.PARENT_STEP, type).shouldBe(visible);
+		SelenideElement stepElement = this.getElementContainingText(Element.STEP, type).shouldBe(visible);
 
 		type = type.toLowerCase();
 		return new FlowConnection(type, stepElement);
 	}
 
 	public List<String> getStepsArray() {
-		StepFactory stepFactory = new StepFactory();
 		ElementsCollection steps = this.getRootElement().findAll(Element.STEP);
 
 		List<String> stepsArray = new ArrayList<String>();
@@ -65,17 +67,25 @@ public class FlowViewComponent extends SyndesisPageObject {
 			SelenideElement title = this.getRootElement().find(Element.ACTIVE_STEP);
 
 			String type = title.getText();
-			StepPage stepPage = stepFactory.getStep(type, "");
+			StepComponent stepComponent = stepComponentFactory.getStep(type, "");
 
 			//wait for root element to be loaded
-			stepPage.getRootElement();
-			stepPage.initialize();
+			stepComponent.getRootElement();
+			stepComponent.initialize();
 
-			stepsArray.add(stepPage.getParameter());
+			stepsArray.add(stepComponent.getParameter());
 		}
 
 		this.clickOnFirstVisibleButton("Done");
 
 		return stepsArray;
+	}
+
+	public ElementsCollection getAllTrashes() {
+		return this.getRootElement().findAll(Element.DELETE);
+	}
+
+	public void clickRandomTrash() {
+		this.clickElementRandom(Element.DELETE);
 	}
 }

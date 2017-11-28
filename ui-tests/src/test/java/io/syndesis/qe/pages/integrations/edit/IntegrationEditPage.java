@@ -5,10 +5,12 @@ import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
+import io.syndesis.qe.pages.integrations.edit.steps.StepComponentFactory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -16,10 +18,24 @@ public class IntegrationEditPage extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-edit-page");
-
-		public static final By TRASH = By.className("fa-trash");
-		public static final By DELETE = By.className("delete-icon");
 	}
+	@Getter
+	private ActionConfigureComponent actionConfigureComponent = new ActionConfigureComponent();
+	@Getter
+	private ActionConfigureComponentTwitterSearch twitterSearchComponent = new ActionConfigureComponentTwitterSearch();
+	@Getter
+	private ListActionsComponent listActionsComponent = new ListActionsComponent();
+	@Getter
+	private IntegrationFlowViewComponent flowViewComponent = new IntegrationFlowViewComponent();
+	@Getter
+	private IntegrationBasicsComponent integrationBasicsComponent = new IntegrationBasicsComponent();
+	@Getter
+	private IntegrationConnectionSelectComponent integrationConnectionSelectComponent = new IntegrationConnectionSelectComponent();
+	@Getter
+	private IntegrationAddStepComponent addStepComponent = new IntegrationAddStepComponent();
+
+	private StepComponentFactory stepComponentFactory = new StepComponentFactory();
+	private StepComponent stepComponent;
 
 	@Override
 	public SelenideElement getRootElement() {
@@ -32,30 +48,9 @@ public class IntegrationEditPage extends SyndesisPageObject {
 		return getRootElement().is(visible);
 	}
 
-	public ActionConfigureComponent actionConfigureComponent() {
-		return new ActionConfigureComponent();
-	}
-
-	public FlowViewComponent flowViewComponent() {
-		return new FlowViewComponent();
-	}
-
-	public ConnectionSelectComponent connectionSelectComponent() {
-		return new ConnectionSelectComponent();
-	}
-
-	public IntegrationBasicsComponent basicsComponent() {
-		return new IntegrationBasicsComponent();
-	}
-
-	public ElementsCollection getAllTrashes() {
-		return this.getRootElement().findAll(Element.TRASH);
-	}
-	public ElementsCollection getAllDeletes() {
-		return this.getRootElement().findAll(Element.DELETE);
-	}
-	public void clickRandomTrash() {
-		this.clickElementRandom(Element.TRASH);
+	public StepComponent getStepComponent(String stepType, String parameter) {
+		stepComponent = stepComponentFactory.getStep(stepType, parameter);
+		return stepComponent;
 	}
 
 }
