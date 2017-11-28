@@ -3,18 +3,18 @@ package io.syndesis.qe.pages.integrations.edit.steps;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BasicFilterStepPage extends StepPage {
+public class BasicFilterStepComponent extends StepComponent {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-basic-filter");
@@ -45,7 +45,7 @@ public class BasicFilterStepPage extends StepPage {
 
 	List<BasicFilterRule> ruleArray;
 
-	public BasicFilterStepPage(String filterCondition) {
+	public BasicFilterStepComponent(String filterCondition) {
 		super();
 		this.filterCondition = filterCondition;
 		String[] filterConditionsArray = this.filterCondition.split(", ");

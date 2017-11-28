@@ -8,24 +8,28 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
+import lombok.extern.slf4j.Slf4j;
 
-public class ConnectionSelectComponent extends SyndesisPageObject {
-	
+@Slf4j
+public class IntegrationAddStepComponent extends SyndesisPageObject {
+
 	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-connection-select");
+		public static final By ROOT = By.cssSelector("syndesis-integrations-step-select");
 	}
 
+	@Override
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
 		return elementRoot;
 	}
 
+	@Override
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
 
-	public ConnectionsListComponent connectionListComponent() {
-		return new ConnectionsListComponent();
+	public void addStep(String stepName) {
+		log.info("searching for step {}", stepName);
+		this.getRootElement().find(By.cssSelector(String.format("div.step[title='%s']", stepName))).shouldBe(visible).click();
 	}
 }

@@ -9,7 +9,7 @@ import com.codeborne.selenide.SelenideElement;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class LogStepPage extends StepPage {
+public class LogStepComponent extends StepComponent {
 
 	private static final class Input {
 		public static final By NAME = By.cssSelector("input[name='message']");
@@ -17,7 +17,7 @@ public class LogStepPage extends StepPage {
 
 	private String logMessage;
 
-	public LogStepPage(String logMessage) {
+	public LogStepComponent(String logMessage) {
 		super();
 		this.logMessage = logMessage;
 	}

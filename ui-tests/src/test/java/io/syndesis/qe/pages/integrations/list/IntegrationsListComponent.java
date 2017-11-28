@@ -21,7 +21,6 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 		public static final By ITEM = By.className("list-pf-item");
 		public static final By ITEM_TITLE = By.className("list-pf-title");
 		public static final By ITEM_STATUS = By.cssSelector("syndesis-integration-status");
-		public static final By ITEM_NAME = By.className("name");
 		public static final By ITEM_DESCRIPTION = By.className("description");
 	}
 
@@ -102,7 +101,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
 	public String getIntegrationName(SelenideElement integration) {
 		String name;
-		SelenideElement nameElement = integration.find(Element.ITEM_NAME);
+		SelenideElement nameElement = integration.find(Element.ITEM);
 		boolean isNamePresent = nameElement.is(visible);
 
 		if (isNamePresent) {
@@ -174,7 +173,6 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
 	public void checkAllIntegrationsKebabButtons() {
 		ElementsCollection integrationsItems = getAllIntegrations();
-		//integrationsItems.reverse();
 
 		for (SelenideElement item : integrationsItems) {
 			String status = this.getIntegrationItemStatus(item);
