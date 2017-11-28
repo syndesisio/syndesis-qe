@@ -8,18 +8,16 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
-import lombok.Getter;
 
-public class IntegrationConnectionSelectComponent extends SyndesisPageObject {
+/**
+ * Created by sveres on 11/29/17.
+ */
+public class IntegrationSaveOrAddStepComponent extends SyndesisPageObject {
 
 	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-connection-select");
+		public static final By ROOT = By.cssSelector("syndesis-integrations-save-or-add-step");
+		public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
 	}
-
-	@Getter
-	private ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
-
 	@Override
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
@@ -28,7 +26,6 @@ public class IntegrationConnectionSelectComponent extends SyndesisPageObject {
 
 	@Override
 	public boolean validate() {
-		return getRootElement().is(visible);
+		return this.getRootElement().find(Element.TITLE).is(visible);
 	}
-
 }
