@@ -32,9 +32,9 @@
 		<logback.classic.version>1.2.3</logback.classic.version>
 		<force.rest.api.version>0.0.37</force.rest.api.version>
 		<openshift.version>5.6.0.Final</openshift.version>
-		<selenide.version>4.8.0</selenide.version>
+		<selenide.version>4.8</selenide.version>
 		<guava.version>22.0</guava.version>
-		<cucumber.version>1.2.5</cucumber.version>
+		<cucumber.version>2.1.0</cucumber.version>
 		<openshift.client.version>2.4.1</openshift.client.version>
 		<assertj.version>3.8.0</assertj.version>
 		<rxjava.version>1.3.0</rxjava.version>
@@ -225,13 +225,13 @@
 				<version>${guava.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>info.cukes</groupId>
+				<groupId>io.cucumber</groupId>
 				<artifactId>cucumber-java</artifactId>
 				<version>${cucumber.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>info.cukes</groupId>
+				<groupId>io.cucumber</groupId>
 				<artifactId>cucumber-junit</artifactId>
 				<version>${cucumber.version}</version>
 				<scope>test</scope>
@@ -296,7 +296,6 @@
 			</activation>
 			<modules>
 				<module>ui-tests</module>
-				<module>utilities</module>
 			</modules>
 		</profile>
 	</profiles>

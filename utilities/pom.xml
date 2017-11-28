@@ -119,16 +119,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-java</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-junit</artifactId>
-		</dependency>
-
-
+		
 		<!-- Third party services dependencies -->
 		<dependency>
 			<groupId>org.twitter4j</groupId>
