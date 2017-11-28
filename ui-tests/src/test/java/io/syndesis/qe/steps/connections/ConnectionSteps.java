@@ -39,7 +39,7 @@ public class ConnectionSteps {
 	private ConnectionDetailPage detailPage = new ConnectionDetailPage();
 	private ConnectionListPage listPage = new ConnectionListPage();
 
-	@Then("^Camilla is presented with \"(\\w+)\" connection details")
+	@Then("^Camilla is presented with \"([^\"]*)\" connection details")
 	public void verifyConnectionDetails(String connectionName) {
 		log.info("Connection detail page must show connection name");
 		assertThat(detailPage.connectionName(), is(connectionName));
@@ -50,7 +50,7 @@ public class ConnectionSteps {
 		listPage.getListComponent().getConnectionByTitle(connectionName).shouldBe(visible);
 	}
 
-	@Then("^Camilla can not see \"(\\w+)\" connection anymore$")
+	@Then("^Camilla can not see \"([^\"]*)\" connection anymore$")
 	public void expectConnectionTitleNonPresent(String connectionName) {
 		listPage.getListComponent().getConnectionByTitle(connectionName).shouldBe(not(exist));
 	}
@@ -61,7 +61,7 @@ public class ConnectionSteps {
 		connPage.getRootElement();
 	}
 
-	@When("^Camilla deletes the \"(\\w+)\" connection$")
+	@When("^Camilla deletes the \"([^\"]*)\" connection$")
 	public void deleteConnection(String connectionName) {
 		ConnectionsListComponent listComponent = new ConnectionsListComponent();
 		listComponent.deleteConnection(connectionName);
@@ -117,5 +117,11 @@ public class ConnectionSteps {
 		SelenideElement helpBlock = $(By.className("help-block"));
 		helpBlock.shouldBe(visible);
 		Assertions.assertThat(helpBlock.getText().equals(helpText)).isTrue();
+	}
+
+	@When("^clicks on the \"([^\"]*)\" kebab menu button of \"([^\"]*)\"$")
+	public void clickOnKebabMenuButtonOfConnection(String button, String connectionName) throws Throwable {
+		ConnectionsListComponent conn = new ConnectionsListComponent();
+		conn.clickKebabMenuButton(button, connectionName);
 	}
 }

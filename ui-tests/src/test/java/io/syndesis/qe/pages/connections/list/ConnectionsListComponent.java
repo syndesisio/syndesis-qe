@@ -1,6 +1,10 @@
 package io.syndesis.qe.pages.connections.list;
 
+
+import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -22,7 +26,9 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 
 	private static final class Button {
 		public static final By DELETE = By.linkText("Delete");
-		public static final By OK = By.linkText("Ok");
+
+		public static final By OK = By.linkText("OK");
+		public static final By KEBAB = By.cssSelector("button.btn.btn-link.dropdown-toggle");
 	}
 
 	private static final class Element {
@@ -31,6 +37,8 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 		public static final By KEBAB = By.id("dropdownKebabRight9");
 		public static final By KEBAB_OPEN = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right.open");
 		public static final By KEBAB_UNOPEN = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
+		public static final By MODAL_DIALOG = By.className("modal-dialog");
+		public static final By ALL_BUTTONS = By.className("btn");
 	}
 
 	@Override
@@ -62,9 +70,11 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 
 	public void deleteConnection(String title) {
 		log.info("searching delete link for connection {}", title);
-		this.getConnectionByTitle(title).find(Element.KEBAB).shouldBe(visible).click();
+		this.getConnectionByTitle(title).parent().find(Element.KEBAB).shouldBe(visible).click();
 		$(Element.ROOT).find(Button.DELETE).shouldBe(visible).click();
-		$(Element.ROOT).find(Button.OK).shouldBe(visible).click();
+		log.info("looking for ok button");
+		$(Element.MODAL_DIALOG).shouldBe(visible).findAll(Element.ALL_BUTTONS).shouldBe(sizeGreaterThanOrEqual(1))
+				.filter(exactText("OK")).shouldBe(sizeGreaterThanOrEqual(1)).get(0).click();
 	}
 
 	public ElementsCollection getAllKebabElements(Boolean isOpen) {
@@ -89,11 +99,26 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 		ElementsCollection kebabElements = this.getAllKebabElements(shoulBeOpen).shouldBe(sizeGreaterThan(0));
 		for (SelenideElement kebabElement : kebabElements) {
 			kebabElement.shouldBe(visible);
-			log.info("checking kebab menu {}", kebabElement.getText());
+			log.info("checking kebab menu");
 			for (String pa : properActions) {
 				log.info("testing action:searching for connection {}", pa);
-				kebabElement.find(By.cssSelector(String.format("a[innertext='%s']", pa))).shouldBe(visible);
+				kebabElement.find(By.linkText(pa)).shouldBe(visible);
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @param name name of connection
+	 * @return all kebab menu buttons of one connection with name @param name
+	 */
+	public ElementsCollection getKebabMenuButtons(String name) {
+		SelenideElement conObj = this.getConnectionByTitle(name).shouldBe(visible);
+		conObj.parent().find(By.id("dropdownKebabRight9")).shouldBe(visible).click();
+		return this.getConnectionByTitle(name).parent().findAll(By.className("dropdown-item")).shouldBe(sizeGreaterThanOrEqual(1));
+	}
+
+	public void clickKebabMenuButton(String button, String connectionName) {
+		this.getKebabMenuButtons(connectionName).filter(exactText(button)).shouldBe(size(1)).get(0).click();
 	}
 }
