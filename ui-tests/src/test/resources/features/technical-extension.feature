@@ -4,12 +4,12 @@ Feature: Upload tech extension and add it to integration
   @tech-extension-clean-application-state
   Scenario: Clean application state
     Given "Camilla" logs into the Syndesis
-    Given clean application state
+   	Given clean application state
 
   @tech-extension-navigate-to-technical-extensions-page
   Scenario: Navigate to technical extensions page
     When "Camilla" navigates to the "Customizations" page
-    And click on the "Technical Extensions" tab #new step
+    And click on the "Technical Extensions" tab
     Then she is presented with the Syndesis page "Technical extensions"
     
   @tech-extension-import-new-tech-extension
@@ -18,16 +18,16 @@ Feature: Upload tech extension and add it to integration
     Then she is presented with the Syndesis page "Import Technical Extensions"
     
     When Camilla clicks on the "Choose File" button
-    Then she is presented with dialog page "Select a file to upload" #new step
+    Then she is presented with dialog page "Select a file to upload"
     
     When Camilla choose a file "Tech extension"
     And clicks on the "Open" button
-    Then she is presented with file "Tech extension" being apploaded #new step
-    And she can review uploaded technical extension #new step
+    Then she is presented with file "Tech extension" being apploaded
+    And she can review uploaded technical extension
     
     When she clicks on the "Import" button
     Then Camilla is presented with the Syndesis page "Technical extensions"
-    And technical extension "Tech extension" is present in technical extensions list #new step
+    And technical extension "Tech extension" is present in technical extensions list
     
   @tech-extension-update-tech-extension
   Scenario: Update technical extensions
@@ -35,16 +35,16 @@ Feature: Upload tech extension and add it to integration
     Then she is presented with the Syndesis page "Update Technical Extensions"
 
     When Camilla clicks on the "Choose File" button
-    Then she is presented with dialog page "Select a file to upload" #new step
+    Then she is presented with dialog page "Select a file to upload"
     
     When Camilla choose a file "Tech extension"
     And clicks on the "Open" button
-    Then she is presented with file "Tech extension" being apploaded #new step
-    And she can review uploaded technical extension #new step
+    Then she is presented with file "Tech extension" being apploaded
+    And she can review uploaded technical extension
 
     When she clicks on the "Import" button
     Then Camilla is presented with the Syndesis page "Technical extensions"
-    And technical extension "Tech extension" is present in technical extensions list #new step
+    And technical extension "Tech extension" is present in technical extensions list
   	
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create integration from twitter to salesforce
@@ -73,7 +73,7 @@ Feature: Upload tech extension and add it to integration
     And clicks on the "Add a step" link
 
     When she selects "Custom steps" from "steps" dropdown
-    Then she can see "Custom step" in step list #new step
+    Then she can see "Custom step" in step list
     
     Then she selects "Custom step" integration step
     And click on the "Next" button
@@ -92,12 +92,12 @@ Feature: Upload tech extension and add it to integration
   @tech-extension-delete-tech-extension
   Scenario: Delete technical extensions
     When "Camilla" navigates to the "Customizations" page
-    And click on the "Technical Extensions" tab #new step
+    And click on the "Technical Extensions" tab
     Then she is presented with the Syndesis page "Technical extensions"
 
     When Camilla click on the "Delete" button of "Tech extension" technical extension
-    Then she is presented with dialog page "Warning!" #new step
-    And she can see integrations "Twitter to Salesforce E2E" in which is tech extension used #new step
+    Then she is presented with dialog page "Warning!"
+    And she can see integrations "Twitter to Salesforce E2E" in which is tech extension used
 
     When she clicks on the "Delete" button
-    Then Camilla can not see "Tech extension" technical extension anymore #new step
+    Then Camilla can not see "Tech extension" technical extension anymore
