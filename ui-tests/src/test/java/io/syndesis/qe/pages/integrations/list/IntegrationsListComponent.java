@@ -44,13 +44,9 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
 	public SelenideElement getIntegration(String name) {
 		SelenideElement entryElement = getElementContainingText(Element.ITEM_TITLE, name);
-		return entryElement;
-	}
-
-	public SelenideElement getIntegrationActiveState(String integrationName, String integrationState) {
-		SelenideElement integration = this.getIntegration(integrationName);
-		SelenideElement integrationActiveState = integration.find(By.cssSelector(String.format("syndesis-integration-status[innertext='%s']", integrationState)));
-		return integrationActiveState;
+		// this is pure hack to get parent elements as title si too low-level
+		//TODO: refactor getElementContainingText to accept params e.g. elementToReturn, elementWithText, text
+		return entryElement.parent().parent();
 	}
 
 	public boolean isIntegrationPresent(String name) {

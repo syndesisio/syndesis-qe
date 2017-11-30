@@ -13,6 +13,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -23,6 +24,7 @@ import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -147,10 +149,10 @@ public class IntegrationSteps {
 	}
 
 	@Then("^she wait until integration \"([^\"]*)\" get into \"([^\"]*)\" state$")
-	public void waitForIntegrationState(String integrationName, String integrationState) {
-		SelenideElement integrationActiveState = listPage.getListComponent().getIntegrationActiveState(integrationName, integrationState);
-		log.info("Integration should get into {}.", integrationState);
-		integrationActiveState.shouldBe(visible);
+	public void waitForIntegrationState(String integrationName, String integrationStatus) {
+		SelenideElement integration = listPage.getListComponent().getIntegration(integrationName);
+		assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> listPage.getListComponent().getIntegrationItemStatus(integration),
+				TimeUnit.MINUTES,5, TimeUnit.SECONDS, 5));
 	}
 
 	@Then("^she is presented with a add step page$")
