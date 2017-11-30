@@ -5,6 +5,7 @@ import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
 import io.syndesis.qe.pages.connections.list.ConnectionListPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentFinish;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
+import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
 
 /**
@@ -17,7 +18,9 @@ public enum SyndesisPage {
 	CONNECTION_LIST(new ConnectionListPage()),
 	INTEGRATIONS_LIST(new IntegrationsListPage()),
 	SELECT_START_CONNECTION(new IntegrationConnectionSelectComponentStart()),
-	SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish());
+	SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
+	CHOOSE_A_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
+	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent());
 
 	private SyndesisPageObject pageObject = null;
 

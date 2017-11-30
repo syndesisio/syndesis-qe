@@ -152,7 +152,7 @@ public class IntegrationSteps {
 	public void waitForIntegrationState(String integrationName, String integrationStatus) {
 		SelenideElement integration = listPage.getListComponent().getIntegration(integrationName);
 		assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> listPage.getListComponent().getIntegrationItemStatus(integration),
-				TimeUnit.MINUTES,5, TimeUnit.SECONDS, 5));
+				TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 5));
 	}
 
 	@Then("^she is presented with a add step page$")
@@ -296,6 +296,6 @@ public class IntegrationSteps {
 	@Then("^she is prompted to select a \"([^\"]*)\" connection from a list of available connections$")
 	public void verifyTypeOfConnection(String position) {
 		log.info("{} connection must be active", position);
-		assertTrue("There was no active icon found for position " +  position, editPage.getFlowViewComponent().verifyActivePosition(position));
+		assertTrue("There was no active icon found for position " + position, editPage.getFlowViewComponent().verifyActivePosition(position));
 	}
 }

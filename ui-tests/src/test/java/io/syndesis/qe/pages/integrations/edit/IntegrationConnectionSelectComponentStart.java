@@ -7,7 +7,7 @@ import org.openqa.selenium.By;
 public class IntegrationConnectionSelectComponentStart extends IntegrationConnectionSelectComponent {
 	
 	private static final class Element {
-		public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
+		public static final By TITLE = By.cssSelector("h1[innertext='Choose a Start Connection']");
 	}
 
 	public boolean validate() {
