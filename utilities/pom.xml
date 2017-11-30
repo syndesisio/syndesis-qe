@@ -13,6 +13,15 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-java</artifactId>
+		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>io.cucumber</groupId>-->
+			<!--<artifactId>cucumber-junit</artifactId>-->
+		<!--</dependency>-->
+		<!---->
+		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>openshift-client</artifactId>
 		</dependency>
@@ -119,7 +128,7 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
-		
+
 		<!-- Third party services dependencies -->
 		<dependency>
 			<groupId>org.twitter4j</groupId>

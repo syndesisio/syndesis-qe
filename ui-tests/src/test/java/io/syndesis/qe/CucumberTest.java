@@ -1,16 +1,9 @@
 package io.syndesis.qe;
 
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
@@ -18,15 +11,15 @@ import cucumber.api.junit.Cucumber;
 @RunWith(Cucumber.class)
 @CucumberOptions(
 		features = "classpath:features",
-		format = {"pretty"}
+		format = {"pretty", "html:target/cucumber-report.html", "junit:target/cucumber-junit.html"}
 )
 public class CucumberTest {
 	// setup
 	@BeforeClass
 	public static void setup() {
 		//set up Selenide
-		Configuration.timeout = 60000;
-		
+		Configuration.timeout = 5 * 60 * 1000;
+
 		//getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
 
 	}
