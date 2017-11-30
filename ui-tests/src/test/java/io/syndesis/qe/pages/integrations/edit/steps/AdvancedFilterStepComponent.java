@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class AdvancedFilterStepComponent extends StepComponent {
 
 	public boolean validate() {
 		log.debug("Validating advanced filter configuration page");
-		return this.getFilterTextarea().shouldBe(visible).isDisplayed();
+		return this.getFilterTextarea().waitWhile(Condition.not(visible), 5 * 1000).isDisplayed();
 	}
 
 	public void initialize() {
