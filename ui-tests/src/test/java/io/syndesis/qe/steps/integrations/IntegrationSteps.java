@@ -1,6 +1,7 @@
 package io.syndesis.qe.steps.integrations;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import static org.hamcrest.Matchers.is;
 
@@ -288,12 +289,11 @@ public class IntegrationSteps {
 	/**
 	 * whether it's start or finish connection
 	 *
-	 * @param type
+	 * @param position
 	 */
 	@Then("^she is prompted to select a \"([^\"]*)\" connection from a list of available connections$")
-	public void verifyTypeOfConnection(String type) {
-		editPage.getFlowViewComponent().flowConnection(type).getElement().shouldBe(visible);
-		log.info("{} connection must be active", type);
-		assertThat(editPage.getFlowViewComponent().flowConnection(type).isActive(), is(true));
+	public void verifyTypeOfConnection(String position) {
+		log.info("{} connection must be active", position);
+		assertTrue("There was no active icon found for position " +  position, editPage.getFlowViewComponent().verifyActivePosition(position));
 	}
 }
