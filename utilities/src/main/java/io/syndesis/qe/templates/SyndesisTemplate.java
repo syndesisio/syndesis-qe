@@ -22,8 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyndesisTemplate {
 
-	private static final String SUPPORT_SA_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-openshift-templates/master/support/serviceaccount-as-oauthclient-restricted.yml";
-	private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-openshift-templates/master/syndesis-restricted.yml";
+	private static final String SUPPORT_SA_URL = TestConfiguration.syndesisTempalateSA();
+	private static final String TEMPLATE_URL = TestConfiguration.syndesisTempalateUrl();
 
 	public static Template getTemplate() {
 		try (InputStream is = new URL(TEMPLATE_URL).openStream()) {
@@ -72,5 +72,16 @@ public class SyndesisTemplate {
 		// process & create
 		KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
 		OpenShiftUtils.getInstance().createResources(processedTemplate);
+
+		//TODO: there's a bug in openshift-client, we need to initialize manually
+		OpenShiftUtils.getInstance().withDefaultUser(client -> client.roleBindings().createOrReplaceWithNew()
+				.withNewMetadata()
+					.withName("syndesis:editors")
+		        .endMetadata()
+				.withNewRoleRef().withName("edit").endRoleRef()
+				.addNewSubject().withKind("ServiceAccount").withName("syndesis-rest").endSubject()
+				.addToUserNames("system:serviceaccount:syndesis:syndesis-rest")
+				.done()
+		);
 	}
 }
