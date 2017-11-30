@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -146,10 +147,10 @@ public class BasicFilterStepComponent extends StepComponent {
 		SelenideElement valueInput = this.getValueInput();
 		SelenideElement opSelect = this.getOpSelect();
 
-		boolean isPredicateSelect = predicateSelect.is(visible);
-		boolean isPathInput = pathInput.is(visible);
-		boolean isValueInput = valueInput.is(visible);
-		boolean isOpSelect= opSelect.is(visible);
+		boolean isPredicateSelect = predicateSelect.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
+		boolean isPathInput = pathInput.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
+		boolean isValueInput = valueInput.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
+		boolean isOpSelect= opSelect.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
 	    
 		log.info("isPredicateSelect {}, isPathInput {}, isValueInput {}, isOpSelect {}", isPredicateSelect , isPathInput , isValueInput , isOpSelect);
 		
