@@ -22,8 +22,6 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
-import io.syndesis.qe.pages.dashboard.DashboardPage;
-import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
 import io.syndesis.qe.pages.login.GitHubLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
@@ -202,4 +200,10 @@ public class CommonSteps {
 		SelenideElement selectElement = $(String.format("select[id=\"%s\"]", selectId)).shouldBe(visible);
 		selectElement.selectOption(option);
 	}
+
+	@Then("^she stays there for \"(\\w+)\" ms$")
+	public void sleep(Integer ms) {
+		Selenide.sleep(ms);
+	}
+
 }

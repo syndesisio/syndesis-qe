@@ -27,7 +27,6 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 		public static final By STEP = By.cssSelector("div.parent-step");
 		public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
 		public static final By ACTIVE_STEP_ICON = By.cssSelector("p.icon.active");
-		//DELETE AND DELETE ARE IDENTICAL
 		public static final By DELETE = By.className("delete-icon");
 	}
 
@@ -92,4 +91,5 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 	public void clickRandomTrash() {
 		this.clickElementRandom(Element.DELETE);
 	}
+
 }
