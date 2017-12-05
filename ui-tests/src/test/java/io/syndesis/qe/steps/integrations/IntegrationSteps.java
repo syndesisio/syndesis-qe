@@ -1,24 +1,21 @@
 package io.syndesis.qe.steps.integrations;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import static org.hamcrest.Matchers.is;
-
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
-
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
-import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
@@ -33,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationSteps {
 
-	private SyndesisRootPage rootPage = new SyndesisRootPage();
 	private IntegrationEditPage editPage = new IntegrationEditPage();
 	private IntegrationDetailPage detailPage = new IntegrationDetailPage();
 	private IntegrationsListPage listPage = new IntegrationsListPage();
@@ -122,7 +118,7 @@ public class IntegrationSteps {
 			for (String action : detailPageSpecific.actionsSet) {
 				log.info("Action: {}", action);
 				log.info("There should by button for {} action on {} status", action, status);
-				SelenideElement actionButton = detailPageSpecific.getActionButton(action).shouldBe(visible);
+				detailPageSpecific.getActionButton(action).shouldBe(visible);
 			}
 			log.info("Status on detail editPage should be equal to expected status:");
 			assertThat(detailPageSpecific.getStatus(), is(status));
