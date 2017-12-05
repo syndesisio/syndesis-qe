@@ -19,7 +19,7 @@ public class CucumberTest {
 	public static void setup() {
 		//set up Selenide
 		Configuration.timeout = 5 * 60 * 1000;
-
+		Configuration.browser = TestConfiguration.syndesisBrowser();
 		//getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
 
 	}

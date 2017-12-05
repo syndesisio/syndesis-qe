@@ -40,7 +40,7 @@ Feature: Test to verify correct function of connections kebab menu
       # select postgresDB connection as 'to' point
     Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
     When Camilla selects the "PostgresDB" connection
-    And she selects "Invoke SQL stored procedure" integration action
+    And she selects "Invoke Stored Procedure" integration action
     And she selects "add_lead" from "procedureName" dropdown
     And clicks on the "Done" button
 
@@ -55,8 +55,9 @@ Feature: Test to verify correct function of connections kebab menu
     And she creates mapping from "Phone" to "phone"
     And she creates mapping from "Status" to "lead_status"
     And she creates mapping from "Rating" to "rating"
-
+    And she creates mapping from "FirstName" to "first_and_last_name"
       #   A. ONE STEP:
+    And she combines "FirstName" as "1" with "LastName" as "2" to "first_and_last_name" using "Space" separator
 #    THIS "combine step" is temporary commented out.
 #    It works separately but not in combination with below "separate step".
 #    UNTIL ids for datamapper input fields are available. It has no meaning to spend a lot of time
@@ -76,8 +77,6 @@ Feature: Test to verify correct function of connections kebab menu
       # And she fills "SecondCombinePosition" selector-input with "1" value
       # Then she fills "TargetCombine" selector-input with "first_and_last_name" value
       #   B. Many steps: --END
-
-    And she separates "Rating" into "rating" as "2" and "email" as "1" using "Comma" separator
 
 #    And she stays there for "12000" ms
     And scroll "top" "right"
