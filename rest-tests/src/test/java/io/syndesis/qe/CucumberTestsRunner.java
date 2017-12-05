@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests;
+package io.syndesis.qe;
 
 import org.junit.runner.RunWith;
 
@@ -7,8 +7,8 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-		features = "classpath:features",
-		format = {"pretty", "html:target/cucumber-report.html", "junit:target/cucumber-junit.html"})
+	features = "classpath:features",
+	format = {"pretty", "html:target/cucumber-report.html", "junit:target/cucumber-junit.html", "json:target/cucumber-report.json"})
 public class CucumberTestsRunner {
 
 	//we could have some setup here

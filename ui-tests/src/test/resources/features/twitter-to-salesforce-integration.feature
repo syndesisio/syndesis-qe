@@ -4,6 +4,9 @@ Feature: Create integration with datamapper step
 
   @integrations-twitter-to-salesforce-clean-application-state
   Scenario: Clean application state
+#    Given user cleans default namespace
+#    When user deploys Syndesis from template
+#    Then user waits for Syndesis to become ready
     Given "Camilla" logs into the Syndesis
     Given clean application state
 
@@ -98,3 +101,4 @@ Feature: Create integration with datamapper step
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
     Then she wait until integration "Twitter to Salesforce E2E" get into "Active" state
+    And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
