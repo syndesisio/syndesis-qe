@@ -29,6 +29,9 @@ public class TestConfiguration {
 	public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
 	public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
 
+	public static final String SYNDESIS_TEMPLATE_URL = "syndesis.config.template.url";
+	public static final String SYNDESIS_TEMPLATE_SA = "syndesis.config.template.sa";
+
 	private static final TestConfiguration INSTANCE = new TestConfiguration();
 
 	private final Properties properties = new Properties();
@@ -80,6 +83,12 @@ public class TestConfiguration {
 
 	public static String syndesisUrlSuffix() { return get().readValue(SYNDESIS_URL_SUFFIX); }
 
+	public static String syndesisTempalateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
+
+	public static String syndesisTempalateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
+
+	public static String syndesisBrowser() { return get().readValue(SYNDESIS_UI_BROWSER); }
+
 	private Properties defaultValues() {
 		final Properties props = new Properties();
 
@@ -89,6 +98,11 @@ public class TestConfiguration {
 
 		props.setProperty(SYNDESIS_CREDENTIALS_FILE, "../credentials.json");
 		props.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
+
+		props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
+
+		props.setProperty(SYNDESIS_TEMPLATE_URL, "https://raw.githubusercontent.com/syndesisio/syndesis/master/app/deploy/syndesis-restricted.yml");
+		props.setProperty(SYNDESIS_TEMPLATE_SA, "https://raw.githubusercontent.com/syndesisio/syndesis/master/app/deploy/support/serviceaccount-as-oauthclient-restricted.yml");
 
 		return props;
 	}
