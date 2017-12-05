@@ -2,13 +2,17 @@ package io.syndesis.qe.pages.integrations.edit.steps;
 
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
@@ -160,6 +164,15 @@ public class DataMapperComponent extends SyndesisPageObject {
 		log.info("field {} has {} child fields", field.getText(), children.size());
 		return children;
 	}
+
+	public void fillInputAndConfirm(SelenideElement element, String value) {
+		element.shouldBe(visible).clear();
+		element.shouldBe(visible).sendKeys(value);
+		//TODO: this is pretty ugly sleep should be addressed in future
+		Selenide.sleep(5 * 1000);
+		Selenide.actions().sendKeys(Keys.ENTER).perform();
+	}
+
 
 	public SelenideElement getElementByAlias(String alias) {
 
