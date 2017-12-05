@@ -28,6 +28,8 @@ public class TestConfiguration {
 
 	public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
 	public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
+	
+	public static final String SYNDESIS_TECH_EXTENSION_URL = "syndesis.config.ui.tech.extension.url";
 
 	private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -79,6 +81,8 @@ public class TestConfiguration {
 	public static String syndesisVersionsFile() { return get().readValue(SYNDESIS_VERSIONS_FILE); }
 
 	public static String syndesisUrlSuffix() { return get().readValue(SYNDESIS_URL_SUFFIX); }
+	
+	public static String techExtensionUrl() { return get().readValue(SYNDESIS_TECH_EXTENSION_URL); }
 
 	private Properties defaultValues() {
 		final Properties props = new Properties();
