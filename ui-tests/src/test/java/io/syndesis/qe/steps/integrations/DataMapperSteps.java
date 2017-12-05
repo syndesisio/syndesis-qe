@@ -78,7 +78,7 @@ public class DataMapperSteps {
 
 		// Then she fills "SecondCombine" selector-input with "LastName" value
 		inputElement = mapper.getElementByAlias("SecondSource").shouldBe(visible);
-		mapper.fillInput(inputElement, second);
+		mapper.fillInputAndConfirm(inputElement, second);
 
 		// And she fills "FirstCombinePosition" selector-input with "2" value
 		inputElement = mapper.getElementByAlias("FirstSourcePosition").shouldBe(visible);
@@ -90,11 +90,11 @@ public class DataMapperSteps {
 
 		// Then she fills "TargetCombine" selector-input with "first_and_last_name" value
 		inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
-		mapper.fillInput(inputElement, combined);
+		mapper.fillInputAndConfirm(inputElement, combined);
 	}
 
 	//	And she separates "FirstName" into "company" as "2" and "email" as "1" using "Comma" separator
-	@Then("^she separates \"(\\w+)\" into \"(\\w+)\" as \"(\\w+)\" and \"(\\w+)\" as \"(\\w+)\" using \"(\\w+)\" separator$")
+	@Then("^she separates \"([^\"]*)\" into \"(\\w+)\" as \"(\\w+)\" and \"(\\w+)\" as \"(\\w+)\" using \"(\\w+)\" separator$")
 	public void separatePresentFielsIntoTwo(String input, String output1, String first_pos, String output2, String second_pos, String separator) {
 		SelenideElement inputElement;
 		SelenideElement selectElement;
@@ -112,13 +112,13 @@ public class DataMapperSteps {
 		mapper.clickLink("Add Target");
 
 		inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
-		mapper.fillInput(inputElement, output1);
+		mapper.fillInputAndConfirm(inputElement, output1);
 
 		inputElement = mapper.getElementByAlias("FirstTargetPosition").shouldBe(visible);
 		mapper.fillInput(inputElement, first_pos);
 
 		inputElement = mapper.getElementByAlias("SecondTarget").shouldBe(visible);
-		mapper.fillInput(inputElement, output2);
+		mapper.fillInputAndConfirm(inputElement, output2);
 
 		inputElement = mapper.getElementByAlias("SecondTargetPosition").shouldBe(visible);
 		mapper.fillInput(inputElement, second_pos);
