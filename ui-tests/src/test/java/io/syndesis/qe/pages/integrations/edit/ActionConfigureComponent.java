@@ -8,7 +8,9 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ActionConfigureComponent extends SyndesisPageObject {
 
 	private static final class Element {
@@ -25,4 +27,5 @@ public class ActionConfigureComponent extends SyndesisPageObject {
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
+
 }

@@ -206,4 +206,8 @@ public class CommonSteps {
 		Selenide.sleep(ms);
 	}
 
+	@Then("^she checks \"([^\"]*)\" button is \"([^\"]*)\"$")
+	public void sheCheckButtonStatus(String buttonTitle, String status) throws Throwable {
+		new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
+	}
 }

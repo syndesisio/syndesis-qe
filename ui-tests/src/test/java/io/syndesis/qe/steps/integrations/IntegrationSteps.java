@@ -1,18 +1,22 @@
 package io.syndesis.qe.steps.integrations;
 
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.visible;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import static org.hamcrest.Matchers.is;
+
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.visible;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
@@ -275,15 +279,29 @@ public class IntegrationSteps {
 	@Then("^she fills keywords field with random text to configure search action$")
 	public void fillKeywords() {
 		String value = Utils.randomString(20);
-		editPage.getTwitterSearchComponent().fillKeywordsValue(value);
+		editPage.getTwitterSearchComponent().fillInput(value);
 	}
 
 	@Then("^she fills \"(\\w+)\" action configure component input with \"([^\"]*)\" value$")
 	public void fillActionConfigureField(String fieldId, String value) {
-		log.info("Input skould be visible");
+		log.info("Input should be visible");
 		editPage.getActionConfigureComponent().fillInput(fieldId, value);
 	}
 
+	@Then("^she fills periodic query input with \"([^\"]*)\" value$")
+	public void fillPerodicSQLquery(String query) {
+		editPage.getPeriodicSqlComponent().fillSqlInput(query);
+	}
+
+	@Then("^she fills period input with \"([^\"]*)\" value$")
+	public void fillSQLperiod(String period) {
+		editPage.getPeriodicSqlComponent().fillSQLperiod(period);
+	}
+
+	@Then("^she fills invoke query input with \"([^\"]*)\" value$")
+	public void fillInvokeSQLquery(String query) {
+		editPage.getInvokeSqlComponent().fillSqlInput(query);
+	}
 	/**
 	 * whether it's start or finish connection
 	 *
@@ -294,4 +312,20 @@ public class IntegrationSteps {
 		log.info("{} connection must be active", position);
 		assertTrue("There was no active icon found for position " + position, editPage.getFlowViewComponent().verifyActivePosition(position));
 	}
+
+	@And("^she is presented with sql-warning$")
+	public void checkSqlWarning() throws Throwable {
+		// Write code here that turns the phrase above into concrete actions
+		throw new PendingException();
+	}
+
+	@When("^she adds first step between START and STEP connection$")
+	public void sheAddsFirstStep() throws Throwable {
+		editPage.getFlowViewComponent().clickAddStepLink(0);
+	}
+	@When("^she adds second step between STEP and FINISH connection$")
+	public void sheAddsSecond() throws Throwable {
+		editPage.getFlowViewComponent().clickAddStepLink(2);
+	}
+
 }
