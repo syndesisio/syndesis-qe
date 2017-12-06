@@ -18,7 +18,7 @@ Feature: Create integration with datamapper step
     And Camilla selects the "Twitter" connection
     Then she is presented with the "Validate" button
     # fill twitter connection details
-    When she fills "Twitter Listen" connection details
+    When she fills "Twitter Listener" connection details
     And scroll "top" "right"
     And click on the "Next" button
     And type "Twitter Listener" into connection name
