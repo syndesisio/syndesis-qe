@@ -79,8 +79,8 @@ public class SyndesisTemplate {
 					.withName("syndesis:editors")
 		        .endMetadata()
 				.withNewRoleRef().withName("edit").endRoleRef()
-				.addNewSubject().withKind("ServiceAccount").withName("syndesis-rest").endSubject()
-				.addToUserNames("system:serviceaccount:syndesis:syndesis-rest")
+				.addNewSubject().withKind("ServiceAccount").withName("syndesis-rest").withNamespace(TestConfiguration.openShiftNamespace()).endSubject()
+				.addToUserNames(String.format("system:serviceaccount:%s:syndesis-rest", TestConfiguration.openShiftNamespace()))
 				.done()
 		);
 	}

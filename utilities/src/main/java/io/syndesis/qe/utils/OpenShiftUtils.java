@@ -114,8 +114,12 @@ public final class OpenShiftUtils {
 		return pods.iterator().next();
 	}
 
+	public void deletePod(Pod pod, long gracePeriod) {
+		withDefaultUserPod(pod).withGracePeriod(gracePeriod).delete();
+	}
+
 	public void deletePod(Pod pod) {
-		withDefaultUser(client -> client.pods().delete(pod));
+		deletePod(pod, 0);
 	}
 
 	public Collection<DeploymentConfig> getDeployments() {
