@@ -3,6 +3,10 @@ package io.syndesis.qe.pages;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
 import io.syndesis.qe.pages.connections.list.ConnectionListPage;
+import io.syndesis.qe.pages.customizations.CustomizationsPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentFinish;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
 import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
@@ -20,7 +24,11 @@ public enum SyndesisPage {
 	SELECT_START_CONNECTION(new IntegrationConnectionSelectComponentStart()),
 	SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
 	CHOOSE_A_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
-	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent());
+	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent()),
+	CUSTOMIZATIONS(new CustomizationsPage()),
+	TECHNICAL_EXTENSIONS(new TechExtensionsListComponent()),
+	TECHNICAL_EXTENSIONS_IMPORT(new TechExtensionsImportPage()),
+	TECHNICAL_EXTENSIONS_DETAIL(new TechExtensionDetailPage());
 
 	private SyndesisPageObject pageObject = null;
 
