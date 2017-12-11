@@ -22,29 +22,11 @@
 		<!-- Syndesis dependencies -->
 		<dependency>
 			<groupId>io.syndesis</groupId>
-			<artifactId>verifier</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.syndesis</groupId>
 			<artifactId>project-generator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.syndesis</groupId>
-			<artifactId>rest</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-over-slf4j</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>model</artifactId>
 		</dependency>
 
 		<!-- test dependencies -->
@@ -59,21 +41,6 @@
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-all</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>rest-assured</artifactId>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>json-path</artifactId>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>json-schema-validator</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -150,7 +117,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
-						<include>io.syndesis.qe.rest.RestTestSuite.class</include>
+						<include>io.syndesis.qe.CucumberTestsRunner.class</include>
 					</includes>
 				</configuration>
 			</plugin>

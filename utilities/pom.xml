@@ -33,29 +33,11 @@
 
 		<dependency>
 			<groupId>io.syndesis</groupId>
-			<artifactId>verifier</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.syndesis</groupId>
 			<artifactId>project-generator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.syndesis</groupId>
-			<artifactId>rest</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>ch.qos.logback</groupId>
-					<artifactId>logback-classic</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>log4j-over-slf4j</artifactId>
-				</exclusion>
-			</exclusions>
+			<artifactId>model</artifactId>
 		</dependency>
 
 		<dependency>
@@ -91,20 +73,6 @@
 			<artifactId>hamcrest-all</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>rest-assured</artifactId>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>json-path</artifactId>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>io.rest-assured</groupId>
-			<artifactId>json-schema-validator</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 		</dependency>
@@ -128,7 +96,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 		</dependency>
-
 		<!-- Third party services dependencies -->
 		<dependency>
 			<groupId>org.twitter4j</groupId>
@@ -149,7 +116,14 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

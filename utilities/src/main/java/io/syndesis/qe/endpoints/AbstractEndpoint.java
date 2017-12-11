@@ -43,6 +43,7 @@ public abstract class AbstractEndpoint<T> {
 	}
 
 	public T create(T obj) {
+		log.debug("POST: {}", getEndpointUrl());
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl())
 				.request(MediaType.APPLICATION_JSON)
@@ -55,6 +56,7 @@ public abstract class AbstractEndpoint<T> {
 	}
 
 	public void delete(String id) {
+		log.debug("DELETE: {}", getEndpointUrl() + "/" + id);
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl() + "/" + id)
 				.request(MediaType.APPLICATION_JSON)
@@ -65,6 +67,7 @@ public abstract class AbstractEndpoint<T> {
 	}
 
 	public T get(String id) {
+		log.debug("GET : {}", getEndpointUrl() + "/" + id);
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl() + "/" + id)
 				.request(MediaType.APPLICATION_JSON)
@@ -79,6 +82,7 @@ public abstract class AbstractEndpoint<T> {
 	}
 
 	public T update(String id, T obj) {
+		log.debug("PUT : {}", getEndpointUrl() + "/" + id);
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl() + "/" + id)
 				.request(MediaType.APPLICATION_JSON)
@@ -94,6 +98,7 @@ public abstract class AbstractEndpoint<T> {
 		final ObjectWriter ow = mapper.writer();
 		final Class<ListResult<T>> listtype = (Class) ListResult.class;
 
+		log.debug("GET : {}", getEndpointUrl());
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl())
 				.request(MediaType.APPLICATION_JSON)

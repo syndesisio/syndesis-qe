@@ -72,6 +72,7 @@ public class SyndesisTemplate {
 		// process & create
 		KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
 		OpenShiftUtils.getInstance().createResources(processedTemplate);
+		OpenShiftUtils.getInstance().createRestRoute();
 
 		//TODO: there's a bug in openshift-client, we need to initialize manually
 		OpenShiftUtils.getInstance().withDefaultUser(client -> client.roleBindings().createOrReplaceWithNew()
