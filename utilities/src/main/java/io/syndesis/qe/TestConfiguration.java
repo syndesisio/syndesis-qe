@@ -15,6 +15,7 @@ public class TestConfiguration {
 	public static final String OPENSHIFT_URL = "syndesis.config.openshift.url";
 	public static final String OPENSHIFT_TOKEN = "syndesis.config.openshift.token";
 	public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
+	public static final String OPENSHIFT_NAMESPACE_CLEANUP = "syndesis.config.openshift.namespace.cleanup";
 	public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
 
 	public static final String SYNDESIS_UI_USERNAME = "syndesis.config.ui.username";
@@ -93,6 +94,8 @@ public class TestConfiguration {
 
 	public static String syndesisBrowser() { return get().readValue(SYNDESIS_UI_BROWSER); }
 
+	public static boolean namespaceCleanup() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP)); }
+
 	private Properties defaultValues() {
 		final Properties props = new Properties();
 
@@ -104,6 +107,8 @@ public class TestConfiguration {
 		props.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
 
 		props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
+
+		props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
 
 		props.setProperty(SYNDESIS_TEMPLATE_URL, "https://raw.githubusercontent.com/syndesisio/syndesis/master/app/deploy/syndesis-restricted.yml");
 		props.setProperty(SYNDESIS_TEMPLATE_SA, "https://raw.githubusercontent.com/syndesisio/syndesis/master/app/deploy/support/serviceaccount-as-oauthclient-restricted.yml");
