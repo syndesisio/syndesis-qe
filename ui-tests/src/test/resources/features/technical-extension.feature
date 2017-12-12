@@ -50,8 +50,8 @@ Feature: Upload tech extension and add it to integration
     
   @tech-extension-import-new-tech-extension
   Scenario: Import new technical extensions
-    When Camilla clicks on the "Import technical extension" button
-    Then she is presented with the Syndesis page "Technical Extensions Import"
+    When Camilla clicks on the "Import Technical Extension" button
+    Then she is presented with the Syndesis page "Import Technical Extensions"
 
 		#TODO
     When Camilla upload extension
@@ -68,7 +68,7 @@ Feature: Upload tech extension and add it to integration
   @tech-extension-update-tech-extension
   Scenario: Update technical extensions
     When Camilla choose "Update" action on "Syndesis Extension" technical extension
-    Then she is presented with the Syndesis page "Technical Extensions Import"
+    Then she is presented with the Syndesis page "Import Technical Extensions"
 
     When Camilla upload extension
     Then she see details about imported extension

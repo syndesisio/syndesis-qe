@@ -57,7 +57,7 @@ public class ConnectionConfigurationComponent extends SyndesisPageObject {
 
 		for (String key : conneDetails.keySet()) {
 			if (keys.contains(key)) {
-				log.info("fill conneDetails detail {} => {}", key, conneDetails.get(key));
+				log.info("fill conneDetails detail {} ", key);
 				SelenideElement input = getRootElement().$(String.format("input[name=\"%s\"", key)).shouldBe(visible);
 				input.clear();
 				input.sendKeys(conneDetails.get(key));
