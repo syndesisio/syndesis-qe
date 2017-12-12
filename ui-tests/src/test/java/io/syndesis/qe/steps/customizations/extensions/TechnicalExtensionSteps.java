@@ -21,6 +21,7 @@ public class TechnicalExtensionSteps {
 	
 	private CustomizationsPage customizationsPage = new CustomizationsPage();
 	private TechExtensionsImportPage techExtensionsImportPage = new TechExtensionsImportPage();
+	private ModalDialogPage modalDialogPage = new ModalDialogPage();
 
 	@Then("^she is presented with dialog page \"([^\"]*)\"$")
 	public void isPresentedWithDialogPage(String title) throws Throwable {
@@ -30,7 +31,7 @@ public class TechnicalExtensionSteps {
 
 	@When("^she clicks on the modal dialog \"([^\"]*)\" button$")
 	public void clickModalButton(String buttonName) throws Exception {
-		new ModalDialogPage().getButton(buttonName).shouldBe(visible).click();;
+		modalDialogPage.getButton(buttonName).shouldBe(visible).click();
     	
 	}
 
@@ -81,9 +82,12 @@ public class TechnicalExtensionSteps {
 		throw new PendingException();
 	}
 
-	@Then("^she can see integrations \"([^\"]*)\" in which is tech extension used$")
-	public void usedInIntegrations(String arg1) throws Throwable {
-		// Write code here that turns the phrase above into concrete actions
-		throw new PendingException();
+	@Then("^she can see notification about integrations \"([^\"]*)\" in which is tech extension used$")
+	public void usedInIntegrations(String integrations) throws Throwable {
+		String[] integrationsNames = integrations.split(", ");
+		
+		for (String integrationName : integrationsNames) {
+			modalDialogPage.getElementContainingText(By.cssSelector("strong"), integrationName).shouldBe(visible);
+		}
 	}
 }
