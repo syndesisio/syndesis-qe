@@ -27,7 +27,7 @@ public enum SyndesisPage {
 	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent()),
 	CUSTOMIZATIONS(new CustomizationsPage()),
 	TECHNICAL_EXTENSIONS(new TechExtensionsListComponent()),
-	TECHNICAL_EXTENSIONS_IMPORT(new TechExtensionsImportPage()),
+	IMPORT_TECHNICAL_EXTENSION(new TechExtensionsImportPage()),
 	TECHNICAL_EXTENSIONS_DETAIL(new TechExtensionDetailPage());
 
 	private SyndesisPageObject pageObject = null;
