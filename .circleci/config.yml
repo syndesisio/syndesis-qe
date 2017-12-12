@@ -38,9 +38,9 @@ jobs:
             export DISPLAY=:99
             ./mvnw clean test -P ui -Dcucumber.options="--tags ~@wip"
       - store_artifacts:
-          path: ~/ui-tests/target/cucumber
+          path: ui-tests/target/cucumber
       - store_test_results:
-          path: ~/ui-tests/target/cucumber/cucumber-junit.xml
+          path: ui-tests/target/cucumber/cucumber-junit.xml
       - save_cache:
           key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
           paths:
