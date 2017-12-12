@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActionConfigureComponentTwitterSearch extends ActionConfigureComponent {
 
-	@Override
 	public void fillInput(String value) {
 		log.debug("setting keywords element of twitter search with value: {}", value);
 		HashMap<By, String> fillMap = new HashMap<By, String>();
