@@ -4,36 +4,60 @@
 #
 version: 2
 
+common_env: &common_env
+  MAVEN_OPTS: -Xmx1024m
+
+job_default: &job_defaults
+  docker:
+    - image: circleci/openjdk:8-jdk-node-browsers
+
 jobs:
-  build:
-    docker:
-      - image: selenium/standalone-chrome:3.1.0
-
-    working_directory: ~/workspace
-
+  e2e-tests:
+    <<: *job_defaults
     environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
+      <<: *common_env
 
     steps:
       - checkout
 
-      # Download and cache dependencies
       - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "pom.xml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
-
-      - run: mvnw dependency:go-offline
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
+          key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
 
       # run build
-      - run: mvnw clean install -DskipTests
-      
+      - run:
+          name: Build tests
+          command: |
+            ./mvnw clean install -DskipTests
+
       # run tests
-      - run: xfvb-run mvnw clean test -P ui
+      - run:
+          name: Execute tests
+          command: |
+            if [ -n "${OPENSHIFT_TOKEN}" ]; then
+                curl -fsSL https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | sudo tar xz -C /usr/bin --strip-components 1
+                oc login --server "${OPENSHIFT_SERVER}" --token "${OPENSHIFT_TOKEN}"
+
+                oc get cm syndesis-qe-test-config -o jsonpath="{ .data.test_properties }" -n syndesis-ci > test.properties
+                oc get cm syndesis-qe-credentials -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
+            else
+              echo "Setup OpenShift cluster credentials"
+            fi
+
+            nohup /usr/bin/Xvfb :99 -ac -screen 0 1280x720x24 &
+            export DISPLAY=:99
+            ./mvnw clean test -P ui -Dcucumber.options="--tags ~@wip"
+      - store_artifacts:
+          path: ui-tests/target/cucumber-report.html
+      - save_cache:
+          key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+
+workflows:
+  version: 2
+  syndesis-qe:
+    jobs:
+      - e2e-tests:
+          filters:
+            branches:
+              only: master
