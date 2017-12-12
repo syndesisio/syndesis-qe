@@ -7,6 +7,9 @@ import io.syndesis.qe.pages.customizations.CustomizationsPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentInvokeSql;
+import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentPeriodicSql;
+
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentFinish;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
 import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
@@ -28,7 +31,10 @@ public enum SyndesisPage {
 	CUSTOMIZATIONS(new CustomizationsPage()),
 	TECHNICAL_EXTENSIONS(new TechExtensionsListComponent()),
 	IMPORT_TECHNICAL_EXTENSION(new TechExtensionsImportPage()),
-	TECHNICAL_EXTENSIONS_DETAIL(new TechExtensionDetailPage());
+	TECHNICAL_EXTENSIONS_DETAIL(new TechExtensionDetailPage()),
+	TECHNICAL_EXTENSIONS_IMPORT(new TechExtensionsImportPage()),
+	PERIODIC_SQL_INVOCATION(new ActionConfigureComponentPeriodicSql()),
+	INVOKE_SQL(new ActionConfigureComponentInvokeSql());
 
 	private SyndesisPageObject pageObject = null;
 

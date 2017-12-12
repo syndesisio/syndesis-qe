@@ -5,9 +5,12 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,10 @@ import io.syndesis.qe.pages.integrations.edit.steps.StepComponentFactory;
 
 public class IntegrationFlowViewComponent extends SyndesisPageObject {
 
+	private static final class Link {
+		public static final By ADD_STEP = By.linkText("Add a Step");
+	}
+
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-flow-view");
 
@@ -28,6 +35,8 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 		public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
 		public static final By ACTIVE_STEP_ICON = By.cssSelector("p.icon.active");
 		public static final By DELETE = By.className("delete-icon");
+		public static final By STEP_INSERT = By.className("step-insert");
+
 	}
 
 	private StepComponentFactory stepComponentFactory = new StepComponentFactory();
@@ -90,6 +99,17 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 
 	public void clickRandomTrash() {
 		this.clickElementRandom(Element.DELETE);
+	}
+
+	public void clickAddStepLink(int pos){
+
+		List<WebElement> allStepInserts = getRootElement().findElements(Element.STEP_INSERT);
+		WebElement stepElement = allStepInserts.get(pos);
+		Actions action = new Actions(WebDriverRunner.getWebDriver());
+		//to make ADD_STEP element visible:
+		action.moveToElement(stepElement);
+
+		getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
 	}
 
 }

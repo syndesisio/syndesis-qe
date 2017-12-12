@@ -30,7 +30,7 @@ public class DataMapperSteps {
 	@Then("^she is presented with data mapper ui$")
 	public void dataMapperUIpresent() {
 		log.info("data mapper ui must load and show fields count");
-		assertThat(mapper.fieldsCount(), greaterThan(5));
+		assertThat(mapper.fieldsCount(), greaterThan(0));
 	}
 
 	@When("^she selects \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
