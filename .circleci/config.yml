@@ -7,7 +7,7 @@ version: 2
 jobs:
   build:
     docker:
-       image: selenium/standalone-chrome:3.1.0
+      - image: selenium/standalone-chrome:3.1.0
 
     working_directory: ~/workspace
 
