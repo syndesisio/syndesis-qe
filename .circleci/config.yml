@@ -19,17 +19,8 @@ jobs:
 
     steps:
       - checkout
-
       - restore_cache:
-          key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
-
-      # run build
-      - run:
-          name: Build tests
-          command: |
-            ./mvnw clean install -DskipTests
-
-      # run tests
+          key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
       - run:
           name: Execute tests
           command: |
@@ -47,9 +38,27 @@ jobs:
             export DISPLAY=:99
             ./mvnw clean test -P ui -Dcucumber.options="--tags ~@wip"
       - store_artifacts:
-          path: ui-tests/target/cucumber-report
+          path: ~/ui-tests/target/cucumber
       - store_test_results:
-          path: ui-tests/target/cucumber-junit.xml
+          path: ~/ui-tests/target/cucumber/cucumber-junit.xml
+      - save_cache:
+          key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
+
+  build:
+    <<: *job_defaults
+    environment:
+      <<: *common_env
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
+      - run:
+          name: Build tests
+          command: |
+            ./mvnw clean install -DskipTests
       - save_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
           paths:
@@ -59,6 +68,7 @@ workflows:
   version: 2
   syndesis-qe:
     jobs:
+      - build
       - e2e-tests:
           filters:
             branches:

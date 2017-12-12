@@ -8,7 +8,7 @@ import cucumber.api.junit.Cucumber;
 @RunWith(Cucumber.class)
 @CucumberOptions(
 	features = "classpath:features",
-	format = {"pretty", "html:target/cucumber-report", "junit:target/cucumber-junit.html", "json:target/cucumber-report.json"})
+	format = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml", "json:target/cucumber/cucumber-report.json"})
 public class CucumberTestsRunner {
 
 	//we could have some setup here
