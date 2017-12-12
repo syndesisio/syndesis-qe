@@ -8,12 +8,16 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import lombok.extern.slf4j.Slf4j;
 
-public class ActionConfigureComponent extends SyndesisPageObject {
+@Slf4j
+public abstract class ActionConfigureComponent extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-action-configure");
 	}
+
+	public abstract void fillInput(String value);
 
 	@Override
 	public SelenideElement getRootElement() {
@@ -25,4 +29,5 @@ public class ActionConfigureComponent extends SyndesisPageObject {
 	public boolean validate() {
 		return getRootElement().is(visible);
 	}
+
 }

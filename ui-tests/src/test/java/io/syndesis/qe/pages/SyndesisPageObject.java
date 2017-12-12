@@ -1,12 +1,14 @@
 package io.syndesis.qe.pages;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -167,5 +169,28 @@ public abstract class SyndesisPageObject {
 	public String getElementText(By locator) {
 		SelenideElement element = this.getRootElement().find(locator);
 		return element.shouldBe(visible).getText();
+	}
+
+	public void checkButtonStatus(String buttonTitle, String status) {
+		log.info("checking button {} status", buttonTitle);
+		this.getButton(buttonTitle).shouldBe(this.conditionValueOf(status));
+	}
+
+	public Condition conditionValueOf(String status){
+		Condition condition;
+		switch(status){
+			case "Active":
+			case "Visible":
+				condition = visible;
+				break;
+			case "Disabled":
+			case "Inactive":
+				condition = disabled;
+				break;
+			default:
+				condition = visible;
+				break;
+		}
+		return condition;
 	}
 }

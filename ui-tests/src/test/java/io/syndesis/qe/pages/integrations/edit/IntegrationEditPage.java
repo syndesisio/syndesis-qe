@@ -21,7 +21,11 @@ public class IntegrationEditPage extends SyndesisPageObject {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-edit-page");
 	}
 	@Getter
-	private ActionConfigureComponent actionConfigureComponent = new ActionConfigureComponent();
+	private ActionConfigureComponentGeneric actionConfigureComponent = new ActionConfigureComponentGeneric();
+	@Getter
+	private ActionConfigureComponentPeriodicSql periodicSqlComponent = new ActionConfigureComponentPeriodicSql();
+	@Getter
+	private ActionConfigureComponentInvokeSql invokeSqlComponent = new ActionConfigureComponentInvokeSql();
 	@Getter
 	private ActionConfigureComponentTwitterSearch twitterSearchComponent = new ActionConfigureComponentTwitterSearch();
 	@Getter
