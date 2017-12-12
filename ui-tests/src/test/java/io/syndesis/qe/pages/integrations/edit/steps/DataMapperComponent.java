@@ -1,8 +1,6 @@
 package io.syndesis.qe.pages.integrations.edit.steps;
 
 import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -12,7 +10,9 @@ import org.openqa.selenium.Keys;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
+
+import java.util.Arrays;
+import java.util.List;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,6 @@ public class DataMapperComponent extends SyndesisPageObject {
 		public static final By ROOT = By.cssSelector("data-mapper");
 		public static final By LOADER_SELECTOR = By.cssSelector("div.card-pf-heading.fieldsCount");
 		public static final By DM_COLLUMNS = By.cssSelector("div.docDef");
-		public static final By FIELD_DETAIL = By.cssSelector("document-field-detail");
 		public static final By LABEL = By.cssSelector("label");
 		public static final By NAME = By.cssSelector("div.fieldDetail > div > label");
 		public static final By PARENT = By.cssSelector("div.parentField");
@@ -98,45 +97,21 @@ public class DataMapperComponent extends SyndesisPageObject {
 	}
 
 	/**
-	 * Filter datamapper field element by it's name
-	 *
-	 * @param name name to find
-	 * @param fields fields ElementsCollection
-	 * @returns SelenideElement field element
-	 */
-	public SelenideElement findFieldByName(String name, ElementsCollection fields) {
-		log.info("searching field named {}", name);
-		for (SelenideElement f : fields) {
-			String fieldName = this.fieldName(f);
-			if (name.equals(fieldName)) {
-				log.info("field {} found", name);
-				return f;
-			}
-		}
-		log.warn("field {} not found between {} fields.length fields, rejecting", name, fields.size());
-		throw new IllegalArgumentException(String.format("Field %s not found in given %d fields", name, fields.size()));
-	}
-
-	/**
 	 * @param mappingName for instance "User.ScreenName"
 	 * @param containerElement start searching mapping fields from here
 	 */
 	public void selectMapping(String mappingName, SelenideElement containerElement) {
 		//split and trim in one step:
-		String[] path = mappingName.trim().split("\\.");
+		List<String> path = Arrays.asList(mappingName.trim().split("\\."));
 
-		ElementsCollection fields = containerElement.findAll(Element.FIELD_DETAIL).shouldBe(sizeGreaterThanOrEqual(1));
-		log.info("source has {} fields.length fields", fields.size());
-
-		SelenideElement nextField;
-		for (String p : path) {
-			nextField = this.findFieldByName(p, fields);
-			// click on it to expand or select find correct field from list
-			log.info("Clicking on field {}", p);
-			nextField.$(Element.LABEL).shouldBe(visible).click();
-			// find all subfields for next iteration
-			fields = nextField.$$(Element.FIELD_DETAIL);
-		}
+		path.forEach(s -> {
+			SelenideElement detailElement = containerElement.find(By.id(s)).shouldBe(visible);
+			if (detailElement.find(Element.CHILDREN).exists()) {
+				// if there're childrenFields display element is expanded already, click otherwise
+			} else {
+				detailElement.$(Element.LABEL).shouldBe(visible).click();
+			}
+		});
 	}
 
 	/**
@@ -150,21 +125,6 @@ public class DataMapperComponent extends SyndesisPageObject {
 		return nameElement.getText();
 	}
 
-	/**
-	 * Expand field and return list of child elements
-	 *
-	 * @param field
-	 * @returns ElementsCollection list of child elements or empty
-	 */
-	public ElementsCollection expandField(SelenideElement field) {
-		//should be parent element:
-		field.$(Element.PARENT).shouldBe(visible);
-		field.click();
-		ElementsCollection children = field.$(Element.CHILDREN).$$(Element.FIELD_DETAIL).shouldBe(sizeGreaterThanOrEqual(1));
-		log.info("field {} has {} child fields", field.getText(), children.size());
-		return children;
-	}
-
 	public void fillInputAndConfirm(SelenideElement element, String value) {
 		element.shouldBe(visible).clear();
 		element.shouldBe(visible).sendKeys(value);
@@ -172,7 +132,6 @@ public class DataMapperComponent extends SyndesisPageObject {
 		Selenide.sleep(5 * 1000);
 		Selenide.actions().sendKeys(Keys.ENTER).perform();
 	}
-
 
 	public SelenideElement getElementByAlias(String alias) {
 
