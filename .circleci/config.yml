@@ -11,6 +11,16 @@ job_default: &job_defaults
   docker:
     - image: circleci/openjdk:8-jdk-node-browsers
 
+load_m2: &load_m2
+  attach_workspace:
+    at: ~/.m2
+
+save_m2: &save_m2
+  persist_to_workspace:
+    root: ~/.m2
+    paths:
+      - repository/io/syndesis
+
 jobs:
   e2e-tests:
     <<: *job_defaults
@@ -21,6 +31,7 @@ jobs:
       - checkout
       - restore_cache:
           key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
+      - <<: *load_m2
       - run:
           name: Execute tests
           command: |
@@ -36,15 +47,21 @@ jobs:
 
             nohup /usr/bin/Xvfb :99 -ac -screen 0 1280x720x24 &
             export DISPLAY=:99
-            ./mvnw clean test -P ui -Dcucumber.options="--tags ~@wip"
+            ./mvnw clean test -B -P ui -Dcucumber.options="--tags ~@wip"
+
+      - run:
+          name: Store Cucumber report
+          command: |
+            mkdir -p $CIRCLE_TEST_REPORTS/cucumber
+            cp -f ui-tests/target/cucumber/cucumber-junit.xml $CIRCLE_TEST_REPORTS/cucumber/junit.xml
       - store_artifacts:
           path: ui-tests/target/cucumber
-      - store_test_results:
-          path: ui-tests/target/cucumber/cucumber-junit.xml
+      - <<: *save_m2
       - save_cache:
           key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
+
 
   build:
     <<: *job_defaults
@@ -55,14 +72,40 @@ jobs:
       - checkout
       - restore_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
+      - <<: *load_m2
       - run:
           name: Build tests
           command: |
-            ./mvnw clean install -DskipTests
+            ./mvnw clean install -B -DskipTests
+      - <<: *save_m2
       - save_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
+
+  rest:
+    <<: *job_defaults
+    environment:
+      <<: *common_env
+    steps:
+      - checkout
+      - run:
+          name: Checkout Syndesis
+          command: |
+            git clone git@github.com:syndesisio/syndesis.git
+
+      - restore_cache:
+          key: syndesis-mvn-rest-{{ checksum "syndesis/app/rest/pom.xml" }}
+      - <<: *load_m2
+      - run:
+          name: Build Rest
+          command: |
+            ./syndesis/tools/bin/syndesis build --batch-mode --module rest -d --flash | tee build_log.txt
+      - <<: *save_m2
+      - save_cache:
+          key: syndesis-mvn-rest-{{ checksum "syndesis/app/rest/pom.xml" }}
+          paths:
+          - ~/.m2
 
 workflows:
   version: 2
@@ -74,4 +117,6 @@ workflows:
           filters:
             branches:
               only: master
-      - build
+      - build:
+          requires:
+            - rest
