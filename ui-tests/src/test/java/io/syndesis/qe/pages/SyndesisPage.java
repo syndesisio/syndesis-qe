@@ -1,6 +1,7 @@
 package io.syndesis.qe.pages;
 
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
+import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponentAmq;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
 import io.syndesis.qe.pages.connections.list.ConnectionListPage;
 import io.syndesis.qe.pages.customizations.CustomizationsPage;
@@ -8,8 +9,10 @@ import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
 import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentInvokeSql;
+import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentJmsPublish;
+import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentJmsRequest;
 import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentPeriodicSql;
-
+import io.syndesis.qe.pages.integrations.edit.ActionConfigureComponentJmsSubscribe;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentFinish;
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
 import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
@@ -32,7 +35,11 @@ public enum SyndesisPage {
 	IMPORT_EXTENSION(new TechExtensionsImportPage()),
 	EXTENSION_DETAILS(new TechExtensionDetailPage()),
 	PERIODIC_SQL_INVOCATION(new ActionConfigureComponentPeriodicSql()),
-	INVOKE_SQL(new ActionConfigureComponentInvokeSql());
+	INVOKE_SQL(new ActionConfigureComponentInvokeSql()),
+	ACTIVEMQ_CONFIGURATION(new ConnectionConfigurationComponentAmq()),
+	SUBSCRIBE_FOR_MESSAGES(new ActionConfigureComponentJmsSubscribe()),
+	PUBLISH_MESSAGES(new ActionConfigureComponentJmsPublish()),
+	REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest());
 
 	private SyndesisPageObject pageObject = null;
 

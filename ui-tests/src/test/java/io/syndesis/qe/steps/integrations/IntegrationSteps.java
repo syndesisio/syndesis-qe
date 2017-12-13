@@ -13,8 +13,10 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import cucumber.api.DataTable;
 import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -302,6 +304,7 @@ public class IntegrationSteps {
 	public void fillInvokeSQLquery(String query) {
 		editPage.getInvokeSqlComponent().fillSqlInput(query);
 	}
+
 	/**
 	 * whether it's start or finish connection
 	 *
@@ -323,9 +326,39 @@ public class IntegrationSteps {
 	public void sheAddsFirstStep() throws Throwable {
 		editPage.getFlowViewComponent().clickAddStepLink(0);
 	}
+
 	@When("^she adds second step between STEP and FINISH connection$")
 	public void sheAddsSecond() throws Throwable {
 		editPage.getFlowViewComponent().clickAddStepLink(2);
 	}
 
+	@And("^sets jms subscribe inputs source data$")
+	public void setJmsSubscribeData(DataTable sourceMappingData) {
+		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+			for (String field : source.keySet()) {
+				String tagType = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+				editPage.getJmsSubscribeComponent().fillInput(field, source.get(field), tagType);
+			}
+		}
+	}
+
+	@And("^sets jms request inputs source data$")
+	public void setJmsRequestData(DataTable sourceMappingData) {
+		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+			for (String field : source.keySet()) {
+				String tagType = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+				editPage.getJmsSubscribeComponent().fillInput(field, source.get(field), tagType);
+			}
+		}
+	}
+
+	@And("^sets jms publish inputs source data$")
+	public void setJmsPublishData(DataTable sourceMappingData) {
+		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+			for (String field : source.keySet()) {
+				String tagType = editPage.getJmsPublishComponent().checkAndGetFieldType(field);
+				editPage.getJmsPublishComponent().fillInput(field, source.get(field), tagType);
+			}
+		}
+	}
 }
