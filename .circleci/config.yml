@@ -120,3 +120,4 @@ workflows:
       - build:
           requires:
             - rest
+      - rest
