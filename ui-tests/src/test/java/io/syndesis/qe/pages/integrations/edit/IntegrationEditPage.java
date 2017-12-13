@@ -27,6 +27,12 @@ public class IntegrationEditPage extends SyndesisPageObject {
 	@Getter
 	private ActionConfigureComponentInvokeSql invokeSqlComponent = new ActionConfigureComponentInvokeSql();
 	@Getter
+	private ActionConfigureComponentJmsSubscribe jmsSubscribeComponent = new ActionConfigureComponentJmsSubscribe();
+	@Getter
+	private ActionConfigureComponentJmsPublish jmsPublishComponent = new ActionConfigureComponentJmsPublish();
+	@Getter
+	private ActionConfigureComponentJmsRequest jmsRequestComponent = new ActionConfigureComponentJmsRequest();
+	@Getter
 	private ActionConfigureComponentTwitterSearch twitterSearchComponent = new ActionConfigureComponentTwitterSearch();
 	@Getter
 	private ListActionsComponent listActionsComponent = new ListActionsComponent();

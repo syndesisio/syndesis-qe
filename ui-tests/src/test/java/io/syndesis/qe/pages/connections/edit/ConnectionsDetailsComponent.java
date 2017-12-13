@@ -20,6 +20,7 @@ public class ConnectionsDetailsComponent extends SyndesisPageObject {
 		public static final By ROOT = By.cssSelector("syndesis-connections-review");
 		public static final By DESCRIPTION = By.cssSelector("textarea[data-id=\"descriptionInput\"]");
 		public static final By INPUT_NAME = By.cssSelector("input[data-id=\"nameInput\"]");
+		public static final By TITLE = By.cssSelector("h2[innertext='Add Connection Details']");
 	}
 
 	@Override
@@ -29,7 +30,7 @@ public class ConnectionsDetailsComponent extends SyndesisPageObject {
 
 	@Override
 	public boolean validate() {
-		return $(Element.ROOT).is(visible);
+		return this.getRootElement().find(Element.TITLE).is(visible);
 	}
 
 	public SelenideElement getDescription() {
