@@ -22,7 +22,6 @@ public enum SyndesisPage {
 	CONNECTIONS(new ConnectionListPage()),
 	CONNECTION_CREATE(new ConnectionCreatePage()),
 	CONNECTION_DETAIL(new ConnectionDetailPage()),
-	CONNECTION_LIST(new ConnectionListPage()),
 	INTEGRATIONS_LIST(new IntegrationsListPage()),
 	SELECT_START_CONNECTION(new IntegrationConnectionSelectComponentStart()),
 	SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
