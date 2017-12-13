@@ -15,6 +15,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
 
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,9 +27,6 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 
 	private static final class Button {
 		public static final By DELETE = By.linkText("Delete");
-
-		public static final By OK = By.linkText("OK");
-		public static final By KEBAB = By.cssSelector("button.btn.btn-link.dropdown-toggle");
 	}
 
 	private static final class Element {
@@ -37,8 +35,7 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 		public static final By KEBAB = By.id("dropdownKebabRight9");
 		public static final By KEBAB_OPEN = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right.open");
 		public static final By KEBAB_UNOPEN = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
-		public static final By MODAL_DIALOG = By.className("modal-dialog");
-		public static final By ALL_BUTTONS = By.className("btn");
+		public static final By KEBAB_ITEM = By.className("dropdown-item");
 	}
 
 	@Override
@@ -73,8 +70,7 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 		this.getConnectionByTitle(title).parent().find(Element.KEBAB).shouldBe(visible).click();
 		$(Element.ROOT).find(Button.DELETE).shouldBe(visible).click();
 		log.info("looking for ok button");
-		$(Element.MODAL_DIALOG).shouldBe(visible).findAll(Element.ALL_BUTTONS).shouldBe(sizeGreaterThanOrEqual(1))
-				.filter(exactText("OK")).shouldBe(sizeGreaterThanOrEqual(1)).get(0).click();
+		new ModalDialogPage().getButton("OK").shouldBe(visible).click();
 	}
 
 	public ElementsCollection getAllKebabElements(Boolean isOpen) {
@@ -114,8 +110,8 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 	 */
 	public ElementsCollection getKebabMenuButtons(String name) {
 		SelenideElement conObj = this.getConnectionByTitle(name).shouldBe(visible);
-		conObj.parent().find(By.id("dropdownKebabRight9")).shouldBe(visible).click();
-		return this.getConnectionByTitle(name).parent().findAll(By.className("dropdown-item")).shouldBe(sizeGreaterThanOrEqual(1));
+		conObj.parent().find(Element.KEBAB).shouldBe(visible).click();
+		return this.getConnectionByTitle(name).parent().findAll(Element.KEBAB_ITEM).shouldBe(sizeGreaterThanOrEqual(1));
 	}
 
 	public void clickKebabMenuButton(String button, String connectionName) {
