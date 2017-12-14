@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import io.syndesis.model.connection.Action;
+import io.syndesis.model.action.Action;
+import io.syndesis.model.action.ConnectorAction;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.Integration;
-
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,12 +30,11 @@ public final class TestUtils {
 	 * @param connectorPrefix
 	 * @return Action with given prefix or null if no such action can be found.
 	 */
-	public static Action findAction(Connector connector, String connectorPrefix) {
-		final Optional<Action> action = connector.getActions()
+	public static Action findConnectorAction(Connector connector, String connectorPrefix) {
+		final Optional<ConnectorAction> action = connector.getActions()
 				.stream()
-				.filter(a -> a.getCamelConnectorPrefix().equals(connectorPrefix))
+				.filter(a -> a.getDescriptor().getCamelConnectorPrefix().equals(connectorPrefix))
 				.findFirst();
-
 		return action.get();
 	}
 

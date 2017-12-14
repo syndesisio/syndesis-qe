@@ -1,8 +1,11 @@
 package io.syndesis.qe.endpoints;
 
-import static io.restassured.RestAssured.given;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 
-import io.restassured.http.Header;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -13,9 +16,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class TestSupport {
 
-	public static final String ENDPOINT_NAME = "test-support";
+	private static final String ENDPOINT_NAME = "test-support";
+	private static final String apiPath = TestConfiguration.syndesisRestApiPath();
+	private static Client client;
+	private static TestSupport instance = null;
 
 	private TestSupport() {
+		client = RestUtils.getClient();
+	}
+
+	public static TestSupport getInstance() {
+		if (instance == null) {
+			instance = new TestSupport();
+		}
+		return instance;
 	}
 
 	/**
@@ -23,11 +37,18 @@ public final class TestSupport {
 	 *
 	 * @param token
 	 */
-	public static void resetDB() {
+	public static void resetDB(String syndesisUrl) {
 		log.info("Resetting syndesis DB.");
-		given().relaxedHTTPSValidation().header(new Header("X-Forwarded-User", "pista")).header(new Header("X-Forwarded-Access-Token", "kral"))
-				.when()
-				.get(ENDPOINT_NAME + "/reset-db")
-				.asString();
+
+		final Invocation.Builder invocation = client
+				.target(getEndpointUrl(syndesisUrl, "/reset-db"))
+				.request(MediaType.APPLICATION_JSON)
+				.header("X-Forwarded-User", "pista")
+				.header("X-Forwarded-Access-Token", "kral");
+		invocation.get();
+	}
+
+	public static String getEndpointUrl(String syndesisUrl, String resetEndpoint) {
+		return String.format("%s%s%s%s", syndesisUrl, apiPath, ENDPOINT_NAME, resetEndpoint);
 	}
 }

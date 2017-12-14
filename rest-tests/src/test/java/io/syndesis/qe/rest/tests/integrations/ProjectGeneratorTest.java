@@ -5,9 +5,6 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import static io.syndesis.qe.utils.TestUtils.findAction;
-import static io.syndesis.qe.utils.TestUtils.map;
-
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
@@ -52,16 +49,15 @@ import java.util.Properties;
 import io.syndesis.connector.catalog.ConnectorCatalog;
 import io.syndesis.connector.catalog.ConnectorCatalogProperties;
 import io.syndesis.core.MavenProperties;
-import io.syndesis.dao.init.ModelData;
 import io.syndesis.dao.init.ReadApiClientData;
 import io.syndesis.model.Kind;
+import io.syndesis.model.ModelData;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.Integration;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
 import io.syndesis.project.converter.DefaultProjectGenerator;
-import io.syndesis.project.converter.GenerateProjectRequest;
 import io.syndesis.project.converter.ProjectGeneratorProperties;
 import io.syndesis.project.converter.ProjectGeneratorProperties.Templates;
 import io.syndesis.project.converter.visitor.DataMapperStepVisitor;
@@ -72,6 +68,7 @@ import io.syndesis.project.converter.visitor.StepVisitorFactoryRegistry;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -91,7 +88,7 @@ public class ProjectGeneratorTest {
 	private static Connector salesforceConnector;
 	private static AccountsDirectory accountsDirectory;
 	private VersionsDirectory versions;
-	private static MavenProperties mavenProperties = new MavenProperties(map("maven.central", "https://repo1.maven.org/maven2",
+	private static MavenProperties mavenProperties = new MavenProperties(TestUtils.map("maven.central", "https://repo1.maven.org/maven2",
 			"redhat.ga", "https://maven.repository.redhat.com/ga",
 			"jboss.ea", "https://repository.jboss.org/nexus/content/groups/ea"));
 	private static String basePath;
@@ -235,18 +232,18 @@ public class ProjectGeneratorTest {
 				.connection(new Connection.Builder()
 						.connector(twitterConnector)
 						.connectorId(twitterConnector.getId())
-						.configuredProperties(map("accessToken", twitterAccount.getProperty("accessToken"),
+						.configuredProperties(TestUtils.map("accessToken", twitterAccount.getProperty("accessToken"),
 								"accessTokenSecret", twitterAccount.getProperty("accessTokenSecret"),
 								"consumerKey", twitterAccount.getProperty("consumerKey"),
 								"consumerSecret", twitterAccount.getProperty("consumerSecret")))
 						.name("Fuse QE twitter")
 						.build())
-				.action(findAction(twitterConnector, "twitter-mention-connector"))
+				.action(TestUtils.findConnectorAction(twitterConnector, "twitter-mention-connector"))
 				.build();
 
 		final Step mapperStep = new SimpleStep.Builder()
 				.stepKind("mapper")
-				.configuredProperties(map("atlasmapping", mapping))
+				.configuredProperties(TestUtils.map("atlasmapping", mapping))
 				.build();
 
 		final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
@@ -255,7 +252,7 @@ public class ProjectGeneratorTest {
 				.connection(new Connection.Builder()
 						.connector(salesforceConnector)
 						.connectorId(salesforceConnector.getId())
-						.configuredProperties(map("clientId", salesforceAccount.getProperty("clientId"),
+						.configuredProperties(TestUtils.map("clientId", salesforceAccount.getProperty("clientId"),
 								"clientSecret", salesforceAccount.getProperty("clientSecret"),
 								"instanceUrl", salesforceAccount.getProperty("instanceUrl"),
 								"loginUrl", salesforceAccount.getProperty("loginUrl"),
@@ -263,39 +260,37 @@ public class ProjectGeneratorTest {
 								"password", salesforceAccount.getProperty("password")))
 						.name("Fuse QE salesforce")
 						.build())
-				.action(findAction(salesforceConnector, "salesforce-upsert-sobject"))
+				.action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-upsert-sobject"))
 				.build();
 
-		final GenerateProjectRequest request = new GenerateProjectRequest.Builder()
-				.integration(new Integration.Builder()
-						.id("test-integration")
-						.name("Test Integration")
-						.description("This is a test integration!")
-						.steps(Arrays.asList(twitterStep, mapperStep, salesforceStep))
-						.build())
-				.connectors(connectors)
+		Integration integration = new Integration.Builder()
+				.id("test-integration")
+				.name("Test Integration")
+				.description("This is a test integration!")
+				.steps(Arrays.asList(twitterStep, mapperStep, salesforceStep))
 				.build();
-
+		
 		final ProjectGeneratorProperties generatorProperties = new ProjectGeneratorProperties(mavenProperties);
 		generatorProperties.getTemplates().setOverridePath(basePath);
 		generatorProperties.getTemplates().getAdditionalResources().addAll(additionalResources);
 		generatorProperties.setSecretMaskingEnabled(true);
 
-		final Path runtimeDir = generate(request, generatorProperties);
+		final Path runtimeDir = generate(integration, generatorProperties);
 
 		return runtimeDir;
 	}
 
-	private static Path generate(GenerateProjectRequest request, ProjectGeneratorProperties generatorProperties) throws IOException {
-		try (InputStream is = new DefaultProjectGenerator(new ConnectorCatalog(new ConnectorCatalogProperties(mavenProperties)),
-				generatorProperties, registry).generate(request)) {
+	private static Path generate(Integration integration, ProjectGeneratorProperties generatorProperties) throws IOException {
+		try (InputStream is = new DefaultProjectGenerator(
+				generatorProperties,
+				new ConnectorCatalog(new ConnectorCatalogProperties(mavenProperties)),
+				registry, null, Optional.empty()).generate(integration)) {
 			final Path ret = Files.createTempDirectory("integration-runtime");
 			try (TarArchiveInputStream tis = new TarArchiveInputStream(is)) {
-
 				TarArchiveEntry tarEntry = tis.getNextTarEntry();
 				// tarIn is a TarArchiveInputStream
-				while (tarEntry != null) { // create a file with the same name as the tarEntry
-					final File destPath = new File(ret.toFile(), tarEntry.getName());
+				while (tarEntry != null) {// create a file with the same name as the tarEntry
+					File destPath = new File(ret.toFile(), tarEntry.getName());
 					if (tarEntry.isDirectory()) {
 						destPath.mkdirs();
 					} else {
