@@ -1,116 +1,124 @@
-# Syndesis E2E tests
+# Syndesis QE
+
+
+### Structure
+
+```bash
+├── docs
+├── manual
+├── rest-tests
+├── ui-tests
+├── ui-tests-protractor
+└── utilities
+```
+
+#### docs
+On-going initiative to provide comprehensive guide to current code structure.
+
+#### manual
+BDD scenarios to be tested manually for now.
+
+#### rest-tests
+Java based tests that use Cucumber scenarios.
+Test actions are executed directly to `syndesis-rest` backend.
+
+#### ui-tests
+Java based tests that use Selenide and Cucumber BDD scenarios.
+Test actions are mainly UI driven with additional 3rd party validation like Salesforce, Twitter etc.
+
+#### ui-tests-protractor (Deprecated)
+Typescript based tests that use Protractor and Cucumber BDD scenarios.
+
 
 ### CI job
 
-To check the report of automated tests, you need to have access to our Jenkins instance inside Dedicated cluster.
+Circle CI job is configured to be executed on OpenShift Dedicated cluster, with configuration located in `.circleci/config.yml`
 
-https://jenkins-syndesis-ci.b6ff.rh-idev.openshiftapps.com/job/syndesis-e2e-tests/
-
-Currently the job are executed manually on demand and with every PR to this repository.
+https://circleci.com/gh/syndesisio/syndesis-qe
 
 
+### Scenarios
+Test scenarios are provided in Gherkin language in a BDD fashion. Located in `./resources`
+directory of `*-tests` module, e.g. [UI scenarios](https://github.com/syndesisio/syndesis-qe/tree/master/ui-tests/src/test/resources/features).
 
-### Execute locally
+Every scenario is wrapped with appropriate tags to target specific execution on demand.
 
-Before test execution you should have Syndesis UI running, follow [the documentation](https://github.com/syndesisio/syndesis-ui#running).
+### Configuration
+NOTE: Successful execution of tests requires fully configured credentials.
+All the callback URLs, Oauth tokens, etc. for Salesforce and Twitter accounts.
 
-Test are located in `ui-tests-protractor`
+Placed to the root of `syndesis-qe` directory.
 
-Download test dependencies
+test.properties
+```
+syndesis.config.openshift.url=https://192.168.64.2:8443
+syndesis.config.openshift.token=<openshift-token>
+syndesis.config.openshift.namespace=syndesis
+syndesis.config.url.suffix=192.168.64.2.nip.io
+syndesis.config.ui.url=https://syndesis.192.168.64.2.nip.io
+syndesis.config.ui.username=developer
+syndesis.config.ui.password=developer
 
-```bash
-cd ui-tests-protractor
-yarn
-yarn webdriver-manager update
 ```
 
-#### Credentials
 
-Create json config file `${PROJECT_ROOT}/test_config.json` with connection credentials
-or specify `export SYNDESIS_TEST_CONFIG=/path/to/test_config.json` 
+credentials.json
 ```json
 {
-  "users": {
-    "camilla": {
-      "username": "<GITHUB_USERNAME>",
-      "password": "<GITHUB_PASSWORD>",
-      "userDetails": {
-        "email": "camilla@gmail.com",
-        "firstName": "Camilla",
-        "lastName": "Syndesio"
-      }
+  "twitter_listen": {
+    "service": "twitter",
+    "properties": {
+      "screenName": "************",
+      "consumerKey": "*************************",
+      "consumerSecret": "**************************************************",
+      "accessToken": "**************************************************",
+      "accessTokenSecret": "*********************************************"
     }
   },
-  "connection": {
-    "Twitter Listener": {
-      "accessToken": "YOUR_SECRET_DATA",
-      "accessTokenSecret": "YOUR_SECRET_DATA",
-      "consumerKey": "YOUR_SECRET_DATA",
-      "consumerSecret": "YOUR_SECRET_DATA"
-    },
-    "QE Salesforce": {
-      "clientId": "YOUR_SECRET_DATA",
-      "clientSecret": "YOUR_SECRET_DATA",
-      "password": "YOUR_SECRET_DATA",
-      "userName": "YOUR_SECRET_DATA"
-    },
-    "Twitter" : "..."
+  "twitter_talky": {
+    "service": "twitter",
+    "properties": {
+      "screenName": "************",
+      "consumerKey": "*************************",
+      "consumerSecret": "**************************************************",
+      "accessToken": "**************************************************",
+      "accessTokenSecret": "*********************************************"
+    }
   },
-  "settings": {
-    "Twitter": {
-      "clientId": "aaaaaaj to je ID",
-      "clientSecret": "aaa to je seeecret"
+  "salesforce": {
+    "service": "salesforce",
+    "properties": {
+      "instanceUrl": "https://developer.salesforce.com",
+      "loginUrl": "https://login.salesforce.com",
+      "clientId": "*************************************************************************************",
+      "clientSecret": "*******************",
+      "userName": "**********************",
+      "password": "*********"
     }
   }
 }
 ```
 
-#### Test environment configuration
-Define env variable that points to your Syndesis UI web console
+### Execution
 
-```bash
-export SYNDESIS_UI_URL='https://<SYNDESIS_UI_URL>'
+For the test execution at least `syndesis-rest` modules are required in current SNAPSHOT version.
 
-# default browser is chrome, to run with firefox:
-export BROWSER=Firefox
-
-# optionally restart browser after each feature with
-export SYNDESIS_E2E_RESTART=1
-
-yarn e2e:syndesis-qe
+```
+cd <syndesis-project-dir>
+./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash
 ```
 
-For executing tests on local minishift instance: 
+#### Test suite execution
 
-```bash
-export SYNDESIS_UI_URL=https://syndesis.$(minishift ip).nip.io
+There're three Maven profiles: `all, rest, ui` to target the specific test suite.
 
-yarn e2e
-``` 
-
-Alternatively execute tests in Docker container with Xvfb
-
-```bash
-export SYNDESIS_UI_URL='https://<SYNDESIS_UI_URL>'
-yarn e2e:xvfb
+```
+mvn clean test // default all profile
+mvn clean test -P ui
+mvn clean test -P rest
 ```
 
-#### Execute subset of cucumber tests
-Tests `*.feature` files can have something like java annotations.
-In the cucumber docs it's called [tags](https://github.com/cucumber/cucumber/wiki/Tags).
-
-Example of feature with tag `@narrative`
-```gherkin
-@narrative
-Feature: First pass at login, homepage, connections, and integrations
-  https://issues.jboss.org/browse/IPAAS-153
-```https://yarnpkg.com/lang/en/docs/cli/run/
-
-Can be run with command
-
-```bash
-# first -- tells yarn to pass these arguments to script
-yarn e2e -- --cucumberOpts.tags="@narrative"
+#### Cucumber tag execution
 ```
-
-For more information about parameters see [yarn run docs](https://yarnpkg.com/lang/en/docs/cli/run/).
+mvn clean test -P ui -Dcucumber.options="--tags @integrations-sf-db-test"
+```
