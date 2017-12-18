@@ -142,6 +142,9 @@ public class CommonSteps {
 	@When(".*clicks? on the \"([^\"]*)\" button.*$")
 	public void clickOnButton(String buttonTitle) { new SyndesisRootPage().clickButton(buttonTitle); }
 
+	@When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
+	public void clickOnModalDialogButton(String buttonTitle) { new SyndesisRootPage().clickModalDialogButton(buttonTitle); }
+
 	@When(".*clicks? on the \"([^\"]*)\" link.*$")
 	public void clickOnLink(String linkTitle) {
 		new SyndesisRootPage().clickLink(linkTitle);

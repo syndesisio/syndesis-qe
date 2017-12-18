@@ -1,10 +1,16 @@
 package io.syndesis.qe.pages;
 
+import io.syndesis.qe.pages.customizations.api_client_connectors.detail.ApiClientConnectorDetail;
+import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.GeneralConnectorInfo;
+import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.ReviewSwaggerActions;
+import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.Security;
+import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.UploadSwagger;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponentAmq;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
 import io.syndesis.qe.pages.connections.list.ConnectionListPage;
 import io.syndesis.qe.pages.customizations.CustomizationsPage;
+import io.syndesis.qe.pages.customizations.api_client_connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
@@ -17,6 +23,7 @@ import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectCompone
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
 import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
+import io.syndesis.qe.pages.modal_dialogs.DeleteWarningDialog;
 
 /**
  * Created by mastepan on 11/15/17.
@@ -30,7 +37,16 @@ public enum SyndesisPage {
 	SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
 	CHOOSE_A_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
 	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent()),
+
 	CUSTOMIZATIONS(new CustomizationsPage()),
+		API_CLIENT_CONNECTORS(new ApiClientConnectors()),
+			UPLOAD_SWAGGER(new UploadSwagger()),
+			REVIEW_SWAGGER_ACTIONS(new ReviewSwaggerActions()),
+			SECURITY(new Security()),
+			GENERAL_CONNECTOR_INFO(new GeneralConnectorInfo()),
+
+			CONNECTOR_DETAILS(new ApiClientConnectorDetail()),
+
 	EXTENSIONS(new TechExtensionsListComponent()),
 	IMPORT_EXTENSION(new TechExtensionsImportPage()),
 	EXTENSION_DETAILS(new TechExtensionDetailPage()),
@@ -39,7 +55,11 @@ public enum SyndesisPage {
 	ACTIVEMQ_CONFIGURATION(new ConnectionConfigurationComponentAmq()),
 	SUBSCRIBE_FOR_MESSAGES(new ActionConfigureComponentJmsSubscribe()),
 	PUBLISH_MESSAGES(new ActionConfigureComponentJmsPublish()),
-	REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest());
+	REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
+
+	//modal dialogs
+	DELETE_WARNING(new DeleteWarningDialog());
+
 
 	private SyndesisPageObject pageObject = null;
 
