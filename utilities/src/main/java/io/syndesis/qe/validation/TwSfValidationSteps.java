@@ -2,8 +2,8 @@ package io.syndesis.qe.validation;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
-import static org.infinispan.util.ByteString.emptyString;
 
 import org.hamcrest.Matchers;
 
@@ -100,8 +100,8 @@ public class TwSfValidationSteps {
 
 		final Contact createdContact = getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName")).get();
 		assertThat(createdContact.getDescription(), Matchers.startsWith(record));
-		assertThat(createdContact.getFirstName(), not(emptyString()));
-		assertThat(createdContact.getLastname(), not(emptyString()));
+		assertThat(createdContact.getFirstName(), not(isEmptyString()));
+		assertThat(createdContact.getLastname(), not(isEmptyString()));
 		log.info("Twitter to salesforce integration test finished.");
 	}
 

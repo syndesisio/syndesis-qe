@@ -45,40 +45,40 @@ Feature: Upload tech extension and add it to integration
     When "Camilla" navigates to the "Customizations" page
     Then she is presented with the Syndesis page "Customizations"
 
-    When clicks on the "Technical Extensions" link
-    Then she is presented with the Syndesis page "Technical extensions"
+    When clicks on the "Extensions" link
+    Then she is presented with the Syndesis page "Extensions"
     
   @tech-extension-import-new-tech-extension
   Scenario: Import new technical extensions
-    When Camilla clicks on the "Import Technical Extension" button
-    Then she is presented with the Syndesis page "Import Technical Extension"
+    When Camilla clicks on the "Import Extension" button
+    Then she is presented with the Syndesis page "Import Extension"
 
 		#TODO
     When Camilla upload extension
     Then she see details about imported extension
     
     When she clicks on the "Import" button
-    Then Camilla is presented with the Syndesis page "Technical extensions detail"
+    Then Camilla is presented with the Syndesis page "Extension Details"
     
     When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Technical Extensions" link
-    Then Camilla is presented with the Syndesis page "Technical extensions"
+    And clicks on the "Extensions" link
+    Then Camilla is presented with the Syndesis page "Extensions"
     And technical extension "Syndesis Extension" is present in technical extensions list
     
   @tech-extension-update-tech-extension
   Scenario: Update technical extensions
     When Camilla choose "Update" action on "Syndesis Extension" technical extension
-    Then she is presented with the Syndesis page "Import Technical Extension"
+    Then she is presented with the Syndesis page "Import Extension"
 
     When Camilla upload extension
     Then she see details about imported extension
 
     When she clicks on the "Import" button
-    Then Camilla is presented with the Syndesis page "Technical extensions detail"
+    Then Camilla is presented with the Syndesis page "Extension Details"
 
     When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Technical Extensions" link
-    Then Camilla is presented with the Syndesis page "Technical extensions"
+    And clicks on the "Extensions" link
+    Then Camilla is presented with the Syndesis page "Extensions"
     And technical extension "Syndesis Extension" is present in technical extensions list
   	
   @tech-extension-create-integration-with-new-tech-extension
@@ -100,7 +100,7 @@ Feature: Upload tech extension and add it to integration
     And she selects "Contact" from "sObjectName" dropdown
     And Camilla clicks on the "Next" button
     And she selects "TwitterScreenName" from "sObjectIdName" dropdown
-    
+    And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
 
     # add tech extension step
@@ -124,8 +124,8 @@ Feature: Upload tech extension and add it to integration
   @tech-extension-delete-tech-extension
   Scenario: Delete technical extensions
     When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Technical Extensions" link
-    Then she is presented with the Syndesis page "Technical extensions"
+    And clicks on the "Extensions" link
+    Then she is presented with the Syndesis page "Extensions"
 
     When Camilla choose "Delete" action on "Syndesis Extension" technical extension
     Then she is presented with dialog page "Warning!"
