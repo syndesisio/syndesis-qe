@@ -28,10 +28,9 @@ public enum SyndesisPage {
 	CHOOSE_A_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
 	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent()),
 	CUSTOMIZATIONS(new CustomizationsPage()),
-	TECHNICAL_EXTENSIONS(new TechExtensionsListComponent()),
-	IMPORT_TECHNICAL_EXTENSION(new TechExtensionsImportPage()),
-	TECHNICAL_EXTENSIONS_DETAIL(new TechExtensionDetailPage()),
-	TECHNICAL_EXTENSIONS_IMPORT(new TechExtensionsImportPage()),
+	EXTENSIONS(new TechExtensionsListComponent()),
+	IMPORT_EXTENSION(new TechExtensionsImportPage()),
+	EXTENSION_DETAILS(new TechExtensionDetailPage()),
 	PERIODIC_SQL_INVOCATION(new ActionConfigureComponentPeriodicSql()),
 	INVOKE_SQL(new ActionConfigureComponentInvokeSql());
 
