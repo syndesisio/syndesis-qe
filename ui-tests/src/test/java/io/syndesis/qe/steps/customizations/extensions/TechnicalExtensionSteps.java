@@ -7,6 +7,9 @@ import static org.junit.Assert.assertThat;
 
 import org.openqa.selenium.By;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -39,8 +42,8 @@ public class TechnicalExtensionSteps {
 	public void uploadFile() throws Throwable {
 		//TODO temporary solution
 		String techExtensionUrl = TestConfiguration.techExtensionUrl();
-		
-		$(By.cssSelector("input[type='file']")).shouldBe(visible).sendKeys(techExtensionUrl);
+		Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
+		$(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
 	}
 
 	@When("^she see details about imported extension$")
