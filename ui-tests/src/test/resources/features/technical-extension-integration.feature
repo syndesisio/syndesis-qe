@@ -1,4 +1,4 @@
-@tech-extension
+@tech-extension-integration-test
 Feature: Upload tech extension and add it to integration
 
   @tech-extension-clean-application-state
@@ -23,23 +23,6 @@ Feature: Upload tech extension and add it to integration
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
-  @tech-extension-create-salesforce-connection
-  Scenario: Create Salesforce connection
-    # create salesforce connection
-    When "Camilla" navigates to the "Connections" page
-    And click on the "Create Connection" button
-    And Camilla selects the "Salesforce" connection
-    Then she is presented with the "Validate" button
-
-    # fill salesforce connection details
-    When she fills "QE Salesforce" connection details
-    And scroll "top" "right"
-    And click on the "Next" button
-    And type "QE Salesforce" into connection name
-    And type "SyndesisQE salesforce test" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
-
   @tech-extension-navigate-to-technical-extensions-page
   Scenario: Navigate to technical extensions page
     When "Camilla" navigates to the "Customizations" page
@@ -53,7 +36,6 @@ Feature: Upload tech extension and add it to integration
     When Camilla clicks on the "Import Extension" button
     Then she is presented with the Syndesis page "Import Extension"
 
-		#TODO
     When Camilla upload extension
     Then she see details about imported extension
     
@@ -64,23 +46,7 @@ Feature: Upload tech extension and add it to integration
     And clicks on the "Extensions" link
     Then Camilla is presented with the Syndesis page "Extensions"
     And technical extension "Syndesis Extension" is present in technical extensions list
-    
-  @tech-extension-update-tech-extension
-  Scenario: Update technical extensions
-    When Camilla choose "Update" action on "Syndesis Extension" technical extension
-    Then she is presented with the Syndesis page "Import Extension"
 
-    When Camilla upload extension
-    Then she see details about imported extension
-
-    When she clicks on the "Import" button
-    Then Camilla is presented with the Syndesis page "Extension Details"
-
-    When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Extensions" link
-    Then Camilla is presented with the Syndesis page "Extensions"
-    And technical extension "Syndesis Extension" is present in technical extensions list
-  	
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create integration from twitter to salesforce
     When "Camilla" logs into the Syndesis
@@ -89,18 +55,18 @@ Feature: Upload tech extension and add it to integration
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
 
+    # select postgresDB connection as 'from' point
+    When Camilla selects the "PostgresDB" connection
+    And she selects "Periodic SQL Invocation" integration action
+    Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
+    Then she fills periodic query input with "SELECT * FROM CONTACT" value
+    Then she fills period input with "5000" value
+    And clicks on the "Done" button
+    Then she is prompted to select a "Finish" connection from a list of available connections
+
     # select twitter connection
     When Camilla selects the "Twitter Listener" connection
     And she selects "Mention" integration action
-    Then she is prompted to select a "Finish" connection from a list of available connections
-
-    # select salesforce connection
-    When Camilla selects the "QE Salesforce" connection
-    And she selects "Create or update record" integration action
-    And she selects "Contact" from "sObjectName" dropdown
-    And Camilla clicks on the "Next" button
-    And she selects "TwitterScreenName" from "sObjectIdName" dropdown
-    And Camilla clicks on the "Done" button
     Then she is presented with the "Add a Step" button
 
     # add tech extension step
@@ -131,5 +97,4 @@ Feature: Upload tech extension and add it to integration
     Then she is presented with dialog page "Warning!"
     And she can see notification about integrations "Twitter to Salesforce E2E" in which is tech extension used
 
-    When she clicks on the modal dialog "Delete" button
-    Then Camilla can not see "Syndesis Extension" technical extension anymore
+    Then she clicks on the modal dialog "Cancel" button
