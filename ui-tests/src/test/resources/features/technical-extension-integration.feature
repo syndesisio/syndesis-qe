@@ -64,13 +64,27 @@ Feature: Upload tech extension and add it to integration
     And clicks on the "Done" button
     Then she is prompted to select a "Finish" connection from a list of available connections
 
-    # select twitter connection
-    When Camilla selects the "Twitter Listener" connection
-    And she selects "Mention" integration action
-    Then she is presented with the "Add a Step" button
+    # select postgresDB connection as 'to' point
+    Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
+    When Camilla selects the "PostgresDB" connection
+    And she selects "Invoke Stored Procedure" integration action
+    And she selects "add_lead" from "procedureName" dropdown
+    And clicks on the "Done" button
+
+    # add data mapper step
+    When Camilla clicks on the "Add a Step" button
+    And she selects "Data Mapper" integration step
+    Then she is presented with data mapper ui
+    And she creates mapping from "company" to "company"
+    And she creates mapping from "first_name" to "first_and_last_name"
+    And she creates mapping from "last_name" to "first_and_last_name"
+    And she creates mapping from "lead_source" to "lead_source"
+    And clicks on the "Done" button
 
     # add tech extension step
     When Camilla clicks on the "Add a Step" button
+    Then Camilla is presented with the "Add a step" link
+    And clicks on the "Add a step" link
     Then she selects "simple-log" integration step
     And click on the "Next" button
 
