@@ -7,11 +7,13 @@ import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
+import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -65,5 +67,10 @@ public class CommonSteps {
 		} else {
 			Assertions.fail("No build found for integration with name " + sanitizedName);
 		}
+	}
+
+	@Given("^deploy AMQ broker$")
+	public void deployAMQBroker() throws Throwable {
+		AmqTemplate.deploy();
 	}
 }
