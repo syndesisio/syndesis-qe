@@ -44,7 +44,7 @@ public class SfDbValidationSteps {
 	private final AccountsDirectory accountsDirectory;
 
 	public SfDbValidationSteps() throws IOException, TwitterException {
-		accountsDirectory = new AccountsDirectory();
+		accountsDirectory = AccountsDirectory.getInstance();
 		final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
 		dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
 		salesforce = new ForceApi(new ApiConfig()
