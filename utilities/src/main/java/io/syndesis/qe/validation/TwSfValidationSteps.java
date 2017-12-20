@@ -46,7 +46,7 @@ public class TwSfValidationSteps {
 
 	public TwSfValidationSteps() {
 
-		accountsDirectory = new AccountsDirectory();
+		accountsDirectory = AccountsDirectory.getInstance();
 		final Account twitterTalky = accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get();
 		//twitter
 		final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()

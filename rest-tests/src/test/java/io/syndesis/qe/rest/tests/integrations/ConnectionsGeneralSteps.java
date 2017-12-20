@@ -28,7 +28,7 @@ public class ConnectionsGeneralSteps {
 	public ConnectionsGeneralSteps() throws GeneralSecurityException {
 		connectionsEndpoint = new ConnectionsEndpoint(RestConstants.getInstance().getSyndesisURL());
 		connectorsEndpoint = new ConnectorsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		accountsDirectory = new AccountsDirectory();
+		accountsDirectory = AccountsDirectory.getInstance();
 	}
 
 	@Given("^creates the TW connection using \"([^\"]*)\" template")
