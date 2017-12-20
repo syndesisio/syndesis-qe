@@ -21,16 +21,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AccountsDirectory {
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private static AccountsDirectory instance;
 
+	private ObjectMapper mapper = new ObjectMapper();
 	private Map<String, Account> accounts;
 
-	public AccountsDirectory() throws AccountsException {
-		load(Paths.get(TestConfiguration.syndesisCredentialsFile()));
+	public static AccountsDirectory getInstance() {
+		if (instance == null) {
+			instance = new AccountsDirectory();
+		}
+		return instance;
 	}
 
-	public AccountsDirectory(Path path) throws AccountsException {
-		load(path);
+	private AccountsDirectory() throws AccountsException {
+		if (accounts == null) {
+			load(Paths.get(TestConfiguration.syndesisCredentialsFile()));
+		}
 	}
 
 	private void load(Path path) throws AccountsException {
@@ -40,6 +46,10 @@ public class AccountsDirectory {
 		} catch (IOException e) {
 			throw new AccountsException("Cannot load account information.", e);
 		}
+	}
+
+	public void addAccount(String key, Account account) {
+		accounts.put(key, account);
 	}
 
 	public int getTotalAccounts() {

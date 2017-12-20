@@ -85,12 +85,12 @@ public class ConnectionSteps {
 
 	@When("^she fills \"([^\"]*)\" connection details$")
 	public void fillConnectionDetails(String connectionName) {
-		Optional<Account> optional = new AccountsDirectory().getAccount(connectionName);
+		Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
 		if (optional.isPresent()) {
 			editPage.getConnectionConfiguration().fillDetails(optional.get().getProperties());
 		} else {
 			String nameTransformed = connectionName.toLowerCase().replaceAll(" ", "_");
-			new AccountsDirectory().getAccount(nameTransformed).ifPresent(account -> editPage.getConnectionConfiguration().fillDetails(account.getProperties()));
+			AccountsDirectory.getInstance().getAccount(nameTransformed).ifPresent(account -> editPage.getConnectionConfiguration().fillDetails(account.getProperties()));
 		}
 	}
 
