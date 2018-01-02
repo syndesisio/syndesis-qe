@@ -1,5 +1,9 @@
 package io.syndesis.qe.pages;
 
+import static org.junit.Assert.assertThat;
+
+import static org.hamcrest.Matchers.is;
+
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.exactText;
@@ -66,6 +70,12 @@ public abstract class SyndesisPageObject {
 		dropDownToggle.click();
 		SelenideElement selectOption = selectGroup.find(By.cssSelector(String.format("li[data-value=\"%s\"]"))).shouldBe(visible);
 		selectOption.click();
+	}
+
+	private void selectFromDropDown(String selectId, String option) {
+		SelenideElement select = this.getElementById(selectId).shouldBe(visible);
+		assertThat(select.getTagName(), is("select"));
+		select.selectOption(option);
 	}
 
 	public String getCurrentUrl() {
@@ -137,7 +147,7 @@ public abstract class SyndesisPageObject {
 		optionElement.shouldBe(visible).click();
 	}
 
-	public SelenideElement getInputById(String inputId) {
+	private SelenideElement getElementById(String inputId) {
 		return this.getRootElement().find(By.id(inputId));
 	}
 
@@ -146,7 +156,8 @@ public abstract class SyndesisPageObject {
 	}
 
 	public void fillInput(String inputId, String value) {
-		SelenideElement input = this.getInputById(inputId);
+		SelenideElement input = this.getElementById(inputId);
+		assertThat(input.getTagName(), is("input"));
 		input.shouldBe(visible).clear();
 		input.shouldBe(visible).sendKeys(value);
 	}
@@ -154,6 +165,17 @@ public abstract class SyndesisPageObject {
 	public void fillInput(SelenideElement element, String value) {
 		element.shouldBe(visible).clear();
 		element.shouldBe(visible).sendKeys(value);
+	}
+
+	public void fillInput(String fieldId, String value, String tagType) {
+		switch (tagType) {
+			case "input":
+				fillInput(fieldId, value);
+				break;
+			case "select":
+				selectFromDropDown(fieldId, value);
+				break;
+		}
 	}
 
 	public SelenideElement getElementContainingText(By by, String text) {

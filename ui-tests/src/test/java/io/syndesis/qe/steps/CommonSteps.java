@@ -210,4 +210,5 @@ public class CommonSteps {
 	public void sheCheckButtonStatus(String buttonTitle, String status) throws Throwable {
 		new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
 	}
+
 }
