@@ -53,8 +53,8 @@ jobs:
           name: Store Cucumber report
           when: always
           command: |
-            mkdir -p $CIRCLE_TEST_REPORTS/cucumber
-            cp -f ui-tests/target/cucumber/cucumber-junit.xml $CIRCLE_TEST_REPORTS/cucumber/junit.xml
+            mkdir -p ~/cucumber
+            cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/junit.xml
       - store_artifacts:
           path: ui-tests/target/cucumber
       - <<: *save_m2
