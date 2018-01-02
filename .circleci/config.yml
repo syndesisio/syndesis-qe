@@ -51,6 +51,7 @@ jobs:
 
       - run:
           name: Store Cucumber report
+          when: always
           command: |
             mkdir -p $CIRCLE_TEST_REPORTS/cucumber
             cp -f ui-tests/target/cucumber/cucumber-junit.xml $CIRCLE_TEST_REPORTS/cucumber/junit.xml
