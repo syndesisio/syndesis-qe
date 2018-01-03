@@ -9,38 +9,10 @@ Feature: Create integration with datamapper step
 #    Then user waits for Syndesis to become ready
     Given "Camilla" logs into the Syndesis
     Given clean application state
-
-  @integrations-twitter-to-salesforce-create-twitter-connection
-  Scenario: Create Twitter connection
-    # create twitter connection
-    When "Camilla" navigates to the "Connections" page
-    And click on the "Create Connection" button
-    And Camilla selects the "Twitter" connection
-    Then she is presented with the "Validate" button
-    # fill twitter connection details
-    When she fills "Twitter Listener" connection details
-    And scroll "top" "right"
-    And click on the "Next" button
-    And type "Twitter Listener" into connection name
-    And type "SyndesisQE Twitter listener account" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
-
-  @integrations-twitter-to-salesforce-create-salesforce-connection
-  Scenario: Create Salesforce connection
-    # create salesforce connection
-    When "Camilla" navigates to the "Connections" page
-    And click on the "Create Connection" button
-    And Camilla selects the "Salesforce" connection
-    Then she is presented with the "Validate" button
-    # fill salesforce connection details
-    When she fills "QE Salesforce" connection details
-    And scroll "top" "right"
-    And click on the "Next" button
-    And type "QE Salesforce" into connection name
-    And type "SyndesisQE salesforce test" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
+    
+    Given created connections
+      | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
+      | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
   @integrations-twitter-to-salesforce-create-integration
   Scenario: Create integration from twitter to salesforce

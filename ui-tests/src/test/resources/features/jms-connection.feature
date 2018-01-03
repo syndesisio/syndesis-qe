@@ -9,22 +9,8 @@ Feature: Test functionality of DB connection
     Given deploy AMQ broker
     And she fills "AMQ" connection details
 
-  Scenario: Create amq connection
-    When "Camilla" navigates to the "Connections" page
-    And clicks on the "Create Connection" button
-    And Camilla selects the "ActiveMQ" connection
-  # fill salesforce connection details:
-    Then Camilla is presented with the Syndesis page "ActiveMQ Configuration"
-    Then she is presented with the "Validate" button
-    And she fills "Active MQ" connection details
-    Then click on the "Validate" button
-    Then she can see "Active MQ has been successfully validated" in alert-success notification
-    And click on the "Next" button
-    Then Camilla is presented with the Syndesis page "Add Connection Details"
-    And type "Active MQ" into connection name
-    And type "Active MQ connection is awesome" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
+    Given created connections
+      | ActiveMQ | Active MQ | Active MQ | Active MQ connection is awesome |
 
 #
 #  1. publish-subscribe-request

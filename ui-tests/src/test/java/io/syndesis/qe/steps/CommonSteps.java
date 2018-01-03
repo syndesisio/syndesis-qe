@@ -1,7 +1,10 @@
 package io.syndesis.qe.steps;
 
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
+import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
@@ -15,6 +18,7 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -22,9 +26,11 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
+import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
 import io.syndesis.qe.pages.login.GitHubLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
+import io.syndesis.qe.steps.connections.ConnectionSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -68,6 +74,47 @@ public class CommonSteps {
 		if (currentUrl.contains("oauth/authorize/approve")) {
 			log.info("Authorize access login page");
 			$("input[name=\"approve\"]").shouldBe(visible).click();
+		}
+	}
+
+	@Given("^created connections$")
+	public void createConnections(DataTable connectionsData) {
+		ConnectionSteps connectionSteps = new ConnectionSteps();
+		ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
+		
+		List<List<String>> dataTable = connectionsData.raw();
+		
+		for (List<String> dataRow : dataTable) {
+			String connectionType = dataRow.get(0);
+			String connectionCredentialsName = dataRow.get(1);		
+			String connectionName = dataRow.get(2);
+			String connectionDescription = dataRow.get(3);
+			
+			navigateTo("", "Connections");
+			validatePage("", "Connections");
+
+			ElementsCollection connections = connectionsListComponent.getAllConnections();
+			connections = connections.filter(exactText(connectionName));
+
+			if (connections.size() != 0) {
+				log.warn("Connection {} already exists!", connectionName);
+			} else {
+				clickOnButton("Create Connection");
+
+				connectionSteps.selectConnection(connectionType);
+				connectionSteps.fillConnectionDetails(connectionCredentialsName);
+
+				clickOnButton("Validate");
+				successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+
+				scrollTo("top", "right");
+				clickOnButton("Next");
+
+				connectionSteps.typeConnectionName(connectionName);
+				connectionSteps.typeConnectionDescription(connectionDescription);
+
+				clickOnButton("Create");
+			} 
 		}
 	}
 
