@@ -6,22 +6,8 @@ Feature: Upload tech extension and add it to integration
     Given "Camilla" logs into the Syndesis
    	Given clean application state
 
-  @tech-extension-create-twitter-connection
-  Scenario: Create Twitter connection
-    # create twitter connection
-    When "Camilla" navigates to the "Connections" page
-    And click on the "Create Connection" button
-    And Camilla selects the "Twitter" connection
-    Then she is presented with the "Validate" button
-
-    # fill twitter connection details
-    When she fills "Twitter Listener" connection details
-    And scroll "top" "right"
-    And click on the "Next" button
-    And type "Twitter Listener" into connection name
-    And type "SyndesisQE Twitter listener account" into connection description
-    And click on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
+    Given created connections
+      | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
 
   @tech-extension-navigate-to-technical-extensions-page
   Scenario: Navigate to technical extensions page
