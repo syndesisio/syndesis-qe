@@ -31,7 +31,7 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-connections-list");
-		public static final By CONNECTION = By.cssSelector("h2.card-pf-title.text-center");
+		public static final By CONNECTION = By.cssSelector("h2.card-pf-title");
 		public static final By KEBAB = By.id("dropdownKebabRight9");
 		public static final By KEBAB_OPEN = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right.open");
 		public static final By KEBAB_UNOPEN = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
@@ -49,10 +49,14 @@ public class ConnectionsListComponent extends SyndesisPageObject {
 	}
 
 	public Integer countConnections() {
-		ElementsCollection allConnections =
-				$(Element.ROOT).findAll(Element.CONNECTION).shouldBe(sizeGreaterThan(0));
+		ElementsCollection allConnections = this.getAllConnections();
 		log.info("found {} connections", allConnections.size());
 		return allConnections.size();
+	}
+
+	public ElementsCollection getAllConnections() {
+		ElementsCollection allConnections = $(Element.ROOT).findAll(Element.CONNECTION).shouldBe(sizeGreaterThan(0));
+		return allConnections;
 	}
 
 	public SelenideElement getConnectionByTitle(String title) {

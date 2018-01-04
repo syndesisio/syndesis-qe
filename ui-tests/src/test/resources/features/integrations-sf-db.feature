@@ -9,6 +9,9 @@ Feature: Test to verify correct function of connections kebab menu
     Given "Camilla" logs into the Syndesis
     Given clean application state
 
+    Given created connections
+      | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
+
   Scenario: Create salesforce connection
       # create salesforce connection
     When "Camilla" navigates to the "Connections" page
