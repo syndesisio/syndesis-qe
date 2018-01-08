@@ -1,5 +1,7 @@
 package io.syndesis.qe.endpoints;
 
+import com.fasterxml.jackson.core.JsonParser.Feature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -15,6 +17,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.syndesis.core.Json;
 import io.syndesis.model.ListResult;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.RestUtils;
@@ -50,9 +53,9 @@ public abstract class AbstractEndpoint<T> {
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
 
-		final Response response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON));
+		final JsonNode response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
 
-		return response.readEntity(type);
+		return transformJsonNode(response, type);
 	}
 
 	public void delete(String id) {
@@ -73,12 +76,10 @@ public abstract class AbstractEndpoint<T> {
 				.request(MediaType.APPLICATION_JSON)
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
-		final Response response = invocation
-				.get();
 
-		final T result = response.readEntity(type);
+		final JsonNode response = invocation.get(JsonNode.class);
 
-		return result;
+		return transformJsonNode(response, type);
 	}
 
 	public T update(String id, T obj) {
@@ -88,13 +89,15 @@ public abstract class AbstractEndpoint<T> {
 				.request(MediaType.APPLICATION_JSON)
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
-		final Response response = invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON));
 
-		return response.readEntity(type);
+		final JsonNode response = invocation.get(JsonNode.class);
+
+		return transformJsonNode(response, type);
 	}
 
 	public List<T> list() {
 		final ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
+		mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 		final ObjectWriter ow = mapper.writer();
 		final Class<ListResult<T>> listtype = (Class) ListResult.class;
 
@@ -105,18 +108,23 @@ public abstract class AbstractEndpoint<T> {
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
 
-		final Response response = invocation
-				.get();
+		final JsonNode response = invocation
+				.get(JsonNode.class);
 
-		//TODO(tplevko): nasty hack... Change this
-		final ListResult<T> result = response.readEntity(listtype);
+		ListResult<T> result = null;
+		try {
+			result = Json.mapper().readValue(response.toString(), listtype);
+		} catch (IOException ex) {
+			log.error("" + ex);
+		}
+
 		final List<T> ts = new ArrayList<>();
 
 		for (int i = 0; i < result.getTotalCount(); i++) {
 			T con = null;
 			try {
 				final String json = ow.writeValueAsString(result.getItems().get(i));
-				con = (T) mapper.readValue(json, type);
+				con = Json.mapper().readValue(json, type);
 			} catch (IOException ex) {
 				log.error(ex.toString());
 			}
@@ -128,5 +136,15 @@ public abstract class AbstractEndpoint<T> {
 
 	public String getEndpointUrl() {
 		return String.format("%s%s%s", syndesisUrl, apiPath, endpointName);
+	}
+
+	private T transformJsonNode(JsonNode json, Class<T> t) {
+		T ts = null;
+		try {
+			ts = Json.mapper().readValue(json.toString(), t);
+		} catch (IOException ex) {
+			log.error("" + ex);
+		}
+		return ts;
 	}
 }

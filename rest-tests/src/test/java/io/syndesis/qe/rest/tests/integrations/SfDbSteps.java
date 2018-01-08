@@ -43,7 +43,7 @@ public class SfDbSteps {
 		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
 	}
 
-	@Given("^creates SF step for SF DB test")
+	@Given("^create SF step for SF DB test")
 	public void createSalesforceStep() {
 		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 		final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
@@ -57,7 +57,7 @@ public class SfDbSteps {
 		steps.add(salesforceStep);
 	}
 
-	@Given("^creates SF DB mapper step")
+	@Given("^create SF DB mapper step")
 	public void createMapperStep() throws IOException {
 		final String mapping = new String(Files.readAllBytes(Paths.get("./target/test-classes/mappings/salesforce-db.json")));
 		final Step mapperStep = new SimpleStep.Builder()
@@ -67,7 +67,7 @@ public class SfDbSteps {
 		steps.add(mapperStep);
 	}
 
-	@Given("^creates DB step")
+	@Given("^create DB step")
 	public void createDbStep() {
 		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
 		final Connector dbConnector = connectorsEndpoint.get("sql");
@@ -83,7 +83,7 @@ public class SfDbSteps {
 		steps.add(dbStep);
 	}
 
-	@When("^creates SF to DB integration with name: \"([^\"]*)\"$")
+	@When("^create SF to DB integration with name: \"([^\"]*)\"$")
 	public void createIntegrationFromGivenSteps(String integrationName) throws GeneralSecurityException {
 
 		Integration integration = new Integration.Builder()

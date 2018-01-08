@@ -33,7 +33,7 @@ public final class TestUtils {
 	public static Action findConnectorAction(Connector connector, String connectorPrefix) {
 		final Optional<ConnectorAction> action = connector.getActions()
 				.stream()
-				.filter(a -> a.getDescriptor().getCamelConnectorPrefix().equals(connectorPrefix))
+				.filter(a -> a.getId().get().toString().contains(connectorPrefix))
 				.findFirst();
 		return action.get();
 	}

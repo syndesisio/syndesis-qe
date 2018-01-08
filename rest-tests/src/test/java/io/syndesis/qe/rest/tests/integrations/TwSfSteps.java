@@ -48,7 +48,7 @@ public class TwSfSteps {
 		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
 	}
 
-	@Given("^creates TW mention step with \"([^\"]*)\" action")
+	@Given("^create TW mention step with \"([^\"]*)\" action")
 	public void createTwitterStep(String twitterAction) {
 
 		final Connector twitterConnector = connectorsEndpoint.get("twitter");
@@ -61,7 +61,7 @@ public class TwSfSteps {
 		steps.add(twitterStep);
 	}
 
-	@Given("^creates TW to SF mapper step")
+	@Given("^create TW to SF mapper step")
 	public void createMapperStep() throws IOException {
 		final String mapping = new String(Files.readAllBytes(Paths.get("./target/test-classes/mappings/twitter-salesforce.json")));
 
@@ -72,7 +72,7 @@ public class TwSfSteps {
 		steps.add(mapperStep);
 	}
 
-	@Given("^creates basic TW to SF filter step")
+	@Given("^create basic TW to SF filter step")
 	public void createBasicFilterStep() {
 		final Step basicFilter = new RuleFilterStep.Builder()
 				.configuredProperties(TestUtils.map(
@@ -83,7 +83,7 @@ public class TwSfSteps {
 		steps.add(basicFilter);
 	}
 
-	@Given("^creates SF step for TW SF test")
+	@Given("^create SF step for TW SF test")
 	public void createSalesforceStep() {
 		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 
@@ -96,7 +96,7 @@ public class TwSfSteps {
 		steps.add(salesforceStep);
 	}
 
-	@When("^creates TW to SF integration with name: \"([^\"]*)\"$")
+	@When("^create TW to SF integration with name: \"([^\"]*)\"$")
 	public void createIntegrationFromGivenSteps(String integrationName) throws GeneralSecurityException {
 
 		Integration integration = new Integration.Builder()
