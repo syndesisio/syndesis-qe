@@ -1,11 +1,6 @@
 package io.syndesis.qe.validation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.not;
-
-import org.hamcrest.Matchers;
+import org.assertj.core.api.Assertions;
 
 import com.force.api.ApiConfig;
 import com.force.api.ForceApi;
@@ -66,16 +61,17 @@ public class TwSfValidationSteps {
 				.setForceURL(salesforceAccount.getProperty("loginUrl")));
 	}
 
-	@Given("^cleans TW to SF scenario")
+	@Given("^clean TW to SF scenario")
 	public void cleanupTwSf() throws TwitterException {
 		TestSupport.getInstance().resetDB(RestConstants.getInstance().getSyndesisURL());
 		deleteSalesforceContact(salesforce, accountsDirectory.getAccount("twitter_talky").get().getProperty("screenName"));
 		deleteAllTweets(twitter);
 	}
 
-	@Then("^tweets a message \"([^\"]*)\"")
+	@Then("^tweet a message \"([^\"]*)\"")
 	public void sendTweet(String tweet) throws TwitterException {
-		assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName")).isPresent(), is(false));
+		Assertions.assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
+				.get().getProperty("screenName")).isPresent()).isEqualTo(false);
 		final String message = tweet + " @" + accountsDirectory.getAccount("twitter_listen").get().getProperty("screenName");
 		log.info("Sending a tweet from {}. Message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName"), message);
 		twitter.updateStatus(message);
@@ -83,9 +79,10 @@ public class TwSfValidationSteps {
 		log.info("Tweet submitted.");
 	}
 
-	@Then("^validates record is present in SF \"([^\"]*)\"")
+	@Then("^validate record is present in SF \"([^\"]*)\"")
 	public void validateIntegration(String record) throws TwitterException {
-		assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName")).isPresent(), is(false));
+		Assertions.assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
+				.get().getProperty("screenName")).isPresent()).isEqualTo(false);
 
 		log.info("Waiting until a contact appears in salesforce...");
 		final long start = System.currentTimeMillis();
@@ -95,13 +92,13 @@ public class TwSfValidationSteps {
 				2,
 				TimeUnit.SECONDS,
 				5);
-		assertThat("Contact has appeard in salesforce", contactCreated, is(true));
+		Assertions.assertThat(contactCreated).as("Contact has appeard in salesforce").isEqualTo(true);
 		log.info("Contact appeared in salesforce. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 
 		final Contact createdContact = getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName")).get();
-		assertThat(createdContact.getDescription(), Matchers.startsWith(record));
-		assertThat(createdContact.getFirstName(), not(isEmptyString()));
-		assertThat(createdContact.getLastname(), not(isEmptyString()));
+		Assertions.assertThat(createdContact.getDescription()).startsWith(record);
+		Assertions.assertThat(createdContact.getFirstName()).isNotEmpty();
+		Assertions.assertThat(createdContact.getLastname()).isNotEmpty();
 		log.info("Twitter to salesforce integration test finished.");
 	}
 
