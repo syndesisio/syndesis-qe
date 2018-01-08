@@ -1,7 +1,6 @@
 package io.syndesis.qe.validation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import org.assertj.core.api.Assertions;
 
 import java.security.GeneralSecurityException;
 import java.util.List;
@@ -29,7 +28,7 @@ public class CommonValidationSteps {
 		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
 	}
 
-	@Then("^waits for integration with name: \"([^\"]*)\" to become active")
+	@Then("^wait for integration with name: \"([^\"]*)\" to become active")
 	public void waitForIntegrationToBeActive(String integrationName) {
 		final List<Integration> integrations = integrationsEndpoint.list().stream()
 				.filter(item -> item.getName().equals(integrationName))
@@ -39,7 +38,7 @@ public class CommonValidationSteps {
 		//wait for activation
 		log.info("Waiting until integration \"{}\" becomes active. This may take a while...", integrationName);
 		final boolean activated = TestUtils.waitForActivation(integrationsEndpoint, integrations.get(0), TimeUnit.MINUTES, 10);
-		assertThat(activated, is(true));
+		Assertions.assertThat(activated).isEqualTo(true);
 		log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 	}
 }

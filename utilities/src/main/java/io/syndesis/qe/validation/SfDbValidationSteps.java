@@ -1,10 +1,6 @@
 package io.syndesis.qe.validation;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-
-import org.hamcrest.CoreMatchers;
+import org.assertj.core.api.Assertions;
 
 import com.force.api.ApiConfig;
 import com.force.api.ForceApi;
@@ -55,20 +51,20 @@ public class SfDbValidationSteps {
 				.setForceURL(salesforceAccount.getProperty("loginUrl")));
 	}
 
-	@Given("^cleans before SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
+	@Given("^clean before SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
 	public void cleanupSfDb(String firstName, String lastName) throws TwitterException {
 		TestSupport.getInstance().resetDB(RestConstants.getInstance().getSyndesisURL());
 		deleteSalesforceLead(salesforce, firstName, lastName);
 		dbUtils.deleteRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME());
 	}
 
-	@Then("^cleans after SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
+	@Then("^clean after SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
 	public void tearDownSfDb(String firstName, String lastName) throws TwitterException {
 		cleanupSfDb(firstName, lastName);
 		SampleDbConnectionManager.getInstance().closeConnection();
 	}
 
-	@Then("^validates SF to DB created new lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\"")
+	@Then("^validate SF to DB created new lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\"")
 	public void validateSfDbIntegration(String firstName, String lastName, String emailAddress) {
 		final long start = System.currentTimeMillis();
 		// We wait for exactly 1 record to appear in DB.
@@ -77,10 +73,10 @@ public class SfDbValidationSteps {
 				2,
 				TimeUnit.SECONDS,
 				5);
-		assertThat("Lead record has appeard in db", contactCreated, is(true));
+		Assertions.assertThat(contactCreated).as("Lead record has appeard in db").isEqualTo(true);
 		log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 		// Now we verify, the created lead contains the correct personal information.
-		assertThat(getLeadTaskFromDb(firstName, lastName).toLowerCase(), CoreMatchers.containsString(emailAddress));
+		Assertions.assertThat(getLeadTaskFromDb(firstName, lastName).toLowerCase()).contains(emailAddress);
 	}
 
 	/**
@@ -103,10 +99,10 @@ public class SfDbValidationSteps {
 		return leadTask;
 	}
 
-	@Then("^creates SF lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\" and company: \"([^\"]*)\"")
+	@Then("^create SF lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\" and company: \"([^\"]*)\"")
 	public void createNewSalesforceLead(String firstName, String lastName, String email, String companyName) {
 		// The table has to be empty prior to testing.
-		assertThat(dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()), equalTo(0));
+		Assertions.assertThat(dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME())).isEqualTo(0);
 		final Lead lead = new Lead();
 		lead.setFirstName(firstName);
 		lead.setLastName(lastName);

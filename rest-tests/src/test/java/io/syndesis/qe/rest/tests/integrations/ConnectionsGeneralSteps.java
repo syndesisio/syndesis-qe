@@ -31,7 +31,7 @@ public class ConnectionsGeneralSteps {
 		accountsDirectory = AccountsDirectory.getInstance();
 	}
 
-	@Given("^creates the TW connection using \"([^\"]*)\" template")
+	@Given("^create the TW connection using \"([^\"]*)\" template")
 	public void createTwitterConnection(String twitterTemplate) throws GeneralSecurityException {
 
 		final Connector twitterConnector = connectorsEndpoint.get("twitter");
@@ -54,7 +54,7 @@ public class ConnectionsGeneralSteps {
 		connectionsEndpoint.create(twitterConnection);
 	}
 
-	@Given("^creates SF connection")
+	@Given("^create SF connection")
 	public void createSalesforceConnections() {
 
 		final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
@@ -76,5 +76,29 @@ public class ConnectionsGeneralSteps {
 
 		log.info("Creating salesforce connection {}", salesforceConnection.getName());
 		connectionsEndpoint.create(salesforceConnection);
+	}
+
+	@Given("^create S3 connection using \"([^\"]*)\" bucket")
+	public void createS3Connections(String s3Bucket) {
+
+		final Connector s3Connector = connectorsEndpoint.get("aws-s3");
+		final Account s3Account = accountsDirectory.getAccount("s3").get();
+		log.info("Bucket name:  {}", s3Bucket);
+
+		final Connection s3Connection = new Connection.Builder()
+				.connector(s3Connector)
+				.connectorId(s3Connector.getId())
+				.id(s3Bucket)
+				.name("New Fuse QE s3 " + s3Bucket)
+				.configuredProperties(TestUtils.map(
+						"accessKey", s3Account.getProperty("accessKey"),
+						"bucketNameOrArn", s3Bucket,
+						"region", s3Account.getProperty("region"),
+						"secretKey", s3Account.getProperty("secretKey")
+				))
+				.build();
+
+		log.info("Creating s3 connection {}", s3Connection.getName());
+		connectionsEndpoint.create(s3Connection);
 	}
 }
