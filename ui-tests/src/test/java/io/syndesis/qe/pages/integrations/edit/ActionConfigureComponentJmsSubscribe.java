@@ -2,6 +2,7 @@ package io.syndesis.qe.pages.integrations.edit;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import java.util.ArrayList;
@@ -24,10 +25,9 @@ public class ActionConfigureComponentJmsSubscribe extends ActionConfigureCompone
 
 	private static final class Input {
 		public static final By DESTINATION_NAME = By.id("destinationName");
-		public static final By DURABLE = By.id("durable");
-		public static final By SUBCRIPTION_ID = By.id("destinationSubscriptionId");
+		public static final By SUBCRIPTION_ID = By.id("durableSubscriptionId");
 		public static final By MESSAGE_SELECTOR = By.id("messageSelector");
-		public static final List<By> ALL_INPUTS = new ArrayList<By>(Arrays.asList(DESTINATION_NAME,DURABLE,SUBCRIPTION_ID,MESSAGE_SELECTOR));
+		public static final List<By> ALL_INPUTS = new ArrayList<By>(Arrays.asList(DESTINATION_NAME,SUBCRIPTION_ID,MESSAGE_SELECTOR));
 	}
 
 	private static final class Select {
@@ -48,7 +48,7 @@ public class ActionConfigureComponentJmsSubscribe extends ActionConfigureCompone
 		if ("input".equals(tagName) && Input.ALL_INPUTS.contains(elem) || "select".equals(tagName) && Select.ALL_SELECTS.contains(elem)) {
 			return tagName;
 		} else {
-			throw new RuntimeException("This field id does not belong to this page!");
+			return null;
 		}
 	}
 

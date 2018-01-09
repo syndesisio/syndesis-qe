@@ -51,7 +51,7 @@ public class ActionConfigureComponentJmsRequest extends ActionConfigureComponent
 		if ("input".equals(tagName) && Input.ALL_INPUTS.contains(elem) || "select".equals(tagName) && Select.ALL_SELECTS.contains(elem)) {
 			return tagName;
 		} else {
-			throw new RuntimeException("This field id does not belong to this page!");
+			return null;
 		}
 	}
 

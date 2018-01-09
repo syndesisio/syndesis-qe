@@ -41,14 +41,13 @@ public class AmqTemplate {
 		} catch (InterruptedException | TimeoutException e) {
 			log.error("Wait for syndesis-rest failed ", e);
 		}
-
 		Account amqAccount = new Account();
 		amqAccount.setService("amq");
 		Map<String, String> accountParameters = new HashMap<>();
 		accountParameters.put("brokerUrl", "tcp://broker-amq:61616");
 		accountParameters.put("username", "amq");
 		accountParameters.put("password", "topSecret");
-		accountParameters.put("cliendId", UUID.randomUUID().toString());
+		accountParameters.put("clientId", UUID.randomUUID().toString());
 		amqAccount.setProperties(accountParameters);
 		AccountsDirectory.getInstance().addAccount("AMQ", amqAccount);
 	}
@@ -56,10 +55,14 @@ public class AmqTemplate {
 	private static void cleanUp() {
 		OpenShiftUtils.getInstance().getDeployments().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
 				.ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(true, dc));
-		OpenShiftUtils.getInstance().getServices().stream().filter(service -> service.getMetadata().getLabels().get("template").equals("syndesis-amq")).findFirst()
+		OpenShiftUtils.getInstance().getServices().stream().filter(service ->  "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
 				.ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-		OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> is.getMetadata().getLabels().get("template").equals("syndesis-amq")).findFirst()
+		OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq".equals(is.getMetadata().getLabels().get("template"))).findFirst()
 				.ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
-
+		try {
+			Thread.sleep(10 * 1000);
+		} catch (InterruptedException e) {
+			log.error(e.getMessage());
+		}
 	}
 }
