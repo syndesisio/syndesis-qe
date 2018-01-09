@@ -4,6 +4,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
@@ -337,6 +338,7 @@ public class IntegrationSteps {
 		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
 			for (String field : source.keySet()) {
 				String tagType = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+				assertThat(tagType, notNullValue());
 				editPage.getJmsSubscribeComponent().fillInput(field, source.get(field), tagType);
 			}
 		}
@@ -347,6 +349,7 @@ public class IntegrationSteps {
 		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
 			for (String field : source.keySet()) {
 				String tagType = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+				assertThat(tagType, notNullValue());
 				editPage.getJmsSubscribeComponent().fillInput(field, source.get(field), tagType);
 			}
 		}
@@ -357,6 +360,7 @@ public class IntegrationSteps {
 		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
 			for (String field : source.keySet()) {
 				String tagType = editPage.getJmsPublishComponent().checkAndGetFieldType(field);
+				assertThat(tagType, notNullValue());
 				editPage.getJmsPublishComponent().fillInput(field, source.get(field), tagType);
 			}
 		}
