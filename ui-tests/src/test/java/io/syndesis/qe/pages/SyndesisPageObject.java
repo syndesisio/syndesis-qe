@@ -159,9 +159,7 @@ public abstract class SyndesisPageObject {
 		SelenideElement input = this.getElementById(inputId);
 		assertThat(input.getTagName(), is("input"));
 		if (input.getAttribute("type").equals("checkbox")) {
-			if (Boolean.parseBoolean(value)  != input.isSelected()) {
-				input.click();
-			}
+			input.setSelected(Boolean.valueOf(value));
 		} else {
 			input.shouldBe(visible).clear();
 			input.shouldBe(visible).sendKeys(value);
