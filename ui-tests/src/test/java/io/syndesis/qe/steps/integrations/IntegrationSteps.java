@@ -337,9 +337,9 @@ public class IntegrationSteps {
 	public void setJmsSubscribeData(DataTable sourceMappingData) {
 		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
 			for (String field : source.keySet()) {
-				String tagType = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
-				assertThat(tagType, notNullValue());
-				editPage.getJmsSubscribeComponent().fillInput(field, source.get(field), tagType);
+				SelenideElement element = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+				assertThat(element, notNullValue());
+				editPage.getJmsSubscribeComponent().setElementValue(source.get(field), element);
 			}
 		}
 	}
@@ -348,9 +348,9 @@ public class IntegrationSteps {
 	public void setJmsRequestData(DataTable sourceMappingData) {
 		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
 			for (String field : source.keySet()) {
-				String tagType = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
-				assertThat(tagType, notNullValue());
-				editPage.getJmsSubscribeComponent().fillInput(field, source.get(field), tagType);
+				SelenideElement element = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+				assertThat(element, notNullValue());
+				editPage.getJmsSubscribeComponent().setElementValue(source.get(field), element);
 			}
 		}
 	}
@@ -359,9 +359,9 @@ public class IntegrationSteps {
 	public void setJmsPublishData(DataTable sourceMappingData) {
 		for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
 			for (String field : source.keySet()) {
-				String tagType = editPage.getJmsPublishComponent().checkAndGetFieldType(field);
-				assertThat(tagType, notNullValue());
-				editPage.getJmsPublishComponent().fillInput(field, source.get(field), tagType);
+				SelenideElement element = editPage.getJmsPublishComponent().checkAndGetFieldType(field);
+				assertThat(element, notNullValue());
+				editPage.getJmsPublishComponent().setElementValue(source.get(field), element);
 			}
 		}
 	}
