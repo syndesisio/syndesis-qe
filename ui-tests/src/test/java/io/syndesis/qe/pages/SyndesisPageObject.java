@@ -59,20 +59,7 @@ public abstract class SyndesisPageObject {
 		}
 	}
 
-	/*
-	* @param select Combobox select element.
-	* @param optionNumber number of the option from list of options.
-	*/
-	public void selectFromDropDown(SelenideElement select, String option) {
-		SelenideElement selectGroup = select.find(By.xpath("'.."));
-		SelenideElement dropDownToggle = selectGroup.find(By.className("dropdown-toggle"));
-		dropDownToggle.click();
-		dropDownToggle.click();
-		SelenideElement selectOption = selectGroup.find(By.cssSelector(String.format("li[data-value=\"%s\"]"))).shouldBe(visible);
-		selectOption.click();
-	}
-
-	private void selectFromDropDown(String selectId, String option) {
+	public void selectFromDropDown(String selectId, String option) {
 		SelenideElement select = this.getElementById(selectId).shouldBe(visible);
 		assertThat(select.getTagName(), is("select"));
 		select.selectOption(option);
@@ -166,18 +153,22 @@ public abstract class SyndesisPageObject {
 		}
 	}
 
-	public void fillInput(SelenideElement element, String value) {
-		element.shouldBe(visible).clear();
-		element.shouldBe(visible).sendKeys(value);
+	public void fillInput(SelenideElement input, String value) {
+		if (input.getAttribute("type").equals("checkbox")) {
+			input.setSelected(Boolean.valueOf(value));
+		} else {
+			input.shouldBe(visible).clear();
+			input.shouldBe(visible).sendKeys(value);
+		}
 	}
 
-	public void fillInput(String fieldId, String value, String tagType) {
-		switch (tagType) {
+	public void setElementValue(String value, SelenideElement element) {
+		switch (element.getTagName()) {
 			case "input":
-				fillInput(fieldId, value);
+				fillInput(element, value);
 				break;
 			case "select":
-				selectFromDropDown(fieldId, value);
+				element.selectOption(value);
 				break;
 		}
 	}
