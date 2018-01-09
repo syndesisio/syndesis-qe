@@ -158,8 +158,12 @@ public abstract class SyndesisPageObject {
 	public void fillInput(String inputId, String value) {
 		SelenideElement input = this.getElementById(inputId);
 		assertThat(input.getTagName(), is("input"));
-		input.shouldBe(visible).clear();
-		input.shouldBe(visible).sendKeys(value);
+		if (input.getAttribute("type").equals("checkbox")) {
+			input.setSelected(Boolean.valueOf(value));
+		} else {
+			input.shouldBe(visible).clear();
+			input.shouldBe(visible).sendKeys(value);
+		}
 	}
 
 	public void fillInput(SelenideElement element, String value) {
