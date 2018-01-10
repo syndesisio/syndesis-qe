@@ -18,7 +18,7 @@ public class Contact {
 	private String id;
 	@JsonProperty(value = "FirstName")
 	private String firstName;
-	@JsonProperty(value = "Lastname")
+	@JsonProperty(value = "LastName")
 	private String lastname;
 	@JsonProperty(value = "Description")
 	private String description;

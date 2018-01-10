@@ -1,6 +1,5 @@
 package io.syndesis.qe.rest.tests.integrations;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -76,6 +75,7 @@ public class TwSfSteps {
 	public void createBasicFilterStep() {
 		final Step basicFilter = new RuleFilterStep.Builder()
 				.configuredProperties(TestUtils.map(
+						"type", "rule",
 						"predicate", FilterPredicate.AND.toString(),
 						"rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
 				))
