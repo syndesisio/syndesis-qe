@@ -25,7 +25,7 @@
 						{
 							"jsonType": "io.atlasmap.java.v2.JavaField",
 							"name": "name",
-							"path": "username",
+							"path": "/user/name",
 							"fieldType": "STRING",
 							"docId": "twitter4j.Status"
 						}
@@ -34,7 +34,7 @@
 						{
 							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "FirstName",
-							"path": "FirstName",
+							"path": "/FirstName",
 							"fieldType": "STRING",
 							"docId": "Contact",
 							"userCreated": false,
@@ -43,7 +43,7 @@
 						{
 							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "LastName",
-							"path": "LastName",
+							"path": "/LastName",
 							"fieldType": "STRING",
 							"docId": "Contact",
 							"userCreated": false,
@@ -59,7 +59,7 @@
 						{
 							"jsonType": "io.atlasmap.java.v2.JavaField",
 							"name": "screenName",
-							"path": "userscreenName",
+							"path": "/user/screenName",
 							"fieldType": "STRING",
 							"docId": "twitter4j.Status"
 						}
@@ -68,7 +68,7 @@
 						{
 							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "Title",
-							"path": "Title",
+							"path": "/Title",
 							"fieldType": "STRING",
 							"docId": "Contact",
 							"userCreated": false
@@ -82,7 +82,7 @@
 						{
 							"jsonType": "io.atlasmap.java.v2.JavaField",
 							"name": "text",
-							"path": "text",
+							"path": "/text",
 							"fieldType": "STRING",
 							"docId": "twitter4j.Status"
 						}
@@ -91,7 +91,7 @@
 						{
 							"jsonType": "io.atlasmap.json.v2.JsonField",
 							"name": "Description",
-							"path": "Description",
+							"path": "/Description",
 							"fieldType": "STRING",
 							"docId": "Contact",
 							"userCreated": false
@@ -100,7 +100,7 @@
 				}
 			]
 		},
-		"name": "UI.866563",
+		"name": "UI.876711",
 		"lookupTables": {
 			"lookupTable": []
 		},
