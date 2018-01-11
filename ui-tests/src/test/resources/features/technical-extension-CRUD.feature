@@ -11,12 +11,12 @@ Feature: Upload tech extension and add it to integration
     When "Camilla" navigates to the "Customizations" page
     Then she is presented with the Syndesis page "Customizations"
 
-    When clicks on the "Extensions" link
+    When clicks on the "Technical Extensions" link
     Then she is presented with the Syndesis page "Extensions"
     
   @tech-extension-CRUD-import-new-tech-extension
   Scenario: Import new technical extensions
-    When Camilla clicks on the "Import Extension" button
+    When Camilla clicks on the "Import Technical Extension" button
     Then she is presented with the Syndesis page "Import Extension"
 
     When Camilla upload extension
@@ -26,7 +26,7 @@ Feature: Upload tech extension and add it to integration
     Then Camilla is presented with the Syndesis page "Extension Details"
     
     When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Extensions" link
+    And clicks on the "Technical Extensions" link
     Then Camilla is presented with the Syndesis page "Extensions"
     And technical extension "Syndesis Extension" is present in technical extensions list
     
@@ -42,14 +42,14 @@ Feature: Upload tech extension and add it to integration
     Then Camilla is presented with the Syndesis page "Extension Details"
 
     When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Extensions" link
+    And clicks on the "Technical Extensions" link
     Then Camilla is presented with the Syndesis page "Extensions"
     And technical extension "Syndesis Extension" is present in technical extensions list
     
   @tech-extension-CRUD-delete-tech-extension
   Scenario: Delete technical extensions
     When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Extensions" link
+    And clicks on the "Technical Extensions" link
     Then she is presented with the Syndesis page "Extensions"
 
     When Camilla choose "Delete" action on "Syndesis Extension" technical extension
