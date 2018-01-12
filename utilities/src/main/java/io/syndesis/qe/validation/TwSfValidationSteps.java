@@ -63,7 +63,7 @@ public class TwSfValidationSteps {
 
 	@Given("^clean TW to SF scenario")
 	public void cleanupTwSf() throws TwitterException {
-		TestSupport.getInstance().resetDB(RestConstants.getInstance().getSyndesisURL());
+		TestSupport.getInstance().resetDB();
 		deleteSalesforceContact(salesforce, accountsDirectory.getAccount("twitter_talky").get().getProperty("screenName"));
 		deleteAllTweets(twitter);
 	}
@@ -72,7 +72,7 @@ public class TwSfValidationSteps {
 	public void sendTweet(String tweet) throws TwitterException {
 		Assertions.assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
 				.get().getProperty("screenName")).isPresent()).isEqualTo(false);
-		final String message = tweet + " @" + accountsDirectory.getAccount("twitter_listen").get().getProperty("screenName");
+		final String message = tweet + " @" + accountsDirectory.getAccount("twitter_talky").get().getProperty("screenName");
 		log.info("Sending a tweet from {}. Message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName"), message);
 		twitter.updateStatus(message);
 

@@ -8,7 +8,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.S3Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,7 +32,7 @@ public class S3ValidationSteps {
 		for (String bucket : bucketNames) {
 			s3Utils.deleteS3Bucket(bucket);
 		}
-		TestSupport.getInstance().resetDB(RestConstants.getInstance().getSyndesisURL());
+		TestSupport.getInstance().resetDB();
 	}
 
 	@Given("^create sample buckets on S3 with name \"([^\"]*)\"")
