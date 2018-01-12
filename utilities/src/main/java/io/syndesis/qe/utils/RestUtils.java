@@ -21,14 +21,19 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
+import io.fabric8.kubernetes.client.LocalPortForward;
 import io.syndesis.qe.exceptions.RestClientException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utility class for Rest client (RestEasy).
  *
  * @author jknetl
  */
+@Slf4j
 public final class RestUtils {
+
+	private static LocalPortForward localPortForward = null;
 
 	private RestUtils() {
 	}
@@ -72,5 +77,20 @@ public final class RestUtils {
 			throw new RestClientException("Cannot create all SSL certificates trusting client", e);
 		}
 		return httpclient;
+	}
+
+	public static String getRestUrl() {
+		String restUrl = null;
+		if (runPortForward()) {
+			restUrl = "http://" + localPortForward.getLocalAddress().getLoopbackAddress().getHostName() + ":" + localPortForward.getLocalPort();
+		}
+		return restUrl;
+	}
+
+	private static boolean runPortForward() {
+		if (localPortForward == null || !localPortForward.isAlive()) {
+			localPortForward = TestUtils.createLocalPortForward("syndesis-rest", 8080, 8080);
+		}
+		return true;
 	}
 }

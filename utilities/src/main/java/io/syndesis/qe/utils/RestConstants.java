@@ -1,6 +1,5 @@
 package io.syndesis.qe.utils;
 
-import io.syndesis.qe.TestConfiguration;
 import lombok.Getter;
 
 /**
@@ -13,8 +12,6 @@ import lombok.Getter;
 public final class RestConstants {
 
 	private static RestConstants instance = null;
-	@Getter
-	private static String syndesisURL;
 	@Getter
 	private static final String SALESFORCE_CONNECTION_ID = "fuseqe-salesforce";
 	@Getter
@@ -32,6 +29,5 @@ public final class RestConstants {
 	}
 
 	private RestConstants() {
-		syndesisURL = TestConfiguration.syndesisRestUrl();
 	}
 }

@@ -42,9 +42,9 @@ public class TwSfSteps {
 	private final List<Step> steps = new ArrayList<>();
 
 	public TwSfSteps() throws GeneralSecurityException {
-		connectorsEndpoint = new ConnectorsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		connectionsEndpoint = new ConnectionsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
+		connectorsEndpoint = new ConnectorsEndpoint();
+		connectionsEndpoint = new ConnectionsEndpoint();
+		integrationsEndpoint = new IntegrationsEndpoint();
 	}
 
 	@Given("^create TW mention step with \"([^\"]*)\" action")
