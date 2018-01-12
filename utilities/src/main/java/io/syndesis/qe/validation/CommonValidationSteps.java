@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import cucumber.api.java.en.Then;
 import io.syndesis.model.integration.Integration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,7 +24,7 @@ public class CommonValidationSteps {
 	private final IntegrationsEndpoint integrationsEndpoint;
 
 	public CommonValidationSteps() throws GeneralSecurityException {
-		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
+		integrationsEndpoint = new IntegrationsEndpoint();
 	}
 
 	@Then("^wait for integration with name: \"([^\"]*)\" to become active")

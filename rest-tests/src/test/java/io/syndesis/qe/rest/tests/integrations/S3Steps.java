@@ -14,7 +14,6 @@ import io.syndesis.model.integration.Step;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +31,9 @@ public class S3Steps {
 	private final List<Step> steps = new ArrayList<>();
 
 	public S3Steps() throws GeneralSecurityException {
-		connectorsEndpoint = new ConnectorsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		connectionsEndpoint = new ConnectionsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
+		connectorsEndpoint = new ConnectorsEndpoint();
+		connectionsEndpoint = new ConnectionsEndpoint();
+		integrationsEndpoint = new IntegrationsEndpoint();
 	}
 
 	@Given("^create S3 polling step with bucket: \"([^\"]*)\"")

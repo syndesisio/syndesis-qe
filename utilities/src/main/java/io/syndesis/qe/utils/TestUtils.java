@@ -1,5 +1,6 @@
 package io.syndesis.qe.utils;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -7,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.LocalPortForward;
 import io.syndesis.model.action.Action;
 import io.syndesis.model.action.ConnectorAction;
 import io.syndesis.model.connection.Connector;
@@ -90,6 +93,27 @@ public final class TestUtils {
 
 	private static Optional<Integration> getIntegration(IntegrationsEndpoint e, Integration i) {
 		return Optional.of(e.get(i.getId().get()));
+	}
+
+	public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
+		final Pod podToForward = OpenShiftUtils.getInstance().findComponentPod(podName);
+		final LocalPortForward lpf = OpenShiftUtils.getInstance().portForward(podToForward, remotePort, localPort);
+		return lpf;
+	}
+
+	public static void terminateLocalPortForward(LocalPortForward lpf) {
+		if (lpf == null) {
+			return;
+		}
+		if (lpf.isAlive()) {
+			try {
+				lpf.close();
+			} catch (IOException ex) {
+				log.error("Error: " + ex);
+			}
+		} else {
+			log.info("Local Port Forward already closed.");
+		}
 	}
 
 	/**

@@ -11,8 +11,8 @@ import io.syndesis.model.connection.Connector;
  */
 public class ConnectorsEndpoint extends AbstractEndpoint<Connector> {
 
-	public ConnectorsEndpoint(String syndesisUrl) throws GeneralSecurityException {
-		super(Connector.class, syndesisUrl, "connectors");
+	public ConnectorsEndpoint() throws GeneralSecurityException {
+		super(Connector.class, "connectors");
 	}
 
 	@Override

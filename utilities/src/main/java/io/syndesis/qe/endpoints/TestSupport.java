@@ -37,18 +37,18 @@ public final class TestSupport {
 	 *
 	 * @param token
 	 */
-	public static void resetDB(String syndesisUrl) {
+	public static void resetDB() {
 		log.info("Resetting syndesis DB.");
 
 		final Invocation.Builder invocation = client
-				.target(getEndpointUrl(syndesisUrl, "/reset-db"))
+				.target(getEndpointUrl())
 				.request(MediaType.APPLICATION_JSON)
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
 		invocation.get();
 	}
 
-	public static String getEndpointUrl(String syndesisUrl, String resetEndpoint) {
-		return String.format("%s%s%s%s", syndesisUrl, apiPath, ENDPOINT_NAME, resetEndpoint);
+	public static String getEndpointUrl() {
+		return String.format("%s%s%s%s", RestUtils.getRestUrl(), apiPath, ENDPOINT_NAME, "/reset-db");
 	}
 }

@@ -1,12 +1,10 @@
 package io.syndesis.qe.utils;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +29,7 @@ public class SampleDbConnectionManager {
 	}
 
 	private SampleDbConnectionManager() {
-		initiateDbLocalPortForward();
+		localPortForward = TestUtils.createLocalPortForward("syndesis-db", 5432, 5432);
 	}
 
 	public static Connection getConnection() {
@@ -50,7 +48,7 @@ public class SampleDbConnectionManager {
 	}
 
 	public static void closeConnection() {
-		terminateLocalPortForward();
+		TestUtils.terminateLocalPortForward(localPortForward);
 		try {
 			if (dbConnection == null) {
 				return;
@@ -60,28 +58,6 @@ public class SampleDbConnectionManager {
 			}
 		} catch (SQLException ex) {
 			log.error("Error: " + ex);
-		}
-	}
-
-	private static void initiateDbLocalPortForward() {
-		if (localPortForward == null || !localPortForward.isAlive()) {
-			final Pod dbPod = OpenShiftUtils.getInstance().findComponentPod("syndesis-db");
-			localPortForward = OpenShiftUtils.getInstance().portForward(dbPod, 5432, 5432);
-		}
-	}
-
-	private static void terminateLocalPortForward() {
-		if (localPortForward == null) {
-			return;
-		}
-		if (localPortForward.isAlive()) {
-			try {
-				localPortForward.close();
-			} catch (IOException ex) {
-				log.error("Error: " + ex);
-			}
-		} else {
-			log.info("Local Port Forward already closed.");
 		}
 	}
 }
