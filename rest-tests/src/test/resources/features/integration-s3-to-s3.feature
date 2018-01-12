@@ -9,7 +9,7 @@ Feature: s3 scenarios
     And create S3 connection using "syndesis-bucket-in" bucket
     And create S3 polling step with bucket: "syndesis-bucket-out"
     And create S3 copy step with bucket: "syndesis-bucket-in"
-    When create S3 to S3 integration with name: "S3 to S3 rest test"
+    When create integration with name: "S3 to S3 rest test"
     Then wait for integration with name: "S3 to S3 rest test" to become active
     Then create a new text file in bucket "syndesis-bucket-out" with name "test.txt" and text "Hello world!"
     Then validate bucket with name "syndesis-bucket-in" contains file with name "test.txt" and text "Hello world!"
