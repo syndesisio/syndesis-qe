@@ -109,7 +109,7 @@ public class DataMapperSteps {
 		mapper.selectOption(selectElement, separator);
 
 		// NOTE: THIS STEP SHOULD HAVE BEEN DONE AUTOMATICALLY BY SELECTING "Separate" action
-		mapper.clickLink("Add Target");
+		mapper.clickButton("Add Target");
 
 		inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
 		mapper.fillInputAndConfirm(inputElement, output1);
