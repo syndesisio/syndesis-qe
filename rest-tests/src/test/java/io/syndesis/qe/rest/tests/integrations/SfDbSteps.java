@@ -38,9 +38,9 @@ public class SfDbSteps {
 	private final List<Step> steps = new ArrayList<>();
 
 	public SfDbSteps() throws GeneralSecurityException {
-		connectorsEndpoint = new ConnectorsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		connectionsEndpoint = new ConnectionsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		integrationsEndpoint = new IntegrationsEndpoint(RestConstants.getInstance().getSyndesisURL());
+		connectorsEndpoint = new ConnectorsEndpoint();
+		connectionsEndpoint = new ConnectionsEndpoint();
+		integrationsEndpoint = new IntegrationsEndpoint();
 	}
 
 	@Given("^create SF step for SF DB test")

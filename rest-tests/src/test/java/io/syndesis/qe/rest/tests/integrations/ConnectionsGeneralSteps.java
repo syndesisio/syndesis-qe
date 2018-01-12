@@ -26,8 +26,8 @@ public class ConnectionsGeneralSteps {
 	private final AccountsDirectory accountsDirectory;
 
 	public ConnectionsGeneralSteps() throws GeneralSecurityException {
-		connectionsEndpoint = new ConnectionsEndpoint(RestConstants.getInstance().getSyndesisURL());
-		connectorsEndpoint = new ConnectorsEndpoint(RestConstants.getInstance().getSyndesisURL());
+		connectionsEndpoint = new ConnectionsEndpoint();
+		connectorsEndpoint = new ConnectorsEndpoint();
 		accountsDirectory = AccountsDirectory.getInstance();
 	}
 

@@ -10,7 +10,8 @@ import io.syndesis.model.connection.Connection;
  * @author jknetl
  */
 public class ConnectionsEndpoint extends AbstractEndpoint<Connection> {
-	public ConnectionsEndpoint(String syndesisUrl) throws GeneralSecurityException {
-		super(Connection.class, syndesisUrl, "connections");
+
+	public ConnectionsEndpoint() throws GeneralSecurityException {
+		super(Connection.class, "connections");
 	}
 }

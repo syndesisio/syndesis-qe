@@ -32,14 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractEndpoint<T> {
 
 	protected String endpointName;
-	protected String syndesisUrl;
 	protected String apiPath = TestConfiguration.syndesisRestApiPath();
 	private Class<T> type;
 	private final Client client;
 
-	public AbstractEndpoint(Class<?> type, String syndesisUrl, String endpointName) throws GeneralSecurityException {
+	public AbstractEndpoint(Class<?> type, String endpointName) throws GeneralSecurityException {
 		this.type = (Class<T>) type;
-		this.syndesisUrl = syndesisUrl;
 		this.endpointName = endpointName;
 
 		client = RestUtils.getClient();
@@ -135,7 +133,8 @@ public abstract class AbstractEndpoint<T> {
 	}
 
 	public String getEndpointUrl() {
-		return String.format("%s%s%s", syndesisUrl, apiPath, endpointName);
+
+		return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
 	}
 
 	private T transformJsonNode(JsonNode json, Class<T> t) {

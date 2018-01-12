@@ -3,7 +3,7 @@ Feature: tw scenarios
   @integrations-twitter-to-salesforce
   Scenario: TW - SF integration
     Given clean TW to SF scenario
-    And create the TW connection using "twitter_listen" template
+    And create the TW connection using "twitter_talky" template
     And create SF connection
     And create TW mention step with "twitter-mention-connector" action
     And create basic TW to SF filter step

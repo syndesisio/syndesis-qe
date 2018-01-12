@@ -53,7 +53,7 @@ public class SfDbValidationSteps {
 
 	@Given("^clean before SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
 	public void cleanupSfDb(String firstName, String lastName) throws TwitterException {
-		TestSupport.getInstance().resetDB(RestConstants.getInstance().getSyndesisURL());
+		TestSupport.getInstance().resetDB();
 		deleteSalesforceLead(salesforce, firstName, lastName);
 		dbUtils.deleteRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME());
 	}
