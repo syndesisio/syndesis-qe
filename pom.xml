@@ -35,6 +35,7 @@
 		<selenide.version>4.8</selenide.version>
 		<guava.version>22.0</guava.version>
 		<cucumber.version>2.1.0</cucumber.version>
+		<cucumber.spring>2.3.1</cucumber.spring>
 		<openshift.client.version>2.4.1</openshift.client.version>
 		<assertj.version>3.8.0</assertj.version>
 		<rxjava.version>1.3.0</rxjava.version>
@@ -213,7 +214,11 @@
 				<artifactId>cucumber-junit</artifactId>
 				<version>${cucumber.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>io.cucumber</groupId>
+				<artifactId>cucumber-spring</artifactId>
+				<version>${cucumber.spring}</version>
+			</dependency>
 
 			<!-- Third party services dependencies -->
 			<dependency>

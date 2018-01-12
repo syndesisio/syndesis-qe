@@ -1,24 +1,21 @@
 package io.syndesis.qe.rest.tests.integrations;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.List;
 
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.filter.FilterPredicate;
 import io.syndesis.model.filter.RuleFilterStep;
-import io.syndesis.model.integration.Integration;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.TestUtils;
@@ -32,19 +29,19 @@ import lombok.extern.slf4j.Slf4j;
  * @author tplevko@redhat.com
  */
 @Slf4j
-public class TwSfSteps {
+public class TwSteps {
+
+	@Autowired
+	private StepsStorage steps;
 
 	public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
 
 	private final ConnectionsEndpoint connectionsEndpoint;
 	private final ConnectorsEndpoint connectorsEndpoint;
-	private final IntegrationsEndpoint integrationsEndpoint;
-	private final List<Step> steps = new ArrayList<>();
 
-	public TwSfSteps() throws GeneralSecurityException {
+	public TwSteps() throws GeneralSecurityException {
 		connectorsEndpoint = new ConnectorsEndpoint();
 		connectionsEndpoint = new ConnectionsEndpoint();
-		integrationsEndpoint = new IntegrationsEndpoint();
 	}
 
 	@Given("^create TW mention step with \"([^\"]*)\" action")
@@ -57,7 +54,7 @@ public class TwSfSteps {
 				.connection(twitterConnection)
 				.action(TestUtils.findConnectorAction(twitterConnector, twitterAction))
 				.build();
-		steps.add(twitterStep);
+		steps.getSteps().add(twitterStep);
 	}
 
 	@Given("^create TW to SF mapper step")
@@ -68,7 +65,7 @@ public class TwSfSteps {
 				.stepKind("mapper")
 				.configuredProperties(TestUtils.map("atlasmapping", mapping))
 				.build();
-		steps.add(mapperStep);
+		steps.getSteps().add(mapperStep);
 	}
 
 	@Given("^create basic TW to SF filter step")
@@ -80,32 +77,6 @@ public class TwSfSteps {
 						"rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
 				))
 				.build();
-		steps.add(basicFilter);
-	}
-
-	@Given("^create SF step for TW SF test")
-	public void createSalesforceStep() {
-		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
-
-		final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
-		final Step salesforceStep = new SimpleStep.Builder()
-				.stepKind("endpoint")
-				.connection(salesforceConnection)
-				.action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-create-sobject"))
-				.build();
-		steps.add(salesforceStep);
-	}
-
-	@When("^create TW to SF integration with name: \"([^\"]*)\"$")
-	public void createIntegrationFromGivenSteps(String integrationName) throws GeneralSecurityException {
-
-		Integration integration = new Integration.Builder()
-				.steps(steps)
-				.name(integrationName)
-				.desiredStatus(Integration.Status.Activated)
-				.build();
-
-		log.info("Creating integration {}", integration.getName());
-		integration = integrationsEndpoint.create(integration);
+		steps.getSteps().add(basicFilter);
 	}
 }
