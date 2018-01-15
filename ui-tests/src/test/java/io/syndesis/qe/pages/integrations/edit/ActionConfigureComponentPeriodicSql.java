@@ -16,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ActionConfigureComponentPeriodicSql extends ActionConfigureComponentSql {
 
 	private static final class Element {
-		public static final By INPUT_QUERY = By.cssSelector("input[id='query']");
-		public static final By INPUT_PERIOD = By.cssSelector("input[id='schedulerPeriod']");
+		public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
+		public static final By INPUT_PERIOD = By.cssSelector("input[name='schedulerPeriod']");
 		public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
 	}
 

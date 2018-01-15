@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdvancedFilterStepComponent extends StepComponent {
 
 	private static final class Textarea {
-		public static final By FILTER = By.cssSelector("textarea[id='filter']");
+		public static final By FILTER = By.cssSelector("textarea[name='filter']");
 	}
 
 	private String filterString;
