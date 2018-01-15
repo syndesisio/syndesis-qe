@@ -208,6 +208,13 @@ public class CommonSteps {
 		log.info("Text message {} was found.", textMessage);
 	  }
 
+	@Then("^she is presented with warning$")
+	public void checkSqlWarning() throws Throwable {
+		SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-warning");
+		allertSucces.shouldBe(visible);
+
+	}
+
 	/**
 	 * Scroll the webpage.
 	 *
@@ -244,7 +251,7 @@ public class CommonSteps {
 
 	@And("^she selects \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
 	public void selectsFromDropdown(String option, String selectId) throws Throwable {
-		SelenideElement selectElement = $(String.format("select[id=\"%s\"]", selectId)).shouldBe(visible);
+		SelenideElement selectElement = $(String.format("select[name=\"%s\"]", selectId)).shouldBe(visible);
 		selectElement.selectOption(option);
 	}
 

@@ -15,8 +15,10 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,4 +75,21 @@ public class CommonSteps {
 	public void deployAMQBroker() throws Throwable {
 		AmqTemplate.deploy();
 	}
+
+	@Given("^execute SQL command \"([^\"]*)\"$")
+	public void executeSql(String sqlCmd) {
+		DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
+		dbUtils.executeSqlOnSampleDb(sqlCmd);
+		SampleDbConnectionManager.getInstance().closeConnection();
+	}
+
+	@Given("^clean TODO table$")
+	public void cleanTodoTable() {
+		DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
+		dbUtils.deleteRecordsInTable("TODO");
+		SampleDbConnectionManager.getInstance().closeConnection();
+	}
+
+
+
 }
