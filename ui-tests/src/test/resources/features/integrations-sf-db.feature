@@ -12,21 +12,6 @@ Feature: Test to verify correct function of connections kebab menu
     Given created connections
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
-  Scenario: Create salesforce connection
-      # create salesforce connection
-    When "Camilla" navigates to the "Connections" page
-    And clicks on the "Create Connection" button
-    And Camilla selects the "Salesforce" connection
-    Then she is presented with the "Validate" button
-      # fill salesforce connection details
-    When she fills "QE Salesforce" connection details
-    And scroll "top" "right"
-    And clicks on the "Next" button
-    And type "QE Salesforce" into connection name
-    And type "SyndesisQE salesforce test" into connection description
-    And clicks on the "Create" button
-    Then Camilla is presented with the Syndesis page "Connections"
-
   @create-sf-db-integration
   Scenario: Create integration from salesforce to postgresDB
     When "Camilla" navigates to the "Home" page

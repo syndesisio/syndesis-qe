@@ -27,7 +27,7 @@ public class BasicFilterStepComponent extends StepComponent {
 	}
 
 	private static final class Select {
-		public static final By PREDICATE = By.cssSelector("select[id='predicate']");
+		public static final By PREDICATE = By.cssSelector("select[name='predicate']");
 		public static final By OP = By.cssSelector("select[name='op']");
 	}
 

@@ -74,7 +74,7 @@ public class DataMapperSteps {
 		mapper.selectOption(selectElement, separator);
 
 		// And clicks on the "Add Source" link
-		mapper.clickLink("Add Source");
+		mapper.clickButton("Add Source");
 
 		// Then she fills "SecondCombine" selector-input with "LastName" value
 		inputElement = mapper.getElementByAlias("SecondSource").shouldBe(visible);
@@ -89,8 +89,8 @@ public class DataMapperSteps {
 		mapper.fillInput(inputElement, sec_pos);
 
 		// Then she fills "TargetCombine" selector-input with "first_and_last_name" value
-		inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
-		mapper.fillInputAndConfirm(inputElement, combined);
+//		inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
+//		mapper.fillInputAndConfirm(inputElement, combined);
 	}
 
 	//	And she separates "FirstName" into "company" as "2" and "email" as "1" using "Comma" separator
@@ -99,8 +99,8 @@ public class DataMapperSteps {
 		SelenideElement inputElement;
 		SelenideElement selectElement;
 
-		inputElement = mapper.getElementByAlias("FirstSource").shouldBe(visible);
-		mapper.fillInput(inputElement, input);
+		//inputElement = mapper.getElementByAlias("FirstSource").shouldBe(visible);
+		//mapper.fillInput(inputElement, input);
 
 		selectElement = mapper.getElementByAlias("ActionSelect").shouldBe(visible);
 		mapper.selectOption(selectElement, "Separate");

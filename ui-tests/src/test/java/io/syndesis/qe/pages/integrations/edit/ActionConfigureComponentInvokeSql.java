@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActionConfigureComponentInvokeSql extends ActionConfigureComponentSql {
 	private static final class Element {
-		public static final By INPUT_QUERY = By.cssSelector("input[id='query']");
+		public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
 		public static final By TITLE = By.cssSelector("h3[innertext='Invoke SQL']");
 	}
 
