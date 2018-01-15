@@ -9,6 +9,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
 
+import org.assertj.core.api.Assertions;
+
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -23,6 +25,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
+import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
@@ -315,12 +318,6 @@ public class IntegrationSteps {
 	public void verifyTypeOfConnection(String position) {
 		log.info("{} connection must be active", position);
 		assertTrue("There was no active icon found for position " + position, editPage.getFlowViewComponent().verifyActivePosition(position));
-	}
-
-	@And("^she is presented with sql-warning$")
-	public void checkSqlWarning() throws Throwable {
-		// Write code here that turns the phrase above into concrete actions
-		throw new PendingException();
 	}
 
 	@When("^she adds first step between START and STEP connection$")
