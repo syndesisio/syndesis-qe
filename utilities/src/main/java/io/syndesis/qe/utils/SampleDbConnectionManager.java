@@ -37,7 +37,7 @@ public class SampleDbConnectionManager {
 		props.setProperty("user", "sampledb");
 		try {
 			if (dbConnection == null || dbConnection.isClosed()) {
-				dbUrl = "jdbc:postgresql://" + localPortForward.getLocalAddress().getHostAddress() + ":" + localPortForward.getLocalPort() + "/sampledb";
+				dbUrl = "jdbc:postgresql://" + localPortForward.getLocalAddress().getLoopbackAddress().getHostName() + ":" + localPortForward.getLocalPort() + "/sampledb";
 				dbConnection = DriverManager.getConnection(dbUrl, props);
 			}
 		} catch (SQLException ex) {
