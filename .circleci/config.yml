@@ -101,7 +101,7 @@ jobs:
       - run:
           name: Build Rest
           command: |
-            ./syndesis/tools/bin/syndesis build --init --batch-mode -m runtime,connectors,rest --flash | tee build_log.txt
+            ./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash | tee build_log.txt
       - <<: *save_m2
       - save_cache:
           key: syndesis-mvn-rest-{{ checksum "syndesis/app/rest/pom.xml" }}
