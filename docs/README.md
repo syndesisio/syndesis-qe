@@ -15,7 +15,7 @@ If there are any sub-elements these are listed in private static classes, like
 Input, Select, Button, or generally: Element
 Disadvantage of this approach is that such 'Pages' does not represent web 'pages' as user sees them.
 
-To partly remedy this disadvantage class 'SyndesisPage' has been created.
+To partly remedy this disadvantage enum 'SyndesisPage' has been created.
 This class represents web 'page' from user point of view.
 
 
