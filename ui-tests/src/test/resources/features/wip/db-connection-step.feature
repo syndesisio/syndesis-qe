@@ -1,4 +1,4 @@
-@tp3
+@wip
 @db-connection-step
 Feature: Test functionality of DB connection
 
@@ -10,7 +10,6 @@ Feature: Test functionality of DB connection
 #
 #  1. select - select - delete
 #
-  @wip
   @db-connection-step-crud-1-read-update-delete
   Scenario: Create integration to test DB connector for update operation of step connection
     When "Camilla" navigates to the "Home" page

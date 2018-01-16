@@ -1,18 +1,13 @@
-@tp2
-@integrations-sf-db-test
+@integrations-salesforce-to-database
 Feature: Test to verify correct function of connections kebab menu
-  https://app.zenhub.com/workspace/o/syndesisio/syndesis-qe/issues/102
-  https://drive.google.com/file/d/0B_udTBpEdqO8WUxzTWVKX1NsME0/view
 
-  @integrations-sf-db-clean-application-state
-  Scenario: Clean application state
+
+  Background: Clean application state
     Given "Camilla" logs into the Syndesis
     Given clean application state
-
     Given created connections
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
-  @create-sf-db-integration
   Scenario: Create integration from salesforce to postgresDB
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.

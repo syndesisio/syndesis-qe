@@ -1,5 +1,5 @@
 @tech-extension-CRUD-test
-Feature: Upload tech extension and add it to integration
+Feature: Extension CRUD operations
 
   @tech-extension-CRUD-clean-application-state
   Scenario: Clean application state
@@ -22,7 +22,7 @@ Feature: Upload tech extension and add it to integration
     When Camilla upload extension
     Then she see details about imported extension
     
-    When she clicks on the "Import" button
+    When she clicks on the "Import Extension" button
     Then Camilla is presented with the Syndesis page "Extension Details"
     
     When "Camilla" navigates to the "Customizations" page
@@ -38,7 +38,7 @@ Feature: Upload tech extension and add it to integration
     When Camilla upload extension
     Then she see details about imported extension
 
-    When she clicks on the "Import" button
+    When she clicks on the "Import Extension" button
     Then Camilla is presented with the Syndesis page "Extension Details"
 
     When "Camilla" navigates to the "Customizations" page

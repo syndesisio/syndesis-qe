@@ -1,5 +1,4 @@
-@tp3
-@db-connection
+@integrations-database-to-database
 Feature: Test functionality of DB connection
 
   Background: Clean application state
