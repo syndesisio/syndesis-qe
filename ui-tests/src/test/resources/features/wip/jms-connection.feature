@@ -1,4 +1,4 @@
-@tp3
+@wip
 @jms-connection
 Feature: Test functionality of DB connection
 
@@ -13,7 +13,6 @@ Feature: Test functionality of DB connection
 #
 #  1. publish-subscribe-request
 #
-  @wip
   @jms-connection-publish-subscribe-request
   Scenario: Create integration to test JMS connector
     When "Camilla" navigates to the "Home" page

@@ -1,20 +1,13 @@
-@tp2
 @integrations-twitter-to-salesforce
 Feature: Create integration with datamapper step
 
-  @integrations-twitter-to-salesforce-clean-application-state
-  Scenario: Clean application state
-#    Given user cleans default namespace
-#    When user deploys Syndesis from template
-#    Then user waits for Syndesis to become ready
+  Background: Clean application state
     Given "Camilla" logs into the Syndesis
     Given clean application state
-    
     Given created connections
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
-  @integrations-twitter-to-salesforce-create-integration
   Scenario: Create integration from twitter to salesforce
     # create integration
     When "Camilla" logs into the Syndesis
