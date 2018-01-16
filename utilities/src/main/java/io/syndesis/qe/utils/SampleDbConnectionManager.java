@@ -29,12 +29,14 @@ public class SampleDbConnectionManager {
 	}
 
 	private SampleDbConnectionManager() {
-		localPortForward = TestUtils.createLocalPortForward("syndesis-db", 5432, 5432);
 	}
 
 	public static Connection getConnection() {
 		final Properties props = new Properties();
 		props.setProperty("user", "sampledb");
+		if (localPortForward == null || !localPortForward.isAlive()) {
+			localPortForward = TestUtils.createLocalPortForward("syndesis-db", 5432, 5432);
+		}
 		try {
 			if (dbConnection == null || dbConnection.isClosed()) {
 				try {
@@ -42,6 +44,7 @@ public class SampleDbConnectionManager {
 				} catch (IllegalStateException ex) {
 					dbUrl = String.format("jdbc:postgresql://%s:%s/sampledb", "127.0.0.1", 5432);
 				}
+				log.debug("DB endpoint URL: " + dbUrl);
 				dbConnection = DriverManager.getConnection(dbUrl, props);
 			}
 		} catch (SQLException ex) {
