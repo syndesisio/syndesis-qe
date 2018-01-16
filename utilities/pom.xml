@@ -16,11 +16,6 @@
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-java</artifactId>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>io.cucumber</groupId>-->
-			<!--<artifactId>cucumber-junit</artifactId>-->
-		<!--</dependency>-->
-		<!---->
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>openshift-client</artifactId>
@@ -108,7 +103,7 @@
 		</dependency>		
 		<dependency>
 			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
+			<artifactId>aws-java-sdk-s3</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.frejo</groupId>

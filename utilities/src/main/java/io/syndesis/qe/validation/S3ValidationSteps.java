@@ -6,7 +6,6 @@ import java.util.List;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.S3Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 public class S3ValidationSteps {
 
 	private final S3Utils s3Utils;
-	private final AccountsDirectory accountsDirectory;
 
 	public S3ValidationSteps() {
-		accountsDirectory = AccountsDirectory.getInstance();
 		s3Utils = new S3Utils();
 	}
 

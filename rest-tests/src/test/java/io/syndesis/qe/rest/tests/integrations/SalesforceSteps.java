@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.security.GeneralSecurityException;
 
 import cucumber.api.java.en.Given;
+import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
@@ -33,17 +34,16 @@ public class SalesforceSteps {
 		connectionsEndpoint = new ConnectionsEndpoint();
 	}
 
-	@Given("^create SF step for SF DB test")
-	public void createSfDbStep() {
+	@Given("^create SF \"([^\"]*)\" action step on field: \"([^\"]*)\"$")
+	public void createSfStepWithAction(String action, String field) {
 		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 		final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
 		final Step salesforceStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(salesforceConnection)
-				.action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-on-create"))
-				.configuredProperties(TestUtils.map("sObjectName", "Lead"))
+				.action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-on-" + action))
+				.configuredProperties(TestUtils.map("sObjectName", field))
 				.build();
-
 		steps.getSteps().add(salesforceStep);
 	}
 
