@@ -55,7 +55,7 @@ public class ConnectionsGeneralSteps {
 	}
 
 	@Given("^create SF connection")
-	public void createSalesforceConnections() {
+	public void createSalesforceConnection() {
 
 		final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
 		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
@@ -79,7 +79,7 @@ public class ConnectionsGeneralSteps {
 	}
 
 	@Given("^create S3 connection using \"([^\"]*)\" bucket")
-	public void createS3Connections(String s3Bucket) {
+	public void createS3Connection(String s3Bucket) {
 
 		final Connector s3Connector = connectorsEndpoint.get("aws-s3");
 		final Account s3Account = accountsDirectory.getAccount("s3").get();

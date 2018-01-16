@@ -1,0 +1,76 @@
+{
+	"AtlasMapping": {
+		"jsonType": "io.atlasmap.v2.AtlasMapping",
+		"dataSource": [
+			{
+				"jsonType": "io.atlasmap.json.v2.JsonDataSource",
+				"id": "Lead",
+				"uri": "atlas:json:Lead",
+				"dataSourceType": "SOURCE"
+			},
+			{
+				"jsonType": "io.atlasmap.json.v2.JsonDataSource",
+				"id": "SQL_PARAM_IN",
+				"uri": "atlas:json:SQL_PARAM_IN",
+				"dataSourceType": "TARGET",
+				"template": null
+			}
+		],
+		"mappings": {
+			"mapping": [
+				{
+					"jsonType": "io.atlasmap.v2.Mapping",
+					"mappingType": "COMBINE",
+					"id": "mapping.252636",
+					"inputField": [
+						{
+							"jsonType": "io.atlasmap.json.v2.JsonField",
+							"name": "FirstName",
+							"path": "/FirstName",
+							"fieldType": "STRING",
+							"docId": "Lead",
+							"userCreated": false,
+							"index": 0
+						},
+						{
+							"jsonType": "io.atlasmap.json.v2.JsonField",
+							"name": "LastName",
+							"path": "/LastName",
+							"fieldType": "STRING",
+							"docId": "Lead",
+							"userCreated": false,
+							"index": 1
+						},
+						{
+							"jsonType": "io.atlasmap.json.v2.JsonField",
+							"name": "Email",
+							"path": "/Email",
+							"fieldType": "STRING",
+							"docId": "Lead",
+							"userCreated": false,
+							"index": 2
+						}
+					],
+					"outputField": [
+						{
+							"jsonType": "io.atlasmap.json.v2.JsonField",
+							"name": "task",
+							"path": "/task",
+							"fieldType": "STRING",
+							"docId": "SQL_PARAM_IN",
+							"userCreated": false
+						}
+					],
+					"strategy": "Space"
+				}
+			]
+		},
+		"name": "UI.904135",
+		"lookupTables": {
+			"lookupTable": []
+		},
+		"properties": {
+			"property": []
+		}
+	}
+}

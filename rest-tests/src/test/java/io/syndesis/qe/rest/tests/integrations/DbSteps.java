@@ -2,9 +2,6 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
@@ -39,18 +36,8 @@ public class DbSteps {
 		connectionsEndpoint = new ConnectionsEndpoint();
 	}
 
-	@Given("^create SF DB mapper step")
-	public void createMapperStep() throws IOException {
-		final String mapping = new String(Files.readAllBytes(Paths.get("./target/test-classes/mappings/salesforce-db.json")));
-		final Step mapperStep = new SimpleStep.Builder()
-				.stepKind("mapper")
-				.configuredProperties(TestUtils.map("atlasmapping", mapping))
-				.build();
-		steps.getSteps().add(mapperStep);
-	}
-
-	@Given("^create DB step")
-	public void createDbStep() {
+	@Given("^create DB step from template add_lead")
+	public void createDbTemplateStep() {
 		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
 		final Connector dbConnector = connectorsEndpoint.get("sql");
 
@@ -61,6 +48,20 @@ public class DbSteps {
 				.configuredProperties(TestUtils.map("procedureName", "add_lead",
 						"template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
 						+ "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
+				.build();
+		steps.getSteps().add(dbStep);
+	}
+
+	@Given("^create DB insert taks step")
+	public void createDbInsertStep() {
+		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
+		final Connector dbConnector = connectorsEndpoint.get("sql");
+
+		final Step dbStep = new SimpleStep.Builder()
+				.stepKind("endpoint")
+				.connection(dbConnection)
+				.action(TestUtils.findConnectorAction(dbConnector, "sql-connector"))
+				.configuredProperties(TestUtils.map("query", "INSERT INTO TODO (task) VALUES (:#task)"))
 				.build();
 		steps.getSteps().add(dbStep);
 	}

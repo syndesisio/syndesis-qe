@@ -2,21 +2,15 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 
 import cucumber.api.java.en.Given;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
-import io.syndesis.model.filter.FilterPredicate;
-import io.syndesis.model.filter.RuleFilterStep;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -55,28 +49,5 @@ public class TwSteps {
 				.action(TestUtils.findConnectorAction(twitterConnector, twitterAction))
 				.build();
 		steps.getSteps().add(twitterStep);
-	}
-
-	@Given("^create TW to SF mapper step")
-	public void createMapperStep() throws IOException {
-		final String mapping = new String(Files.readAllBytes(Paths.get("./target/test-classes/mappings/twitter-salesforce.json")));
-
-		final Step mapperStep = new SimpleStep.Builder()
-				.stepKind("mapper")
-				.configuredProperties(TestUtils.map("atlasmapping", mapping))
-				.build();
-		steps.getSteps().add(mapperStep);
-	}
-
-	@Given("^create basic TW to SF filter step")
-	public void createBasicFilterStep() {
-		final Step basicFilter = new RuleFilterStep.Builder()
-				.configuredProperties(TestUtils.map(
-						"type", "rule",
-						"predicate", FilterPredicate.AND.toString(),
-						"rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
-				))
-				.build();
-		steps.getSteps().add(basicFilter);
 	}
 }

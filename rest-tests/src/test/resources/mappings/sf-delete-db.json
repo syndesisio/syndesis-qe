@@ -1,0 +1,55 @@
+{
+	"AtlasMapping": {
+		"jsonType": "io.atlasmap.v2.AtlasMapping",
+		"dataSource": [
+			{
+				"jsonType": "io.atlasmap.v2.DataSource",
+				"id": "io.syndesis.connector.salesforce.SalesforceIdentifier",
+				"uri": "atlas:java?className=io.syndesis.connector.salesforce.SalesforceIdentifier",
+				"dataSourceType": "SOURCE"
+			},
+			{
+				"jsonType": "io.atlasmap.json.v2.JsonDataSource",
+				"id": "SQL_PARAM_IN",
+				"uri": "atlas:json:SQL_PARAM_IN",
+				"dataSourceType": "TARGET",
+				"template": null
+			}
+		],
+		"mappings": {
+			"mapping": [
+				{
+					"jsonType": "io.atlasmap.v2.Mapping",
+					"mappingType": "MAP",
+					"id": "mapping.138008",
+					"inputField": [
+						{
+							"jsonType": "io.atlasmap.java.v2.JavaField",
+							"name": "id",
+							"path": "/id",
+							"fieldType": "STRING",
+							"docId": "io.syndesis.connector.salesforce.SalesforceIdentifier"
+						}
+					],
+					"outputField": [
+						{
+							"jsonType": "io.atlasmap.json.v2.JsonField",
+							"name": "task",
+							"path": "/task",
+							"fieldType": "STRING",
+							"docId": "SQL_PARAM_IN",
+							"userCreated": false
+						}
+					]
+				}
+			]
+		},
+		"name": "UI.310482",
+		"lookupTables": {
+			"lookupTable": []
+		},
+		"properties": {
+			"property": []
+		}
+	}
+}

@@ -1,6 +1,6 @@
 Feature: s3 scenarios
 
-  @integrations-s3-to-s3
+  @integrations-s3-s3
   Scenario: S3 - S3 integration
     Given clean S3 to S3 scenario, removes two sample buckets with names: "syndesis-bucket-in, syndesis-bucket-out"
     And create sample buckets on S3 with name "syndesis-bucket-out"
