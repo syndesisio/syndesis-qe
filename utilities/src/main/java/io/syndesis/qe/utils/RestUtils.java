@@ -34,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class RestUtils {
 
 	private static LocalPortForward localPortForward = null;
+	private static String restUrl = null;
 
 	private RestUtils() {
 	}
@@ -80,22 +81,16 @@ public final class RestUtils {
 	}
 
 	public static String getRestUrl() {
-		String restUrl = null;
-		if (runPortForward()) {
-			String localAddress;
+		if (localPortForward == null || !localPortForward.isAlive()) {
+			log.debug("creating local port forward for pod syndesis-rest");
+			localPortForward = TestUtils.createLocalPortForward("syndesis-rest", 8080, 8080);
 			try {
 				restUrl = String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort());
 			} catch (IllegalStateException ex) {
 				restUrl = String.format("http://%s:%s", "127.0.0.1", 8080);
 			}
+			log.debug("rest endpoint URL: " + restUrl);
 		}
 		return restUrl;
-	}
-
-	private static boolean runPortForward() {
-		if (localPortForward == null || !localPortForward.isAlive()) {
-			localPortForward = TestUtils.createLocalPortForward("syndesis-rest", 8080, 8080);
-		}
-		return true;
 	}
 }
