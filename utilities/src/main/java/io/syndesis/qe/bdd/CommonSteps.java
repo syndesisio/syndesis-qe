@@ -13,6 +13,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
+import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.DbUtils;
@@ -89,6 +90,14 @@ public class CommonSteps {
 		dbUtils.deleteRecordsInTable("TODO");
 		SampleDbConnectionManager.getInstance().closeConnection();
 	}
+
+	@Given("^clean application state")
+	public void resetState() {
+		int responseCode = TestSupport.getInstance().resetDbWithResponse();
+		Assertions.assertThat(responseCode).isEqualTo(204);
+	}
+
+
 
 
 
