@@ -3,8 +3,8 @@ Feature: Test to verify correct function of connections kebab menu
 
 
   Background: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
     Given created connections
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
@@ -74,3 +74,6 @@ Feature: Test to verify correct function of connections kebab menu
     And she clicks on the "Done" button
       # wait for integration to get in active state
     Then she wait until integration "Salesforce to PostresDB E2E" get into "Active" state
+    And create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
+    And validate SF to DB created new lead with first name: "John", last name: "Doe", email: "jdoe@acme.com"
+    And clean after SF to DB, removes user with first name: "John" and last name: "Doe"
