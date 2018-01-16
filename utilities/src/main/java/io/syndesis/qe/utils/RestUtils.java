@@ -82,7 +82,13 @@ public final class RestUtils {
 	public static String getRestUrl() {
 		String restUrl = null;
 		if (runPortForward()) {
-			restUrl = "http://" + localPortForward.getLocalAddress().getLoopbackAddress().getHostName() + ":" + localPortForward.getLocalPort();
+			String localAddress;
+			try {
+				localAddress = localPortForward.getLocalAddress().getLoopbackAddress().getHostName();
+			} catch (IllegalStateException ex) {
+				localAddress = "127.0.0.1";
+			}
+			restUrl = String.format("http://%s:%s", localAddress, localPortForward.getLocalPort());
 		}
 		return restUrl;
 	}
