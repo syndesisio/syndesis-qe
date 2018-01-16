@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.integrations.edit;
+package io.syndesis.qe.pages.integrations.edit.actions;
 
 import static com.codeborne.selenide.Condition.visible;
 
