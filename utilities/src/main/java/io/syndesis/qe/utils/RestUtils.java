@@ -84,11 +84,10 @@ public final class RestUtils {
 		if (runPortForward()) {
 			String localAddress;
 			try {
-				localAddress = localPortForward.getLocalAddress().getLoopbackAddress().getHostName();
+				restUrl = String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort());
 			} catch (IllegalStateException ex) {
-				localAddress = "127.0.0.1";
+				restUrl = String.format("http://%s:%s", "127.0.0.1", 8080);
 			}
-			restUrl = String.format("http://%s:%s", localAddress, localPortForward.getLocalPort());
 		}
 		return restUrl;
 	}
