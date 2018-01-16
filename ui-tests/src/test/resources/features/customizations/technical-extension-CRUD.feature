@@ -1,5 +1,5 @@
 @tech-extension-CRUD-test
-Feature: Upload tech extension and add it to integration
+Feature: Extension CRUD operations
 
   @tech-extension-CRUD-clean-application-state
   Scenario: Clean application state

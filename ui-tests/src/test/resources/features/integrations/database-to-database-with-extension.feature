@@ -1,11 +1,10 @@
-@tech-extension-integration-test
+@integrations-salesforce-to-database-with-extension
 Feature: Upload tech extension and add it to integration
 
   @tech-extension-clean-application-state
   Scenario: Clean application state
     Given "Camilla" logs into the Syndesis
    	Given clean application state
-
     Given created connections
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
 
@@ -34,7 +33,7 @@ Feature: Upload tech extension and add it to integration
     And technical extension "Syndesis Extension" is present in technical extensions list
 
   @tech-extension-create-integration-with-new-tech-extension
-  Scenario: Create integration from twitter to salesforce
+  Scenario: Create integration from DB to DB
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
