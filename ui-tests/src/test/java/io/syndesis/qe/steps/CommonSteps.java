@@ -125,7 +125,7 @@ public class CommonSteps {
 		allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
 	}
 
-	@Given("^clean application state$")
+	//@Given("^clean application state$")
 	public void resetState() {
 		Long result = (Long) ((JavascriptExecutor) WebDriverRunner.getWebDriver())
 				.executeAsyncScript("var callback = arguments[arguments.length - 1]; " +

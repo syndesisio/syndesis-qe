@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class TestSupport {
 
-	private static final String ENDPOINT_NAME = "test-support";
+	private static final String ENDPOINT_NAME = "/test-support";
 	private static final String apiPath = TestConfiguration.syndesisRestApiPath();
 	private static Client client;
 	private static TestSupport instance = null;
@@ -33,11 +33,18 @@ public final class TestSupport {
 	}
 
 	/**
-	 * Resets syndesis database.
-	 *
-	 * @param token
+	 * Resets Syndesis database.
 	 */
-	public static void resetDB() {
+	public void resetDB() {
+		resetDbWithResponse();
+	}
+
+	/**
+	 * Resets Syndesis database.
+	 *
+	 * @return HTTP response code
+	 */
+	public int resetDbWithResponse() {
 		log.info("Resetting syndesis DB.");
 
 		final Invocation.Builder invocation = client
@@ -45,10 +52,12 @@ public final class TestSupport {
 				.request(MediaType.APPLICATION_JSON)
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
-		invocation.get();
+		int responseCode = invocation.get().getStatus();
+		log.debug("Reset endpoint reponse: {}", responseCode);
+		return responseCode;
 	}
 
-	public static String getEndpointUrl() {
+	public String getEndpointUrl() {
 		return String.format("%s%s%s%s", RestUtils.getRestUrl(), apiPath, ENDPOINT_NAME, "/reset-db");
 	}
 }
