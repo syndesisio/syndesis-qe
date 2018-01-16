@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.integrations.edit;
+package io.syndesis.qe.pages.integrations.edit.actions;
 
 /**
  * Created by sveres on 12/11/17.

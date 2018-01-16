@@ -8,6 +8,13 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponent;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentInvokeSql;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsPublish;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsRequest;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsSubscribe;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentPeriodicSql;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentTwitterSearch;
 import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponentFactory;
