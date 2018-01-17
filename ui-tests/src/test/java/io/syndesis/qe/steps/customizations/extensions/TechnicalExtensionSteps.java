@@ -51,7 +51,7 @@ public class TechnicalExtensionSteps {
 		//TODO Deeper validation
 		assertThat(techExtensionsImportPage.validate(), is(true));
 		
-		techExtensionsImportPage.getButton("Import").shouldBe(visible);
+		techExtensionsImportPage.getButton("Import Extension").shouldBe(visible);
 		techExtensionsImportPage.getButton("Cancel").shouldBe(visible);
 	}
 
