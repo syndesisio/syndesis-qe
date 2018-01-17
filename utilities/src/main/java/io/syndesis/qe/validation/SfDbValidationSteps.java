@@ -38,6 +38,7 @@ public class SfDbValidationSteps {
 	private final DbUtils dbUtils;
 	private final ForceApi salesforce;
 	private final AccountsDirectory accountsDirectory;
+	private String leadId;
 
 	public SfDbValidationSteps() throws IOException, TwitterException {
 		accountsDirectory = AccountsDirectory.getInstance();
@@ -51,13 +52,15 @@ public class SfDbValidationSteps {
 				.setForceURL(salesforceAccount.getProperty("loginUrl")));
 	}
 
+	// TODO(tplevko): make 2 steps out of this -> delete user, clean SF
 	@Given("^clean before SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
 	public void cleanupSfDb(String firstName, String lastName) throws TwitterException {
 		TestSupport.getInstance().resetDB();
-		deleteSalesforceLead(salesforce, firstName, lastName);
+		deleteAllSalesforceLeadsWithName(salesforce, firstName, lastName);
 		dbUtils.deleteRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME());
 	}
 
+	// TODO(tplevko): make 2 steps out of this -> delete user, clean SF
 	@Then("^clean after SF to DB, removes user with first name: \"([^\"]*)\" and last name: \"([^\"]*)\"")
 	public void tearDownSfDb(String firstName, String lastName) throws TwitterException {
 		cleanupSfDb(firstName, lastName);
@@ -76,7 +79,7 @@ public class SfDbValidationSteps {
 		Assertions.assertThat(contactCreated).as("Lead record has appeard in db").isEqualTo(true);
 		log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 		// Now we verify, the created lead contains the correct personal information.
-		Assertions.assertThat(getLeadTaskFromDb(firstName, lastName).toLowerCase()).contains(emailAddress);
+		Assertions.assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
 	}
 
 	/**
@@ -84,11 +87,11 @@ public class SfDbValidationSteps {
 	 *
 	 * @return
 	 */
-	private String getLeadTaskFromDb(String firstName, String lastName) {
+	private String getLeadTaskFromDb(String task) {
 
 		String leadTask = null;
 		try (ResultSet rs = dbUtils.executeSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
-				+ firstName + " " + lastName + "%'");) {
+				+ task + "%'");) {
 			if (rs.next()) {
 				leadTask = rs.getString("TASK");
 				log.debug("TASK = " + leadTask);
@@ -108,8 +111,47 @@ public class SfDbValidationSteps {
 		lead.setLastName(lastName);
 		lead.setCompany(companyName);
 		lead.setEmail(email);
+		salesforce.createSObject("lead", lead);
+	}
 
-		final String id = salesforce.createSObject("lead", lead);
+	@Then("^delete lead with first name \"([^\"]*)\" and last name \"([^\"]*)\"")
+	public void deleteSalesforceLead(String firstName, String lastName) {
+
+		final Optional<Lead> lead = getSalesforceLead(salesforce, firstName, lastName);
+		if (lead.isPresent()) {
+			leadId = String.valueOf(lead.get().getId());
+			salesforce.deleteSObject("lead", leadId);
+			log.debug("Deleting salesforce lead: {}", lead.get());
+		}
+	}
+
+	@Then("^validate SF on delete to DB created new task with lead ID as task name")
+	public void validateLead() {
+		final long start = System.currentTimeMillis();
+		// We wait for exactly 1 record to appear in DB.
+		final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()),
+				TimeUnit.MINUTES,
+				2,
+				TimeUnit.SECONDS,
+				5);
+		Assertions.assertThat(contactCreated).as("Lead record has appeard in db").isEqualTo(true);
+		log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+		// Now we verify, the created lead contains the correct personal information.
+		Assertions.assertThat(getLeadTaskFromDb(leadId).toLowerCase()).isNotEmpty();
+	}
+
+	@Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)\"")
+	public void updateLead(String origEmail, String newFirstName, String newLastName, String newEmailAddress, String companyName) {
+
+		leadId = getSalesforceLeadByEmail(salesforce, origEmail).get().getId();
+		final Lead lead = new Lead();
+
+		lead.setEmail(newEmailAddress);
+		lead.setFirstName(newFirstName);
+		lead.setLastName(newLastName);
+		lead.setCompany(companyName);
+
+		salesforce.updateSObject("lead", leadId, lead);
 	}
 
 	/**
@@ -117,19 +159,27 @@ public class SfDbValidationSteps {
 	 *
 	 * @param salesforce
 	 */
-	private void deleteSalesforceLead(ForceApi salesforce, String firstName, String lastName) {
+	private void deleteAllSalesforceLeadsWithName(ForceApi salesforce, String firstName, String lastName) {
 		final Optional<Lead> lead = getSalesforceLead(salesforce, firstName, lastName);
 		if (lead.isPresent()) {
 			final String id = String.valueOf(lead.get().getId());
 			salesforce.deleteSObject("lead", id);
-			log.info("Deleting salesforce lead: {}", lead.get());
-			deleteSalesforceLead(salesforce, firstName, lastName);
+			log.debug("Deleting salesforce lead: {}", lead.get());
+			deleteAllSalesforceLeadsWithName(salesforce, firstName, lastName);
 		}
 	}
 
 	private Optional<Lead> getSalesforceLead(ForceApi salesforce, String firstName, String lastName) {
 		final QueryResult<Lead> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Email,Company FROM lead where FirstName = '"
 				+ firstName + "' and LastName='" + lastName + "'", Lead.class
+		);
+		final Optional<Lead> lead = queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
+		return lead;
+	}
+
+	private Optional<Lead> getSalesforceLeadByEmail(ForceApi salesforce, String emailAddress) {
+		final QueryResult<Lead> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Email,Company FROM lead where Email = '"
+				+ emailAddress + "'", Lead.class
 		);
 		final Optional<Lead> lead = queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
 		return lead;
