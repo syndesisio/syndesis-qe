@@ -96,9 +96,4 @@ public class CommonSteps {
 		int responseCode = TestSupport.getInstance().resetDbWithResponse();
 		Assertions.assertThat(responseCode).isEqualTo(204);
 	}
-
-
-
-
-
 }
