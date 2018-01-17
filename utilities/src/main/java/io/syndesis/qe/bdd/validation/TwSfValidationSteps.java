@@ -1,4 +1,4 @@
-package io.syndesis.qe.validation;
+package io.syndesis.qe.bdd.validation;
 
 import org.assertj.core.api.Assertions;
 
