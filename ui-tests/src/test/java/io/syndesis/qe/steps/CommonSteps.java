@@ -199,7 +199,7 @@ public class CommonSteps {
 		log.info("Text message {} was found.", textMessage);
 	  }
 
-	@Then("^she is presented with warning$")
+	@Then("^she can see alert notification$")
 	public void checkSqlWarning() throws Throwable {
 		SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-warning");
 		allertSucces.shouldBe(visible);

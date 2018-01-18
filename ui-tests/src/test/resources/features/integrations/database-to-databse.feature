@@ -216,7 +216,7 @@ Feature: Test functionality of DB connection
     Then she fills periodic query input with "SELECT * FROM CONTACT-A" value
     Then she fills period input with "5000" value
     And clicks on the "Done" button
-    And she is presented with sql-warning
+    And she can see alert notification
     #@wip time_unit_id is not yet available
     #Then she selects "Miliseconds" from "time_unit_id" dropdown
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
@@ -228,13 +228,13 @@ Feature: Test functionality of DB connection
     And she selects "Invoke SQL" integration action
     Then she fills invoke query input with "UPDATE TODO-A SET completed=1 WHERE task like '%:#task%'" value
     And clicks on the "Done" button
-    And she is presented with sql-warning
+    And she can see alert notification
     Then she fills invoke query input with "DELETE FROM TODO-A WHERE task like '%:#task%'" value
     And clicks on the "Done" button
-    And she is presented with sql-warning
+    And she can see alert notification
     Then she fills invoke query input with "INSERT INTO TODO-A(task) VALUES(:#task)" value
     And clicks on the "Done" button
-    And she is presented with sql-warning
+    And she can see alert notification
 #    correct one:
     #wip this query doesnt work ftb #698
     Then she fills invoke query input with "DELETE FROM TODO WHERE task = :#task" value
