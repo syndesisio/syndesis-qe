@@ -3,8 +3,8 @@ Feature: Upload tech extension and add it to integration
 
   @tech-extension-clean-application-state
   Scenario: Clean application state
+    Given clean application state
     Given "Camilla" logs into the Syndesis
-   	Given clean application state
     Given created connections
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
 

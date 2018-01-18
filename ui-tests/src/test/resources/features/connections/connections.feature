@@ -3,8 +3,8 @@ Feature: Connections CRUD test
 # Enter feature description here
 
   Background:
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
 
   @connection-create-delete-test
   Scenario: CREATE and DELETE connection happy path

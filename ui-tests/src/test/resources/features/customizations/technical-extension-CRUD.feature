@@ -3,8 +3,8 @@ Feature: Extension CRUD operations
 
   @tech-extension-CRUD-clean-application-state
   Scenario: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
 
   @tech-extension-CRUD-navigate-to-technical-extensions-page
   Scenario: Navigate to technical extensions page
