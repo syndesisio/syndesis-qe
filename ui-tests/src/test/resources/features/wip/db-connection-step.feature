@@ -4,8 +4,8 @@ Feature: Test functionality of DB connection
 
   @db-connection-step-clean-application-state
   Scenario: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
 
 #
 #  1. select - select - delete

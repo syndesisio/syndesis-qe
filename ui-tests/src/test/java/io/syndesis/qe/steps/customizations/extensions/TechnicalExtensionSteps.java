@@ -48,6 +48,7 @@ public class TechnicalExtensionSteps {
 
 	@When("^she see details about imported extension$")
 	public void importDetails() throws Throwable {
+		//TODO Deeper validation
 		assertThat(techExtensionsImportPage.validate(), is(true));
 	}
 

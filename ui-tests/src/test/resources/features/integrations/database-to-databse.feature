@@ -2,8 +2,8 @@
 Feature: Test functionality of DB connection
 
   Background: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
     Given clean TODO table
 
 #

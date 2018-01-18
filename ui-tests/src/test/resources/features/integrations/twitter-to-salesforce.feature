@@ -2,8 +2,8 @@
 Feature: Create integration with datamapper step
 
   Background: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
     Given created connections
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
