@@ -9,7 +9,7 @@ import cucumber.api.junit.Cucumber;
 @CucumberOptions(
 	features = "classpath:features",
 	format = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml", "json:target/cucumber/cucumber-report.json"})
-public class CucumberTestsRunner {
+public class CucumberTestsRunner extends TestSuiteParent {
 
 	//we could have some setup here
 
