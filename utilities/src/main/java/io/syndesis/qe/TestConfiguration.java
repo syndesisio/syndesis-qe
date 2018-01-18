@@ -17,6 +17,7 @@ public class TestConfiguration {
 	public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
 	public static final String OPENSHIFT_NAMESPACE_CLEANUP = "syndesis.config.openshift.namespace.cleanup";
 	public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
+	public static final String OPENSHIFT_NAMESPACE_LOCK = "syndesis.config.openshift.namespace.lock";
 
 	public static final String SYNDESIS_UI_USERNAME = "syndesis.config.ui.username";
 	public static final String SYNDESIS_UI_PASSWORD = "syndesis.config.ui.password";
@@ -93,6 +94,8 @@ public class TestConfiguration {
 
 	public static boolean namespaceCleanup() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP)); }
 
+	public static boolean namespaceLock() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_LOCK)); }
+
 	private Properties defaultValues() {
 		final Properties props = new Properties();
 
@@ -106,6 +109,7 @@ public class TestConfiguration {
 		props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
 
 		props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
+		props.setProperty(OPENSHIFT_NAMESPACE_LOCK, "false");
 
 		props.setProperty(SYNDESIS_TECH_EXTENSION_URL, "src/test/resources/extensions/syndesis-extensions-1.0.0-SNAPSHOT.jar");
 
