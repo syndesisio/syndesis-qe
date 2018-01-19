@@ -50,9 +50,6 @@ public class TechnicalExtensionSteps {
 	public void importDetails() throws Throwable {
 		//TODO Deeper validation
 		assertThat(techExtensionsImportPage.validate(), is(true));
-		
-		techExtensionsImportPage.getButton("Import Extension").shouldBe(visible);
-		techExtensionsImportPage.getButton("Cancel").shouldBe(visible);
 	}
 
 	@Then("^technical extension \"([^\"]*)\" is present in technical extensions list$")
