@@ -12,7 +12,7 @@ import io.syndesis.model.connection.Connector;
 public class ConnectorsEndpoint extends AbstractEndpoint<Connector> {
 
 	public ConnectorsEndpoint() throws GeneralSecurityException {
-		super(Connector.class, "connectors");
+		super(Connector.class, "/connectors");
 	}
 
 	@Override
