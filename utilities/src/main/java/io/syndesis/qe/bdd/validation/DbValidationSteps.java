@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.endpoints.TestSupport;
@@ -52,7 +53,7 @@ public class DbValidationSteps {
 		Assertions.assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
 	}
 
-	@Then("^validate SF on delete to DB created new task")
+	@Then("^validate SF on delete to DB created new task.*$")
 	public void validateLead() {
 		final long start = System.currentTimeMillis();
 		// We wait for exactly 1 record to appear in DB.
