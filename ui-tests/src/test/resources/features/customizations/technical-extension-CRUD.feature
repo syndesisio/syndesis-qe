@@ -3,8 +3,8 @@ Feature: Extension CRUD operations
 
   @tech-extension-CRUD-clean-application-state
   Scenario: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
 
   @tech-extension-CRUD-navigate-to-technical-extensions-page
   Scenario: Navigate to technical extensions page
@@ -38,7 +38,7 @@ Feature: Extension CRUD operations
     When Camilla upload extension
     Then she see details about imported extension
 
-    When she clicks on the "Import Extension" button
+    When she clicks on the "Update" button
     Then Camilla is presented with the Syndesis page "Extension Details"
 
     When "Camilla" navigates to the "Customizations" page

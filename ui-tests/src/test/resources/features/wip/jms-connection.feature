@@ -4,8 +4,8 @@ Feature: Test functionality of DB connection
 
   @jms-connection-clean-application-state
   Scenario: Clean application state
-    Given "Camilla" logs into the Syndesis
     Given clean application state
+    Given "Camilla" logs into the Syndesis
     Given deploy AMQ broker
     Given created connections
       | AMQ | AMQ | AMQ | AMQ connection is awesome |

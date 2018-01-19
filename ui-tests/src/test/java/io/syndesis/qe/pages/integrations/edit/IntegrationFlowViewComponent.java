@@ -62,10 +62,8 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 	 * @param position (start|finish)
 	 */
 	public boolean verifyActivePosition(String position) {
-		ElementsCollection flowSteps = getRootElement().findAll(Element.STEP_ROOT);
-		Optional<SelenideElement> flowStep = flowSteps.stream().filter(e -> e.findAll(Element.STEP).filter(exactText(position)).size() == 1).findFirst();
-
-		return flowStep.map(selenideElement -> selenideElement.find(Element.ACTIVE_STEP_ICON).isDisplayed()).orElse(false);
+		SelenideElement selenideElement = getRootElement().find(By.cssSelector("div.step." + position.toLowerCase()));
+		return selenideElement.find(Element.ACTIVE_STEP_ICON).shouldBe(visible).exists();
 	}
 
 	public List<String> getStepsArray() {
