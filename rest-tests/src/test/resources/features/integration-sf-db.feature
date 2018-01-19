@@ -23,7 +23,7 @@ Feature: sf scenarios
     And create DB insert taks step
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
-    Then delete lead with first name "John" and last name "Doe"
+    Then delete lead from SF with email: "jdoe@acme.com"
     Then validate SF on delete to DB created new task with lead ID as task name
 
   @integrations-sf-db
@@ -35,4 +35,4 @@ Feature: sf scenarios
     When create integration with name: "SF update to DB rest test"
     Then wait for integration with name: "SF update to DB rest test" to become active
     Then update SF lead with email "jdoe@acme.com" to first name: "Joe", last name "Carrot", email "jcarrot@acme.com", company name "EMCA"
-    Then validate SF to DB created new lead with first name: "Joe", last name: "Carrot", email: "jcarrot@acme.com"
+    Then validate DB created new lead with first name: "Joe", last name: "Carrot", email: "jcarrot@acme.com"
