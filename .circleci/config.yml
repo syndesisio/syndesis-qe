@@ -39,8 +39,8 @@ jobs:
                 curl -fsSL https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | sudo tar xz -C /usr/bin --strip-components 1
                 oc login --server "${OPENSHIFT_SERVER}" --token "${OPENSHIFT_TOKEN}"
 
-                oc get cm syndesis-qe-test-config -o jsonpath="{ .data.test_properties }" -n syndesis-ci > test.properties
-                oc get cm syndesis-qe-credentials -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
+                oc get cm syndesis-qe -o jsonpath="{ .data.ui_test_properties }" -n syndesis-ci > test.properties
+                oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
             else
               echo "Setup OpenShift cluster credentials"
             fi
@@ -54,7 +54,7 @@ jobs:
           when: always
           command: |
             mkdir -p ~/cucumber
-            cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/junit.xml
+            cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/ui.cucumber
       - store_artifacts:
           path: ui-tests/target/cucumber
       - <<: *save_m2
@@ -63,6 +63,44 @@ jobs:
           paths:
             - ~/.m2
 
+  rest-tests:
+    <<: *job_defaults
+    environment:
+      <<: *common_env
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: syndesis-rest-qe-mvn-{{ checksum "pom.xml" }}
+      - <<: *load_m2
+      - run:
+          name: Execute tests
+          command: |
+            if [ -n "${OPENSHIFT_TOKEN}" ]; then
+                curl -fsSL https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | sudo tar xz -C /usr/bin --strip-components 1
+                oc login --server "${OPENSHIFT_SERVER}" --token "${OPENSHIFT_TOKEN}"
+
+                oc get cm syndesis-qe -o jsonpath="{ .data.rest_test_properties }" -n syndesis-ci > test.properties
+                oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
+            else
+              echo "Setup OpenShift cluster credentials"
+            fi
+
+            ./mvnw clean test -B -P rest -Dcucumber.options="--tags ~@wip"
+
+      - run:
+          name: Store Cucumber report
+          when: always
+          command: |
+            mkdir -p ~/cucumber
+            cp -f rest-tests/target/cucumber/cucumber-junit.xml ~/cucumber/rest.cucumber
+      - store_artifacts:
+          path: rest-tests/target/cucumber
+      - <<: *save_m2
+      - save_cache:
+          key: syndesis-rest-qe-mvn-{{ checksum "pom.xml" }}
+          paths:
+            - ~/.m2
 
   build:
     <<: *job_defaults
@@ -75,38 +113,22 @@ jobs:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
       - <<: *load_m2
       - run:
+          name: Checkout Syndesis
+          command: |
+            git clone git@github.com:syndesisio/syndesis.git
+      - run:
+          name: Build Rest
+          command: |
+            ./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash | tee syndesis_build_log.txt
+      - run:
           name: Build tests
           command: |
-            ./mvnw clean install -B -DskipTests
+            ./mvnw clean install -B -DskipTests | tee build_log.txt
       - <<: *save_m2
       - save_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
           paths:
             - ~/.m2
-
-  rest:
-    <<: *job_defaults
-    environment:
-      <<: *common_env
-    steps:
-      - checkout
-      - run:
-          name: Checkout Syndesis
-          command: |
-            git clone git@github.com:syndesisio/syndesis.git
-
-      - restore_cache:
-          key: syndesis-mvn-rest-{{ checksum "syndesis/app/rest/pom.xml" }}
-      - <<: *load_m2
-      - run:
-          name: Build Rest
-          command: |
-            ./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash | tee build_log.txt
-      - <<: *save_m2
-      - save_cache:
-          key: syndesis-mvn-rest-{{ checksum "syndesis/app/rest/pom.xml" }}
-          paths:
-          - ~/.m2
 
 workflows:
   version: 2
@@ -118,7 +140,10 @@ workflows:
           filters:
             branches:
               only: master
-      - build:
+      - rest-tests:
           requires:
-            - rest
-      - rest
+            - build
+          filters:
+            branches:
+              only: master
+      - build
