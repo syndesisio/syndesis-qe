@@ -58,6 +58,8 @@ public final class TestSupport {
 	}
 
 	public String getEndpointUrl() {
-		return String.format("%s%s%s%s", RestUtils.getRestUrl(), apiPath, ENDPOINT_NAME, "/reset-db");
+		String restEndpoint = String.format("%s%s%s%s", RestUtils.getRestUrl(), apiPath, ENDPOINT_NAME, "/reset-db");
+		log.debug("Reset endpoint URL: {}", restEndpoint);
+		return restEndpoint;
 	}
 }

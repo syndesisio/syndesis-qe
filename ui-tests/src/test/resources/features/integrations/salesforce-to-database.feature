@@ -75,5 +75,6 @@ Feature: Test to verify correct function of connections kebab menu
       # wait for integration to get in active state
     Then she wait until integration "Salesforce to PostresDB E2E" get into "Active" state
     And create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
-    And validate SF to DB created new lead with first name: "John", last name: "Doe", email: "jdoe@acme.com"
-    And clean after SF to DB, removes user with first name: "John" and last name: "Doe"
+    And validate DB created new lead with first name: "John", last name: "Doe", email: "jdoe@acme.com"
+    Given clean SF, removes all leads with email: "jdoe@acme.com"
+	And remove all records from DB
