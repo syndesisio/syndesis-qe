@@ -12,6 +12,6 @@ import io.syndesis.model.connection.Connection;
 public class ConnectionsEndpoint extends AbstractEndpoint<Connection> {
 
 	public ConnectionsEndpoint() throws GeneralSecurityException {
-		super(Connection.class, "connections");
+		super(Connection.class, "/connections");
 	}
 }
