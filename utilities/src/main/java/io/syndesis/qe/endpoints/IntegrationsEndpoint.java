@@ -12,6 +12,6 @@ import io.syndesis.model.integration.Integration;
 public class IntegrationsEndpoint extends AbstractEndpoint<Integration> {
 
 	public IntegrationsEndpoint() throws GeneralSecurityException {
-		super(Integration.class, "integrations");
+		super(Integration.class, "/integrations");
 	}
 }
