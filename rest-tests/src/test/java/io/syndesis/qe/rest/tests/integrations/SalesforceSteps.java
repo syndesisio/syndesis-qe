@@ -47,15 +47,15 @@ public class SalesforceSteps {
 		steps.getSteps().add(salesforceStep);
 	}
 
-	@Given("^create SF step for TW SF test")
-	public void createSfTwStep() {
+	@Given("^create SF step with action: \"([^\"]*)\"")
+	public void createSfActionStep(String action) {
 		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 
 		final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
 		final Step salesforceStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(salesforceConnection)
-				.action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-create-sobject"))
+				.action(TestUtils.findConnectorAction(salesforceConnector, action))
 				.build();
 		steps.getSteps().add(salesforceStep);
 	}

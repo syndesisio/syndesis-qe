@@ -14,6 +14,7 @@ import io.syndesis.model.action.Action;
 import io.syndesis.model.action.ConnectorAction;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.Integration;
+import io.syndesis.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,7 +83,7 @@ public final class TestUtils {
 	public static boolean waitForActivation(IntegrationsEndpoint e, Integration i, TimeUnit unit, long timeout) {
 
 		return waitForEvent(
-				integration -> integration.getCurrentStatus().orElse(Integration.Status.Pending) == Integration.Status.Activated,
+				integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == IntegrationDeploymentState.Active,
 				() -> getIntegration(e, i).orElse(i),
 				unit,
 				timeout,
