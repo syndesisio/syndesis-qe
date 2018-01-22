@@ -6,6 +6,7 @@ import java.security.GeneralSecurityException;
 
 import cucumber.api.java.en.When;
 import io.syndesis.model.integration.Integration;
+import io.syndesis.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,7 @@ public class IntegrationHandler {
 		Integration integration = new Integration.Builder()
 				.steps(steps.getSteps())
 				.name(integrationName)
-				.desiredStatus(Integration.Status.Activated)
+				.desiredStatus(IntegrationDeploymentState.Active)
 				.build();
 
 		log.info("Creating integration {}", integration.getName());
