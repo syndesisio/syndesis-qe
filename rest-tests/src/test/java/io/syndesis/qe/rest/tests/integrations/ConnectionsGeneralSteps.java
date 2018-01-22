@@ -7,6 +7,7 @@ import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.RestConstants;
@@ -83,16 +84,16 @@ public class ConnectionsGeneralSteps {
 
 		final Connector s3Connector = connectorsEndpoint.get("aws-s3");
 		final Account s3Account = accountsDirectory.getAccount("s3").get();
-		log.info("Bucket name:  {}", s3Bucket);
+		log.info("Bucket name:  {}", S3BucketNameBuilder.getBucketName(s3Bucket));
 
 		final Connection s3Connection = new Connection.Builder()
 				.connector(s3Connector)
 				.connectorId(s3Connector.getId())
-				.id(s3Bucket)
-				.name("New Fuse QE s3 " + s3Bucket)
+				.id(S3BucketNameBuilder.getBucketName(s3Bucket))
+				.name("New Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
 				.configuredProperties(TestUtils.map(
 						"accessKey", s3Account.getProperty("accessKey"),
-						"bucketNameOrArn", s3Bucket,
+						"bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket),
 						"region", s3Account.getProperty("region"),
 						"secretKey", s3Account.getProperty("secretKey")
 				))
