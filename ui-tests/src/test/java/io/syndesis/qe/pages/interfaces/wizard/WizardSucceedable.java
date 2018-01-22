@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.java_interfaces.wizard;
+package io.syndesis.qe.pages.interfaces.wizard;
 
 public interface WizardSucceedable {
 	void nextWizardStep();

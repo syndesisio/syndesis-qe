@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.customizations.api_client_connectors.wizard;
+package io.syndesis.qe.pages.customizations.connectors.wizard;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
@@ -12,7 +12,7 @@ import com.codeborne.selenide.SelenideElement;
 import java.io.File;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.java_interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
 
 public class UploadSwagger extends SyndesisPageObject implements WizardSucceedable {
 

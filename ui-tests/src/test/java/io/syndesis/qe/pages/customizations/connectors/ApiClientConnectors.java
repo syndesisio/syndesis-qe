@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.customizations.api_client_connectors;
+package io.syndesis.qe.pages.customizations.connectors;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.text;

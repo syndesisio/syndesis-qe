@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.customizations.api_client_connectors.wizard;
+package io.syndesis.qe.pages.customizations.connectors.wizard;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Selenide.$;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.java_interfaces.wizard.WizardCancelable;
-import io.syndesis.qe.pages.java_interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardCancelable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
 
 public class ApiClientConnectorWizard extends SyndesisPageObject implements WizardCancelable {
 

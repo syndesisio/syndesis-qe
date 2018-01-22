@@ -1,12 +1,9 @@
-package io.syndesis.qe.steps.customizations.api_client_connectors;
+package io.syndesis.qe.steps.customizations.connectors;
 
 import static java.util.Arrays.asList;
 
 import org.junit.Assert;
 
-import com.codeborne.selenide.SelenideElement;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +12,13 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.pages.customizations.api_client_connectors.detail.ApiClientConnectorDetail;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.ApiClientConnectorWizard;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.GeneralConnectorInfo;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.ReviewSwaggerActions;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.Security;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.UploadSwagger;
-import io.syndesis.qe.pages.customizations.api_client_connectors.ApiClientConnectors;
+import io.syndesis.qe.pages.customizations.connectors.detail.ApiClientConnectorDetail;
+import io.syndesis.qe.pages.customizations.connectors.wizard.ApiClientConnectorWizard;
+import io.syndesis.qe.pages.customizations.connectors.wizard.GeneralConnectorInfo;
+import io.syndesis.qe.pages.customizations.connectors.wizard.ReviewSwaggerActions;
+import io.syndesis.qe.pages.customizations.connectors.wizard.Security;
+import io.syndesis.qe.pages.customizations.connectors.wizard.UploadSwagger;
+import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.steps.CommonSteps;
 
 public class ApiClientConnectorsSteps {

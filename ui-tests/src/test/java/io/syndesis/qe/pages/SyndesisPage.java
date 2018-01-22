@@ -1,16 +1,16 @@
 package io.syndesis.qe.pages;
 
-import io.syndesis.qe.pages.customizations.api_client_connectors.detail.ApiClientConnectorDetail;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.GeneralConnectorInfo;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.ReviewSwaggerActions;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.Security;
-import io.syndesis.qe.pages.customizations.api_client_connectors.wizard.UploadSwagger;
+import io.syndesis.qe.pages.customizations.connectors.detail.ApiClientConnectorDetail;
+import io.syndesis.qe.pages.customizations.connectors.wizard.GeneralConnectorInfo;
+import io.syndesis.qe.pages.customizations.connectors.wizard.ReviewSwaggerActions;
+import io.syndesis.qe.pages.customizations.connectors.wizard.Security;
+import io.syndesis.qe.pages.customizations.connectors.wizard.UploadSwagger;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponentAmq;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
 import io.syndesis.qe.pages.connections.list.ConnectionListPage;
 import io.syndesis.qe.pages.customizations.CustomizationsPage;
-import io.syndesis.qe.pages.customizations.api_client_connectors.ApiClientConnectors;
+import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
@@ -23,7 +23,7 @@ import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectCompone
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
 import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
-import io.syndesis.qe.pages.modal_dialogs.DeleteWarningDialog;
+import io.syndesis.qe.pages.dialogs.DeleteWarningDialog;
 
 /**
  * Created by mastepan on 11/15/17.

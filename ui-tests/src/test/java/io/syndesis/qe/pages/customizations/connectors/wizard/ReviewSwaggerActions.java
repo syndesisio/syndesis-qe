@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.customizations.api_client_connectors.wizard;
+package io.syndesis.qe.pages.customizations.connectors.wizard;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
@@ -10,28 +10,22 @@ import org.openqa.selenium.WebDriverException;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.java_interfaces.wizard.WizardFinishable;
-import io.syndesis.qe.pages.java_interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
 
-public class GeneralConnectorInfo extends SyndesisPageObject implements WizardFinishable, WizardSucceedable {
+public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSucceedable {
 
 	private static class Button {
-
-		public static By CREATE_CONNECTOR = By.xpath("//button[contains(.,'Create Connector')]");
+		public static By NEXT = By.xpath("//button[contains(.,'Next')]");
 	}
 
 	private static class Element {
-		public static By ROOT = By.cssSelector("syndesis-api-connector-info");
+		public static By ROOT = By.cssSelector("syndesis-api-connector-review");
 	}
 
 	@Override
 	public void nextWizardStep() {
-		finish();
-	}
-
-	@Override
-	public void finish() {
-		$(Button.CREATE_CONNECTOR).shouldBe(visible).click();
+		System.out.println("REVIEW_SWAGGER_ACTION");
+		$(Button.NEXT).shouldBe(visible).click();
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.modal_dialogs;
+package io.syndesis.qe.pages.dialogs;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
