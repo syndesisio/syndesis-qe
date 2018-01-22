@@ -30,7 +30,7 @@ public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSu
 
 	@Override
 	public SelenideElement getRootElement() {
-		return null;
+		return $(Element.ROOT).should(exist);
 	}
 
 	@Override

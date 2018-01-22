@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selectors.byId;
 import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
@@ -28,8 +29,7 @@ public class ApiClientConnectorDetail extends SyndesisPageObject {
 		try {
 			$(Element.ROOT).should(exist);
 			return true;
-		} catch (Throwable t) {
-			System.out.println("THROWABLE: " + t.getClass().getName());
+		} catch (WebDriverException wde) {
 			return false;
 		}
 	}

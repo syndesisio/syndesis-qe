@@ -36,7 +36,7 @@ public class GeneralConnectorInfo extends SyndesisPageObject implements WizardFi
 
 	@Override
 	public SelenideElement getRootElement() {
-		return null;
+		return $(Element.ROOT).should(exist);
 	}
 
 	@Override

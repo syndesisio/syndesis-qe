@@ -1,8 +1,12 @@
 package io.syndesis.qe.pages.customizations.api_client_connectors.wizard;
 
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Selenide.$;
+
 import static java.util.Arrays.asList;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriverException;
 
 import com.codeborne.selenide.SelenideElement;
 
@@ -45,12 +49,17 @@ public class ApiClientConnectorWizard extends SyndesisPageObject implements Wiza
 
 	@Override
 	public SelenideElement getRootElement() {
-		return null;
+		return $(Element.ROOT).should(exist);
 	}
 
 	@Override
 	public boolean validate() {
-		return false;
+		try {
+			$(Element.ROOT).should(exist);
+			return true;
+		} catch (WebDriverException wde) {
+			return false;
+		}
 	}
 
 	@Override

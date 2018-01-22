@@ -33,7 +33,7 @@ public class Security extends SyndesisPageObject implements WizardSucceedable {
 
 	@Override
 	public SelenideElement getRootElement() {
-		return null;
+		return $(Element.ROOT).should(exist);
 	}
 
 	@Override
