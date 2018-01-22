@@ -9,6 +9,7 @@ import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.TestUtils;
@@ -36,7 +37,7 @@ public class S3Steps {
 	@Given("^create S3 polling step with bucket: \"([^\"]*)\"")
 	public void createS3PollingStep(String bucketName) {
 		final Connector s3Connector = connectorsEndpoint.get("aws-s3");
-		final Connection s3Connection = connectionsEndpoint.get(bucketName);
+		final Connection s3Connection = connectionsEndpoint.get(S3BucketNameBuilder.getBucketName(bucketName));
 		final Step s3Step = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(s3Connection)
@@ -52,7 +53,7 @@ public class S3Steps {
 	@Given("^create S3 copy step with bucket: \"([^\"]*)\"")
 	public void createS3CopyStep(String bucketName) {
 		final Connector s3Connector = connectorsEndpoint.get("aws-s3");
-		final Connection s3Connection = connectionsEndpoint.get(bucketName);
+		final Connection s3Connection = connectionsEndpoint.get(S3BucketNameBuilder.getBucketName(bucketName));
 		final Step s3Step = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(s3Connection)

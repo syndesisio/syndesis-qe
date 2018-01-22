@@ -10,7 +10,7 @@ Feature: tw scenarios
     And create TW mention step with "twitter-mention-action" action
     And create basic TW to SF filter step
     And create mapper step using template: "twitter-salesforce"
-    And create SF step for TW SF test
+    And create SF step with action: "salesforce-create-sobject"
     When create integration with name: "Twitter to salesforce contact rest test"
     Then wait for integration with name: "Twitter to salesforce contact rest test" to become active
     Then check SF does not contain contact for tw accound: "twitter_talky"
