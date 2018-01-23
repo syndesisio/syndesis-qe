@@ -88,7 +88,7 @@ public class ApiClientConnectorsSteps {
 				securityWizardStep.setUpSecurity(TestConfiguration.syndesisUrl() + TestConfiguration.syndesisCallbackUrlSuffix());
 				break;
 			default:
-				throw new UnsupportedOperationException("The Auth type < " + authType + "> is not implemented by the test.");
+				Assert.fail("The Auth type < " + authType + "> is not implemented by the test.");
 		}
 	}
 
