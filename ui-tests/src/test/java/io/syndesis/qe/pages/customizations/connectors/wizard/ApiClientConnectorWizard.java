@@ -15,36 +15,17 @@ import java.util.List;
 import java.util.ListIterator;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.interfaces.wizard.WizardCancelable;
-import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.WizardPageObject;
+import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
-public class ApiClientConnectorWizard extends SyndesisPageObject implements WizardCancelable {
+public class ApiClientConnectorWizard extends WizardPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-api-connector-create");
 	}
 
-	private List<WizardSucceedable> wizardSteps = new ArrayList(asList(
-			new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()));
-
-	private ListIterator<WizardSucceedable> steps = wizardSteps.listIterator();
-
-	private SyndesisPageObject currentStep = (SyndesisPageObject) wizardSteps.get(0);
-
 	public ApiClientConnectorWizard() {
-		steps.next();
-	}
-
-	public void nextStep() {
-		((WizardSucceedable) currentStep).nextWizardStep();
-		if (steps.hasNext()) {
-			currentStep = (SyndesisPageObject) steps.next();
-		}
-	}
-
-	public SyndesisPageObject getCurrentStep() {
-		System.out.println(currentStep.getClass());
-		return currentStep;
+		setSteps(new WizardStep[] {new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()});
 	}
 
 	@Override
@@ -60,10 +41,5 @@ public class ApiClientConnectorWizard extends SyndesisPageObject implements Wiza
 		} catch (WebDriverException wde) {
 			return false;
 		}
-	}
-
-	@Override
-	public void cancelWizard() {
-
 	}
 }

@@ -12,9 +12,9 @@ import com.codeborne.selenide.SelenideElement;
 import java.io.File;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
-public class UploadSwagger extends SyndesisPageObject implements WizardSucceedable {
+public class UploadSwagger extends SyndesisPageObject implements WizardStep {
 
 	private static class Button {
 		public static By NEXT = By.xpath("//button[contains(.,'Next')]");
@@ -32,7 +32,7 @@ public class UploadSwagger extends SyndesisPageObject implements WizardSucceedab
 	}
 
 	@Override
-	public void nextWizardStep() {
+	public void goToNextWizardStep() {
 		$(Button.NEXT).shouldBe(visible).click();
 	}
 

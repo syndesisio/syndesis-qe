@@ -10,9 +10,9 @@ import org.openqa.selenium.WebDriverException;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
-public class Security extends SyndesisPageObject implements WizardSucceedable {
+public class Security extends SyndesisPageObject implements WizardStep {
 
 	private static class Button {
 		public static By NEXT = By.xpath("//button[contains(.,'Next')]");
@@ -27,7 +27,7 @@ public class Security extends SyndesisPageObject implements WizardSucceedable {
 	}
 
 	@Override
-	public void nextWizardStep() {
+	public void goToNextWizardStep() {
 		$(Button.NEXT).shouldBe(visible).click();
 	}
 

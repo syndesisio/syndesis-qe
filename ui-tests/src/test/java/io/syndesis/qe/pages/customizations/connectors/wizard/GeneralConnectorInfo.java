@@ -10,10 +10,9 @@ import org.openqa.selenium.WebDriverException;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.interfaces.wizard.WizardFinishable;
-import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
-public class GeneralConnectorInfo extends SyndesisPageObject implements WizardFinishable, WizardSucceedable {
+public class GeneralConnectorInfo extends SyndesisPageObject implements WizardStep {
 
 	private static class Button {
 
@@ -25,11 +24,10 @@ public class GeneralConnectorInfo extends SyndesisPageObject implements WizardFi
 	}
 
 	@Override
-	public void nextWizardStep() {
+	public void goToNextWizardStep() {
 		finish();
 	}
 
-	@Override
 	public void finish() {
 		$(Button.CREATE_CONNECTOR).shouldBe(visible).click();
 	}

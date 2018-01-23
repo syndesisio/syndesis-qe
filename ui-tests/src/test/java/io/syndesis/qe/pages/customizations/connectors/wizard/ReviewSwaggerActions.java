@@ -10,9 +10,9 @@ import org.openqa.selenium.WebDriverException;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.interfaces.wizard.WizardSucceedable;
+import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
-public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSucceedable {
+public class ReviewSwaggerActions extends SyndesisPageObject implements WizardStep {
 
 	private static class Button {
 		public static By NEXT = By.xpath("//button[contains(.,'Next')]");
@@ -23,7 +23,7 @@ public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSu
 	}
 
 	@Override
-	public void nextWizardStep() {
+	public void goToNextWizardStep() {
 		System.out.println("REVIEW_SWAGGER_ACTION");
 		$(Button.NEXT).shouldBe(visible).click();
 	}

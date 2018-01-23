@@ -76,7 +76,7 @@ public class ApiClientConnectorsSteps {
 	public void sheReviewsSwaggerActions(String user) throws Throwable {
 		reviewSwaggerActionsWizardStep.validate();
 		reviewSwaggerActionsWizardStep.review();
-		reviewSwaggerActionsWizardStep.nextWizardStep();
+		reviewSwaggerActionsWizardStep.goToNextWizardStep();
 	}
 
 	@Then("(\\w+) sets up security by \"([^\"]*)\"$")
