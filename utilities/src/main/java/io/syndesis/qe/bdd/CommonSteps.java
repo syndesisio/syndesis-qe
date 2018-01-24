@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -80,7 +79,7 @@ public class CommonSteps {
 	@Given("^execute SQL command \"([^\"]*)\"$")
 	public void executeSql(String sqlCmd) {
 		DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
-		dbUtils.executeSqlOnSampleDb(sqlCmd);
+		dbUtils.readSqlOnSampleDb(sqlCmd);
 		SampleDbConnectionManager.getInstance().closeConnection();
 	}
 

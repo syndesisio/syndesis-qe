@@ -3,7 +3,9 @@ package io.syndesis.qe.steps;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
 import static org.hamcrest.Matchers.is;
+
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -49,14 +51,14 @@ public class CommonSteps {
 		if (!WebDriverRunner.isChrome()) {
 			WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
 		}
-		
+
 		String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
 		if (currentUrl.contains("api.fuse-ignite.openshift.com")) {
 
 			//click only if there is Ignite cluster login page
 			SelenideElement login = $(By.className("login-redhat"));
-			if(login.isDisplayed()) {
+			if (login.isDisplayed()) {
 				login.click();
 			}
 
@@ -85,15 +87,15 @@ public class CommonSteps {
 	public void createConnections(DataTable connectionsData) {
 		ConnectionSteps connectionSteps = new ConnectionSteps();
 		ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
-		
+
 		List<List<String>> dataTable = connectionsData.raw();
-		
+
 		for (List<String> dataRow : dataTable) {
 			String connectionType = dataRow.get(0);
-			String connectionCredentialsName = dataRow.get(1);		
+			String connectionCredentialsName = dataRow.get(1);
 			String connectionName = dataRow.get(2);
 			String connectionDescription = dataRow.get(3);
-			
+
 			navigateTo("", "Connections");
 			validatePage("", "Connections");
 
@@ -118,7 +120,7 @@ public class CommonSteps {
 				connectionSteps.typeConnectionDescription(connectionDescription);
 
 				clickOnButton("Create");
-			} 
+			}
 		}
 	}
 
@@ -140,7 +142,9 @@ public class CommonSteps {
 	}
 
 	@When(".*clicks? on the \"([^\"]*)\" button.*$")
-	public void clickOnButton(String buttonTitle) { new SyndesisRootPage().clickButton(buttonTitle); }
+	public void clickOnButton(String buttonTitle) {
+		new SyndesisRootPage().clickButton(buttonTitle);
+	}
 
 	@When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
 	public void clickOnModalDialogButton(String buttonTitle) { new SyndesisRootPage().clickModalDialogButton(buttonTitle); }
@@ -204,13 +208,12 @@ public class CommonSteps {
 		Assertions.assertThat(allertSucces.getText().equals(textMessage)).isTrue();
 
 		log.info("Text message {} was found.", textMessage);
-	  }
+	}
 
 	@Then("^she can see alert notification$")
 	public void checkSqlWarning() throws Throwable {
 		SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-warning");
 		allertSucces.shouldBe(visible);
-
 	}
 
 	/**
@@ -272,6 +275,5 @@ public class CommonSteps {
 	@When("^she clicks on the modal dialog \"([^\"]*)\" button$")
 	public void clickModalButton(String buttonName) throws Exception {
 		modalDialogPage.getButton(buttonName).shouldBe(visible).click();
-    	
 	}
 }
