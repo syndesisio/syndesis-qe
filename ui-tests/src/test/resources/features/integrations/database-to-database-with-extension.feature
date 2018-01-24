@@ -21,7 +21,7 @@ Feature: Upload tech extension and add it to integration
     When Camilla clicks on the "Import Extension" button
     Then she is presented with the Syndesis page "Import Extension"
 
-    When Camilla upload extension
+    When Camilla upload extension "syndesis-extensions-1.0.0-SNAPSHOT"
     Then she see details about imported extension
     
     When she clicks on the "Import Extension" button
@@ -35,6 +35,8 @@ Feature: Upload tech extension and add it to integration
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create integration from DB to DB
     When "Camilla" logs into the Syndesis
+    Then inserts into "contact" table
+      | Josef | Stieranka | Istrochem | db |
     And "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
@@ -45,7 +47,7 @@ Feature: Upload tech extension and add it to integration
     And she selects "Periodic SQL Invocation" integration action
     Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "5000" value
+    Then she fills period input with "10000" value
     And clicks on the "Done" button
     Then she is prompted to select a "Finish" connection from a list of available connections
 
@@ -75,17 +77,19 @@ Feature: Upload tech extension and add it to integration
 
     # finish and save integration
     When click on the "Save as Draft" button
-    And she defines integration name "Twitter to Salesforce E2E"
+    And she defines integration name "CRUD4-read-create-inbuilt E2E"
     And click on the "Publish" button
 
     # assert integration is present in list
-    Then Camilla is presented with "Twitter to Salesforce E2E" integration details
+    Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
     And Camilla clicks on the "Done" button
     And Integration "Twitter to Salesforce E2E" is present in integrations list
-
     # wait for integration to get in active state
-    Then she wait until integration "Twitter to Salesforce E2E" get into "Active" state
-    
+    Then she wait until integration "CRUD4-read-create-inbuilt E2E" get into "Active" state
+
+    Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
+
+
   @tech-extension-delete-tech-extension
   Scenario: Delete technical extensions
     When "Camilla" navigates to the "Customizations" page
