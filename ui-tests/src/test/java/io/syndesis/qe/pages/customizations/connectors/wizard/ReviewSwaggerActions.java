@@ -24,7 +24,6 @@ public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSt
 
 	@Override
 	public void goToNextWizardStep() {
-		System.out.println("REVIEW_SWAGGER_ACTION");
 		$(Button.NEXT).shouldBe(visible).click();
 	}
 
