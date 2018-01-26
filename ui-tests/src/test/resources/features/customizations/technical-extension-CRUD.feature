@@ -5,6 +5,11 @@ Feature: Extension CRUD operations
   Scenario: Clean application state
     Given clean application state
     Given "Camilla" logs into the Syndesis
+    
+    ## Extension metastep example
+    #Given imported extensions
+    #	| Syndesis Extension | syndesis-extensions-1.0.0-SNAPSHOT |
+    #	| Syndesis Extension (DataShape) | syndesis-extension-example-datashape-1.0.0-SNAPSHOT |
 
   @tech-extension-CRUD-navigate-to-technical-extensions-page
   Scenario: Navigate to technical extensions page
@@ -19,7 +24,7 @@ Feature: Extension CRUD operations
     When Camilla clicks on the "Import Extension" button
     Then she is presented with the Syndesis page "Import Extension"
 
-    When Camilla upload extension
+    When Camilla upload extension "syndesis-extensions-1.0.0-SNAPSHOT"
     Then she see details about imported extension
     
     When she clicks on the "Import Extension" button
