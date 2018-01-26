@@ -7,16 +7,23 @@ import static org.junit.Assert.assertThat;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.SelenideElement;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
+import cucumber.api.DataTable;
 import cucumber.api.PendingException;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.customizations.CustomizationsPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.steps.CommonSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,24 +31,50 @@ public class TechnicalExtensionSteps {
 	
 	private CustomizationsPage customizationsPage = new CustomizationsPage();
 	private TechExtensionsImportPage techExtensionsImportPage = new TechExtensionsImportPage();
+	private TechExtensionsListComponent techExtensionsListComponent = new TechExtensionsListComponent();
 	private ModalDialogPage modalDialogPage = new ModalDialogPage();
-
-	@Then("^she is presented with dialog page \"([^\"]*)\"$")
-	public void isPresentedWithDialogPage(String title) throws Throwable {
-		String titleText = new ModalDialogPage().getTitleText();
-		assertThat(titleText.equals(title), is(true));
+	
+	@Given("^imported extensions$")
+	public void importExtension(DataTable extensionsData) throws Throwable {
+		CommonSteps commonSteps = new CommonSteps();
+		
+		String extensionsLink = "Extensions";
+		String importButton = "Import Extension";
+		
+		List<List<String>> dataTable = extensionsData.raw();
+		
+		for (List<String> dataRow : dataTable) {
+			String extensionName = dataRow.get(0);
+			String extensionFileName = dataRow.get(1);
+			
+			commonSteps.navigateTo("", "Customizations");
+			commonSteps.validatePage("", "Customizations");
+			
+			commonSteps.clickOnLink(extensionsLink);
+			commonSteps.validatePage("", "Extensions");
+			
+			SelenideElement techExtensionItem = techExtensionsListComponent.getExtensionItem(extensionName);
+			
+			if (techExtensionItem != null) {
+				log.warn("Extension {} already exists!", extensionName);
+			} else {
+				commonSteps.clickOnButton(importButton);
+				commonSteps.validatePage("", "Import Extension");
+				
+				uploadFile(extensionFileName);
+				importDetails();
+	
+				commonSteps.clickOnButton(importButton);
+				commonSteps.validatePage("", "Extension Details");
+			}
+		}
 	}
 
-	@When("^she clicks on the modal dialog \"([^\"]*)\" button$")
-	public void clickModalButton(String buttonName) throws Exception {
-		modalDialogPage.getButton(buttonName).shouldBe(visible).click();
-    	
-	}
-
-	@When("^Camilla upload extension$")
-	public void uploadFile() throws Throwable {
+	@When("^Camilla upload extension \"([^\"]*)\"$")
+	public void uploadFile(String extensionName) throws Throwable {
 		//TODO temporary solution
-		String techExtensionUrl = TestConfiguration.techExtensionUrl();
+		String techExtensionFolderUrl = TestConfiguration.techExtensionUrl();
+		String techExtensionUrl = techExtensionFolderUrl + extensionName + ".jar";
 		Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
 		$(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
 	}
