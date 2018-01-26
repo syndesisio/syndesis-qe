@@ -32,10 +32,6 @@
 
 		<dependency>
 			<groupId>io.syndesis</groupId>
-			<artifactId>project-generator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.syndesis</groupId>
 			<artifactId>model</artifactId>
 		</dependency>
 
@@ -102,6 +98,10 @@
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-jackson-provider</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
 		</dependency>
 
 		<!-- Third party services dependencies -->
