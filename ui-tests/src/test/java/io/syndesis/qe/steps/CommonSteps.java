@@ -3,6 +3,8 @@ package io.syndesis.qe.steps;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
@@ -37,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CommonSteps {
 
 	private SyndesisRootPage syndesisRootPage = new SyndesisRootPage();
+	private ModalDialogPage modalDialogPage = new ModalDialogPage();
 
 	@Given("^\"([^\"]*)\" logs into the Syndesis$")
 	public void login(String username) throws Throwable {
@@ -256,4 +260,15 @@ public class CommonSteps {
 		new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
 	}
 
+	@Then("^she is presented with dialog page \"([^\"]*)\"$")
+	public void isPresentedWithDialogPage(String title) throws Throwable {
+		String titleText = new ModalDialogPage().getTitleText();
+		assertThat(titleText.equals(title), is(true));
+	}
+
+	@When("^she clicks on the modal dialog \"([^\"]*)\" button$")
+	public void clickModalButton(String buttonName) throws Exception {
+		modalDialogPage.getButton(buttonName).shouldBe(visible).click();
+    	
+	}
 }
