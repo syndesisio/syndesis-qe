@@ -111,11 +111,6 @@
 			<!-- Syndesis dependencies -->
 			<dependency>
 				<groupId>io.syndesis</groupId>
-				<artifactId>project-generator</artifactId>
-				<version>${syndesis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.syndesis</groupId>
 				<artifactId>model</artifactId>
 				<version>${syndesis.version}</version>
 			</dependency>

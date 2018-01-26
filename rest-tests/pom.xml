@@ -22,10 +22,6 @@
 		<!-- Syndesis dependencies -->
 		<dependency>
 			<groupId>io.syndesis</groupId>
-			<artifactId>project-generator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.syndesis</groupId>
 			<artifactId>model</artifactId>
 		</dependency>
 
