@@ -46,8 +46,4 @@ public class GeneralConnectorInfo extends SyndesisPageObject implements WizardSt
 			return false;
 		}
 	}
-
-	public void review() {
-
-	}
 }

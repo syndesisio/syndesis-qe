@@ -41,8 +41,4 @@ public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSt
 			return false;
 		}
 	}
-
-	public void review() {
-
-	}
 }
