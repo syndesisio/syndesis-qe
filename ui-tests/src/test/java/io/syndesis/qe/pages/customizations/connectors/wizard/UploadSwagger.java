@@ -43,12 +43,7 @@ public class UploadSwagger extends SyndesisPageObject implements WizardStep {
 
 	@Override
 	public boolean validate() {
-		try {
-			getRootElement();
-			return true;
-		} catch (WebDriverException wde) {
-			return false;
-		}
+		return getRootElement().exists();
 	}
 
 	public void upload(String source, String url) {

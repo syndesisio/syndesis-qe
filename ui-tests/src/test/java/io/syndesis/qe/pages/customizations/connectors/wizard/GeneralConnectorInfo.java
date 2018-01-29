@@ -39,11 +39,6 @@ public class GeneralConnectorInfo extends SyndesisPageObject implements WizardSt
 
 	@Override
 	public boolean validate() {
-		try {
-			$(Element.ROOT).should(exist);
-			return true;
-		} catch (WebDriverException wde) {
-			return false;
-		}
+		return getRootElement().exists();
 	}
 }

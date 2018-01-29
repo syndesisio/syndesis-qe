@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriverException;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.ex.ElementNotFound;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 
@@ -21,17 +22,12 @@ public class ApiClientConnectorDetail extends SyndesisPageObject {
 
 	@Override
 	public SelenideElement getRootElement() {
-		return $(Element.ROOT).should(Condition.exist);
+		return $(Element.ROOT).should(exist);
 	}
 
 	@Override
 	public boolean validate() {
-		try {
-			$(Element.ROOT).should(exist);
-			return true;
-		} catch (WebDriverException wde) {
-			return false;
-		}
+		return getRootElement().exists();
 	}
 
 	public void edit(SelenideElement editableText) {

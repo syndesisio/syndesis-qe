@@ -50,9 +50,7 @@ public enum SyndesisPage {
 	ACTIVEMQ_CONFIGURATION(new ConnectionConfigurationComponentAmq()),
 	SUBSCRIBE_FOR_MESSAGES(new ActionConfigureComponentJmsSubscribe()),
 	PUBLISH_MESSAGES(new ActionConfigureComponentJmsPublish()),
-	REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
-
-	//modal dialogs
+	REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest());
 
 
 	private SyndesisPageObject pageObject = null;

@@ -38,12 +38,7 @@ public class Security extends SyndesisPageObject implements WizardStep {
 
 	@Override
 	public boolean validate() {
-		try {
-			$(Element.ROOT).should(exist);
-			return true;
-		} catch (WebDriverException wde) {
-			return false;
-		}
+		return getRootElement().exists();
 	}
 
 	public void setUpOAuth2Security(String authorizationUrl) {
