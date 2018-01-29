@@ -46,7 +46,7 @@ public class Security extends SyndesisPageObject implements WizardStep {
 		}
 	}
 
-	public void setUpSecurity(String authorizationUrl) {
+	public void setUpOAuth2Security(String authorizationUrl) {
 		$(Input.AUTHORIZATION_URL).setValue(authorizationUrl);
 	}
 }

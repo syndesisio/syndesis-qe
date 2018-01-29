@@ -85,7 +85,7 @@ public class ApiClientConnectorsSteps {
 		//String authType, String authenticationUrl, String authorizationUrl, String scopes
 		switch (authType) {
 			case "OAuth 2.0":
-				securityWizardStep.setUpSecurity(TestConfiguration.syndesisUrl() + TestConfiguration.syndesisCallbackUrlSuffix());
+				securityWizardStep.setUpOAuth2Security(TestConfiguration.syndesisUrl() + TestConfiguration.syndesisCallbackUrlSuffix());
 				break;
 			default:
 				Assert.fail("The Auth type < " + authType + "> is not implemented by the test.");
@@ -139,10 +139,6 @@ public class ApiClientConnectorsSteps {
 		sheUploadsSwaggerFile(user, DataTable.create(dataTable));
 		sheNavigatesToTheNextApiConnectorWizardStep(user, "Review Swagger Action");
 		sheNavigatesToTheNextApiConnectorWizardStep(user, "Security");
-
-		List<String> secRow = asList("authType", "authenticationUrl", "https://syndesis.192.168.42.188.xip.io/api/v1/credentials/callback", "scopes");
-		List<List<String>> secDataTable = new ArrayList<>();
-		secDataTable.add(secRow);
 
 		sheSetsUpSecurityBy(user, securityAuthType);
 		sheNavigatesToTheNextApiConnectorWizardStep(user, "General Connector Info");
