@@ -40,17 +40,17 @@ public class TwValidationSteps {
 		twitter = factory.getInstance();
 	}
 
-	@Given("^clean all tweets")
+	@Given("^clean all tweets in twitter_talky account")
 	public void cleanupTwSf() throws TwitterException {
 		deleteAllTweets(twitter);
 	}
 
-	@Then("^tweet a message \"([^\"]*)\"")
-	public void sendTweet(String tweet) throws TwitterException {
-		final String message = tweet + " @" + accountsDirectory.getAccount("twitter_talky").get().getProperty("screenName");
-		log.info("Sending a tweet from {}. Message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get().getProperty("screenName"), message);
+	@Then("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
+	public void sendTweet(String toAcc, String tweet) throws TwitterException {
+		final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
+		log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
+				.get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
 		twitter.updateStatus(message);
-
 		log.info("Tweet submitted.");
 	}
 
