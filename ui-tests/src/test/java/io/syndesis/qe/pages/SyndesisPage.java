@@ -23,11 +23,7 @@ import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectCompone
 import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
 import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
-import io.syndesis.qe.pages.dialogs.DeleteWarningDialog;
 
-/**
- * Created by mastepan on 11/15/17.
- */
 public enum SyndesisPage {
 	CONNECTIONS(new ConnectionListPage()),
 	CONNECTION_CREATE(new ConnectionCreatePage()),
@@ -39,13 +35,12 @@ public enum SyndesisPage {
 	ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent()),
 
 	CUSTOMIZATIONS(new CustomizationsPage()),
-		API_CLIENT_CONNECTORS(new ApiClientConnectors()),
-			UPLOAD_SWAGGER(new UploadSwagger()),
-			REVIEW_SWAGGER_ACTIONS(new ReviewSwaggerActions()),
-			SECURITY(new Security()),
-			GENERAL_CONNECTOR_INFO(new GeneralConnectorInfo()),
-
-			CONNECTOR_DETAILS(new ApiClientConnectorDetail()),
+	API_CLIENT_CONNECTORS(new ApiClientConnectors()),
+	UPLOAD_SWAGGER(new UploadSwagger()),
+	REVIEW_SWAGGER_ACTIONS(new ReviewSwaggerActions()),
+	SECURITY(new Security()),
+	GENERAL_CONNECTOR_INFO(new GeneralConnectorInfo()),
+	CONNECTOR_DETAILS(new ApiClientConnectorDetail()),
 
 	EXTENSIONS(new TechExtensionsListComponent()),
 	IMPORT_EXTENSION(new TechExtensionsImportPage()),
@@ -58,7 +53,6 @@ public enum SyndesisPage {
 	REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
 
 	//modal dialogs
-	DELETE_WARNING(new DeleteWarningDialog());
 
 
 	private SyndesisPageObject pageObject = null;
