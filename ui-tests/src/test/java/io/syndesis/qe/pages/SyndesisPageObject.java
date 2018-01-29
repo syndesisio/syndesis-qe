@@ -28,11 +28,6 @@ public abstract class SyndesisPageObject {
 
 	public abstract boolean validate();
 
-	public SelenideElement getModalContainerElement() {
-		SelenideElement elementRoot = $(By.cssSelector("modal-container"));
-		return elementRoot;
-	}
-
 	public SelenideElement getButton(String buttonTitle) {
 		log.info("searching for button {}", buttonTitle);
 		return getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
@@ -40,7 +35,9 @@ public abstract class SyndesisPageObject {
 
 	public SelenideElement getModalDialogButton(String buttonTitle) {
 		log.info("searching for button {}", buttonTitle);
-		return getModalContainerElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
+		ModalDialogPage modalDialog = new ModalDialogPage();
+
+		return modalDialog.getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
 	}
 
 	public void clickOnFirstVisibleButton(String buttonTitle) {
