@@ -13,21 +13,21 @@ public abstract class WizardPageObject extends SyndesisPageObject {
 	private ListIterator<WizardStep> steps = null;
 	private SyndesisPageObject currentStep = null;
 
- public void setSteps (List<WizardStep> stepPages) {
-	 wizardSteps = stepPages;
-	 initIteration();
- }
+	public void setSteps(List<WizardStep> stepPages) {
+		wizardSteps = stepPages;
+		initIteration();
+	}
 
- public void setSteps (WizardStep [] stepPages) {
-	 wizardSteps = asList(stepPages);
-	 initIteration();
- }
+	public void setSteps(WizardStep[] stepPages) {
+		wizardSteps = asList(stepPages);
+		initIteration();
+	}
 
- private void initIteration() {
-	 steps = wizardSteps.listIterator();
-	 steps.next();
-	 currentStep = (SyndesisPageObject) wizardSteps.get(0);
- }
+	private void initIteration() {
+		steps = wizardSteps.listIterator();
+		steps.next();
+		currentStep = (SyndesisPageObject) wizardSteps.get(0);
+	}
 
 	public void nextStep() {
 		((WizardStep) currentStep).goToNextWizardStep();
