@@ -72,13 +72,6 @@ public class ApiClientConnectorsSteps {
 		uploadSwaggerWizardStep.upload(sourceTypes.get(0), urls.get(0));
 	}
 
-	@Then("^(\\w+) reviews swagger actions$")
-	public void sheReviewsSwaggerActions(String user) throws Throwable {
-		reviewSwaggerActionsWizardStep.validate();
-		reviewSwaggerActionsWizardStep.review();
-		reviewSwaggerActionsWizardStep.goToNextWizardStep();
-	}
-
 	@Then("(\\w+) sets up security by \"([^\"]*)\"$")
 	public void sheSetsUpSecurityBy(String user, String authType) throws Throwable {
 		securityWizardStep.validate();
@@ -90,13 +83,6 @@ public class ApiClientConnectorsSteps {
 			default:
 				Assert.fail("The Auth type < " + authType + "> is not implemented by the test.");
 		}
-	}
-
-	@Then("^(\\w+) reviews general info$")
-	public void sheReviewsGeneralInfo(String user) throws Throwable {
-		generalConnectorInfoWizardStep.validate();
-		generalConnectorInfoWizardStep.review();
-		generalConnectorInfoWizardStep.validate();
 	}
 
 	@Then("(\\w+) is presented with the new connector \"([^\"]*)\"$")
