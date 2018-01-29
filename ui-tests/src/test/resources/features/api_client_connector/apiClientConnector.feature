@@ -57,8 +57,8 @@ Feature: API connector test
     When Camilla creates new API connector "Swagger Petstore"
       | security | authType | OAuth 2.0 |
 
-    And she is presented with the Syndesis page "Connector Details"
     Then she opens the API connector "Swagger Petstore" detail
+    And she is presented with the Syndesis page "Connector Details"
 
     Then she edits property
       | Connector Name  | Swagger Petstore-1            | name         |

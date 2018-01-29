@@ -12,14 +12,12 @@ import org.openqa.selenium.WebDriverException;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import lombok.Getter;
 
-@Getter
 public class ApiClientConnectors extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-api-connector-list");
-		public static By CONNECTOR_TITLE = By.className("list-pf-title");
+		public static By CONNECTOR_TITLE = By.xpath("//div[@class='list-pf-title']");
 		public static By CONNECTORS_LIST_ITEM = By.xpath("//div[@class='list-pf-item']");
 	}
 
@@ -65,6 +63,6 @@ public class ApiClientConnectors extends SyndesisPageObject {
 	}
 
 	public void clickConnectorByTitle(String connectorName) {
-		$$(Element.CONNECTOR_TITLE).find(text(connectorName)).$(By.xpath("./../../../../div[@class='pfng-list-content']")).click();
+		$$(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible).click();
 	}
 }
