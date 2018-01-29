@@ -71,12 +71,12 @@ Feature: API connector test
     When Camilla creates new API connector "Swagger Petstore"
       | security | authType | OAuth 2.0 |
     And clicks on the "Delete" button
-    Then she is presented with the Syndesis page "Delete warning"
+    Then she is presented with the Syndesis page "Modal Dialog"
     When clicks on the modal dialog "Cancel" button
     And she is presented with a connectors list of size 1
     Then she is presented with the Syndesis page "API Client Connectors"
     Then clicks on the "Delete" button
-    And she is presented with the Syndesis page "Delete warning"
+    And she is presented with the Syndesis page "Modal Dialog"
     When clicks on the modal dialog "Delete" button
     Then she is presented with the Syndesis page "API Client Connectors"
     And she is presented with a connectors list of size 0
