@@ -46,7 +46,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
 	public boolean isConnectorPresent(String connectorName) {
 		try {
-			$$(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible);
+			getRootElement().findAll(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible);
 			return true;
 		} catch (WebDriverException wde) {
 			return false;
