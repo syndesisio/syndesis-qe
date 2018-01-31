@@ -57,7 +57,7 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 	}
 
 	/**
-	 * Check if there's an icon in active state next to the position in the integration flow
+	 * Check if there's an icon in active state goToNextWizardStep to the position in the integration flow
 	 *
 	 * @param position (start|finish)
 	 */
