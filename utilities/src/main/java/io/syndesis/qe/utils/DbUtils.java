@@ -1,10 +1,15 @@
 package io.syndesis.qe.utils;
 
+import org.assertj.core.api.Assertions;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,18 +27,28 @@ public class DbUtils {
 	 * @param sqlCommnad
 	 * @return
 	 */
-	public ResultSet executeSqlOnSampleDb(String sqlCommnad) {
+	public ResultSet readSqlOnSampleDb(String sqlCommnad) {
 		ResultSet resultSet = null;
 		final PreparedStatement preparedStatement;
 		try {
 			preparedStatement = dbConnection.prepareStatement(sqlCommnad);
 			resultSet = preparedStatement.executeQuery();
-
 		} catch (SQLException ex) {
 			log.error("Error: " + ex);
 		}
-
 		return resultSet;
+	}
+
+	public int updateSqlOnSampleDb(String sqlCommnad) {
+		int result=-2;
+		final PreparedStatement preparedStatement;
+		try {
+			preparedStatement = dbConnection.prepareStatement(sqlCommnad);
+			result = preparedStatement.executeUpdate();
+		} catch (SQLException ex) {
+			log.error("Error: " + ex);
+		}
+		return result;
 	}
 
 	/**
@@ -61,6 +76,32 @@ public class DbUtils {
 	}
 
 	/**
+	 * Get number of records in table specified.
+	 *
+	 * @param tableName - name of the DB table.
+	 * @param columnName - name of column in that table.
+	 * @param value - value of the parameter.
+	 * @return
+	 */
+	public int getNumberOfRecordsInTable(String tableName, String columnName, String value) {
+
+		int records = 0;
+		final PreparedStatement preparedStatement;
+		try {
+			preparedStatement = dbConnection.prepareStatement("SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " LIKE " + value);
+			final ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				records = resultSet.getInt(1);
+			}
+		} catch (SQLException ex) {
+			log.error("Error: " + ex);
+		}
+		log.debug("Number of records: " + records);
+
+		return records;
+	}
+
+	/**
 	 * Removes all data from specified table.
 	 *
 	 * @param tableName
@@ -75,4 +116,5 @@ public class DbUtils {
 			log.error("Error: " + ex);
 		}
 	}
+
 }
