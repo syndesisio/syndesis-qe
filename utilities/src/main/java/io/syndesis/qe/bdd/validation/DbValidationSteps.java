@@ -4,9 +4,12 @@ import org.assertj.core.api.Assertions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.PendingException;
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.endpoints.TestSupport;
@@ -18,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * DB related validation steps.
- *
+ * <p>
  * Jan 17, 2018 Red Hat
  *
  * @author tplevko@redhat.com
@@ -68,36 +71,106 @@ public class DbValidationSteps {
 		Assertions.assertThat(getLeadTaskFromDb().toLowerCase()).isNotEmpty();
 	}
 
+	@Then("^validate add_lead procedure with last_name: \"([^\"]*)\", company: \"([^\"]*)\", period in ms: \"(\\w+)\"")
+	public void validateAddLeadProcedure(String lastName, String company, Integer ms) throws InterruptedException {
+		//wait for period cycle:
+		Thread.sleep(ms + 1000);
+		final long start = System.currentTimeMillis();
+		// We wait for at least 1 record to appear in DB (procedure goes on every 5 seconds).
+		final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()),
+				TimeUnit.MINUTES,
+				2,
+				TimeUnit.SECONDS,
+				5);
+		Assertions.assertThat(contactCreated).as("Lead record has appeard in DB, todo table").isEqualTo(true);
+		Assertions.assertThat(getLeadTaskFromDb(lastName).contains(company));
+	}
+
+	@Then("^inserts into \"([^\"]*)\" table$")
+	public void insertsIntoTable(String tableName, DataTable data) throws SQLException {
+
+		List<List<String>> dataTable = data.raw();
+
+		String sql = null;
+		switch (tableName.toLowerCase()) {
+			case "todo":
+//				INSERT INTO TODOx(task) VALUES('Joe');
+				sql = "INSERT INTO todo(task) VALUES('%s'";
+				break;
+			case "contact":
+//				INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
+				sql = "INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('%s'";
+				break;
+		}
+
+		Iterator it;
+		String next;
+		for (List<String> list : dataTable) {
+			it = list.iterator();
+			while (it.hasNext()) {
+				next = (String) it.next();
+				if (it.hasNext()) {
+					sql = String.format(sql, next) + ", '%s'";
+				} else {
+					sql = String.format(sql, next) + ")";
+				}
+			}
+		}
+		log.info("SQL query: *{}*", sql);
+		int newId = dbUtils.updateSqlOnSampleDb(sql);
+
+		//assert new row in database has been created:
+		Assertions.assertThat(newId).isEqualTo(1);
+	}
+
+	@Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\"$")
+	public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) throws InterruptedException {
+		Thread.sleep(ms + 1000);
+
+		ResultSet rs;
+		List<Integer> completedAll = new ArrayList<>();
+		String sql = String.format("SELECT completed FROM todo WHERE task like %s", task);
+		rs = dbUtils.readSqlOnSampleDb(sql);
+		Assertions.assertThat(rs).isEqualToComparingOnlyGivenFields(val, "completed");
+	}
+
+	@Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\", period in ms: \"(\\w+)\"$")
+	public void checksNumberOfTodos(String task, Integer val, Integer ms) throws InterruptedException {
+		Thread.sleep(ms + 1000);
+		int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
+		Assertions.assertThat(number).isEqualTo(val);
+	}
+
+//AUXILIARIES:
+
 	/**
 	 * Used for verification of successful creation of a new task in the todo app.
 	 *
 	 * @return
 	 */
 	private String getLeadTaskFromDb(String task) {
-
 		String leadTask = null;
-		try (ResultSet rs = dbUtils.executeSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
+		try (ResultSet rs = dbUtils.readSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
 				+ task + "%'");) {
 			if (rs.next()) {
 				leadTask = rs.getString("TASK");
 				log.debug("TASK = " + leadTask);
 			}
 		} catch (SQLException ex) {
-			log.error("Error: " + ex);
+			Assertions.fail("Error: " + ex);
 		}
 		return leadTask;
 	}
 
 	private String getLeadTaskFromDb() {
-
 		String leadTask = null;
-		try (ResultSet rs = dbUtils.executeSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo");) {
+		try (ResultSet rs = dbUtils.readSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo");) {
 			if (rs.next()) {
 				leadTask = rs.getString("TASK");
 				log.debug("TASK = " + leadTask);
 			}
 		} catch (SQLException ex) {
-			log.error("Error: " + ex);
+			Assertions.fail("Error: " + ex);
 		}
 		return leadTask;
 	}
