@@ -74,7 +74,7 @@ public class DataMapperSteps {
 		mapper.selectOption(selectElement, separator);
 
 		// And clicks on the "Add Source" link
-		mapper.clickButton("Add Source");
+		mapper.getButton("Add Source").shouldBe(visible).click();
 
 		// Then she fills "SecondCombine" selector-input with "LastName" value
 		inputElement = mapper.getElementByAlias("SecondSource").shouldBe(visible);
@@ -109,7 +109,7 @@ public class DataMapperSteps {
 		mapper.selectOption(selectElement, separator);
 
 		// NOTE: THIS STEP SHOULD HAVE BEEN DONE AUTOMATICALLY BY SELECTING "Separate" action
-		mapper.clickButton("Add Target");
+		mapper.getButton("Add Target").shouldBe(visible).click();
 
 		inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
 		mapper.fillInputAndConfirm(inputElement, output1);

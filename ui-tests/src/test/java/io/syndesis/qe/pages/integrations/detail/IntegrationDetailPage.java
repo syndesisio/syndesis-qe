@@ -41,16 +41,16 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 	}
 
 	public void deleteIntegration() {
-		this.clickButton(IntegrationDetailActions.DELETE);
-		this.clickButton("OK");
+		this.getButton(IntegrationDetailActions.DELETE).shouldBe(visible).click();
+		this.getButton("OK").shouldBe(visible).click();
 	}
 
 	public void editIntegration() {
-		this.clickButton(IntegrationDetailActions.EDIT);
+		this.getButton(IntegrationDetailActions.EDIT).shouldBe(visible).click();
 	}
 
 	public void done() {
-		this.clickButton("Done");
+		this.getButton("Done").shouldBe(visible).click();
 	}
 
 	public String getStatus() {
@@ -59,7 +59,7 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
 	public void performAction(String action) {
 		if (this.actionsSet.contains(action)) {
-			this.clickButton(action);
+			this.getButton(action).shouldBe(visible).click();
 		} else {
 			log.error("Action {} is not available on detail page!", action);
 		}
