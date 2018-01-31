@@ -8,6 +8,7 @@ import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 import org.openqa.selenium.By;
@@ -29,7 +30,14 @@ public abstract class SyndesisPageObject {
 
 	public SelenideElement getButton(String buttonTitle) {
 		log.info("searching for button {}", buttonTitle);
-		return getRootElement().findAll(By.tagName("button")).filter(exactText(buttonTitle)).first();
+		return getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
+	}
+
+	public SelenideElement getModalDialogButton(String buttonTitle) {
+		log.info("searching for button {}", buttonTitle);
+		ModalDialogPage modalDialog = new ModalDialogPage();
+
+		return modalDialog.getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
 	}
 
 	public void clickOnFirstVisibleButton(String buttonTitle) {
@@ -41,6 +49,12 @@ public abstract class SyndesisPageObject {
 	public void clickButton(String buttonTitle) {
 		log.info("clicking button {}", buttonTitle);
 		SelenideElement buttonElement = this.getButton(buttonTitle).shouldBe(visible);
+		buttonElement.click();
+	}
+
+	public void clickModalDialogButton(String buttonTitle) {
+		log.info("clicking button {}", buttonTitle);
+		SelenideElement buttonElement = this.getModalDialogButton(buttonTitle).shouldBe(visible);
 		buttonElement.click();
 	}
 
