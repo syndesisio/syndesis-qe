@@ -147,7 +147,7 @@ public class CommonSteps {
 	}
 
 	@When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
-	public void clickOnModalDialogButton(String buttonTitle) { new SyndesisRootPage().getModalDialogButton(buttonTitle).shouldBe(visible).click(); }
+	public void clickOnModalDialogButton(String buttonTitle) { modalDialogPage.getButton(buttonTitle).shouldBe(visible).click(); }
 
 	@When(".*clicks? on the \"([^\"]*)\" link.*$")
 	public void clickOnLink(String linkTitle) {
@@ -270,10 +270,5 @@ public class CommonSteps {
 	public void isPresentedWithDialogPage(String title) throws Throwable {
 		String titleText = new ModalDialogPage().getTitleText();
 		assertThat(titleText.equals(title), is(true));
-	}
-
-	@When("^she clicks on the modal dialog \"([^\"]*)\" button$")
-	public void clickModalButton(String buttonName) throws Exception {
-		modalDialogPage.getButton(buttonName).shouldBe(visible).click();
 	}
 }

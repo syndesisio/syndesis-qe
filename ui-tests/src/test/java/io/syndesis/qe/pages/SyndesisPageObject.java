@@ -33,13 +33,6 @@ public abstract class SyndesisPageObject {
 		return getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
 	}
 
-	public SelenideElement getModalDialogButton(String buttonTitle) {
-		log.info("searching for button {}", buttonTitle);
-		ModalDialogPage modalDialog = new ModalDialogPage();
-
-		return modalDialog.getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
-	}
-
 	public SelenideElement getFirstVisibleButton(String buttonTitle) {
 		log.info("searching for first visible button {}", buttonTitle);
 		ElementsCollection buttonElements = this.getRootElement().findAll(By.linkText(buttonTitle)).filter(visible);
