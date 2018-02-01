@@ -86,7 +86,7 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 			stepsArray.add(stepComponent.getParameter());
 		}
 
-		this.clickOnFirstVisibleButton("Done");
+		this.getFirstVisibleButton("Done").shouldBe(visible).click();
 
 		return stepsArray;
 	}
@@ -96,7 +96,7 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 	}
 
 	public void clickRandomTrash() {
-		this.clickElementRandom(Element.DELETE);
+		this.getElementRandom(Element.DELETE).shouldBe(visible).click();
 	}
 
 	public void clickAddStepLink(int pos){

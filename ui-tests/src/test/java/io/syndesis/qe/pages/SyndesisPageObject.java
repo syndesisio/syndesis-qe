@@ -40,22 +40,10 @@ public abstract class SyndesisPageObject {
 		return modalDialog.getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
 	}
 
-	public void clickOnFirstVisibleButton(String buttonTitle) {
+	public SelenideElement getFirstVisibleButton(String buttonTitle) {
 		log.info("searching for first visible button {}", buttonTitle);
 		ElementsCollection buttonElements = this.getRootElement().findAll(By.linkText(buttonTitle)).filter(visible);
-		buttonElements.get(0).click();
-	}
-
-	public void clickButton(String buttonTitle) {
-		log.info("clicking button {}", buttonTitle);
-		SelenideElement buttonElement = this.getButton(buttonTitle).shouldBe(visible);
-		buttonElement.click();
-	}
-
-	public void clickModalDialogButton(String buttonTitle) {
-		log.info("clicking button {}", buttonTitle);
-		SelenideElement buttonElement = this.getModalDialogButton(buttonTitle).shouldBe(visible);
-		buttonElement.click();
+		return buttonElements.get(0);
 	}
 
 	/**
@@ -95,14 +83,10 @@ public abstract class SyndesisPageObject {
 		return this.getRootElement().findAll(By.linkText(linkTitle));
 	}
 
-	public void clickLink(String linkTitle) {
-		this.getLink(linkTitle).shouldBe(visible).click();
-	}
-
-	public void clickLinkRandom(String linkTitle) {
+	public SelenideElement getLinkRandom(String linkTitle) {
 		ElementsCollection links = this.getLinks(linkTitle);
 		int index = (int) Math.floor(Math.random() * links.size());
-		links.get(index).shouldBe(visible).click();
+		return links.get(index);
 	}
 
 	public SelenideElement getElementByCssSelector(String cssSelector) {
@@ -131,16 +115,16 @@ public abstract class SyndesisPageObject {
 		return this.getRootElement().findAll(By.className(elementClassName));
 	}
 
-	public void clickElementRandom(String elementClassName) {
+	public SelenideElement getElementRandom(String elementClassName) {
 		ElementsCollection elements = this.getElementsByClassName(elementClassName);
 		int index = (int) Math.floor(Math.random() * elements.size());
-		elements.get(index).shouldBe(visible).click();
+		return elements.get(index);
 	}
 
-	public void clickElementRandom(By locator) {
+	public SelenideElement getElementRandom(By locator) {
 		ElementsCollection elements = this.getRootElement().findAll(locator);
 		int index = (int) Math.floor(Math.random() * elements.size());
-		elements.get(index).shouldBe(visible).click();
+		return elements.get(index);
 	}
 
 	public void selectOption(SelenideElement selectElement, String option) {

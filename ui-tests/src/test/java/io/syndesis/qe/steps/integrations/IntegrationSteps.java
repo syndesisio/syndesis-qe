@@ -185,7 +185,7 @@ public class IntegrationSteps {
 	public void addRandomStepsAndCheckRest(Integer numberOfSteps) {
 		log.info("Adding random steps");
 		List<String> list = editPage.getFlowViewComponent().getStepsArray();
-		editPage.clickButton("Add a Step");
+		editPage.getButton("Add a Step").shouldBe(visible).click();
 		ElementsCollection links = editPage.getLinks("Add a step");
 		Integer count = links.size();
 		List<Integer> randomIndexes = new ArrayList<>();
@@ -199,8 +199,8 @@ public class IntegrationSteps {
 			editPage.getAddStepComponent().addStep(stepType);
 			StepComponent stepComponent = editPage.getStepComponent(stepType, stepParameter);
 			stepComponent.fillConfiguration();
-			editPage.clickButton("Next");
-			editPage.clickButton("Add a Step");
+			editPage.getButton("Next").shouldBe(visible).click();
+			editPage.getButton("Add a Step").shouldBe(visible).click();
 			list.add(randomIndex, stepParameter);
 		}
 		List<String> list2 = editPage.getFlowViewComponent().getStepsArray();
@@ -222,7 +222,7 @@ public class IntegrationSteps {
 		}
 		for (Integer randomIndex : randomIndexes) {
 			deletes.get(randomIndex + 1).click();
-			editPage.clickOnFirstVisibleButton("OK");
+			editPage.getFirstVisibleButton("OK").shouldBe(visible).click();
 			list.remove(randomIndex);
 		}
 		List<String> list2 = editPage.getFlowViewComponent().getStepsArray();
@@ -239,7 +239,7 @@ public class IntegrationSteps {
 		ElementsCollection deletes = this.editPage.getFlowViewComponent().getAllTrashes().shouldBe(sizeGreaterThanOrEqual(1));
 		Integer indexOfStep = positionOfStep + 1;
 		deletes.get(indexOfStep).click();
-		editPage.clickOnFirstVisibleButton("OK");
+		editPage.getFirstVisibleButton("OK");
 		list.remove(positionOfStep);
 		//NOW CHECK:
 		List<String> list2 = editPage.getFlowViewComponent().getStepsArray();
