@@ -143,20 +143,20 @@ public class CommonSteps {
 
 	@When(".*clicks? on the \"([^\"]*)\" button.*$")
 	public void clickOnButton(String buttonTitle) {
-		new SyndesisRootPage().clickButton(buttonTitle);
+		new SyndesisRootPage().getButton(buttonTitle).shouldBe(visible).click();
 	}
 
 	@When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
-	public void clickOnModalDialogButton(String buttonTitle) { new SyndesisRootPage().clickModalDialogButton(buttonTitle); }
+	public void clickOnModalDialogButton(String buttonTitle) { new SyndesisRootPage().getModalDialogButton(buttonTitle).shouldBe(visible).click(); }
 
 	@When(".*clicks? on the \"([^\"]*)\" link.*$")
 	public void clickOnLink(String linkTitle) {
-		new SyndesisRootPage().clickLink(linkTitle);
+		new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();
 	}
 
 	@When(".*clicks? on the random \"([^\"]*)\" link.*$")
 	public void clickOnLinkRandom(String linkTitle) {
-		new SyndesisRootPage().clickLinkRandom(linkTitle);
+		new SyndesisRootPage().getLinkRandom(linkTitle);
 	}
 
 	@Then("^she is presented with the \"([^\"]*)\" button$")
