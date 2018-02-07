@@ -7,25 +7,31 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class IntegrationDetailPage extends SyndesisPageObject {
 
-	public final List<String> actionsSet = new ArrayList<String>();
-
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integration-detail-page");
 		public static final By STATUS = By.cssSelector("syndesis-integration-status");
 		public static final By TITLE = By.cssSelector("h1");
 	}
+	
+	public static final class Status {
+		public static final String ACTIVE = "Active";
+		public static final String INACTIVE = "Inactive";
+		public static final String DRAFT = "Draft";
+		public static final String IN_PROGRESS = "In Progress";
+	}
 
-	private IntegrationDetailPageFactory detailPageFactory = new IntegrationDetailPageFactory();
-	private IntegrationDetailPage detailPage;
+	public static final class Actions {
+		public static final String START = "Start Integration";
+		public static final String STOP = "Stop Integration";
+		public static final String DELETE = "Delete Integration";
+		public static final String EDIT = "Edit Integration";
+	}
 
 	public SelenideElement getRootElement() {
 		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
@@ -41,36 +47,37 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 	}
 
 	public void deleteIntegration() {
-		this.getButton(IntegrationDetailActions.DELETE).shouldBe(visible).click();
+		this.getButton(Actions.DELETE).shouldBe(visible).click();
 		this.getButton("OK").shouldBe(visible).click();
 	}
 
 	public void editIntegration() {
-		this.getButton(IntegrationDetailActions.EDIT).shouldBe(visible).click();
+		this.getButton(Actions.EDIT).shouldBe(visible).click();
 	}
 
 	public void done() {
 		this.getButton("Done").shouldBe(visible).click();
 	}
 
+	public void toggleIntegrationState() {
+		String status = getStatus();
+		
+		if (status.equals(Status.DRAFT) || status.equals(Status.INACTIVE)) {
+			this.getButton(Actions.START).shouldBe(visible).click();
+			this.getButton("OK").shouldBe(visible).click();
+		} else if (status.equals(Status.ACTIVE)) {
+			this.getButton(Actions.STOP).shouldBe(visible).click();
+			this.getButton("OK").shouldBe(visible).click();
+		} else {
+			log.error("Integration state {} cant be toggled!", status);
+		}
+	}
+
 	public String getStatus() {
 		return this.getElementText(Element.STATUS);
 	}
 
-	public void performAction(String action) {
-		if (this.actionsSet.contains(action)) {
-			this.getButton(action).shouldBe(visible).click();
-		} else {
-			log.error("Action {} is not available on detail page!", action);
-		}
-	}
-
 	public SelenideElement getActionButton(String action) {
 		return this.getButton(action);
-	}
-
-	public IntegrationDetailPage getDetailPage(String integrationStatus) {
-		detailPage = detailPageFactory.getDetailPage(integrationStatus);
-		return detailPage;
 	}
 }
