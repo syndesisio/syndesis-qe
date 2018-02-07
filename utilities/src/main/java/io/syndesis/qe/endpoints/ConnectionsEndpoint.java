@@ -1,7 +1,5 @@
 package io.syndesis.qe.endpoints;
 
-import java.security.GeneralSecurityException;
-
 import io.syndesis.model.connection.Connection;
 
 /**
@@ -11,7 +9,7 @@ import io.syndesis.model.connection.Connection;
  */
 public class ConnectionsEndpoint extends AbstractEndpoint<Connection> {
 
-	public ConnectionsEndpoint() throws GeneralSecurityException {
+	public ConnectionsEndpoint() {
 		super(Connection.class, "/connections");
 	}
 }

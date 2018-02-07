@@ -1,7 +1,5 @@
 package io.syndesis.qe.endpoints;
 
-import java.security.GeneralSecurityException;
-
 import io.syndesis.model.connection.Connector;
 
 /**
@@ -11,7 +9,7 @@ import io.syndesis.model.connection.Connector;
  */
 public class ConnectorsEndpoint extends AbstractEndpoint<Connector> {
 
-	public ConnectorsEndpoint() throws GeneralSecurityException {
+	public ConnectorsEndpoint() {
 		super(Connector.class, "/connectors");
 	}
 

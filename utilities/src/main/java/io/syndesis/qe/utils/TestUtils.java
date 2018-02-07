@@ -71,19 +71,25 @@ public final class TestUtils {
 		return predicate.test(supplier.get());
 	}
 
+	public static boolean waitForActivation(IntegrationsEndpoint e, Integration i, TimeUnit unit, long timeout) {
+
+		return waitForState(e, i, IntegrationDeploymentState.Active, unit, timeout);
+	}
+
 	/**
-	 * Waits until integration is activated or timeout exceeds.
+	 * Waits until integration reaches a specified state or timeout exceeds.
 	 *
 	 * @param e Integration endpoint to obtain current state
 	 * @param i integration
+	 * @param state desired integration state
 	 * @param unit Time unit
 	 * @param timeout timeout
 	 * @return True if integration is activated within a timeout. False otherwise.
 	 */
-	public static boolean waitForActivation(IntegrationsEndpoint e, Integration i, TimeUnit unit, long timeout) {
+	public static boolean waitForState(IntegrationsEndpoint e, Integration i, IntegrationDeploymentState state, TimeUnit unit, long timeout) {
 
 		return waitForEvent(
-				integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == IntegrationDeploymentState.Active,
+				integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
 				() -> getIntegration(e, i).orElse(i),
 				unit,
 				timeout,

@@ -1,16 +1,16 @@
 package io.syndesis.qe.rest.tests.integrations;
 
-import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
 import cucumber.api.java.en.Given;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,14 +26,14 @@ public class ConnectionsGeneralSteps {
 	private final ConnectorsEndpoint connectorsEndpoint;
 	private final AccountsDirectory accountsDirectory;
 
-	public ConnectionsGeneralSteps() throws GeneralSecurityException {
+	public ConnectionsGeneralSteps() {
 		connectionsEndpoint = new ConnectionsEndpoint();
 		connectorsEndpoint = new ConnectorsEndpoint();
 		accountsDirectory = AccountsDirectory.getInstance();
 	}
 
 	@Given("^create the TW connection using \"([^\"]*)\" template")
-	public void createTwitterConnection(String twitterTemplate) throws GeneralSecurityException {
+	public void createTwitterConnection(String twitterTemplate) {
 
 		final Connector twitterConnector = connectorsEndpoint.get("twitter");
 		final Account twitterAccount = accountsDirectory.getAccount(twitterTemplate).get();
@@ -50,6 +50,8 @@ public class ConnectionsGeneralSteps {
 						"consumerKey", twitterAccount.getProperty("consumerKey"),
 						"consumerSecret", twitterAccount.getProperty("consumerSecret")
 				))
+				.icon("fa-twitter")
+				.tags(Arrays.asList("twitter"))
 				.build();
 		log.info("Creating twitter connection {}", twitterConnection.getName());
 		connectionsEndpoint.create(twitterConnection);
@@ -73,6 +75,7 @@ public class ConnectionsGeneralSteps {
 						"loginUrl", salesforceAccount.getProperty("loginUrl"),
 						"userName", salesforceAccount.getProperty("userName"),
 						"password", salesforceAccount.getProperty("password")))
+				.tags(Arrays.asList("salesforce"))
 				.build();
 
 		log.info("Creating salesforce connection {}", salesforceConnection.getName());
@@ -91,12 +94,14 @@ public class ConnectionsGeneralSteps {
 				.connectorId(s3Connector.getId())
 				.id(S3BucketNameBuilder.getBucketName(s3Bucket))
 				.name("New Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
+				.icon("fa-puzzle-piece")
 				.configuredProperties(TestUtils.map(
 						"accessKey", s3Account.getProperty("accessKey"),
 						"bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket),
 						"region", s3Account.getProperty("region"),
 						"secretKey", s3Account.getProperty("secretKey")
 				))
+				.tags(Arrays.asList("aws-s3"))
 				.build();
 
 		log.info("Creating s3 connection {}", s3Connection.getName());
