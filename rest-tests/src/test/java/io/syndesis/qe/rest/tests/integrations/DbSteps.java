@@ -2,7 +2,6 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 import cucumber.api.java.en.Given;
@@ -31,7 +30,7 @@ public class DbSteps {
 	private final ConnectionsEndpoint connectionsEndpoint;
 	private final ConnectorsEndpoint connectorsEndpoint;
 
-	public DbSteps() throws GeneralSecurityException {
+	public DbSteps() {
 		connectorsEndpoint = new ConnectorsEndpoint();
 		connectionsEndpoint = new ConnectionsEndpoint();
 	}
@@ -62,6 +61,19 @@ public class DbSteps {
 				.connection(dbConnection)
 				.action(TestUtils.findConnectorAction(dbConnector, "sql-connector"))
 				.configuredProperties(TestUtils.map("query", "INSERT INTO TODO (task) VALUES (:#task)"))
+				.build();
+		steps.getSteps().add(dbStep);
+	}
+
+	@Given("^create DB step with query: \"([^\"]*)\" and interval: (\\d+) miliseconds")
+	public void createDbStepWithInterval(String query, int interval) {
+		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
+		final Connector dbConnector = connectorsEndpoint.get("sql");
+		final Step dbStep = new SimpleStep.Builder()
+				.stepKind("endpoint")
+				.connection(dbConnection)
+				.action(TestUtils.findConnectorAction(dbConnector, "sql-connector"))
+				.configuredProperties(TestUtils.map("query", query, "schedulerPeriod", interval))
 				.build();
 		steps.getSteps().add(dbStep);
 	}
