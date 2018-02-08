@@ -88,7 +88,9 @@ public class DbUtils {
 		int records = 0;
 		final PreparedStatement preparedStatement;
 		try {
-			preparedStatement = dbConnection.prepareStatement("SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " LIKE " + value);
+			String sql = "SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " LIKE '" + value + "'";
+			log.info("SQL: *{}*", sql);
+			preparedStatement = dbConnection.prepareStatement(sql);
 			final ResultSet resultSet = preparedStatement.executeQuery();
 			while (resultSet.next()) {
 				records = resultSet.getInt(1);
