@@ -170,10 +170,10 @@ Feature: Test functionality of DB connection
   @db-connection-crud-4-read-update-inbuilt
   Scenario: Create integration to test DB connector for read and create operations via stored procedure
       # INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
-    Then inserts into "contact" table
+    When inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
 
-    When "Camilla" navigates to the "Home" page
+    Then "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections

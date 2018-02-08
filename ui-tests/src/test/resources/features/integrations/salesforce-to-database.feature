@@ -5,11 +5,14 @@ Feature: Test to verify correct function of connections kebab menu
   Background: Clean application state
     Given clean application state
     Given "Camilla" logs into the Syndesis
+    Given clean TODO table
     Given created connections
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
   Scenario: Create integration from salesforce to postgresDB
-    When "Camilla" navigates to the "Home" page
+    When inserts into "contact" table
+      | Josef | Stieranka | Istrochem | db |
+    Then "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
@@ -74,7 +77,8 @@ Feature: Test to verify correct function of connections kebab menu
     And she clicks on the "Done" button
       # wait for integration to get in active state
     Then she wait until integration "Salesforce to PostresDB E2E" get into "Active" state
-    And create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
-    And validate DB created new lead with first name: "John", last name: "Doe", email: "jdoe@acme.com"
-    Given clean SF, removes all leads with email: "jdoe@acme.com"
-	And remove all records from DB
+#    VALIDATION:
+    And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
+    And validate DB created new lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk"
+#    And remove all records from DB
+    Given clean SF, removes all leads with email: "k1stieranka1@istrochem.sk"

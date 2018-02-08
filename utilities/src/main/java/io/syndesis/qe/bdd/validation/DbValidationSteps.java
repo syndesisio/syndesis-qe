@@ -42,7 +42,8 @@ public class DbValidationSteps {
 	}
 
 	@Then("^validate DB created new lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\"")
-	public void validateSfDbIntegration(String firstName, String lastName, String emailAddress) {
+	public void validateSfDbIntegration(String firstName, String lastName, String emailAddress) throws InterruptedException {
+		Thread.sleep(5000);
 		final long start = System.currentTimeMillis();
 		// We wait for exactly 1 record to appear in DB.
 		final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()),
@@ -50,7 +51,7 @@ public class DbValidationSteps {
 				2,
 				TimeUnit.SECONDS,
 				5);
-		Assertions.assertThat(contactCreated).as("Lead record has appeard in db").isEqualTo(true);
+		Assertions.assertThat(contactCreated).as("Lead record has appeard in db 1").isEqualTo(true);
 		log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 		// Now we verify, the created lead contains the correct personal information.
 		Assertions.assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
@@ -65,7 +66,7 @@ public class DbValidationSteps {
 				2,
 				TimeUnit.SECONDS,
 				5);
-		Assertions.assertThat(contactCreated).as("Lead record has appeard in db").isEqualTo(true);
+		Assertions.assertThat(contactCreated).as("Lead record has appeard in db 2").isEqualTo(true);
 		log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 		// Now we verify, the created lead contains the correct personal information.
 		Assertions.assertThat(getLeadTaskFromDb().toLowerCase()).isNotEmpty();
@@ -124,14 +125,18 @@ public class DbValidationSteps {
 	}
 
 	@Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\"$")
-	public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) throws InterruptedException {
+	public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) throws InterruptedException, SQLException {
 		Thread.sleep(ms + 1000);
 
 		ResultSet rs;
 		List<Integer> completedAll = new ArrayList<>();
-		String sql = String.format("SELECT completed FROM todo WHERE task like %s", task);
+		String sql = String.format("SELECT completed FROM todo WHERE task like '%s'", task);
+		log.info("SQL **{}**", sql);
 		rs = dbUtils.readSqlOnSampleDb(sql);
-		Assertions.assertThat(rs).isEqualToComparingOnlyGivenFields(val, "completed");
+		while (rs.next()) {
+			Assertions.assertThat(rs.getInt("completed")).isEqualTo(val);
+		}
+
 	}
 
 	@Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\", period in ms: \"(\\w+)\"$")
@@ -150,6 +155,7 @@ public class DbValidationSteps {
 	 */
 	private String getLeadTaskFromDb(String task) {
 		String leadTask = null;
+		log.info("***SELECT ID, TASK, COMPLETED FROM todo where task like '%" + task + "%'***");
 		try (ResultSet rs = dbUtils.readSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
 				+ task + "%'");) {
 			if (rs.next()) {
