@@ -9,7 +9,7 @@ Feature: sf scenarios
   Scenario: SF action on create - DB integration
     And create SF "create" action step on field: "Lead"
     And create mapper step using template: "sf-create-db"
-    And create DB step from template add_lead
+    And create finish DB invoke stored procedure "add_lead" action step
     When create integration with name: "SF create to DB rest test"
     Then wait for integration with name: "SF create to DB rest test" to become active
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
@@ -20,7 +20,7 @@ Feature: sf scenarios
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "delete" action step on field: "Lead"
     And create mapper step using template: "sf-delete-db"
-    And create DB insert taks step
+    And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
     Then delete lead from SF with email: "jdoe@acme.com"
@@ -31,7 +31,7 @@ Feature: sf scenarios
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "update" action step on field: "Lead"
     And create mapper step using template: "sf-update-db"
-    And create DB insert taks step
+    And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF update to DB rest test"
     Then wait for integration with name: "SF update to DB rest test" to become active
     Then update SF lead with email "jdoe@acme.com" to first name: "Joe", last name "Carrot", email "jcarrot@acme.com", company name "EMCA"
