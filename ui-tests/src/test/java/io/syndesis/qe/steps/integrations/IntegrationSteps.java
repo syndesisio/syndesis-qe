@@ -1,31 +1,25 @@
 package io.syndesis.qe.steps.integrations;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
-
-import org.assertj.core.api.Assertions;
-
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
 import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
-import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
@@ -98,42 +92,6 @@ public class IntegrationSteps {
 		String status = detailPage.getStatus();
 		log.info("Status: {}", status);
 		assertThat(expectedStatus, is(status));
-	}
-
-	@Then("^she clicks on integration in \"([^\"]*)\" status and check on detail if status match and appropriate actions are available$")
-	public void clickOnIntegrationInStatus(String status) {
-		SelenideElement integrationByStatus = listPage.getListComponent().getIntegrationByStatus(status);
-		integrationByStatus.shouldBe(visible).click();
-		IntegrationDetailPage detailPageSpecific = detailPage.getDetailPage(status);
-		for (String action : detailPageSpecific.actionsSet) {
-			log.info("Action: {}", action);
-			SelenideElement actionButton = detailPageSpecific.getActionButton(action);
-			log.info("There should by button for {} action on {} status", action, status);
-			actionButton.shouldBe(visible);
-			log.info("Status on detail editPage should be equal to expected status");
-			assertThat(detailPageSpecific.getStatus(), is(status));
-		}
-		detailPageSpecific.getActionButton("Done").shouldBe(visible).click();
-	}
-
-	@Then("^she go trough whole list of integrations and check on detail if status match and appropriate actions are available$")
-	public void goTrouhListAndCheckDetails() {
-		ElementsCollection integrations = listPage.getListComponent().getAllIntegrations();
-
-		for (SelenideElement integration : integrations) {
-			String status = listPage.getListComponent().getIntegrationItemStatus(integration);
-			log.info("Status: {}", status);
-			integration.shouldBe(visible).click();
-			IntegrationDetailPage detailPageSpecific = detailPage.getDetailPage(status);
-			for (String action : detailPageSpecific.actionsSet) {
-				log.info("Action: {}", action);
-				log.info("There should by button for {} action on {} status", action, status);
-				detailPageSpecific.getActionButton(action).shouldBe(visible);
-			}
-			log.info("Status on detail editPage should be equal to expected status:");
-			assertThat(detailPageSpecific.getStatus(), is(status));
-			detailPageSpecific.done();
-		}
 	}
 
 	@When("^she selects \"([^\"]*)\" integration step$")
