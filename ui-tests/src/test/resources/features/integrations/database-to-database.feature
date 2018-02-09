@@ -86,7 +86,7 @@ Feature: Test functionality of DB connection
     When Camilla selects the "PostgresDB" connection
     And she selects "Invoke SQL" integration action
 #    @wip - bug to be reported, wrong is: (:#TASK, 2). (:#TASK, :#MASK) is OK
-    Then she fills invoke query input with "INSERT INTO TODO(task, completed) VALUES (:#TASK, 2)" value
+    Then she fills invoke query input with "INSERT INTO TODO (task) VALUES (:#TASK)" value
     And clicks on the "Done" button
 
       # add data mapper step
