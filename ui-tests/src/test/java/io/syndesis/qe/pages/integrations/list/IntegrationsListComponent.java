@@ -1,16 +1,19 @@
 package io.syndesis.qe.pages.integrations.list;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Condition.hidden;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
+import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import java.io.File;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.hidden;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 @Slf4j
 public class IntegrationsListComponent extends SyndesisPageObject {
@@ -21,8 +24,9 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 		public static final By ITEM = By.className("list-pf-item");
 		public static final By ITEM_TITLE = By.className("list-pf-title");
 		public static final By ITEM_STATUS = By.cssSelector("syndesis-integration-status");
-//		public static final By ITEM_STATUS = By.cssSelector("syndesis-integrations-status");
 		public static final By ITEM_DESCRIPTION = By.className("description");
+		public static final By FILE_INPUT = By.cssSelector("input[type='file']");
+		public static final By FINISHED_PROGRESS_BAR = By.cssSelector("*[style='width: 100%;']");
 	}
 
 	private static final class Link {
@@ -32,6 +36,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 	private static final class Button {
 		public static final By OK = By.xpath("//button[.='OK']");
 		public static final By KEBAB_DROPDOWN = By.cssSelector("button.dropdown-toggle");
+
 	}
 
 	public SelenideElement getRootElement() {
@@ -183,5 +188,21 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 				this.checkIfKebabHasWhatShouldHave(item, status);
 			}
 		}
+	}
+
+	public boolean importIntegration(String integrationName) throws InterruptedException {
+
+		String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + integrationName + "-export.zip";
+
+		File exportedIntegrationFile = new File(filePath);
+
+		ModalDialogPage modal = new ModalDialogPage();
+		modal.getRootElement().find(Element.FILE_INPUT).shouldBe(visible).uploadFile(exportedIntegrationFile);
+
+		modal.getElementRandom(Element.FINISHED_PROGRESS_BAR).shouldBe(visible);
+
+		modal.getButton("OK").shouldBe(visible).click();
+
+		return this.getIntegration(integrationName).exists();
 	}
 }
