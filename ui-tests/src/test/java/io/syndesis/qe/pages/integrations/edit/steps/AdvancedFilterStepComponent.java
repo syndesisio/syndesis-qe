@@ -57,7 +57,7 @@ public class AdvancedFilterStepComponent extends StepComponent {
 
 	public SelenideElement getFilterTextarea() {
 		log.debug("Searching for filter text area");
-		return this.getRootElement().find(Textarea.FILTER);
+		return this.getRootElement().find(Textarea.FILTER).shouldBe(visible);
 	}
 
 	public String getFilterTextareaValue() {
