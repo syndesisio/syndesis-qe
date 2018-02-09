@@ -83,7 +83,7 @@ Feature: Upload tech extension and add it to integration
     # assert integration is present in list
     Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
     And Camilla clicks on the "Done" button
-    And Integration "Twitter to Salesforce E2E" is present in integrations list
+    And Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
     # wait for integration to get in active state
     Then she wait until integration "CRUD4-read-create-inbuilt E2E" get into "Active" state
 
