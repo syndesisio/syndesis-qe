@@ -1,27 +1,10 @@
 package io.syndesis.qe.steps;
 
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import static org.hamcrest.Matchers.is;
-
-import static org.junit.Assert.assertThat;
-
-import java.util.List;
-
-import org.assertj.core.api.Assertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -37,6 +20,18 @@ import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.steps.connections.ConnectionSteps;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+
+import java.util.List;
+
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class CommonSteps {
@@ -47,10 +42,6 @@ public class CommonSteps {
 	@Given("^\"([^\"]*)\" logs into the Syndesis$")
 	public void login(String username) throws Throwable {
 		Selenide.open(TestConfiguration.syndesisUrl());
-
-		if (!WebDriverRunner.isChrome()) {
-			WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1024));
-		}
 
 		String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
