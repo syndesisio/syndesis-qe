@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.SimpleStep;
@@ -16,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * DB steps for integrations.
- *
+ * <p>
  * Oct 7, 2017 Red Hat
  *
  * @author tplevko@redhat.com
@@ -35,24 +36,41 @@ public class DbSteps {
 		connectionsEndpoint = new ConnectionsEndpoint();
 	}
 
-	@Given("^create DB step from template add_lead")
-	public void createDbTemplateStep() {
+	//done.
+	@Then("^create start DB periodic sql invocation action step with query \"([^\"]*)\" and period \"([^\"]*)\" ms")
+	public void createStartDbPeriodicSqlStep(String sqlQuery, Integer ms) {
 		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
 		final Connector dbConnector = connectorsEndpoint.get("sql");
 
+		//to be reported: period is not part of .json step (when checked via browser).
 		final Step dbStep = new SimpleStep.Builder()
 				.stepKind("endpoint")
 				.connection(dbConnection)
-				.action(TestUtils.findConnectorAction(dbConnector, "sql-stored-connector"))
-				.configuredProperties(TestUtils.map("procedureName", "add_lead",
-						"template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
-						+ "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
+				.action(TestUtils.findConnectorAction(dbConnector, "sql-start-connector"))
+				.configuredProperties(TestUtils.map("query", sqlQuery, "schedulerPeriod", ms))
 				.build();
 		steps.getSteps().add(dbStep);
 	}
 
-	@Given("^create DB insert taks step")
-	public void createDbInsertStep() {
+	//done. (not used for the time being.)
+	@Then("^create start DB periodic stored procedure invocation action step named \"([^\"]*)\" and period \"([^\"]*)\" ms")
+	public void createStartDbPeriodicProcedureStep(String procedureName, Integer ms) {
+		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
+		final Connector dbConnector = connectorsEndpoint.get("sql");
+		final Step dbStep = new SimpleStep.Builder()
+				.stepKind("endpoint")
+				.connection(dbConnection)
+				.action(TestUtils.findConnectorAction(dbConnector, "sql-stored-start-connector"))
+				.configuredProperties(TestUtils.map("procedureName", procedureName, "schedulerPeriod", ms,
+						"template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
+								+ "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
+				.build();
+		steps.getSteps().add(dbStep);
+	}
+
+	//done
+	@Then("^create finish DB invoke sql action step with query \"([^\"]*)\"")
+	public void createFinishDbInvokeSqlStep(String sqlQuery) {
 		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
 		final Connector dbConnector = connectorsEndpoint.get("sql");
 
@@ -60,7 +78,7 @@ public class DbSteps {
 				.stepKind("endpoint")
 				.connection(dbConnection)
 				.action(TestUtils.findConnectorAction(dbConnector, "sql-connector"))
-				.configuredProperties(TestUtils.map("query", "INSERT INTO TODO (task) VALUES (:#task)"))
+				.configuredProperties(TestUtils.map("query", sqlQuery))
 				.build();
 		steps.getSteps().add(dbStep);
 	}
@@ -77,6 +95,23 @@ public class DbSteps {
 				.build();
 		steps.getSteps().add(dbStep);
 	}
+
+	@Then("^create finish DB invoke stored procedure \"([^\"]*)\" action step")
+	public void createFinishDbInvokeProcedureStep(String procedureName) {
+		final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
+		final Connector dbConnector = connectorsEndpoint.get("sql");
+		final Step dbStep = new SimpleStep.Builder()
+				.stepKind("endpoint")
+				.connection(dbConnection)
+				.action(TestUtils.findConnectorAction(dbConnector, "sql-stored-connector"))
+				.configuredProperties(TestUtils.map("procedureName", procedureName,
+						"template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
+								+ "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
+				.build();
+		steps.getSteps().add(dbStep);
+	}
+
+//	AUXILIARIES:
 
 	private String getDbConnectionId() {
 
