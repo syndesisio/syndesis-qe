@@ -77,7 +77,7 @@ Feature: Upload tech extension and add it to integration
 
     # finish and save integration
     When click on the "Save as Draft" button
-    And she defines integration name "CRUD4-read-create-inbuilt E2E"
+    And she sets the integration name "CRUD4-read-create-inbuilt E2E"
     And click on the "Publish" button
 
     # assert integration is present in list
@@ -85,10 +85,9 @@ Feature: Upload tech extension and add it to integration
     And Camilla clicks on the "Done" button
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
-    Then she wait until integration "CRUD4-read-create-inbuilt E2E" get into "Active" state
+    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Active" state
 
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
-
 
   @tech-extension-delete-tech-extension
   Scenario: Delete technical extensions

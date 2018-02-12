@@ -45,8 +45,8 @@ Feature: Create integration with datamapper step
     Then Camilla is presented with the "Add a step" link
     And clicks on the "Add a step" link
     And she selects "Basic Filter" integration step
-    And she is presented with a "Basic Filter" step configure page
-    Then she fill configure page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
+    And she is presented with "Basic Filter" step configuration page
+    Then she fills the configuration page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
     And click on the "Next" button
 
      # add advanced filter step
@@ -54,18 +54,18 @@ Feature: Create integration with datamapper step
     Then Camilla is presented with the "Add a step" link
     And clicks on the "Add a step" link
     And she selects "Advanced Filter" integration step
-    And she is presented with a "Advanced Filter" step configure page
-    Then she fill configure page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
+    And she is presented with "Advanced Filter" step configuration page
+    Then she fills the configuration page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
     And click on the "Next" button
 
     # finish and save integration
     When click on the "Save as Draft" button
-    And she defines integration name "Twitter to Salesforce E2E"
+    And she sets integration name "Twitter to Salesforce E2E"
     And click on the "Publish" button
     # assert integration is present in list
     Then Camilla is presented with "Twitter to Salesforce E2E" integration details
     And Camilla clicks on the "Done" button
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
-    Then she wait until integration "Twitter to Salesforce E2E" get into "Active" state
+    Then she waits until integration "Twitter to Salesforce E2E" gets into "Active" state
     And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
