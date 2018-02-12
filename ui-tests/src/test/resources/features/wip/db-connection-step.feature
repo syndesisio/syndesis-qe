@@ -63,7 +63,7 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD1-step-read-read E2E"
+    And she sets integration name "CRUD1-step-read-read E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD1-step-read-read E2E" integration details
@@ -131,7 +131,7 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD2-step-read-create E2E"
+    And she sets integration name "CRUD2-step-read-create E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD2-step-read-create E2E" integration details
@@ -197,7 +197,7 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD3-step-read-update E2E"
+    And she sets integration name "CRUD3-step-read-update E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD3-step-read-update E2E" integration details
@@ -263,7 +263,7 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD4-step-read-delete E2E"
+    And she sets integration name "CRUD4-step-read-delete E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD4-step-read-delete E2E" integration details
@@ -341,7 +341,7 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "Step connection SQL query checker E2E"
+    And she sets integration name "Step connection SQL query checker E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "Step connection SQL query checker E2E" integration details
