@@ -11,7 +11,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class IntegrationChooseStepComponent extends SyndesisPageObject {
+public class IntegrationStepSelectComponent extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-step-select");
