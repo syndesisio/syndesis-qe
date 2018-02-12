@@ -97,7 +97,7 @@ public class IntegrationSteps {
 	@When("^she selects \"([^\"]*)\" integration step$")
 	public void chooseStep(String stepName) {
 		log.info("Adding {} step to integration", stepName);
-		editPage.getChooseStepComponent().chooseStep(stepName);
+		editPage.getIntegrationStepSelectComponent().chooseStep(stepName);
 	}
 
 	@Then("^Integration \"([^\"]*)\" is present in integrations list$")
@@ -122,7 +122,7 @@ public class IntegrationSteps {
 	@Then("^she is presented with Choose Step page$")
 	public void verifyChooseStepPage() {
 		log.info("there must be add step page root element");
-		editPage.getChooseStepComponent().getRootElement().shouldBe(visible);
+		editPage.getIntegrationStepSelectComponent().getRootElement().shouldBe(visible);
 	}
 
 	@Then("^she is presented with \"([^\"]*)\" step configuration page$")
@@ -154,7 +154,7 @@ public class IntegrationSteps {
 			links.get(randomIndex).click();
 			String stepType = "Basic Filter";
 			String stepParameter = "ANY of the following, pathx " + randomIndex + ", Contains, valuex " + randomIndex;
-			editPage.getChooseStepComponent().chooseStep(stepType);
+			editPage.getIntegrationStepSelectComponent().chooseStep(stepType);
 			StepComponent stepComponent = editPage.getStepComponent(stepType, stepParameter);
 			stepComponent.fillConfiguration();
 			editPage.getButton("Next").shouldBe(visible).click();
@@ -168,6 +168,7 @@ public class IntegrationSteps {
 		}
 	}
 
+	//what rest??
 	@Then("^she deletes \"(\\d+)\" random integration steps and checks the rest$")
 	public void deleteRandomStepsAndCheckRest(Integer numberOfSteps) {
 		log.info("Deleting random steps");
@@ -190,6 +191,7 @@ public class IntegrationSteps {
 		}
 	}
 
+	//what rest???
 	@Then("^she deletes step on position \"(\\d+)\" and checks the rest$")
 	public void deleteStepOnPositionAndCheckRest(Integer positionOfStep) {
 		log.info("Deleting step on position {}", positionOfStep);
