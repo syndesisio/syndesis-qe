@@ -163,7 +163,6 @@ Feature: Test functionality of DB connection
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
 
-
 #
 #  4. select - create (via buildin procedure)
 #

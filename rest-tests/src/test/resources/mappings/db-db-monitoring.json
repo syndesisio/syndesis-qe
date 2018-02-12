@@ -1,0 +1,57 @@
+//put
+{
+  "AtlasMapping": {
+    "jsonType": "io.atlasmap.v2.AtlasMapping",
+    "dataSource": [
+      {
+        "jsonType": "io.atlasmap.json.v2.JsonDataSource",
+        "id": "SQL_PARAM_OUT",
+        "uri": "atlas:json:SQL_PARAM_OUT",
+        "dataSourceType": "SOURCE"
+      },
+      {
+        "jsonType": "io.atlasmap.json.v2.JsonDataSource",
+        "id": "SQL_PARAM_IN",
+        "uri": "atlas:json:SQL_PARAM_IN",
+        "dataSourceType": "TARGET",
+        "template": null
+      }
+    ],
+    "mappings": {
+      "mapping": [
+        {
+          "jsonType": "io.atlasmap.v2.Mapping",
+          "mappingType": "MAP",
+          "id": "mapping.541540",
+          "inputField": [
+            {
+              "jsonType": "io.atlasmap.json.v2.JsonField",
+              "name": "first_name",
+              "path": "/first_name",
+              "fieldType": "STRING",
+              "docId": "SQL_PARAM_OUT",
+              "userCreated": false
+            }
+          ],
+          "outputField": [
+            {
+              "jsonType": "io.atlasmap.json.v2.JsonField",
+              "name": "task",
+              "path": "/task",
+              "fieldType": "STRING",
+              "docId": "SQL_PARAM_IN",
+              "userCreated": false
+            }
+          ]
+        }
+      ]
+    },
+    "name": "UI.17887",
+    "lookupTables": {
+      "lookupTable": []
+    },
+    "properties": {
+      "property": []
+    }
+  }
+}
