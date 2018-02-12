@@ -50,7 +50,7 @@ public class IntegrationEditPage extends SyndesisPageObject {
 	@Getter
 	private IntegrationConnectionSelectComponent integrationConnectionSelectComponent = new IntegrationConnectionSelectComponent();
 	@Getter
-	private IntegrationAddStepComponent addStepComponent = new IntegrationAddStepComponent();
+	private IntegrationChooseStepComponent chooseStepComponent = new IntegrationChooseStepComponent();
 	@Getter
 	private DataMapperComponent dataMapperComponent = new DataMapperComponent();
 

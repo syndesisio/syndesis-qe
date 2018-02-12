@@ -38,21 +38,21 @@ public class IntegrationSteps {
 	private IntegrationDetailPage detailPage = new IntegrationDetailPage();
 	private IntegrationsListPage listPage = new IntegrationsListPage();
 
-	@When("^she defines integration name \"([^\"]*)\"$")
-	public void defineIntegrationName(String integrationName) {
+	@When("^she sets the integration name \"([^\"]*)\"$")
+	public void setIntegrationName(String integrationName) {
 		editPage.getIntegrationBasicsComponent().setName(integrationName);
 	}
 
 	@Then("^she is presented with a visual integration editor$")
-	public void editorOpened() {
+	public void verifyEditorOpened() {
 		editPage.getRootElement().shouldBe(visible);
 		editPage.getIntegrationConnectionSelectComponent().getRootElement().shouldBe(visible);
 		editPage.getFlowViewComponent().getRootElement().shouldBe(visible);
 	}
 
 	@Then("^she is presented with a visual integration editor for \"([^\"]*)\"$")
-	public void editorOpenedFor(String integrationName) {
-		this.editorOpened();
+	public void verifyEditorOpenedFor(String integrationName) {
+		this.verifyEditorOpened();
 		log.info("editor must display integration name {}", integrationName);
 		assertThat(editPage.getFlowViewComponent().getIntegrationName(), is(integrationName));
 	}
@@ -64,7 +64,7 @@ public class IntegrationSteps {
 	}
 
 	@When("^Camilla selects the \"([^\"]*)\" integration.*$")
-	public void selectConnection(String itegrationName) {
+	public void selectIntegration(String itegrationName) {
 		listPage.getListComponent().goToIntegrationDetail(itegrationName);
 	}
 
@@ -87,17 +87,17 @@ public class IntegrationSteps {
 		detailPage.deleteIntegration();
 	}
 
-	@Then("^she can see on detail editPage that integration is \"([^\"]*)\" status$")
-	public void checkStatus(String expectedStatus) {
+	@Then("^she is presented with \"([^\"]*)\" integration status on Integration Detail page$")
+	public void checkStatusOnIntegrationDetail(String expectedStatus) {
 		String status = detailPage.getStatus();
 		log.info("Status: {}", status);
 		assertThat(expectedStatus, is(status));
 	}
 
 	@When("^she selects \"([^\"]*)\" integration step$")
-	public void addStep(String stepName) {
+	public void chooseStep(String stepName) {
 		log.info("Adding {} step to integration", stepName);
-		editPage.getAddStepComponent().addStep(stepName);
+		editPage.getChooseStepComponent().chooseStep(stepName);
 	}
 
 	@Then("^Integration \"([^\"]*)\" is present in integrations list$")
@@ -112,34 +112,34 @@ public class IntegrationSteps {
 		assertThat(listPage.getListComponent().isIntegrationPresent(name), is(false));
 	}
 
-	@Then("^she wait until integration \"([^\"]*)\" get into \"([^\"]*)\" state$")
+	@Then("^she waits until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
 	public void waitForIntegrationState(String integrationName, String integrationStatus) {
 		SelenideElement integration = listPage.getListComponent().getIntegration(integrationName);
 		assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> listPage.getListComponent().getIntegrationItemStatus(integration),
 				TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 5));
 	}
 
-	@Then("^she is presented with a add step page$")
-	public void addStepPageOpened() {
+	@Then("^she is presented with Choose Step page$")
+	public void verifyChooseStepPage() {
 		log.info("there must be add step page root element");
-		editPage.getAddStepComponent().getRootElement().shouldBe(visible);
+		editPage.getChooseStepComponent().getRootElement().shouldBe(visible);
 	}
 
-	@Then("^she is presented with a \"([^\"]*)\" step configure page$")
-	public void configureStepPageOpen(String stepType) {
+	@Then("^she is presented with \"([^\"]*)\" step configuration page$")
+	public void verifyConfigureStepPage(String stepType) {
 		StepComponent stepComponent = editPage.getStepComponent(stepType, "");
 		log.info("there must be add step editPage root element");
 		stepComponent.getRootElement().shouldBe(visible);
 		assertThat(stepComponent.validate(), is(true));
 	}
 
-	@Then("^she fill configure page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
+	@Then("^she fills the configuration page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
 	public void fillStepConfiguration(String stepType, String parameter) {
 		StepComponent stepComponent = editPage.getStepComponent(stepType, parameter);
 		stepComponent.fillConfiguration();
 	}
 
-	@Then("^she adds \"(\\d+)\" random steps and then check the structure$")
+	@Then("^she adds \"(\\d+)\" random steps and then checks the structure$")
 	public void addRandomStepsAndCheckRest(Integer numberOfSteps) {
 		log.info("Adding random steps");
 		List<String> list = editPage.getFlowViewComponent().getStepsArray();
@@ -154,7 +154,7 @@ public class IntegrationSteps {
 			links.get(randomIndex).click();
 			String stepType = "Basic Filter";
 			String stepParameter = "ANY of the following, pathx " + randomIndex + ", Contains, valuex " + randomIndex;
-			editPage.getAddStepComponent().addStep(stepType);
+			editPage.getChooseStepComponent().chooseStep(stepType);
 			StepComponent stepComponent = editPage.getStepComponent(stepType, stepParameter);
 			stepComponent.fillConfiguration();
 			editPage.getButton("Next").shouldBe(visible).click();
@@ -168,7 +168,7 @@ public class IntegrationSteps {
 		}
 	}
 
-	@Then("^she delete \"(\\d+)\" random steps and check rest$")
+	@Then("^she deletes \"(\\d+)\" random integration steps and checks the rest$")
 	public void deleteRandomStepsAndCheckRest(Integer numberOfSteps) {
 		log.info("Deleting random steps");
 		List<String> list = editPage.getFlowViewComponent().getStepsArray();
@@ -190,7 +190,7 @@ public class IntegrationSteps {
 		}
 	}
 
-	@Then("^she delete step on position \"(\\d+)\" and check rest$")
+	@Then("^she deletes step on position \"(\\d+)\" and checks the rest$")
 	public void deleteStepOnPositionAndCheckRest(Integer positionOfStep) {
 		log.info("Deleting step on position {}", positionOfStep);
 		List<String> list = editPage.getFlowViewComponent().getStepsArray();
@@ -208,7 +208,7 @@ public class IntegrationSteps {
 	}
 
 	@Then("^she is presented with an actions list$")
-	public void expectActionListIsPresent() {
+	public void verifyActionsList() {
 		log.info("There must be action list loaded");
 		editPage.getListActionsComponent().getRootElement().shouldBe(visible);
 	}

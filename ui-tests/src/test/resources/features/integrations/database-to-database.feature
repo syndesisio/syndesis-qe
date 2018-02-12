@@ -50,7 +50,7 @@ Feature: Test functionality of DB connection
 
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD1-read-update E2E"
+    And she sets integration name "CRUD1-read-update E2E"
     And clicks on the "Publish" button
     Then Camilla is presented with "CRUD1-read-update E2E" integration details
     And she clicks on the "Done" button
@@ -99,7 +99,7 @@ Feature: Test functionality of DB connection
 #    And scroll "top" "right"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD2-read-create E2E"
+    And she sets integration name "CRUD2-read-create E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD2-read-create E2E" integration details
@@ -153,7 +153,7 @@ Feature: Test functionality of DB connection
 
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD3-read-delete E2E"
+    And she sets integration name "CRUD3-read-delete E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD3-read-delete E2E" integration details
@@ -210,7 +210,7 @@ Feature: Test functionality of DB connection
 #    And scroll "top" "right"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "CRUD4-read-create-inbuilt E2E"
+    And she sets integration name "CRUD4-read-create-inbuilt E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
@@ -279,12 +279,12 @@ Feature: Test functionality of DB connection
 
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she defines integration name "DB Connection 5 SQL query checker E2E"
+    And she sets integration name "DB Connection 5 SQL query checker E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "DB Connection 5 SQL query checker E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "DB Connection 5 SQL query checker E2E" get into "Active" state
+    Then she waits until integration "DB Connection 5 SQL query checker E2E" gets into "Active" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
