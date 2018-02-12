@@ -10,6 +10,20 @@ You may run the tests against a syndesis instance deployed on OpenShift as follo
 mvn clean install -Dcredentials.file=<PATH_TO_CREDENTIALS_FILE>
 ```
 
+### Running parts of test suite
+
+There are cucumber tests deactivated by default. These tests contain tags namely:
+
+ * @integration-lifecycle
+ * @integration-lifecycle-long
+
+You can run them using following parameters:
+
+```bash
+/usr/share/maven/bin/mvn clean install -P rest -Dcucumber.options="--tags @integrations-lifecycle"
+ -Dcredentials.file=<PATH_TO_CREDENTIALS_FILE>
+```
+
 ## System properties
 
 Several properties may influence coarse of the tests. Mandatory properties are shown in bold.
@@ -29,6 +43,7 @@ These tests require access to third party services such as Twitter, and Salesfor
 
 * a Salesforce account
 * two Twitter accounts
+* AWS S3 account
 
 You should configure credentials for these services in JSON file with following syntax (you need to replace *** with valid values):
 
@@ -65,19 +80,12 @@ You should configure credentials for these services in JSON file with following 
       "password": "*********"
     }
   },
-  "openshift":	{
-    "service":	"openshift",
-    "properties":	{
-      "instanceUrl":	"***************************",
-      "userUID":	""
-    }
-  },
-  "syndesis":	{
-    "service":	"syndesis",
-    "properties":	{
-      "instanceUrl":	"**********************************",
-      "login":	"****",
-      "password":	"****"
+  "s3": {
+    "service": "s3",
+    "properties": {
+      "region": "US_WEST_1",
+      "accessKey": "*******************",
+      "secretKey": "***************************************"
     }
   }
 }

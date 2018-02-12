@@ -181,14 +181,14 @@ public final class OpenShiftUtils {
 		withDefaultUser(client -> client.resource(route).delete());
 	}
 
-	public Route createRestRoute() {
+	public Route createRestRoute(String openShiftNamespace, String urlSuffix) {
 
 		final Route route = new RouteBuilder()
 					.withNewMetadata()
 						.withName("syndesis-rest")
 					.endMetadata()
 					.withNewSpec()
-						.withPath("/api").withHost("rest-" + TestConfiguration.openShiftNamespace() + "." + TestConfiguration.syndesisUrlSuffix())
+						.withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
 						.withWildcardPolicy("None")
 						.withNewTls()
 							.withTermination("edge")

@@ -30,6 +30,12 @@ public class CommonSteps {
 		OpenShiftUtils.getInstance().cleanProject();
 	}
 
+	@Given("^clean all builds")
+	public void cleanBuilds() {
+		OpenShiftUtils.getInstance().getBuildConfigs().forEach(OpenShiftUtils.getInstance()::deleteBuildConfig);
+		OpenShiftUtils.getInstance().getBuilds().forEach(OpenShiftUtils.getInstance()::deleteBuild);
+	}
+
 	@When("^deploy Syndesis from template")
 	public void deploySyndesis() {
 		SyndesisTemplate.deploy();
