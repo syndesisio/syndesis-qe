@@ -11,7 +11,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class IntegrationAddStepComponent extends SyndesisPageObject {
+public class IntegrationStepSelectComponent extends SyndesisPageObject {
 
 	private static final class Element {
 		public static final By ROOT = By.cssSelector("syndesis-integrations-step-select");
@@ -28,7 +28,7 @@ public class IntegrationAddStepComponent extends SyndesisPageObject {
 		return getRootElement().is(visible);
 	}
 
-	public void addStep(String stepName) {
+	public void chooseStep(String stepName) {
 		log.info("searching for step {}", stepName);
 		this.getRootElement().find(By.cssSelector(String.format("div.step[title='%s']", stepName))).shouldBe(visible).click();
 	}

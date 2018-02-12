@@ -50,8 +50,8 @@ Feature: Test functionality of DB connection
 
     # final steps
     When clicks on the "Publish" button
-    And she defines integration name "JMS publish-subscribe-request E2E"
+    And she sets integration name "JMS publish-subscribe-request E2E"
     And clicks on the "Publish" button
     Then Camilla is presented with "JMS publish-subscribe-request E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "JMS publish-subscribe-request E2E" get into "Active" state
+    Then she waits until integration "JMS publish-subscribe-request E2E" gets into "Active" state
