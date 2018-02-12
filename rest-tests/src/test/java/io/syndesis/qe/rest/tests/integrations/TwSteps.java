@@ -2,8 +2,6 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.security.GeneralSecurityException;
-
 import cucumber.api.java.en.Given;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
@@ -33,7 +31,7 @@ public class TwSteps {
 	private final ConnectionsEndpoint connectionsEndpoint;
 	private final ConnectorsEndpoint connectorsEndpoint;
 
-	public TwSteps() throws GeneralSecurityException {
+	public TwSteps() {
 		connectorsEndpoint = new ConnectorsEndpoint();
 		connectionsEndpoint = new ConnectionsEndpoint();
 	}

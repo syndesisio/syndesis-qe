@@ -10,10 +10,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +34,7 @@ public abstract class AbstractEndpoint<T> {
 	private Class<T> type;
 	private final Client client;
 
-	public AbstractEndpoint(Class<?> type, String endpointName) throws GeneralSecurityException {
+	public AbstractEndpoint(Class<?> type, String endpointName) {
 		this.type = (Class<T>) type;
 		this.endpointName = endpointName;
 
@@ -64,7 +62,7 @@ public abstract class AbstractEndpoint<T> {
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
 
-		final Response response = invocation.delete();
+		invocation.delete();
 	}
 
 	public T get(String id) {
@@ -80,7 +78,7 @@ public abstract class AbstractEndpoint<T> {
 		return transformJsonNode(response, type);
 	}
 
-	public T update(String id, T obj) {
+	public void update(String id, T obj) {
 		log.debug("PUT : {}", getEndpointUrl() + "/" + id);
 		final Invocation.Builder invocation = client
 				.target(getEndpointUrl() + "/" + id)
@@ -88,9 +86,7 @@ public abstract class AbstractEndpoint<T> {
 				.header("X-Forwarded-User", "pista")
 				.header("X-Forwarded-Access-Token", "kral");
 
-		final JsonNode response = invocation.get(JsonNode.class);
-
-		return transformJsonNode(response, type);
+		invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
 	}
 
 	public List<T> list() {

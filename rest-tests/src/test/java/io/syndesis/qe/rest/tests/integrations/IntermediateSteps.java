@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 
 import cucumber.api.java.en.Given;
 import io.syndesis.model.filter.FilterPredicate;
@@ -29,7 +28,7 @@ public class IntermediateSteps {
 	@Autowired
 	private StepsStorage steps;
 
-	public IntermediateSteps() throws GeneralSecurityException {
+	public IntermediateSteps() {
 	}
 
 	/**

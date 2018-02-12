@@ -2,16 +2,14 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.security.GeneralSecurityException;
-
 import cucumber.api.java.en.Given;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
 import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
-import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +27,7 @@ public class S3Steps {
 	private final ConnectionsEndpoint connectionsEndpoint;
 	private final ConnectorsEndpoint connectorsEndpoint;
 
-	public S3Steps() throws GeneralSecurityException {
+	public S3Steps() {
 		connectorsEndpoint = new ConnectorsEndpoint();
 		connectionsEndpoint = new ConnectionsEndpoint();
 	}
