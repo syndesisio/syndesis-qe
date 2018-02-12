@@ -106,7 +106,7 @@ Feature: Test functionality of DB connection
     And she clicks on the "Done" button
     Then she wait until integration "CRUD2-read-create E2E" get into "Active" state
 
-    Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
+    Then validate that all todos with task "Joe" have value completed "0", period in ms: "5000"
 
 #
 #  3. select - delete

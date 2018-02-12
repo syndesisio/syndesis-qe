@@ -98,6 +98,6 @@ Feature: Upload tech extension and add it to integration
 
     When Camilla choose "Delete" action on "Syndesis Extension" technical extension
     Then she is presented with dialog page "Warning!"
-    And she can see notification about integrations "Twitter to Salesforce E2E" in which is tech extension used
+    And she can see notification about integrations "CRUD4-read-create-inbuilt E2E" in which is tech extension used
 
     Then she clicks on the modal dialog "Cancel" button
