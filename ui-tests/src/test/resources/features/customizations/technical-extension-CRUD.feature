@@ -40,7 +40,7 @@ Feature: Extension CRUD operations
     When Camilla choose "Update" action on "Syndesis Extension" technical extension
     Then she is presented with the Syndesis page "Import Extension"
 
-    When Camilla upload extension
+    When Camilla upload extension "syndesis-extensions-1.0.0-SNAPSHOT"
     Then she see details about imported extension
 
     When she clicks on the "Update" button
