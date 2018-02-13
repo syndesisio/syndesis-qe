@@ -1,14 +1,13 @@
 package io.syndesis.qe.endpoints;
 
-import java.security.GeneralSecurityException;
+import org.springframework.stereotype.Component;
 
-import io.syndesis.model.integration.Integration;
 import io.syndesis.model.metrics.IntegrationMetricsSummary;
 
+@Component
 public class MetricsEndpoint extends AbstractEndpoint<IntegrationMetricsSummary> {
 
-    public MetricsEndpoint() throws GeneralSecurityException {
+    public MetricsEndpoint() {
         super(IntegrationMetricsSummary.class, "/metrics");
     }
 }
-

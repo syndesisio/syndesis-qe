@@ -1,8 +1,8 @@
 package io.syndesis.qe.bdd.validation;
 
 import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.security.GeneralSecurityException;
 import java.util.Date;
 import java.util.List;
 
@@ -16,19 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MetricsValidationSteps {
 
+    @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
+    @Autowired
     private MetricsEndpoint metricsEndpoint;
 
-    public MetricsValidationSteps () {
-        try {
-            integrationsEndpoint = new IntegrationsEndpoint();
-            metricsEndpoint = new MetricsEndpoint();
-        } catch (GeneralSecurityException e) {
-            Assertions.fail("Error: " + e);
-        }
-
-
+    public MetricsValidationSteps() {
     }
+
     @Then("^validate that number of all messages through integration \"([^\"]*)\" is greater than \"([^\"]*)\", period in ms: \"([^\"]*)\"$")
     public void validateThatNumberOfAllMessagesOfIntegrationIsGreaterThanPeriodInMs(String integrationName, Integer nr, Integer ms) throws InterruptedException {
         Thread.sleep(ms + 1000);
@@ -47,9 +42,7 @@ public class MetricsValidationSteps {
         log.info("LAST MESSAGE WAS PROCEEDED ON: *{}*", lastProceded);
     }
 
-
 //    AUXILIARIES
-
     private String getIdByIntegrationName(String integrationName) {
         List<Integration> integrations = integrationsEndpoint.list();
         Integration integr = integrations.stream().filter(integration -> integrationName.equals(integration.getName())).findAny().orElse(null);

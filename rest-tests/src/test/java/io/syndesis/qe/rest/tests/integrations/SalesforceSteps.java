@@ -23,13 +23,12 @@ public class SalesforceSteps {
 
     @Autowired
     private StepsStorage steps;
-
-    private final ConnectionsEndpoint connectionsEndpoint;
-    private final ConnectorsEndpoint connectorsEndpoint;
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
+    @Autowired
+    private ConnectorsEndpoint connectorsEndpoint;
 
     public SalesforceSteps() {
-        connectorsEndpoint = new ConnectorsEndpoint();
-        connectionsEndpoint = new ConnectionsEndpoint();
     }
 
     @Given("^create SF \"([^\"]*)\" action step on field: \"([^\"]*)\"$")
