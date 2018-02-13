@@ -9,12 +9,12 @@ import org.openqa.selenium.By;
  */
 public class ConnectionConfigurationComponentAmq extends ConnectionConfigurationComponent {
 
-	private static final class Element {
-		public static final By TITLE = By.cssSelector("h2[innertext='ActiveMQ Configuration']");
-	}
+    private static final class Element {
+        public static final By TITLE = By.cssSelector("h2[innertext='ActiveMQ Configuration']");
+    }
 
-	@Override
-	public boolean validate() {
-		return this.getRootElement().find(Element.TITLE).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return this.getRootElement().find(Element.TITLE).is(visible);
+    }
 }

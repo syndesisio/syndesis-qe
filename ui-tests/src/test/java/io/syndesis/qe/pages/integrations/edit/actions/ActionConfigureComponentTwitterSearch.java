@@ -13,22 +13,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActionConfigureComponentTwitterSearch extends ActionConfigureComponent {
 
-	public void fillInput(String value) {
-		log.debug("setting keywords element of twitter search with value: {}", value);
-		HashMap<By, String> fillMap = new HashMap<By, String>();
-		fillMap.put(Input.KEYWORLDS, value);
-		this.fillForm(fillMap, this.getRootElement());
-	}
+    public void fillInput(String value) {
+        log.debug("setting keywords element of twitter search with value: {}", value);
+        HashMap<By, String> fillMap = new HashMap<By, String>();
+        fillMap.put(Input.KEYWORLDS, value);
+        this.fillForm(fillMap, this.getRootElement());
+    }
 
-	private static final class Input {
-		public static final By KEYWORLDS = By.id("keywords");
-	}
+    private static final class Input {
+        public static final By KEYWORLDS = By.id("keywords");
+    }
 
-	public SelenideElement keywordsElement() {
-		return this.getRootElement().find(Input.KEYWORLDS).shouldBe(visible);
-	}
+    public SelenideElement keywordsElement() {
+        return this.getRootElement().find(Input.KEYWORLDS).shouldBe(visible);
+    }
 
-	public void fillKeywordsValue(String value) {
+    public void fillKeywordsValue(String value) {
 
-	}
+    }
 }

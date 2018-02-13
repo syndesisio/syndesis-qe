@@ -18,51 +18,51 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AmqTemplate {
 
-	public static void deploy() {
-		Template template = null;
-		try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
-			template = OpenShiftUtils.getInstance().withDefaultUser(client -> client.templates().load(is).get());
-		} catch (IOException ex) {
-			throw new IllegalArgumentException("Unable to read template ", ex);
-		}
-		Map<String, String> templateParams = new HashMap<>();
-		templateParams.put("MQ_USERNAME", "amq");
-		templateParams.put("MQ_PASSWORD", "topSecret");
+    public static void deploy() {
+        Template template = null;
+        try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
+            template = OpenShiftUtils.getInstance().withDefaultUser(client -> client.templates().load(is).get());
+        } catch (IOException ex) {
+            throw new IllegalArgumentException("Unable to read template ", ex);
+        }
+        Map<String, String> templateParams = new HashMap<>();
+        templateParams.put("MQ_USERNAME", "amq");
+        templateParams.put("MQ_PASSWORD", "topSecret");
 
-		// try to clean previous broker
-		cleanUp();
-		OpenShiftUtils.getInstance().withDefaultUser(c -> c.templates().withName("syndesis-amq").delete());
+        // try to clean previous broker
+        cleanUp();
+        OpenShiftUtils.getInstance().withDefaultUser(c -> c.templates().withName("syndesis-amq").delete());
 
-		KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
-		OpenShiftUtils.getInstance().createResources(processedTemplate);
+        KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
+        OpenShiftUtils.getInstance().createResources(processedTemplate);
 
-		try {
-			OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
-		} catch (InterruptedException | TimeoutException e) {
-			log.error("Wait for syndesis-rest failed ", e);
-		}
-		Account amqAccount = new Account();
-		amqAccount.setService("amq");
-		Map<String, String> accountParameters = new HashMap<>();
-		accountParameters.put("brokerUrl", "tcp://broker-amq:61616");
-		accountParameters.put("username", "amq");
-		accountParameters.put("password", "topSecret");
-		accountParameters.put("clientId", UUID.randomUUID().toString());
-		amqAccount.setProperties(accountParameters);
-		AccountsDirectory.getInstance().addAccount("AMQ", amqAccount);
-	}
+        try {
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
+        } catch (InterruptedException | TimeoutException e) {
+            log.error("Wait for syndesis-rest failed ", e);
+        }
+        Account amqAccount = new Account();
+        amqAccount.setService("amq");
+        Map<String, String> accountParameters = new HashMap<>();
+        accountParameters.put("brokerUrl", "tcp://broker-amq:61616");
+        accountParameters.put("username", "amq");
+        accountParameters.put("password", "topSecret");
+        accountParameters.put("clientId", UUID.randomUUID().toString());
+        amqAccount.setProperties(accountParameters);
+        AccountsDirectory.getInstance().addAccount("AMQ", amqAccount);
+    }
 
-	private static void cleanUp() {
-		OpenShiftUtils.getInstance().getDeployments().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
-				.ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(true, dc));
-		OpenShiftUtils.getInstance().getServices().stream().filter(service ->  "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
-				.ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-		OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq".equals(is.getMetadata().getLabels().get("template"))).findFirst()
-				.ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
-		try {
-			Thread.sleep(10 * 1000);
-		} catch (InterruptedException e) {
-			log.error(e.getMessage());
-		}
-	}
+    private static void cleanUp() {
+        OpenShiftUtils.getInstance().getDeployments().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
+                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(true, dc));
+        OpenShiftUtils.getInstance().getServices().stream().filter(service ->  "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
+                .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
+        OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq".equals(is.getMetadata().getLabels().get("template"))).findFirst()
+                .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
+        try {
+            Thread.sleep(10 * 1000);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage());
+        }
+    }
 }

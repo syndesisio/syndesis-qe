@@ -15,28 +15,28 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActionConfigureComponentPeriodicSql extends ActionConfigureComponentSql {
 
-	private static final class Element {
-		public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
-		public static final By INPUT_PERIOD = By.cssSelector("input[name='schedulerPeriod']");
-		public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
-	}
+    private static final class Element {
+        public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
+        public static final By INPUT_PERIOD = By.cssSelector("input[name='schedulerPeriod']");
+        public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
+    }
 
-	@Override
-	public void fillSqlInput(String query) {
-		log.debug("filling sql query: {}", query);
-		SelenideElement element = $(Element.INPUT_QUERY);
-		this.fillInput(element, query);
-	}
+    @Override
+    public void fillSqlInput(String query) {
+        log.debug("filling sql query: {}", query);
+        SelenideElement element = $(Element.INPUT_QUERY);
+        this.fillInput(element, query);
+    }
 
-	@Override
-	public boolean validate() {
-		return this.getRootElement().find(Element.TITLE).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return this.getRootElement().find(Element.TITLE).is(visible);
+    }
 
-	public void fillSQLperiod(String period) {
-		log.debug("filling sql period: {}", period);
-		SelenideElement element = $(Element.INPUT_PERIOD);
-		this.fillInput(element, period);
-	}
+    public void fillSQLperiod(String period) {
+        log.debug("filling sql period: {}", period);
+        SelenideElement element = $(Element.INPUT_PERIOD);
+        this.fillInput(element, period);
+    }
 
 }

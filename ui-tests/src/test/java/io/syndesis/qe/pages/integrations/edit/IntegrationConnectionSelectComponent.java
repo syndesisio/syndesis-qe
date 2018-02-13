@@ -13,22 +13,22 @@ import lombok.Getter;
 
 public class IntegrationConnectionSelectComponent extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-connection-select");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-integrations-connection-select");
+    }
 
-	@Getter
-	private ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
+    @Getter
+    private ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
 
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().is(visible);
+    }
 
 }

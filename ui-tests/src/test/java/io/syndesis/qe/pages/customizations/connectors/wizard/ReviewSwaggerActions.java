@@ -14,26 +14,26 @@ import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
 public class ReviewSwaggerActions extends SyndesisPageObject implements WizardStep {
 
-	private static class Button {
-		public static By NEXT = By.xpath("//button[contains(.,'Next')]");
-	}
+    private static class Button {
+        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
+    }
 
-	private static class Element {
-		public static By ROOT = By.cssSelector("syndesis-api-connector-review");
-	}
+    private static class Element {
+        public static By ROOT = By.cssSelector("syndesis-api-connector-review");
+    }
 
-	@Override
-	public void goToNextWizardStep() {
-		$(Button.NEXT).shouldBe(visible).click();
-	}
+    @Override
+    public void goToNextWizardStep() {
+        $(Button.NEXT).shouldBe(visible).click();
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).should(exist);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).should(exist);
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().exists();
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().exists();
+    }
 }

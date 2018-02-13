@@ -5,22 +5,22 @@ package io.syndesis.qe.exceptions;
  * @author jknetl
  */
 public class AccountsException extends RuntimeException {
-	public AccountsException() {
-	}
+    public AccountsException() {
+    }
 
-	public AccountsException(String message) {
-		super(message);
-	}
+    public AccountsException(String message) {
+        super(message);
+    }
 
-	public AccountsException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public AccountsException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public AccountsException(Throwable cause) {
-		super(cause);
-	}
+    public AccountsException(Throwable cause) {
+        super(cause);
+    }
 
-	public AccountsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+    public AccountsException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

@@ -9,7 +9,7 @@ import io.syndesis.model.connection.Connection;
  */
 public class ConnectionsEndpoint extends AbstractEndpoint<Connection> {
 
-	public ConnectionsEndpoint() {
-		super(Connection.class, "/connections");
-	}
+    public ConnectionsEndpoint() {
+        super(Connection.class, "/connections");
+    }
 }
