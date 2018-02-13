@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.customizations.connectors.wizard;
+package io.syndesis.qe.pages.customizations.connectors.wizard.steps;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
