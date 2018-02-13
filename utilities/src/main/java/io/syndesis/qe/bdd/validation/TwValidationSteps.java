@@ -23,47 +23,47 @@ import twitter4j.conf.ConfigurationBuilder;
 @Slf4j
 public class TwValidationSteps {
 
-	private final Twitter twitter;
-	private final AccountsDirectory accountsDirectory;
+    private final Twitter twitter;
+    private final AccountsDirectory accountsDirectory;
 
-	public TwValidationSteps() {
+    public TwValidationSteps() {
 
-		accountsDirectory = AccountsDirectory.getInstance();
-		final Account twitterTalky = accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get();
-		//twitter
-		final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()
-				.setOAuthConsumerKey(twitterTalky.getProperty("consumerKey"))
-				.setOAuthConsumerSecret(twitterTalky.getProperty("consumerSecret"))
-				.setOAuthAccessToken(twitterTalky.getProperty("accessToken"))
-				.setOAuthAccessTokenSecret(twitterTalky.getProperty("accessTokenSecret"))
-				.build());
-		twitter = factory.getInstance();
-	}
+        accountsDirectory = AccountsDirectory.getInstance();
+        final Account twitterTalky = accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get();
+        //twitter
+        final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()
+                .setOAuthConsumerKey(twitterTalky.getProperty("consumerKey"))
+                .setOAuthConsumerSecret(twitterTalky.getProperty("consumerSecret"))
+                .setOAuthAccessToken(twitterTalky.getProperty("accessToken"))
+                .setOAuthAccessTokenSecret(twitterTalky.getProperty("accessTokenSecret"))
+                .build());
+        twitter = factory.getInstance();
+    }
 
-	@Given("^clean all tweets in twitter_talky account")
-	public void cleanupTwSf() throws TwitterException {
-		deleteAllTweets(twitter);
-	}
+    @Given("^clean all tweets in twitter_talky account")
+    public void cleanupTwSf() throws TwitterException {
+        deleteAllTweets(twitter);
+    }
 
-	@Then("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
-	public void sendTweet(String toAcc, String tweet) throws TwitterException {
-		final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
-		log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
-				.get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
-		twitter.updateStatus(message);
-		log.info("Tweet submitted.");
-	}
+    @Then("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
+    public void sendTweet(String toAcc, String tweet) throws TwitterException {
+        final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
+        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
+                .get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
+        twitter.updateStatus(message);
+        log.info("Tweet submitted.");
+    }
 
-	private void deleteAllTweets(Twitter twitter) throws TwitterException {
-		final ResponseList<Status> userTimeline = twitter.timelines().getUserTimeline();
-		log.info("Deleting all tweets of: " + twitter.getScreenName());
+    private void deleteAllTweets(Twitter twitter) throws TwitterException {
+        final ResponseList<Status> userTimeline = twitter.timelines().getUserTimeline();
+        log.info("Deleting all tweets of: " + twitter.getScreenName());
 
-		userTimeline.stream().forEach(s -> {
-			try {
-				twitter.destroyStatus(s.getId());
-			} catch (TwitterException e) {
-				log.warn("Cannot destroy status: " + s.getId());
-			}
-		});
-	}
+        userTimeline.stream().forEach(s -> {
+            try {
+                twitter.destroyStatus(s.getId());
+            } catch (TwitterException e) {
+                log.warn("Cannot destroy status: " + s.getId());
+            }
+        });
+    }
 }

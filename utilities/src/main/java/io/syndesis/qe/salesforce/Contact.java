@@ -14,14 +14,14 @@ import lombok.Data;
 @Data
 public class Contact {
 
-	@JsonProperty(value = "Id")
-	private String id;
-	@JsonProperty(value = "FirstName")
-	private String firstName;
-	@JsonProperty(value = "LastName")
-	private String lastname;
-	@JsonProperty(value = "Description")
-	private String description;
-	@JsonProperty(value = "Title")
-	private String title;
+    @JsonProperty(value = "Id")
+    private String id;
+    @JsonProperty(value = "FirstName")
+    private String firstName;
+    @JsonProperty(value = "LastName")
+    private String lastname;
+    @JsonProperty(value = "Description")
+    private String description;
+    @JsonProperty(value = "Title")
+    private String title;
 }

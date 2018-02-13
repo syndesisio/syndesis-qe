@@ -17,17 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StepsStorage {
 
-	private List<Step> steps = null;
+    private List<Step> steps = null;
 
-	public StepsStorage() {
-		steps = new ArrayList<>();
-	}
+    public StepsStorage() {
+        steps = new ArrayList<>();
+    }
 
-	public List<Step> getSteps() {
-		return steps;
-	}
+    public List<Step> getSteps() {
+        return steps;
+    }
 
-	public void flushSteps() {
-		steps.clear();
-	}
+    public void flushSteps() {
+        steps.clear();
+    }
 }

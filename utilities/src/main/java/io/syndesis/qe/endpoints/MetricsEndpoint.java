@@ -7,8 +7,8 @@ import io.syndesis.model.metrics.IntegrationMetricsSummary;
 
 public class MetricsEndpoint extends AbstractEndpoint<IntegrationMetricsSummary> {
 
-	public MetricsEndpoint() throws GeneralSecurityException {
-		super(IntegrationMetricsSummary.class, "/metrics");
-	}
+    public MetricsEndpoint() throws GeneralSecurityException {
+        super(IntegrationMetricsSummary.class, "/metrics");
+    }
 }
 

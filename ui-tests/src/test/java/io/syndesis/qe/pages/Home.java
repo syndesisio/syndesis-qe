@@ -5,11 +5,11 @@ import static com.codeborne.selenide.Selenide.$;
 
 public class Home extends MainPage {
 
-	public void checkVisibility(boolean shouldBeVisible) {
-		if (shouldBeVisible) {
-			$(Tab.HOME).shouldBe(visible);
-		} else {
-			$(Tab.HOME).shouldNotBe(visible);
-		}
-	}
+    public void checkVisibility(boolean shouldBeVisible) {
+        if (shouldBeVisible) {
+            $(Tab.HOME).shouldBe(visible);
+        } else {
+            $(Tab.HOME).shouldNotBe(visible);
+        }
+    }
 }

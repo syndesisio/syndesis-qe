@@ -12,32 +12,32 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ActionConfigureComponentJmsPublish extends ActionConfigureComponentJms {
 
-	private static final class Element {
-		public static final By TITLE = By.cssSelector("div[innertext='Publish Messages']");
-	}
+    private static final class Element {
+        public static final By TITLE = By.cssSelector("div[innertext='Publish Messages']");
+    }
 
-	private static final class Input {
-		public static final By DESTINATION_NAME = By.id("destinationName");
-		public static final By PERSISTENT = By.id("persistent");
-	}
+    private static final class Input {
+        public static final By DESTINATION_NAME = By.id("destinationName");
+        public static final By PERSISTENT = By.id("persistent");
+    }
 
-	private static final class Select {
-		public static final By DESTINATION_TYPE = By.id("destinationType");
-	}
+    private static final class Select {
+        public static final By DESTINATION_TYPE = By.id("destinationType");
+    }
 
 
-	@Override
-	public boolean validate() {
-		return this.getRootElement().find(Element.TITLE).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return this.getRootElement().find(Element.TITLE).is(visible);
+    }
 
-	@Override
-	public Class getInputClass() {
-		return ActionConfigureComponentJmsPublish.Input.class;
-	}
+    @Override
+    public Class getInputClass() {
+        return ActionConfigureComponentJmsPublish.Input.class;
+    }
 
-	@Override
-	public Class getSelectClass() {
-		return ActionConfigureComponentJmsPublish.Select.class;
-	}
+    @Override
+    public Class getSelectClass() {
+        return ActionConfigureComponentJmsPublish.Select.class;
+    }
 }

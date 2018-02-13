@@ -16,34 +16,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DashboardPage extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-dashboard");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-dashboard");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(visible);
+    }
 
-	@Override
-	public boolean validate() {
-		return $(Element.ROOT).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return $(Element.ROOT).is(visible);
+    }
 
-	public SelenideElement getConnection(String connectionTitle) {
-		log.info("searching for connection {}", connectionTitle);
-		return this.getRootElement().$(String.format("h2.card-pf-title.text-center[title=\"%s\"]", connectionTitle));
-	}
+    public SelenideElement getConnection(String connectionTitle) {
+        log.info("searching for connection {}", connectionTitle);
+        return this.getRootElement().$(String.format("h2.card-pf-title.text-center[title=\"%s\"]", connectionTitle));
+    }
 
-	public void goToConnection(String connectionTitle) {
-		log.info("searching for connection {}", connectionTitle);
-		this.getConnection(connectionTitle).shouldBe(visible).click();
-	}
+    public void goToConnection(String connectionTitle) {
+        log.info("searching for connection {}", connectionTitle);
+        this.getConnection(connectionTitle).shouldBe(visible).click();
+    }
 
-	public boolean isIntegrationPresent(String integrationName) {
-		log.info("Checking if integration {} is present in the list", integrationName);
-		SelenideElement integration = this.getRootElement().find(By.cssSelector(String.format("div[innertext='%s']", integrationName)));
-		return integration.is(visible);
-	}
+    public boolean isIntegrationPresent(String integrationName) {
+        log.info("Checking if integration {} is present in the list", integrationName);
+        SelenideElement integration = this.getRootElement().find(By.cssSelector(String.format("div[innertext='%s']", integrationName)));
+        return integration.is(visible);
+    }
 
 }

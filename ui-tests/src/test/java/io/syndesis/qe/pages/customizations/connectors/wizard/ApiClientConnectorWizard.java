@@ -20,21 +20,21 @@ import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
 public class ApiClientConnectorWizard extends WizardPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-api-connector-create");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-api-connector-create");
+    }
 
-	public ApiClientConnectorWizard() {
-		setSteps(new WizardStep[] {new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()});
-	}
+    public ApiClientConnectorWizard() {
+        setSteps(new WizardStep[] {new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()});
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).should(exist);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).should(exist);
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().exists();
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().exists();
+    }
 }

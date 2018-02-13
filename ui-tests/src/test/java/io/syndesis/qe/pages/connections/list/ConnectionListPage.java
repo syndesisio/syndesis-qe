@@ -17,21 +17,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConnectionListPage extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-connections-list-page");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-connections-list-page");
+    }
 
-	@Getter
-	private ConnectionsListComponent listComponent = new ConnectionsListComponent();
+    @Getter
+    private ConnectionsListComponent listComponent = new ConnectionsListComponent();
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(visible);
+    }
 
-	@Override
-	public boolean validate() {
-		return $(Element.ROOT).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return $(Element.ROOT).is(visible);
+    }
 
 }

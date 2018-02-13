@@ -14,18 +14,18 @@ import io.syndesis.qe.pages.SyndesisPageObject;
  */
 public class IntegrationSaveOrAddStepComponent extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-save-or-add-step");
-		public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
-	}
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-integrations-save-or-add-step");
+        public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
+    }
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	@Override
-	public boolean validate() {
-		return this.getRootElement().find(Element.TITLE).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return this.getRootElement().find(Element.TITLE).is(visible);
+    }
 }
