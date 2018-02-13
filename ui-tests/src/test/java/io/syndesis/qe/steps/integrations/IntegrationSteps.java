@@ -1,32 +1,35 @@
 package io.syndesis.qe.steps.integrations;
 
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.fabric8.kubernetes.client.utils.Utils;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
+import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
+import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
+import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
+import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
+import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-
-import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.fabric8.kubernetes.client.utils.Utils;
-import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
-import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
-import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
-import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
-import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
-import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by sveres on 11/15/17.
@@ -37,6 +40,7 @@ public class IntegrationSteps {
 	private IntegrationEditPage editPage = new IntegrationEditPage();
 	private IntegrationDetailPage detailPage = new IntegrationDetailPage();
 	private IntegrationsListPage listPage = new IntegrationsListPage();
+	private IntegrationsListComponent listComponent = new IntegrationsListComponent();
 
 	@When("^she sets the integration name \"([^\"]*)\"$")
 	public void setIntegrationName(String integrationName) {
@@ -322,4 +326,33 @@ public class IntegrationSteps {
 			}
 		}
 	}
+
+	@And("^Camilla exports this integraion$")
+	public void exportIntegration() throws InterruptedException {
+		File exportedIntegrationFile = detailPage.exportIntegration();
+		assertTrue("Export of integration failed.",exportedIntegrationFile.exists());
+		assertTrue("Export of integration failed - not a file.",exportedIntegrationFile.isFile());
+		assertTrue("Export of integration failed - empty file.",exportedIntegrationFile.length() > 0);
+	}
+
+	@And("^Camilla imports integraion \"([^\"]*)\"$")
+	public void importIntegration(String integrationName) throws InterruptedException {
+		assertTrue("Import of integration failed.", listComponent.importIntegration(integrationName));
+		assertTrue("Integration is not present after importing", listComponent.isIntegrationPresent(integrationName));
+	}
+
+	@And("^Camilla starts integration \"([^\"]*)\"$")
+	public void startIntegration(String integrationName) {
+		detailPage.getButton("Start Integration").shouldBe(visible).click();
+
+		ModalDialogPage modal = new ModalDialogPage();
+		modal.getButton("OK").shouldBe(visible).click();
+	}
+
+	@And("^Wait until there is no integration pod with name \"([^\"]*)\"$")
+	public void waitForIntegrationPodShutdown(String integartionPodName) throws InterruptedException {
+		OpenShiftWaitUtils.assertEventually("Pod with name " + integartionPodName + "is still running.",
+				OpenShiftWaitUtils.areNoPodsPresent(integartionPodName),1000,5 * 60 *1000);
+	}
+
 }
