@@ -7,10 +7,10 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-	features = "classpath:features", tags = {"not @integrations-lifecycle", "not @integrations-lifecycle-long"},
-	plugin = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml", "json:target/cucumber/cucumber-report.json"})
+    features = "classpath:features", tags = {"not @integrations-lifecycle", "not @integrations-lifecycle-long"},
+    plugin = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml", "json:target/cucumber/cucumber-report.json"})
 public class CucumberTestsRunner extends TestSuiteParent {
 
-	//we could have some setup here
+    //we could have some setup here
 
 }

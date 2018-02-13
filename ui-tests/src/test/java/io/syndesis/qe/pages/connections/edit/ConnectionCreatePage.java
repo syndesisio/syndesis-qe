@@ -18,20 +18,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConnectionCreatePage extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-connection-create-page");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-connection-create-page");
+    }
 
-	private ConnectionConfigurationComponent connectionConfiguration = new ConnectionConfigurationComponent();
-	private ConnectionsDetailsComponent connectionDetails = new ConnectionsDetailsComponent();
+    private ConnectionConfigurationComponent connectionConfiguration = new ConnectionConfigurationComponent();
+    private ConnectionsDetailsComponent connectionDetails = new ConnectionsDetailsComponent();
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(visible);
+    }
 
-	@Override
-	public boolean validate() {
-		return $(Element.ROOT).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return $(Element.ROOT).is(visible);
+    }
 }

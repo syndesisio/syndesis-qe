@@ -29,117 +29,117 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractEndpoint<T> {
 
-	protected String endpointName;
-	protected String apiPath = TestConfiguration.syndesisRestApiPath();
-	private Class<T> type;
-	private final Client client;
+    protected String endpointName;
+    protected String apiPath = TestConfiguration.syndesisRestApiPath();
+    private Class<T> type;
+    private final Client client;
 
-	public AbstractEndpoint(Class<?> type, String endpointName) {
-		this.type = (Class<T>) type;
-		this.endpointName = endpointName;
+    public AbstractEndpoint(Class<?> type, String endpointName) {
+        this.type = (Class<T>) type;
+        this.endpointName = endpointName;
 
-		client = RestUtils.getClient();
-	}
+        client = RestUtils.getClient();
+    }
 
-	public T create(T obj) {
-		log.debug("POST: {}", getEndpointUrl());
-		final Invocation.Builder invocation = client
-				.target(getEndpointUrl())
-				.request(MediaType.APPLICATION_JSON)
-				.header("X-Forwarded-User", "pista")
-				.header("X-Forwarded-Access-Token", "kral");
+    public T create(T obj) {
+        log.debug("POST: {}", getEndpointUrl());
+        final Invocation.Builder invocation = client
+                .target(getEndpointUrl())
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-User", "pista")
+                .header("X-Forwarded-Access-Token", "kral");
 
-		final JsonNode response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
+        final JsonNode response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
 
-		return transformJsonNode(response, type);
-	}
+        return transformJsonNode(response, type);
+    }
 
-	public void delete(String id) {
-		log.debug("DELETE: {}", getEndpointUrl() + "/" + id);
-		final Invocation.Builder invocation = client
-				.target(getEndpointUrl() + "/" + id)
-				.request(MediaType.APPLICATION_JSON)
-				.header("X-Forwarded-User", "pista")
-				.header("X-Forwarded-Access-Token", "kral");
+    public void delete(String id) {
+        log.debug("DELETE: {}", getEndpointUrl() + "/" + id);
+        final Invocation.Builder invocation = client
+                .target(getEndpointUrl() + "/" + id)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-User", "pista")
+                .header("X-Forwarded-Access-Token", "kral");
 
-		invocation.delete();
-	}
+        invocation.delete();
+    }
 
-	public T get(String id) {
-		log.debug("GET : {}", getEndpointUrl() + "/" + id);
-		final Invocation.Builder invocation = client
-				.target(getEndpointUrl() + "/" + id)
-				.request(MediaType.APPLICATION_JSON)
-				.header("X-Forwarded-User", "pista")
-				.header("X-Forwarded-Access-Token", "kral");
+    public T get(String id) {
+        log.debug("GET : {}", getEndpointUrl() + "/" + id);
+        final Invocation.Builder invocation = client
+                .target(getEndpointUrl() + "/" + id)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-User", "pista")
+                .header("X-Forwarded-Access-Token", "kral");
 
-		final JsonNode response = invocation.get(JsonNode.class);
+        final JsonNode response = invocation.get(JsonNode.class);
 
-		return transformJsonNode(response, type);
-	}
+        return transformJsonNode(response, type);
+    }
 
-	public void update(String id, T obj) {
-		log.debug("PUT : {}", getEndpointUrl() + "/" + id);
-		final Invocation.Builder invocation = client
-				.target(getEndpointUrl() + "/" + id)
-				.request(MediaType.APPLICATION_JSON)
-				.header("X-Forwarded-User", "pista")
-				.header("X-Forwarded-Access-Token", "kral");
+    public void update(String id, T obj) {
+        log.debug("PUT : {}", getEndpointUrl() + "/" + id);
+        final Invocation.Builder invocation = client
+                .target(getEndpointUrl() + "/" + id)
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-User", "pista")
+                .header("X-Forwarded-Access-Token", "kral");
 
-		invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
-	}
+        invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
+    }
 
-	public List<T> list() {
-		final ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
-		mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
-		final ObjectWriter ow = mapper.writer();
-		final Class<ListResult<T>> listtype = (Class) ListResult.class;
+    public List<T> list() {
+        final ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
+        mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
+        final ObjectWriter ow = mapper.writer();
+        final Class<ListResult<T>> listtype = (Class) ListResult.class;
 
-		log.debug("GET : {}", getEndpointUrl());
-		final Invocation.Builder invocation = client
-				.target(getEndpointUrl())
-				.request(MediaType.APPLICATION_JSON)
-				.header("X-Forwarded-User", "pista")
-				.header("X-Forwarded-Access-Token", "kral");
+        log.debug("GET : {}", getEndpointUrl());
+        final Invocation.Builder invocation = client
+                .target(getEndpointUrl())
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-User", "pista")
+                .header("X-Forwarded-Access-Token", "kral");
 
-		final JsonNode response = invocation
-				.get(JsonNode.class);
+        final JsonNode response = invocation
+                .get(JsonNode.class);
 
-		ListResult<T> result = null;
-		try {
-			result = Json.mapper().readValue(response.toString(), listtype);
-		} catch (IOException ex) {
-			log.error("" + ex);
-		}
+        ListResult<T> result = null;
+        try {
+            result = Json.mapper().readValue(response.toString(), listtype);
+        } catch (IOException ex) {
+            log.error("" + ex);
+        }
 
-		final List<T> ts = new ArrayList<>();
+        final List<T> ts = new ArrayList<>();
 
-		for (int i = 0; i < result.getTotalCount(); i++) {
-			T con = null;
-			try {
-				final String json = ow.writeValueAsString(result.getItems().get(i));
-				con = Json.mapper().readValue(json, type);
-			} catch (IOException ex) {
-				log.error(ex.toString());
-			}
-			ts.add(con);
-		}
+        for (int i = 0; i < result.getTotalCount(); i++) {
+            T con = null;
+            try {
+                final String json = ow.writeValueAsString(result.getItems().get(i));
+                con = Json.mapper().readValue(json, type);
+            } catch (IOException ex) {
+                log.error(ex.toString());
+            }
+            ts.add(con);
+        }
 
-		return ts;
-	}
+        return ts;
+    }
 
-	public String getEndpointUrl() {
+    public String getEndpointUrl() {
 
-		return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
-	}
+        return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
+    }
 
-	private T transformJsonNode(JsonNode json, Class<T> t) {
-		T ts = null;
-		try {
-			ts = Json.mapper().readValue(json.toString(), t);
-		} catch (IOException ex) {
-			log.error("" + ex);
-		}
-		return ts;
-	}
+    private T transformJsonNode(JsonNode json, Class<T> t) {
+        T ts = null;
+        try {
+            ts = Json.mapper().readValue(json.toString(), t);
+        } catch (IOException ex) {
+            log.error("" + ex);
+        }
+        return ts;
+    }
 }

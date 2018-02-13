@@ -14,59 +14,59 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class TestSuiteParent {
 
-	private static Secret lockSecret;
+    private static Secret lockSecret;
 
-	@BeforeClass
-	public static void lockNamespace() {
-		if (!TestConfiguration.namespaceLock()) {
-			return; //skip when syndesis.config.openshift.namespace.lock is false
-		}
-		log.info("Waiting to obtain namespace lock");
-		boolean isReady = TestUtils.waitForEvent(s -> !s.isPresent(),
-				() -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> "test-lock".equals(s.getMetadata().getName())).findFirst(),
-				TimeUnit.MINUTES, 60,
-				TimeUnit.SECONDS, 15);
+    @BeforeClass
+    public static void lockNamespace() {
+        if (!TestConfiguration.namespaceLock()) {
+            return; //skip when syndesis.config.openshift.namespace.lock is false
+        }
+        log.info("Waiting to obtain namespace lock");
+        boolean isReady = TestUtils.waitForEvent(s -> !s.isPresent(),
+                () -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> "test-lock".equals(s.getMetadata().getName())).findFirst(),
+                TimeUnit.MINUTES, 60,
+                TimeUnit.SECONDS, 15);
 
-		if (isReady) {
-			log.info("No lock present, namespace is ready");
-		} else {
-			// there's probably staled lock after 60 min timeout,
-			// display log warning and continue with force break
-			log.warn("Can't obtain lock gracefully");
-		}
-		cleanNamespace();
-		log.info("Creating namespace lock via secret `test-lock`");
-		lockSecret = OpenShiftUtils.getInstance().withDefaultUser(c -> c.secrets()
-				.createOrReplaceWithNew()
-				.withNewMetadata()
-				.withName("test-lock")
-				.endMetadata()
-				.done());
-	}
+        if (isReady) {
+            log.info("No lock present, namespace is ready");
+        } else {
+            // there's probably staled lock after 60 min timeout,
+            // display log warning and continue with force break
+            log.warn("Can't obtain lock gracefully");
+        }
+        cleanNamespace();
+        log.info("Creating namespace lock via secret `test-lock`");
+        lockSecret = OpenShiftUtils.getInstance().withDefaultUser(c -> c.secrets()
+                .createOrReplaceWithNew()
+                .withNewMetadata()
+                .withName("test-lock")
+                .endMetadata()
+                .done());
+    }
 
-	@AfterClass
-	public static void tearDown() {
-		if (lockSecret != null) {
-			if (TestConfiguration.namespaceCleanup()) {
-				log.info("Cleaning namespace");
-				OpenShiftUtils.getInstance().cleanProject();
-			} else {
-				log.info("Releasing namespace lock");
-				OpenShiftUtils.getInstance().deleteSecret(lockSecret);
-			}
+    @AfterClass
+    public static void tearDown() {
+        if (lockSecret != null) {
+            if (TestConfiguration.namespaceCleanup()) {
+                log.info("Cleaning namespace");
+                OpenShiftUtils.getInstance().cleanProject();
+            } else {
+                log.info("Releasing namespace lock");
+                OpenShiftUtils.getInstance().deleteSecret(lockSecret);
+            }
 
-		}
-	}
+        }
+    }
 
-	private static void cleanNamespace() {
-		if (TestConfiguration.namespaceCleanup()) {
-			CommonSteps commonSteps = new CommonSteps();
-			log.info("Cleaning namespace");
-			commonSteps.cleanNamespace();
-			log.info("Deploying Syndesis to namespace");
-			commonSteps.deploySyndesis();
-			log.info("Waiting for Syndesis to get ready");
-			commonSteps.waitForSyndeisis();
-		}
-	}
+    private static void cleanNamespace() {
+        if (TestConfiguration.namespaceCleanup()) {
+            CommonSteps commonSteps = new CommonSteps();
+            log.info("Cleaning namespace");
+            commonSteps.cleanNamespace();
+            log.info("Deploying Syndesis to namespace");
+            commonSteps.deploySyndesis();
+            log.info("Waiting for Syndesis to get ready");
+            commonSteps.waitForSyndeisis();
+        }
+    }
 }

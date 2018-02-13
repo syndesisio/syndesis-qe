@@ -124,6 +124,13 @@ jobs:
           name: Build tests
           command: |
             ./mvnw clean install -B -DskipTests | tee build_log.txt
+      - run:
+          name: Archive checkstyle result
+          command: |
+            mkdir ./checkstyle/
+            find . -type f -regex "\./.+/target/checkstyle-result.xml" -exec bash -c "cp {} ./checkstyle/\`echo {} | sed -e 's#^\./##' | sed -e 's#/#-#g'\`" \;
+      - store_artifacts:
+          path: ./checkstyle
       - <<: *save_m2
       - save_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}

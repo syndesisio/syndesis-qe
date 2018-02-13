@@ -25,80 +25,80 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonSteps {
 
-	@Given("^clean default namespace")
-	public void cleanNamespace() {
-		OpenShiftUtils.getInstance().cleanProject();
-	}
+    @Given("^clean default namespace")
+    public void cleanNamespace() {
+        OpenShiftUtils.getInstance().cleanProject();
+    }
 
-	@Given("^clean all builds")
-	public void cleanBuilds() {
-		OpenShiftUtils.getInstance().getBuildConfigs().forEach(OpenShiftUtils.getInstance()::deleteBuildConfig);
-		OpenShiftUtils.getInstance().getBuilds().forEach(OpenShiftUtils.getInstance()::deleteBuild);
-	}
+    @Given("^clean all builds")
+    public void cleanBuilds() {
+        OpenShiftUtils.getInstance().getBuildConfigs().forEach(OpenShiftUtils.getInstance()::deleteBuildConfig);
+        OpenShiftUtils.getInstance().getBuilds().forEach(OpenShiftUtils.getInstance()::deleteBuild);
+    }
 
-	@When("^deploy Syndesis from template")
-	public void deploySyndesis() {
-		SyndesisTemplate.deploy();
-	}
+    @When("^deploy Syndesis from template")
+    public void deploySyndesis() {
+        SyndesisTemplate.deploy();
+    }
 
-	@Then("^wait for Syndesis to become ready")
-	public void waitForSyndeisis() {
-		try {
-			OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("component", "syndesis-rest"));
-		} catch (InterruptedException | TimeoutException e) {
-			log.error("Wait for syndesis-rest failed ", e);
-		}
-	}
+    @Then("^wait for Syndesis to become ready")
+    public void waitForSyndeisis() {
+        try {
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("component", "syndesis-rest"));
+        } catch (InterruptedException | TimeoutException e) {
+            log.error("Wait for syndesis-rest failed ", e);
+        }
+    }
 
-	@Then("^verify s2i build of integration \"([^\"]*)\" was finished in duration (\\d+) min$")
-	public void verifyBuild(String integrationName, int duration) {
-		String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
+    @Then("^verify s2i build of integration \"([^\"]*)\" was finished in duration (\\d+) min$")
+    public void verifyBuild(String integrationName, int duration) {
+        String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
 
-		Optional<Build> s2iBuild = OpenShiftUtils.getInstance().getBuilds().stream().filter(b -> b.getMetadata().getName().contains(sanitizedName)).findFirst();
+        Optional<Build> s2iBuild = OpenShiftUtils.getInstance().getBuilds().stream().filter(b -> b.getMetadata().getName().contains(sanitizedName)).findFirst();
 
-		if (s2iBuild.isPresent()) {
-			Build build = s2iBuild.get();
-			String buildPodName = build.getMetadata().getAnnotations().get("openshift.io/build.pod-name");
-			Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(buildPodName)).findFirst();
-			if (buildPod.isPresent()) {
-				try {
-					boolean[] patternsInLogs = LogCheckerUtils.findPatternsInLogs(buildPod.get(), Pattern.compile(".*Downloading: \\b.*"));
-					Assertions.assertThat(patternsInLogs).containsOnly(false);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+        if (s2iBuild.isPresent()) {
+            Build build = s2iBuild.get();
+            String buildPodName = build.getMetadata().getAnnotations().get("openshift.io/build.pod-name");
+            Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(buildPodName)).findFirst();
+            if (buildPod.isPresent()) {
+                try {
+                    boolean[] patternsInLogs = LogCheckerUtils.findPatternsInLogs(buildPod.get(), Pattern.compile(".*Downloading: \\b.*"));
+                    Assertions.assertThat(patternsInLogs).containsOnly(false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
-			Assertions.assertThat(build.getStatus().getPhase()).isEqualTo("Complete");
-			// % 1_000L is there to parse OpenShift ms format
-			Assertions.assertThat(build.getStatus().getDuration() % 1_000L).isLessThan(duration * 60 * 1000);
-		} else {
-			Assertions.fail("No build found for integration with name " + sanitizedName);
-		}
-	}
+            Assertions.assertThat(build.getStatus().getPhase()).isEqualTo("Complete");
+            // % 1_000L is there to parse OpenShift ms format
+            Assertions.assertThat(build.getStatus().getDuration() % 1_000L).isLessThan(duration * 60 * 1000);
+        } else {
+            Assertions.fail("No build found for integration with name " + sanitizedName);
+        }
+    }
 
-	@Given("^deploy AMQ broker$")
-	public void deployAMQBroker() throws Throwable {
-		AmqTemplate.deploy();
-	}
+    @Given("^deploy AMQ broker$")
+    public void deployAMQBroker() throws Throwable {
+        AmqTemplate.deploy();
+    }
 
-	@Given("^execute SQL command \"([^\"]*)\"$")
-	public void executeSql(String sqlCmd) {
-		DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
-		dbUtils.readSqlOnSampleDb(sqlCmd);
-		SampleDbConnectionManager.getInstance().closeConnection();
-	}
+    @Given("^execute SQL command \"([^\"]*)\"$")
+    public void executeSql(String sqlCmd) {
+        DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
+        dbUtils.readSqlOnSampleDb(sqlCmd);
+        SampleDbConnectionManager.getInstance().closeConnection();
+    }
 
-	@Given("^clean TODO table$")
-	public void cleanTodoTable() {
-		DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
-		dbUtils.deleteRecordsInTable("TODO");
-		SampleDbConnectionManager.getInstance().closeConnection();
-	}
+    @Given("^clean TODO table$")
+    public void cleanTodoTable() {
+        DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
+        dbUtils.deleteRecordsInTable("TODO");
+        SampleDbConnectionManager.getInstance().closeConnection();
+    }
 
-	@Given("^clean application state")
-	public void resetState() {
-		int responseCode = TestSupport.getInstance().resetDbWithResponse();
-		Assertions.assertThat(responseCode).isEqualTo(204);
-	}
+    @Given("^clean application state")
+    public void resetState() {
+        int responseCode = TestSupport.getInstance().resetDbWithResponse();
+        Assertions.assertThat(responseCode).isEqualTo(204);
+    }
 }

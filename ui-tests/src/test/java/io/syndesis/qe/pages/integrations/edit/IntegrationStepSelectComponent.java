@@ -13,23 +13,23 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationStepSelectComponent extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-step-select");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-integrations-step-select");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().is(visible);
+    }
 
-	public void chooseStep(String stepName) {
-		log.info("searching for step {}", stepName);
-		this.getRootElement().find(By.cssSelector(String.format("div.step[title='%s']", stepName))).shouldBe(visible).click();
-	}
+    public void chooseStep(String stepName) {
+        log.info("searching for step {}", stepName);
+        this.getRootElement().find(By.cssSelector(String.format("div.step[title='%s']", stepName))).shouldBe(visible).click();
+    }
 }

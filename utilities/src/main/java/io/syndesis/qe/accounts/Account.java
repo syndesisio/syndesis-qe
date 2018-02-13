@@ -12,10 +12,10 @@ import lombok.Data;
 @Data
 public class Account {
 
-	private String service;
-	private Map<String, String> properties;
+    private String service;
+    private Map<String, String> properties;
 
-	public String getProperty(String name) {
-		return properties.get(name);
-	}
+    public String getProperty(String name) {
+        return properties.get(name);
+    }
 }

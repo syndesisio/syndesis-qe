@@ -11,23 +11,23 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 
 public abstract class StepComponent extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-step-configure");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-integrations-step-configure");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	public abstract void fillConfiguration();
+    public abstract void fillConfiguration();
 
-	public abstract boolean validate();
+    public abstract boolean validate();
 
-	public abstract void initialize();
+    public abstract void initialize();
 
-	public abstract void setParameter(String parameter);
+    public abstract void setParameter(String parameter);
 
-	public abstract String getParameter();
+    public abstract String getParameter();
 }

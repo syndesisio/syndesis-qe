@@ -5,5 +5,5 @@ package io.syndesis.qe.pages.integrations.edit.actions;
  */
 public abstract class ActionConfigureComponentSql extends ActionConfigureComponent {
 
-	public abstract void fillSqlInput(String value);
+    public abstract void fillSqlInput(String value);
 }
