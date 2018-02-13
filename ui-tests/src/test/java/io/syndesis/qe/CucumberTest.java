@@ -1,12 +1,10 @@
 package io.syndesis.qe;
 
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-
 import com.codeborne.selenide.Configuration;
-
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
@@ -19,6 +17,9 @@ public class CucumberTest extends TestSuiteParent {
 	public static void setupCucumber() {
 		//set up Selenide
 		Configuration.timeout = 5 * 60 * 1000;
-		Configuration.browser = TestConfiguration.syndesisBrowser();
+		//We will now use custom web driver
+		//Configuration.browser = TestConfiguration.syndesisBrowser();
+		Configuration.browser = "io.syndesis.qe.CustomWebDriverProvider";
 	}
+
 }

@@ -1,14 +1,15 @@
 package io.syndesis.qe.pages.integrations.detail;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.SelenideElement;
-
+import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import java.io.File;
+
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 @Slf4j
 public class IntegrationDetailPage extends SyndesisPageObject {
@@ -80,4 +81,17 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 	public SelenideElement getActionButton(String action) {
 		return this.getButton(action);
 	}
+
+	public File exportIntegration() throws InterruptedException {
+
+		this.getButton("Export").shouldBe(visible).click();
+		String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + this.getIntegrationName() + "-export.zip";
+
+		// wait for download
+		Thread.sleep(5000);
+
+		return new File(filePath);
+	}
+
+
 }
