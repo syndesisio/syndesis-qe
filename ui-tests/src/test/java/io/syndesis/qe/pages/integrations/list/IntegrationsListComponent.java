@@ -123,7 +123,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
     SelenideElement getKebabElement(boolean isOpen, SelenideElement item) {
         String open = isOpen ? ".open" : "";
-        return item.find(By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right" + open));
+        return item.find(By.cssSelector("div.dropdown.dropdown-menu-pf.pull-right" + open));
     }
 
     public void checkIfKebabHasWhatShouldHave(SelenideElement item, String status) {
@@ -133,7 +133,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
             throw new Error("Wrong status!");
         }
 
-        //log.debug(`checking kebab menu of kebab element:`);
+        //log.debug(`checking menu menu of menu element:`);
         SelenideElement kebabE = this.getKebabElement(true, item);
         kebabE.shouldBe(visible);
 

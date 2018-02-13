@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
  * Created by sveres on 11/10/17.
  */
 @Slf4j
-public class ConnectionDetailPage extends SyndesisPageObject {
+public class ConnectionDetail extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-connection-detail-page");

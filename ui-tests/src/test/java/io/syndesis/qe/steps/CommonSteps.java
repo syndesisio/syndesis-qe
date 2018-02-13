@@ -15,16 +15,21 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
-import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
+import io.syndesis.qe.pages.connections.Connections;
+import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
 import io.syndesis.qe.pages.login.GitHubLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
-import io.syndesis.qe.steps.connections.ConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -43,6 +48,9 @@ public class CommonSteps {
 
     private SyndesisRootPage syndesisRootPage = new SyndesisRootPage();
     private ModalDialogPage modalDialogPage = new ModalDialogPage();
+
+    @Autowired
+    private SelectConnectionTypeSteps selectConnectionTypeSteps = new SelectConnectionTypeSteps();
 
     @Given("^\"([^\"]*)\" logs into the Syndesis$")
     public void login(String username) throws Throwable {
@@ -81,8 +89,10 @@ public class CommonSteps {
 
     @Given("^created connections$")
     public void createConnections(DataTable connectionsData) {
-        ConnectionSteps connectionSteps = new ConnectionSteps();
-        ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
+        Connections connectionsPage = new Connections();
+
+        ConfigureConnectionSteps configureConnectionSteps = new ConfigureConnectionSteps();
+        NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
 
         List<List<String>> dataTable = connectionsData.raw();
 
@@ -95,7 +105,7 @@ public class CommonSteps {
             navigateTo("", "Connections");
             validatePage("", "Connections");
 
-            ElementsCollection connections = connectionsListComponent.getAllConnections();
+            ElementsCollection connections = connectionsPage.getAllConnections();
             connections = connections.filter(exactText(connectionName));
 
             if (connections.size() != 0) {
@@ -103,8 +113,8 @@ public class CommonSteps {
             } else {
                 clickOnButton("Create Connection");
 
-                connectionSteps.selectConnection(connectionType);
-                connectionSteps.fillConnectionDetails(connectionCredentialsName);
+                selectConnectionTypeSteps.selectConnectionType(connectionType);
+                configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
 
                 clickOnButton("Validate");
                 successNotificationIsPresentWithError(connectionType + " has been successfully validated");
@@ -112,8 +122,8 @@ public class CommonSteps {
                 scrollTo("top", "right");
                 clickOnButton("Next");
 
-                connectionSteps.typeConnectionName(connectionName);
-                connectionSteps.typeConnectionDescription(connectionDescription);
+                nameConnectionSteps.setConnectionName(connectionName);
+                nameConnectionSteps.setConnectionDescription(connectionDescription);
 
                 clickOnButton("Create");
             }

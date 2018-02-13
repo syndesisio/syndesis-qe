@@ -2,45 +2,42 @@ package io.syndesis.qe.pages;
 
 import static java.util.Arrays.asList;
 
-import java.util.List;
-import java.util.ListIterator;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
-import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
+import java.util.List;
+
+import io.syndesis.qe.logic.common.wizard.WizardPhase;
 import lombok.Getter;
 
-@Getter
 public abstract class WizardPageObject extends SyndesisPageObject {
 
-    private List<WizardStep> wizardSteps = null;
-    private ListIterator<WizardStep> stepsIterator = null;
-    private SyndesisPageObject currentStep = null;
+    private List<WizardPhase> steps = null;
+    @Getter
+    private int currentPosition = 0;
 
-    private static WizardPageObject INSTANCE;
-
-    public void setSteps(List<WizardStep> stepPages) {
-        wizardSteps = stepPages;
-        initIteration();
+    public void setSteps(List<WizardPhase> stepPages) {
+        steps = stepPages;
     }
 
-    public void setSteps(WizardStep[] stepPages) {
-        wizardSteps = asList(stepPages);
-        initIteration();
-    }
-
-    private void initIteration() {
-        stepsIterator = wizardSteps.listIterator();
-        stepsIterator.next();
-        currentStep = (SyndesisPageObject) wizardSteps.get(0);
+    public void setSteps(WizardPhase[] stepPages) {
+        steps = asList(stepPages);
     }
 
     public void nextStep() {
-        ((WizardStep) currentStep).goToNextWizardStep();
-        if (stepsIterator.hasNext()) {
-            currentStep = (SyndesisPageObject) stepsIterator.next();
-        }
+        steps.get(currentPosition).goToNextWizardPhase();
+        currentPosition++;
     }
 
     public SyndesisPageObject getCurrentStep() {
-        return currentStep;
+        return (SyndesisPageObject) steps.get(currentPosition);
+    }
+
+    public void addStep(WizardPhase step, int zeroBasedPosition) {
+        steps.add(zeroBasedPosition,step);
+    }
+
+    public void replaceStep(WizardPhase step, int zeroBasedPosition) {
+        steps.set(zeroBasedPosition,step);
     }
 }

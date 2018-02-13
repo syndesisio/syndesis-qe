@@ -1,16 +1,16 @@
 package io.syndesis.qe.pages;
 
 import io.syndesis.qe.pages.customizations.connectors.detail.ApiClientConnectorDetail;
+import io.syndesis.qe.pages.connections.detail.ConnectionDetail;
+import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnectionAmq;
+import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
+import io.syndesis.qe.pages.connections.Connections;
+import io.syndesis.qe.pages.customizations.CustomizationsPage;
+import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.GeneralConnectorInfo;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewSwaggerActions;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.Security;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger;
-import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
-import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponentAmq;
-import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
-import io.syndesis.qe.pages.connections.list.ConnectionListPage;
-import io.syndesis.qe.pages.customizations.CustomizationsPage;
-import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
@@ -26,9 +26,9 @@ import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
 
 public enum SyndesisPage {
-    CONNECTIONS(new ConnectionListPage()),
-    CONNECTION_CREATE(new ConnectionCreatePage()),
-    CONNECTION_DETAIL(new ConnectionDetailPage()),
+    CONNECTIONS(new Connections()),
+    CONNECTION_CREATE(new ConnectionWizard()),
+    CONNECTION_DETAIL(new ConnectionDetail()),
     INTEGRATIONS_LIST(new IntegrationsListPage()),
     SELECT_START_CONNECTION(new IntegrationConnectionSelectComponentStart()),
     SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
@@ -48,7 +48,7 @@ public enum SyndesisPage {
     EXTENSION_DETAILS(new TechExtensionDetailPage()),
     PERIODIC_SQL_INVOCATION(new ActionConfigureComponentPeriodicSql()),
     INVOKE_SQL(new ActionConfigureComponentInvokeSql()),
-    ACTIVEMQ_CONFIGURATION(new ConnectionConfigurationComponentAmq()),
+    ACTIVEMQ_CONFIGURATION(new ConfigureConnectionAmq()),
     SUBSCRIBE_FOR_MESSAGES(new ActionConfigureComponentJmsSubscribe()),
     PUBLISH_MESSAGES(new ActionConfigureComponentJmsPublish()),
     REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
