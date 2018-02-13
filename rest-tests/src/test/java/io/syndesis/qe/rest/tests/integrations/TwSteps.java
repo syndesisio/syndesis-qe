@@ -25,15 +25,13 @@ public class TwSteps {
 
     @Autowired
     private StepsStorage steps;
-
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
+    @Autowired
+    private ConnectorsEndpoint connectorsEndpoint;
     public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
 
-    private final ConnectionsEndpoint connectionsEndpoint;
-    private final ConnectorsEndpoint connectorsEndpoint;
-
     public TwSteps() {
-        connectorsEndpoint = new ConnectorsEndpoint();
-        connectionsEndpoint = new ConnectionsEndpoint();
     }
 
     @Given("^create TW mention step with \"([^\"]*)\" action")

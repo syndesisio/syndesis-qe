@@ -1,5 +1,7 @@
 package io.syndesis.qe.endpoints;
 
+import org.springframework.stereotype.Component;
+
 import io.syndesis.model.integration.Integration;
 
 /**
@@ -7,6 +9,7 @@ import io.syndesis.model.integration.Integration;
  *
  * @author jknetl
  */
+@Component
 public class IntegrationsEndpoint extends AbstractEndpoint<Integration> {
 
     public IntegrationsEndpoint() {
