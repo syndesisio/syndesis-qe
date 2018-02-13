@@ -24,15 +24,19 @@
 			<groupId>io.fabric8</groupId>
 			<artifactId>openshift-client</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
 
+		<!-- Syndesis dependencies -->
 		<dependency>
 			<groupId>io.syndesis.common</groupId>
 			<artifactId>common-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.syndesis.rest</groupId>
+			<artifactId>rest-endpoint</artifactId>
 		</dependency>
 
 		<dependency>
@@ -107,7 +111,7 @@
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
