@@ -11,17 +11,17 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 
 public class TechExtensionsImportPage extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-tech-extentions-import");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-tech-extentions-import");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(visible);
+    }
 
-	@Override
-	public boolean validate() {
-		return $(Element.ROOT).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return $(Element.ROOT).is(visible);
+    }
 }

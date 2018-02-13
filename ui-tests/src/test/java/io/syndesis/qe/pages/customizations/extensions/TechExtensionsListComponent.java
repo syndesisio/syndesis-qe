@@ -16,49 +16,49 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TechExtensionsListComponent extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-tech-extensions-list");
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-tech-extensions-list");
 
-		public static final By ITEM = By.className("list-pf-item");
-		public static final By ITEM_TITLE = By.className("list-pf-title");
-		public static final By LIST_WRAPPER = By.cssSelector("pfng-list");
-	}
+        public static final By ITEM = By.className("list-pf-item");
+        public static final By ITEM_TITLE = By.className("list-pf-title");
+        public static final By LIST_WRAPPER = By.cssSelector("pfng-list");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(visible);
+    }
 
-	@Override
-	public boolean validate() {
-		return $(Element.ROOT).is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return $(Element.ROOT).is(visible);
+    }
 
-	public SelenideElement getExtensionItem(String name) {
-		$(Element.LIST_WRAPPER).shouldBe(visible);
-		
-		ElementsCollection items = $$(Element.ITEM);
+    public SelenideElement getExtensionItem(String name) {
+        $(Element.LIST_WRAPPER).shouldBe(visible);
 
-		SelenideElement resultItem = items.stream()
-			.filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name))
-			.findAny().orElse(null);
+        ElementsCollection items = $$(Element.ITEM);
 
-		return resultItem;
-	}
+        SelenideElement resultItem = items.stream()
+                .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name))
+                .findAny().orElse(null);
 
-	public boolean isExtensionPresent(String name) {
-		log.info("Checking if extension {} is present in the list", name);
-		SelenideElement extension = this.getExtensionItem(name);
-		if (extension != null) {
-			return extension.is(visible);
-		} else {
-			return false;
-		}
-	}
-	
-	public void chooseActionOnExtension(String name, String action) {
-		SelenideElement extension = this.getExtensionItem(name);
-		SelenideElement actionButton = extension.findAll(By.tagName("button")).filter(exactText(action)).first();		
-		actionButton.shouldBe(visible).click();
-	}
+        return resultItem;
+    }
+
+    public boolean isExtensionPresent(String name) {
+        log.info("Checking if extension {} is present in the list", name);
+        SelenideElement extension = this.getExtensionItem(name);
+        if (extension != null) {
+            return extension.is(visible);
+        } else {
+            return false;
+        }
+    }
+
+    public void chooseActionOnExtension(String name, String action) {
+        SelenideElement extension = this.getExtensionItem(name);
+        SelenideElement actionButton = extension.findAll(By.tagName("button")).filter(exactText(action)).first();
+        actionButton.shouldBe(visible).click();
+    }
 }

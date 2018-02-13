@@ -23,29 +23,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TwSteps {
 
-	@Autowired
-	private StepsStorage steps;
+    @Autowired
+    private StepsStorage steps;
 
-	public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
+    public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
 
-	private final ConnectionsEndpoint connectionsEndpoint;
-	private final ConnectorsEndpoint connectorsEndpoint;
+    private final ConnectionsEndpoint connectionsEndpoint;
+    private final ConnectorsEndpoint connectorsEndpoint;
 
-	public TwSteps() {
-		connectorsEndpoint = new ConnectorsEndpoint();
-		connectionsEndpoint = new ConnectionsEndpoint();
-	}
+    public TwSteps() {
+        connectorsEndpoint = new ConnectorsEndpoint();
+        connectionsEndpoint = new ConnectionsEndpoint();
+    }
 
-	@Given("^create TW mention step with \"([^\"]*)\" action")
-	public void createTwitterStep(String twitterAction) {
+    @Given("^create TW mention step with \"([^\"]*)\" action")
+    public void createTwitterStep(String twitterAction) {
 
-		final Connector twitterConnector = connectorsEndpoint.get("twitter");
-		final Connection twitterConnection = connectionsEndpoint.get(RestConstants.getInstance().getTWITTER_CONNECTION_ID());
-		final Step twitterStep = new SimpleStep.Builder()
-				.stepKind("endpoint")
-				.connection(twitterConnection)
-				.action(TestUtils.findConnectorAction(twitterConnector, twitterAction))
-				.build();
-		steps.getSteps().add(twitterStep);
-	}
+        final Connector twitterConnector = connectorsEndpoint.get("twitter");
+        final Connection twitterConnection = connectionsEndpoint.get(RestConstants.getInstance().getTWITTER_CONNECTION_ID());
+        final Step twitterStep = new SimpleStep.Builder()
+                .stepKind("endpoint")
+                .connection(twitterConnection)
+                .action(TestUtils.findConnectorAction(twitterConnector, twitterAction))
+                .build();
+        steps.getSteps().add(twitterStep);
+    }
 }

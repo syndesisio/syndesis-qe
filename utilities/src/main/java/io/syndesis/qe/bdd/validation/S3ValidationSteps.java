@@ -23,40 +23,40 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class S3ValidationSteps {
 
-	private final S3Utils s3Utils;
+    private final S3Utils s3Utils;
 
-	public S3ValidationSteps() {
-		s3Utils = new S3Utils();
-	}
+    public S3ValidationSteps() {
+        s3Utils = new S3Utils();
+    }
 
-	@Then("^clean S3 to S3 scenario, removes two sample buckets with names: \"([^\"]*)\"")
-	public void cleanupS3(List<String> bucketNames) {
-		for (String bucket : bucketNames) {
-			s3Utils.deleteS3Bucket(S3BucketNameBuilder.getBucketName(bucket));
-		}
-		TestSupport.getInstance().resetDB();
-	}
+    @Then("^clean S3 to S3 scenario, removes two sample buckets with names: \"([^\"]*)\"")
+    public void cleanupS3(List<String> bucketNames) {
+        for (String bucket : bucketNames) {
+            s3Utils.deleteS3Bucket(S3BucketNameBuilder.getBucketName(bucket));
+        }
+        TestSupport.getInstance().resetDB();
+    }
 
-	@Given("^create sample buckets on S3 with name \"([^\"]*)\"")
-	public void createSampleBucket(String bucketName) {
-		s3Utils.forceCreateS3Bucket(S3BucketNameBuilder.getBucketName(bucketName));
-	}
+    @Given("^create sample buckets on S3 with name \"([^\"]*)\"")
+    public void createSampleBucket(String bucketName) {
+        s3Utils.forceCreateS3Bucket(S3BucketNameBuilder.getBucketName(bucketName));
+    }
 
-	@Then("^create a new text file in bucket \"([^\"]*)\" with name \"([^\"]*)\" and text \"([^\"]*)\"")
-	public void createFileInBucket(String bucketName, String fileName, String text) {
-		s3Utils.createTextFile(S3BucketNameBuilder.getBucketName(bucketName), fileName, text);
-	}
+    @Then("^create a new text file in bucket \"([^\"]*)\" with name \"([^\"]*)\" and text \"([^\"]*)\"")
+    public void createFileInBucket(String bucketName, String fileName, String text) {
+        s3Utils.createTextFile(S3BucketNameBuilder.getBucketName(bucketName), fileName, text);
+    }
 
-	@Then("^validate bucket with name \"([^\"]*)\" contains file with name \"([^\"]*)\" and text \"([^\"]*)\"")
-	public void validateIntegration(String bucketName, String fileName, String text) {
+    @Then("^validate bucket with name \"([^\"]*)\" contains file with name \"([^\"]*)\" and text \"([^\"]*)\"")
+    public void validateIntegration(String bucketName, String fileName, String text) {
 
-		try {
-			//TODO(tplevko): make waiting more dynamic
-			Thread.sleep(20000);
-		} catch (InterruptedException ex) {
-			log.error("Error: " + ex);
-		}
-		Assertions.assertThat(s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).isEqualTo(true);
-		Assertions.assertThat(s3Utils.readTextFileContentFromBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).contains(text);
-	}
+        try {
+            //TODO(tplevko): make waiting more dynamic
+            Thread.sleep(20000);
+        } catch (InterruptedException ex) {
+            log.error("Error: " + ex);
+        }
+        Assertions.assertThat(s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).isEqualTo(true);
+        Assertions.assertThat(s3Utils.readTextFileContentFromBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).contains(text);
+    }
 }

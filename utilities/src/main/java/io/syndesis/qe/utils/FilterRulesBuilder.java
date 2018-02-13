@@ -15,33 +15,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FilterRulesBuilder {
 
-	private final JSONArray myArray;
-	private final JSONObject json;
+    private final JSONArray myArray;
+    private final JSONObject json;
 
-	public FilterRulesBuilder() {
-		myArray = new JSONArray();
-		json = new JSONObject();
-	}
+    public FilterRulesBuilder() {
+        myArray = new JSONArray();
+        json = new JSONObject();
+    }
 
-	public FilterRulesBuilder addPath(String path) {
-		return addField("path", path);
-	}
+    public FilterRulesBuilder addPath(String path) {
+        return addField("path", path);
+    }
 
-	public FilterRulesBuilder addOps(String op) {
-		return addField("op", op);
-	}
+    public FilterRulesBuilder addOps(String op) {
+        return addField("op", op);
+    }
 
-	public FilterRulesBuilder addValue(String value) {
-		return addField("value", value);
-	}
+    public FilterRulesBuilder addValue(String value) {
+        return addField("value", value);
+    }
 
-	private FilterRulesBuilder addField(String name, String value) {
-		json.put(name, value);
-		return this;
-	}
+    private FilterRulesBuilder addField(String name, String value) {
+        json.put(name, value);
+        return this;
+    }
 
-	public String build() {
-		myArray.put(json);
-		return myArray.toString();
-	}
+    public String build() {
+        myArray.put(json);
+        return myArray.toString();
+    }
 }

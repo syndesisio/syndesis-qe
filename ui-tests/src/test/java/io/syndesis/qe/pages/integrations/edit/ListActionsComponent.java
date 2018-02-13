@@ -13,25 +13,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ListActionsComponent extends SyndesisPageObject {
 
-	private static final class Element {
+    private static final class Element {
 
-		public static final By ROOT = By.cssSelector("syndesis-list-actions");
-		public static final By NAME = By.className("name");
-	}
+        public static final By ROOT = By.cssSelector("syndesis-list-actions");
+        public static final By NAME = By.className("name");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().is(visible);
+    }
 
-	public void selectAction(String name) {
-		log.info("Searching for integration action {}", name);
-		getElementContainingText(Element.NAME, name).shouldBe(visible).click();
-	}
+    public void selectAction(String name) {
+        log.info("Searching for integration action {}", name);
+        getElementContainingText(Element.NAME, name).shouldBe(visible).click();
+    }
 }

@@ -16,14 +16,14 @@ import lombok.Data;
 @Data
 public class Lead {
 
-	@JsonProperty(value = "Id")
-	private String id;
-	@JsonProperty(value = "FirstName")
-	private String firstName;
-	@JsonProperty(value = "LastName")
-	private String lastName;
-	@JsonProperty(value = "Email")
-	private String email;
-	@JsonProperty(value = "Company")
-	private String company;
+    @JsonProperty(value = "Id")
+    private String id;
+    @JsonProperty(value = "FirstName")
+    private String firstName;
+    @JsonProperty(value = "LastName")
+    private String lastName;
+    @JsonProperty(value = "Email")
+    private String email;
+    @JsonProperty(value = "Company")
+    private String company;
 }

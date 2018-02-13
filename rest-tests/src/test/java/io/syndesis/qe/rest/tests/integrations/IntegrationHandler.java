@@ -24,67 +24,67 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationHandler {
 
-	@Autowired
-	private StepsStorage steps;
+    @Autowired
+    private StepsStorage steps;
 
-	private IntegrationsEndpoint integrationsEndpoint;
+    private IntegrationsEndpoint integrationsEndpoint;
 
-	public IntegrationHandler() {
-		integrationsEndpoint = new IntegrationsEndpoint();
-	}
+    public IntegrationHandler() {
+        integrationsEndpoint = new IntegrationsEndpoint();
+    }
 
-	@When("^create integration with name: \"([^\"]*)\"")
-	public void createActiveIntegrationFromGivenSteps(String integrationName) {
-		createIntegrationFromGivenStepsWithState(integrationName, "Active");
-	}
+    @When("^create integration with name: \"([^\"]*)\"")
+    public void createActiveIntegrationFromGivenSteps(String integrationName) {
+        createIntegrationFromGivenStepsWithState(integrationName, "Active");
+    }
 
-	@When("^create new integration with name: \"([^\"]*)\" and desiredState: \"([^\"]*)\"")
-	public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
-		Integration integration = new Integration.Builder()
-				.steps(steps.getSteps())
-				.name(integrationName)
-				.desiredStatus(IntegrationDeploymentState.valueOf(desiredState))
-				.description("Awkward integration.")
-				.build();
+    @When("^create new integration with name: \"([^\"]*)\" and desiredState: \"([^\"]*)\"")
+    public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
+        Integration integration = new Integration.Builder()
+                .steps(steps.getSteps())
+                .name(integrationName)
+                .desiredStatus(IntegrationDeploymentState.valueOf(desiredState))
+                .description("Awkward integration.")
+                .build();
 
-		log.info("Creating integration {}", integration.getName());
-		integrationsEndpoint.create(integration);
-		//after the integration is created - the steps are cleaned for further use.
-		log.debug("Flushing used steps");
-		steps.flushSteps();
-	}
+        log.info("Creating integration {}", integration.getName());
+        integrationsEndpoint.create(integration);
+        //after the integration is created - the steps are cleaned for further use.
+        log.debug("Flushing used steps");
+        steps.flushSteps();
+    }
 
-	@When("^set integration with name: \"([^\"]*)\" to desiredState: \"([^\"]*)\"")
-	public void changeIntegrationState(String integrationName, String desiredState) {
+    @When("^set integration with name: \"([^\"]*)\" to desiredState: \"([^\"]*)\"")
+    public void changeIntegrationState(String integrationName, String desiredState) {
 
-		final List<Integration> integrations = integrationsEndpoint.list();
-		final Integration integration = integrations.stream().filter(i -> i.getName().contentEquals(integrationName)).findFirst().get();
-		final Integration updatedIngegration = new Integration.Builder().createFrom(integration)
-				.desiredStatus(IntegrationDeploymentState.valueOf(desiredState))
-				.build();
+        final List<Integration> integrations = integrationsEndpoint.list();
+        final Integration integration = integrations.stream().filter(i -> i.getName().contentEquals(integrationName)).findFirst().get();
+        final Integration updatedIngegration = new Integration.Builder().createFrom(integration)
+                .desiredStatus(IntegrationDeploymentState.valueOf(desiredState))
+                .build();
 
-		log.info("Updating integration \"{}\" to state \"{}\"", integration.getName(), desiredState);
-		integrationsEndpoint.update(integration.getId().get(), updatedIngegration);
-	}
+        log.info("Updating integration \"{}\" to state \"{}\"", integration.getName(), desiredState);
+        integrationsEndpoint.update(integration.getId().get(), updatedIngegration);
+    }
 
-	@Then("^try to create new integration with the same name: \"([^\"]*)\" and state: \"([^\"]*)\"$")
-	public void sameNameIntegrationValidation(String integrationName, String desiredState) {
+    @Then("^try to create new integration with the same name: \"([^\"]*)\" and state: \"([^\"]*)\"$")
+    public void sameNameIntegrationValidation(String integrationName, String desiredState) {
 
-		final Integration integration = new Integration.Builder()
-				.steps(steps.getSteps())
-				.name(integrationName)
-				.desiredStatus(IntegrationDeploymentState.valueOf(desiredState))
-				.description("Awkward integration.")
-				.build();
+        final Integration integration = new Integration.Builder()
+                .steps(steps.getSteps())
+                .name(integrationName)
+                .desiredStatus(IntegrationDeploymentState.valueOf(desiredState))
+                .description("Awkward integration.")
+                .build();
 
-		log.info("Creating integration {}", integration.getName());
-		Assertions.assertThatExceptionOfType(BadRequestException.class)
-				.isThrownBy(() -> {
-					integrationsEndpoint.create(integration);
-				})
-				.withMessageContaining("HTTP 400 Bad Request")
-				.withNoCause();
-		log.debug("Flushing used steps");
-		steps.flushSteps();
-	}
+        log.info("Creating integration {}", integration.getName());
+        Assertions.assertThatExceptionOfType(BadRequestException.class)
+                .isThrownBy(() -> {
+                    integrationsEndpoint.create(integration);
+                })
+                .withMessageContaining("HTTP 400 Bad Request")
+                .withNoCause();
+        log.debug("Flushing used steps");
+        steps.flushSteps();
+    }
 }

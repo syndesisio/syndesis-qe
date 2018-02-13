@@ -22,89 +22,89 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConnectionsGeneralSteps {
 
-	private final ConnectionsEndpoint connectionsEndpoint;
-	private final ConnectorsEndpoint connectorsEndpoint;
-	private final AccountsDirectory accountsDirectory;
+    private final ConnectionsEndpoint connectionsEndpoint;
+    private final ConnectorsEndpoint connectorsEndpoint;
+    private final AccountsDirectory accountsDirectory;
 
-	public ConnectionsGeneralSteps() {
-		connectionsEndpoint = new ConnectionsEndpoint();
-		connectorsEndpoint = new ConnectorsEndpoint();
-		accountsDirectory = AccountsDirectory.getInstance();
-	}
+    public ConnectionsGeneralSteps() {
+        connectionsEndpoint = new ConnectionsEndpoint();
+        connectorsEndpoint = new ConnectorsEndpoint();
+        accountsDirectory = AccountsDirectory.getInstance();
+    }
 
-	@Given("^create the TW connection using \"([^\"]*)\" template")
-	public void createTwitterConnection(String twitterTemplate) {
+    @Given("^create the TW connection using \"([^\"]*)\" template")
+    public void createTwitterConnection(String twitterTemplate) {
 
-		final Connector twitterConnector = connectorsEndpoint.get("twitter");
-		final Account twitterAccount = accountsDirectory.getAccount(twitterTemplate).get();
-		log.info("Template name:  {}", twitterTemplate);
+        final Connector twitterConnector = connectorsEndpoint.get("twitter");
+        final Account twitterAccount = accountsDirectory.getAccount(twitterTemplate).get();
+        log.info("Template name:  {}", twitterTemplate);
 
-		final Connection twitterConnection = new Connection.Builder()
-				.connector(twitterConnector)
-				.connectorId(twitterConnector.getId())
-				.id(RestConstants.getInstance().getTWITTER_CONNECTION_ID())
-				.name("New Fuse QE twitter listen")
-				.configuredProperties(TestUtils.map(
-						"accessToken", twitterAccount.getProperty("accessToken"),
-						"accessTokenSecret", twitterAccount.getProperty("accessTokenSecret"),
-						"consumerKey", twitterAccount.getProperty("consumerKey"),
-						"consumerSecret", twitterAccount.getProperty("consumerSecret")
-				))
-				.icon("fa-twitter")
-				.tags(Arrays.asList("twitter"))
-				.build();
-		log.info("Creating twitter connection {}", twitterConnection.getName());
-		connectionsEndpoint.create(twitterConnection);
-	}
+        final Connection twitterConnection = new Connection.Builder()
+                .connector(twitterConnector)
+                .connectorId(twitterConnector.getId())
+                .id(RestConstants.getInstance().getTWITTER_CONNECTION_ID())
+                .name("New Fuse QE twitter listen")
+                .configuredProperties(TestUtils.map(
+                        "accessToken", twitterAccount.getProperty("accessToken"),
+                        "accessTokenSecret", twitterAccount.getProperty("accessTokenSecret"),
+                        "consumerKey", twitterAccount.getProperty("consumerKey"),
+                        "consumerSecret", twitterAccount.getProperty("consumerSecret")
+                ))
+                .icon("fa-twitter")
+                .tags(Arrays.asList("twitter"))
+                .build();
+        log.info("Creating twitter connection {}", twitterConnection.getName());
+        connectionsEndpoint.create(twitterConnection);
+    }
 
-	@Given("^create SF connection")
-	public void createSalesforceConnection() {
+    @Given("^create SF connection")
+    public void createSalesforceConnection() {
 
-		final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
-		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
+        final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
+        final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 
-		final Connection salesforceConnection = new Connection.Builder()
-				.connector(salesforceConnector)
-				.connectorId(salesforceConnector.getId())
-				.id(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID())
-				.icon("fa-puzzle-piece")
-				.name("New Fuse QE salesforce")
-				.configuredProperties(TestUtils.map(
-						"clientId", salesforceAccount.getProperty("clientId"),
-						"clientSecret", salesforceAccount.getProperty("clientSecret"),
-						"loginUrl", salesforceAccount.getProperty("loginUrl"),
-						"userName", salesforceAccount.getProperty("userName"),
-						"password", salesforceAccount.getProperty("password")))
-				.tags(Arrays.asList("salesforce"))
-				.build();
+        final Connection salesforceConnection = new Connection.Builder()
+                .connector(salesforceConnector)
+                .connectorId(salesforceConnector.getId())
+                .id(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID())
+                .icon("fa-puzzle-piece")
+                .name("New Fuse QE salesforce")
+                .configuredProperties(TestUtils.map(
+                        "clientId", salesforceAccount.getProperty("clientId"),
+                        "clientSecret", salesforceAccount.getProperty("clientSecret"),
+                        "loginUrl", salesforceAccount.getProperty("loginUrl"),
+                        "userName", salesforceAccount.getProperty("userName"),
+                        "password", salesforceAccount.getProperty("password")))
+                .tags(Arrays.asList("salesforce"))
+                .build();
 
-		log.info("Creating salesforce connection {}", salesforceConnection.getName());
-		connectionsEndpoint.create(salesforceConnection);
-	}
+        log.info("Creating salesforce connection {}", salesforceConnection.getName());
+        connectionsEndpoint.create(salesforceConnection);
+    }
 
-	@Given("^create S3 connection using \"([^\"]*)\" bucket")
-	public void createS3Connection(String s3Bucket) {
+    @Given("^create S3 connection using \"([^\"]*)\" bucket")
+    public void createS3Connection(String s3Bucket) {
 
-		final Connector s3Connector = connectorsEndpoint.get("aws-s3");
-		final Account s3Account = accountsDirectory.getAccount("s3").get();
-		log.info("Bucket name:  {}", S3BucketNameBuilder.getBucketName(s3Bucket));
+        final Connector s3Connector = connectorsEndpoint.get("aws-s3");
+        final Account s3Account = accountsDirectory.getAccount("s3").get();
+        log.info("Bucket name:  {}", S3BucketNameBuilder.getBucketName(s3Bucket));
 
-		final Connection s3Connection = new Connection.Builder()
-				.connector(s3Connector)
-				.connectorId(s3Connector.getId())
-				.id(S3BucketNameBuilder.getBucketName(s3Bucket))
-				.name("New Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
-				.icon("fa-puzzle-piece")
-				.configuredProperties(TestUtils.map(
-						"accessKey", s3Account.getProperty("accessKey"),
-						"bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket),
-						"region", s3Account.getProperty("region"),
-						"secretKey", s3Account.getProperty("secretKey")
-				))
-				.tags(Arrays.asList("aws-s3"))
-				.build();
+        final Connection s3Connection = new Connection.Builder()
+                .connector(s3Connector)
+                .connectorId(s3Connector.getId())
+                .id(S3BucketNameBuilder.getBucketName(s3Bucket))
+                .name("New Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
+                .icon("fa-puzzle-piece")
+                .configuredProperties(TestUtils.map(
+                        "accessKey", s3Account.getProperty("accessKey"),
+                        "bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket),
+                        "region", s3Account.getProperty("region"),
+                        "secretKey", s3Account.getProperty("secretKey")
+                ))
+                .tags(Arrays.asList("aws-s3"))
+                .build();
 
-		log.info("Creating s3 connection {}", s3Connection.getName());
-		connectionsEndpoint.create(s3Connection);
-	}
+        log.info("Creating s3 connection {}", s3Connection.getName());
+        connectionsEndpoint.create(s3Connection);
+    }
 }

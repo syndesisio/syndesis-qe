@@ -15,49 +15,49 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 
 public class ApiClientConnectors extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-api-connector-list");
-		public static By CONNECTOR_TITLE = By.xpath("//div[@class='list-pf-title']");
-		public static By CONNECTORS_LIST_ITEM = By.xpath("//div[@class='list-pf-item']");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-api-connector-list");
+        public static By CONNECTOR_TITLE = By.xpath("//div[@class='list-pf-title']");
+        public static By CONNECTORS_LIST_ITEM = By.xpath("//div[@class='list-pf-item']");
+    }
 
-	private static class Button {
-		public static By CREATE_API_CONNECTOR_RIGHT = By.xpath("//button[@title='Create API Connector']");
-	}
+    private static class Button {
+        public static By CREATE_API_CONNECTOR_RIGHT = By.xpath("//button[@title='Create API Connector']");
+    }
 
-	public void startWizard() {
-		$(Button.CREATE_API_CONNECTOR_RIGHT).shouldBe(visible).click();
-	}
+    public void startWizard() {
+        $(Button.CREATE_API_CONNECTOR_RIGHT).shouldBe(visible).click();
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(exist);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(exist);
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().exists();
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().exists();
+    }
 
-	public boolean isConnectorPresent(String connectorName) {
-		try {
-			getRootElement().findAll(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible);
-			return true;
-		} catch (WebDriverException wde) {
-			return false;
-		}
-	}
+    public boolean isConnectorPresent(String connectorName) {
+        try {
+            getRootElement().findAll(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible);
+            return true;
+        } catch (WebDriverException wde) {
+            return false;
+        }
+    }
 
-	public boolean isConnectorsListLongAs(int expectedSize) {
-		try {
-			$$(Element.CONNECTORS_LIST_ITEM).shouldHaveSize(expectedSize);
-			return true;
-		} catch (WebDriverException wde) {
-			return false;
-		}
-	}
+    public boolean isConnectorsListLongAs(int expectedSize) {
+        try {
+            $$(Element.CONNECTORS_LIST_ITEM).shouldHaveSize(expectedSize);
+            return true;
+        } catch (WebDriverException wde) {
+            return false;
+        }
+    }
 
-	public void clickConnectorByTitle(String connectorName) {
-		$$(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible).click();
-	}
+    public void clickConnectorByTitle(String connectorName) {
+        $$(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible).click();
+    }
 }

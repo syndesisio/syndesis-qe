@@ -11,21 +11,21 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 
 public class TechExtensionDetailPage extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-tech-extension-detail");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-tech-extension-detail");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		return $(Element.ROOT).shouldBe(visible);
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        return $(Element.ROOT).shouldBe(visible);
+    }
 
-	@Override
-	public boolean validate() {
-		//TODO Deeper validation
-		boolean isUpdateButtonPresent = this.getButton("Update").is(visible);
-		boolean isDeleteButtonPresent = this.getButton("Delete").is(visible);
-		
-		return isUpdateButtonPresent && isDeleteButtonPresent;
-	}
+    @Override
+    public boolean validate() {
+        //TODO Deeper validation
+        boolean isUpdateButtonPresent = this.getButton("Update").is(visible);
+        boolean isDeleteButtonPresent = this.getButton("Delete").is(visible);
+
+        return isUpdateButtonPresent && isDeleteButtonPresent;
+    }
 }

@@ -21,40 +21,40 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SalesforceSteps {
 
-	@Autowired
-	private StepsStorage steps;
+    @Autowired
+    private StepsStorage steps;
 
-	private final ConnectionsEndpoint connectionsEndpoint;
-	private final ConnectorsEndpoint connectorsEndpoint;
+    private final ConnectionsEndpoint connectionsEndpoint;
+    private final ConnectorsEndpoint connectorsEndpoint;
 
-	public SalesforceSteps() {
-		connectorsEndpoint = new ConnectorsEndpoint();
-		connectionsEndpoint = new ConnectionsEndpoint();
-	}
+    public SalesforceSteps() {
+        connectorsEndpoint = new ConnectorsEndpoint();
+        connectionsEndpoint = new ConnectionsEndpoint();
+    }
 
-	@Given("^create SF \"([^\"]*)\" action step on field: \"([^\"]*)\"$")
-	public void createSfStepWithAction(String action, String field) {
-		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
-		final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
-		final Step salesforceStep = new SimpleStep.Builder()
-				.stepKind("endpoint")
-				.connection(salesforceConnection)
-				.action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-on-" + action))
-				.configuredProperties(TestUtils.map("sObjectName", field))
-				.build();
-		steps.getSteps().add(salesforceStep);
-	}
+    @Given("^create SF \"([^\"]*)\" action step on field: \"([^\"]*)\"$")
+    public void createSfStepWithAction(String action, String field) {
+        final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
+        final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
+        final Step salesforceStep = new SimpleStep.Builder()
+                .stepKind("endpoint")
+                .connection(salesforceConnection)
+                .action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-on-" + action))
+                .configuredProperties(TestUtils.map("sObjectName", field))
+                .build();
+        steps.getSteps().add(salesforceStep);
+    }
 
-	@Given("^create SF step with action: \"([^\"]*)\"")
-	public void createSfActionStep(String action) {
-		final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
+    @Given("^create SF step with action: \"([^\"]*)\"")
+    public void createSfActionStep(String action) {
+        final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 
-		final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
-		final Step salesforceStep = new SimpleStep.Builder()
-				.stepKind("endpoint")
-				.connection(salesforceConnection)
-				.action(TestUtils.findConnectorAction(salesforceConnector, action))
-				.build();
-		steps.getSteps().add(salesforceStep);
-	}
+        final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
+        final Step salesforceStep = new SimpleStep.Builder()
+                .stepKind("endpoint")
+                .connection(salesforceConnection)
+                .action(TestUtils.findConnectorAction(salesforceConnector, action))
+                .build();
+        steps.getSteps().add(salesforceStep);
+    }
 }

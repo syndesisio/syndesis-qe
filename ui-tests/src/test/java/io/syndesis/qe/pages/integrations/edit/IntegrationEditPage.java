@@ -24,53 +24,53 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationEditPage extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-edit-page");
-	}
-	@Getter
-	private ActionConfigureComponent actionConfigureComponent = new ActionConfigureComponent();
-	@Getter
-	private ActionConfigureComponentPeriodicSql periodicSqlComponent = new ActionConfigureComponentPeriodicSql();
-	@Getter
-	private ActionConfigureComponentInvokeSql invokeSqlComponent = new ActionConfigureComponentInvokeSql();
-	@Getter
-	private ActionConfigureComponentJmsSubscribe jmsSubscribeComponent = new ActionConfigureComponentJmsSubscribe();
-	@Getter
-	private ActionConfigureComponentJmsPublish jmsPublishComponent = new ActionConfigureComponentJmsPublish();
-	@Getter
-	private ActionConfigureComponentJmsRequest jmsRequestComponent = new ActionConfigureComponentJmsRequest();
-	@Getter
-	private ActionConfigureComponentTwitterSearch twitterSearchComponent = new ActionConfigureComponentTwitterSearch();
-	@Getter
-	private ListActionsComponent listActionsComponent = new ListActionsComponent();
-	@Getter
-	private IntegrationFlowViewComponent flowViewComponent = new IntegrationFlowViewComponent();
-	@Getter
-	private IntegrationBasicsComponent integrationBasicsComponent = new IntegrationBasicsComponent();
-	@Getter
-	private IntegrationConnectionSelectComponent integrationConnectionSelectComponent = new IntegrationConnectionSelectComponent();
-	@Getter
-	private IntegrationStepSelectComponent integrationStepSelectComponent = new IntegrationStepSelectComponent();
-	@Getter
-	private DataMapperComponent dataMapperComponent = new DataMapperComponent();
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-integrations-edit-page");
+    }
+    @Getter
+    private ActionConfigureComponent actionConfigureComponent = new ActionConfigureComponent();
+    @Getter
+    private ActionConfigureComponentPeriodicSql periodicSqlComponent = new ActionConfigureComponentPeriodicSql();
+    @Getter
+    private ActionConfigureComponentInvokeSql invokeSqlComponent = new ActionConfigureComponentInvokeSql();
+    @Getter
+    private ActionConfigureComponentJmsSubscribe jmsSubscribeComponent = new ActionConfigureComponentJmsSubscribe();
+    @Getter
+    private ActionConfigureComponentJmsPublish jmsPublishComponent = new ActionConfigureComponentJmsPublish();
+    @Getter
+    private ActionConfigureComponentJmsRequest jmsRequestComponent = new ActionConfigureComponentJmsRequest();
+    @Getter
+    private ActionConfigureComponentTwitterSearch twitterSearchComponent = new ActionConfigureComponentTwitterSearch();
+    @Getter
+    private ListActionsComponent listActionsComponent = new ListActionsComponent();
+    @Getter
+    private IntegrationFlowViewComponent flowViewComponent = new IntegrationFlowViewComponent();
+    @Getter
+    private IntegrationBasicsComponent integrationBasicsComponent = new IntegrationBasicsComponent();
+    @Getter
+    private IntegrationConnectionSelectComponent integrationConnectionSelectComponent = new IntegrationConnectionSelectComponent();
+    @Getter
+    private IntegrationStepSelectComponent integrationStepSelectComponent = new IntegrationStepSelectComponent();
+    @Getter
+    private DataMapperComponent dataMapperComponent = new DataMapperComponent();
 
-	private StepComponentFactory stepComponentFactory = new StepComponentFactory();
-	private StepComponent stepComponent;
+    private StepComponentFactory stepComponentFactory = new StepComponentFactory();
+    private StepComponent stepComponent;
 
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().is(visible);
+    }
 
-	public StepComponent getStepComponent(String stepType, String parameter) {
-		stepComponent = stepComponentFactory.getStep(stepType, parameter);
-		return stepComponent;
-	}
+    public StepComponent getStepComponent(String stepType, String parameter) {
+        stepComponent = stepComponentFactory.getStep(stepType, parameter);
+        return stepComponent;
+    }
 
 }

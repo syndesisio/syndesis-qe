@@ -18,26 +18,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class S3BucketNameBuilder {
 
-	private static Optional<String> randomSalt = Optional.empty();
+    private static Optional<String> randomSalt = Optional.empty();
 
-	private S3BucketNameBuilder() {
-	}
+    private S3BucketNameBuilder() {
+    }
 
-	private static Optional<String> getRandomSalt() {
-		if (randomSalt.isPresent()) {
-		} else {
-			randomSalt = Optional.of(RandomStringUtils.randomAlphanumeric(8).toLowerCase());
-		}
-		log.debug(randomSalt.get());
-		return randomSalt;
-	}
+    private static Optional<String> getRandomSalt() {
+        if (randomSalt.isPresent()) {
+        } else {
+            randomSalt = Optional.of(RandomStringUtils.randomAlphanumeric(8).toLowerCase());
+        }
+        log.debug(randomSalt.get());
+        return randomSalt;
+    }
 
-	public static String getBucketName(String bucketName) {
-		final StringBuilder resp = new StringBuilder(bucketName);
-		resp.append("-");
-		resp.append(getRandomSalt().get());
+    public static String getBucketName(String bucketName) {
+        final StringBuilder resp = new StringBuilder(bucketName);
+        resp.append("-");
+        resp.append(getRandomSalt().get());
 
-		log.debug(resp.toString());
-		return resp.toString();
-	}
+        log.debug(resp.toString());
+        return resp.toString();
+    }
 }

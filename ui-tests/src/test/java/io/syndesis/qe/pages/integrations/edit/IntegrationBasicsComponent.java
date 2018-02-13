@@ -13,36 +13,36 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntegrationBasicsComponent extends SyndesisPageObject {
 
-	private static final class Element {
-		public static final By ROOT = By.cssSelector("syndesis-integrations-integration-basics");
-	}
+    private static final class Element {
+        public static final By ROOT = By.cssSelector("syndesis-integrations-integration-basics");
+    }
 
-	private static final class Input {
-		public static final By NAME = By.cssSelector("input[name='nameInput']");
-	}
+    private static final class Input {
+        public static final By NAME = By.cssSelector("input[name='nameInput']");
+    }
 
-	private static final class TextArea {
-		public static final By DESCRIPTION = By.cssSelector("textarea[name='descriptionInput']");
-	}
+    private static final class TextArea {
+        public static final By DESCRIPTION = By.cssSelector("textarea[name='descriptionInput']");
+    }
 
-	@Override
-	public SelenideElement getRootElement() {
-		SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-		return elementRoot;
-	}
+    @Override
+    public SelenideElement getRootElement() {
+        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
+        return elementRoot;
+    }
 
-	@Override
-	public boolean validate() {
-		return getRootElement().is(visible);
-	}
+    @Override
+    public boolean validate() {
+        return getRootElement().is(visible);
+    }
 
-	public void setName(String name) {
-		log.debug("Setting integration name to {}", name);
-		this.getRootElement().find(Input.NAME).shouldBe(visible).sendKeys(name);
-	}
+    public void setName(String name) {
+        log.debug("Setting integration name to {}", name);
+        this.getRootElement().find(Input.NAME).shouldBe(visible).sendKeys(name);
+    }
 
-	public void setDescription(String description) {
-		log.debug("Setting integration description to {}", description);
-		this.getRootElement().find(TextArea.DESCRIPTION).shouldBe(visible).sendKeys(description);
-	}
+    public void setDescription(String description) {
+        log.debug("Setting integration description to {}", description);
+        this.getRootElement().find(TextArea.DESCRIPTION).shouldBe(visible).sendKeys(description);
+    }
 }

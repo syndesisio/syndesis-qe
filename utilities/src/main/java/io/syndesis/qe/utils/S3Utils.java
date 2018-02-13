@@ -35,114 +35,114 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class S3Utils {
 
-	private final AccountsDirectory accountsDirectory;
-	private final AmazonS3 s3client;
+    private final AccountsDirectory accountsDirectory;
+    private final AmazonS3 s3client;
 
-	public S3Utils() {
-		accountsDirectory = AccountsDirectory.getInstance();
-		final Account s3Account = accountsDirectory.getAccount("s3").get();
-		final AWSCredentials credentials = new BasicAWSCredentials(
-				s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
-		);
+    public S3Utils() {
+        accountsDirectory = AccountsDirectory.getInstance();
+        final Account s3Account = accountsDirectory.getAccount("s3").get();
+        final AWSCredentials credentials = new BasicAWSCredentials(
+                s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
+        );
 
-		s3client = AmazonS3ClientBuilder
-				.standard()
-				.withCredentials(new AWSStaticCredentialsProvider(credentials))
-				.withRegion(Regions.US_WEST_1)
-				.build();
-	}
+        s3client = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.US_WEST_1)
+                .build();
+    }
 
-	public void forceCreateS3Bucket(String bucketName) {
+    public void forceCreateS3Bucket(String bucketName) {
 
-		createS3Bucket(bucketName, true);
-	}
+        createS3Bucket(bucketName, true);
+    }
 
-	public void createS3Bucket(String bucketName, boolean force) {
+    public void createS3Bucket(String bucketName, boolean force) {
 
-		if (s3client.doesBucketExistV2(bucketName)) {
-			if (force) {
-				deleteS3Bucket(bucketName);
-			} else {
-				log.error("Bucket name is not available."
-						+ " Try again with a different Bucket name.");
-				return;
-			}
-		}
-		s3client.createBucket(bucketName);
-	}
+        if (s3client.doesBucketExistV2(bucketName)) {
+            if (force) {
+                deleteS3Bucket(bucketName);
+            } else {
+                log.error("Bucket name is not available."
+                        + " Try again with a different Bucket name.");
+                return;
+            }
+        }
+        s3client.createBucket(bucketName);
+    }
 
-	public void deleteS3Bucket(String bucketName) {
-		try {
-			final ObjectListing bucketObjects = s3client.listObjects(bucketName);
-			for (Iterator<?> iterator = bucketObjects.getObjectSummaries().iterator(); iterator.hasNext();) {
-				final S3ObjectSummary summary = (S3ObjectSummary) iterator.next();
-				s3client.deleteObject(bucketName, summary.getKey());
-			}
-			s3client.deleteBucket(bucketName);
-		} catch (AmazonServiceException e) {
-			log.error("Could not delete the S3 bucket: {}", e.getErrorMessage());
-		}
-	}
+    public void deleteS3Bucket(String bucketName) {
+        try {
+            final ObjectListing bucketObjects = s3client.listObjects(bucketName);
+            for (Iterator<?> iterator = bucketObjects.getObjectSummaries().iterator(); iterator.hasNext();) {
+                final S3ObjectSummary summary = (S3ObjectSummary) iterator.next();
+                s3client.deleteObject(bucketName, summary.getKey());
+            }
+            s3client.deleteBucket(bucketName);
+        } catch (AmazonServiceException e) {
+            log.error("Could not delete the S3 bucket: {}", e.getErrorMessage());
+        }
+    }
 
-	/**
-	 * Creates a text file in the specified S3 bucket.
-	 *
-	 * @param bucketName
-	 * @param fileName
-	 * @param text
-	 */
-	public void createTextFile(String bucketName, String fileName, String text) {
-		try {
-			final File temp = File.createTempFile(fileName, "");
-			temp.deleteOnExit();
-			final BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
-			bw.write(text);
-			bw.close();
-			s3client.putObject(bucketName, fileName, temp);
-		} catch (IOException ex) {
-			log.error("Error with tmp file: " + ex);
-		}
-	}
+    /**
+     * Creates a text file in the specified S3 bucket.
+     *
+     * @param bucketName
+     * @param fileName
+     * @param text
+     */
+    public void createTextFile(String bucketName, String fileName, String text) {
+        try {
+            final File temp = File.createTempFile(fileName, "");
+            temp.deleteOnExit();
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
+            bw.write(text);
+            bw.close();
+            s3client.putObject(bucketName, fileName, temp);
+        } catch (IOException ex) {
+            log.error("Error with tmp file: " + ex);
+        }
+    }
 
-	/**
-	 * Checks if the specified text file exists in specified S3 bucket.
-	 *
-	 * @param bucketName
-	 * @param fileName
-	 * @return
-	 */
-	public boolean checkFileExistsInBucket(String bucketName, String fileName) {
+    /**
+     * Checks if the specified text file exists in specified S3 bucket.
+     *
+     * @param bucketName
+     * @param fileName
+     * @return
+     */
+    public boolean checkFileExistsInBucket(String bucketName, String fileName) {
 
-		boolean fileExists = false;
-		final ObjectListing objectListing = s3client.listObjects(bucketName);
-		for (S3ObjectSummary os : objectListing.getObjectSummaries()) {
-			log.debug(os.getKey());
-			if (os.getKey().matches(fileName)) {
-				fileExists = true;
-				break;
-			}
-		}
-		return fileExists;
-	}
+        boolean fileExists = false;
+        final ObjectListing objectListing = s3client.listObjects(bucketName);
+        for (S3ObjectSummary os : objectListing.getObjectSummaries()) {
+            log.debug(os.getKey());
+            if (os.getKey().matches(fileName)) {
+                fileExists = true;
+                break;
+            }
+        }
+        return fileExists;
+    }
 
-	/**
-	 * Gets specified text file content from specified S3 bucket.
-	 *
-	 * @param bucketName
-	 * @param fileName
-	 * @return
-	 */
-	public String readTextFileContentFromBucket(String bucketName, String fileName) {
+    /**
+     * Gets specified text file content from specified S3 bucket.
+     *
+     * @param bucketName
+     * @param fileName
+     * @return
+     */
+    public String readTextFileContentFromBucket(String bucketName, String fileName) {
 
-		final S3Object s3object = s3client.getObject(bucketName, fileName);
-		final S3ObjectInputStream inputStream = s3object.getObjectContent();
+        final S3Object s3object = s3client.getObject(bucketName, fileName);
+        final S3ObjectInputStream inputStream = s3object.getObjectContent();
 
-		final StringWriter writer = new StringWriter();
-		try {
-			IOUtils.copy(inputStream, writer, "UTF-8");
-		} catch (IOException ex) {
-			log.error("Error copying file from s3: " + ex);
-		}
-		return writer.toString();
-	}
+        final StringWriter writer = new StringWriter();
+        try {
+            IOUtils.copy(inputStream, writer, "UTF-8");
+        } catch (IOException ex) {
+            log.error("Error copying file from s3: " + ex);
+        }
+        return writer.toString();
+    }
 }
