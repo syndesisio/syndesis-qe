@@ -1,15 +1,10 @@
 package io.syndesis.qe.utils;
 
-import org.assertj.core.api.Assertions;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,7 +35,7 @@ public class DbUtils {
     }
 
     public int updateSqlOnSampleDb(String sqlCommnad) {
-        int result=-2;
+        int result = -2;
         final PreparedStatement preparedStatement;
         try {
             preparedStatement = dbConnection.prepareStatement(sqlCommnad);
@@ -118,5 +113,4 @@ public class DbUtils {
             log.error("Error: " + ex);
         }
     }
-
 }

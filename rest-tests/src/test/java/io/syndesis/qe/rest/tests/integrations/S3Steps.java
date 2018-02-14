@@ -23,13 +23,12 @@ public class S3Steps {
 
     @Autowired
     private StepsStorage steps;
-
-    private final ConnectionsEndpoint connectionsEndpoint;
-    private final ConnectorsEndpoint connectorsEndpoint;
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
+    @Autowired
+    private ConnectorsEndpoint connectorsEndpoint;
 
     public S3Steps() {
-        connectorsEndpoint = new ConnectorsEndpoint();
-        connectionsEndpoint = new ConnectionsEndpoint();
     }
 
     @Given("^create S3 polling step with bucket: \"([^\"]*)\"")

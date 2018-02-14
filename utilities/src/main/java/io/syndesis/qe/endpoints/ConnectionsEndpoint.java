@@ -1,5 +1,7 @@
 package io.syndesis.qe.endpoints;
 
+import org.springframework.stereotype.Component;
+
 import io.syndesis.model.connection.Connection;
 
 /**
@@ -7,6 +9,7 @@ import io.syndesis.model.connection.Connection;
  *
  * @author jknetl
  */
+@Component
 public class ConnectionsEndpoint extends AbstractEndpoint<Connection> {
 
     public ConnectionsEndpoint() {
