@@ -97,7 +97,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
 
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", preferences);
-        options.addArguments("start-maximized");
+        options.addArguments("start-maximized", "--no-sandbox");
 
         /* this version of constructor is deprecated :( how can we add those DesiredCapabilities? it is not used for now
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
