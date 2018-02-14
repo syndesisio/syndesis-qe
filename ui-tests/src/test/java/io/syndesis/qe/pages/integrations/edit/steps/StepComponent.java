@@ -15,6 +15,12 @@ public abstract class StepComponent extends SyndesisPageObject {
         public static final By ROOT = By.cssSelector("syndesis-integrations-step-configure");
     }
 
+    public static final class StepType {
+        public static final String LOG = "LOG";
+        public static final String BASIC_FILTER = "BASIC FILTER";
+        public static final String ADVANCED_FILTER = "ADVANCED FILTER";
+    }
+
     @Override
     public SelenideElement getRootElement() {
         SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
