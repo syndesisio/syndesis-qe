@@ -1,13 +1,26 @@
 package io.syndesis.qe.steps.integrations;
 
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.visible;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
-import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
@@ -17,19 +30,6 @@ import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.visible;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by sveres on 11/15/17.
@@ -343,10 +343,7 @@ public class IntegrationSteps {
 
     @And("^Camilla starts integration \"([^\"]*)\"$")
     public void startIntegration(String integrationName) {
-        detailPage.getButton("Start Integration").shouldBe(visible).click();
-
-        ModalDialogPage modal = new ModalDialogPage();
-        modal.getButton("OK").shouldBe(visible).click();
+        detailPage.toggleIntegrationState();
     }
 
     @And("^Wait until there is no integration pod with name \"([^\"]*)\"$")
