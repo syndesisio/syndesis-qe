@@ -1,4 +1,4 @@
-package io.syndesis.qe.pages.customizations.connectors.wizard;
+package io.syndesis.qe.pages.customizations.connectors.wizard.steps;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
@@ -12,14 +12,18 @@ import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
 
-public class ReviewSwaggerActions extends SyndesisPageObject implements WizardStep {
+public class Security extends SyndesisPageObject implements WizardStep {
 
     private static class Button {
         public static By NEXT = By.xpath("//button[contains(.,'Next')]");
     }
 
     private static class Element {
-        public static By ROOT = By.cssSelector("syndesis-api-connector-review");
+        public static By ROOT = By.cssSelector("syndesis-api-connector-auth");
+    }
+
+    private static class Input {
+        public static By AUTHORIZATION_URL = By.xpath("//input[@formcontrolname='tokenEndpoint']");
     }
 
     @Override
@@ -35,5 +39,9 @@ public class ReviewSwaggerActions extends SyndesisPageObject implements WizardSt
     @Override
     public boolean validate() {
         return getRootElement().exists();
+    }
+
+    public void setUpOAuth2Security(String authorizationUrl) {
+        $(Input.AUTHORIZATION_URL).setValue(authorizationUrl);
     }
 }

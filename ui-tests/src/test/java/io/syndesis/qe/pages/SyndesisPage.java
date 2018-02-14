@@ -1,10 +1,10 @@
 package io.syndesis.qe.pages;
 
 import io.syndesis.qe.pages.customizations.connectors.detail.ApiClientConnectorDetail;
-import io.syndesis.qe.pages.customizations.connectors.wizard.GeneralConnectorInfo;
-import io.syndesis.qe.pages.customizations.connectors.wizard.ReviewSwaggerActions;
-import io.syndesis.qe.pages.customizations.connectors.wizard.Security;
-import io.syndesis.qe.pages.customizations.connectors.wizard.UploadSwagger;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.GeneralConnectorInfo;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewSwaggerActions;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.Security;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetailPage;
 import io.syndesis.qe.pages.connections.edit.ConnectionConfigurationComponentAmq;
 import io.syndesis.qe.pages.connections.edit.ConnectionCreatePage;
