@@ -1,5 +1,7 @@
 package io.syndesis.qe.rest.tests.integrations;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Arrays;
 
 import cucumber.api.java.en.Given;
@@ -22,13 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConnectionsGeneralSteps {
 
-    private final ConnectionsEndpoint connectionsEndpoint;
-    private final ConnectorsEndpoint connectorsEndpoint;
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
+    @Autowired
+    private ConnectorsEndpoint connectorsEndpoint;
     private final AccountsDirectory accountsDirectory;
 
     public ConnectionsGeneralSteps() {
-        connectionsEndpoint = new ConnectionsEndpoint();
-        connectorsEndpoint = new ConnectorsEndpoint();
         accountsDirectory = AccountsDirectory.getInstance();
     }
 

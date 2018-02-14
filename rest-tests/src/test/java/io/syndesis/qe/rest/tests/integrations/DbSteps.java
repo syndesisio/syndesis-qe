@@ -27,13 +27,12 @@ public class DbSteps {
 
     @Autowired
     private StepsStorage steps;
-
-    private final ConnectionsEndpoint connectionsEndpoint;
-    private final ConnectorsEndpoint connectorsEndpoint;
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
+    @Autowired
+    private ConnectorsEndpoint connectorsEndpoint;
 
     public DbSteps() {
-        connectorsEndpoint = new ConnectorsEndpoint();
-        connectionsEndpoint = new ConnectionsEndpoint();
     }
 
     //done.
@@ -63,7 +62,7 @@ public class DbSteps {
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-stored-start-connector"))
                 .configuredProperties(TestUtils.map("procedureName", procedureName, "schedulerPeriod", ms,
                         "template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
-                                + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
+                        + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
                 .build();
         steps.getSteps().add(dbStep);
     }
@@ -106,13 +105,12 @@ public class DbSteps {
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-stored-connector"))
                 .configuredProperties(TestUtils.map("procedureName", procedureName,
                         "template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
-                                + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
+                        + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"))
                 .build();
         steps.getSteps().add(dbStep);
     }
 
 //    AUXILIARIES:
-
     private String getDbConnectionId() {
 
         final String postgresDbName = "PostgresDB";

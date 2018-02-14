@@ -26,11 +26,10 @@ public class IntegrationHandler {
 
     @Autowired
     private StepsStorage steps;
-
+    @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
 
     public IntegrationHandler() {
-        integrationsEndpoint = new IntegrationsEndpoint();
     }
 
     @When("^create integration with name: \"([^\"]*)\"")

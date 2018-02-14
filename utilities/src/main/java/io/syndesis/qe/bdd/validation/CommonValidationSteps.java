@@ -1,6 +1,7 @@
 package io.syndesis.qe.bdd.validation;
 
 import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonValidationSteps {
 
-    private final IntegrationsEndpoint integrationsEndpoint;
+    @Autowired
+    private IntegrationsEndpoint integrationsEndpoint;
 
     public CommonValidationSteps() {
-        integrationsEndpoint = new IntegrationsEndpoint();
     }
 
     @Then("^wait for integration with name: \"([^\"]*)\" to become active")
