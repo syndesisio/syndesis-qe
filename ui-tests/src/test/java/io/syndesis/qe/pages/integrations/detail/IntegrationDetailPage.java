@@ -3,6 +3,7 @@ package io.syndesis.qe.pages.integrations.detail;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,6 +16,8 @@ import static com.codeborne.selenide.Selenide.$;
 
 @Slf4j
 public class IntegrationDetailPage extends SyndesisPageObject {
+
+    ModalDialogPage modal = new ModalDialogPage();
 
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-integration-detail-page");
@@ -51,7 +54,7 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
     public void deleteIntegration() {
         this.getButton(Actions.DELETE).shouldBe(visible).click();
-        this.getButton("OK").shouldBe(visible).click();
+        modal.getButton("OK").shouldBe(visible).click();
     }
 
     public void editIntegration() {
@@ -67,10 +70,10 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
         if (status.equals(Status.DRAFT) || status.equals(Status.INACTIVE)) {
             this.getButton(Actions.START).shouldBe(visible).click();
-            this.getButton("OK").shouldBe(visible).click();
+            modal.getButton("OK").shouldBe(visible).click();
         } else if (status.equals(Status.ACTIVE)) {
             this.getButton(Actions.STOP).shouldBe(visible).click();
-            this.getButton("OK").shouldBe(visible).click();
+            modal.getButton("OK").shouldBe(visible).click();
         } else {
             log.error("Integration state {} cant be toggled!", status);
         }
