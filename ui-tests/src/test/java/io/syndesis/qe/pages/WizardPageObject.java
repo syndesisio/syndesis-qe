@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.ListIterator;
 
 import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
+import lombok.Getter;
 
+@Getter
 public abstract class WizardPageObject extends SyndesisPageObject {
 
     private List<WizardStep> wizardSteps = null;
-    private ListIterator<WizardStep> steps = null;
+    private ListIterator<WizardStep> stepsIterator = null;
     private SyndesisPageObject currentStep = null;
+
+    private static WizardPageObject INSTANCE;
 
     public void setSteps(List<WizardStep> stepPages) {
         wizardSteps = stepPages;
@@ -24,15 +28,15 @@ public abstract class WizardPageObject extends SyndesisPageObject {
     }
 
     private void initIteration() {
-        steps = wizardSteps.listIterator();
-        steps.next();
+        stepsIterator = wizardSteps.listIterator();
+        stepsIterator.next();
         currentStep = (SyndesisPageObject) wizardSteps.get(0);
     }
 
     public void nextStep() {
         ((WizardStep) currentStep).goToNextWizardStep();
-        if (steps.hasNext()) {
-            currentStep = (SyndesisPageObject) steps.next();
+        if (stepsIterator.hasNext()) {
+            currentStep = (SyndesisPageObject) stepsIterator.next();
         }
     }
 
