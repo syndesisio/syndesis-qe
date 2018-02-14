@@ -19,6 +19,8 @@ public class BasicFilterStepComponent extends StepComponent {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-basic-filter");
+
+        public static final By OPTION = By.cssSelector("option");
     }
 
     private static final class Input {
@@ -33,6 +35,10 @@ public class BasicFilterStepComponent extends StepComponent {
 
     private static final class Link {
         public static final By ADD_RULE = By.cssSelector("a.add-rule");
+    }
+
+    private static final class DataList {
+        public static final By PATH_LIST = By.id("pathList");
     }
 
     public SelenideElement getRootElement() {
@@ -261,6 +267,20 @@ public class BasicFilterStepComponent extends StepComponent {
         log.debug("Searching basic filter predicate select checked option");
         String predicateValue = this.getPredicateSelect().shouldBe(visible).getText();
         return predicateValue.trim();
+    }
+
+    public List<String> getPathInputOptions() {
+        SelenideElement pathDataList = this.getRootElement().find(DataList.PATH_LIST);
+        ElementsCollection options = pathDataList.findAll(Element.OPTION);
+
+        List<String> optionsList = new ArrayList<String>();
+
+        for (SelenideElement option : options) {
+            String value = option.getAttribute("value");
+            optionsList.add(value);
+        }
+
+        return optionsList;
     }
 
     public String getPathInputValue() {

@@ -46,6 +46,7 @@ Feature: Create integration with datamapper step
     And clicks on the "Add a step" link
     And she selects "Basic Filter" integration step
     And she is presented with "Basic Filter" step configuration page
+    And she checks that basic filter step path input options contains "text" option
     Then she fills the configuration page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
     And click on the "Next" button
 

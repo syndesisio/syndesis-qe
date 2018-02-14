@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.assertj.core.api.Assertions;
+
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -141,6 +143,14 @@ public class IntegrationSteps {
     public void fillStepConfiguration(String stepType, String parameter) {
         StepComponent stepComponent = editPage.getStepComponent(stepType, parameter);
         stepComponent.fillConfiguration();
+    }
+
+    @Then("^she checks that basic filter step path input options contains \"([^\"]*)\" option$")
+    public void checkBasicFilterStepOption(String option) {
+        BasicFilterStepComponent basicFilterStepComponent = new BasicFilterStepComponent("");
+        List<String> options = basicFilterStepComponent.getPathInputOptions();
+
+        Assertions.assertThat(options.contains(option)).isTrue();
     }
 
     @Then("^she adds \"(\\d+)\" random steps and then checks the structure$")
