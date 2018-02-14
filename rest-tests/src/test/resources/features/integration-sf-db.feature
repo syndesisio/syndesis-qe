@@ -34,5 +34,5 @@ Feature: sf scenarios
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF update to DB rest test"
     Then wait for integration with name: "SF update to DB rest test" to become active
-    Then update SF lead with email "jdoe@acme.com" to first name: "Joe", last name "Carrot", email "jcarrot@acme.com", company name "EMCA"
-    Then validate DB created new lead with first name: "Joe", last name: "Carrot", email: "jcarrot@acme.com"
+    Then update SF lead with email "jdoe@acme.com" to first name: "Joe", last name "Carrot", email "jdoe@acme.com", company name "EMCA"
+    Then validate DB created new lead with first name: "Joe", last name: "Carrot", email: "jdoe@acme.com"
