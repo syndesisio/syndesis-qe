@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cucumber.api.java.en.Given;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
-import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
+import io.syndesis.model.integration.StepKind;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.RestConstants;
@@ -35,8 +35,8 @@ public class SalesforceSteps {
     public void createSfStepWithAction(String action, String field) {
         final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
         final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
-        final Step salesforceStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step salesforceStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(salesforceConnection)
                 .action(TestUtils.findConnectorAction(salesforceConnector, "salesforce-on-" + action))
                 .configuredProperties(TestUtils.map("sObjectName", field))
@@ -49,8 +49,8 @@ public class SalesforceSteps {
         final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 
         final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
-        final Step salesforceStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step salesforceStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(salesforceConnection)
                 .action(TestUtils.findConnectorAction(salesforceConnector, action))
                 .build();
