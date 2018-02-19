@@ -8,9 +8,8 @@ import java.nio.file.Paths;
 
 import cucumber.api.java.en.Given;
 import io.syndesis.model.filter.FilterPredicate;
-import io.syndesis.model.filter.RuleFilterStep;
-import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
+import io.syndesis.model.integration.StepKind;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +40,8 @@ public class IntermediateSteps {
     @Given("^create mapper step using template: \"([^\"]*)\"")
     public void createMapperStep(String templateName) throws IOException {
         final String mapping = new String(Files.readAllBytes(Paths.get("./target/test-classes/mappings/" + templateName + ".json")));
-        final Step mapperStep = new SimpleStep.Builder()
-                .stepKind("mapper")
+        final Step mapperStep = new Step.Builder()
+                .stepKind(StepKind.mapper)
                 .configuredProperties(TestUtils.map("atlasmapping", mapping))
                 .build();
         steps.getSteps().add(mapperStep);
@@ -50,7 +49,8 @@ public class IntermediateSteps {
 
     @Given("^create basic TW to SF filter step")
     public void createBasicFilterStep() {
-        final Step basicFilter = new RuleFilterStep.Builder()
+        final Step basicFilter = new Step.Builder()
+                .stepKind(StepKind.ruleFilter)
                 .configuredProperties(TestUtils.map(
                         "type", "rule",
                         "predicate", FilterPredicate.AND.toString(),

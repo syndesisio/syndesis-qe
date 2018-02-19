@@ -8,8 +8,8 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
-import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
+import io.syndesis.model.integration.StepKind;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.TestUtils;
@@ -42,8 +42,8 @@ public class DbSteps {
         final Connector dbConnector = connectorsEndpoint.get("sql");
 
         //to be reported: period is not part of .json step (when checked via browser).
-        final Step dbStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step dbStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(dbConnection)
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-start-connector"))
                 .configuredProperties(TestUtils.map("query", sqlQuery, "schedulerPeriod", ms))
@@ -56,8 +56,8 @@ public class DbSteps {
     public void createStartDbPeriodicProcedureStep(String procedureName, Integer ms) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
-        final Step dbStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step dbStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(dbConnection)
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-stored-start-connector"))
                 .configuredProperties(TestUtils.map("procedureName", procedureName, "schedulerPeriod", ms,
@@ -73,8 +73,8 @@ public class DbSteps {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
 
-        final Step dbStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step dbStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(dbConnection)
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-connector"))
                 .configuredProperties(TestUtils.map("query", sqlQuery))
@@ -86,8 +86,8 @@ public class DbSteps {
     public void createDbStepWithInterval(String query, int interval) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
-        final Step dbStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step dbStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(dbConnection)
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-connector"))
                 .configuredProperties(TestUtils.map("query", query, "schedulerPeriod", interval))
@@ -99,8 +99,8 @@ public class DbSteps {
     public void createFinishDbInvokeProcedureStep(String procedureName) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
-        final Step dbStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step dbStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(dbConnection)
                 .action(TestUtils.findConnectorAction(dbConnector, "sql-stored-connector"))
                 .configuredProperties(TestUtils.map("procedureName", procedureName,

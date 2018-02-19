@@ -13,9 +13,9 @@ import io.fabric8.kubernetes.client.LocalPortForward;
 import io.syndesis.model.action.Action;
 import io.syndesis.model.action.ConnectorAction;
 import io.syndesis.model.connection.Connector;
-import io.syndesis.model.integration.Integration;
 import io.syndesis.model.integration.IntegrationDeploymentState;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
+import io.syndesis.qe.model.IntegrationOverview;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,15 +30,26 @@ public final class TestUtils {
     /**
      * Finds an Action of a given connector.
      *
+     * TODO(tplevko): Rework this, when all connectors will be unified to follow the new writing style.
+     *
      * @param connector
      * @param connectorPrefix
      * @return Action with given prefix or null if no such action can be found.
      */
     public static Action findConnectorAction(Connector connector, String connectorPrefix) {
-        final Optional<ConnectorAction> action = connector.getActions()
+        Optional<ConnectorAction> action;
+        action = connector.getActions()
                 .stream()
                 .filter(a -> a.getId().get().toString().contains(connectorPrefix))
                 .findFirst();
+
+        if (!action.isPresent()) {
+            action = connector.getActions()
+                    .stream()
+                    .filter(a -> a.getDescriptor().getCamelConnectorPrefix().contains(connectorPrefix))
+                    .findFirst();
+        }
+
         return action.get();
     }
 
@@ -71,9 +82,9 @@ public final class TestUtils {
         return predicate.test(supplier.get());
     }
 
-    public static boolean waitForActivation(IntegrationsEndpoint e, Integration i, TimeUnit unit, long timeout) {
+    public static boolean waitForPublishing(IntegrationOverviewEndpoint e, IntegrationOverview i, TimeUnit unit, long timeout) {
 
-        return waitForState(e, i, IntegrationDeploymentState.Active, unit, timeout);
+        return waitForState(e, i, IntegrationDeploymentState.Published, unit, timeout);
     }
 
     /**
@@ -86,10 +97,11 @@ public final class TestUtils {
      * @param timeout timeout
      * @return True if integration is activated within a timeout. False otherwise.
      */
-    public static boolean waitForState(IntegrationsEndpoint e, Integration i, IntegrationDeploymentState state, TimeUnit unit, long timeout) {
+    public static boolean waitForState(IntegrationOverviewEndpoint e, IntegrationOverview i, IntegrationDeploymentState state, TimeUnit unit, long timeout) {
 
         return waitForEvent(
-                integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
+                //                integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
+                integration -> integration.getCurrentState() == state,
                 () -> getIntegration(e, i).orElse(i),
                 unit,
                 timeout,
@@ -98,8 +110,8 @@ public final class TestUtils {
         );
     }
 
-    private static Optional<Integration> getIntegration(IntegrationsEndpoint e, Integration i) {
-        return Optional.of(e.get(i.getId().get()));
+    private static Optional<IntegrationOverview> getIntegration(IntegrationOverviewEndpoint e, IntegrationOverview i) {
+        return Optional.of(e.getOverview());
     }
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {

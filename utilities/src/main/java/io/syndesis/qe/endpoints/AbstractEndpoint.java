@@ -32,7 +32,7 @@ public abstract class AbstractEndpoint<T> {
     protected String endpointName;
     protected String apiPath = TestConfiguration.syndesisRestApiPath();
     private Class<T> type;
-    private final Client client;
+    protected final Client client;
 
     public AbstractEndpoint(Class<?> type, String endpointName) {
         this.type = (Class<T>) type;
@@ -107,7 +107,7 @@ public abstract class AbstractEndpoint<T> {
 
         ListResult<T> result = null;
         try {
-            result = Json.mapper().readValue(response.toString(), listtype);
+            result = Json.reader().forType(listtype).readValue(response.toString());
         } catch (IOException ex) {
             log.error("" + ex);
         }
@@ -118,7 +118,7 @@ public abstract class AbstractEndpoint<T> {
             T con = null;
             try {
                 final String json = ow.writeValueAsString(result.getItems().get(i));
-                con = Json.mapper().readValue(json, type);
+                con = Json.reader().forType(type).readValue(json);
             } catch (IOException ex) {
                 log.error(ex.toString());
             }
@@ -133,10 +133,10 @@ public abstract class AbstractEndpoint<T> {
         return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
     }
 
-    private T transformJsonNode(JsonNode json, Class<T> t) {
+    protected T transformJsonNode(JsonNode json, Class<T> t) {
         T ts = null;
         try {
-            ts = Json.mapper().readValue(json.toString(), t);
+            ts = Json.reader().forType(t).readValue(json.toString());
         } catch (IOException ex) {
             log.error("" + ex);
         }
