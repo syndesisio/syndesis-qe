@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IntegrationBasicsComponent extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-integration-basics");
+        public static final By ROOT = By.cssSelector("syndesis-integration-integration-basics");
     }
 
     private static final class Input {

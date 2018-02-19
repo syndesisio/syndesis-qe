@@ -27,7 +27,7 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
     }
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-flow-view");
+        public static final By ROOT = By.cssSelector("syndesis-integration-flow-view");
 
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
         public static final By STEP_ROOT = By.cssSelector("div.flow-view-step");
