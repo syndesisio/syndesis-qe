@@ -10,7 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<syndesis.version>1.3.0-20180202</syndesis.version>
+		<syndesis.version>1.3-SNAPSHOT</syndesis.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.version>3.3</maven.compiler.version>
@@ -114,8 +114,8 @@
 
 			<!-- Syndesis dependencies -->
 			<dependency>
-				<groupId>io.syndesis</groupId>
-				<artifactId>model</artifactId>
+				<groupId>io.syndesis.common</groupId>
+				<artifactId>common-model</artifactId>
 				<version>${syndesis.version}</version>
 			</dependency>
 

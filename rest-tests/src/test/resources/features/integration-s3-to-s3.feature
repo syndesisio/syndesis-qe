@@ -2,7 +2,8 @@ Feature: s3 scenarios
 
   @integrations-s3-s3
   Scenario: S3 - S3 integration
-    Given create sample buckets on S3 with name "syndesis-rest-bucket-out"
+    Given clean application state
+    And create sample buckets on S3 with name "syndesis-rest-bucket-out"
     And create sample buckets on S3 with name "syndesis-rest-bucket-in"
     And create S3 connection using "syndesis-rest-bucket-out" bucket
     And create S3 connection using "syndesis-rest-bucket-in" bucket
