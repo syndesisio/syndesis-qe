@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import cucumber.api.java.en.Given;
 import io.syndesis.model.connection.Connection;
 import io.syndesis.model.connection.Connector;
-import io.syndesis.model.integration.SimpleStep;
 import io.syndesis.model.integration.Step;
+import io.syndesis.model.integration.StepKind;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.RestConstants;
@@ -39,8 +39,8 @@ public class TwSteps {
 
         final Connector twitterConnector = connectorsEndpoint.get("twitter");
         final Connection twitterConnection = connectionsEndpoint.get(RestConstants.getInstance().getTWITTER_CONNECTION_ID());
-        final Step twitterStep = new SimpleStep.Builder()
-                .stepKind("endpoint")
+        final Step twitterStep = new Step.Builder()
+                .stepKind(StepKind.endpoint)
                 .connection(twitterConnection)
                 .action(TestUtils.findConnectorAction(twitterConnector, twitterAction))
                 .build();

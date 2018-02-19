@@ -12,8 +12,9 @@ import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
 import io.syndesis.model.integration.Integration;
-import io.syndesis.model.integration.IntegrationDeploymentState;
+import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.model.IntegrationOverview;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -29,6 +30,7 @@ public class CommonValidationSteps {
 
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
+    private IntegrationOverviewEndpoint integrationOverviewEndpoint;
 
     public CommonValidationSteps() {
     }
@@ -42,7 +44,12 @@ public class CommonValidationSteps {
         final long start = System.currentTimeMillis();
         //wait for activation
         log.info("Waiting until integration \"{}\" becomes active. This may take a while...", integrationName);
-        final boolean activated = TestUtils.waitForActivation(integrationsEndpoint, integrations.get(0), TimeUnit.MINUTES, 10);
+
+        String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
+        integrationOverviewEndpoint = new IntegrationOverviewEndpoint(integrationId);
+        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview();
+
+        final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 10);
         Assertions.assertThat(activated).isEqualTo(true);
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
     }
@@ -65,12 +72,13 @@ public class CommonValidationSteps {
 
     @Then("^verify integration \"([^\"]*)\" has current state \"([^\"]*)\"")
     public void verifyIntegrationState(String integrationName, String integrationState) {
-        final Integration integration = integrationsEndpoint.list().stream()
-                .filter(item -> item.getName().equals(integrationName))
-                .collect(Collectors.toList()).get(0);
 
-        log.debug("Actual state: {} and desired state: {}", integration.getCurrentStatus().get().name(), integrationState);
-        Assertions.assertThat(integration.getCurrentStatus().get().name()).isEqualTo(integrationState);
+        String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
+        integrationOverviewEndpoint = new IntegrationOverviewEndpoint(integrationId);
+        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview();
+
+        log.debug("Actual state: {} and desired state: {}", integrationOverview.getCurrentState().name(), integrationState);
+        Assertions.assertThat(integrationOverview.getCurrentState().name()).isEqualTo(integrationState);
     }
 
     @Then("^validate integration: \"([^\"]*)\" pod scaled to (\\d+)$")
@@ -95,27 +103,6 @@ public class CommonValidationSteps {
 
     @Then("^switch Inactive and Active state on integration \"([^\"]*)\" for (\\d+) times and check pods up/down")
     public void verifyIntegrationOnOffNTimes(String integrationName, int switchNTimes) {
-
-        for (int i = 0; i <= switchNTimes; i++) {
-
-            final IntegrationDeploymentState newDepState;
-            final Integration integration = integrationsEndpoint.list().stream().filter(a -> a.getName().contentEquals(integrationName)).findFirst().get();
-            if (integration.getCurrentStatus().get().equals(IntegrationDeploymentState.Active)) {
-                newDepState = IntegrationDeploymentState.Inactive;
-            } else {
-                newDepState = IntegrationDeploymentState.Active;
-            }
-
-            final Integration updatedIntegration = new Integration.Builder().createFrom(integration)
-                    .desiredStatus(newDepState).build();
-            integrationsEndpoint.update(integration.getId().get(), updatedIntegration);
-
-            if (newDepState.name().equals("Active")) {
-                verifyPodCount(integrationName, 1);
-            } else {
-                verifyPodCount(integrationName, 0);
-            }
-            TestUtils.waitForState(integrationsEndpoint, updatedIntegration, newDepState, TimeUnit.MINUTES, 10);
-        }
+        //TODO(tplevko): rework this.
     }
 }
