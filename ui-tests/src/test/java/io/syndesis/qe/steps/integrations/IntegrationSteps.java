@@ -1,23 +1,8 @@
 package io.syndesis.qe.steps.integrations;
 
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.visible;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.assertj.core.api.Assertions;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -32,6 +17,21 @@ import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Condition;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.visible;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by sveres on 11/15/17.
@@ -340,15 +340,16 @@ public class IntegrationSteps {
     @And("^Camilla exports this integraion$")
     public void exportIntegration() throws InterruptedException {
         File exportedIntegrationFile = detailPage.exportIntegration();
-        assertTrue("Export of integration failed.",exportedIntegrationFile.exists());
-        assertTrue("Export of integration failed - not a file.",exportedIntegrationFile.isFile());
-        assertTrue("Export of integration failed - empty file.",exportedIntegrationFile.length() > 0);
+        Assertions.assertThat(exportedIntegrationFile)
+                .exists()
+                .isFile()
+                .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
     }
 
     @And("^Camilla imports integraion \"([^\"]*)\"$")
     public void importIntegration(String integrationName) throws InterruptedException {
-        assertTrue("Import of integration failed.", listComponent.importIntegration(integrationName));
-        assertTrue("Integration is not present after importing", listComponent.isIntegrationPresent(integrationName));
+        Assertions.assertThat(listComponent.importIntegration(integrationName)).isTrue();
+        Assertions.assertThat(listComponent.isIntegrationPresent(integrationName)).isTrue();
     }
 
     @And("^Camilla starts integration \"([^\"]*)\"$")
@@ -359,7 +360,13 @@ public class IntegrationSteps {
     @And("^Wait until there is no integration pod with name \"([^\"]*)\"$")
     public void waitForIntegrationPodShutdown(String integartionPodName) throws InterruptedException {
         OpenShiftWaitUtils.assertEventually("Pod with name " + integartionPodName + "is still running.",
-                OpenShiftWaitUtils.areNoPodsPresent(integartionPodName),1000,5 * 60 *1000);
+                OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
+    }
+
+    @And("^Camilla drags exported integration \"([^\"]*)\" file to drag and drop area$")
+    public void importIntegrationViaDragAndDrop(String integrationName) throws InterruptedException {
+        Assertions.assertThat(listComponent.importIntegrationViaDragAndDrop(integrationName)).isTrue();
+        Assertions.assertThat(listComponent.isIntegrationPresent(integrationName)).isTrue();
     }
 
 }

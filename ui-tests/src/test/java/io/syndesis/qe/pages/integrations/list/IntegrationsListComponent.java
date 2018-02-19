@@ -3,6 +3,7 @@ package io.syndesis.qe.pages.integrations.list;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +11,6 @@ import org.openqa.selenium.By;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -27,6 +27,8 @@ public class IntegrationsListComponent extends SyndesisPageObject {
         public static final By ITEM_DESCRIPTION = By.className("description");
         public static final By FILE_INPUT = By.cssSelector("input[type='file']");
         public static final By FINISHED_PROGRESS_BAR = By.cssSelector("*[style='width: 100%;']");
+        public static final By DRAG_AND_DROP_PLACE = By.className("my-drop-zone");
+
     }
 
     private static final class Link {
@@ -156,17 +158,17 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
         switch (status) {
             case "Active":
-                actions = new String[] {view, edit, deactivate, deleteAction};
+                actions = new String[]{view, edit, deactivate, deleteAction};
                 break;
             case "Inactive":
             case "Draft":
-                actions = new String[] {view, edit, activate, deleteAction};
+                actions = new String[]{view, edit, activate, deleteAction};
                 break;
             case "In Progress":
-                actions = new String[] {view, edit, deleteAction};
+                actions = new String[]{view, edit, deleteAction};
                 break;
             default:
-                actions = new String[] {};
+                actions = new String[]{};
                 break;
         }
 
@@ -200,6 +202,20 @@ public class IntegrationsListComponent extends SyndesisPageObject {
         modal.getRootElement().find(Element.FILE_INPUT).shouldBe(visible).uploadFile(exportedIntegrationFile);
 
         modal.getElementRandom(Element.FINISHED_PROGRESS_BAR).shouldBe(visible);
+
+        modal.getButton("OK").shouldBe(visible).click();
+
+        return this.getIntegration(integrationName).exists();
+    }
+
+    public boolean importIntegrationViaDragAndDrop(String integrationName) {
+        String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + integrationName + "-export.zip";
+
+        ModalDialogPage modal = new ModalDialogPage();
+
+        DragAndDropFile.dragAndDropFile(new File(filePath),
+                modal.getElementRandom(Element.DRAG_AND_DROP_PLACE).shouldBe(visible),
+                Element.FINISHED_PROGRESS_BAR);
 
         modal.getButton("OK").shouldBe(visible).click();
 
