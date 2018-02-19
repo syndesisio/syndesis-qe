@@ -8,7 +8,6 @@ import java.util.List;
 
 import cucumber.api.java.en.Then;
 import io.syndesis.model.integration.Integration;
-
 import io.syndesis.model.metrics.IntegrationMetricsSummary;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsMetricsEndpoint;
@@ -39,7 +38,7 @@ public class MonitoringValidationSteps {
 //        1. get metrics:
         IntegrationMetricsSummary summary = integrationsMetricsEndpoint.get(integrationId);
 //        2. get metrics info:
-        Long nrOfMessages = summary.getMessages().get();
+        Long nrOfMessages = summary.getMessages();
         log.info("MESSAGES SUMMARY: *{}*", nrOfMessages);
         Assertions.assertThat(nrOfMessages).isEqualTo(3);
 
