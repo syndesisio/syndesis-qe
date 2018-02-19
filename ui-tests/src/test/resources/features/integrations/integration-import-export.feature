@@ -1,4 +1,3 @@
-@wip
 @integration-import-export
 Feature: Test functionality of integration import export feature
 
@@ -6,21 +5,8 @@ Feature: Test functionality of integration import export feature
     Given clean application state
     Given "Camilla" logs into the Syndesis
     Given created connections
-      | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-      | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
-
-
-
-  @integration-import-export-step-clean-application-state
-  Scenario: Clean application state
-    Given clean application state
-    Given "Camilla" logs into the Syndesis
-
-#
-#  1. integration-export
-#
-  @integration-export
-  Scenario: Create integration and test export feature of single integration
+      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
+      | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
 
     # create integration
     And "Camilla" navigates to the "Home" page
@@ -54,27 +40,6 @@ Feature: Test functionality of integration import export feature
     And scroll "top" "right"
     And click on the "Done" button
 
-    Given clean application state
-
-
-    # add basic filter step
- #   When Camilla clicks on the "Add a Step" button
- #   Then Camilla is presented with the "Add a step" link
- #   And clicks on the "Add a step" link
- #   And she selects "Basic Filter" integration step
- #   And she is presented with a "Basic Filter" step configure page
- #   Then she fill configure page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
- #   And click on the "Next" button
-
-     # add advanced filter step
- #   When Camilla clicks on the "Add a Step" button
- #   Then Camilla is presented with the "Add a step" link
- #   And clicks on the "Add a step" link
- #   And she selects "Advanced Filter" integration step
- #   And she is presented with a "Advanced Filter" step configure page
- #   Then she fill configure page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
- #   And click on the "Next" button
-
     # finish and save integration
     When click on the "Save as Draft" button
     And she sets the integration name "Integration_import_export_test"
@@ -86,20 +51,25 @@ Feature: Test functionality of integration import export feature
     # wait for integration to get in active state
     Then she waits until integration "Integration_import_export_test" gets into "Active" state
 
-    # export the integration
+    # export the integration for import tests
     When Camilla selects the "Integration_import_export_test" integration
     Then Camilla is presented with "Integration_import_export_test" integration details
     And Camilla exports this integraion
 
-    # now we have exported integration, we can clean old one and try to import
+    # now we have exported integration, we can clean state and try to import
     Given clean application state
 
     Then Wait until there is no integration pod with name "integrationimportexporttest"
 
-
     Given "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Integrations" page
     And Camilla clicks on the "Import" button
+
+#
+#  1. integration-import classic method
+#
+  @integration-import-export-classic
+  Scenario: Create integration and test export feature of single integration
 
     Then Camilla imports integraion "Integration_import_export_test"
 
@@ -116,8 +86,23 @@ Feature: Test functionality of integration import export feature
     And "Camilla" navigates to the "Integrations" page
     Then she waits until integration "Integration_import_export_test" gets into "Active" state
 
+#
+#  2. integration-import with drag'n'drop
+#
+  @integration-import-export-with-drag-and-drop
+  Scenario: Create integration and test export feature of single integration
 
+    And Camilla drags exported integration "Integration_import_export_test" file to drag and drop area
 
+    # check draft status after import
+    When Camilla selects the "Integration_import_export_test" integration
+    And she is presented with "Draft" integration status on Integration Detail page
 
+    # with this wait here imported integration finally starts but just to be sure I will not delete the above wait for pod deletion
+    And she stays there for "15000" ms
 
+    # start integration and wait for active state
+    And Camilla starts integration "Integration_import_export_test"
 
+    And "Camilla" navigates to the "Integrations" page
+    Then she waits until integration "Integration_import_export_test" gets into "Active" state
