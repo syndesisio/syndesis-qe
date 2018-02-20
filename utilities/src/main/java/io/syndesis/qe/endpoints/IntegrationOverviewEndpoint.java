@@ -23,12 +23,7 @@ public class IntegrationOverviewEndpoint extends AbstractEndpoint<IntegrationOve
 
     public IntegrationOverview getOverview() {
         log.debug("GET : {}", getEndpointUrl() + "/overview");
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + "/overview")
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
-
+        final Invocation.Builder invocation = this.createInvocation("overview");
         final JsonNode response = invocation.get(JsonNode.class);
 
         return transformJsonNode(response, IntegrationOverview.class);

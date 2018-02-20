@@ -118,6 +118,11 @@
 				<artifactId>common-model</artifactId>
 				<version>${syndesis.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>io.syndesis.rest</groupId>
+				<artifactId>rest-endpoint</artifactId>
+				<version>${syndesis.version}</version>
+			</dependency>
 
 			<!-- test dependencies -->
 			<dependency>

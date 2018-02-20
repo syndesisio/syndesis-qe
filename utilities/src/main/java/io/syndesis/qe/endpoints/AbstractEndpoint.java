@@ -43,64 +43,42 @@ public abstract class AbstractEndpoint<T> {
 
     public T create(T obj) {
         log.debug("POST: {}", getEndpointUrl());
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl())
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
-
+        final Invocation.Builder invocation = this.createInvocation();
         final JsonNode response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
 
         return transformJsonNode(response, type);
     }
 
     public void delete(String id) {
-        log.debug("DELETE: {}", getEndpointUrl() + "/" + id);
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + "/" + id)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+        log.debug("DELETE: {}", getEndpointUrl(id));
+        final Invocation.Builder invocation = this.createInvocation(id);
 
         invocation.delete();
     }
 
     public T get(String id) {
-        log.debug("GET : {}", getEndpointUrl() + "/" + id);
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + "/" + id)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
-
+        log.debug("GET : {}", getEndpointUrl(id));
+        final Invocation.Builder invocation = this.createInvocation(id);
         final JsonNode response = invocation.get(JsonNode.class);
 
         return transformJsonNode(response, type);
     }
 
     public void update(String id, T obj) {
-        log.debug("PUT : {}", getEndpointUrl() + "/" + id);
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + "/" + id)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+        log.debug("PUT : {}", getEndpointUrl(id));
+        final Invocation.Builder invocation = this.createInvocation(id);
 
         invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
     }
 
-    public List<T> list() {
+    public List<T> list(String... id) {
         final ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
         mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         final ObjectWriter ow = mapper.writer();
         final Class<ListResult<T>> listtype = (Class) ListResult.class;
 
-        log.debug("GET : {}", getEndpointUrl());
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl())
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+        log.debug("GET : {}", getEndpointUrl(id));
+        final Invocation.Builder invocation = this.createInvocation(id);
 
         final JsonNode response = invocation
                 .get(JsonNode.class);
@@ -128,9 +106,21 @@ public abstract class AbstractEndpoint<T> {
         return ts;
     }
 
-    public String getEndpointUrl() {
+    public String getEndpointUrl(String... id) {
+        if (id.length == 0) {
+            return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
+        } else {
+            return String.format("%s%s%s/%s", RestUtils.getRestUrl(), apiPath, endpointName, id);
+        }
+    }
 
-        return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
+    protected Invocation.Builder createInvocation(String... id) {
+        Invocation.Builder invocation = client
+                .target(getEndpointUrl(id))
+                .request(MediaType.APPLICATION_JSON)
+                .header("X-Forwarded-User", "pista")
+                .header("X-Forwarded-Access-Token", "kral");
+        return invocation;
     }
 
     protected T transformJsonNode(JsonNode json, Class<T> t) {
