@@ -28,11 +28,7 @@ public class IntegrationsDeploymentEndpoint extends AbstractEndpoint<Integration
      */
     public void activate() {
         log.debug("PUT : {}", getEndpointUrl());
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl())
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+        final Invocation.Builder invocation = this.createInvocation();
 
         JsonNode r = invocation.put(Entity.entity(new TargetStateRequest(), MediaType.APPLICATION_JSON), JsonNode.class);
         log.info(r.asText());
@@ -44,11 +40,14 @@ public class IntegrationsDeploymentEndpoint extends AbstractEndpoint<Integration
      */
     public void deactivate(int deploymentId) {
         log.debug("POST : {}", getEndpointUrl());
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + "1/targetState")
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+        final Invocation.Builder invocation = this.createInvocation("1/targetState");
+//this url is slightly different, so please chceck:
+
+        //        final Invocation.Builder invocation = client
+//                .target(getEndpointUrl() + "1/targetState")
+//                .request(MediaType.APPLICATION_JSON)
+//                .header("X-Forwarded-User", "pista")
+//                .header("X-Forwarded-Access-Token", "kral");
 
         invocation.put(Entity.entity(new TargetStateRequest(IntegrationDeploymentState.Unpublished), MediaType.APPLICATION_JSON), JsonNode.class);
     }
