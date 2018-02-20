@@ -13,7 +13,7 @@ import lombok.Getter;
 public class IntegrationsListPage extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-list-page");
+        public static final By ROOT = By.cssSelector("syndesis-integration-list-page");
     }
 
     @Getter

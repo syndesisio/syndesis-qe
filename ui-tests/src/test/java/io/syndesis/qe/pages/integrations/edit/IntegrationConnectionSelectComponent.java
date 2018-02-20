@@ -14,7 +14,7 @@ import lombok.Getter;
 public class IntegrationConnectionSelectComponent extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-connection-select");
+        public static final By ROOT = By.cssSelector("syndesis-integration-connection-select");
     }
 
     @Getter
