@@ -10,6 +10,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
@@ -25,9 +26,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static org.hamcrest.Matchers.is;
@@ -122,6 +127,20 @@ public class CommonSteps {
         allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
     }
 
+    @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
+    public void navigateToHelp(String title) {
+        SelenideElement helpDropdownMenu = $(By.id("dropdownHelp")).shouldBe(visible);
+
+        if (!helpDropdownMenu.getAttribute("class").contains("open")) {
+            helpDropdownMenu.click();
+        }
+
+        SelenideElement dropdownElementsTable = $(By.className("dropdown-menu")).shouldBe(visible);
+        ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"));
+
+        dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
+    }
+
     @Then("^\"(\\w+)\" is presented with the Syndesis home page$")
     public void checkHomePageVisibility(String username) {
         syndesisRootPage.getRootElement().shouldBe(visible);
@@ -138,7 +157,9 @@ public class CommonSteps {
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
-    public void clickOnModalDialogButton(String buttonTitle) { modalDialogPage.getButton(buttonTitle).shouldBe(visible).click(); }
+    public void clickOnModalDialogButton(String buttonTitle) {
+        modalDialogPage.getButton(buttonTitle).shouldBe(visible).click();
+    }
 
     @When(".*clicks? on the \"([^\"]*)\" link.*$")
     public void clickOnLink(String linkTitle) {
@@ -261,5 +282,11 @@ public class CommonSteps {
     public void isPresentedWithDialogPage(String title) throws Throwable {
         String titleText = new ModalDialogPage().getTitleText();
         assertThat(titleText.equals(title), is(true));
+    }
+
+
+    @Then("^.*removes? file \"([^\"]*)\" if it exists$")
+    public void removeFileIfExists(String fileName) throws Throwable {
+        Files.deleteIfExists(Paths.get(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + fileName));
     }
 }
