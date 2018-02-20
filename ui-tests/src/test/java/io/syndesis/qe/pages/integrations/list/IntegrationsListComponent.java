@@ -19,7 +19,7 @@ import static com.codeborne.selenide.Selenide.$;
 public class IntegrationsListComponent extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-list");
+        public static final By ROOT = By.cssSelector("syndesis-integration-list");
 
         public static final By ITEM = By.className("list-pf-item");
         public static final By ITEM_TITLE = By.className("list-pf-title");
