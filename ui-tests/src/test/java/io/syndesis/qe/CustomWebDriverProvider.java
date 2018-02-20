@@ -21,7 +21,7 @@ import java.util.Map;
 public class CustomWebDriverProvider implements WebDriverProvider {
     public static final String DOWNLOAD_DIR = Paths.get("tmp" + File.separator + "download").toAbsolutePath().toString();
 
-    private final String INTEGRATION_EXPORT_MIME_TYPE = "application/octet-stream";
+    private final String INTEGRATION_EXPORT_MIME_TYPE = "application/octet-stream;application/zip";
 
     @Override
     public WebDriver createDriver(DesiredCapabilities capabilities) {
