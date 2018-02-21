@@ -45,8 +45,9 @@ public class SupportPageSteps {
     @When("^.*checks? version string$")
     public void checkVersionString() {
         //TODO: what do we want to test here? some property will be required for syndesis version or where can we take it from?
-        supportPage.getVersion().equalsIgnoreCase("");
-
+        Assertions.assertThat(supportPage.getVersion())
+                .isNotEmpty()
+                .isEqualToIgnoringCase("Syndesis: v1.0");
     }
 
 
