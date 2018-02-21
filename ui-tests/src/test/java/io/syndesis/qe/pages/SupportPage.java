@@ -3,6 +3,7 @@ package io.syndesis.qe.pages;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.utils.TestUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -12,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+@Slf4j
 public class SupportPage extends SyndesisPageObject {
 
     private static final class Element {
@@ -21,6 +23,8 @@ public class SupportPage extends SyndesisPageObject {
         public static final By ALL_LOGS = By.id("alllogs");
 
         public static final By CHECKBOX = By.xpath("//*[@type='checkbox']");
+
+        public static final By PRODUCT_VERSION = By.id("productVersion");
     }
 
     @Override
@@ -54,7 +58,8 @@ public class SupportPage extends SyndesisPageObject {
     }
 
     public String getVersion() {
-        //TODO: lets wait here until they add ID for version string in the product
-        return "";
+        String versionString = getRootElement().$(Element.PRODUCT_VERSION).shouldBe(visible).getText();
+        log.info("Version string found: " + versionString);
+        return versionString;
     }
 }
