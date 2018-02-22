@@ -1,14 +1,12 @@
 package io.syndesis.qe.pages.integrations.edit;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.SelenideElement;
-
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 @Slf4j
 public class ListActionsComponent extends SyndesisPageObject {
@@ -17,12 +15,12 @@ public class ListActionsComponent extends SyndesisPageObject {
 
         public static final By ROOT = By.cssSelector("syndesis-list-actions");
         public static final By NAME = By.className("name");
+        public static final By ACTION_CONFIGURE = By.cssSelector("syndesis-integration-action-configure");
     }
 
     @Override
     public SelenideElement getRootElement() {
-        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-        return elementRoot;
+        return $(Element.ROOT).shouldBe(visible);
     }
 
     @Override
