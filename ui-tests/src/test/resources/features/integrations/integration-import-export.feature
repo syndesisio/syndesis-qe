@@ -17,6 +17,7 @@ Feature: Test functionality of integration import export feature
     # select twitter connection
     When Camilla selects the "Twitter Listener" connection
     And she selects "Mention" integration action
+    And Camilla clicks on the "Done" button
     Then she is prompted to select a "Finish" connection from a list of available connections
 
     # select salesforce connection
