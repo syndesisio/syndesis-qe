@@ -1,9 +1,12 @@
 package io.syndesis.qe.pages.integrations.edit;
 
-import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.collections.SizeGreaterThanOrEqual;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -14,16 +17,16 @@ import com.codeborne.selenide.WebDriverRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponentFactory;
 
+@Slf4j
 public class IntegrationFlowViewComponent extends SyndesisPageObject {
 
     private static final class Link {
-        public static final By ADD_STEP = By.linkText("Add a Step");
+        public static final By ADD_STEP = By.linkText("Add a step");
     }
 
     private static final class Element {
@@ -33,7 +36,7 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
         public static final By STEP_ROOT = By.cssSelector("div.flow-view-step");
         public static final By STEP = By.cssSelector("div.parent-step");
         public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
-        public static final By ACTIVE_STEP_ICON = By.cssSelector("p.icon.active");
+        public static final By ACTIVE_STEP_ICON = By.cssSelector("div.icon.active");
         public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = By.className("step-insert");
 
@@ -99,15 +102,39 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
         this.getElementRandom(Element.DELETE).shouldBe(visible).click();
     }
 
-    public void clickAddStepLink(int pos){
+    public void clickAddStepLink(int pos) {
 
-        List<WebElement> allStepInserts = getRootElement().findElements(Element.STEP_INSERT);
-        WebElement stepElement = allStepInserts.get(pos);
-        Actions action = new Actions(WebDriverRunner.getWebDriver());
-        //to make ADD_STEP element visible:
-        action.moveToElement(stepElement);
+        List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
+                .shouldHave(CollectionCondition.sizeGreaterThanOrEqual(pos));
+        SelenideElement stepElement = allStepInserts.get(pos);
+
+        stepElement.hover();
 
         getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
+    }
+
+    /**
+     * If you only have 3 steps - start, finish and a step in the middle to get the middle step
+     * set stepPosition to "middle". Otherwise set it to start or finish to get first/last step.
+     *
+     * @param stepPosition
+     * @return text in popover element
+     */
+    public String checkTextInHoverTable(String stepPosition) {
+        String text;
+        if (stepPosition.equalsIgnoreCase("middle")) {
+            // This is ugly but for now it works - it has only one usage: for getting our data-mapper step
+            // which is between start and finish step.
+            // Explanation: we have 3 steps and between them 2 elements with insert step option --> 5 total
+            // with class "step" and we want the third element
+            $$(By.className("step")).shouldHaveSize(5).get(2)
+                    .shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
+            text = $(By.className("popover")).shouldBe(visible).getText();
+        } else {
+            $(By.className(stepPosition)).shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
+            text = $(By.className("popover")).shouldBe(visible).getText();
+        }
+        return text;
     }
 
 }

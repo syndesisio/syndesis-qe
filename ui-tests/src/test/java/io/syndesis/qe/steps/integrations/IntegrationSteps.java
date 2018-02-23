@@ -10,7 +10,10 @@ import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
+import io.syndesis.qe.pages.integrations.edit.IntegrationFlowViewComponent;
+import io.syndesis.qe.pages.integrations.edit.IntegrationStepSelectComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
+import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
@@ -19,6 +22,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
+import org.openqa.selenium.By;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,6 +49,8 @@ public class IntegrationSteps {
     private IntegrationDetailPage detailPage = new IntegrationDetailPage();
     private IntegrationsListPage listPage = new IntegrationsListPage();
     private IntegrationsListComponent listComponent = new IntegrationsListComponent();
+    private IntegrationFlowViewComponent flowViewComponent = new IntegrationFlowViewComponent();
+    private DataMapperComponent dataMapper = new DataMapperComponent();
 
     @When("^she sets the integration name \"([^\"]*)\"$")
     public void setIntegrationName(String integrationName) {
@@ -304,7 +310,7 @@ public class IntegrationSteps {
 
     @When("^she adds second step between STEP and FINISH connection$")
     public void sheAddsSecond() throws Throwable {
-        editPage.getFlowViewComponent().clickAddStepLink(2);
+        editPage.getFlowViewComponent().clickAddStepLink(1);
     }
 
     @And("^sets jms subscribe inputs source data$")
@@ -376,4 +382,23 @@ public class IntegrationSteps {
     public void selectsFromDopdownByClassName(String timeUnits) {
         editPage.getPeriodicSqlComponent().selectSQLperiodUnits(timeUnits);
     }
+
+    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in hover table over \"([^\"]*)\" step$")
+    public void checkTextInHoverTable(String text, String isVisible, String stepPosition) throws InterruptedException {
+        if (isVisible.equalsIgnoreCase("visible")) {
+            Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
+                    .isNotEmpty()
+                    .containsIgnoringCase(text);
+        } else {
+            Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
+                    .isNotEmpty()
+                    .doesNotContain(text);
+        }
+    }
+
+    @And("^.*checks? that data bucket \"([^\"]*)\" is available and opens? it$")
+    public void checkPreviousDataBuckets(String bucket) {
+        dataMapper.openBucket(By.id(bucket));
+    }
+
 }

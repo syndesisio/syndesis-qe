@@ -36,7 +36,7 @@ public class ActionConfigureComponentPeriodicSql extends ActionConfigureComponen
 
     public void fillSQLperiod(String period) {
         log.debug("filling sql period: {}", period);
-        SelenideElement element = $(Element.INPUT_PERIOD);
+        SelenideElement element = $(Element.INPUT_PERIOD).shouldBe(visible);
         this.fillInput(element, period);
     }
 
