@@ -29,8 +29,13 @@ public abstract class SyndesisPageObject {
     public abstract boolean validate();
 
     public SelenideElement getButton(String buttonTitle) {
+        return getButton(buttonTitle, getRootElement());
+    }
+
+    public SelenideElement getButton(String buttonTitle, SelenideElement differentRoot) {
         log.info("searching for button {}", buttonTitle);
-        return getRootElement().findAll(By.tagName("button")).filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first();
+        return differentRoot.shouldBe(visible).findAll(By.tagName("button"))
+                .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHaveSize(1).first();
     }
 
     public SelenideElement getFirstVisibleButton(String buttonTitle) {
@@ -165,13 +170,16 @@ public abstract class SyndesisPageObject {
     }
 
     public SelenideElement getElementContainingText(By by, String text) {
-        ElementsCollection elements = getRootElement().findAll(by).shouldBe(sizeGreaterThan(0));
+        return getElementContainingText(by, text, getRootElement());
+    }
+
+    public SelenideElement getElementContainingText(By by, String text, SelenideElement differentRoot) {
+        ElementsCollection elements = differentRoot.shouldBe(visible).findAll(by).shouldBe(sizeGreaterThan(0));
         log.info("I found " + elements.size() + " elements.");
 
         elements = elements.filter(exactText(text));
         log.info("Elements after filter: " + elements.size());
-        SelenideElement element = elements.shouldBe(sizeGreaterThan(0)).first();
-        return element;
+        return elements.shouldBe(sizeGreaterThan(0)).first();
     }
 
     public String getElementText(By locator) {
