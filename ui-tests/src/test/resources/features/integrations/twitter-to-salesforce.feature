@@ -62,7 +62,7 @@ Feature: Create integration with datamapper step
 
     # finish and save integration
     When click on the "Save as Draft" button
-    And she sets integration name "Twitter to Salesforce E2E"
+    And she sets the integration name "Twitter to Salesforce E2E"
     And click on the "Publish" button
     # assert integration is present in list
     Then Camilla is presented with "Twitter to Salesforce E2E" integration details
