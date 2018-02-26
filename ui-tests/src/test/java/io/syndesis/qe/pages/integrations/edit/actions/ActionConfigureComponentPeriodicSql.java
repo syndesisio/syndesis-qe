@@ -17,7 +17,8 @@ public class ActionConfigureComponentPeriodicSql extends ActionConfigureComponen
 
     private static final class Element {
         public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
-        public static final By INPUT_PERIOD = By.cssSelector("input[name='schedulerPeriod']");
+        public static final By INPUT_PERIOD = By.className("duration-input__input");
+        public static final By SELECT_PERIOD = By.className("duration-input__select");
         public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
     }
 
@@ -37,6 +38,12 @@ public class ActionConfigureComponentPeriodicSql extends ActionConfigureComponen
         log.debug("filling sql period: {}", period);
         SelenideElement element = $(Element.INPUT_PERIOD);
         this.fillInput(element, period);
+    }
+
+    public void selectSQLperiodUnits(String timeUnits) {
+        log.debug("selecting sql period units: {}", timeUnits);
+        SelenideElement selectElement = $(Element.SELECT_PERIOD).shouldBe(visible);
+        selectElement.selectOption(timeUnits);
     }
 
 }

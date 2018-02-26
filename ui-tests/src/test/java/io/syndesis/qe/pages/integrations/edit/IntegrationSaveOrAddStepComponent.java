@@ -15,7 +15,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 public class IntegrationSaveOrAddStepComponent extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-save-or-add-step");
+        public static final By ROOT = By.cssSelector("syndesis-integration-save-or-add-step");
         public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
     }
     @Override
