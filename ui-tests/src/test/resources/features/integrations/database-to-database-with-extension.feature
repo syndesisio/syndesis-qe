@@ -47,7 +47,8 @@ Feature: Upload tech extension and add it to integration
     And she selects "Periodic SQL Invocation" integration action
     Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "10000" value
+    Then she fills period input with "10" value
+    Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
     Then she is prompted to select a "Finish" connection from a list of available connections
 

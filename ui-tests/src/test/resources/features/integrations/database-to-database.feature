@@ -24,12 +24,10 @@ Feature: Test functionality of DB connection
     When Camilla selects the "PostgresDB" connection
     And she selects "Periodic SQL Invocation" integration action
     #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
-    #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "5000" value
-    #@wip time_unit_id to be specified after new update is available:
-    #Then she selects "Miliseconds" from "time_unit_id" dropdown
+    Then she fills period input with "5" value
+    Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
 
     # select postgresDB connection as 'to' point
@@ -50,11 +48,11 @@ Feature: Test functionality of DB connection
 
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD1-read-update E2E"
+    And she sets the integration name "CRUD1-read-update E2E"
     And clicks on the "Publish" button
     Then Camilla is presented with "CRUD1-read-update E2E" integration details
-    And she clicks on the "Done" button
-    Then she wait until integration "CRUD1-read-update E2E" get into "Active" state
+    Then "Camilla" navigates to the "Integrations" page
+    Then she waits until integration "CRUD1-read-update E2E" gets into "Active" state
 
     Then validate that all todos with task "Joe" have value completed "1", period in ms: "5000"
 
@@ -76,9 +74,8 @@ Feature: Test functionality of DB connection
     #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "5000" value
-    #@wip time_unit_id is not yet available
-    #Then she selects "Miliseconds" from "time_unit_id" dropdown
+    Then she fills period input with "5" value
+    Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
 
     # select postgresDB connection as 'to' point
@@ -99,12 +96,12 @@ Feature: Test functionality of DB connection
 #    And scroll "top" "right"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD2-read-create E2E"
+    And she sets the integration name "CRUD2-read-create E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD2-read-create E2E" integration details
-    And she clicks on the "Done" button
-    Then she wait until integration "CRUD2-read-create E2E" get into "Active" state
+    Then "Camilla" navigates to the "Integrations" page
+    Then she waits until integration "CRUD2-read-create E2E" gets into "Active" state
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
 
@@ -130,9 +127,8 @@ Feature: Test functionality of DB connection
     #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "10000" value
-    #@wip time_unit_id is not yet available
-    #Then she selects "Miliseconds" from "time_unit_id" dropdown
+    Then she fills period input with "10" value
+    Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
 
     # select postgresDB connection as 'to' point
@@ -153,12 +149,12 @@ Feature: Test functionality of DB connection
 
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD3-read-delete E2E"
+    And she sets the integration name "CRUD3-read-delete E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD3-read-delete E2E" integration details
-    And she clicks on the "Done" button
-    Then she wait until integration "CRUD3-read-delete E2E" get into "Active" state
+    Then "Camilla" navigates to the "Integrations" page
+    Then she waits until integration "CRUD3-read-delete E2E" gets into "Active" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
@@ -184,9 +180,8 @@ Feature: Test functionality of DB connection
     #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "10000" value
-    #@wip time_unit_id is not yet available
-    #Then she selects "Miliseconds" from "time_unit_id" dropdown
+    Then she fills period input with "10" value
+    Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
 
     # select postgresDB connection as 'to' point
@@ -209,12 +204,11 @@ Feature: Test functionality of DB connection
 #    And scroll "top" "right"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD4-read-create-inbuilt E2E"
+    And she sets the integration name "CRUD4-read-create-inbuilt E2E"
     And clicks on the "Publish" button
-    #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
-    And she clicks on the "Done" button
-#    Then she wait until integration "CRUD4-read-create-inbuilt E2E" get into "Active" state
+    Then "Camilla" navigates to the "Integrations" page
+    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Active" state
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 
 
@@ -242,11 +236,12 @@ Feature: Test functionality of DB connection
     Then she checks "Done" button is "Disabled"
 #    wrong query:
     Then she fills periodic query input with "SELECT * FROM CONTACT-A" value
-    Then she fills period input with "5000" value
+    Then she fills period input with "5" value
+    Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
     And she can see alert notification
     #@wip time_unit_id is not yet available
-    #Then she selects "Miliseconds" from "time_unit_id" dropdown
+
     Then she fills periodic query input with "SELECT * FROM CONTACT" value
     And clicks on the "Done" button
 
@@ -278,11 +273,11 @@ Feature: Test functionality of DB connection
 
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "DB Connection 5 SQL query checker E2E"
+    And she sets the integration name "DB Connection 5 SQL query checker E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "DB Connection 5 SQL query checker E2E" integration details
-    And she clicks on the "Done" button
+    Then "Camilla" navigates to the "Integrations" page
     Then she waits until integration "DB Connection 5 SQL query checker E2E" gets into "Active" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
