@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * Created by sveres on 12/19/17.
  */
 @Slf4j
-public class ActionConfigureComponentJmsSubscribe extends ActionConfigureComponentJms {
+public class ActionConfigureComponentJmsSubscribe extends ActionConfigureComponentFieldFiller {
 
 
     private static final class Element {

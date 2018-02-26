@@ -14,6 +14,7 @@ import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentFtpDownload;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentInvokeSql;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsPublish;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsRequest;
@@ -51,6 +52,7 @@ public enum SyndesisPage {
     SUBSCRIBE_FOR_MESSAGES(new ActionConfigureComponentJmsSubscribe()),
     PUBLISH_MESSAGES(new ActionConfigureComponentJmsPublish()),
     REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
+    DOWNLOAD(new ActionConfigureComponentFtpDownload()),
 
     MODAL_DIALOG(new ModalDialogPage());
 
