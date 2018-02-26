@@ -9,6 +9,9 @@ import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponent;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentFtpDownload;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentFtpDataType;
+import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentFtpUpload;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentInvokeSql;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsPublish;
 import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsRequest;
@@ -27,6 +30,7 @@ public class IntegrationEditPage extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-integration-edit-page");
     }
+
     @Getter
     private ActionConfigureComponent actionConfigureComponent = new ActionConfigureComponent();
     @Getter
@@ -41,6 +45,12 @@ public class IntegrationEditPage extends SyndesisPageObject {
     private ActionConfigureComponentJmsRequest jmsRequestComponent = new ActionConfigureComponentJmsRequest();
     @Getter
     private ActionConfigureComponentTwitterSearch twitterSearchComponent = new ActionConfigureComponentTwitterSearch();
+    @Getter
+    private ActionConfigureComponentFtpDownload ftpDownloadComponent = new ActionConfigureComponentFtpDownload();
+    @Getter
+    private ActionConfigureComponentFtpDataType ftpDatatypeComponent = new ActionConfigureComponentFtpDataType();
+    @Getter
+    private ActionConfigureComponentFtpUpload ftpUploadComponent = new ActionConfigureComponentFtpUpload();
     @Getter
     private ListActionsComponent listActionsComponent = new ListActionsComponent();
     @Getter
@@ -72,5 +82,4 @@ public class IntegrationEditPage extends SyndesisPageObject {
         stepComponent = stepComponentFactory.getStep(stepType, parameter);
         return stepComponent;
     }
-
 }

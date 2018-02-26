@@ -315,7 +315,7 @@ public class IntegrationSteps {
     public void setJmsSubscribeData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
             for (String field : source.keySet()) {
-                SelenideElement element = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+                SelenideElement element = editPage.getJmsSubscribeComponent().checkAndGetFieldTypeById(field);
                 assertThat(element, notNullValue());
                 editPage.getJmsSubscribeComponent().setElementValue(source.get(field), element);
             }
@@ -326,7 +326,7 @@ public class IntegrationSteps {
     public void setJmsRequestData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
             for (String field : source.keySet()) {
-                SelenideElement element = editPage.getJmsSubscribeComponent().checkAndGetFieldType(field);
+                SelenideElement element = editPage.getJmsSubscribeComponent().checkAndGetFieldTypeById(field);
                 assertThat(element, notNullValue());
                 editPage.getJmsSubscribeComponent().setElementValue(source.get(field), element);
             }
@@ -337,9 +337,41 @@ public class IntegrationSteps {
     public void setJmsPublishData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
             for (String field : source.keySet()) {
-                SelenideElement element = editPage.getJmsPublishComponent().checkAndGetFieldType(field);
+                SelenideElement element = editPage.getJmsPublishComponent().checkAndGetFieldTypeById(field);
                 assertThat(element, notNullValue());
                 editPage.getJmsPublishComponent().setElementValue(source.get(field), element);
+            }
+        }
+    }
+
+    @And("^she fills ftp download form with values$")
+    public void setFtpDownloadData(DataTable sourceMappingData) {
+        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+            for (String field : source.keySet()) {
+                SelenideElement element = editPage.getFtpDownloadComponent().checkAndGetFieldTypeByName(field);
+                assertThat(element, notNullValue());
+                editPage.getFtpDownloadComponent().setElementValue(source.get(field), element);
+            }
+        }
+    }
+    @And("^she fills specify output data type form with values$")
+    public void setOutputDataTypeData(DataTable sourceMappingData) {
+        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+            for (String field : source.keySet()) {
+                SelenideElement element = editPage.getFtpDatatypeComponent().checkAndGetFieldTypeByName(field);
+                assertThat(element, notNullValue());
+                editPage.getFtpDatatypeComponent().setElementValue(source.get(field), element);
+            }
+        }
+    }
+
+    @And("^she fills ftp upload form with values$")
+    public void setFtpUploadData(DataTable sourceMappingData) {
+        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+            for (String field : source.keySet()) {
+                SelenideElement element = editPage.getFtpUploadComponent().checkAndGetFieldTypeByName(field);
+                assertThat(element, notNullValue());
+                editPage.getFtpUploadComponent().setElementValue(source.get(field), element);
             }
         }
     }

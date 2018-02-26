@@ -11,21 +11,31 @@ import com.codeborne.selenide.SelenideElement;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class ActionConfigureComponentJms extends ActionConfigureComponent {
+public abstract class ActionConfigureComponentFieldFiller extends ActionConfigureComponent {
 
     abstract Class getInputClass();
 
     abstract Class getSelectClass();
 
-    public SelenideElement checkAndGetFieldType(String elementId) {
-        log.info("field: {} is being checked", elementId);
+    public SelenideElement checkAndGetFieldTypeById(String elementId) {
+        log.info("field-id: {} is being checked", elementId);
         By elem = By.id(elementId);
+        return this.checkAndGet(elem);
+    }
+
+    public SelenideElement checkAndGetFieldTypeByName(String elementName) {
+        log.info("field-name: {} is being checked", elementName);
+        By elem = By.name(elementName);
+        return this.checkAndGet(elem);
+    }
+
+    private SelenideElement checkAndGet(By elem) {
 
         Class inputClass = getInputClass();
         Class selectClass = getSelectClass();
 
         SelenideElement element = this.getRootElement().find(elem).shouldBe(visible);
-        if (element.getTagName().equals("input") && isContainedInLocators(elem, inputClass) ||
+        if ((element.getTagName().equals("input") || element.getTagName().equals("textarea")) && isContainedInLocators(elem, inputClass) ||
                 element.getTagName().equals("select") && isContainedInLocators(elem, selectClass)) {
             return element;
         } else {
@@ -33,7 +43,7 @@ public abstract class ActionConfigureComponentJms extends ActionConfigureCompone
         }
     }
 
-    public boolean isContainedInLocators(By by, Class c) {
+    private boolean isContainedInLocators(By by, Class c) {
         Field[] fields = c.getDeclaredFields();
 
         for (Field field : fields) {
