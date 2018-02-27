@@ -1,5 +1,6 @@
 package io.syndesis.qe.bdd;
 
+import io.syndesis.qe.templates.FtpTemplate;
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
@@ -100,5 +101,15 @@ public class CommonSteps {
     public void resetState() {
         int responseCode = TestSupport.getInstance().resetDbWithResponse();
         Assertions.assertThat(responseCode).isEqualTo(204);
+    }
+
+    @Given("^deploy FTP server$")
+    public void deployFTPServier() {
+        FtpTemplate.deploy();
+    }
+
+    @Given("^clean FTP server$")
+    public void cleanFTPServier() {
+        FtpTemplate.cleanUp();
     }
 }
