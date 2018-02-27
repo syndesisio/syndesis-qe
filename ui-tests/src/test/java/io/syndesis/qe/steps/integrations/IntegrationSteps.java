@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -283,6 +285,7 @@ public class IntegrationSteps {
         editPage.getInvokeSqlComponent().fillSqlInput(query);
     }
 
+
     /**
      * whether it's start or finish connection
      *
@@ -369,4 +372,8 @@ public class IntegrationSteps {
         Assertions.assertThat(listComponent.isIntegrationPresent(integrationName)).isTrue();
     }
 
+    @Then("^she selects \"([^\"]*)\" from sql dropdown$")
+    public void selectsFromDopdownByClassName(String timeUnits) {
+        editPage.getPeriodicSqlComponent().selectSQLperiodUnits(timeUnits);
+    }
 }
