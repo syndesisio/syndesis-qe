@@ -103,9 +103,27 @@ credentials.json
       "accessKey": "********************",
       "secretKey": "*****************************************"
     }
+  },
+  "ftp": {
+    "service": "ftp",
+    "properties": {
+      "binary": "Yes",
+      "connectTimeout": "10000",
+      "disconnect": "No",
+      "host": "ftpd",
+      "maximumReconnectAttempts": "3",
+      "passiveMode": "Yes",
+      "password": "",
+      "port": "2121",
+      "reconnectDelay": "1000",
+      "timeout": "30000",
+      "username": "anonymous"
+    }
   }
 }
 ```
+for ftp connection credentials:
+All values are just examples / proposals. Need to be updated in accordance with 
 
 ### Execution
 
