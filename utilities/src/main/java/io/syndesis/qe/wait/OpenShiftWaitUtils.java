@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodCondition;
 import io.fabric8.openshift.api.model.Build;
@@ -17,7 +18,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 
 public class OpenShiftWaitUtils {
 
-    protected static final OpenShiftUtils openshift = OpenShiftUtils.getInstance();
+    protected static final OpenShiftUtil openshift = OpenShiftUtils.getInstance();
     public static final long DEFAULT_WAIT_INTERVAL = 1000L; // one second
 
     public static boolean hasBuildFailed(Predicate<Build> filter) {
@@ -124,7 +125,7 @@ public class OpenShiftWaitUtils {
     }
 
     public static BooleanSupplier areNoPodsPresent(final String appName) {
-        return () -> openshift.findComponentPods(appName).size() == 0;
+        return () -> OpenShiftUtils.getInstance().getLabeledPods("component", appName).size() == 0;
     }
 
     public static BooleanSupplier areNoPodsPresent(Predicate<Pod> podFilter) {

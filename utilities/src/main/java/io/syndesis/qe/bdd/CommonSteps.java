@@ -28,7 +28,7 @@ public class CommonSteps {
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
-        OpenShiftUtils.getInstance().cleanProject();
+        OpenShiftUtils.getInstance().clean();
     }
 
     @Given("^clean all builds")

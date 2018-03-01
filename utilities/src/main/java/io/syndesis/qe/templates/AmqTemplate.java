@@ -21,7 +21,7 @@ public class AmqTemplate {
     public static void deploy() {
         Template template = null;
         try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
-            template = OpenShiftUtils.getInstance().withDefaultUser(client -> client.templates().load(is).get());
+            template = OpenShiftUtils.client().templates().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read template ", ex);
         }
@@ -31,9 +31,9 @@ public class AmqTemplate {
 
         // try to clean previous broker
         cleanUp();
-        OpenShiftUtils.getInstance().withDefaultUser(c -> c.templates().withName("syndesis-amq").delete());
+        OpenShiftUtils.client().templates().withName("syndesis-amq").delete();
 
-        KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
+        KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         OpenShiftUtils.getInstance().createResources(processedTemplate);
 
         try {
@@ -53,8 +53,8 @@ public class AmqTemplate {
     }
 
     private static void cleanUp() {
-        OpenShiftUtils.getInstance().getDeployments().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
-                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(true, dc));
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
+                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service ->  "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq".equals(is.getMetadata().getLabels().get("template"))).findFirst()
