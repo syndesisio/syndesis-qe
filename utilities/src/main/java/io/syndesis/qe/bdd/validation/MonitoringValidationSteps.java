@@ -67,7 +67,7 @@ public class MonitoringValidationSteps {
 
         Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(podName)).findFirst();
         if (buildPod.isPresent()) {
-            String logText = OpenShiftUtils.getInstance().getRuntimeLog(buildPod.get());
+            String logText = OpenShiftUtils.getInstance().getPodLog(buildPod.get());
             Assertions.assertThat(logText).isNotEmpty();
         } else {
             Assertions.fail("No pod found for pod name: " + podName);

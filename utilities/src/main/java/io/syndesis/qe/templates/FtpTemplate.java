@@ -41,7 +41,7 @@ public class FtpTemplate {
             ports.add(dataPort);
         }
 
-        OpenShiftUtils.getInstance().withDefaultUser(c -> c.deploymentConfigs().createOrReplaceWithNew()
+        OpenShiftUtils.client().deploymentConfigs().createOrReplaceWithNew()
                 .editOrNewMetadata()
                     .withName(APP_NAME)
                     .addToLabels(LABEL_NAME, APP_NAME)
@@ -64,8 +64,7 @@ public class FtpTemplate {
                         .withType("ConfigChange")
                     .endTrigger()
                 .endSpec()
-            .done()
-        );
+            .done();
 
         ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, APP_NAME);
 
@@ -83,14 +82,14 @@ public class FtpTemplate {
                     .build());
         }
 
-        OpenShiftUtils.getInstance().withDefaultUser(c -> c.services().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().client().services().createOrReplaceWithNew()
                 .editOrNewMetadata()
                     .withName(APP_NAME)
                     .addToLabels(LABEL_NAME, APP_NAME)
                 .endMetadata()
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
-                .done());
+                .done();
 
         try {
             OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning(LABEL_NAME, APP_NAME, 1));
@@ -108,8 +107,8 @@ public class FtpTemplate {
     }
 
     public static void cleanUp() {
-        OpenShiftUtils.getInstance().getDeployments().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
-                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(true, dc));
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
+                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service ->  APP_NAME.equals(service.getMetadata().getName())).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         try {

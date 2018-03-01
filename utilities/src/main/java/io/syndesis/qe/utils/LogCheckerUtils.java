@@ -20,7 +20,7 @@ public class LogCheckerUtils {
         boolean found[] = new boolean[patterns.length];
 
         // TODO: use a method that don't require whole log in memory
-        StringReader stringReader = new StringReader(OpenShiftUtils.getInstance().getRuntimeLog(pod));
+        StringReader stringReader = new StringReader(OpenShiftUtils.getInstance().getPodLog(pod));
 
         try (BufferedReader br = new BufferedReader(stringReader)) {
             br.lines().forEach(line -> {
@@ -41,7 +41,7 @@ public class LogCheckerUtils {
         String found[] = new String[patterns.length];
 
         // TODO: use a method that don't require whole log in memory
-        StringReader stringReader = new StringReader(OpenShiftUtils.getInstance().getRuntimeLog(pod));
+        StringReader stringReader = new StringReader(OpenShiftUtils.getInstance().getPodLog(pod));
 
         try (BufferedReader br = new BufferedReader(stringReader)) {
             br.lines().forEach(line -> {
@@ -100,7 +100,7 @@ public class LogCheckerUtils {
      * @return
      */
     static Collection<Pod> defaultPods(String containerName) {
-        return OpenShiftUtils.getInstance().findComponentPods(containerName);
+        return OpenShiftUtils.getInstance().getLabeledPods("component", containerName);
     }
 
     private static String formatPodLists(Collection<Pod> pods) {
