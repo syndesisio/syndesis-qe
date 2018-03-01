@@ -36,12 +36,12 @@ public abstract class TestSuiteParent {
         }
         cleanNamespace();
         log.info("Creating namespace lock via secret `test-lock`");
-        lockSecret = OpenShiftUtils.getInstance().withDefaultUser(c -> c.secrets()
+        lockSecret = OpenShiftUtils.client().secrets()
                 .createOrReplaceWithNew()
                 .withNewMetadata()
                 .withName("test-lock")
                 .endMetadata()
-                .done());
+                .done();
     }
 
     @AfterClass
@@ -49,7 +49,7 @@ public abstract class TestSuiteParent {
         if (lockSecret != null) {
             if (TestConfiguration.namespaceCleanup()) {
                 log.info("Cleaning namespace");
-                OpenShiftUtils.getInstance().cleanProject();
+                OpenShiftUtils.getInstance().clean();
             } else {
                 log.info("Releasing namespace lock");
                 OpenShiftUtils.getInstance().deleteSecret(lockSecret);

@@ -13,6 +13,11 @@
 	<dependencies>
 
 		<dependency>
+			<groupId>cz.xtf</groupId>
+			<artifactId>utilities</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-java</artifactId>
 		</dependency>
@@ -20,10 +25,7 @@
 			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-spring</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.fabric8</groupId>
-			<artifactId>openshift-client</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -94,6 +96,10 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jdk8</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>

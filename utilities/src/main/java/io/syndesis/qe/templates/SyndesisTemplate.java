@@ -1,7 +1,11 @@
 package io.syndesis.qe.templates;
 
+import cz.xtf.http.HttpClient;
+import io.fabric8.openshift.api.model.DoneableTemplate;
+import io.fabric8.openshift.client.dsl.TemplateResource;
 import org.apache.commons.codec.binary.Base64;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -27,7 +31,7 @@ public class SyndesisTemplate {
 
     public static Template getTemplate() {
         try (InputStream is = new URL(TEMPLATE_URL).openStream()) {
-            return OpenShiftUtils.getInstance().withDefaultUser(client -> client.templates().load(is).get());
+            return OpenShiftUtils.client().templates().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read template ", ex);
         }
@@ -35,17 +39,17 @@ public class SyndesisTemplate {
 
     public static ServiceAccount getSupportSA() {
         try (InputStream is = new URL(SUPPORT_SA_URL).openStream()) {
-            return OpenShiftUtils.getInstance().withDefaultUser(client -> client.serviceAccounts().load(is).get());
+            return OpenShiftUtils.client().serviceAccounts().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read SA ", ex);
         }
     }
 
     public static void deploy() {
-        OpenShiftUtils.getInstance().cleanProject();
+        OpenShiftUtils.getInstance().cleanAndAssert();
 
         // get & create restricted SA
-        ServiceAccount serviceAccount1 = OpenShiftUtils.getInstance().withDefaultUser(client -> client.serviceAccounts().createOrReplace(getSupportSA()));
+        OpenShiftUtils.getInstance().createServiceAccount(getSupportSA());
         // get token from SA `oc secrets get-token` && wait until created to prevent 404
         TestUtils.waitForEvent(Optional::isPresent,
                 () -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> s.getMetadata().getName().startsWith("syndesis-oauth-client-token")).findFirst(),
@@ -70,19 +74,18 @@ public class SyndesisTemplate {
         templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
         templateParams.put("TEST_SUPPORT_ENABLED", "true");
         // process & create
-        KubernetesList processedTemplate = OpenShiftUtils.getInstance().processTemplate(template, templateParams);
+        KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         OpenShiftUtils.getInstance().createResources(processedTemplate);
-        OpenShiftUtils.getInstance().createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.syndesisUrlSuffix());
+        OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.syndesisUrlSuffix());
 
         //TODO: there's a bug in openshift-client, we need to initialize manually
-        OpenShiftUtils.getInstance().withDefaultUser(client -> client.roleBindings().createOrReplaceWithNew()
+        OpenShiftUtils.client().roleBindings().createOrReplaceWithNew()
                 .withNewMetadata()
                     .withName("syndesis:editors")
                 .endMetadata()
                 .withNewRoleRef().withName("edit").endRoleRef()
                 .addNewSubject().withKind("ServiceAccount").withName("syndesis-rest").withNamespace(TestConfiguration.openShiftNamespace()).endSubject()
                 .addToUserNames(String.format("system:serviceaccount:%s:syndesis-rest", TestConfiguration.openShiftNamespace()))
-                .done()
-        );
+                .done();
     }
 }

@@ -1,11 +1,12 @@
 package io.syndesis.qe.bdd;
 
+import io.syndesis.qe.Component;
 import io.syndesis.qe.templates.FtpTemplate;
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import cucumber.api.java.en.Given;
@@ -20,7 +21,6 @@ import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,7 +28,7 @@ public class CommonSteps {
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
-        OpenShiftUtils.getInstance().cleanProject();
+        OpenShiftUtils.getInstance().clean();
     }
 
     @Given("^clean all builds")
@@ -44,11 +44,10 @@ public class CommonSteps {
 
     @Then("^wait for Syndesis to become ready")
     public void waitForSyndeisis() {
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("component", "syndesis-rest"));
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for syndesis-rest failed ", e);
-        }
+       OpenShiftUtils.xtf().waiters()
+               .areExactlyNPodsRunning(1, "component", Component.REST.getName())
+               .timeout(TimeUnit.MINUTES, 10)
+               .assertEventually("Deployment failed within given timeout");
     }
 
     @Then("^verify s2i build of integration \"([^\"]*)\" was finished in duration (\\d+) min$")
