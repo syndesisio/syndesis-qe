@@ -22,7 +22,7 @@ import twitter4j.TwitterException;
 
 /**
  * Validation steps for Salesforce related integrations.
- *
+ * <p>
  * Dec 11, 2017 Red Hat
  *
  * @author tplevko@redhat.com
@@ -78,6 +78,41 @@ public class SfValidationSteps {
             log.debug("Deleting salesforce lead: {}", lead.get());
         }
     }
+
+    @Then("^delete contact from SF with email: \"([^\"]*)\"")
+    public void deleteSalesforceContact(String email) {
+
+        final Optional<Contact> lead = getSalesforceContactByEmail(salesforce, email);
+        if (lead.isPresent()) {
+            salesforce.deleteSObject("contact", String.valueOf(lead.get().getId()));
+            log.debug("Deleting salesforce lead: {}", lead.get());
+        }
+    }
+
+    @Then("^.*deletes? contact from SF with last name: \"([^\"]*)\"")
+    public void deleteSalesforceContactWithName(String name) {
+
+        final Optional<Contact> lead = getSalesforceContactByLastName(salesforce, name);
+        if (lead.isPresent()) {
+            salesforce.deleteSObject("contact", String.valueOf(lead.get().getId()));
+            log.info("Deleting salesforce lead: {}", lead.get());
+        } else {
+            log.info("Contact with name {} was not found, nothing was deleted");
+
+        }
+    }
+
+    @Then("^.*checks? that contact from SF with last name: \"([^\"]*)\" has description \"([^\"]*)\"$")
+    public void checkSalesforceContactHasDescription(String name, String description) {
+
+        final Optional<Contact> contact = getSalesforceContactByLastName(salesforce, name);
+        Assertions.assertThat(contact.isPresent()).isTrue();
+
+        Assertions.assertThat(String.valueOf(contact.get().getDescription()))
+                .isNotEmpty()
+                .isEqualToIgnoringCase(description);
+    }
+
 
     @Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)\"")
     public void updateLead(String origEmail, String newFirstName, String newLastName, String newEmailAddress, String companyName) {
@@ -157,4 +192,30 @@ public class SfValidationSteps {
         final Optional<Lead> lead = queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
         return lead;
     }
+
+    private Optional<Contact> getSalesforceContactByEmail(ForceApi salesforce, String emailAddress) {
+        final QueryResult<Contact> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Email FROM contact where Email = '"
+                + emailAddress + "'", Contact.class
+        );
+        return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
+
+    }
+
+    private Optional<Contact> getSalesforceContactByLastName(ForceApi salesforce, String lastName) {
+        final QueryResult<Contact> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Email,Description FROM contact where LastName = '"
+                + lastName + "'", Contact.class
+        );
+        return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
+
+    }
+
+    private void deleteAllSalesforceContactsWithEmail(ForceApi salesforce, String email) {
+        final Optional<Contact> contact = getSalesforceContactByEmail(salesforce, email);
+        if (contact.isPresent()) {
+            salesforce.deleteSObject("contact", String.valueOf(contact.get().getId()));
+            log.debug("Deleting salesforce contact: {}", contact.get());
+            deleteAllSalesforceContactsWithEmail(salesforce, email);
+        }
+    }
+
 }

@@ -4,6 +4,7 @@ import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
@@ -188,5 +189,9 @@ public class DataMapperComponent extends SyndesisPageObject {
         }
 
         return this.getElementByLocator(locator);
+    }
+
+    public void openBucket(By bucketSelector) {
+        getRootElement().$(bucketSelector).shouldBe(visible).click();
     }
 }
