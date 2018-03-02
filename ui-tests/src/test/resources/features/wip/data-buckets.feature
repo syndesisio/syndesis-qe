@@ -35,8 +35,18 @@ Feature: Test functionality of data buckets during creation of integration
     And clicks on the "Done" button
 
     # check pop ups
-    Then she checks that text "Output: Twitter Mention" is "visible" in hover table over "start" step
-    Then she checks that text "Add a datamapper step" is "visible" in hover table over "finish" step
+    #Then she checks that text "Output: Twitter Mention" is "visible" in hover table over "start" step
+    #Then she checks that text "Add a datamapper step" is "visible" in hover table over "finish" step
+    Then she checks that text "Add a data mapping step" is "visible" in step warning inside of step number "2"
+    And she checks that there is no warning inside of step number "0"
+
+    And she checks that in connection info popover for step number "0" is following text
+      | Connection Properties | Twitter Listener | Action | Mention | Output Data Type | Twitter Mention |
+
+    And she checks that in connection info popover for step number "2" is following text
+      | Connection Properties | Name | PostgresDB | Action | Invoke SQL | Input Data Type | SQL Parameter |
+
+
 
     # add data mapper step
     When Camilla clicks on the "Add a Step" button
@@ -48,13 +58,16 @@ Feature: Test functionality of data buckets during creation of integration
     And click on the "Done" button
 
     # check pop ups
-    Then she checks that text "Output: Twitter Mention" is "visible" in hover table over "start" step
-    Then she checks that text "Add a datamapper step" is "not visible" in hover table over "finish" step
-    Then she checks that text "Input: SQL Parameter" is "visible" in hover table over "finish" step
 
-    Then she checks that text "Input: All preceding outputs" is "visible" in hover table over "middle" step
-    Then she checks that text "Output: Data Mapper" is "visible" in hover table over "middle" step
+    And she checks that in connection info popover for step number "0" is following text
+      | Connection Properties | Twitter Listener | Action | Mention | Output Data Type | Twitter Mention |
 
+    And she checks that in connection info popover for step number "4" is following text
+      | Connection Properties | Name | PostgresDB | Action | Invoke SQL | Input Data Type | SQL Parameter |
+
+    And she checks that there is no warning inside of step number "4"
+    And she checks that there is no warning inside of step number "0"
+    And she checks that there is no warning inside of step number "2"
 
 #
 #  2. check that data buckets are available
@@ -75,7 +88,7 @@ Feature: Test functionality of data buckets during creation of integration
     #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
-    Then she fills periodic query input with "select * from contact where create_date='2018-02-21'" value
+    Then she fills periodic query input with "select * from contact" value
     Then she fills period input with "10000" value
     #@wip time_unit_id to be specified after new update is available:
     #Then she selects "Miliseconds" from "time_unit_id" dropdown
@@ -105,8 +118,9 @@ Feature: Test functionality of data buckets during creation of integration
 
     Then she is presented with the "Add a Step" button
 
-    Then she checks that text "Add a datamapper step" is "not visible" in hover table over "middle" step
-    Then she checks that text "Add a datamapper step" is "visible" in hover table over "finish" step
+    And she checks that there is no warning inside of step number "2"
+    And she checks that in connection info popover for step number "2" is following text
+      | Connection Properties | Name | PostgresDB | Action | Invoke SQL | Output Data Type | SQL Result |
 
     Then she adds second step between STEP and FINISH connection
     # add data mapper step
@@ -125,7 +139,7 @@ Feature: Test functionality of data buckets during creation of integration
     And scroll "top" "right"
     And click on the "Done" button
 
-    Then she checks that text "Add a datamapper step" is "not visible" in hover table over "finish" step
+    And she checks that there is no warning inside of step number "4"
 
     # finish and save integration
     When click on the "Save as Draft" button
