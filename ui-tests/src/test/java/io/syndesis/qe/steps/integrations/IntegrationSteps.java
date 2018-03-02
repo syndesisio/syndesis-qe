@@ -11,7 +11,6 @@ import io.fabric8.kubernetes.client.utils.Utils;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationFlowViewComponent;
-import io.syndesis.qe.pages.integrations.edit.IntegrationStepSelectComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.BasicFilterStepComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
@@ -32,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -401,4 +399,50 @@ public class IntegrationSteps {
         dataMapper.openBucket(By.id(bucket));
     }
 
+    /**
+     * Every step element has class step and every option to add step/connection also has class step.
+     * So if you have 3 steps created, stepPosition is: first = 0, second = 2, third = 4 etc.
+     *
+     * @param text
+     * @param isVisible
+     * @param stepPosition
+     * @throws InterruptedException
+     */
+    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"")
+    public void checkTextInStepWarning(String text, String isVisible, int stepPosition) throws InterruptedException {
+        if (isVisible.equalsIgnoreCase("visible")) {
+            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(stepPosition))
+                    .isNotEmpty()
+                    .containsIgnoringCase(text);
+        } else {
+            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(stepPosition))
+                    .isNotEmpty()
+                    .doesNotContain(text);
+        }
+    }
+
+    @And("^.*checks? that in connection info popover for step number \"([^\"]*)\" is following text$")
+    public void checkTextInConnectionInfo(int stepPosition, DataTable connectionsData) throws InterruptedException {
+
+        List<String> data = connectionsData.asList(String.class);
+        String foundText = flowViewComponent.getConnectionPropertiesText(flowViewComponent.getStepOnPosition(stepPosition));
+
+        Assertions.assertThat(foundText).isNotEmpty();
+
+        for (String column : data) {
+            Assertions.assertThat(foundText)
+                    .containsIgnoringCase(column);
+        }
+    }
+
+    /**
+     * Every step element has class step and every option to add step/connection also has class step.
+     * If you have 3 steps created, position is: first = 0, second = 2, third = 4 etc.
+     *
+     * @param position index of element with class .step
+     */
+    @And(".*checks? that there is no warning inside of step number \"([^\"]*)\"$")
+    public void checkIfWarningIsVisible(int position) {
+        Assertions.assertThat(flowViewComponent.getStepWarningElement(position).isDisplayed()).isFalse();
+    }
 }
