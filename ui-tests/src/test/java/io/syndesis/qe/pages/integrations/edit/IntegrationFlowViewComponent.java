@@ -1,5 +1,6 @@
 package io.syndesis.qe.pages.integrations.edit;
 
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
@@ -39,6 +40,11 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
         public static final By ACTIVE_STEP_ICON = By.cssSelector("div.icon.active");
         public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = By.className("step-insert");
+
+        public static final By POPOVER_CLASS = By.className("popover");
+        public static final By CONNECTION_INFO_CLASS = By.className("fa-info-circle");
+        public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
+
 
     }
 
@@ -105,7 +111,7 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
     public void clickAddStepLink(int pos) {
 
         List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
-                .shouldHave(CollectionCondition.sizeGreaterThanOrEqual(pos));
+                .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
 
         stepElement.hover();
@@ -134,6 +140,45 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
             $(By.className(stepPosition)).shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
             text = $(By.className("popover")).shouldBe(visible).getText();
         }
+        return text;
+    }
+
+    public String getWarningTextFromStep(int stepPosition) {
+        SelenideElement warningIcon = getStepWarningElement(stepPosition).shouldBe(visible);
+        //open popup
+        warningIcon.click();
+        String text = getPopoverText();
+        //hide popup
+        warningIcon.click();
+        return text;
+    }
+
+    /**
+     * Always follow with shouldBe(visible) as it is needed also for the case when it returns nothing
+     * @param stepPosition
+     * @return
+     */
+    public SelenideElement getStepWarningElement(int stepPosition) {
+        return getStepOnPosition(stepPosition).$(Element.DATA_WARNING_CLASS);
+    }
+
+    public SelenideElement getStepOnPosition(int position) {
+        return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position)).get(position).shouldBe(visible);
+    }
+
+    public String getPopoverText() {
+        String text = $(Element.POPOVER_CLASS).shouldBe(visible).getText();
+        log.info("Text found: " + text);
+        return text;
+    }
+
+    public String getConnectionPropertiesText(SelenideElement connectionStep) {
+        SelenideElement infoIcon = connectionStep.$(Element.CONNECTION_INFO_CLASS).shouldBe(visible);
+        //open popup
+        infoIcon.click();
+        String text = getPopoverText();
+        //hide popup
+        infoIcon.click();
         return text;
     }
 
