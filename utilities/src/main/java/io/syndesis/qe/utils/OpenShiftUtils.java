@@ -9,6 +9,7 @@ import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftConfigBuilder;
+import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,7 +59,7 @@ public final class OpenShiftUtils {
     public static Route createRestRoute(String openShiftNamespace, String urlSuffix) {
         final Route route = new RouteBuilder()
                     .withNewMetadata()
-                        .withName("syndesis-rest")
+                        .withName(Component.SERVER.getName())
                     .endMetadata()
                     .withNewSpec()
                         .withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
@@ -67,7 +68,7 @@ public final class OpenShiftUtils {
                             .withTermination("edge")
                         .endTls()
                         .withNewTo()
-                            .withKind("Service").withName("syndesis-rest")
+                            .withKind("Service").withName(Component.SERVER.getName())
                         .endTo()
                     .endSpec()
                 .build();

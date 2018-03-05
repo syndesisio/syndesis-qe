@@ -21,7 +21,7 @@ node {
                 scriptEnvironmentVariables: ['SYNDESIS_RELEASED_IMAGES':'true', 'DEMO_DATA_ENABLED':'true'],
                 environmentSetupScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/setup.sh",
                 environmentTeardownScriptUrl: "https://raw.githubusercontent.com/syndesisio/syndesis-system-tests/master/src/test/resources/teardown.sh",
-                waitForServiceList: ['syndesis-rest', 'syndesis-ui', 'syndesis-keycloak'],
+                waitForServiceList: ['syndesis-server', 'syndesis-ui', 'syndesis-keycloak'],
                 waitTimeout: 600000L,
                 namespaceCleanupEnabled: true,
                 namespaceDestroyEnabled: true)
