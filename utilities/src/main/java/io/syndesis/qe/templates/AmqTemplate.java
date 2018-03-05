@@ -39,7 +39,7 @@ public class AmqTemplate {
         try {
             OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
         } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for syndesis-rest failed ", e);
+            log.error("Wait for syndesis-server failed ", e);
         }
         Account amqAccount = new Account();
         amqAccount.setService("amq");

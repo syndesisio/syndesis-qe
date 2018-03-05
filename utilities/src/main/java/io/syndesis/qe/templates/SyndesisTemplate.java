@@ -3,6 +3,7 @@ package io.syndesis.qe.templates;
 import cz.xtf.http.HttpClient;
 import io.fabric8.openshift.api.model.DoneableTemplate;
 import io.fabric8.openshift.client.dsl.TemplateResource;
+import io.syndesis.qe.Component;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.ByteArrayInputStream;
@@ -84,8 +85,8 @@ public class SyndesisTemplate {
                     .withName("syndesis:editors")
                 .endMetadata()
                 .withNewRoleRef().withName("edit").endRoleRef()
-                .addNewSubject().withKind("ServiceAccount").withName("syndesis-rest").withNamespace(TestConfiguration.openShiftNamespace()).endSubject()
-                .addToUserNames(String.format("system:serviceaccount:%s:syndesis-rest", TestConfiguration.openShiftNamespace()))
+                .addNewSubject().withKind("ServiceAccount").withName(Component.SERVER.getName()).withNamespace(TestConfiguration.openShiftNamespace()).endSubject()
+                .addToUserNames(String.format("system:serviceaccount:%s:%s", TestConfiguration.openShiftNamespace(), Component.SERVER.getName()))
                 .done();
     }
 }
