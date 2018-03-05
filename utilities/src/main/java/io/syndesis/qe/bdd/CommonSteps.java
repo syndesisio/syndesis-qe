@@ -45,7 +45,7 @@ public class CommonSteps {
     @Then("^wait for Syndesis to become ready")
     public void waitForSyndeisis() {
        OpenShiftUtils.xtf().waiters()
-               .areExactlyNPodsRunning(1, "component", Component.REST.getName())
+               .areExactlyNPodsRunning(1, "component", Component.SERVER.getName())
                .timeout(TimeUnit.MINUTES, 10)
                .assertEventually("Deployment failed within given timeout");
     }
