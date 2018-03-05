@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.syndesis.model.integration.Step;
+import io.syndesis.common.model.integration.Step;
 import lombok.extern.slf4j.Slf4j;
 
 /**

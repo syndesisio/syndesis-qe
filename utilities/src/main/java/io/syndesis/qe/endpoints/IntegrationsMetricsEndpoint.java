@@ -4,8 +4,8 @@ import org.springframework.stereotype.Component;
 
 import java.security.GeneralSecurityException;
 
-import io.syndesis.model.integration.Integration;
-import io.syndesis.model.metrics.IntegrationMetricsSummary;
+import io.syndesis.common.model.integration.Integration;
+import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 
 @Component
 public class IntegrationsMetricsEndpoint extends AbstractEndpoint<IntegrationMetricsSummary> {
