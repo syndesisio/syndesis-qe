@@ -116,8 +116,8 @@ public class TestConfiguration {
 
         props.setProperty(SYNDESIS_TECH_EXTENSION_URL, "src/test/resources/extensions/syndesis-extensions-1.0.0-SNAPSHOT.jar");
 
-        props.setProperty(SYNDESIS_TEMPLATE_URL, "https://raw.githubusercontent.com/syndesisio/syndesis/master/app/deploy/syndesis.yml");
-        props.setProperty(SYNDESIS_TEMPLATE_SA, "https://raw.githubusercontent.com/syndesisio/syndesis/master/app/deploy/support/serviceaccount-as-oauthclient-restricted.yml");
+        props.setProperty(SYNDESIS_TEMPLATE_URL, "https://raw.githubusercontent.com/syndesisio/syndesis/master/install/syndesis.yml");
+        props.setProperty(SYNDESIS_TEMPLATE_SA, "https://raw.githubusercontent.com/syndesisio/syndesis/master/install/support/serviceaccount-as-oauthclient-restricted.yml");
 
         return props;
     }
