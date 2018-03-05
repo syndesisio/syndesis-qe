@@ -1,5 +1,6 @@
 package io.syndesis.qe.utils;
 
+import io.syndesis.qe.Component;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -82,8 +83,8 @@ public final class RestUtils {
 
     public static String getRestUrl() {
         if (localPortForward == null || !localPortForward.isAlive()) {
-            log.debug("creating local port forward for pod syndesis-rest");
-            localPortForward = TestUtils.createLocalPortForward("syndesis-rest", 8080, 8080);
+            log.debug("creating local port forward for pod syndesis-server");
+            localPortForward = TestUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
             try {
                 restUrl = String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort());
             } catch (IllegalStateException ex) {
