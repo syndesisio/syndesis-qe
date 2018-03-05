@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 
 import cucumber.api.java.en.Given;
-import io.syndesis.model.connection.Connection;
-import io.syndesis.model.connection.Connector;
+import io.syndesis.common.model.connection.Connection;
+import io.syndesis.common.model.connection.Connector;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;

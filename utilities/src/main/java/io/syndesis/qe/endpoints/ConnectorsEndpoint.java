@@ -2,7 +2,7 @@ package io.syndesis.qe.endpoints;
 
 import org.springframework.stereotype.Component;
 
-import io.syndesis.model.connection.Connector;
+import io.syndesis.common.model.connection.Connector;
 
 /**
  * Connectors rest client endpoint.

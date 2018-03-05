@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
-import io.syndesis.model.integration.IntegrationDeployment;
+import io.syndesis.common.model.integration.IntegrationDeployment;
 import io.syndesis.qe.model.IntegrationOverview;
 import lombok.extern.slf4j.Slf4j;
 

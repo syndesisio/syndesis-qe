@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.syndesis.core.Json;
-import io.syndesis.model.ListResult;
+import io.syndesis.common.util.Json;
+import io.syndesis.common.model.ListResult;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
