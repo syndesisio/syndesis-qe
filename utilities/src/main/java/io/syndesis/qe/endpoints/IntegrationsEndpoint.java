@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-import io.syndesis.model.integration.Integration;
+import io.syndesis.common.model.integration.Integration;
 
 /**
  * Integrations client endpoint.

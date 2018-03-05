@@ -9,8 +9,8 @@ import java.util.Optional;
 
 import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.syndesis.model.integration.Integration;
-import io.syndesis.model.metrics.IntegrationMetricsSummary;
+import io.syndesis.common.model.integration.Integration;
+import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 import io.syndesis.qe.endpoints.ActivityIntegrationsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.OpenShiftUtils;

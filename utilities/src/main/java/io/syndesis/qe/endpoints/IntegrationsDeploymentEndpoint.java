@@ -6,8 +6,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
-import io.syndesis.model.integration.IntegrationDeployment;
-import io.syndesis.model.integration.IntegrationDeploymentState;
+import io.syndesis.common.model.integration.IntegrationDeployment;
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

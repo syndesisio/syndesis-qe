@@ -10,10 +10,10 @@ import java.util.function.Supplier;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.syndesis.model.action.Action;
-import io.syndesis.model.action.ConnectorAction;
-import io.syndesis.model.connection.Connector;
-import io.syndesis.model.integration.IntegrationDeploymentState;
+import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.ConnectorAction;
+import io.syndesis.common.model.connection.Connector;
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import lombok.extern.slf4j.Slf4j;

@@ -2,7 +2,7 @@ package io.syndesis.qe.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import io.syndesis.model.integration.IntegrationDeploymentState;
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import lombok.Data;
 
 /**
