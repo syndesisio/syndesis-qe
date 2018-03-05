@@ -12,9 +12,9 @@ public enum Component {
     DB ("syndesis-db"),
     OAUTH ("syndesis-oauthproxy"),
     PROMETHEUS ("syndesis-prometheus"),
-    REST ("syndesis-rest"),
+    SERVER("syndesis-server"),
     UI ("syndesis-ui"),
-    VERIFIER ("syndesis-verifier");
+    META("syndesis-meta");
 
     private final String name;
 
