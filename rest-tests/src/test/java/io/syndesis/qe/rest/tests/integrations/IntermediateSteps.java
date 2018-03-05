@@ -7,9 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import cucumber.api.java.en.Given;
-import io.syndesis.model.filter.FilterPredicate;
-import io.syndesis.model.integration.Step;
-import io.syndesis.model.integration.StepKind;
+import io.syndesis.common.model.filter.FilterPredicate;
+import io.syndesis.common.model.integration.Step;
+import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;

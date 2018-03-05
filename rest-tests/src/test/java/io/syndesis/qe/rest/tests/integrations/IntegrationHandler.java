@@ -7,7 +7,7 @@ import javax.ws.rs.BadRequestException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.model.integration.Integration;
+import io.syndesis.common.model.integration.Integration;
 import io.syndesis.qe.endpoints.IntegrationsDeploymentEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import lombok.extern.slf4j.Slf4j;
