@@ -1,6 +1,6 @@
 package io.syndesis.qe.endpoints;
 
-import io.syndesis.rest.v1.handler.activity.Activity;
+import io.syndesis.server.endpoint.v1.handler.activity.Activity;
 
 public class ActivityLogsEndpoint extends AbstractEndpoint<Activity> {
 

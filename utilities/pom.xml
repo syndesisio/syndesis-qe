@@ -37,8 +37,8 @@
 			<artifactId>common-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.syndesis.rest</groupId>
-			<artifactId>rest-endpoint</artifactId>
+			<groupId>io.syndesis.server</groupId>
+			<artifactId>server-endpoint</artifactId>
 		</dependency>
 
 		<dependency>
