@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.datamapper;
+package io.syndesis.qe.bdd.datamapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,8 +37,8 @@ import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.endpoints.AtlasmapEndpoint;
-import io.syndesis.qe.rest.tests.entities.DataMapperStepDefinition;
-import io.syndesis.qe.rest.tests.entities.StepDefinition;
+import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
+import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
