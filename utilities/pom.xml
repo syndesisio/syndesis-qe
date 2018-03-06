@@ -41,6 +41,12 @@
 			<artifactId>server-endpoint</artifactId>
 		</dependency>
 
+		<!-- FTP client -->
+		<dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>io.reactivex</groupId>
 			<artifactId>rxjava-string</artifactId>
