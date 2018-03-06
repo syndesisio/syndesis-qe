@@ -1,0 +1,3 @@
+[submodule "syndesis-extensions"]
+	path = syndesis-extensions
+	url = git@github.com:syndesisio/syndesis-extensions.git
