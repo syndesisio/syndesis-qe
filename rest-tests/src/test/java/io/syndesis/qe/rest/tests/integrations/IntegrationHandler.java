@@ -12,16 +12,16 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.common.model.integration.Integration;
 import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.IntegrationsDeploymentEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.rest.tests.datamapper.AtlasMapperGenerator;
-import io.syndesis.qe.rest.tests.entities.StepDefinition;
-import io.syndesis.qe.rest.tests.storage.StepsStorage;
+import io.syndesis.qe.bdd.datamapper.AtlasMapperGenerator;
+import io.syndesis.qe.bdd.entities.StepDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Used for generation of integrations using the steps in StepsStorage bean.
- *
+ * <p>
  * Jan 12, 2018 Red Hat
  *
  * @author tplevko@redhat.com

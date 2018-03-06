@@ -7,6 +7,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.syndesis.common.model.integration.Integration;
@@ -81,4 +84,5 @@ public class MonitoringValidationSteps {
         Integration integr = integrations.stream().filter(integration -> integrationName.equals(integration.getName())).findAny().orElse(null);
         return integr.getId().get();
     }
+
 }

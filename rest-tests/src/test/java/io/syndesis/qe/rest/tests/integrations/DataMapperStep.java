@@ -14,11 +14,12 @@ import cucumber.api.java.en.Then;
 import io.atlasmap.v2.MappingType;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.rest.tests.entities.DataMapperDefinition;
-import io.syndesis.qe.rest.tests.entities.DataMapperStepDefinition;
-import io.syndesis.qe.rest.tests.entities.SeparatorType;
-import io.syndesis.qe.rest.tests.entities.StepDefinition;
-import io.syndesis.qe.rest.tests.storage.StepsStorage;
+import io.syndesis.qe.bdd.entities.DataMapperDefinition;
+import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
+import io.syndesis.qe.bdd.entities.SeparatorType;
+import io.syndesis.qe.bdd.entities.StepDefinition;
+
+import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 

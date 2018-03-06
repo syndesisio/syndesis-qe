@@ -1,16 +1,22 @@
 package io.syndesis.qe.pages.integrations.detail;
 
 import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.detail.monitoring.IntegrationActivityListComponent;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
 import org.openqa.selenium.By;
 
 import java.io.File;
 
 import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -27,6 +33,7 @@ public class IntegrationDetailPage extends SyndesisPageObject {
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
         public static final By INFO = By.className("integration-detail__info");
 
+        public static final By TAB = By.cssSelector("li.syn-tabs__tab > a");
     }
 
     public static final class Status {
@@ -47,6 +54,9 @@ public class IntegrationDetailPage extends SyndesisPageObject {
         SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
         return elementRoot;
     }
+
+    @Getter
+    private IntegrationActivityListComponent integrationActivityListComponent = new IntegrationActivityListComponent();
 
     public boolean validate() {
         return getRootElement().is(visible);
@@ -113,5 +123,10 @@ public class IntegrationDetailPage extends SyndesisPageObject {
         // click on action
         this.getRootElement().$(Element.KEBAB_DROPDOWN_MENU).shouldBe(visible).$$(By.tagName("a"))
                 .shouldHave(CollectionCondition.sizeGreaterThanOrEqual(3)).findBy(exactText(action)).shouldBe(visible).click();
+    }
+
+    public void selectTab(String tabName) {
+        ElementsCollection allTabs = $(Element.ROOT).findAll(Element.TAB).shouldBe(sizeGreaterThan(0));
+        allTabs.stream().filter(s -> tabName.equals(s.getText())).findFirst().get().shouldBe(visible).click();
     }
 }

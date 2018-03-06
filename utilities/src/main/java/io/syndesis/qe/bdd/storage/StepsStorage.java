@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.storage;
+package io.syndesis.qe.bdd.storage;
 
 import org.springframework.stereotype.Component;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.syndesis.common.model.integration.Step;
-import io.syndesis.qe.rest.tests.entities.StepDefinition;
+import io.syndesis.qe.bdd.entities.StepDefinition;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,7 +34,7 @@ public class StepsStorage {
     }
 
     public StepDefinition getLastStepDefinition() {
-        return stepDefinitions.get(stepDefinitions.size()-1);
+        return stepDefinitions.get(stepDefinitions.size() - 1);
     }
 
     public void flushStepDefinitions() {
