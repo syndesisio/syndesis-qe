@@ -35,7 +35,6 @@ public class DbSteps {
     public DbSteps() {
     }
 
-    //done.
     @Then("^create start DB periodic sql invocation action step with query \"([^\"]*)\" and period \"([^\"]*)\" ms")
     public void createStartDbPeriodicSqlStep(String sqlQuery, Integer ms) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
@@ -51,7 +50,6 @@ public class DbSteps {
         steps.getSteps().add(dbStep);
     }
 
-    //done. (not used for the time being.)
     @Then("^create start DB periodic stored procedure invocation action step named \"([^\"]*)\" and period \"([^\"]*)\" ms")
     public void createStartDbPeriodicProcedureStep(String procedureName, Integer ms) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
@@ -67,7 +65,6 @@ public class DbSteps {
         steps.getSteps().add(dbStep);
     }
 
-    //done
     @Then("^create finish DB invoke sql action step with query \"([^\"]*)\"")
     public void createFinishDbInvokeSqlStep(String sqlQuery) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
@@ -112,18 +109,6 @@ public class DbSteps {
 
 //    AUXILIARIES:
     private String getDbConnectionId() {
-
-        final String postgresDbName = "PostgresDB";
-        List<Connection> connects = null;
-
-        connects = connectionsEndpoint.list();
-        String dbConnectionId = null;
-        for (Connection s : connects) {
-            if (s.getName().equals(postgresDbName)) {
-                dbConnectionId = (String) s.getId().get();
-            }
-        }
-        log.debug("db connection id: " + dbConnectionId);
-        return dbConnectionId;
+        return connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst().get().getId().get();
     }
 }
