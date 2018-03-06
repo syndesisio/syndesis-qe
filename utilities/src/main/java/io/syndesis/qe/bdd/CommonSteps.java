@@ -68,10 +68,10 @@ public class CommonSteps {
         try {
             if (!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
-                Assertions.fail("Syndesis didn't initilized in time");
+                Assertions.fail("Syndesis wasn't initilized in time");
             }
         } catch (InterruptedException e) {
-            Assertions.fail("Syndesis didn't initilized in time");
+            Assertions.fail("Syndesis wasn't initilized in time");
         }
     }
 
