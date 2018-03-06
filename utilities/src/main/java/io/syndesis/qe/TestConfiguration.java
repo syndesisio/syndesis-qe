@@ -114,7 +114,7 @@ public class TestConfiguration {
         props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
         props.setProperty(OPENSHIFT_NAMESPACE_LOCK, "false");
 
-        props.setProperty(SYNDESIS_TECH_EXTENSION_URL, "src/test/resources/extensions/syndesis-extensions-1.0.0-SNAPSHOT.jar");
+        props.setProperty(SYNDESIS_TECH_EXTENSION_URL, "../syndesis-extensions/syndesis-extension-log-body/target/");
 
         // pom defined property
         String syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
