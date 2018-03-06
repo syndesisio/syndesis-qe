@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * Created by sveres on 12/19/17.
  */
 @Slf4j
-public class ActionConfigureComponentJmsRequest extends ActionConfigureComponentJms {
+public class ActionConfigureComponentJmsRequest extends ActionConfigureComponentFieldFiller {
 
     private static final class Element {
         public static final By TITLE = By.cssSelector("div[innertext='Request response using Messages']");
