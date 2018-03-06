@@ -14,8 +14,8 @@ import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 import io.syndesis.qe.endpoints.ActivityIntegrationsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.rest.v1.handler.activity.Activity;
 import io.syndesis.qe.endpoints.IntegrationsMetricsEndpoint;
+import io.syndesis.server.endpoint.v1.handler.activity.Activity;
 import lombok.extern.slf4j.Slf4j;
 
 /**
