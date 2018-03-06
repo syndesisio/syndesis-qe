@@ -130,8 +130,8 @@
 				<version>${syndesis.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.syndesis.rest</groupId>
-				<artifactId>rest-endpoint</artifactId>
+				<groupId>io.syndesis.server</groupId>
+				<artifactId>server-endpoint</artifactId>
 				<version>${syndesis.version}</version>
 				<exclusions>
 					<exclusion>
