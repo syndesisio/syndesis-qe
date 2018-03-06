@@ -5,7 +5,13 @@ import io.syndesis.qe.templates.FtpTemplate;
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -28,7 +34,7 @@ public class CommonSteps {
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
-        OpenShiftUtils.getInstance().clean();
+        OpenShiftUtils.getInstance().cleanAndAssert();
     }
 
     @Given("^clean all builds")
@@ -44,10 +50,29 @@ public class CommonSteps {
 
     @Then("^wait for Syndesis to become ready")
     public void waitForSyndeisis() {
-       OpenShiftUtils.xtf().waiters()
-               .areExactlyNPodsRunning(1, "component", Component.SERVER.getName())
-               .timeout(TimeUnit.MINUTES, 10)
-               .assertEventually("Deployment failed within given timeout");
+        EnumSet<Component> components = EnumSet.allOf(Component.class);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        components.forEach(c -> {
+            Runnable runnable = () ->
+                OpenShiftUtils.xtf().waiters()
+                        .areExactlyNPodsRunning(1, "component", c.getName())
+                        .interval(TimeUnit.SECONDS, 20)
+                        .timeout(TimeUnit.MINUTES, 12)
+                        .assertEventually();
+
+            executorService.submit(runnable);
+        });
+
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
+                executorService.shutdownNow();
+                Assertions.fail("Syndesis wasn't initilized in time");
+            }
+        } catch (InterruptedException e) {
+            Assertions.fail("Syndesis wasn't initilized in time");
+        }
     }
 
     @Then("^verify s2i build of integration \"([^\"]*)\" was finished in duration (\\d+) min$")
