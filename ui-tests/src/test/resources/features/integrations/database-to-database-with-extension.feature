@@ -1,36 +1,11 @@
-@integrations-salesforce-to-database-with-extension
+@integrations-database-to-database-with-extension
 Feature: Upload tech extension and add it to integration
 
-  @tech-extension-clean-application-state
-  Scenario: Clean application state
+  Background: 
     Given clean application state
     Given "Camilla" logs into the Syndesis
-    Given created connections
-      | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-
-  @tech-extension-navigate-to-technical-extensions-page
-  Scenario: Navigate to technical extensions page
-    When "Camilla" navigates to the "Customizations" page
-    Then she is presented with the Syndesis page "Customizations"
-
-    When clicks on the "Extensions" link
-    Then she is presented with the Syndesis page "Extensions"
-    
-  @tech-extension-import-new-tech-extension
-  Scenario: Import new technical extensions
-    When Camilla clicks on the "Import Extension" button
-    Then she is presented with the Syndesis page "Import Extension"
-
-    When Camilla upload extension "syndesis-extensions-1.0.0-SNAPSHOT"
-    Then she see details about imported extension
-    
-    When she clicks on the "Import Extension" button
-    Then Camilla is presented with the Syndesis page "Extension Details"
-    
-    When "Camilla" navigates to the "Customizations" page
-    And clicks on the "Extensions" link
-    Then Camilla is presented with the Syndesis page "Extensions"
-    And technical extension "Syndesis Extension" is present in technical extensions list
+    Given imported extensions
+    	| Log Message Body | syndesis-extension-log-body-1.0.0 |
 
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create integration from DB to DB
@@ -73,7 +48,7 @@ Feature: Upload tech extension and add it to integration
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the "Add a step" link
-    Then she selects "simple-log" integration step
+    Then she selects "Log" integration step
     And click on the "Next" button
 
     # finish and save integration
@@ -83,21 +58,19 @@ Feature: Upload tech extension and add it to integration
 
     # assert integration is present in list
     Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
-    And Camilla clicks on the "Done" button
-    And Integration "Twitter to Salesforce E2E" is present in integrations list
+    And "Camilla" navigates to the "Integrations" page
+    And Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
     # wait for integration to get in active state
-    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Active" state
+    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Published" state
 
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 
-  @tech-extension-delete-tech-extension
-  Scenario: Delete technical extensions
     When "Camilla" navigates to the "Customizations" page
     And clicks on the "Extensions" link
     Then she is presented with the Syndesis page "Extensions"
 
-    When Camilla choose "Delete" action on "Syndesis Extension" technical extension
+    When Camilla choose "Delete" action on "Log Message Body" technical extension
     Then she is presented with dialog page "Warning!"
-    And she can see notification about integrations "Twitter to Salesforce E2E" in which is tech extension used
+    And she can see notification about integrations "CRUD4-read-create-inbuilt E2E" in which is tech extension used
 
     Then she clicks on the modal dialog "Cancel" button

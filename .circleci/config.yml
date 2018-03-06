@@ -32,6 +32,10 @@ jobs:
       - restore_cache:
           key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
       - <<: *load_m2
+      - run: Build Extensions
+        command: |
+          git submodule update
+          ./mvnw clean install -f syndesis-extensions/pom.xml
       - run:
           name: Execute tests
           command: |
