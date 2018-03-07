@@ -70,13 +70,13 @@ Feature: Test to verify correct function of connections kebab menu
       # finish and save integration
     And clicks on the "Save as Draft" button
 
-    And she sets integration name "Salesforce to PostresDB E2E"
+    And she sets the integration name "Salesforce to PostresDB E2E"
     And clicks on the "Publish" button
       # assert integration is present in list
     Then Camilla is presented with "Salesforce to PostresDB E2E" integration details
-    And she clicks on the "Done" button
+    And "Camilla" navigates to the "Integrations" page
       # wait for integration to get in active state
-    Then she waits until integration "Salesforce to PostresDB E2E" gets into "Active" state
+    Then she waits until integration "Salesforce to PostresDB E2E" gets into "Published" state
 #    VALIDATION:
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
     And validate DB created new lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk"

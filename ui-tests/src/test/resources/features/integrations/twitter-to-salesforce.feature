@@ -66,8 +66,8 @@ Feature: Create integration with datamapper step
     And click on the "Publish" button
     # assert integration is present in list
     Then Camilla is presented with "Twitter to Salesforce E2E" integration details
-    And Camilla clicks on the "Done" button
+    And "Camilla" navigates to the "Integrations" page
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
-    Then she waits until integration "Twitter to Salesforce E2E" gets into "Active" state
+    Then she waits until integration "Twitter to Salesforce E2E" gets into "Published" state
     And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
