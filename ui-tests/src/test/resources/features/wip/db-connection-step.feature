@@ -63,12 +63,12 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD1-step-read-read E2E"
+    And she sets the integration name "CRUD1-step-read-read E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD1-step-read-read E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "CRUD1-step-read-read E2E" get into "Active" state
+    Then she waits until integration "CRUD1-step-read-read E2E" gets into "Active" state
 
 
 #
@@ -131,12 +131,12 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD2-step-read-create E2E"
+    And she sets the integration name "CRUD2-step-read-create E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD2-step-read-create E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "CRUD2-step-read-create E2E" get into "Active" state
+    Then she waits until integration "CRUD2-step-read-create E2E" gets into "Active" state
 
 
 #
@@ -197,12 +197,12 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD3-step-read-update E2E"
+    And she sets the integration name "CRUD3-step-read-update E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD3-step-read-update E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "CRUD3-step-read-update E2E" get into "Active" state
+    Then she waits until integration "CRUD3-step-read-update E2E" gets into "Active" state
 
 
 #
@@ -263,12 +263,12 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "CRUD4-step-read-delete E2E"
+    And she sets the integration name "CRUD4-step-read-delete E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD4-step-read-delete E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "CRUD4-step-read-delete E2E" get into "Active" state
+    Then she waits until integration "CRUD4-step-read-delete E2E" gets into "Active" state
 
 
 #
@@ -309,13 +309,13 @@ Feature: Test functionality of DB connection
     And she selects "Invoke SQL" integration action
 #    wrong queries:
     Then she fills invoke query input with "SELECT * FROM TODO-A" value
-    And she is presented with sql-warning
+    And she can see alert notification
     Then she fills invoke query input with "UPDATE TODO-A SET completed=1 WHERE task like '%:#task%'" value
-    And she is presented with sql-warning
+    And she can see alert notification
     Then she fills invoke query input with "DELETE FROM TODO-A WHERE task like '%:#task%'" value
-    And she is presented with sql-warning
+    And she can see alert notification
     Then she fills invoke query input with "INSERT INTO TODO-A(task) VALUES(:#task)" value
-    And she is presented with sql-warning
+    And she can see alert notification
     #  correct query:
     Then she fills periodic query input with "INSERT INTO TODO(task) VALUES(:#task)" value
     And clicks on the "Done" button
@@ -341,9 +341,9 @@ Feature: Test functionality of DB connection
     And she creates mapping from "first_name" to "TASK"
     And clicks on the "Done" button
     And clicks on the "Publish" button
-    And she sets integration name "Step connection SQL query checker E2E"
+    And she sets the integration name "Step connection SQL query checker E2E"
     And clicks on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "Step connection SQL query checker E2E" integration details
     And she clicks on the "Done" button
-    Then she wait until integration "Step connection SQL query checker E2E" get into "Active" state
+    Then she waits until integration "Step connection SQL query checker E2E" gets into "Active" state
