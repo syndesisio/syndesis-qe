@@ -37,10 +37,10 @@ Feature: Test to verify correct function of connections kebab menu
     Then she is presented with data mapper ui
     When she creates mapping from "Company" to "company"
     And she creates mapping from "Email" to "email"
-    And she creates mapping from "LeadSource" to "lead_source"
-    And she creates mapping from "Phone" to "phone"
-    And she creates mapping from "Status" to "lead_status"
-    And she creates mapping from "Rating" to "rating"
+    #And she creates mapping from "LeadSource" to "lead_source"
+    #And she creates mapping from "Phone" to "phone"
+    #And she creates mapping from "Status" to "lead_status"
+    #And she creates mapping from "Rating" to "rating"
     And she creates mapping from "FirstName" to "first_and_last_name"
       #   A. ONE STEP:
     And she combines "FirstName" as "1" with "LastName" as "2" to "first_and_last_name" using "Space" separator
