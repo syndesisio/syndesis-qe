@@ -1,7 +1,7 @@
-@tech-extension-CRUD-test
+@extension-CRUD-test
 Feature: Extension CRUD operations
 
-  @tech-extension-CRUD-clean-application-state
+  @extension-CRUD-clean-application-state
   Scenario: Clean application state
     Given clean application state
     Given "Camilla" logs into the Syndesis
@@ -11,16 +11,16 @@ Feature: Extension CRUD operations
     #	| Syndesis Extension | syndesis-extensions-1.0.0-SNAPSHOT |
     #	| Syndesis Extension (DataShape) | syndesis-extension-example-datashape-1.0.0-SNAPSHOT |
 
-  @tech-extension-CRUD-navigate-to-technical-extensions-page
-  Scenario: Navigate to technical extensions page
+  @extension-CRUD-navigate-to-extensions-page
+  Scenario: Navigate to Extensions
     When "Camilla" navigates to the "Customizations" page
     Then she is presented with the Syndesis page "Customizations"
 
     When clicks on the "Extensions" link
     Then she is presented with the Syndesis page "Extensions"
     
-  @tech-extension-CRUD-import-new-tech-extension
-  Scenario: Import new technical extensions
+  @extension-CRUD-import-new
+  Scenario: Import new Extension
     When Camilla clicks on the "Import Extension" button
     Then she is presented with the Syndesis page "Import Extension"
 
@@ -33,10 +33,10 @@ Feature: Extension CRUD operations
     When "Camilla" navigates to the "Customizations" page
     And clicks on the "Extensions" link
     Then Camilla is presented with the Syndesis page "Extensions"
-    And technical extension "Log Message Body" is present in technical extensions list
+    And extension "Log Message Body" is present in list
     
-  @tech-extension-CRUD-update-tech-extension
-  Scenario: Update technical extensions
+  @extension-CRUD-update
+  Scenario: Update Extension
     When Camilla choose "Update" action on "Log Message Body" technical extension
     Then she is presented with the Syndesis page "Import Extension"
 
@@ -49,10 +49,10 @@ Feature: Extension CRUD operations
     When "Camilla" navigates to the "Customizations" page
     And clicks on the "Extensions" link
     Then Camilla is presented with the Syndesis page "Extensions"
-    And technical extension "Log Message Body" is present in technical extensions list
+    And extension "Log Message Body" is present in list
     
-  @tech-extension-CRUD-delete-tech-extension
-  Scenario: Delete technical extensions
+  @extension-CRUD-delete
+  Scenario: Delete Extension
     When "Camilla" navigates to the "Customizations" page
     And clicks on the "Extensions" link
     Then she is presented with the Syndesis page "Extensions"

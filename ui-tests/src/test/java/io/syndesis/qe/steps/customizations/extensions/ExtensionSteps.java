@@ -29,7 +29,7 @@ import io.syndesis.qe.steps.CommonSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class TechnicalExtensionSteps {
+public class ExtensionSteps {
 
     private CustomizationsPage customizationsPage = new CustomizationsPage();
     private TechExtensionsImportPage techExtensionsImportPage = new TechExtensionsImportPage();
@@ -87,7 +87,7 @@ public class TechnicalExtensionSteps {
         assertThat(techExtensionsImportPage.validate(), is(true));
     }
 
-    @Then("^technical extension \"([^\"]*)\" is present in technical extensions list$")
+    @Then("^extension \"([^\"]*)\" is present in list$")
     public void expectExtensionPresent(String name) throws Throwable {
         log.info("Verifying if extension {} is present", name);
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name), is(true));

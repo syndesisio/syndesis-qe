@@ -48,7 +48,7 @@ Feature: Upload tech extension and add it to integration
     When Camilla clicks on the "Add a Step" button
     Then Camilla is presented with the "Add a step" link
     And clicks on the "Add a step" link
-    Then she selects "Log" integration step
+    Then she selects "Log Body" integration step
     And click on the "Next" button
 
     # finish and save integration
