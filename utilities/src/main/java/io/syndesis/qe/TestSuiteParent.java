@@ -17,9 +17,13 @@ public abstract class TestSuiteParent {
     private static Secret lockSecret;
 
     @BeforeClass
-    public static void lockNamespace() {
+    public static void lockNamespace() throws InterruptedException {
         if (!TestConfiguration.namespaceLock()) {
             return; //skip when syndesis.config.openshift.namespace.lock is false
+        }
+        if (OpenShiftUtils.xtf().getProject(TestConfiguration.openShiftNamespace()) == null) {
+            OpenShiftUtils.xtf().createProjectRequest(TestConfiguration.openShiftNamespace());
+            Thread.sleep(10 * 1000);
         }
         log.info("Waiting to obtain namespace lock");
         boolean isReady = TestUtils.waitForEvent(s -> !s.isPresent(),
