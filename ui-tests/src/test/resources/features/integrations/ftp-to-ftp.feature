@@ -51,7 +51,7 @@ Feature: Test functionality of FTP connection
     And clicks on the "Publish" button
     Then Camilla is presented with "ftp-to-ftp E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "ftp-to-ftp E2E" gets into "Active" state
+    Then she waits until integration "ftp-to-ftp E2E" gets into "Published" state
 
 #    to be done:
     Then validate that file "1MB.zip" was deleted and file "1MB_out.zip" is in "/upload" directory

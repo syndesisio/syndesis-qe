@@ -47,10 +47,10 @@ Feature: Test functionality of integration import export feature
     And click on the "Publish" button
     # assert integration is present in list
     Then Camilla is presented with "Integration_import_export_test" integration details
-    And Camilla clicks on the "Done" button
+    And "Camilla" navigates to the "Integrations" page
     And Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
-    Then she waits until integration "Integration_import_export_test" gets into "Active" state
+    Then she waits until integration "Integration_import_export_test" gets into "Published" state
 
     # export the integration for import tests
     When Camilla selects the "Integration_import_export_test" integration
@@ -81,11 +81,11 @@ Feature: Test functionality of integration import export feature
     # with this wait here imported integration finally starts but just to be sure I will not delete the above wait for pod deletion
     And she stays there for "15000" ms
 
-    # start integration and wait for active state
+    # start integration and wait for published state
     And Camilla starts integration "Integration_import_export_test"
 
     And "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "Integration_import_export_test" gets into "Active" state
+    Then she waits until integration "Integration_import_export_test" gets into "Published" state
 
 #
 #  2. integration-import with drag'n'drop

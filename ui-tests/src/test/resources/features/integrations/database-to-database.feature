@@ -208,7 +208,7 @@ Feature: Test functionality of DB connection
     And clicks on the "Publish" button
     Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Active" state
+    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Published" state
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 
 
@@ -278,7 +278,7 @@ Feature: Test functionality of DB connection
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "DB Connection 5 SQL query checker E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "DB Connection 5 SQL query checker E2E" gets into "Active" state
+    Then she waits until integration "DB Connection 5 SQL query checker E2E" gets into "Published" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
