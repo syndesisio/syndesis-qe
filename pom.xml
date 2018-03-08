@@ -47,6 +47,7 @@
 		<webdriverextensions.version>3.1.3</webdriverextensions.version>
 		<xtf.utilities.version>0.6</xtf.utilities.version>
 		<ftp.client.version>3.3</ftp.client.version>
+		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>

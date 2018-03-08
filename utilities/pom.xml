@@ -151,6 +151,13 @@
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-client</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.dropbox.core</groupId>
+			<artifactId>dropbox-core-sdk</artifactId>
+			<version>${dropbox.core.sdk.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
