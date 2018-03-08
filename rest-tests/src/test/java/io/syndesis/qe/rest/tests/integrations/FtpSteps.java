@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import cucumber.api.DataTable;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.And;
-import cucumber.api.java.en.Then;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
@@ -38,7 +36,7 @@ public class FtpSteps {
     @And("^creates start FTP download action with values$")
     public void setFtpDownloadData(DataTable sourceMappingData) {
 
-        final Connection ftpConnection = connectionsEndpoint.get(getDbConnectionId());
+        final Connection ftpConnection = connectionsEndpoint.get(getFtpConnectionId());
         final Connector ftpConnector = connectorsEndpoint.get("ftp");
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
@@ -55,7 +53,7 @@ public class FtpSteps {
     @And("^creates finish FTP upload action with values$")
     public void setFtpUploadData(DataTable sourceMappingData) {
 
-        final Connection ftpConnection = connectionsEndpoint.get(getDbConnectionId());
+        final Connection ftpConnection = connectionsEndpoint.get(getFtpConnectionId());
         final Connector ftpConnector = connectorsEndpoint.get("ftp");
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
@@ -69,19 +67,8 @@ public class FtpSteps {
         steps.getSteps().add(dbStep);
     }
 
-    private String getDbConnectionId() {
-
-        final String postgresDbName = "PostgresDB";
-        List<Connection> connects = null;
-
-        connects = connectionsEndpoint.list();
-        String dbConnectionId = null;
-        for (Connection s : connects) {
-            if (s.getName().equals(postgresDbName)) {
-                dbConnectionId = (String) s.getId().get();
-            }
-        }
-        log.debug("db connection id: " + dbConnectionId);
-        return dbConnectionId;
+//    AUXILIARIES:
+    private String getFtpConnectionId() {
+        return connectionsEndpoint.list().stream().filter(s -> s.getName().equals("Ftp")).findFirst().get().getId().get();
     }
 }

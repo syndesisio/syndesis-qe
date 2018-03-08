@@ -1,7 +1,6 @@
-Feature: ftp scenarios
+Feature: ftp scenario
 
   Background: Clean application state
-    And remove all records from DB
 
   @integration-ftp-ftp
   Scenario: ftp - ftp integration
