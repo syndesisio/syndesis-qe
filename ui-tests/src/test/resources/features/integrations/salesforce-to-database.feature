@@ -38,7 +38,8 @@ Feature: Test to verify correct function of connections kebab menu
     When she creates mapping from "Company" to "company"
     And she creates mapping from "Email" to "email"
     #And she creates mapping from "LeadSource" to "lead_source"
-    #And she creates mapping from "Phone" to "phone"
+    #Keep this mapping to verify #1924
+    And she creates mapping from "Phone" to "phone"
     #And she creates mapping from "Status" to "lead_status"
     #And she creates mapping from "Rating" to "rating"
     And she creates mapping from "FirstName" to "first_and_last_name"
