@@ -108,4 +108,4 @@ Feature: Test functionality of integration import export feature
     And Camilla starts integration "Integration_import_export_test"
 
     And "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "Integration_import_export_test" gets into "Active" state
+    Then she waits until integration "Integration_import_export_test" gets into "Published" state
