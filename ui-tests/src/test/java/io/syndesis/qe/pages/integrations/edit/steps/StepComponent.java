@@ -12,7 +12,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 public abstract class StepComponent extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integrations-step-configure");
+        public static final By ROOT = By.cssSelector("syndesis-integration-step-configure");
     }
 
     public static final class StepType {
