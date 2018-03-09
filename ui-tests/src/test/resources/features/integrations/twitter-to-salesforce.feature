@@ -70,4 +70,4 @@ Feature: Create integration with datamapper step
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
     Then she waits until integration "Twitter to Salesforce E2E" gets into "Published" state
-    And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
+    #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
