@@ -17,8 +17,8 @@ public class ActionConfigureComponentPeriodicSql extends ActionConfigureComponen
 
     private static final class Element {
         public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
-        public static final By INPUT_PERIOD = By.className("duration-input__input");
-        public static final By SELECT_PERIOD = By.className("duration-input__select");
+        public static final By INPUT_PERIOD = By.cssSelector("input[id='schedulerExpression']");
+        public static final By SELECT_PERIOD = By.cssSelector("select[id='select-schedulerExpression']");
         public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
     }
 

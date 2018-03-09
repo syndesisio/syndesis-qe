@@ -52,7 +52,7 @@ Feature: Test functionality of DB connection
     And clicks on the "Publish" button
     Then Camilla is presented with "CRUD1-read-update E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD1-read-update E2E" gets into "Active" state
+    Then she waits until integration "CRUD1-read-update E2E" gets into "Published" state
 
     Then validate that all todos with task "Joe" have value completed "1", period in ms: "5000"
 
@@ -101,7 +101,7 @@ Feature: Test functionality of DB connection
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD2-read-create E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD2-read-create E2E" gets into "Active" state
+    Then she waits until integration "CRUD2-read-create E2E" gets into "Published" state
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
 
@@ -154,7 +154,7 @@ Feature: Test functionality of DB connection
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then Camilla is presented with "CRUD3-read-delete E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD3-read-delete E2E" gets into "Active" state
+    Then she waits until integration "CRUD3-read-delete E2E" gets into "Published" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
