@@ -18,7 +18,7 @@ public class FtpValidationSteps {
         ftpUtils = new FtpUtils(FtpClientManager.getClient());
     }
 
-    @Then("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" to \"([^\"]*)\" directory\"$")
+    @Then("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" to \"([^\"]*)\" directory$")
     public void validateThatFileHasBeenTransferedFromToDirectory(String filename, String remoteFromDirectory, String remoteToDirectory) {
         try {
             boolean isThereFrom = ftpUtils.isThereFile(remoteFromDirectory + "/" + filename);
