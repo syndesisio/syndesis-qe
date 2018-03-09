@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import io.syndesis.common.util.Json;
 import io.syndesis.common.model.ListResult;
@@ -32,7 +33,7 @@ public abstract class AbstractEndpoint<T> {
     protected String endpointName;
     protected String apiPath = TestConfiguration.syndesisRestApiPath();
     private Class<T> type;
-    protected final Client client;
+    protected Client client;
 
     public AbstractEndpoint(Class<?> type, String endpointName) {
         this.type = (Class<T>) type;
@@ -50,14 +51,14 @@ public abstract class AbstractEndpoint<T> {
     }
 
     public void delete(String id) {
-        log.debug("DELETE: {}", getEndpointUrl(id));
+        log.debug("DELETE: {}", getEndpointUrl(Optional.ofNullable(id)));
         final Invocation.Builder invocation = this.createInvocation(id);
 
         invocation.delete();
     }
 
     public T get(String id) {
-        log.debug("GET : {}", getEndpointUrl(id));
+        log.debug("GET : {}", getEndpointUrl(Optional.ofNullable(id)));
         final Invocation.Builder invocation = this.createInvocation(id);
         final JsonNode response = invocation.get(JsonNode.class);
 
@@ -65,19 +66,23 @@ public abstract class AbstractEndpoint<T> {
     }
 
     public void update(String id, T obj) {
-        log.debug("PUT : {}", getEndpointUrl(id));
+        log.debug("PUT : {}", getEndpointUrl(Optional.ofNullable(id)));
         final Invocation.Builder invocation = this.createInvocation(id);
 
         invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
     }
 
-    public List<T> list(String... id) {
+    public List<T> list() {
+        return list(null);
+    }
+
+    public List<T> list(String id) {
         final ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
         mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
         final ObjectWriter ow = mapper.writer();
         final Class<ListResult<T>> listtype = (Class) ListResult.class;
 
-        log.debug("GET : {}", getEndpointUrl(id));
+        log.debug("GET : {}", getEndpointUrl(Optional.ofNullable(id)));
         final Invocation.Builder invocation = this.createInvocation(id);
 
         final JsonNode response = invocation
@@ -102,21 +107,30 @@ public abstract class AbstractEndpoint<T> {
             }
             ts.add(con);
         }
-
         return ts;
     }
 
-    public String getEndpointUrl(String... id) {
-        if (id.length == 0) {
-            return String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
-        } else {
-            return String.format("%s%s%s/%s", RestUtils.getRestUrl(), apiPath, endpointName, id);
-        }
+    public String getEndpointUrl() {
+        return getEndpointUrl(Optional.empty());
     }
 
-    protected Invocation.Builder createInvocation(String... id) {
+    public String getEndpointUrl(Optional<String> id) {
+        String url = null;
+        if (id.isPresent()) {
+            url = String.format("%s%s%s/%s", RestUtils.getRestUrl(), apiPath, endpointName, id.get());
+        } else {
+            url = String.format("%s%s%s", RestUtils.getRestUrl(), apiPath, endpointName);
+        }
+        return url;
+    }
+
+    protected Invocation.Builder createInvocation() {
+        return createInvocation(null);
+    }
+
+    protected Invocation.Builder createInvocation(String id) {
         Invocation.Builder invocation = client
-                .target(getEndpointUrl(id))
+                .target(getEndpointUrl(Optional.ofNullable(id)))
                 .request(MediaType.APPLICATION_JSON)
                 .header("X-Forwarded-User", "pista")
                 .header("X-Forwarded-Access-Token", "kral");
