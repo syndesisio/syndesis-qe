@@ -74,12 +74,13 @@ Feature: Test functionality of integration import export feature
 
     Then Camilla imports integraion "Integration_import_export_test"
 
+    Then "She" navigates to the "Integrations" page
+
     # check draft status after import
     When Camilla selects the "Integration_import_export_test" integration
-    And she is presented with "Draft" integration status on Integration Detail page
+    And she is presented with "Not Published" integration status on Integration Detail page
 
-    # with this wait here imported integration finally starts but just to be sure I will not delete the above wait for pod deletion
-    And she stays there for "15000" ms
+    And she stays there for "20000" ms
 
     # start integration and wait for published state
     And Camilla starts integration "Integration_import_export_test"
@@ -95,12 +96,13 @@ Feature: Test functionality of integration import export feature
 
     And Camilla drags exported integration "Integration_import_export_test" file to drag and drop area
 
+    Then "She" navigates to the "Integrations" page
+
     # check draft status after import
     When Camilla selects the "Integration_import_export_test" integration
-    And she is presented with "Draft" integration status on Integration Detail page
+    And she is presented with "Not Published" integration status on Integration Detail page
 
-    # with this wait here imported integration finally starts but just to be sure I will not delete the above wait for pod deletion
-    And she stays there for "15000" ms
+    And she stays there for "20000" ms
 
     # start integration and wait for active state
     And Camilla starts integration "Integration_import_export_test"
