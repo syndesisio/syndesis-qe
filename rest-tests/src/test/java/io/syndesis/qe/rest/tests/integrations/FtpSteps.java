@@ -1,9 +1,5 @@
 package io.syndesis.qe.rest.tests.integrations;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.notNullValue;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -17,6 +13,8 @@ import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.rest.tests.entities.StepDefinition;
+import io.syndesis.qe.rest.tests.storage.StepsStorage;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,13 +39,13 @@ public class FtpSteps {
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
 
-        final Step dbStep = new Step.Builder()
+        final Step ftpStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .connection(ftpConnection)
                 .action(TestUtils.findConnectorAction(ftpConnector, "io.syndesis:ftp-download-connector"))
                 .configuredProperties(TestUtils.map(dataMap))
                 .build();
-        steps.getSteps().add(dbStep);
+        steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
 
     @And("^creates finish FTP upload action with values$")
@@ -58,13 +56,13 @@ public class FtpSteps {
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
 
-        final Step dbStep = new Step.Builder()
+        final Step ftpStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .connection(ftpConnection)
                 .action(TestUtils.findConnectorAction(ftpConnector, "io.syndesis:ftp-upload-connector"))
                 .configuredProperties(TestUtils.map(dataMap))
                 .build();
-        steps.getSteps().add(dbStep);
+        steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
 
 //    AUXILIARIES:

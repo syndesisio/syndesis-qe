@@ -40,6 +40,18 @@
 			<groupId>io.syndesis.server</groupId>
 			<artifactId>server-endpoint</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.atlasmap</groupId>
+			<artifactId>atlas-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.atlasmap</groupId>
+			<artifactId>atlas-json-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.atlasmap</groupId>
+			<artifactId>atlas-xml-model</artifactId>
+		</dependency>
 
 		<!-- FTP client -->
 		<dependency>
