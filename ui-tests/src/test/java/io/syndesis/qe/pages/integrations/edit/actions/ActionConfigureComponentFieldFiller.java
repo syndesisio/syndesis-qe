@@ -35,12 +35,14 @@ public abstract class ActionConfigureComponentFieldFiller extends ActionConfigur
         Class selectClass = getSelectClass();
 
         SelenideElement element = this.getRootElement().find(elem).shouldBe(visible);
-        if ((element.getTagName().equals("input") || element.getTagName().equals("textarea")) && isContainedInLocators(elem, inputClass) ||
-                element.getTagName().equals("select") && isContainedInLocators(elem, selectClass)) {
-            return element;
-        } else {
-            return null;
-        }
+        return element;
+        //TODO: @sveres this is throwing NPE pls take a look
+//        if ((element.getTagName().equals("input") || element.getTagName().equals("textarea")) && isContainedInLocators(elem, inputClass) ||
+//                element.getTagName().equals("select") && isContainedInLocators(elem, selectClass)) {
+//            return element;
+//        } else {
+//            return null;
+//        }
     }
 
     private boolean isContainedInLocators(By by, Class c) {

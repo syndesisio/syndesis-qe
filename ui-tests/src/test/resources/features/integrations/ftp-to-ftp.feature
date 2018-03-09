@@ -5,8 +5,9 @@ Feature: Test functionality of FTP connection
     Given clean application state
     Given "Camilla" logs into the Syndesis
     Given clean FTP server
+    Given deploy FTP server
     Given created connections
-      | Ftp | Ftp | Ftp | Ftp on local minishift |
+      | FTP | FTP | FTP | FTP on OpenShift |
 #
 #  1. download - upload
 #
@@ -26,24 +27,24 @@ Feature: Test functionality of FTP connection
     And she selects "download" integration action
     And she fills ftp download form with values
       | fileName | directoryName | initialDelay | delay | delete |
-      | 1MB.zip  | /             | 1000         | 500   | Yes    |
-    And clicks on the "Done" button
-    And she fills specify output data type form with values
-      | kind       | specification      | name                | description      |
-      | 'Any Type' | some_specification | data_type_some_name | some_description |
+      | test.txt  | download             | 1000         | 500   | Yes    |
     And clicks on the "Next" button
+    #And she fills specify output data type form with values
+    #  | kind       | specification      | name                | description      |
+    #  | 'Any Type' | some_specification | data_type_some_name | some_description |
+    And clicks on the "Done" button
 
     Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
     When Camilla selects the "Ftp" connection
     And she selects "Upload" integration action
     And she fills ftp upload form with values
       | fileName    | directoryName | fileExist | tempPrefix    | tempFileName    |
-      | 1MB_out.zip | /upload       | Override  | copyingprefix | copying_1MB_out |
-    And clicks on the "Done" button
-    And she fills specify output data type form with values
-      | kind       | specification      | name                | description      |
-      | 'Any Type' | some_specification | data_type_some_name | some_description |
+      | test.txt | upload       | Override  | copyingprefix | copying_test_out |
     And clicks on the "Next" button
+    #And she fills specify output data type form with values
+    # | kind       | specification      | name                | description      |
+    #  | 'Any Type' | some_specification | data_type_some_name | some_description |
+    And clicks on the "Done" button
 
     Then Camilla is presented with the Syndesis page "Add to Integration"
     And clicks on the "Publish" button
@@ -54,4 +55,5 @@ Feature: Test functionality of FTP connection
     Then she waits until integration "ftp-to-ftp E2E" gets into "Published" state
 
 #    to be done:
-    Then validate that file "1MB.zip" was deleted and file "1MB_out.zip" is in "/upload" directory
+    Then validate that file "test.txt" has been transfered from "/download" to "/upload" directory
+    #Then validate that file "1MB.zip" was deleted and file "1MB_out.zip" is in "/upload" directory
