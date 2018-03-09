@@ -12,7 +12,9 @@ import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import javax.ws.rs.client.Client;
@@ -21,6 +23,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Optional;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.syndesis.qe.exceptions.RestClientException;
@@ -41,7 +44,17 @@ public final class RestUtils {
     }
 
     public static Client getClient() throws RestClientException {
-        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJacksonProvider();
+        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJacksonProvider(Optional.empty(), Optional.empty());
+        return getClient(jackson2Provider);
+    }
+
+    public static Client getWrappedClient() throws RestClientException {
+        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJacksonProvider(Optional.of(SerializationFeature.WRAP_ROOT_VALUE),
+                Optional.of(DeserializationFeature.UNWRAP_ROOT_VALUE));
+        return getClient(jackson2Provider);
+    }
+
+    public static Client getClient(ResteasyJackson2Provider jackson2Provider) throws RestClientException {
         final ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(RestUtils.createAllTrustingClient());
 
         final Client client = new ResteasyClientBuilder()
@@ -53,10 +66,16 @@ public final class RestUtils {
         return client;
     }
 
-    private static ResteasyJackson2Provider createJacksonProvider() {
+    private static ResteasyJackson2Provider createJacksonProvider(Optional<SerializationFeature> serialization, Optional<DeserializationFeature> deserialization) {
         final ResteasyJackson2Provider jackson2Provider = new ResteasyJackson2Provider();
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Jdk8Module());
+        if (serialization.isPresent()) {
+            objectMapper.enable(serialization.get());
+        }
+        if (deserialization.isPresent()) {
+            objectMapper.enable(deserialization.get());
+        }
         jackson2Provider.setMapper(objectMapper);
         return jackson2Provider;
     }

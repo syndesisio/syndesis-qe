@@ -9,6 +9,8 @@ import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.rest.tests.entities.StepDefinition;
+import io.syndesis.qe.rest.tests.storage.StepsStorage;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +46,7 @@ public class S3Steps {
                         "delay", "1000"))
                 .build();
 
-        steps.getSteps().add(s3Step);
+        steps.getStepDefinitions().add(new StepDefinition(s3Step));
     }
 
     @Given("^create S3 copy step with bucket: \"([^\"]*)\"")
@@ -57,6 +59,6 @@ public class S3Steps {
                 .action(TestUtils.findConnectorAction(s3Connector, "aws-s3-copy-object-connector"))
                 .build();
 
-        steps.getSteps().add(s3Step);
+        steps.getStepDefinitions().add(new StepDefinition(s3Step));
     }
 }
