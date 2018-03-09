@@ -3,11 +3,9 @@ package io.syndesis.qe.utils;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.GetMetadataErrorException;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import javassist.tools.rmi.ObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +22,7 @@ import java.util.Optional;
 public class DropBoxUtils {
     private final DbxClientV2 client;
 
-    public DropBoxUtils() throws ObjectNotFoundException, DbxException {
+    public DropBoxUtils() throws DbxException {
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Dropbox");
 
         if (optional.isPresent()) {

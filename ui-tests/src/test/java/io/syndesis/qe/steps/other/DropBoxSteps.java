@@ -5,11 +5,13 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.utils.DropBoxUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class DropBoxSteps {
+    @Lazy
     @Autowired
     private DropBoxUtils dropBoxUtils;
 
