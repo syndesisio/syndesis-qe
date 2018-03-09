@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.utils.FtpClientManager;
 import io.syndesis.qe.utils.FtpUtils;

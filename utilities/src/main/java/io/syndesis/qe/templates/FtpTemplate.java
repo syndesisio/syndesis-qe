@@ -92,7 +92,8 @@ public class FtpTemplate {
                 .done();
 
         try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning(LABEL_NAME, APP_NAME, 1));
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, APP_NAME, 1));
+            Thread.sleep(20 * 1000);
         } catch (InterruptedException | TimeoutException e) {
             log.error("Wait for {} deployment failed ", APP_NAME, e);
         }
