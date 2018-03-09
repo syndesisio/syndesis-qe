@@ -119,7 +119,14 @@ credentials.json
       "timeout": "30000",
       "username": "anonymous"
     }
-  }
+  },
+  "QE Dropbox": {
+  	  "service": "dropbox",
+  	  "properties": {
+  	  	"accessToken": "**************",
+  		"clientIdentifier": "**************"
+  	  }
+    }
 }
 ```
 for ftp connection credentials:
