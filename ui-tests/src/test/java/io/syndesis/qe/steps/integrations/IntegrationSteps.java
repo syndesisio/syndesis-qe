@@ -8,6 +8,8 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.ImportIntegrationPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationFlowViewComponent;
@@ -49,6 +51,7 @@ public class IntegrationSteps {
     private IntegrationsListComponent listComponent = new IntegrationsListComponent();
     private IntegrationFlowViewComponent flowViewComponent = new IntegrationFlowViewComponent();
     private DataMapperComponent dataMapper = new DataMapperComponent();
+    private ImportIntegrationPage importIntegrationPage = new ImportIntegrationPage();
 
     @When("^she sets the integration name \"([^\"]*)\"$")
     public void setIntegrationName(String integrationName) {
@@ -101,9 +104,9 @@ public class IntegrationSteps {
 
     @Then("^she is presented with \"([^\"]*)\" integration status on Integration Detail page$")
     public void checkStatusOnIntegrationDetail(String expectedStatus) {
-        String status = detailPage.getStatus();
+        String status = detailPage.getIntegrationInfo();
         log.info("Status: {}", status);
-        assertThat(expectedStatus, is(status));
+        Assertions.assertThat(status.contains(expectedStatus)).isTrue();
     }
 
     @When("^she selects \"([^\"]*)\" integration step$")
@@ -387,13 +390,15 @@ public class IntegrationSteps {
 
     @And("^Camilla imports integraion \"([^\"]*)\"$")
     public void importIntegration(String integrationName) throws InterruptedException {
-        Assertions.assertThat(listComponent.importIntegration(integrationName)).isTrue();
+        importIntegrationPage.importIntegration(integrationName);
         Assertions.assertThat(listComponent.isIntegrationPresent(integrationName)).isTrue();
     }
 
     @And("^Camilla starts integration \"([^\"]*)\"$")
     public void startIntegration(String integrationName) {
-        detailPage.toggleIntegrationState();
+        detailPage.clickOnKebabMenuAction("Publish");
+        ModalDialogPage modal = new ModalDialogPage();
+        modal.getButton("OK").shouldBe(visible).click();
     }
 
     @And("^Wait until there is no integration pod with name \"([^\"]*)\"$")
@@ -404,7 +409,7 @@ public class IntegrationSteps {
 
     @And("^Camilla drags exported integration \"([^\"]*)\" file to drag and drop area$")
     public void importIntegrationViaDragAndDrop(String integrationName) throws InterruptedException {
-        Assertions.assertThat(listComponent.importIntegrationViaDragAndDrop(integrationName)).isTrue();
+        importIntegrationPage.importIntegrationViaDragAndDrop(integrationName);
         Assertions.assertThat(listComponent.isIntegrationPresent(integrationName)).isTrue();
     }
 

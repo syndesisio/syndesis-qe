@@ -1,16 +1,16 @@
 package io.syndesis.qe.pages.integrations.detail;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
-
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
-
 import org.openqa.selenium.By;
 
 import java.io.File;
 
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -23,11 +23,15 @@ public class IntegrationDetailPage extends SyndesisPageObject {
         public static final By ROOT = By.cssSelector("syndesis-integration-detail-page");
         public static final By STATUS = By.cssSelector("syndesis-integration-status");
         public static final By TITLE = By.cssSelector("h1");
+        public static final By KEBEB_OPEN_MENU = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
+        public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
+        public static final By INFO = By.className("integration-detail__info");
+
     }
 
     public static final class Status {
-        public static final String ACTIVE = "Active";
-        public static final String INACTIVE = "Inactive";
+        public static final String ACTIVE = "Published";
+        public static final String INACTIVE = "Unpublished";
         public static final String DRAFT = "Draft";
         public static final String IN_PROGRESS = "In Progress";
     }
@@ -83,18 +87,31 @@ public class IntegrationDetailPage extends SyndesisPageObject {
         return this.getElementText(Element.STATUS);
     }
 
+    public String getIntegrationInfo() {
+        return this.getElementText(Element.INFO);
+    }
+
     public SelenideElement getActionButton(String action) {
         return this.getButton(action);
     }
 
     public File exportIntegration() throws InterruptedException {
 
-        this.getButton("Export").shouldBe(visible).click();
+        clickOnKebabMenuAction("Export");
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + this.getIntegrationName() + "-export.zip";
 
         // wait for download
         Thread.sleep(5000);
 
         return new File(filePath);
+    }
+
+    public void clickOnKebabMenuAction(String action) {
+        // open kebab menu
+        this.getRootElement().$(Element.KEBEB_OPEN_MENU).shouldBe(visible).click();
+
+        // click on action
+        this.getRootElement().$(Element.KEBAB_DROPDOWN_MENU).shouldBe(visible).$$(By.tagName("a"))
+                .shouldHave(CollectionCondition.sizeGreaterThanOrEqual(3)).findBy(exactText(action)).shouldBe(visible).click();
     }
 }
