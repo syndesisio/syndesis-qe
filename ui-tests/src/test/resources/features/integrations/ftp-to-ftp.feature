@@ -56,4 +56,3 @@ Feature: Test functionality of FTP connection
 
 #    to be done:
     Then validate that file "test.txt" has been transfered from "/download" to "/upload" directory
-    #Then validate that file "1MB.zip" was deleted and file "1MB_out.zip" is in "/upload" directory
