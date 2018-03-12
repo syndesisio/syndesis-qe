@@ -29,14 +29,15 @@ public class ActionConfigureComponentFtpUpload extends ActionConfigureComponentF
     }
 
     private static final class Input {
-        public static final By INPUT_FILENAME = By.cssSelector("input[name='fileName']");
-        public static final By INPUT_DIRECTORYNAME = By.cssSelector("input[name='directoryName']");
-        public static final By INPUT_TEMPPREFIX = By.cssSelector("input[name='tempPrefix']");
-        public static final By INPUT_TEMPFILENAME = By.cssSelector("input[name='tempFileName']");
+        public static final By INPUT_FILENAME = By.name("fileName");
+        public static final By INPUT_DIRECTORYNAME = By.name("directoryName");
+        public static final By INPUT_TEMPPREFIX = By.name("tempPrefix");
+        public static final By INPUT_TEMPFILENAME = By.name("tempFileName");
+
     }
 
     private static final class Select {
-        public static final By SELECT_FILEEXIST = By.cssSelector("input[name='fileExist']");
+        public static final By SELECT_FILEEXIST = By.name("fileExist");
     }
 
 }

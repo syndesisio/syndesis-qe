@@ -32,14 +32,16 @@ public class ActionConfigureComponentFtpDownload extends ActionConfigureComponen
     }
 
     private static final class Input {
-        public static final By INPUT_FILENAME = By.cssSelector("input[name='fileName']");
-        public static final By INPUT_DIRECTORYNAME = By.cssSelector("input[name='directoryName']");
-        public static final By INPUT_INITIALDELAY = By.cssSelector("input[name='initialDelay']");
-        public static final By INPUT_DELAY = By.cssSelector("input[name='delay']");
+        public static final By INPUT_FILENAME = By.name("fileName");
+        public static final By INPUT_DIRECTORYNAME = By.name("directoryName");
+        public static final By INPUT_INITIALDELAY = By.name("initialDelay");
+        public static final By INPUT_DELAY = By.name("delay");
+
     }
 
     private static final class Select {
         //('Yes', 'No')
-        public static final By SELECT_DELETE = By.cssSelector("input[name='delete']");
+        public static final By SELECT_DELETE = By.name("delete");
+
     }
 }
