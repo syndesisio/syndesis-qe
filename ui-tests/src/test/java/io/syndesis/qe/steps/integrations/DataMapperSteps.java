@@ -8,13 +8,15 @@ import static com.codeborne.selenide.Condition.visible;
 
 import com.codeborne.selenide.SelenideElement;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
+
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
 import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
  * Created by sveres on 11/15/17.
@@ -27,6 +29,13 @@ public class DataMapperSteps {
     @When("^she creates mapping from \"([^\"]*)\" to \"([^\"]*)\"$")
     public void createMapping(String source, String target) {
         mapper.createMapping(source, target);
+    }
+
+    @When("^.*creates? mappings from following table$")
+    public void createMapping(DataTable stepPositions) {
+        for (List<String> row : stepPositions.cells(0)) {
+            mapper.createMapping(row.get(0), row.get(1));
+        }
     }
 
     @Then("^she is presented with data mapper ui$")
@@ -49,17 +58,17 @@ public class DataMapperSteps {
     }
 
     /**
-     * @param first parameter to be combined.
+     * @param first     parameter to be combined.
      * @param first_pos position of the first parameter in the final string
-     * @param second parameter to be combined.
-     * @param sec_pos position of the second parameter in the final string.
-     * @param combined above two into this parameter.
+     * @param second    parameter to be combined.
+     * @param sec_pos   position of the second parameter in the final string.
+     * @param combined  above two into this parameter.
      * @param separator used to estethically join first and second parameter.
      */
     // And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
     @Then("^she combines \"([^\"]*)\" as \"([^\"]*)\" with \"([^\"]*)\" as \"([^\"]*)\" to \"([^\"]*)\" using \"([^\"]*)\" separator$")
     public void combinePresentFielsWithAnother(String first, String first_pos,
-            String second, String sec_pos, String combined, String separator) {
+                                               String second, String sec_pos, String combined, String separator) {
         SelenideElement inputElement;
         SelenideElement selectElement;
 
