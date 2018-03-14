@@ -55,7 +55,7 @@ public class DataMapperSteps {
      * @param separator used to estethically join first and second parameter.
      */
     // And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
-    @Then("^she combines \"(\\w+)\" as \"(\\w+)\" with \"(\\w+)\" as \"(\\w+)\" to \"(\\w+)\" using \"(\\w+)\" separator$")
+    @Then("^she combines \"([^\"]*)\" as \"([^\"]*)\" with \"([^\"]*)\" as \"([^\"]*)\" to \"([^\"]*)\" using \"([^\"]*)\" separator$")
     public void combinePresentFielsWithAnother(String first, String first_pos,
             String second, String sec_pos, String combined, String separator) {
         SelenideElement inputElement;
@@ -94,7 +94,7 @@ public class DataMapperSteps {
     }
 
     //    And she separates "FirstName" into "company" as "2" and "email" as "1" using "Comma" separator
-    @Then("^she separates \"([^\"]*)\" into \"(\\w+)\" as \"(\\w+)\" and \"(\\w+)\" as \"(\\w+)\" using \"(\\w+)\" separator$")
+    @Then("^she separates \"([^\"]*)\" into \"([^\"]*)\" as \"([^\"]*)\" and \"([^\"]*)\" as \"([^\"]*)\" using \"([^\"]*)\" separator$")
     public void separatePresentFielsIntoTwo(String input, String output1, String first_pos, String output2, String second_pos, String separator) {
         SelenideElement inputElement;
         SelenideElement selectElement;

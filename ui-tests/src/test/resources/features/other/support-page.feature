@@ -62,7 +62,7 @@ Feature: Test functionality of support page
     When she creates mapping from "user.screenName" to "TwitterScreenName__c"
     When she creates mapping from "text" to "Description"
     When she creates mapping from "user.name" to "FirstName"
-    And she separates "user.name" into "FirstName" as "1" and "LastName" as "2" using "Space" separator
+    And she separates "user.name" into "FirstName" as "1" and "LastName" as "2" using "Space [ ]" separator
     And scroll "top" "right"
     And click on the "Done" button
 
