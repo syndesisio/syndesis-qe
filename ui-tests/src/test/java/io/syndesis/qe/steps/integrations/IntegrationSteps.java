@@ -23,7 +23,6 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
-import org.openqa.selenium.By;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -92,12 +91,12 @@ public class IntegrationSteps {
         editPage.getListActionsComponent().selectAction(action);
     }
 
-    @When("^Camilla deletes the \"([^\"]*)\" integration*$")
+    @When("^Camilla deletes the \"([^\"]*)\" integration.*$")
     public void deleteIntegration(String integrationName) {
         listPage.getListComponent().clickDeleteIntegration(integrationName);
     }
 
-    @When("^Camilla deletes the integration on detail page*$")
+    @When("^Camilla deletes the integration on detail page.*$")
     public void deleteIntegrationOnDetailPage() {
         detailPage.deleteIntegration();
     }
@@ -123,6 +122,7 @@ public class IntegrationSteps {
 
     @Then("^Camilla can not see \"([^\"]*)\" integration anymore$")
     public void expectIntegrationNotPresent(String name) {
+        // DOES NOT WORK - THROWS ERROR AS getElement has assert that its > 0 and if it does not exists its 0 TODO
         log.info("Verifying if integration {} is present", name);
         assertThat(listPage.getListComponent().isIntegrationPresent(name), is(false));
     }
@@ -314,6 +314,15 @@ public class IntegrationSteps {
         editPage.getFlowViewComponent().clickAddStepLink(1);
     }
 
+    @When("^.*adds? integration \"([^\"]*)\" on position \"([^\"]*)\"$")
+    public void addAnotherStep(String type, int stepPos) throws Throwable {
+        if (type.equalsIgnoreCase("connection")) {
+            editPage.getFlowViewComponent().clickAddConnectionLink(stepPos);
+        } else {
+            editPage.getFlowViewComponent().clickAddStepLink(stepPos);
+        }
+    }
+
     @And("^sets jms subscribe inputs source data$")
     public void setJmsSubscribeData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
@@ -357,6 +366,7 @@ public class IntegrationSteps {
             }
         }
     }
+
     @And("^she fills specify output data type form with values$")
     public void setOutputDataTypeData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
@@ -431,10 +441,41 @@ public class IntegrationSteps {
         }
     }
 
-    @And("^.*checks? that data bucket \"([^\"]*)\" is available and opens? it$")
+    @And("^.*checks? that data bucket \"([^\"]*)\" is available$")
     public void checkPreviousDataBuckets(String bucket) {
-        dataMapper.openBucket(By.id(bucket));
+        //there is condition for element to be visible
+        dataMapper.getDataBucketElement(bucket);
     }
+
+    @And("^.*opens? data bucket \"([^\"]*)\"$")
+    public void openDataBucket(String bucket) {
+        //check if it exists included
+        dataMapper.openBucket(bucket);
+    }
+
+    @And("^.*closes? data bucket \"([^\"]*)\"$")
+    public void closeDataBucket(String bucket) {
+        dataMapper.closeBucket(bucket);
+    }
+
+    @And("^.*performs? action with data bucket")
+    public void performActionWithBucket(DataTable table) {
+        List<List<String>> rows = table.cells(0);
+        String action;
+
+        for (List<String> row : rows) {
+            action = row.get(1);
+            if (action.equalsIgnoreCase("open")) {
+                dataMapper.openBucket(row.get(0));
+            } else if (action.equalsIgnoreCase("close")) {
+                dataMapper.closeBucket(row.get(0));
+            } else {
+                //check if exists, condition visible is in used method
+                dataMapper.getDataBucketElement(row.get(0));
+            }
+        }
+    }
+
 
     /**
      * Every step element has class step and every option to add step/connection also has class step.
@@ -445,14 +486,36 @@ public class IntegrationSteps {
      * @param stepPosition
      * @throws InterruptedException
      */
-    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"")
+    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"$")
     public void checkTextInStepWarning(String text, String isVisible, int stepPosition) throws InterruptedException {
         if (isVisible.equalsIgnoreCase("visible")) {
-            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(stepPosition))
+            doCheckTextInStepsWarningTable(text, stepPosition, true);
+        } else {
+            doCheckTextInStepsWarningTable(text, stepPosition, false);
+        }
+
+    }
+
+
+    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of steps: (.*)")
+    public void checkTextInStepsWarning(String text, String isVisible, List<String> list) throws InterruptedException {
+        for (String index : list) {
+            if (isVisible.equalsIgnoreCase("visible")) {
+                doCheckTextInStepsWarningTable(text, Integer.valueOf(index), true);
+            } else {
+                doCheckTextInStepsWarningTable(text, Integer.valueOf(index), false);
+            }
+        }
+
+    }
+
+    public void doCheckTextInStepsWarningTable(String text, int position, boolean visible) {
+        if (visible) {
+            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(position))
                     .isNotEmpty()
                     .containsIgnoringCase(text);
         } else {
-            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(stepPosition))
+            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(position))
                     .isNotEmpty()
                     .doesNotContain(text);
         }
@@ -487,4 +550,12 @@ public class IntegrationSteps {
     public void clicksOnTheTab(String tabName) {
         detailPage.selectTab(tabName);
     }
+
+    @And(".*checks? that there is no warning inside of steps in range from \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void checkIfWarningIsVisibleInRange(int start, int finish) {
+        for (int i = start; i <= finish; i++) {
+            Assertions.assertThat(flowViewComponent.getStepWarningElement(i).isDisplayed()).isFalse();
+        }
+    }
 }
+

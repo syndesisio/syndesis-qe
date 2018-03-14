@@ -1,5 +1,6 @@
 package io.syndesis.qe.bdd.validation;
 
+import cucumber.api.java.en.And;
 import org.assertj.core.api.Assertions;
 
 import java.sql.ResultSet;
@@ -145,6 +146,22 @@ public class DbValidationSteps {
         int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
         Assertions.assertThat(number).isEqualTo(val);
     }
+
+
+    @And("^.*checks? that query \"([^\"]*)\" has some output$")
+    public void checkValuesExistInTable(String query) {
+        Assertions.assertThat(dbUtils.getCountOfInvokedQuery(query)).isGreaterThanOrEqualTo(1);
+    }
+
+    @And("^.*invokes? database query \"([^\"]*)\"")
+    public void invokeQuery(String query) throws SQLException {
+        if(query.contains("delete") || query.contains("Delete") || query.contains("DELETE")) {
+            Assertions.assertThat(dbUtils.invokeQuery(query)).isFalse();
+        } else {
+            Assertions.assertThat(dbUtils.invokeQuery(query)).isTrue();
+        }
+    }
+
 
 //AUXILIARIES:
 

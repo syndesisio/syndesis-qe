@@ -73,9 +73,9 @@ public class DbUtils {
     /**
      * Get number of records in table specified.
      *
-     * @param tableName - name of the DB table.
+     * @param tableName  - name of the DB table.
      * @param columnName - name of column in that table.
-     * @param value - value of the parameter.
+     * @param value      - value of the parameter.
      * @return
      */
     public int getNumberOfRecordsInTable(String tableName, String columnName, String value) {
@@ -96,6 +96,30 @@ public class DbUtils {
         log.debug("Number of records: " + records);
 
         return records;
+    }
+
+    public int getCountOfInvokedQuery(String query) {
+
+        int records = 0;
+        final PreparedStatement preparedStatement;
+        try {
+            log.info("SQL: *{}*", query);
+            preparedStatement = dbConnection.prepareStatement(query);
+            final ResultSet resultSet = preparedStatement.executeQuery();
+
+            //inefficient but it works :/ our table has 2 rows so it is not a problem...
+            while (resultSet.next()) {
+                records++;
+            }
+        } catch (SQLException ex) {
+            log.error("Error: " + ex);
+        }
+        log.debug("Number of records: " + records);
+        return records;
+    }
+
+    public boolean invokeQuery(String query) throws SQLException {
+        return dbConnection.prepareStatement(query).execute();
     }
 
     /**

@@ -2,6 +2,7 @@ package io.syndesis.qe.pages.integrations.list;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -88,9 +89,9 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
         this.getRootElement().find(Link.KEBAB_DELETE).shouldBe(visible).click();
 
-        SelenideElement okButton = this.getRootElement().find(Button.OK);
+        ModalDialogPage modal = new ModalDialogPage();
+        modal.getButton("OK").shouldBe(visible).click();
 
-        okButton.shouldBe(visible).click();
     }
 
     public ElementsCollection getAllIntegrations() {
@@ -99,7 +100,7 @@ public class IntegrationsListComponent extends SyndesisPageObject {
 
     public String getIntegrationName(SelenideElement integration) {
         String name;
-        SelenideElement nameElement = integration.find(Element.ITEM);
+        SelenideElement nameElement = integration.find(Element.ITEM_TITLE);
         boolean isNamePresent = nameElement.is(visible);
 
         if (isNamePresent) {
