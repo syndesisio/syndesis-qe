@@ -13,7 +13,7 @@ Feature: Test functionality of dropBox connection
 #  1. Functionality test of upload and download
 #
   @dropbox-integration
-  Scenario: Check that there is error without data mapper step
+  Scenario: Check that integration with dropbox connection works
     # upload file
     When She uploads file with path "/testInputFile.txt" and content "some content" on Dropbox
     Then She checks that file with path "/testInputFile.txt" exists on Dropbox
