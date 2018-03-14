@@ -87,10 +87,19 @@ public class ConnectionSteps {
     public void fillConnectionDetails(String connectionName) {
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
         if (optional.isPresent()) {
+            // if connectionName credentials exist
             editPage.getConnectionConfiguration().fillDetails(optional.get().getProperties());
         } else {
             String nameTransformed = connectionName.toLowerCase().replaceAll(" ", "_");
-            AccountsDirectory.getInstance().getAccount(nameTransformed).ifPresent(account -> editPage.getConnectionConfiguration().fillDetails(account.getProperties()));
+            optional = AccountsDirectory.getInstance().getAccount(nameTransformed);
+
+            if(optional.isPresent()) {
+                // if connectionName credentials exist with transformed name
+                editPage.getConnectionConfiguration().fillDetails(optional.get().getProperties());
+            } else {
+                // if it does not exist
+                throw new IllegalArgumentException("Credentials for " + connectionName + " were not found!");
+            }
         }
     }
 
