@@ -20,19 +20,25 @@ import java.util.Optional;
 @Slf4j
 @Component
 public class DropBoxUtils {
-    private final DbxClientV2 client;
+    private DbxClientV2 client;
 
-    public DropBoxUtils() throws DbxException {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Dropbox");
+    private DbxClientV2 getClient() throws DbxException {
+        if (this.client == null) {
+            Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Dropbox");
 
-        if (optional.isPresent()) {
-            DbxRequestConfig config = new DbxRequestConfig(optional.get().getProperty("clientIdentifier"));
-            this.client = new DbxClientV2(config, optional.get().getProperty("accessToken"));
+            if (optional.isPresent()) {
+                DbxRequestConfig config = new DbxRequestConfig(optional.get().getProperty("clientIdentifier"));
+                this.client = new DbxClientV2(config, optional.get().getProperty("accessToken"));
+            } else {
+                log.error("Unable to create DropBox client - credentials not found.");
+                throw new IllegalArgumentException("DropBox credentials were not found.");
+            }
+            log.debug("DropBox client created, logged as: " + client.users().getCurrentAccount());
         } else {
-            log.error("Unable to create DropBox client - credentials not found.");
-            throw new IllegalArgumentException("DropBox credentials were not found.");
+            log.debug("DropBox client was already created, returning existing instance");
         }
-        log.info("DropBox client created, logged as: " + client.users().getCurrentAccount());
+
+        return this.client;
     }
 
     /**
@@ -45,7 +51,7 @@ public class DropBoxUtils {
         //true by default - if no exception thrown
         boolean found = true;
         try {
-            client.files().getMetadata(filePath);
+            getClient().files().getMetadata(filePath);
         } catch (GetMetadataErrorException exception) {
             //this is expected outcome when file does not exist
             if (exception.errorValue.isPath() && exception.errorValue.getPathValue().isNotFound()) {
@@ -67,7 +73,7 @@ public class DropBoxUtils {
      * @throws DbxException
      */
     public void deleteFile(String filePath) throws DbxException {
-        client.files().deleteV2(filePath);
+        getClient().files().deleteV2(filePath);
     }
 
     /**
@@ -85,7 +91,7 @@ public class DropBoxUtils {
             bw.write(text);
             bw.flush();
             try (InputStream is = new FileInputStream(temp)) {
-                client.files().uploadBuilder(filePath)
+                getClient().files().uploadBuilder(filePath)
                         .uploadAndFinish(is);
             }
         } catch (IOException ex) {
