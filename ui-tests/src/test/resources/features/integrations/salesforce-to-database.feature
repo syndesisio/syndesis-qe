@@ -9,6 +9,7 @@ Feature: Test to verify correct function of connections kebab menu
     Given created connections
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
+  @integrations-salesforce-to-database-scenario
   Scenario: Create integration from salesforce to postgresDB
     When inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
@@ -44,12 +45,12 @@ Feature: Test to verify correct function of connections kebab menu
     #And she creates mapping from "Rating" to "rating"
     And she creates mapping from "FirstName" to "first_and_last_name"
       #   A. ONE STEP:
-    And she combines "FirstName" as "1" with "LastName" as "2" to "first_and_last_name" using "Space" separator
+    And she combines "FirstName" as "1" with "LastName" as "2" to "first_and_last_name" using "Space [ ]" separator
 #    THIS "combine step" is temporary commented out.
 #    It works separately but not in combination with below "separate step".
 #    UNTIL ids for datamapper input fields are available. It has no meaning to spend a lot of time
 #    to find magic css selector combination to identify these fields:
-#    And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
+#    And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space [ ]" separator
 
       #   B. Many steps: --START
       # # And she creates mapping from "FirstName" to "first_and_last_name"
