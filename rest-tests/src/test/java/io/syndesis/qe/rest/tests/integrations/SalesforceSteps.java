@@ -45,7 +45,7 @@ public class SalesforceSteps extends AbstractStep {
         final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
         final Action sfAction = TestUtils.findConnectorAction(salesforceConnector, action);
         final Map<String, String> properties = TestUtils.map("sObjectName", field);
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(sfAction, properties, sfAction.getId().get());
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(sfAction, properties, RestConstants.getInstance().getSALESFORCE_CONNECTION_ID());
         final Step salesforceStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())
