@@ -2,13 +2,11 @@ package io.syndesis.qe.bdd;
 
 import io.syndesis.qe.Component;
 import io.syndesis.qe.templates.FtpTemplate;
+
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,12 +53,11 @@ public class CommonSteps {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         components.forEach(c -> {
             Runnable runnable = () ->
-                OpenShiftUtils.xtf().waiters()
-                        .areExactlyNPodsReady(1, "component", c.getName())
-                        .interval(TimeUnit.SECONDS, 20)
-                        .timeout(TimeUnit.MINUTES, 12)
-                        .assertEventually();
-
+                    OpenShiftUtils.xtf().waiters()
+                            .areExactlyNPodsRunning(1, "component", c.getName())
+                            .interval(TimeUnit.SECONDS, 20)
+                            .timeout(TimeUnit.MINUTES, 12)
+                            .assertEventually();
             executorService.submit(runnable);
         });
 

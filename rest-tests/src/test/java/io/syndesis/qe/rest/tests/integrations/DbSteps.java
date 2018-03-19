@@ -2,7 +2,6 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,10 +14,11 @@ import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.qe.bdd.AbstractStep;
+import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.rest.tests.entities.StepDefinition;
-import io.syndesis.qe.rest.tests.storage.StepsStorage;
+import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 

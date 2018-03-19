@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.entities;
+package io.syndesis.qe.bdd.entities;
 
 import java.util.ArrayList;
 import java.util.List;

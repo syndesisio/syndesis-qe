@@ -8,6 +8,8 @@ import static com.codeborne.selenide.Condition.visible;
 
 import com.codeborne.selenide.SelenideElement;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
@@ -124,4 +126,5 @@ public class DataMapperSteps {
         mapper.fillInput(inputElement, second_pos);
 
     }
+
 }

@@ -3,7 +3,7 @@ package io.syndesis.qe;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.After;
-import io.syndesis.qe.rest.tests.storage.StepsStorage;
+import io.syndesis.qe.bdd.storage.StepsStorage;
 import lombok.extern.slf4j.Slf4j;
 
 /**

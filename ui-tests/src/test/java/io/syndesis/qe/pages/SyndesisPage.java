@@ -54,6 +54,9 @@ public enum SyndesisPage {
     REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
     DOWNLOAD(new ActionConfigureComponentFtpDownload()),
 
+//    REQUEST_RESPONSE_USING_MESSAGES(new IntegrationActivityListComponent()),
+
+
     MODAL_DIALOG(new ModalDialogPage());
 
     private SyndesisPageObject pageObject = null;
