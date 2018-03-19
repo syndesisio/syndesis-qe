@@ -29,12 +29,12 @@ public class ActionConfigureComponentFtpDataType extends ActionConfigureComponen
     }
 
     private static final class Input {
-        public static final By INPUT_NAME = By.cssSelector("input[name='name']");
-        public static final By INPUT_DESCRIPTION = By.cssSelector("input[name='description']");
-        public static final By TEXTAREA_SPECIFICATION = By.cssSelector("textarea[name='specification']");
+        public static final By INPUT_NAME = By.name("name");
+        public static final By INPUT_DESCRIPTION = By.name("description");
+        public static final By TEXTAREA_SPECIFICATION = By.name("specification");
     }
 
     private static final class Select {
-        public static final By SELECT_KIND = By.cssSelector("input[name='kind']");
+        public static final By SELECT_KIND = By.name("kind");
     }
 }
