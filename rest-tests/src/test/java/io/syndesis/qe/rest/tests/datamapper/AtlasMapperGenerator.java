@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import io.atlasmap.java.v2.JavaClass;
+import io.atlasmap.java.v2.JavaField;
 import io.atlasmap.json.v2.InspectionType;
 import io.atlasmap.json.v2.JsonDataSource;
 import io.atlasmap.json.v2.JsonInspectionRequest;
@@ -57,38 +58,17 @@ public class AtlasMapperGenerator {
     }
 
     /**
-     * Using output datashape, generates jsonInspectionResponse for steps preceding atlasMapping we want to generate.
+     * Using output datashape, generates jsonInspectionResponse for steps preceding atlasMapping we want to generate. In
+     * case, the specification is of JavaClass-type, is only transforms this scpecification into required Field listing.
      * The jsonInspectionResponse is stored in StepDefinition.
      *
      * @param precedingSteps
      */
     private void processPrecedingSteps(List<StepDefinition> precedingSteps) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
-
         for (StepDefinition s : precedingSteps) {
             String stepSpecification = s.getConnectorDescriptor().get().getOutputDataShape().get().getSpecification();
-            if (stepSpecification.contains("io.atlasmap.java.v2.JavaClass")) {
-                // Convert JSON string to Object - temporary solution, needs more investigation
-                log.debug(stepSpecification);
-                try {
-                    JavaClass j = mapper.readValue(stepSpecification, JavaClass.class);
-                    j = mapper.readValue(stepSpecification, JavaClass.class);
-                    List<Field> fields = j.getJavaFields().getJavaField().stream().map(f -> (Field) f).collect(Collectors.toList());
-                    s.setInspectionResponseFields(Optional.ofNullable(fields));
-                } catch (IOException e) {
-                    log.error("error: {}" + e);
-                }
-            } else {
-                JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(stepSpecification));
-                try {
-                    String mapperString = mapper.writeValueAsString(inspectionResponse);
-                    log.debug(mapperString);
-                } catch (JsonProcessingException e) {
-                    log.error("error: {}" + e);
-                }
-                s.setInspectionResponseFields(Optional.ofNullable(inspectionResponse.getJsonDocument().getFields().getField()));
-            }
+            DataShapeKinds dsKind = s.getConnectorDescriptor().get().getOutputDataShape().get().getKind();
+            s.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
         }
     }
 
@@ -100,30 +80,39 @@ public class AtlasMapperGenerator {
      */
     private void processFolowingStep(StepDefinition followingStep) {
         String stepSpecification = followingStep.getConnectorDescriptor().get().getInputDataShape().get().getSpecification();
+        DataShapeKinds dsKind = followingStep.getConnectorDescriptor().get().getInputDataShape().get().getKind();
+        followingStep.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
+    }
+
+    private List<Field> processDataShapeIntoFields(String stepSpecification, DataShapeKinds dsKind) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+        List<Field> fields = null;
+        log.debug(stepSpecification);
 
-        if (stepSpecification.contains("io.atlasmap.java.v2.JavaClass")) {
-            // Convert JSON string to Object - temporary solution, needs more investigation
-            log.debug(stepSpecification);
+        if (dsKind.equals(DataShapeKinds.JAVA)) {
             try {
-                JavaClass j = mapper.readValue(stepSpecification, JavaClass.class);
-                j = mapper.readValue(stepSpecification, JavaClass.class);
-                List<Field> fields = j.getJavaFields().getJavaField().stream().map(f -> (Field) f).collect(Collectors.toList());
-                followingStep.setInspectionResponseFields(Optional.ofNullable(fields));
+                JavaClass jClass = mapper.readValue(stepSpecification, JavaClass.class);
+                jClass = mapper.readValue(stepSpecification, JavaClass.class);
+                List<JavaField> jfields = getJavaFields(jClass);
+                fields = jfields.stream().map(f -> (Field) f).collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("error: {}" + e);
             }
-        } else {
+        } else if (dsKind.equals(DataShapeKinds.JSON_SCHEMA) || dsKind.equals(DataShapeKinds.JSON_INSTANCE)) {
             JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(stepSpecification));
             try {
                 String mapperString = mapper.writeValueAsString(inspectionResponse);
                 log.debug(mapperString);
+                fields = inspectionResponse.getJsonDocument().getFields().getField();
             } catch (JsonProcessingException e) {
                 log.error("error: {}" + e);
             }
-            followingStep.setInspectionResponseFields(Optional.ofNullable(inspectionResponse.getJsonDocument().getFields().getField()));
+        } else if (dsKind.equals(DataShapeKinds.XML_SCHEMA) || dsKind.equals(DataShapeKinds.XML_INSTANCE)) {
+            //TODO(tplevko)
+            throw new UnsupportedOperationException("XML support is not implemented yet");
         }
+        return fields;
     }
 
     /**
@@ -250,7 +239,7 @@ public class AtlasMapperGenerator {
         Mapping generatedMapping = new Mapping();
         generatedMapping.setId(UUID.randomUUID().toString());
         generatedMapping.setMappingType(MappingType.COMBINE);
-        generatedMapping.setStrategy(mappingDef.getStrategy().name());
+        generatedMapping.setDelimiter(mappingDef.getStrategy().name());
 
         List<Field> in = new ArrayList<>();
 
@@ -279,7 +268,7 @@ public class AtlasMapperGenerator {
         Mapping generatedMapping = new Mapping();
         generatedMapping.setId(UUID.randomUUID().toString());
         generatedMapping.setMappingType(MappingType.SEPARATE);
-        generatedMapping.setStrategy(mappingDef.getStrategy().name());
+        generatedMapping.setDelimiter(mappingDef.getStrategy().name());
 
         List<Field> out = new ArrayList<>();
 
@@ -338,5 +327,18 @@ public class AtlasMapperGenerator {
         jsonInspectReq.setType(InspectionType.SCHEMA);
 
         return jsonInspectReq;
+    }
+
+    private List<JavaField> getJavaFields(JavaClass jClass) {
+        List<JavaField> fields = jClass.getJavaFields().getJavaField();
+        List<JavaField> javaField = new ArrayList<>();
+        for (JavaField jf : fields) {
+            if (jf instanceof JavaClass) {
+                javaField.addAll(getJavaFields((JavaClass) jf));
+            } else if (jf instanceof JavaField) {
+                javaField.add(jf);
+            }
+        }
+        return javaField;
     }
 }
