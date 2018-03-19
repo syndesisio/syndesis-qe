@@ -19,4 +19,4 @@ Feature: ftp scenario
     Then create integration with name: "FTP to FTP rest test"
     Then wait for integration with name: "FTP to FTP rest test" to become active
 
-    Then validate that file "1MB.zip" has been transfered from "/download" to "/upload" directory"
+    Then validate that file "1MB.zip" has been transfered from "/download" to "/upload" directory
