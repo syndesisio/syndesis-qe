@@ -6,15 +6,15 @@ import cucumber.api.java.en.Given;
 import io.syndesis.common.model.filter.FilterPredicate;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.rest.tests.entities.StepDefinition;
-import io.syndesis.qe.rest.tests.storage.StepsStorage;
+import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class contains intermediate step definition methods. It can for instance create a mapping or filter steps.
- *
+ * <p>
  * Jan 15, 2018 Red Hat
  *
  * @author tplevko@redhat.com

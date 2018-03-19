@@ -482,4 +482,9 @@ public class IntegrationSteps {
     public void checkIfWarningIsVisible(int position) {
         Assertions.assertThat(flowViewComponent.getStepWarningElement(position).isDisplayed()).isFalse();
     }
+
+    @And("^clicks on the \"([^\"]*)\" tab$")
+    public void clicksOnTheTab(String tabName) {
+        detailPage.selectTab(tabName);
+    }
 }
