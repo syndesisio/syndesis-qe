@@ -43,6 +43,7 @@ public class DataMapperComponent extends SyndesisPageObject {
         public static final By ACTION_SELECT = By.xpath("//label[text()='Action']/following-sibling::select");
         public static final By SEPARATOR_SELECT = By.xpath("//label[text()='Separator:']/following-sibling::select");
         public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
+        public static final By BUCKET_IS_IN_OPEN_STATE = By.className("panel-collapse");
     }
 
     @Override
@@ -191,7 +192,23 @@ public class DataMapperComponent extends SyndesisPageObject {
         return this.getElementByLocator(locator);
     }
 
-    public void openBucket(By bucketSelector) {
-        getRootElement().$(bucketSelector).shouldBe(visible).click();
+    public SelenideElement getDataBucketElement(String bucketName) {
+        return getRootElement().$(By.id(bucketName)).shouldBe(visible);
+    }
+
+    public void openBucket(String bucketName) {
+        SelenideElement bucket = getDataBucketElement(bucketName);
+        if(!bucket.$(Element.BUCKET_IS_IN_OPEN_STATE).isDisplayed()) {
+            bucket.click();
+            getRootElement().hover();
+        }
+    }
+
+    public void closeBucket(String bucketName) {
+        SelenideElement bucket = getDataBucketElement(bucketName);
+        if(bucket.$(Element.BUCKET_IS_IN_OPEN_STATE).isDisplayed()) {
+            bucket.click();
+            getRootElement().hover();
+        }
     }
 }

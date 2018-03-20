@@ -28,6 +28,8 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
 
     private static final class Link {
         public static final By ADD_STEP = By.linkText("Add a step");
+        public static final By ADD_CONNECTION = By.linkText("Add a connection");
+
     }
 
     private static final class Element {
@@ -117,6 +119,16 @@ public class IntegrationFlowViewComponent extends SyndesisPageObject {
         stepElement.hover();
 
         getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
+    }
+
+    public void clickAddConnectionLink(int pos) {
+        List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
+                .shouldHave(sizeGreaterThanOrEqual(pos));
+        SelenideElement stepElement = allStepInserts.get(pos);
+
+        stepElement.hover();
+
+        getRootElement().$(Link.ADD_CONNECTION).shouldBe(visible).click();
     }
 
     /**
