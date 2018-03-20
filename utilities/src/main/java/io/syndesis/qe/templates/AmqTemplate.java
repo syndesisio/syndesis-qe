@@ -25,6 +25,7 @@ public class AmqTemplate {
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read template ", ex);
         }
+
         Map<String, String> templateParams = new HashMap<>();
         templateParams.put("MQ_USERNAME", "amq");
         templateParams.put("MQ_PASSWORD", "topSecret");
@@ -34,6 +35,7 @@ public class AmqTemplate {
         OpenShiftUtils.client().templates().withName("syndesis-amq").delete();
 
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
+
         OpenShiftUtils.getInstance().createResources(processedTemplate);
 
         try {
@@ -41,21 +43,15 @@ public class AmqTemplate {
         } catch (InterruptedException | TimeoutException e) {
             log.error("Wait for syndesis-server failed ", e);
         }
-        Account amqAccount = new Account();
-        amqAccount.setService("amq");
-        Map<String, String> accountParameters = new HashMap<>();
-        accountParameters.put("brokerUrl", "tcp://broker-amq:61616");
-        accountParameters.put("username", "amq");
-        accountParameters.put("password", "topSecret");
-        accountParameters.put("clientId", UUID.randomUUID().toString());
-        amqAccount.setProperties(accountParameters);
-        AccountsDirectory.getInstance().addAccount("AMQ", amqAccount);
+
+        //this is not part of deployment, but let's have it the same method:
+        AmqTemplate.addAccounts();
     }
 
     private static void cleanUp() {
         OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service ->  "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
+        OpenShiftUtils.getInstance().getServices().stream().filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq".equals(is.getMetadata().getLabels().get("template"))).findFirst()
                 .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
@@ -64,5 +60,32 @@ public class AmqTemplate {
         } catch (InterruptedException e) {
             log.error(e.getMessage());
         }
+    }
+
+    private static void addAccounts() {
+
+        Account openwireAccount = new Account();
+        Map<String, String> openwireAccountParameters = new HashMap<>();
+        openwireAccountParameters.put("username", "amq");
+        openwireAccountParameters.put("password", "topSecret");
+        openwireAccountParameters.put("brokerUrl", "tcp://broker-amq:61616");
+        openwireAccountParameters.put("clientId", UUID.randomUUID().toString());
+        openwireAccount.setService("amq");
+        openwireAccount.setProperties(openwireAccountParameters);
+
+        Account amqpAccount = new Account();
+        Map<String, String> amqpAccountParameters = new HashMap<>();
+        amqpAccountParameters.put("username", "amq");
+        amqpAccountParameters.put("password", "topSecret");
+        amqpAccountParameters.put("connectionUri", "amqp://broker-amq:5672");
+        amqpAccountParameters.put("clientID", UUID.randomUUID().toString());
+        amqpAccountParameters.put("skipCertificateCheck", "Disable");
+        amqpAccountParameters.put("brokerCertificate", "");
+        amqpAccountParameters.put("clientCertificate", "");
+        amqpAccount.setService("amqp");
+        amqpAccount.setProperties(amqpAccountParameters);
+
+        AccountsDirectory.getInstance().addAccount("AMQ", openwireAccount);
+        AccountsDirectory.getInstance().addAccount("AMQP", amqpAccount);
     }
 }

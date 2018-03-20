@@ -18,7 +18,7 @@ public class ActionConfigureComponentJmsPublish extends ActionConfigureComponent
 
     private static final class Input {
         public static final By DESTINATION_NAME = By.id("destinationName");
-        public static final By PERSISTENT = By.id("persistent");
+        public static final By PERSISTENT = By.id("deliveryPersistent");
     }
 
     private static final class Select {
