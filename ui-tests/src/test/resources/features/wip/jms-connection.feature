@@ -1,12 +1,12 @@
 @wip
 @jms-connection
-Feature: Test functionality of DB connection
+Feature: Test functionality of JMS connection
 
   @jms-connection-clean-application-state
   Scenario: Clean application state
     Given clean application state
     Given "Camilla" logs into the Syndesis
-    Given deploy AMQ broker
+    Given deploy AMQ broker and add accounts
     Given created connections
       | AMQ | AMQ | AMQ | AMQ connection is awesome |
 
@@ -33,8 +33,8 @@ Feature: Test functionality of DB connection
     When Camilla selects the "AMQ" connection
     And she selects "Publish Messages" integration action
     And sets jms publish inputs source data
-      | destinationName | destinationType | persistent |
-      | apple           | Topic           | true       |
+      | destinationName | destinationType | deliveryPersistent |
+      | apple           | Topic           | true               |
     And clicks on the "Done" button
 
     # select connection as 'step' point
@@ -50,8 +50,10 @@ Feature: Test functionality of DB connection
 
     # final steps
     When clicks on the "Publish" button
-    And she sets integration name "JMS publish-subscribe-request E2E"
+    And she sets the integration name "JMS publish-subscribe-request E2E"
     And clicks on the "Publish" button
     Then Camilla is presented with "JMS publish-subscribe-request E2E" integration details
-    And she clicks on the "Done" button
+    And she clicks on the "Publish" button
     Then she waits until integration "JMS publish-subscribe-request E2E" gets into "Active" state
+
+    Then verify that JMS message using "openwire" protocol, published on "topic" named "cheese" has arrived to "topic" named "apple" consumer

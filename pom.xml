@@ -49,6 +49,7 @@
 		<xtf.utilities.version>0.6</xtf.utilities.version>
 		<ftp.client.version>3.3</ftp.client.version>
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
+		<activemq.version>5.7.0</activemq.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -308,6 +309,14 @@
 				<artifactId>postgresql</artifactId>
 				<version>${postgresql.version}</version>
 			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-core 5.7.0 -->
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-core</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 

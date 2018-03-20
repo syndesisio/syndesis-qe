@@ -136,7 +136,7 @@ public class IntegrationSteps {
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
         SelenideElement integration = listPage.getListComponent().getIntegration(integrationName);
         assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> listPage.getListComponent().getIntegrationItemStatus(integration),
-                TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 5));
+                TimeUnit.MINUTES, 1, TimeUnit.SECONDS, 1));
     }
 
     @Then("^she is presented with Choose Step page$")
