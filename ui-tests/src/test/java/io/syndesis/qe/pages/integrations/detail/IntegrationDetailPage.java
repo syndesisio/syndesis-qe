@@ -107,7 +107,8 @@ public class IntegrationDetailPage extends SyndesisPageObject {
 
     public File exportIntegration() throws InterruptedException {
 
-        clickOnKebabMenuAction("Export");
+        this.getButton("Export").shouldBe(visible).click();
+
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + this.getIntegrationName() + "-export.zip";
 
         // wait for download
