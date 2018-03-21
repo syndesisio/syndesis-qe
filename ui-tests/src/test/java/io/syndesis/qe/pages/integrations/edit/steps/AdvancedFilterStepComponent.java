@@ -37,7 +37,7 @@ public class AdvancedFilterStepComponent extends StepComponent {
     }
 
     public boolean validate() {
-        log.debug("Validating advanced filter configuration page");
+        log.debug("Validating advanced filter configure page");
         return this.getFilterTextarea().waitWhile(Condition.not(visible), 5 * 1000).isDisplayed();
     }
 

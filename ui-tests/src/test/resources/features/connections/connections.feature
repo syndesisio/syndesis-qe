@@ -8,9 +8,9 @@ Feature: Connections CRUD test
 
   @connection-create-delete-test
   Scenario: CREATE and DELETE connection happy path
-    When "Camilla" navigates to the "Connections" page
+    And "Camilla" navigates to the "Connections" page
     And click on the "Create Connection" button
-    And Camilla selects the "Twitter" connection
+    And Camilla selects "Twitter" connection type
     Then she is presented with the "Validate" button
 
     When she fills "Twitter Listener" connection details
@@ -28,7 +28,7 @@ Feature: Connections CRUD test
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
-    When Camilla selects the "my sample tw conn" connection
+    When opens the "my sample tw conn" connection detail
     Then Camilla is presented with "my sample tw conn" connection details
 
     When "Camilla" navigates to the "Connections" page
@@ -37,7 +37,7 @@ Feature: Connections CRUD test
     When Camilla deletes the "my sample tw conn" connection
   # delete was not fast enough some times so sleep is necessary
   # Then she stays there for "2000" ms
-    Then Camilla can not see "my sample tw conn" connection anymore
+    Then Camilla can not see the "my sample tw conn" connection anymore
 
   @connection-kebab-menu-test
   Scenario: Test whether connections kebab menu works as it should
@@ -45,7 +45,7 @@ Feature: Connections CRUD test
   # is there any connection? If there are no default connections there is nothing
   #     so we have to add at least one connection first
     And click on the "Create Connection" button
-    And Camilla selects the "Twitter" connection
+    And Camilla selects "Twitter" connection type
     Then she is presented with the "Validate" button
     When she fills "Twitter Listener" connection details
 
@@ -68,14 +68,14 @@ Feature: Connections CRUD test
 
     When Camilla deletes the "my sample tw conn" connection
   # Then she stays there for "2000" ms
-    Then Camilla can not see "my sample tw conn" connection anymore
+    Then Camilla can not see the "my sample tw conn" connection anymore
 
 
   @connection-edit-view-test
   Scenario: Test that view and edit options work from kebab menu
     When "Camilla" navigates to the "Connections" page
     And click on the "Create Connection" button
-    And Camilla selects the "Twitter" connection
+    And Camilla selects "Twitter" connection type
     Then she is presented with the "Validate" button
 
     When she fills "Twitter Listener" connection details
@@ -104,14 +104,14 @@ Feature: Connections CRUD test
     When Camilla deletes the "my sample tw conn" connection
   # delete was not fast enough some times so sleep is necessary
   # Then she stays there for "2000" ms
-    Then Camilla can not see "my sample tw conn" connection anymore
+    Then Camilla can not see the "my sample tw conn" connection anymore
 
 
   @connection-create-delete-salesforce-test
   Scenario: CREATE and DELETE salesforce connection happy path
     When "Camilla" navigates to the "Connections" page
     And click on the "Create Connection" button
-    And Camilla selects the "Salesforce" connection
+    And Camilla selects "Salesforce" connection type
     Then she is presented with the "Validate" button
 
     When she fills "QE Salesforce" connection details
@@ -129,7 +129,7 @@ Feature: Connections CRUD test
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
-    When Camilla selects the "my sample sf conn" connection
+    When opens the "my sample sf conn" connection detail
     Then Camilla is presented with "my sample sf conn" connection details
 
     When "Camilla" navigates to the "Connections" page
@@ -138,4 +138,4 @@ Feature: Connections CRUD test
     When Camilla deletes the "my sample sf conn" connection
   # delete was not fast enough some times so sleep is necessary
   #	Then she stays there for "2000" ms
-    Then Camilla can not see "my sample sf conn" connection anymore
+    Then Camilla can not see the "my sample sf conn" connection anymore

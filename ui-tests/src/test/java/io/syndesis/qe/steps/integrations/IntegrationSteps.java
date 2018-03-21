@@ -8,7 +8,9 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.utils.Utils;
+import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
 import io.syndesis.qe.pages.integrations.ImportIntegrationPage;
 import io.syndesis.qe.pages.integrations.detail.IntegrationDetailPage;
 import io.syndesis.qe.pages.integrations.edit.IntegrationEditPage;
@@ -23,6 +25,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
+import org.openqa.selenium.By;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -51,6 +54,8 @@ public class IntegrationSteps {
     private IntegrationFlowViewComponent flowViewComponent = new IntegrationFlowViewComponent();
     private DataMapperComponent dataMapper = new DataMapperComponent();
     private ImportIntegrationPage importIntegrationPage = new ImportIntegrationPage();
+
+    private ConnectionsList connectionsList = new ConnectionsList(By.xpath("//syndesis-connections-list"));
 
     @When("^she sets the integration name \"([^\"]*)\"$")
     public void setIntegrationName(String integrationName) {
@@ -164,7 +169,7 @@ public class IntegrationSteps {
 
     @Then("^she adds \"(\\d+)\" random steps and then checks the structure$")
     public void addRandomStepsAndCheckRest(Integer numberOfSteps) {
-        log.info("Adding random steps");
+        log.info("Adding random phases");
         List<String> list = editPage.getFlowViewComponent().getStepsArray();
         editPage.getButton("Add a Step").shouldBe(visible).click();
         ElementsCollection links = editPage.getLinks("Add a step");
@@ -194,7 +199,7 @@ public class IntegrationSteps {
     //what rest??
     @Then("^she deletes \"(\\d+)\" random integration steps and checks the rest$")
     public void deleteRandomStepsAndCheckRest(Integer numberOfSteps) {
-        log.info("Deleting random steps");
+        log.info("Deleting random phases");
         List<String> list = editPage.getFlowViewComponent().getStepsArray();
         ElementsCollection deletes = editPage.getFlowViewComponent().getAllTrashes().shouldBe(sizeGreaterThanOrEqual(1));
         int count = deletes.size();
@@ -557,5 +562,9 @@ public class IntegrationSteps {
             Assertions.assertThat(flowViewComponent.getStepWarningElement(i).isDisplayed()).isFalse();
         }
     }
-}
 
+    @When("^.*selects? the \"([^\"]*)\" connection$")
+    public void selectConnection(String connectionName) {
+        connectionsList.invokeActionOnItem(connectionName, ListAction.CLICK);
+    }
+}

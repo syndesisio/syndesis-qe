@@ -36,7 +36,7 @@ public class LogStepComponent extends StepComponent {
     }
 
     public boolean validate() {
-        log.debug("validating configuration page");
+        log.debug("validating configure page");
         return this.getMessageInput().is(visible);
     }
 
