@@ -147,7 +147,7 @@ public class BasicFilterStepComponent extends StepComponent {
     }
 
     public boolean validate() {
-        log.info("Validating configuration page");
+        log.info("Validating configure page");
 
         SelenideElement predicateSelect = this.getPredicateSelect();
         SelenideElement pathInput = this.getPathInput();

@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.connections.list.ConnectionsListComponent;
 import lombok.Getter;
 
 public class IntegrationConnectionSelectComponent extends SyndesisPageObject {
@@ -17,8 +16,8 @@ public class IntegrationConnectionSelectComponent extends SyndesisPageObject {
         public static final By ROOT = By.cssSelector("syndesis-integration-connection-select");
     }
 
-    @Getter
-    private ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
+//    @Getter
+//    private ConnectionsListComponent connectionsListComponent = new ConnectionsListComponent();
 
     @Override
     public SelenideElement getRootElement() {

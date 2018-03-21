@@ -12,7 +12,7 @@ import io.syndesis.qe.pages.customizations.connectors.wizard.steps.GeneralConnec
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewSwaggerActions;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.Security;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger;
-import io.syndesis.qe.pages.interfaces.wizard.WizardStep;
+import io.syndesis.qe.logic.common.wizard.WizardPhase;
 
 public class ApiClientConnectorWizard extends WizardPageObject {
 
@@ -22,7 +22,7 @@ public class ApiClientConnectorWizard extends WizardPageObject {
     }
 
     public ApiClientConnectorWizard() {
-        setSteps(new WizardStep[] {new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()});
+        setSteps(new WizardPhase[] {new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()});
     }
 
     @Override
