@@ -72,7 +72,7 @@ public class ApiClientConnectorsSteps {
 
         WizardSteps wizardSteps = new WizardSteps();
 
-        List<String> row = asList("file", "swagger_files/api_client_connector/petstore_swagger.json");
+        List<String> row = asList("file", "swagger/connectors/petstore.json");
         List<List<String>> dataTable = new ArrayList<>();
         dataTable.add(row);
         wizardSteps.uploadSwaggerFile(user, DataTable.create(dataTable));
