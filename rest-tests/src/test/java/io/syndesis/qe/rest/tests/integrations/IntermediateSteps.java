@@ -40,4 +40,16 @@ public class IntermediateSteps {
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(basicFilter));
     }
+
+    @Given("add log step")
+    public void addLogStep() {
+        final Step basicFilter = new Step.Builder()
+                .stepKind(StepKind.log)
+                .configuredProperties(TestUtils.map("contextLoggingEnabled", "true",
+                        "bodyLoggingEnabled", "true"
+                ))
+                .build();
+        steps.getStepDefinitions().add(new StepDefinition(basicFilter));
+    }
+
 }

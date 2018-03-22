@@ -163,7 +163,12 @@ public class CommonSteps {
 
     @When(".*clicks? on the \"([^\"]*)\" button.*$")
     public void clickOnButton(String buttonTitle) {
-        new SyndesisRootPage().getButton(buttonTitle).shouldBe(visible).click();
+        if (buttonTitle.equals("Done")) {
+            // this is hack to replace Done with Next if not present
+            buttonTitle = syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
+                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().is(visible) ? buttonTitle : "Next";
+        }
+        syndesisRootPage.getButton(buttonTitle).shouldBe(visible).click();
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
