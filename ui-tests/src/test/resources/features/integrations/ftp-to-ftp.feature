@@ -23,7 +23,7 @@ Feature: Test functionality of FTP connection
     And she is prompted to select a "Start" connection from a list of available connections
 
       # select salesforce connection as 'from' point
-    When Camilla selects the "Ftp" connection
+    When Camilla selects the "FTP" connection
     And she selects "download" integration action
     And she fills ftp download form with values
       | fileName | directoryName | initialDelay | delay | delete |
@@ -35,7 +35,7 @@ Feature: Test functionality of FTP connection
     And clicks on the "Done" button
 
     Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
-    When Camilla selects the "Ftp" connection
+    When Camilla selects the "FTP" connection
     And she selects "Upload" integration action
     And she fills ftp upload form with values
       | fileName    | directoryName | fileExist | tempPrefix    | tempFileName    |
