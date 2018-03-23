@@ -27,5 +27,4 @@ public class ActionConfigureComponent extends SyndesisPageObject {
     public boolean validate() {
         return getRootElement().is(visible);
     }
-
 }

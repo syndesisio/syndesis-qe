@@ -126,7 +126,29 @@ credentials.json
   	  	"accessToken": "**************",
   		"clientIdentifier": "**************"
   	  }
-    }
+    },
+    "amq": {
+        "service": "amq",
+        "properties": {
+          "brokerUrl": "tcp://broker-amq:61616",
+          "username": "amq",
+          "password": "topSecret",
+          "clientId": "zzz"
+        }
+      },
+   "amqp": {
+        "service": "amqp",
+        "properties": {
+          "connectionUri": "amqp://broker-amq:5672",
+          "username": "amq",
+          "password": "topSecret",
+          "clientID": "zzz",
+          "skipCertificateCheck":"Disable",
+          "brokerCertificate":"",
+          "clientCertificate":""
+        }
+   }
+
 }
 ```
 for ftp connection credentials:

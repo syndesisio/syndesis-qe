@@ -170,6 +170,11 @@
 			<version>${dropbox.core.sdk.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
