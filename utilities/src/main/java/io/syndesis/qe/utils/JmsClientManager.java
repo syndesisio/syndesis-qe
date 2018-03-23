@@ -1,11 +1,6 @@
 package io.syndesis.qe.utils;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.commons.net.ftp.FTP;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import cz.xtf.jms.JmsClient;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -13,7 +8,7 @@ import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class JmsClientManager {
+public class JmsClientManager implements AutoCloseable {
 
     private String jmsUrl;
     private int jmsPort;
@@ -32,11 +27,11 @@ public class JmsClientManager {
             case "tcp":
             case "openwire":
                 jmsPort = 61616;
-                jmsUrl = "tcp://localhost:61616";
+                jmsUrl = "tcp://127.0.0.1:" + jmsPort;
                 break;
             case "amqp":
                 jmsPort = 5672;
-                jmsUrl = "amqp://localhost:5672";
+                jmsUrl = "amqp://127.0.0.1:" + jmsPort;
                 break;
         }
     }
@@ -52,11 +47,11 @@ public class JmsClientManager {
         return this.initClient();
     }
 
-    public void closeJmsClient() {
-        TestUtils.terminateLocalPortForward(jmsLocalPortForward);
+    public void close() {
         if (jmsClient != null) {
             jmsClient.disconnect();
         }
+        TestUtils.terminateLocalPortForward(jmsLocalPortForward);
     }
 
     private JmsClient initClient() {
