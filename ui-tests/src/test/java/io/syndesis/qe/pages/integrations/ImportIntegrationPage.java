@@ -18,7 +18,6 @@ public class ImportIntegrationPage extends SyndesisPageObject {
         public static final By FILE_INPUT = By.cssSelector("input[type='file']");
         public static final By FINISHED_PROGRESS_BAR = By.className("pficon-ok");
         public static final By DRAG_AND_DROP_PLACE = By.className("syn-drop-zone");
-
     }
 
     @Override
@@ -51,5 +50,4 @@ public class ImportIntegrationPage extends SyndesisPageObject {
 
         getButton("Done").shouldBe(visible).click();
     }
-
 }
