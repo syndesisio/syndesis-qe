@@ -6,6 +6,11 @@ Feature: Connections CRUD test
     Given clean application state
     Given "Camilla" logs into the Syndesis
 
+
+  @validate-connection-credentials
+  Scenario: Validate connection credentials
+    And validate credentials
+
   @connection-create-delete-test
   Scenario: CREATE and DELETE connection happy path
     And "Camilla" navigates to the "Connections" page
