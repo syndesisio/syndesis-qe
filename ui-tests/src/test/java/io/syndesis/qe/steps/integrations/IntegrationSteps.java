@@ -20,6 +20,7 @@ import io.syndesis.qe.pages.integrations.edit.steps.DataMapperComponent;
 import io.syndesis.qe.pages.integrations.edit.steps.StepComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
 import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
+import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -401,6 +402,7 @@ public class IntegrationSteps {
                 .exists()
                 .isFile()
                 .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+        ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
     }
 
     @And("^Camilla imports integraion \"([^\"]*)\"$")
