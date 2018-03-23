@@ -3,6 +3,7 @@ Feature: Test functionality of data buckets during creation of integration
 
   Background: Clean application state
     Given clean application state
+    Given reset content of "contact" table
     Given "Camilla" logs into the Syndesis
 
     Given created connections
