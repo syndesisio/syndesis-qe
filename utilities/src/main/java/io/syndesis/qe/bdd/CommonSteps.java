@@ -99,8 +99,8 @@ public class CommonSteps {
         }
     }
 
-    @Given("^deploy AMQ broker$")
-    public void deployAMQBroker() throws Throwable {
+    @Given("^deploy AMQ broker and add accounts$")
+    public void deployAMQBroker() {
         AmqTemplate.deploy();
     }
 
