@@ -4,8 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 
 @Slf4j
 public class DbUtils {
@@ -136,5 +138,13 @@ public class DbUtils {
         } catch (SQLException ex) {
             log.error("Error: " + ex);
         }
+    }
+
+    public void resetContactTable() {
+        deleteRecordsInTable("contact");
+        Assertions.assertThat(updateSqlOnSampleDb
+                ("insert into contact values " +
+                        "('Joe', 'Jackson', 'Red Hat', 'db', '" + LocalDateTime.now().toLocalDate() + "')"))
+                .isEqualTo(1);
     }
 }
