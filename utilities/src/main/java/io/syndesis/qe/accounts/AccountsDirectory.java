@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.exceptions.AccountsException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,6 +25,7 @@ public class AccountsDirectory {
     private static AccountsDirectory instance;
 
     private ObjectMapper mapper = new ObjectMapper();
+    @Getter
     private Map<String, Account> accounts;
 
     public static AccountsDirectory getInstance() {
