@@ -49,11 +49,11 @@ public class AmqTemplate {
     }
 
     private static void cleanUp() {
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals("broker-amq")).findFirst()
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "broker-amq".equals(dc.getMetadata().getName())).findFirst()
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq".equals(is.getMetadata().getLabels().get("template"))).findFirst()
+        OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "jboss-amq-63".equals(is.getMetadata().getName())).findFirst()
                 .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
         try {
             Thread.sleep(10 * 1000);
@@ -69,7 +69,7 @@ public class AmqTemplate {
         openwireAccountParameters.put("username", "amq");
         openwireAccountParameters.put("password", "topSecret");
         openwireAccountParameters.put("brokerUrl", "tcp://broker-amq:61616");
-        openwireAccountParameters.put("clientId", UUID.randomUUID().toString());
+        //openwireAccountParameters.put("clientID", UUID.randomUUID().toString());
         openwireAccount.setService("amq");
         openwireAccount.setProperties(openwireAccountParameters);
 

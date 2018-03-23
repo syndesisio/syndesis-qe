@@ -1,10 +1,11 @@
+@wip
 @integrations-amqp-to-amqp
-Feature: Test functionality of AMQP connection
+Feature: Integration - AMQP to AMQP
 
   Background: Clean application state and prepare what is needed
     Given clean application state
-    Given "Camilla" logs into the Syndesis
     Given deploy AMQ broker and add accounts
+    Given "Camilla" logs into the Syndesis
     Given created connections
       | AMQP | AMQP | AMQP | AMQP on OpenShift |
 
@@ -12,7 +13,7 @@ Feature: Test functionality of AMQP connection
 #  1. publish-subscribe-request
 #
   @amqp-connection-publish-subscribe-request
-  Scenario: Create integration to test AMQP connector
+  Scenario: Publish Subscribe - Topic
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
@@ -32,6 +33,7 @@ Feature: Test functionality of AMQP connection
     # select connection as 'finish' point
     When Camilla selects the "AMQP" connection
     And she selects "Publish" integration action
+    # TODO: there's a mismatch between persistent on ActiveMQ and deliveryPersistent property on AMQP
     And sets jms publish inputs source data
       | destinationName | destinationType | deliveryPersistent |
       | apple           | Topic           | true               |
@@ -45,6 +47,6 @@ Feature: Test functionality of AMQP connection
     And clicks on the "Publish" button
     Then Camilla is presented with "AMQP publish-subscribe-request E2E" integration details
     Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "AMQP publish-subscribe-request E2E" gets into "Active" state
+    Then she waits until integration "AMQP publish-subscribe-request E2E" gets into "Published" state
 
     Then verify that JMS message using "openwire" protocol, published on "topic" named "cheese" has arrived to "topic" named "apple" consumer

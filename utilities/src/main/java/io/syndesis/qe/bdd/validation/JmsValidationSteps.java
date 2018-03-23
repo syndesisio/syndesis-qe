@@ -1,14 +1,13 @@
 package io.syndesis.qe.bdd.validation;
 
+import cz.xtf.jms.JmsClient;
 import org.assertj.core.api.Assertions;
 
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.utils.JmsClientManager;
-import io.syndesis.qe.utils.JmsUtils;
 
 public class JmsValidationSteps {
 
-    private final JmsUtils jmsUtils = new JmsUtils();
     private final String messageText = "ZIL SOM NAPLNO";
 
     public JmsValidationSteps() {
@@ -16,18 +15,38 @@ public class JmsValidationSteps {
 
     @Then("^verify that JMS message using \"([^\"]*)\" protocol, published on \"([^\"]*)\" named \"([^\"]*)\" has arrived to \"([^\"]*)\" named \"([^\"]*)\" consumer$")
     public void verifyJMSconnection(String protocol, String typeFrom, String destinationFrom, String typeTo, String destinationTo) {
-        final JmsClientManager clientManager = new JmsClientManager(protocol);
-        jmsUtils.setJmsClient(clientManager.getClient());
+        try(JmsClientManager manager = new JmsClientManager(protocol)) {
+            JmsClient jmsClient = manager.getClient();
+            addDestination(jmsClient, destinationFrom, typeFrom);
+            jmsClient.sendMessage(messageText);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        }
 
         try {
-            jmsUtils.sendMessage(messageText, typeFrom, destinationFrom);
-            String returnMessageText = jmsUtils.consumeMessage(typeTo, destinationTo);
-            Assertions.assertThat(returnMessageText).isEqualTo(messageText);
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
+        try(JmsClientManager manager = new JmsClientManager(protocol)) {
+            JmsClient jmsClient = manager.getClient();
+            addDestination(jmsClient, destinationTo, typeTo);
+            String textMessage = JmsClient.getTextMessage(jmsClient.receiveMessage());
+            Assertions.assertThat(textMessage).isEqualTo(messageText);
         } catch (Exception e) {
-            Assertions.fail("Error: " + e);
-        } finally {
-            clientManager.closeJmsClient();
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
         }
     }
+
+    private void addDestination(JmsClient jmsClient, String destination, String typeFrom) {
+        if ("queue".equals(typeFrom)) {
+            jmsClient.addQueue(destination);
+        } else {
+            jmsClient.addTopic(destination);
+        }
+    }
+
 }
