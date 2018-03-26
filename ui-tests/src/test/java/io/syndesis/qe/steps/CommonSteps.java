@@ -42,7 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.have;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -237,7 +240,8 @@ public class CommonSteps {
                 buttonTitle = "Next";
             }
         }
-        syndesisRootPage.getButton(buttonTitle).shouldBe(visible).click();
+        log.info(syndesisRootPage.getButton(buttonTitle).toString());
+        syndesisRootPage.getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")

@@ -4,29 +4,41 @@ import static org.junit.Assert.assertThat;
 
 import static org.hamcrest.Matchers.is;
 
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cucumber.api.DataTable;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.connections.Connections;
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConnectionSteps {
 
     private Connections connectionsPage = new Connections();
+
+    @Autowired
+    private SelectConnectionTypeSteps selectConnectionTypeSteps = new SelectConnectionTypeSteps();
 
     @When("^.*opens? the \"([^\"]*)\" connection detail$")
     public void openConnectionDetail(String connectionName) {
@@ -87,5 +99,50 @@ public class ConnectionSteps {
         KebabMenu kebabMenu = new KebabMenu(connectionsPage.getConnection(connectionName).$(By.xpath(".//button")));
         kebabMenu.open();
         kebabMenu.getItemElement(button).shouldBe(visible).click();
+    }
+
+    /**
+     * TODO: This is temporary solution. Unify with createConnections in CommonSteps
+     */
+
+    @Given("^creates connections without validation$")
+    public void createConnectionsWithoutValidation(DataTable connectionsData) {
+        Connections connectionsPage = new Connections();
+        CommonSteps cs = new CommonSteps();
+
+        ConfigureConnectionSteps configureConnectionSteps = new ConfigureConnectionSteps();
+        NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
+
+        List<List<String>> dataTable = connectionsData.raw();
+
+        for (List<String> dataRow : dataTable) {
+            String connectionType = dataRow.get(0);
+            String connectionCredentialsName = dataRow.get(1);
+            String connectionName = dataRow.get(2);
+            String connectionDescription = dataRow.get(3);
+
+            cs.navigateTo("", "Connections");
+            cs.validatePage("", "Connections");
+
+            ElementsCollection connections = connectionsPage.getAllConnections();
+            connections = connections.filter(exactText(connectionName));
+
+            if (connections.size() != 0) {
+                log.warn("Connection {} already exists!", connectionName);
+            } else {
+                cs.clickOnButton("Create Connection");
+
+                selectConnectionTypeSteps.selectConnectionType(connectionType);
+                configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
+
+                cs.scrollTo("top", "right");
+                cs.clickOnButton("Next");
+
+                nameConnectionSteps.setConnectionName(connectionName);
+                nameConnectionSteps.setConnectionDescription(connectionDescription);
+
+                cs.clickOnButton("Create");
+            }
+        }
     }
 }

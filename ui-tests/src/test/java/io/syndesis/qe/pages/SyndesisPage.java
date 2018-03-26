@@ -7,10 +7,10 @@ import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.customizations.CustomizationsPage;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.GeneralConnectorInfo;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewSwaggerActions;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.Security;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewEditConnectorDetails;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
@@ -37,10 +37,10 @@ public enum SyndesisPage {
 
     CUSTOMIZATIONS(new CustomizationsPage()),
     API_CLIENT_CONNECTORS(new ApiClientConnectors()),
-    UPLOAD_SWAGGER(new UploadSwagger()),
-    REVIEW_SWAGGER_ACTIONS(new ReviewSwaggerActions()),
-    SECURITY(new Security()),
-    GENERAL_CONNECTOR_INFO(new GeneralConnectorInfo()),
+    UPLOAD_SWAGGER_SPECIFICATION(new UploadSwaggerSpecification()),
+    REVIEW_ACTIONS(new ReviewActions()),
+    SPECIFY_SECURITY(new SpecifySecurity()),
+    REVIEW_EDIT_CONNECTOR_DETAILS(new ReviewEditConnectorDetails()),
     CONNECTOR_DETAILS(new ApiClientConnectorDetail()),
 
     EXTENSIONS(new TechExtensionsListComponent()),
