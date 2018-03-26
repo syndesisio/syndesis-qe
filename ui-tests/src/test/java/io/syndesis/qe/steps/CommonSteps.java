@@ -60,7 +60,8 @@ public class CommonSteps {
         SALESFORCE,
         TWITTER,
         OPENSHIFT,
-        SYNDESIS
+        SYNDESIS,
+        S3
     }
 
     @Autowired
@@ -167,10 +168,10 @@ public class CommonSteps {
                     case TWITTER:
                         service = "Twitter";
                         break;
-                    case OPENSHIFT:
-                        return;
-                    case SYNDESIS:
-                        return;
+                    case S3:
+                        return; //TODO: skip for now
+                    default:
+                        return; //skip for other cred
                 }
 
                 //type
