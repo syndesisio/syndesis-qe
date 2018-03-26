@@ -12,6 +12,8 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
@@ -34,7 +36,11 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
@@ -48,6 +54,14 @@ public class CommonSteps {
 
     private SyndesisRootPage syndesisRootPage = new SyndesisRootPage();
     private ModalDialogPage modalDialogPage = new ModalDialogPage();
+
+    private enum Credentials {
+        DROPBOX,
+        SALESFORCE,
+        TWITTER,
+        OPENSHIFT,
+        SYNDESIS
+    }
 
     @Autowired
     private SelectConnectionTypeSteps selectConnectionTypeSteps = new SelectConnectionTypeSteps();
@@ -128,6 +142,56 @@ public class CommonSteps {
                 clickOnButton("Create");
             }
         }
+    }
+
+    @And("^.*validate credentials$")
+    public void validateCredentials() {
+        Map<String, Account> accounts = AccountsDirectory.getInstance().getAccounts();
+        List<List<String>> oneAccountList = new ArrayList<>();
+        List<String> tmpList = Arrays.asList("a", "s", "d", "f");
+
+        accounts.keySet().forEach(key -> {
+            Optional<Account> currentAccount = AccountsDirectory.getInstance().getAccount(key);
+            if (currentAccount.isPresent()) {
+
+                String service = currentAccount.get().getService();
+                Credentials current = Credentials.valueOf(service.toUpperCase());
+
+                switch (current) {
+                    case DROPBOX:
+                        service = "DropBox";
+                        break;
+                    case SALESFORCE:
+                        service = "Salesforce";
+                        break;
+                    case TWITTER:
+                        service = "Twitter";
+                        break;
+                    case OPENSHIFT:
+                        return;
+                    case SYNDESIS:
+                        return;
+                }
+
+                //type
+                tmpList.set(0, service);
+                //name
+                tmpList.set(1, key);
+                //connection name
+                tmpList.set(2, "my " + key + " connection");
+                //description
+                tmpList.set(3, "some description");
+
+                log.trace("Inserting: " + tmpList.toString());
+                oneAccountList.add(new ArrayList<>(tmpList));
+                log.trace("Current values in list list: " + oneAccountList.toString());
+            }
+        });
+
+        log.debug("Final status of list: " + oneAccountList.toString());
+        DataTable accountsTalbe = DataTable.create(oneAccountList);
+
+        createConnections(accountsTalbe);
     }
 
     @When("^\"([^\"]*)\" navigates? to the \"([^\"]*)\" page$")
