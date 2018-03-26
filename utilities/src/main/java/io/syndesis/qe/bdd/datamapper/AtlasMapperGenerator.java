@@ -1,5 +1,6 @@
 package io.syndesis.qe.bdd.datamapper;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,11 +36,16 @@ import io.atlasmap.v2.Properties;
 import io.atlasmap.xml.v2.XmlDataSource;
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.ConnectorDescriptor;
+import io.syndesis.common.model.action.StepAction;
+import io.syndesis.common.model.action.StepDescriptor;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.endpoints.AtlasmapEndpoint;
+import io.syndesis.common.util.Json;
 import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.endpoints.AtlasmapEndpoint;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -205,6 +212,8 @@ public class AtlasMapperGenerator {
         final Step mapperStep = new Step.Builder()
                 .stepKind(StepKind.mapper)
                 .configuredProperties(TestUtils.map("atlasmapping", mapperString))
+                .action(getMapperStepAction(followingStep.getConnectorDescriptor().get()))
+                .id(UUID.randomUUID().toString())
                 .build();
 
         return mapperStep;
@@ -246,13 +255,13 @@ public class AtlasMapperGenerator {
         for (int i = 0; i < mappingDef.getInputFields().size(); i++) {
             String def = mappingDef.getInputFields().get(i);
             Field inField = fromStep.getInspectionResponseFields().get()
-                    .stream().filter(f -> f.getPath().contains(def)).findFirst().get();
+                    .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
             inField.setIndex(i);
             in.add(inField);
         }
 
         Field out = followingStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().contains(mappingDef.getOutputFields().get(0))).findFirst().get();
+                .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
 
         in.forEach(f -> f.setDocId(fromStep.getStep().getId().get()));
         out.setDocId(followingStep.getStep().getId().get());
@@ -275,12 +284,12 @@ public class AtlasMapperGenerator {
         for (int i = 0; i < mappingDef.getOutputFields().size(); i++) {
             String def = mappingDef.getOutputFields().get(i);
             Field outField = followingStep.getInspectionResponseFields().get()
-                    .stream().filter(f -> f.getPath().contains(def)).findFirst().get();
+                    .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
             outField.setIndex(i);
             out.add(outField);
         }
         Field in = fromStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().contains(mappingDef.getInputFields().get(0))).findFirst().get();
+                .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
 
         out.forEach(f -> f.setDocId(followingStep.getStep().getId().get()));
         in.setDocId(fromStep.getStep().getId().get());
@@ -299,10 +308,10 @@ public class AtlasMapperGenerator {
         generatedMapping.setMappingType(MappingType.MAP);
 
         Field in = fromStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().contains(mappingDef.getInputFields().get(0))).findFirst().get();
+                .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
 
         Field out = followingStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().contains(mappingDef.getOutputFields().get(0))).findFirst().get();
+                .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
 
         in.setDocId(fromStep.getStep().getId().get());
         out.setDocId(followingStep.getStep().getId().get());
@@ -340,5 +349,25 @@ public class AtlasMapperGenerator {
             }
         }
         return javaField;
+    }
+
+    public Action getMapperStepAction(ConnectorDescriptor outputConnectorDescriptor) {
+        ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
+        Action ts = new StepAction.Builder().descriptor(new StepDescriptor.Builder().build()).build();
+        try {
+            DataShape inputDataShape = new DataShape.Builder().kind(DataShapeKinds.ANY).name("All preceding outputs").build();
+            JSONObject json = new JSONObject(mapper.writeValueAsString(ts));
+            JSONObject inputDataType = new JSONObject(mapper.writeValueAsString(inputDataShape));
+            JSONObject outputDataType = new JSONObject(mapper.writeValueAsString(outputConnectorDescriptor.getInputDataShape().get()));
+
+            json.getJSONObject("descriptor").put("inputDataShape", inputDataType);
+            json.getJSONObject("descriptor").put("outputDataShape", outputDataType);
+            ts = Json.reader().forType(Action.class).readValue(json.toString());
+            log.info(mapper.writeValueAsString(ts));
+
+        } catch (IOException ex) {
+            log.error("Error: " + ex);
+        }
+        return ts;
     }
 }

@@ -2,6 +2,8 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.UUID;
+
 import cucumber.api.java.en.Given;
 import io.syndesis.common.model.filter.FilterPredicate;
 import io.syndesis.common.model.integration.Step;
@@ -37,6 +39,7 @@ public class IntermediateSteps {
                         "predicate", FilterPredicate.AND.toString(),
                         "rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
                 ))
+                .id(UUID.randomUUID().toString())
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(basicFilter));
     }
@@ -48,6 +51,7 @@ public class IntermediateSteps {
                 .configuredProperties(TestUtils.map("contextLoggingEnabled", "true",
                         "bodyLoggingEnabled", "true"
                 ))
+                .id(UUID.randomUUID().toString())
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(basicFilter));
     }

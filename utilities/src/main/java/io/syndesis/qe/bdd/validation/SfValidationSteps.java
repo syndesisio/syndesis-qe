@@ -135,7 +135,7 @@ public class SfValidationSteps {
         final boolean contactCreated = TestUtils.waitForEvent(contact -> contact.isPresent(),
                 () -> getSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount).get().getProperty("screenName")),
                 TimeUnit.MINUTES,
-                2,
+                3,
                 TimeUnit.SECONDS,
                 5);
         Assertions.assertThat(contactCreated).as("Contact has appeard in salesforce").isEqualTo(true);

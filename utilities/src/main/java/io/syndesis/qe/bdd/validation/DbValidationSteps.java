@@ -1,6 +1,5 @@
 package io.syndesis.qe.bdd.validation;
 
-import cucumber.api.java.en.And;
 import org.assertj.core.api.Assertions;
 
 import java.sql.ResultSet;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.endpoints.TestSupport;
@@ -36,10 +36,10 @@ public class DbValidationSteps {
         dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
     }
 
-    @Given("^remove all records from DB")
-    public void cleanupDb() {
+    @Given("^remove all records from table \"([^\"]*)\"")
+    public void cleanupDb(String tableName) {
         TestSupport.getInstance().resetDB();
-        dbUtils.deleteRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME());
+        dbUtils.deleteRecordsInTable(tableName);
     }
 
     @Then("^validate DB created new lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\"")
@@ -147,6 +147,11 @@ public class DbValidationSteps {
         Assertions.assertThat(number).isEqualTo(val);
     }
 
+    @Then("^validate that number of all todos with task \"([^\"]*)\" is greater than \"(\\w+)\"$")
+    public void checkNumberOfTodosMoreThan(String task, Integer val) {
+        int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
+        Assertions.assertThat(number).isGreaterThan(val);
+    }
 
     @And("^.*checks? that query \"([^\"]*)\" has some output$")
     public void checkValuesExistInTable(String query) {
@@ -155,7 +160,7 @@ public class DbValidationSteps {
 
     @And("^.*invokes? database query \"([^\"]*)\"")
     public void invokeQuery(String query) throws SQLException {
-        if(query.contains("delete") || query.contains("Delete") || query.contains("DELETE")) {
+        if (query.contains("delete") || query.contains("Delete") || query.contains("DELETE")) {
             Assertions.assertThat(dbUtils.invokeQuery(query)).isFalse();
         } else {
             Assertions.assertThat(dbUtils.invokeQuery(query)).isTrue();
@@ -164,7 +169,7 @@ public class DbValidationSteps {
 
     @Given("^.*reset content of \"([^\"]*)\" table")
     public void resetTableContent(String tableName) {
-        if(tableName.equalsIgnoreCase("contact")) {
+        if (tableName.equalsIgnoreCase("contact")) {
             dbUtils.resetContactTable();
         } else {
             //there is no default content in other tables
@@ -172,9 +177,7 @@ public class DbValidationSteps {
         }
     }
 
-
 //AUXILIARIES:
-
     /**
      * Used for verification of successful creation of a new task in the todo app.
      *

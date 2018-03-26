@@ -13,10 +13,10 @@ import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.bdd.AbstractStep;
+import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +51,7 @@ public class SalesforceSteps extends AbstractStep {
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())
                 .connection(salesforceConnection)
-                .action(sfAction)
+                .action(generateStepAction(sfAction, connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
 
