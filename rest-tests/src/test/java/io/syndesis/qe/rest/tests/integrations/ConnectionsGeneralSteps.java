@@ -43,7 +43,7 @@ public class ConnectionsGeneralSteps {
 
         final Connection twitterConnection = new Connection.Builder()
                 .connector(twitterConnector)
-                .connectorId(twitterConnector.getId())
+                .connectorId(getConnectorId(twitterConnector))
                 .id(RestConstants.getInstance().getTWITTER_CONNECTION_ID())
                 .name("New Fuse QE twitter listen")
                 .configuredProperties(TestUtils.map(
@@ -67,7 +67,7 @@ public class ConnectionsGeneralSteps {
 
         final Connection salesforceConnection = new Connection.Builder()
                 .connector(salesforceConnector)
-                .connectorId(salesforceConnector.getId())
+                .connectorId(getConnectorId(salesforceConnector))
                 .id(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID())
                 .icon("fa-puzzle-piece")
                 .name("New Fuse QE salesforce")
@@ -93,7 +93,7 @@ public class ConnectionsGeneralSteps {
 
         final Connection s3Connection = new Connection.Builder()
                 .connector(s3Connector)
-                .connectorId(s3Connector.getId())
+                .connectorId(getConnectorId(s3Connector))
                 .id(S3BucketNameBuilder.getBucketName(s3Bucket))
                 .name("New Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
                 .icon("fa-puzzle-piece")
@@ -119,7 +119,7 @@ public class ConnectionsGeneralSteps {
 
         final Connection ftpConnection = new Connection.Builder()
                 .connector(ftpConnector)
-                .connectorId(ftpConnector.getId())
+                .connectorId(getConnectorId(ftpConnector))
                 .id(RestConstants.getInstance().getFTP_CONNECTION_ID())
                 .name("New Fuse QE FTP")
                 .configuredProperties(TestUtils.map(
@@ -140,5 +140,9 @@ public class ConnectionsGeneralSteps {
                 .build();
         log.info("Creating ftp connection {}", ftpConnection.getName());
         connectionsEndpoint.create(ftpConnection);
+    }
+
+    private String getConnectorId(Connector connector) {
+        return connector.getId().orElseThrow(() -> new IllegalArgumentException("Connector ID is null"));
     }
 }
