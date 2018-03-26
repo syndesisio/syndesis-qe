@@ -189,7 +189,8 @@ public abstract class SyndesisPageObject {
 
     public void checkButtonStatus(String buttonTitle, String status) {
         log.info("checking button {} status", buttonTitle);
-        this.getButton(buttonTitle).shouldBe(this.conditionValueOf(status));
+        // this speed-up the check we don't need shoulBe here
+        this.getButton(buttonTitle).waitUntil(this.conditionValueOf(status), 5 * 1000).is(this.conditionValueOf(status));
     }
 
     public Condition conditionValueOf(String status){

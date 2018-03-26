@@ -25,8 +25,7 @@ Feature: Connections CRUD test
     Then scroll "top" "right"
     And click on the "Next" button
 
-    And click on the "Create" button
-    Then she is presented with help block with text "Name is required"
+    And she checks "Create" button is "Disabled"
 
     And type "my sample tw conn" into connection name
     And type "this connection is awesome" into connection description
@@ -126,8 +125,7 @@ Feature: Connections CRUD test
     Then scroll "top" "right"
     And click on the "Next" button
 
-    And click on the "Create" button
-    Then she is presented with help block with text "Name is required"
+    And she checks "Create" button is "Disabled"
 
     And type "my sample sf conn" into connection name
     And type "this connection is awesome" into connection description
