@@ -2,7 +2,8 @@ Feature: integration monitoring scenarios
 
   Background: Clean application state
     Given "Camilla" logs into the Syndesis
-    And remove all records from DB
+    And remove all records from table "todo"
+    And remove all records from table "contact"
     When inserts into "contact" table
       | Josef_monitoring | Stieranka | Istrochem | db |
     Given db to db "CRUD2-read-create E2E" integration with period 5000 ms

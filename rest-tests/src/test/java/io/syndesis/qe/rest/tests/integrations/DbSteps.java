@@ -15,10 +15,10 @@ import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.bdd.AbstractStep;
+import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -47,7 +47,7 @@ public class DbSteps extends AbstractStep {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-start-connector");
-        final Map<String, String> properties = TestUtils.map("query", sqlQuery, "schedulerPeriod", ms);
+        final Map<String, String> properties = TestUtils.map("query", sqlQuery, "schedulerExpression", ms);
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());
 
         //to be reported: period is not part of .json step (when checked via browser).
@@ -55,7 +55,7 @@ public class DbSteps extends AbstractStep {
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())
                 .connection(dbConnection)
-                .action(dbAction)
+                .action(generateStepAction(dbAction, connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(dbStep, connectorDescriptor));
@@ -66,7 +66,7 @@ public class DbSteps extends AbstractStep {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-stored-start-connector");
-        final Map<String, String> properties = TestUtils.map("procedureName", procedureName, "schedulerPeriod", ms,
+        final Map<String, String> properties = TestUtils.map("procedureName", procedureName, "schedulerExpression", ms,
                 "template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
                 + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})");
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());
@@ -75,7 +75,7 @@ public class DbSteps extends AbstractStep {
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())
                 .connection(dbConnection)
-                .action(dbAction)
+                .action(generateStepAction(dbAction, connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(dbStep, connectorDescriptor));
@@ -93,7 +93,7 @@ public class DbSteps extends AbstractStep {
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())
                 .connection(dbConnection)
-                .action(dbAction)
+                .action(generateStepAction(dbAction, connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(dbStep, connectorDescriptor));
@@ -103,7 +103,7 @@ public class DbSteps extends AbstractStep {
     public void createDbStepWithInterval(String query, int interval) {
         final Connection dbConnection = connectionsEndpoint.get(getDbConnectionId());
         final Connector dbConnector = connectorsEndpoint.get("sql");
-        final Map<String, String> properties = TestUtils.map("query", query, "schedulerPeriod", interval);
+        final Map<String, String> properties = TestUtils.map("query", query, "schedulerExpression", interval);
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-connector");
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());
 
@@ -111,7 +111,7 @@ public class DbSteps extends AbstractStep {
                 .stepKind(StepKind.endpoint)
                 .connection(dbConnection)
                 .id(UUID.randomUUID().toString())
-                .action(dbAction)
+                .action(generateStepAction(dbAction, connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(dbStep, connectorDescriptor));
@@ -133,7 +133,7 @@ public class DbSteps extends AbstractStep {
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())
                 .connection(dbConnection)
-                .action(TestUtils.findConnectorAction(dbConnector, "sql-stored-connector"))
+                .action(generateStepAction(TestUtils.findConnectorAction(dbConnector, "sql-stored-connector"), connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(dbStep, connectorDescriptor));
