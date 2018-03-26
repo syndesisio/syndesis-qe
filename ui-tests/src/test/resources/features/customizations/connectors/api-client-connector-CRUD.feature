@@ -13,18 +13,20 @@ Feature: API connector test
     When clicks on the "API Client Connectors" link
     Then she is presented with the Syndesis page "API Client Connectors"
     And she opens new Api Connector wizard
-    And she is presented with the Syndesis page "Upload Swagger"
+    And she is presented with the Syndesis page "Upload Swagger Specification"
     Then she uploads swagger file
       | url | http://petstore.swagger.io/v2/swagger.json |
 
-    And she navigates to the next Api Connector wizard step "Review Swagger Actions"
-    Then she is presented with the Syndesis page "Review Swagger Actions"
-    And she navigates to the next Api Connector wizard step "Security"
-    Then she is presented with the Syndesis page "Security"
-    Then she sets up security by "OAuth 2.0"
+    And she navigates to the next Api Connector wizard step "Review Actions"
+    Then she is presented with the Syndesis page "Review Actions"
+    And she navigates to the next Api Connector wizard step "Specify Security"
+    Then she is presented with the Syndesis page "Specify Security"
+    Then she sets up security
+      | authType       | OAuth 2.0                             |
+      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
 
-    And she navigates to the next Api Connector wizard step "General Connector Info"
-    Then she is presented with the Syndesis page "General Connector Info"
+    And she navigates to the next Api Connector wizard step "Review Edit Connector Details"
+    Then she is presented with the Syndesis page "Review Edit Connector Details"
     And she creates new connector
 
     Then she is presented with the new connector "Swagger Petstore"
@@ -37,25 +39,31 @@ Feature: API connector test
     When clicks on the "API Client Connectors" link
     Then she is presented with the Syndesis page "API Client Connectors"
     And she opens new Api Connector wizard
-    And she is presented with the Syndesis page "Upload Swagger"
+    And she is presented with the Syndesis page "Upload Swagger Specification"
     Then she uploads swagger file
       | file | swagger/connectors/petstore.json |
 
-    Then she navigates to the next Api Connector wizard step "Review Swagger Actions"
-    Then she is presented with the Syndesis page "Review Swagger Actions"
-    Then she navigates to the next Api Connector wizard step "Security"
-    Then she is presented with the Syndesis page "Security"
-    Then she sets up security by "OAuth 2.0"
-    Then she navigates to the next Api Connector wizard step "General Connector Info"
-    Then she is presented with the Syndesis page "General Connector Info"
+    Then she navigates to the next Api Connector wizard step "Review Actions"
+    Then she is presented with the Syndesis page "Review Actions"
+    Then she navigates to the next Api Connector wizard step "Specify Security"
+    Then she is presented with the Syndesis page "Specify Security"
+    Then she sets up security
+    | authType       | OAuth 2.0                             |
+    | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
+
+    Then she navigates to the next Api Connector wizard step "Review Edit Connector Details"
+    Then she is presented with the Syndesis page "Review Edit Connector Details"
     And she creates new connector
 
     Then she is presented with the new connector "Swagger Petstore"
 
   @edit-api-connector
   Scenario: EDIT custom API client connector parameters
-    When Camilla creates new API connector "Swagger Petstore"
-      | security | authType | OAuth 2.0 |
+    When Camilla creates new API connector
+      | source   | file           | swagger/connectors/petstore.json      |
+      | security | authType       | OAuth 2.0                             |
+      | security | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
+      | details  | connectorName  | Swagger Petstore                      |
 
     Then she opens the API connector "Swagger Petstore" detail
     And she is presented with the Syndesis page "Connector Details"
@@ -68,9 +76,13 @@ Feature: API connector test
 
   @delete-api-connector
   Scenario: DELETE custom API client connector
-    When Camilla creates new API connector "Swagger Petstore"
-      | security | authType | OAuth 2.0 |
+    When Camilla creates new API connector
+      | source   | file           | swagger/connectors/petstore.json      |
+      | security | authType       | OAuth 2.0                             |
+      | security | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
+      | details  | connectorName  | Swagger Petstore                      |
     And clicks on the "Delete" button
+
     Then she is presented with the Syndesis page "Modal Dialog"
     When clicks on the modal dialog "Cancel" button
     And she is presented with a connectors list of size 1
