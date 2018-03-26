@@ -2,17 +2,17 @@ Feature: sf scenarios
 
   Background: Clean application state
     Given clean SF, removes all leads with email: "jdoe@acme.com"
-    And remove all records from DB
+    And remove all records from table "todo"
     And create SF connection
 
   @integrations-sf-db
   Scenario: SF action on create - DB integration
     And create SF "salesforce-on-create" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
-    Then MAP using Step 1 and field "Company" to "company"
-    Then MAP using Step 1 and field "Email" to "email"
-    Then COMBINE using Step 1 and strategy "Space" into "first_and_last_name" and sources
-      | FirstName | LastName |
+    Then MAP using Step 1 and field "/Company" to "/company"
+    Then MAP using Step 1 and field "/Email" to "/email"
+    Then COMBINE using Step 1 and strategy "Space" into "/first_and_last_name" and sources
+      | /FirstName | /LastName |
     And create finish DB invoke stored procedure "add_lead" action step
     When create integration with name: "SF create to DB rest test"
     Then wait for integration with name: "SF create to DB rest test" to become active
@@ -24,7 +24,7 @@ Feature: sf scenarios
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "salesforce-on-delete" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
-    Then MAP using Step 1 and field "id" to "todo"
+    Then MAP using Step 1 and field "id" to "/todo"
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
@@ -36,8 +36,8 @@ Feature: sf scenarios
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "salesforce-on-update" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
-    Then COMBINE using Step 1 and strategy "Space" into "todo" and sources
-      | FirstName | LastName | Email |
+    Then COMBINE using Step 1 and strategy "Space" into "/todo" and sources
+      | /FirstName | /LastName | /Email |
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF update to DB rest test"
     Then wait for integration with name: "SF update to DB rest test" to become active
