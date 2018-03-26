@@ -39,7 +39,7 @@ Feature: API connector test
     And she opens new Api Connector wizard
     And she is presented with the Syndesis page "Upload Swagger"
     Then she uploads swagger file
-      | file | swagger_files/api_client_connector/petstore_swagger.json |
+      | file | swagger/connectors/petstore.json |
 
     Then she navigates to the next Api Connector wizard step "Review Swagger Actions"
     Then she is presented with the Syndesis page "Review Swagger Actions"
