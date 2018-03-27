@@ -60,7 +60,8 @@ public class CommonSteps {
         SALESFORCE,
         TWITTER,
         OPENSHIFT,
-        SYNDESIS
+        SYNDESIS,
+        S3
     }
 
     @Autowired
@@ -167,10 +168,10 @@ public class CommonSteps {
                     case TWITTER:
                         service = "Twitter";
                         break;
-                    case OPENSHIFT:
-                        return;
-                    case SYNDESIS:
-                        return;
+                    case S3:
+                        return; //TODO: skip for now
+                    default:
+                        return; //skip for other cred
                 }
 
                 //type
@@ -229,8 +230,12 @@ public class CommonSteps {
     public void clickOnButton(String buttonTitle) {
         if (buttonTitle.equals("Done")) {
             // this is hack to replace Done with Next if not present
-            buttonTitle = syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().is(visible) ? buttonTitle : "Next";
+            try {
+                syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
+                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
+            } catch (Throwable t) {
+                buttonTitle = "Next";
+            }
         }
         syndesisRootPage.getButton(buttonTitle).shouldBe(visible).click();
     }
