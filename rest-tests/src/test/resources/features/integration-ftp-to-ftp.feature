@@ -1,22 +1,19 @@
-Feature: ftp scenario
+@integration-ftp-ftp
+Feature: Integration - FTP to FTP
 
-  Background: Clean application state
-
-  @integration-ftp-ftp
-  Scenario: ftp - ftp integration
+  Background: Prepare
     Given clean application state
     Given clean FTP server
-    And create the FTP connection using "ftp" template
+    Given deploy FTP server
 
-    Then puts "1MB.zip" file in the FTP "/download" directory
-
+  Scenario: Download Upload test
+    When create the FTP connection using "FTP" template
     And creates start FTP download action with values
       | fileName | directoryName | initialDelay | delay | delete |
-      | 1MB.zip  | /download     | 1000         | 500   | Yes    |
-    Then creates finish FTP upload action with values
-      | fileName     | directoryName | fileExist | tempPrefix       | tempFileName        |
-      | 1MB_out.zip  | /upload       | Override  | copyingprefix    | copying_1MB_out     |
+      | test.txt | download      | 1000         | 500   | true   |
+    And creates finish FTP upload action with values
+      | fileName  | directoryName | fileExist | tempPrefix    | tempFileName        |
+      | test.txt  | upload        | Override  | copyingprefix | copying_test_out    |
     Then create integration with name: "FTP to FTP rest test"
-    Then wait for integration with name: "FTP to FTP rest test" to become active
-
-    Then validate that file "1MB.zip" has been transfered from "/download" to "/upload" directory
+    And wait for integration with name: "FTP to FTP rest test" to become active
+    And validate that file "test.txt" has been transfered from "/download" to "/upload" directory
