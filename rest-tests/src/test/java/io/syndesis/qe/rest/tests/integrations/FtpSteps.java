@@ -1,5 +1,6 @@
 package io.syndesis.qe.rest.tests.integrations;
 
+import io.syndesis.qe.utils.RestConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -34,7 +35,7 @@ public class FtpSteps {
     @And("^creates start FTP download action with values$")
     public void setFtpDownloadData(DataTable sourceMappingData) {
 
-        final Connection ftpConnection = connectionsEndpoint.get(getFtpConnectionId());
+        final Connection ftpConnection = connectionsEndpoint.get(RestConstants.getFTP_CONNECTION_ID());
         final Connector ftpConnector = connectorsEndpoint.get("ftp");
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
@@ -44,7 +45,7 @@ public class FtpSteps {
                 .connection(ftpConnection)
                 .id(UUID.randomUUID().toString())
                 .action(TestUtils.findConnectorAction(ftpConnector, "io.syndesis:ftp-download-connector"))
-                .configuredProperties(TestUtils.map(dataMap))
+                .configuredProperties(dataMap)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
@@ -52,7 +53,7 @@ public class FtpSteps {
     @And("^creates finish FTP upload action with values$")
     public void setFtpUploadData(DataTable sourceMappingData) {
 
-        final Connection ftpConnection = connectionsEndpoint.get(getFtpConnectionId());
+        final Connection ftpConnection = connectionsEndpoint.get(RestConstants.getFTP_CONNECTION_ID());
         final Connector ftpConnector = connectorsEndpoint.get("ftp");
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
@@ -62,13 +63,9 @@ public class FtpSteps {
                 .connection(ftpConnection)
                 .id(UUID.randomUUID().toString())
                 .action(TestUtils.findConnectorAction(ftpConnector, "io.syndesis:ftp-upload-connector"))
-                .configuredProperties(TestUtils.map(dataMap))
+                .configuredProperties(dataMap)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
 
-//    AUXILIARIES:
-    private String getFtpConnectionId() {
-        return connectionsEndpoint.list().stream().filter(s -> s.getName().equals("Ftp")).findFirst().get().getId().get();
-    }
 }
