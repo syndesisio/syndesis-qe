@@ -7,17 +7,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.syndesis.common.model.integration.Integration;
 import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 import io.syndesis.qe.endpoints.ActivityIntegrationsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.endpoints.IntegrationsMetricsEndpoint;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.server.endpoint.v1.handler.activity.Activity;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +47,7 @@ public class MonitoringValidationSteps {
 //        2. get metrics info:
         Long nrOfMessages = summary.getMessages();
         log.info("MESSAGES SUMMARY: *{}*", nrOfMessages);
-        Assertions.assertThat(nrOfMessages).isEqualTo(3);
+        Assertions.assertThat(nrOfMessages).isGreaterThan(nr);
 
         Date lastProceded = summary.getLastProcessed().get();
         log.info("LAST MESSAGE WAS PROCEEDED ON: *{}*", lastProceded);

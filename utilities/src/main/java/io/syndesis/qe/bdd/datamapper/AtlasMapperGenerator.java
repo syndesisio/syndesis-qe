@@ -363,7 +363,7 @@ public class AtlasMapperGenerator {
             json.getJSONObject("descriptor").put("inputDataShape", inputDataType);
             json.getJSONObject("descriptor").put("outputDataShape", outputDataType);
             ts = Json.reader().forType(Action.class).readValue(json.toString());
-            log.info(mapper.writeValueAsString(ts));
+            log.debug(mapper.writeValueAsString(ts));
 
         } catch (IOException ex) {
             log.error("Error: " + ex);
