@@ -72,8 +72,8 @@ public class MonitoringValidationSteps {
             String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
             Assertions.assertThat(logText)
                     .isNotEmpty()
-                    .containsPattern(Pattern.compile("\\{\"exchange\":\"i-.*$\",\"status\":\"begin\"}"))
-                    .containsPattern(Pattern.compile("\\{\"exchange\":\"i-.*$\",\"status\":\"done\",\"failed\":false}"));
+                    .containsPattern(Pattern.compile("\\{\"exchange\":\"i-.*\",\"status\":\"begin\"}"))
+                    .containsPattern(Pattern.compile("\\{\"exchange\":\"i-.*\",\"status\":\"done\",\"failed\":false}"));
 
         } else {
             Assertions.fail("No pod found for pod name: " + podName);
