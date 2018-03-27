@@ -118,8 +118,12 @@ public class TestConfiguration {
 
         // pom defined property
         String syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
-        props.setProperty(SYNDESIS_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", syndesisVersion));
-        props.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", syndesisVersion));
+        if (props.getProperty(SYNDESIS_TEMPLATE_URL) == null) {
+            props.setProperty(SYNDESIS_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", syndesisVersion));
+        }
+        if (props.getProperty(SYNDESIS_TEMPLATE_SA) == null) {
+            props.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", syndesisVersion));
+        }
 
         return props;
     }
