@@ -113,6 +113,7 @@ public class ConnectionsGeneralSteps {
     @Given("^create the FTP connection using \"([^\"]*)\" template")
     public void createFtpConnection(String ftpTemplate) {
 
+        connectionsEndpoint.list().forEach(c -> log.info(c.getName()));
         final Connector ftpConnector = connectorsEndpoint.get("ftp");
         final Account ftpAccount = accountsDirectory.getAccount(ftpTemplate).get();
         log.info("Template name:  {}", ftpTemplate);
@@ -123,17 +124,17 @@ public class ConnectionsGeneralSteps {
                 .id(RestConstants.getInstance().getFTP_CONNECTION_ID())
                 .name("New Fuse QE FTP")
                 .configuredProperties(TestUtils.map(
-                        "binary", ftpAccount.getProperty("binary"),
-                        "connectTimeout", ftpAccount.getProperty("connectTimeout"),
-                        "disconnect", ftpAccount.getProperty("disconnect"),
+//                        "binary", ftpAccount.getProperty("binary"),
+//                        "connectTimeout", ftpAccount.getProperty("connectTimeout"),
+//                        "disconnect", ftpAccount.getProperty("disconnect"),
                         "host", ftpAccount.getProperty("host"),
-                        "maximumReconnectAttempts", ftpAccount.getProperty("maximumReconnectAttempts"),
-                        "passiveMode", ftpAccount.getProperty("passiveMode"),
-                        "password", ftpAccount.getProperty("password"),
-                        "port", ftpAccount.getProperty("port"),
-                        "reconnectDelay", ftpAccount.getProperty("reconnectDelay"),
-                        "timeout", ftpAccount.getProperty("timeout"),
-                        "username", ftpAccount.getProperty("username")
+//                        "maximumReconnectAttempts", ftpAccount.getProperty("maximumReconnectAttempts"),
+//                        "passiveMode", ftpAccount.getProperty("passiveMode"),
+//                        "password", ftpAccount.getProperty("password"),
+                        "port", ftpAccount.getProperty("port")
+//                        "reconnectDelay", ftpAccount.getProperty("reconnectDelay"),
+//                        "timeout", ftpAccount.getProperty("timeout"),
+//                        "username", ftpAccount.getProperty("username")
                 ))
                 .icon("fa-ftp")
                 .tags(Arrays.asList("ftp"))
