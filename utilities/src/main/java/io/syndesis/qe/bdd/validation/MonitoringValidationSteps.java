@@ -1,11 +1,13 @@
 package io.syndesis.qe.bdd.validation;
 
+import io.syndesis.qe.utils.LogCheckerUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -61,14 +63,18 @@ public class MonitoringValidationSteps {
 
         //1.
         List<Activity> activityIntegrationLogs = activityIntegrationsEndpoint.list(integrationId);
-        activityIntegrationLogs.stream().forEach(activity -> log.info("LOGS ACTIVITY: *{}*", activity.getPod()));
+        activityIntegrationLogs.stream().forEach(activity -> log.debug("LOGS ACTIVITY: *{}*", activity.getPod()));
         //I suppose there is the same pod for every activity
         String podName = activityIntegrationLogs.get(0).getPod();
 
-        Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(podName)).findFirst();
-        if (buildPod.isPresent()) {
-            String logText = OpenShiftUtils.getInstance().getPodLog(buildPod.get());
-            Assertions.assertThat(logText).isNotEmpty();
+        Optional<Pod> integrationPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(podName)).findFirst();
+        if (integrationPod.isPresent()) {
+            String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
+            Assertions.assertThat(logText)
+                    .isNotEmpty()
+                    .containsPattern(Pattern.compile("\\{\"exchange\":\"i-.*$\",\"status\":\"begin\"}"))
+                    .containsPattern(Pattern.compile("\\{\"exchange\":\"i-.*$\",\"status\":\"done\",\"failed\":false}"));
+
         } else {
             Assertions.fail("No pod found for pod name: " + podName);
         }
