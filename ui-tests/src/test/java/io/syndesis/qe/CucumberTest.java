@@ -21,6 +21,7 @@ public class CucumberTest extends TestSuiteParent {
         //We will now use custom web driver
         //Configuration.browser = TestConfiguration.syndesisBrowser();
         Configuration.browser = "io.syndesis.qe.CustomWebDriverProvider";
+        Configuration.browserSize= "1920x1080";
     }
 
 }
