@@ -1,6 +1,5 @@
 package io.syndesis.qe.utils;
 
-import io.syndesis.qe.Component;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -26,6 +25,9 @@ import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
+import io.fabric8.openshift.api.model.Route;
+import io.syndesis.qe.Component;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class RestUtils {
 
     private static LocalPortForward localPortForward = null;
-    private static String restUrl = null;
+    private static Optional<String> restUrl = Optional.empty();
 
     private RestUtils() {
     }
@@ -101,16 +103,35 @@ public final class RestUtils {
     }
 
     public static String getRestUrl() {
+
+        //TODO(tplevko): before the rest route is generated, check whether it is live. If not, add wait and retry several times
+        // and then after some attempts recreate
+        if (!restUrl.isPresent()) {
+            if (TestConfiguration.useServerRoute()) {
+                setupRestPodRoute();
+            } else {
+                setupLocalPortForward();
+            }
+        }
+        return restUrl.get();
+    }
+
+    public static void setupRestPodRoute() {
+        Route route = OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.openShiftRouteSuffix());
+        restUrl = Optional.of(String.format("https://%s", route.getSpec().getHost()));
+        log.debug("rest endpoint URL: " + restUrl.get());
+    }
+
+    public static void setupLocalPortForward() {
         if (localPortForward == null || !localPortForward.isAlive()) {
             log.debug("creating local port forward for pod syndesis-server");
             localPortForward = TestUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
             try {
-                restUrl = String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort());
+                restUrl = Optional.of(String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort()));
             } catch (IllegalStateException ex) {
-                restUrl = String.format("http://%s:%s", "127.0.0.1", 8080);
+                restUrl = Optional.of(String.format("http://%s:%s", "127.0.0.1", 8080));
             }
-            log.debug("rest endpoint URL: " + restUrl);
+            log.debug("rest endpoint URL: " + restUrl.get());
         }
-        return restUrl;
     }
 }
