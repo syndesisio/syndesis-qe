@@ -27,6 +27,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_CALLBACK_URL_SUFFIX = "syndesis.config.callbackUrlSuffix";
 
     public static final String SYNDESIS_REST_API_PATH = "syndesis.config.rest.api.path";
+    public static final String SYNDESIS_SERVER_ROUTE = "syndesis.config.server.route";
 
     public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
     public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
@@ -99,12 +100,15 @@ public class TestConfiguration {
 
     public static boolean namespaceLock() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_LOCK)); }
 
+    public static boolean useServerRoute() { return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE)); }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
         props.setProperty(OPENSHIFT_URL, "");
         props.setProperty(OPENSHIFT_TOKEN, "");
         props.setProperty(SYNDESIS_REST_API_PATH, "/api/v1");
+        props.setProperty(SYNDESIS_SERVER_ROUTE, "false");
 
         props.setProperty(SYNDESIS_CREDENTIALS_FILE, "../credentials.json");
         props.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
