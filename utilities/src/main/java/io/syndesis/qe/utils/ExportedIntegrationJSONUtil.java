@@ -81,8 +81,7 @@ public class ExportedIntegrationJSONUtil {
                 .containsIgnoringCase("»ENC:");
 
         Assertions.assertThat(configuredProperties.getString("clientId"))
-                .isNotEmpty()
-                .containsIgnoringCase("»ENC:");
+                .isNotEmpty();
     }
 
     private static void testTwitterEncryption(JSONObject json) {
