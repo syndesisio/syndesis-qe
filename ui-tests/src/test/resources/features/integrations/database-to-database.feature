@@ -4,8 +4,9 @@ Feature: Test functionality of DB connection
   Background: Clean application state
     Given clean application state
     Given "Camilla" logs into the Syndesis
-    Given clean TODO table
 
+    Given reset content of "todo" table
+    Given reset content of "contact" table
 #
 #  1. select - update
 #
@@ -126,7 +127,7 @@ Feature: Test functionality of DB connection
     #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
-    Then she fills periodic query input with "SELECT * FROM CONTACT" value
+    Then she fills periodic query input with "SELECT * FROM CONTACT WHERE first_name = 'Joe'" value
     Then she fills period input with "10" value
     Then she selects "Seconds" from sql dropdown
     And clicks on the "Done" button
@@ -165,6 +166,8 @@ Feature: Test functionality of DB connection
   @db-connection-crud-4-read-update-inbuilt
   Scenario: Create integration to test DB connector for read and create operations via stored procedure
       # INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
+
+
     When inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
 
@@ -197,7 +200,6 @@ Feature: Test functionality of DB connection
     And she selects "Data Mapper" integration step
     Then she is presented with data mapper ui
     And she creates mapping from "company" to "company"
-    And she creates mapping from "first_name" to "first_and_last_name"
     And she creates mapping from "last_name" to "first_and_last_name"
     And she creates mapping from "lead_source" to "lead_source"
 
