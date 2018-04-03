@@ -29,7 +29,7 @@ public class TwValidationSteps {
     public TwValidationSteps() {
 
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account twitterTalky = accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT()).get();
+        final Account twitterTalky = accountsDirectory.getAccount(RestConstants.SYNDESIS_TALKY_ACCOUNT).get();
         //twitter
         final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()
                 .setOAuthConsumerKey(twitterTalky.getProperty("consumerKey"))
@@ -48,7 +48,7 @@ public class TwValidationSteps {
     @Then("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
     public void sendTweet(String toAcc, String tweet) throws TwitterException {
         final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
-        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(RestConstants.getInstance().getSYNDESIS_TALKY_ACCOUNT())
+        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(RestConstants.SYNDESIS_TALKY_ACCOUNT)
                 .get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
         twitter.updateStatus(message);
         log.info("Tweet submitted.");

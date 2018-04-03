@@ -44,7 +44,7 @@ public class ConnectionsGeneralSteps {
         final Connection twitterConnection = new Connection.Builder()
                 .connector(twitterConnector)
                 .connectorId(getConnectorId(twitterConnector))
-                .id(RestConstants.getInstance().getTWITTER_CONNECTION_ID())
+                .id(RestConstants.TWITTER_CONNECTION_ID)
                 .name("New Fuse QE twitter listen")
                 .configuredProperties(TestUtils.map(
                         "accessToken", twitterAccount.getProperty("accessToken"),
@@ -68,7 +68,7 @@ public class ConnectionsGeneralSteps {
         final Connection salesforceConnection = new Connection.Builder()
                 .connector(salesforceConnector)
                 .connectorId(getConnectorId(salesforceConnector))
-                .id(RestConstants.getInstance().getSALESFORCE_CONNECTION_ID())
+                .id(RestConstants.SALESFORCE_CONNECTION_ID)
                 .icon("fa-puzzle-piece")
                 .name("New Fuse QE salesforce")
                 .configuredProperties(TestUtils.map(
@@ -121,7 +121,7 @@ public class ConnectionsGeneralSteps {
         final Connection ftpConnection = new Connection.Builder()
                 .connector(ftpConnector)
                 .connectorId(getConnectorId(ftpConnector))
-                .id(RestConstants.getInstance().getFTP_CONNECTION_ID())
+                .id(RestConstants.FTP_CONNECTION_ID)
                 .name("New Fuse QE FTP")
                 .configuredProperties(TestUtils.map(
 //                        "binary", ftpAccount.getProperty("binary"),
