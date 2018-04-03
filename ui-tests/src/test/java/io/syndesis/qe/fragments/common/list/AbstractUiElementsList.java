@@ -36,5 +36,12 @@ public abstract class AbstractUiElementsList extends SyndesisPageObject {
 
     abstract SelenideElement getTitle(String title);
 
-    abstract boolean invokeActionOnItem(String title, ListAction action);
+    public void invokeActionOnItem(String title, ListAction action) {
+        switch(action) {
+            case CLICK:
+                getItem(title).shouldBe(visible).click();
+                break;
+            default:
+        }
+    }
 }

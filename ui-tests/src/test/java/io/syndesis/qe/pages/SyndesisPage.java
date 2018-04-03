@@ -14,26 +14,24 @@ import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
-import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentFtpDownload;
-import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentInvokeSql;
-import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsPublish;
-import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsRequest;
-import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentPeriodicSql;
-import io.syndesis.qe.pages.integrations.edit.actions.ActionConfigureComponentJmsSubscribe;
-import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentFinish;
-import io.syndesis.qe.pages.integrations.edit.IntegrationConnectionSelectComponentStart;
-import io.syndesis.qe.pages.integrations.edit.IntegrationSaveOrAddStepComponent;
-import io.syndesis.qe.pages.integrations.list.IntegrationsListPage;
+import io.syndesis.qe.pages.integrations.editor.AddToIntegration;
+import io.syndesis.qe.pages.integrations.editor.add.ChooseFinishConnection;
+import io.syndesis.qe.pages.integrations.editor.add.ChooseStartConnection;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.InvokeSql;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.PeriodicSql;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.ftp.FtpDownload;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsPublish;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsRequest;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsSubscribe;
 
 public enum SyndesisPage {
     CONNECTIONS(new Connections()),
     CONNECTION_CREATE(new ConnectionWizard()),
     CONNECTION_DETAIL(new ConnectionDetail()),
-    INTEGRATIONS_LIST(new IntegrationsListPage()),
-    SELECT_START_CONNECTION(new IntegrationConnectionSelectComponentStart()),
-    SELECT_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
-    CHOOSE_A_FINISH_CONNECTION(new IntegrationConnectionSelectComponentFinish()),
-    ADD_TO_INTEGRATION(new IntegrationSaveOrAddStepComponent()),
+    SELECT_START_CONNECTION(new ChooseStartConnection()),
+    SELECT_FINISH_CONNECTION(new ChooseFinishConnection()),
+    CHOOSE_A_FINISH_CONNECTION(new ChooseFinishConnection()),
+    ADD_TO_INTEGRATION(new AddToIntegration()),
 
     CUSTOMIZATIONS(new CustomizationsPage()),
     API_CLIENT_CONNECTORS(new ApiClientConnectors()),
@@ -46,15 +44,15 @@ public enum SyndesisPage {
     EXTENSIONS(new TechExtensionsListComponent()),
     IMPORT_EXTENSION(new TechExtensionsImportPage()),
     EXTENSION_DETAILS(new TechExtensionDetailPage()),
-    PERIODIC_SQL_INVOCATION(new ActionConfigureComponentPeriodicSql()),
-    INVOKE_SQL(new ActionConfigureComponentInvokeSql()),
+    PERIODIC_SQL_INVOCATION(new PeriodicSql()),
+    INVOKE_SQL(new InvokeSql()),
     ACTIVEMQ_CONFIGURATION(new ConfigureConnectionAmq()),
-    SUBSCRIBE_FOR_MESSAGES(new ActionConfigureComponentJmsSubscribe()),
-    PUBLISH_MESSAGES(new ActionConfigureComponentJmsPublish()),
-    REQUEST_RESPONSE_USING_MESSAGES(new ActionConfigureComponentJmsRequest()),
-    DOWNLOAD(new ActionConfigureComponentFtpDownload()),
+    SUBSCRIBE_FOR_MESSAGES(new JmsSubscribe()),
+    PUBLISH_MESSAGES(new JmsPublish()),
+    REQUEST_RESPONSE_USING_MESSAGES(new JmsRequest()),
+    DOWNLOAD(new FtpDownload()),
 
-//    REQUEST_RESPONSE_USING_MESSAGES(new IntegrationActivityListComponent()),
+//    REQUEST_RESPONSE_USING_MESSAGES(new IntegrationActivity()),
 
 
     MODAL_DIALOG(new ModalDialogPage());

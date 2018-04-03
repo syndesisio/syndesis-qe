@@ -41,7 +41,7 @@ public class ExtensionSteps {
         CommonSteps commonSteps = new CommonSteps();
 
         String extensionsLink = "Extensions";
-        String importButton = "Import Extension";
+        String importButton = "ImportIntegration Extension";
 
         List<List<String>> dataTable = extensionsData.raw();
 
@@ -61,7 +61,7 @@ public class ExtensionSteps {
                 log.warn("Extension {} already exists!", extensionName);
             } else {
                 commonSteps.clickOnButton(importButton);
-                commonSteps.validatePage("", "Import Extension");
+                commonSteps.validatePage("", "ImportIntegration Extension");
 
                 uploadFile(extensionFileName);
                 importDetails();
