@@ -47,7 +47,7 @@ public class DbValidationSteps {
         Thread.sleep(5000);
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()),
+        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
@@ -62,7 +62,7 @@ public class DbValidationSteps {
     public void validateLead() {
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()),
+        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
@@ -79,7 +79,7 @@ public class DbValidationSteps {
         Thread.sleep(ms + 1000);
         final long start = System.currentTimeMillis();
         // We wait for at least 1 record to appear in DB (procedure goes on every 5 seconds).
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.getInstance().getTODO_APP_NAME()),
+        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
