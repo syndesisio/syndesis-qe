@@ -18,17 +18,25 @@ public class DbUtils {
         this.dbConnection = dbConnection;
     }
 
+
     /**
-     * Execute given SQL command on sampledb in syndesis-db pod.
-     *
-     * @param sqlCommnad
-     * @return
+     * ******************************************
+     * BASIC METHODS
+     * ******************************************
      */
-    public ResultSet readSqlOnSampleDb(String sqlCommnad) {
+
+
+    /**
+     * Best to use with SELECT
+     *
+     * @param sqlCommand
+     * @return a ResultSet object that contains the data produced by the query; never null
+     */
+    public ResultSet executeSQLGetResultSet(String sqlCommand) {
         ResultSet resultSet = null;
         final PreparedStatement preparedStatement;
         try {
-            preparedStatement = dbConnection.prepareStatement(sqlCommnad);
+            preparedStatement = dbConnection.prepareStatement(sqlCommand);
             resultSet = preparedStatement.executeQuery();
         } catch (SQLException ex) {
             log.error("Error: " + ex);
@@ -36,9 +44,15 @@ public class DbUtils {
         return resultSet;
     }
 
-    public int updateSqlOnSampleDb(String sqlCommnad) {
-        int result = -2;
+    /**
+     * Best to use with INSERT, UPDATE or DELETE
+     *
+     * @param sqlCommnad
+     * @return either the row count for sqlCommnad statements or 0 for sqlCommnad statements that return nothing
+     */
+    public int executeSQLGetUpdateNumber(String sqlCommnad) {
         final PreparedStatement preparedStatement;
+        int result = -1;
         try {
             preparedStatement = dbConnection.prepareStatement(sqlCommnad);
             result = preparedStatement.executeUpdate();
@@ -48,47 +62,46 @@ public class DbUtils {
         return result;
     }
 
+
     /**
-     * Get number of records in table.
+     * ******************************************
+     * SPECIFIC METHODS
+     * ******************************************
+     */
+
+
+    /**
+     * Get number of records in specific table. You may specify column and value.
+     * <p>
+     * Example:
+     * <p>
+     * <p>
+     * getNumberOfRecordsInTable(myTable)
+     * <p>
+     * or
+     * <p>
+     * getNumberOfRecordsInTable(myTable, desiredColumn, desiredValue)
      *
-     * @param tableName - name of the table, of which we want the number of items.
+     * @param tableName
+     * @param args      check example
      * @return
      */
-    public int getNumberOfRecordsInTable(String tableName) {
-
-        int records = 0;
-        final PreparedStatement preparedStatement;
-        try {
-            preparedStatement = dbConnection.prepareStatement("SELECT COUNT(*) FROM " + tableName);
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                records = resultSet.getInt(1);
-            }
-        } catch (SQLException ex) {
-            log.error("Error: " + ex);
+    public int getNumberOfRecordsInTable(String tableName, String... args) {
+        if (!(args.length == 0 || args.length == 2)) {
+            throw new IllegalArgumentException("Incorrect usage of this method.");
         }
-        log.debug("Number of records: " + records);
-
-        return records;
-    }
-
-    /**
-     * Get number of records in table specified.
-     *
-     * @param tableName  - name of the DB table.
-     * @param columnName - name of column in that table.
-     * @param value      - value of the parameter.
-     * @return
-     */
-    public int getNumberOfRecordsInTable(String tableName, String columnName, String value) {
 
         int records = 0;
-        final PreparedStatement preparedStatement;
         try {
-            String sql = "SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " LIKE '" + value + "'";
+            String sql = "SELECT COUNT(*) FROM " + tableName;
+
+            if (args.length == 2) {
+                //be specific
+                sql = "SELECT COUNT(*) FROM " + tableName + " WHERE " + args[0] + " LIKE '" + args[1] + "'";
+            }
             log.info("SQL: *{}*", sql);
-            preparedStatement = dbConnection.prepareStatement(sql);
-            final ResultSet resultSet = preparedStatement.executeQuery();
+            final ResultSet resultSet = executeSQLGetResultSet(sql);
+
             while (resultSet.next()) {
                 records = resultSet.getInt(1);
             }
@@ -103,11 +116,9 @@ public class DbUtils {
     public int getCountOfInvokedQuery(String query) {
 
         int records = 0;
-        final PreparedStatement preparedStatement;
         try {
             log.info("SQL: *{}*", query);
-            preparedStatement = dbConnection.prepareStatement(query);
-            final ResultSet resultSet = preparedStatement.executeQuery();
+            final ResultSet resultSet = executeSQLGetResultSet(query);
 
             //inefficient but it works :/ our table has 2 rows so it is not a problem...
             while (resultSet.next()) {
@@ -120,9 +131,6 @@ public class DbUtils {
         return records;
     }
 
-    public boolean invokeQuery(String query) throws SQLException {
-        return dbConnection.prepareStatement(query).execute();
-    }
 
     /**
      * Removes all data from specified table.
@@ -130,19 +138,14 @@ public class DbUtils {
      * @param tableName
      */
     public void deleteRecordsInTable(String tableName) {
-        final PreparedStatement preparedStatement;
-        try {
-            preparedStatement = dbConnection.prepareStatement("Delete FROM " + tableName);
-            preparedStatement.executeUpdate();
-            log.debug("Cleared table: " + tableName);
-        } catch (SQLException ex) {
-            log.error("Error: " + ex);
-        }
+        String sql = "Delete FROM " + tableName;
+        executeSQLGetUpdateNumber(sql);
+        log.debug("Cleared table: " + tableName);
     }
 
     public void resetContactTable() {
         deleteRecordsInTable("contact");
-        Assertions.assertThat(updateSqlOnSampleDb
+        Assertions.assertThat(executeSQLGetUpdateNumber
                 ("insert into contact values " +
                         "('Joe', 'Jackson', 'Red Hat', 'db', '" + LocalDateTime.now().toLocalDate() + "')"))
                 .isEqualTo(1);
