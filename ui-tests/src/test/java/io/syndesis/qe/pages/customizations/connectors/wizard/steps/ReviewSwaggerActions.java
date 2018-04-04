@@ -11,7 +11,7 @@ import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 
-public class ReviewActions extends SyndesisPageObject implements WizardPhase {
+public class ReviewSwaggerActions extends SyndesisPageObject implements WizardPhase {
 
     private static class Button {
         public static By NEXT = By.xpath("//button[contains(.,'Next')]");
@@ -19,16 +19,6 @@ public class ReviewActions extends SyndesisPageObject implements WizardPhase {
 
     private static class Element {
         public static By ROOT = By.cssSelector("syndesis-api-connector-review");
-    }
-
-    private static class Input {
-        public static By CONNECTOR_NAME = By.id("name");
-        public static By HOST = By.id("host");
-        public static By BASE_URL = By.id("basePath");
-    }
-
-    private static class TextArea {
-        public static By DESCRIPTION = By.id("description");
     }
 
     @Override
@@ -44,20 +34,5 @@ public class ReviewActions extends SyndesisPageObject implements WizardPhase {
     @Override
     public boolean validate() {
         return getRootElement().exists();
-    }
-
-    public void setConnectorName(String name) {
-        $(Input.CONNECTOR_NAME).setValue(name);
-    }
-    public void setDescription(String description) {
-        $(TextArea.DESCRIPTION).setValue(description);
-    }
-
-    public void setHost(String host) {
-        $(Input.HOST).setValue(host);
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        $(Input.BASE_URL).setValue(baseUrl);
     }
 }
