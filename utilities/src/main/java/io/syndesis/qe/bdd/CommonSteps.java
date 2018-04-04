@@ -30,7 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonSteps {
 
-    private DbUtils dbUtils = new DbUtils(SampleDbConnectionManager.getConnection());
+    private DbUtils dbUtils;
+
+    public CommonSteps() {
+        this.dbUtils = new DbUtils(SampleDbConnectionManager.getConnection());
+    }
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
