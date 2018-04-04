@@ -46,9 +46,9 @@ public class TwSteps extends AbstractStep {
     public void createTwitterStep(String twitterAction) {
 
         final Connector twitterConnector = connectorsEndpoint.get("twitter");
-        final Connection twitterConnection = connectionsEndpoint.get(RestConstants.getInstance().getTWITTER_CONNECTION_ID());
+        final Connection twitterConnection = connectionsEndpoint.get(RestConstants.TWITTER_CONNECTION_ID);
         final Action twAction = TestUtils.findConnectorAction(twitterConnector, twitterAction);
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(twAction, new HashMap<>(), RestConstants.getInstance().getTWITTER_CONNECTION_ID());
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(twAction, new HashMap<>(), RestConstants.TWITTER_CONNECTION_ID);
 
         final Step twitterStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
