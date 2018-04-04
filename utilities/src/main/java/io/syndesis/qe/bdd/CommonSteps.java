@@ -56,7 +56,7 @@ public class CommonSteps {
         components.forEach(c -> {
             Runnable runnable = () ->
                     OpenShiftUtils.xtf().waiters()
-                            .areExactlyNPodsRunning(1, "component", c.getName())
+                            .areExactlyNPodsReady(1, "component", c.getName())
                             .interval(TimeUnit.SECONDS, 20)
                             .timeout(TimeUnit.MINUTES, 12)
                             .assertEventually();
