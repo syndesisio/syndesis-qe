@@ -17,16 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SampleDbConnectionManager {
 
     private static LocalPortForward localPortForward = null;
-    private static String dbUrl;
     private static Connection dbConnection = null;
-    private static SampleDbConnectionManager instance;
 
-    public static SampleDbConnectionManager getInstance() {
-        if (instance == null) {
-            instance = new SampleDbConnectionManager();
-        }
-        return instance;
-    }
 
     private SampleDbConnectionManager() {
     }
@@ -39,6 +31,7 @@ public class SampleDbConnectionManager {
         }
         try {
             if (dbConnection == null || dbConnection.isClosed()) {
+                String dbUrl;
                 try {
                     dbUrl = String.format("jdbc:postgresql://%s:%s/sampledb", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort());
                 } catch (IllegalStateException ex) {
@@ -58,6 +51,7 @@ public class SampleDbConnectionManager {
         TestUtils.terminateLocalPortForward(localPortForward);
         try {
             if (dbConnection == null) {
+                log.debug("There was no connection to database created, nothing to close.");
                 return;
             }
             if (!dbConnection.isClosed()) {

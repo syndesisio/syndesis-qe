@@ -33,7 +33,7 @@ public class DbValidationSteps {
     private final DbUtils dbUtils;
 
     public DbValidationSteps() {
-        dbUtils = new DbUtils(SampleDbConnectionManager.getInstance().getConnection());
+        dbUtils = new DbUtils(SampleDbConnectionManager.getConnection());
     }
 
     @Given("^remove all records from table \"([^\"]*)\"")
@@ -119,7 +119,7 @@ public class DbValidationSteps {
             }
         }
         log.info("SQL query: *{}*", sql);
-        int newId = dbUtils.updateSqlOnSampleDb(sql);
+        int newId = dbUtils.executeSQLGetUpdateNumber(sql);
 
         //assert new row in database has been created:
         Assertions.assertThat(newId).isEqualTo(1);
@@ -133,7 +133,7 @@ public class DbValidationSteps {
         List<Integer> completedAll = new ArrayList<>();
         String sql = String.format("SELECT completed FROM todo WHERE task like '%s'", task);
         log.info("SQL **{}**", sql);
-        rs = dbUtils.readSqlOnSampleDb(sql);
+        rs = dbUtils.executeSQLGetResultSet(sql);
         while (rs.next()) {
             Assertions.assertThat(rs.getInt("completed")).isEqualTo(val);
         }
@@ -160,11 +160,7 @@ public class DbValidationSteps {
 
     @And("^.*invokes? database query \"([^\"]*)\"")
     public void invokeQuery(String query) throws SQLException {
-        if (query.contains("delete") || query.contains("Delete") || query.contains("DELETE")) {
-            Assertions.assertThat(dbUtils.invokeQuery(query)).isFalse();
-        } else {
-            Assertions.assertThat(dbUtils.invokeQuery(query)).isTrue();
-        }
+        Assertions.assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
     }
 
     @Given("^.*reset content of \"([^\"]*)\" table")
@@ -178,6 +174,7 @@ public class DbValidationSteps {
     }
 
 //AUXILIARIES:
+
     /**
      * Used for verification of successful creation of a new task in the todo app.
      *
@@ -186,7 +183,7 @@ public class DbValidationSteps {
     private String getLeadTaskFromDb(String task) {
         String leadTask = null;
         log.info("***SELECT ID, TASK, COMPLETED FROM todo where task like '%" + task + "%'***");
-        try (ResultSet rs = dbUtils.readSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
                 + task + "%'");) {
             if (rs.next()) {
                 leadTask = rs.getString("TASK");
@@ -200,7 +197,7 @@ public class DbValidationSteps {
 
     private String getLeadTaskFromDb() {
         String leadTask = null;
-        try (ResultSet rs = dbUtils.readSqlOnSampleDb("SELECT ID, TASK, COMPLETED FROM todo");) {
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT ID, TASK, COMPLETED FROM todo");) {
             if (rs.next()) {
                 leadTask = rs.getString("TASK");
                 log.debug("TASK = " + leadTask);
