@@ -30,12 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class CommonSteps {
 
-    private DbUtils dbUtils;
-
-    public CommonSteps() {
-        this.dbUtils = new DbUtils(SampleDbConnectionManager.getConnection());
-    }
-
     @Given("^clean default namespace")
     public void cleanNamespace() {
         OpenShiftUtils.getInstance().cleanAndAssert();
@@ -112,12 +106,12 @@ public class CommonSteps {
 
     @Given("^execute SQL command \"([^\"]*)\"$")
     public void executeSql(String sqlCmd) {
-        dbUtils.executeSQLGetUpdateNumber(sqlCmd);
+        new DbUtils(SampleDbConnectionManager.getConnection()).executeSQLGetUpdateNumber(sqlCmd);
     }
 
     @Given("^clean TODO table$")
     public void cleanTodoTable() {
-        dbUtils.deleteRecordsInTable("TODO");
+        new DbUtils(SampleDbConnectionManager.getConnection()).deleteRecordsInTable("TODO");
     }
 
     @Given("^clean application state")
