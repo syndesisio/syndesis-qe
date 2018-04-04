@@ -11,24 +11,23 @@ import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 
-public class ReviewEditConnectorDetails extends SyndesisPageObject implements WizardPhase {
+public class Security extends SyndesisPageObject implements WizardPhase {
 
     private static class Button {
-
-        public static By CREATE_CONNECTOR = By.xpath("//button[contains(.,'Create Connector')]");
+        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
     }
 
     private static class Element {
-        public static By ROOT = By.cssSelector("syndesis-api-connector-info");
+        public static By ROOT = By.cssSelector("syndesis-api-connector-auth");
+    }
+
+    private static class Input {
+        public static By AUTHORIZATION_URL = By.xpath("//input[@formcontrolname='tokenEndpoint']");
     }
 
     @Override
     public void goToNextWizardPhase() {
-        finish();
-    }
-
-    public void finish() {
-        $(Button.CREATE_CONNECTOR).shouldBe(visible).click();
+        $(Button.NEXT).shouldBe(visible).click();
     }
 
     @Override
@@ -39,5 +38,9 @@ public class ReviewEditConnectorDetails extends SyndesisPageObject implements Wi
     @Override
     public boolean validate() {
         return getRootElement().exists();
+    }
+
+    public void setUpOAuth2Security(String authorizationUrl) {
+        $(Input.AUTHORIZATION_URL).setValue(authorizationUrl);
     }
 }
