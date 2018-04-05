@@ -1,12 +1,12 @@
 @api-connector
-Feature: API connector test
+Feature: Customization - API Connector CRUD
 
   Background:
     Given "Camilla" logs into the Syndesis
     Given clean application state
 
   @create-api-connector-from-url-test
-  Scenario: CREATE custom API client connector from swagger downloaded from url
+  Scenario: Create from url
     When "Camilla" navigates to the "Customizations" page
     Then she is presented with the Syndesis page "Customizations"
 
@@ -32,7 +32,7 @@ Feature: API connector test
     Then she is presented with the new connector "Swagger Petstore"
 
   @create-api-connector-from-file-test
-  Scenario: CREATE custom API client connector from local swagger file
+  Scenario: Create from local file
     When "Camilla" navigates to the "Customizations" page
     Then she is presented with the Syndesis page "Customizations"
 
@@ -58,7 +58,7 @@ Feature: API connector test
     Then she is presented with the new connector "Swagger Petstore"
 
   @edit-api-connector
-  Scenario: EDIT custom API client connector parameters
+  Scenario: Edit parameters
     When Camilla creates new API connector
       | source   | file           | swagger/connectors/petstore.json      |
       | security | authType       | OAuth 2.0                             |
@@ -75,14 +75,13 @@ Feature: API connector test
       | Base URL        | /v2-1                         | basePath     |
 
   @delete-api-connector
-  Scenario: DELETE custom API client connector
+  Scenario: Delete
     When Camilla creates new API connector
       | source   | file           | swagger/connectors/petstore.json      |
       | security | authType       | OAuth 2.0                             |
       | security | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
       | details  | connectorName  | Swagger Petstore                      |
     And clicks on the "Delete" button
-
     Then she is presented with the Syndesis page "Modal Dialog"
     When clicks on the modal dialog "Cancel" button
     And she is presented with a connectors list of size 1

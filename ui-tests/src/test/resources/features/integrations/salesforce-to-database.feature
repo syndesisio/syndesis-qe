@@ -1,5 +1,5 @@
 @integrations-salesforce-to-database
-Feature: Test to verify correct function of connections kebab menu
+Feature: Integration - Salesforce to DB
 
 
   Background: Clean application state
@@ -10,7 +10,7 @@ Feature: Test to verify correct function of connections kebab menu
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
   @integrations-salesforce-to-database-scenario
-  Scenario: Create integration from salesforce to postgresDB
+  Scenario: Create
     When inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
     Then "Camilla" navigates to the "Home" page

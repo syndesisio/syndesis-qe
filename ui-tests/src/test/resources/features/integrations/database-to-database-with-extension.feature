@@ -1,5 +1,5 @@
 @integrations-database-to-database-with-extension
-Feature: Upload tech extension and add it to integration
+Feature: Integration - DB to DB with extension
 
   Background: 
     Given clean application state
@@ -8,7 +8,7 @@ Feature: Upload tech extension and add it to integration
     	| Log Message Body | syndesis-extension-log-body-1.0.0 |
 
   @tech-extension-create-integration-with-new-tech-extension
-  Scenario: Create integration from DB to DB
+  Scenario: Create
     When "Camilla" logs into the Syndesis
     Then inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |

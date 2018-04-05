@@ -1,5 +1,5 @@
 @integrations-ftp-to-ftp
-Feature: Test functionality of FTP connection
+Feature: Integration - FTP to FTP
 
   Background: Clean application state
     Given clean application state
@@ -12,7 +12,7 @@ Feature: Test functionality of FTP connection
 #  1. download - upload
 #
   @ftp-download-ftp-upload
-  Scenario: Create integration to test DB connector for read and update operations
+  Scenario: Create
 
 #     -- TBD. for the time being, no need for adding file to FTP server:
 #    Then puts "1MB.zip" file in the FTP 'from' "directoryName"
