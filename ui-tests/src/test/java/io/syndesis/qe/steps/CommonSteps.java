@@ -207,7 +207,7 @@ public class CommonSteps {
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
     public void navigateToHelp(String title) {
-        SelenideElement helpDropdownMenu = $(By.id("dropdownHelp")).shouldBe(visible);
+        SelenideElement helpDropdownMenu = $(By.className("help")).shouldBe(visible);
 
         if (!helpDropdownMenu.getAttribute("class").contains("open")) {
             helpDropdownMenu.click();
