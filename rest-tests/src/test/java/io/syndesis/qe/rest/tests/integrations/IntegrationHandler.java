@@ -133,7 +133,7 @@ public class IntegrationHandler {
         } else {
 
             //mapping can be done on steps that preceed mapper step and the single step, which follows the mapper step.
-            log.info("Found mapper step, creating new atlas mapping.");
+            log.info("Found mapper step, creating new atlas mapping, mappers size:{}.", mappers.size());
             for (int i = 0; i < mappers.size(); i++) {
                 List<StepDefinition> precedingSteps = steps.getStepDefinitions().subList(0, steps.getStepDefinitions().indexOf(mappers.get(i)))
                         .stream().filter(s -> s.getConnectorDescriptor().isPresent()).collect(Collectors.toList());

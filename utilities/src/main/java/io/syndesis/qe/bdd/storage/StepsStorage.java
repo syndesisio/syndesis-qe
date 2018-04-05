@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.qe.bdd.entities.StepDefinition;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,14 +20,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StepsStorage {
 
+    @Getter
     private List<StepDefinition> stepDefinitions = null;
 
     public StepsStorage() {
         stepDefinitions = new ArrayList<>();
-    }
-
-    public List<StepDefinition> getStepDefinitions() {
-        return stepDefinitions;
     }
 
     public List<Step> getSteps() {
