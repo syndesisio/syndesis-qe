@@ -6,7 +6,7 @@ Feature: Integration - FTP to FTP
     Given clean FTP server
     Given deploy FTP server
 
-  Scenario: Download Upload test
+  Scenario: Download upload
     When create the FTP connection using "FTP" template
     And creates start FTP download action with values
       | fileName | directoryName | initialDelay | delay | delete |

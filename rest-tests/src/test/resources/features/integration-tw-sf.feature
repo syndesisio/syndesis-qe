@@ -1,7 +1,7 @@
-Feature: tw scenarios
+Feature: Integration - Twitter to Salesforce
 
   @integrations-tw-sf
-  Scenario: TW - SF integration
+  Scenario: Create
     Given clean application state
     Given clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
