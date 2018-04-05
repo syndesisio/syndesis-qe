@@ -62,6 +62,8 @@ jobs:
             cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/ui.cucumber
       - store_artifacts:
           path: ui-tests/target/cucumber
+      - store_test_results:
+          path: ~/cucumber
       - <<: *save_m2
       - save_cache:
           key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
@@ -101,6 +103,8 @@ jobs:
             cp -f rest-tests/target/cucumber/cucumber-junit.xml ~/cucumber/rest.cucumber
       - store_artifacts:
           path: rest-tests/target/cucumber
+      - store_test_results:
+          path: ~/cucumber
       - <<: *save_m2
       - save_cache:
           key: syndesis-rest-qe-mvn-{{ checksum "pom.xml" }}
