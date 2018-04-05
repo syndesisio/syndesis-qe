@@ -59,7 +59,7 @@ jobs:
           when: always
           command: |
             mkdir -p ~/cucumber
-            cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/ui.cucumber
+            cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/junit.xml
       - store_artifacts:
           path: ui-tests/target/cucumber
       - store_test_results:
@@ -100,7 +100,7 @@ jobs:
           when: always
           command: |
             mkdir -p ~/cucumber
-            cp -f rest-tests/target/cucumber/cucumber-junit.xml ~/cucumber/rest.cucumber
+            cp -f rest-tests/target/cucumber/cucumber-junit.xml ~/cucumber/junit.xml
       - store_artifacts:
           path: rest-tests/target/cucumber
       - store_test_results:
