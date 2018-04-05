@@ -8,7 +8,7 @@ Feature: Integration - Openwire to Openwire
     Given created connections
       | AMQ | AMQ | AMQ | AMQ connection is awesome |
 
-  Scenario: Publish Subscribe - Queue
+  Scenario: Publish subscribe on queue
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
