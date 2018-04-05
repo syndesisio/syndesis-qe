@@ -1,7 +1,7 @@
-Feature: s3 scenarios
+Feature: Integration - S3 to S3
 
   @integrations-s3-s3
-  Scenario: S3 - S3 integration
+  Scenario: Create
     Given clean application state
     And create sample buckets on S3 with name "syndesis-server-bucket-out"
     And create sample buckets on S3 with name "syndesis-server-bucket-in"

@@ -1,4 +1,4 @@
-Feature: sf scenarios
+Feature: Integration - Salesforce to DB
 
   Background: Clean application state
     Given clean SF, removes all leads with email: "jdoe@acme.com"
@@ -6,7 +6,7 @@ Feature: sf scenarios
     And create SF connection
 
   @integrations-sf-db
-  Scenario: SF action on create - DB integration
+  Scenario: On create
     And create SF "salesforce-on-create" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
     Then MAP using Step 1 and field "/Company" to "/company"
@@ -20,7 +20,7 @@ Feature: sf scenarios
     Then validate DB created new lead with first name: "John", last name: "Doe", email: "jdoe@acme.com"
 
   @integrations-sf-db
-  Scenario: SF action on delete - DB integration
+  Scenario: On delete
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "salesforce-on-delete" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
@@ -32,7 +32,7 @@ Feature: sf scenarios
     Then validate SF on delete to DB created new task with lead ID as task name
 
   @integrations-sf-db
-  Scenario: SF action on update - DB integration
+  Scenario: On update
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "salesforce-on-update" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
