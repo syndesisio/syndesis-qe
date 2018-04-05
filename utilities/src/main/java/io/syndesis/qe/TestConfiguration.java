@@ -120,7 +120,7 @@ public class TestConfiguration {
 
         // to keep backward compatibility
         if (props.getProperty(SYNDESIS_URL_SUFFIX) != null && props.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {
-            props.setProperty(OPENSHIFT_ROUTE_SUFFIX, SYNDESIS_URL_SUFFIX);
+            props.setProperty(OPENSHIFT_ROUTE_SUFFIX, props.getProperty(SYNDESIS_URL_SUFFIX));
         }
 
         // pom defined property
