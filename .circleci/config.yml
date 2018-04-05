@@ -5,7 +5,8 @@
 version: 2
 
 common_env: &common_env
-  MAVEN_OPTS: -Xmx1024m
+  MAVEN_OPTS: "-Xms512m -Xmx1024m"
+  JAVA_OPTS: "-Xms512m -Xmx1024m"
 
 job_default: &job_defaults
   docker:

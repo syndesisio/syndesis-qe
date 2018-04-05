@@ -1,5 +1,6 @@
 package io.syndesis.qe;
 
+import io.syndesis.qe.utils.SampleDbConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import cucumber.api.java.After;
@@ -21,5 +22,6 @@ public class RestTestHooks {
     public void afterTest() {
         stepStorage.flushStepDefinitions();
         log.debug("Flushed steps from steps storage");
+        SampleDbConnectionManager.closeConnection();
     }
 }
