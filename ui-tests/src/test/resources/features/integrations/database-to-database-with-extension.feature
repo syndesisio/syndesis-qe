@@ -49,7 +49,7 @@ Feature: Integration - DB to DB with extension
     Then Camilla is presented with the "Add a step" link
     And clicks on the "Add a step" link
     Then she selects "Log Body" integration step
-    And click on the "Next" button
+    And click on the "Done" button
 
     # finish and save integration
     When click on the "Save as Draft" button
