@@ -8,10 +8,10 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.WizardPageObject;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.GeneralConnectorInfo;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewSwaggerActions;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.Security;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewEditConnectorDetails;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 
 public class ApiClientConnectorWizard extends WizardPageObject {
@@ -22,7 +22,7 @@ public class ApiClientConnectorWizard extends WizardPageObject {
     }
 
     public ApiClientConnectorWizard() {
-        setSteps(new WizardPhase[] {new UploadSwagger(), new ReviewSwaggerActions(), new Security(), new GeneralConnectorInfo()});
+        setSteps(new WizardPhase[] {new UploadSwaggerSpecification(), new ReviewActions(), new SpecifySecurity(), new ReviewEditConnectorDetails()});
     }
 
     @Override

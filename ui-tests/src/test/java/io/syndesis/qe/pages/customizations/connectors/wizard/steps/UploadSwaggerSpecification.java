@@ -13,7 +13,7 @@ import java.io.File;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 
-public class UploadSwagger extends SyndesisPageObject implements WizardPhase {
+public class UploadSwaggerSpecification extends SyndesisPageObject implements WizardPhase {
 
     private static class Button {
         public static By NEXT = By.xpath("//button[contains(.,'Next')]");
