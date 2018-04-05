@@ -69,7 +69,7 @@ public class SyndesisTemplate {
         Template template = getTemplate();
         // set params
         Map<String, String> templateParams = new HashMap<>();
-        templateParams.put("ROUTE_HOSTNAME", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.syndesisUrlSuffix());
+        templateParams.put("ROUTE_HOSTNAME", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
         templateParams.put("OPENSHIFT_MASTER", TestConfiguration.openShiftUrl());
         templateParams.put("OPENSHIFT_PROJECT", TestConfiguration.openShiftNamespace());
         templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
@@ -77,7 +77,7 @@ public class SyndesisTemplate {
         // process & create
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         OpenShiftUtils.getInstance().createResources(processedTemplate);
-        OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.syndesisUrlSuffix());
+        //OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.openShiftRouteSuffix());
 
         //TODO: there's a bug in openshift-client, we need to initialize manually
         OpenShiftUtils.client().roleBindings().createOrReplaceWithNew()

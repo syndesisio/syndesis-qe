@@ -86,8 +86,6 @@ public class TestConfiguration {
 
     public static String syndesisVersionsFile() { return get().readValue(SYNDESIS_VERSIONS_FILE); }
 
-    public static String syndesisUrlSuffix() { return get().readValue(SYNDESIS_URL_SUFFIX); }
-
     public static String techExtensionUrl() { return get().readValue(SYNDESIS_TECH_EXTENSION_URL); }
 
     public static String syndesisTempalateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
@@ -119,6 +117,11 @@ public class TestConfiguration {
         props.setProperty(OPENSHIFT_NAMESPACE_LOCK, "false");
 
         props.setProperty(SYNDESIS_TECH_EXTENSION_URL, "../syndesis-extensions/syndesis-extension-log-body/target/");
+
+        // to keep backward compatibility
+        if (props.getProperty(SYNDESIS_URL_SUFFIX) != null && props.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {
+            props.setProperty(OPENSHIFT_ROUTE_SUFFIX, SYNDESIS_URL_SUFFIX);
+        }
 
         // pom defined property
         String syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
