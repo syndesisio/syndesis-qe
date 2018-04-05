@@ -1,4 +1,5 @@
-Feature: integration monitoring scenarios
+@wip
+Feature: Integration - Monitoring
 
   Background: Clean application state
     Given "Camilla" logs into the Syndesis
@@ -9,7 +10,7 @@ Feature: integration monitoring scenarios
     Given db to db "CRUD2-read-create E2E" integration with period 5000 ms
 
   @integration-monitoring-activity
-  Scenario: integration monitoring
+  Scenario: Activity log
     Then "Camilla" navigates to the "Integrations" page
     And Camilla selects the "CRUD2-read-create E2E" integration
     And Camilla is presented with "CRUD2-read-create E2E" integration details

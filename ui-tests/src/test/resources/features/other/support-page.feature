@@ -1,5 +1,5 @@
 @support-page
-Feature: Test functionality of support page
+Feature: Support page
 
   Background: Clean application state
     Given clean application state
@@ -10,7 +10,7 @@ Feature: Test functionality of support page
 #  1. version check
 #
   @support-page-version-check
-  Scenario: Check version of syndesis on Support page
+  Scenario: Version
 
     And she checks version string
 
@@ -18,7 +18,7 @@ Feature: Test functionality of support page
 #  2. download all diagnostic info
 #
   @support-page-download-diagnostic
-  Scenario: Create integration and test export feature of single integration
+  Scenario: Export diagnostic of all
 
     And she downloads diagnostics for all integrations
 
@@ -26,7 +26,7 @@ Feature: Test functionality of support page
 #  3. download specific diagnostic info
 #
   @support-page-download-specific-diagnostic
-  Scenario: Create integration and test export feature of single integration
+  Scenario: Export diagnostic of single integration
     Given she removes file "syndesis.zip" if it exists
 
     Given created connections

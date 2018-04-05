@@ -1,5 +1,5 @@
 @dropbox
-Feature: Test functionality of dropBox connection
+Feature: Integration - Dropbox to Dropbox
 
   Background: Clean application state
     Given clean application state
@@ -13,7 +13,7 @@ Feature: Test functionality of dropBox connection
 #  1. Functionality test of upload and download
 #
   @dropbox-integration
-  Scenario: Check that integration with dropbox connection works
+  Scenario: Create
     # upload file
     When She uploads file with path "/testInputFile.txt" and content "some content" on Dropbox
     Then She checks that file with path "/testInputFile.txt" exists on Dropbox

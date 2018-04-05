@@ -1,5 +1,5 @@
 @extension-CRUD-test
-Feature: Extension CRUD operations
+Feature: Customization - Extensions CRUD
 
   @extension-CRUD-clean-application-state
   Scenario: Clean application state
@@ -12,7 +12,7 @@ Feature: Extension CRUD operations
     #	| Syndesis Extension (DataShape) | syndesis-extension-example-datashape-1.0.0-SNAPSHOT |
 
   @extension-CRUD-navigate-to-extensions-page
-  Scenario: Navigate to Extensions
+  Scenario: Page
     When "Camilla" navigates to the "Customizations" page
     Then she is presented with the Syndesis page "Customizations"
 
@@ -20,7 +20,7 @@ Feature: Extension CRUD operations
     Then she is presented with the Syndesis page "Extensions"
     
   @extension-CRUD-import-new
-  Scenario: Import new Extension
+  Scenario: Import
     When Camilla clicks on the "Import Extension" button
     Then she is presented with the Syndesis page "Import Extension"
 
@@ -36,7 +36,7 @@ Feature: Extension CRUD operations
     And extension "Log Message Body" is present in list
     
   @extension-CRUD-update
-  Scenario: Update Extension
+  Scenario: Update
     When Camilla choose "Update" action on "Log Message Body" technical extension
     Then she is presented with the Syndesis page "Import Extension"
 
@@ -52,7 +52,7 @@ Feature: Extension CRUD operations
     And extension "Log Message Body" is present in list
     
   @extension-CRUD-delete
-  Scenario: Delete Extension
+  Scenario: Delete
     When "Camilla" navigates to the "Customizations" page
     And clicks on the "Extensions" link
     Then she is presented with the Syndesis page "Extensions"

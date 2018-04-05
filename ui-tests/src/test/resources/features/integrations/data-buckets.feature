@@ -1,5 +1,5 @@
 @data-buckets
-Feature: Test functionality of data buckets during creation of integration
+Feature: Integration - Databucket
 
   Background: Clean application state
     Given clean application state
@@ -16,7 +16,7 @@ Feature: Test functionality of data buckets during creation of integration
 #  1. hover with mouse - error check
 #
   @data-buckets-check-popups
-  Scenario: Check that there is error without data mapper step
+  Scenario: Error mark indicator
     # create integration
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
@@ -75,7 +75,7 @@ Feature: Test functionality of data buckets during creation of integration
 #  2. check that data buckets are available
 #
   @data-buckets-usage
-  Scenario: Check that data buckets can be used
+  Scenario: Create
     # clean salesforce before tests
     Given clean SF contacts related to TW account: "Twitter Listener"
 
@@ -168,7 +168,7 @@ Feature: Test functionality of data buckets during creation of integration
 #  3. check that data buckets work with long integration
 #
   @data-buckets-usage-2
-  Scenario: Check that data buckets can be used
+  Scenario: Create extended
 
     ##################### start step ##################################
     And clicks on the "Create Integration" button to create a new integration.

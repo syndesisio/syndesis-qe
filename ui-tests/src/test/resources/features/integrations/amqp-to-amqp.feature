@@ -13,7 +13,7 @@ Feature: Integration - AMQP to AMQP
 #  1. publish-subscribe-request
 #
   @amqp-connection-publish-subscribe-request
-  Scenario: Publish Subscribe - Topic
+  Scenario: Publish subscribe on topic
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
