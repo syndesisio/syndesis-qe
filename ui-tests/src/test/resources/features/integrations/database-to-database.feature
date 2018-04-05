@@ -1,5 +1,5 @@
 @integrations-database-to-database
-Feature: Test functionality of DB connection
+Feature: Integration - DB to DB
 
   Background: Clean application state
     Given clean application state
@@ -11,7 +11,7 @@ Feature: Test functionality of DB connection
 #  1. select - update
 #
   @db-connection-crud-1-read-update
-  Scenario: Create integration to test DB connector for read and update operations
+  Scenario: Read & update operations
 
     Then inserts into "todo" table
       | Joe |
@@ -62,7 +62,7 @@ Feature: Test functionality of DB connection
 #  2. select - insert
 #
   @db-connection-crud-2-read-create
-  Scenario: Create integration to test DB connector for read and create operations
+  Scenario: Read & create operations
     When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
@@ -110,7 +110,7 @@ Feature: Test functionality of DB connection
 #  3. select - delete
 #
   @db-connection-crud-3-read-delete
-  Scenario: Create integration to test DB connector for read and delete operations
+  Scenario: Read & delete operations
     Then inserts into "todo" table
       | Joe |
     Then inserts into "todo" table
@@ -164,7 +164,7 @@ Feature: Test functionality of DB connection
 #  4. select - create (via buildin procedure)
 #
   @db-connection-crud-4-read-update-inbuilt
-  Scenario: Create integration to test DB connector for read and create operations via stored procedure
+  Scenario: Read & create operations on stored procedure
       # INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
 
 
@@ -219,7 +219,7 @@ Feature: Test functionality of DB connection
 #  5. builtin sql query checker
 #
   @db-connection-5-sqlquery-checker
-  Scenario: Create integration to test inbuilt sql query checker for basic operations: (SELECT, INSERT, UPDATE, DELETE)
+  Scenario: Sql query checker
     Then inserts into "todo" table
       | Joe |
     Then inserts into "todo" table

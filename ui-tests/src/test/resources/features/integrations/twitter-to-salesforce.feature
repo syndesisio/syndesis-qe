@@ -1,5 +1,5 @@
 @integrations-twitter-to-salesforce
-Feature: Create integration with datamapper step
+Feature: Integration - Twitter to Salesforce
 
   Background: Clean application state
     Given clean application state
@@ -8,7 +8,7 @@ Feature: Create integration with datamapper step
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
-  Scenario: Create integration from twitter to salesforce
+  Scenario: Create
     # create integration
     When "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Home" page

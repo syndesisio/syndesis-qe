@@ -1,5 +1,5 @@
 @integration-import-export
-Feature: Test functionality of integration import export feature
+Feature: Integration - Import Export
 
   Background: Clean application state
     Given clean application state
@@ -70,7 +70,7 @@ Feature: Test functionality of integration import export feature
 #  1. integration-import classic method
 #
   @integration-import-export-classic
-  Scenario: Create integration and test export feature of single integration
+  Scenario: Import classic flow
 
     Then Camilla imports integraion "Integration_import_export_test"
 
@@ -92,7 +92,7 @@ Feature: Test functionality of integration import export feature
 #  2. integration-import with drag'n'drop
 #
   @integration-import-export-with-drag-and-drop
-  Scenario: Create integration and test export feature of single integration
+  Scenario: Import drag&drop
 
     And Camilla drags exported integration "Integration_import_export_test" file to drag and drop area
 

@@ -1,5 +1,5 @@
 @api-connector-integration
-Feature: API connector test
+Feature: Integration - DB to API
 
   Background:
     Given "Camilla" logs into the Syndesis
@@ -7,7 +7,7 @@ Feature: API connector test
     Given Set Todo app credentials
 
   @DB-to-TODO-custom-api-connector-integration
-  Scenario: CREATE custom API client connector from swagger downloaded from url
+  Scenario: Create
     When Camilla creates new API connector
       | source    | file            | swagger/connectors/todo.swagger.yaml  |
       | security  | authType        | HTTP Basic Authentication             |
