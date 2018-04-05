@@ -1,5 +1,6 @@
 package io.syndesis.qe.utils;
 
+import cz.xtf.http.HttpUtil;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -111,6 +112,12 @@ public final class RestUtils {
                 setupRestPodRoute();
             } else {
                 setupLocalPortForward();
+            }
+            try {
+                HttpUtil.waitForHttpOk(restUrl.get() + "/api/v1/version");
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("Backend is not responding");
             }
         }
         return restUrl.get();
