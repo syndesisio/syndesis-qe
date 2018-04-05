@@ -49,7 +49,7 @@ Feature: Integration - Twitter to Salesforce
     And she is presented with "Basic Filter" step configuration page
     And she checks that basic filter step path input options contains "text" option
     Then she fills the configuration page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
-    And click on the "Next" button
+    And click on the "Done" button
 
      # add advanced filter step
     When Camilla clicks on the "Add a Step" button
