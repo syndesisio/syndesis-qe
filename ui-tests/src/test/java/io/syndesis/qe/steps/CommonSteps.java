@@ -112,7 +112,7 @@ public class CommonSteps {
         List<List<String>> dataTable = connectionsData.raw();
 
         for (List<String> dataRow : dataTable) {
-            String connectionType = dataRow.get(0);
+            String connectionType = validateConnectorName(dataRow.get(0));
             String connectionCredentialsName = dataRow.get(1);
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
@@ -232,7 +232,7 @@ public class CommonSteps {
             // this is hack to replace Done with Next if not present
             try {
                 syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
+                        .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
             } catch (Throwable t) {
                 buttonTitle = "Next";
             }
@@ -372,5 +372,22 @@ public class CommonSteps {
     @Then("^.*removes? file \"([^\"]*)\" if it exists$")
     public void removeFileIfExists(String fileName) throws Throwable {
         Files.deleteIfExists(Paths.get(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + fileName));
+    }
+
+    /**
+     * When connector name is changed in the product just create new case here instead of changing it in the whole
+     * testsuite string by string.
+     *
+     * @param name
+     * @return
+     */
+    private String validateConnectorName(String name) {
+        String finalName = name;
+        switch (name) {
+            case "DropBox":
+                finalName = "Dropbox";
+                break;
+        }
+        return finalName;
     }
 }
