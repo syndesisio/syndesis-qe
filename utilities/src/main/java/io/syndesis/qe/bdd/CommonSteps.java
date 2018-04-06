@@ -3,6 +3,7 @@ package io.syndesis.qe.bdd;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.templates.FtpTemplate;
 
+import io.syndesis.qe.utils.TestUtils;
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
@@ -116,8 +117,8 @@ public class CommonSteps {
 
     @Given("^clean application state")
     public void resetState() {
-        int responseCode = TestSupport.getInstance().resetDbWithResponse();
-        Assertions.assertThat(responseCode).isEqualTo(204);
+        boolean resetStatus = TestUtils.waitForEvent(rc -> rc == 204, () -> TestSupport.getInstance().resetDbWithResponse(), TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 10);
+        Assertions.assertThat(resetStatus).as("Reset failed in given timeout").isTrue();
     }
 
     @Given("^deploy FTP server$")
