@@ -1,12 +1,12 @@
-@integrations-db-to-db-logs
-Feature: Test functionality of logs monitoring system, part 1.
+@integrations-db-to-db-monitoring
+Feature: Integration - Monitoring
 
   Background: Clean application state
+    Given clean application state
     And remove all records from table "todo"
     And remove all records from table "contact"
 
-  @integrations-db-db-logs
-  Scenario: DB to DB integration with basic monitoring
+  Scenario: Metrics & activity log
     Then inserts into "contact" table
       | Josef3 | Stieranka | Istrochem | db |
 
@@ -24,3 +24,4 @@ Feature: Test functionality of logs monitoring system, part 1.
 
 #    monitoring part:
     Then validate that log of integration "DB to DB logs rest test" has been created, period in ms: "5000"
+    Then validate that number of all messages through integration "DB to DB logs rest test" is greater than "3", period in ms: "10000"
