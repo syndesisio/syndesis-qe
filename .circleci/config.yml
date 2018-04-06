@@ -6,7 +6,7 @@ version: 2
 
 common_env: &common_env
   MAVEN_OPTS: "-Xms512m -Xmx1536m"
-  JAVA_OPTS: "-Xms512m -Xmx1536m"
+  JVM_OPTS: "-Xms512m -Xmx1536m -XX:+UseSerialGC -XX:MaxRAM=2g"
 
 job_default: &job_defaults
   docker:
