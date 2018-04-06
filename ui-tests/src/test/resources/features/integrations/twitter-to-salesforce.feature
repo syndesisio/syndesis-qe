@@ -58,7 +58,7 @@ Feature: Integration - Twitter to Salesforce
     And she selects "Advanced Filter" integration step
     And she is presented with "Advanced Filter" step configuration page
     Then she fills the configuration page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
-    And click on the "Next" button
+    And click on the "Done" button
 
     # finish and save integration
     When click on the "Save as Draft" button
