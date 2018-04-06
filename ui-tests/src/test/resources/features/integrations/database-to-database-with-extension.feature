@@ -4,6 +4,8 @@ Feature: Integration - DB to DB with extension
   Background: 
     Given clean application state
     Given "Camilla" logs into the Syndesis
+    Given reset content of "todo" table
+    Given reset content of "contact" table
     Given imported extensions
     	| Log Message Body | syndesis-extension-log-body-1.0.0 |
 
@@ -39,7 +41,6 @@ Feature: Integration - DB to DB with extension
     And she selects "Data Mapper" integration step
     Then she is presented with data mapper ui
     And she creates mapping from "company" to "company"
-    And she creates mapping from "first_name" to "first_and_last_name"
     And she creates mapping from "last_name" to "first_and_last_name"
     And she creates mapping from "lead_source" to "lead_source"
     And clicks on the "Done" button
