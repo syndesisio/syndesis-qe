@@ -6,6 +6,7 @@ Feature: Integration - Salesforce to DB
     Given clean application state
     Given "Camilla" logs into the Syndesis
     Given clean TODO table
+    Given clean SF, removes all leads with email: "k1stieranka1@istrochem.sk"
     Given created connections
       | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
