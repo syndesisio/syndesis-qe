@@ -2,6 +2,7 @@ package io.syndesis.qe.steps.customizations.connectors;
 
 import static java.util.Arrays.asList;
 
+import io.fabric8.openshift.api.model.Route;
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -134,7 +135,10 @@ public class ApiClientConnectorsSteps {
                         //| details | routeHost | <routeName> |
                         case "routeHost":
                             log.info("Setting up hostname of the used route property");
-                            host = "http://" + OpenShiftUtils.getInstance().getRoute(property.get(2)).getSpec().getHost();
+                            Route route = OpenShiftUtils.getInstance().getRoute(property.get(2));
+                            route.getSpec().getTls().setInsecureEdgeTerminationPolicy("Allow");
+                            OpenShiftUtils.client().routes().createOrReplace(route);
+                            host = "http://" + route.getSpec().getHost();
                         case "baseUrl":
                             baseUrl = property.get(2);
                     }
