@@ -3,11 +3,13 @@ package io.syndesis.qe.steps.other;
 import com.dropbox.core.DbxException;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.utils.DropBoxUtils;
+import io.syndesis.qe.utils.TestUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class DropBoxSteps {
@@ -23,7 +25,8 @@ public class DropBoxSteps {
 
     @When("^.*checks? that file with path \"([^\"]*)\" exists? on Dropbox$")
     public void checkThatFileExists(String filePath) throws IOException, DbxException, TimeoutException, InterruptedException {
-        Assertions.assertThat(dropBoxUtils.checkIfFileExists(filePath)).isTrue();
+        boolean fileExists = TestUtils.waitForEvent(r -> r, () -> dropBoxUtils.checkIfFileExists(filePath), TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15);
+        Assertions.assertThat(fileExists).isTrue();
     }
 
     @When("^.*deletes? file with path \"([^\"]*)\" from Dropbox$")
