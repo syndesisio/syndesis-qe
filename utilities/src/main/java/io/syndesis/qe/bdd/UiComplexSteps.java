@@ -136,8 +136,7 @@ public class UiComplexSteps extends AbstractStep {
         //wait for activation
         log.info("Waiting until integration \"{}\" becomes active. This may take a while...", integrationName);
 
-        integrationOverviewEndpoint = new IntegrationOverviewEndpoint(integrationId);
-        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview();
+        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
         final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 10);
         Assertions.assertThat(activated).isEqualTo(true);
