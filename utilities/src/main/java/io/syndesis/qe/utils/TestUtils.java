@@ -76,6 +76,7 @@ public final class TestUtils {
                 log.debug("Interupted while sleeping", e);
             } finally {
                 elapsed = System.currentTimeMillis() - start;
+                System.gc();
             }
         }
 
@@ -102,7 +103,7 @@ public final class TestUtils {
         return waitForEvent(
                 //                integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
                 integration -> integration.getCurrentState() == state,
-                () -> getIntegration(e, i).orElse(i),
+                () -> getIntegration(e, i.getId()).orElse(i),
                 unit,
                 timeout,
                 TimeUnit.SECONDS,
@@ -110,8 +111,8 @@ public final class TestUtils {
         );
     }
 
-    private static Optional<IntegrationOverview> getIntegration(IntegrationOverviewEndpoint e, IntegrationOverview i) {
-        return Optional.of(e.getOverview());
+    private static Optional<IntegrationOverview> getIntegration(IntegrationOverviewEndpoint e, String integrationId) {
+        return Optional.of(e.getOverview(integrationId));
     }
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {

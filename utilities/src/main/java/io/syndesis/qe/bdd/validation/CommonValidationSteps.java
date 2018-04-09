@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
-import io.syndesis.common.model.integration.Integration;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
@@ -30,6 +29,7 @@ public class CommonValidationSteps {
 
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
+    @Autowired
     private IntegrationOverviewEndpoint integrationOverviewEndpoint;
 
     public CommonValidationSteps() {
@@ -37,17 +37,12 @@ public class CommonValidationSteps {
 
     @Then("^wait for integration with name: \"([^\"]*)\" to become active")
     public void waitForIntegrationToBeActive(String integrationName) {
-        final List<Integration> integrations = integrationsEndpoint.list().stream()
-                .filter(item -> item.getName().equals(integrationName))
-                .collect(Collectors.toList());
-
         final long start = System.currentTimeMillis();
         //wait for activation
         log.info("Waiting until integration \"{}\" becomes active. This may take a while...", integrationName);
 
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
-        integrationOverviewEndpoint = new IntegrationOverviewEndpoint(integrationId);
-        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview();
+        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
         final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 10);
         Assertions.assertThat(activated).isEqualTo(true);
@@ -74,8 +69,8 @@ public class CommonValidationSteps {
     public void verifyIntegrationState(String integrationName, String integrationState) {
 
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
-        integrationOverviewEndpoint = new IntegrationOverviewEndpoint(integrationId);
-        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview();
+        integrationOverviewEndpoint = new IntegrationOverviewEndpoint();
+        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
         log.debug("Actual state: {} and desired state: {}", integrationOverview.getCurrentState().name(), integrationState);
         Assertions.assertThat(integrationOverview.getCurrentState().name()).isEqualTo(integrationState);
