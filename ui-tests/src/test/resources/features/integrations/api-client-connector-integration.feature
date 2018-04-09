@@ -13,7 +13,7 @@ Feature: Integration - DB to API
       | security  | authType        | HTTP Basic Authentication             |
       | details   | connectorName   | Todo connector                        |
       | details   | routeHost       | todo                                  |
-      | details   | baseUrl         |                                       |
+      | details   | baseUrl         | /api                                  |
 
     Then creates connections without validation
       | Todo connector | todo | Todo connection | |
