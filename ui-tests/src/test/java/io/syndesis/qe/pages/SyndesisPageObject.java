@@ -1,5 +1,6 @@
 package io.syndesis.qe.pages;
 
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static org.junit.Assert.assertThat;
 
 import static org.hamcrest.Matchers.is;
@@ -8,7 +9,6 @@ import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 import org.openqa.selenium.By;
@@ -35,7 +35,7 @@ public abstract class SyndesisPageObject {
     public SelenideElement getButton(String buttonTitle, SelenideElement differentRoot) {
         log.info("searching for button {}", buttonTitle);
         return differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHaveSize(1).first();
+                .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
     }
 
     public SelenideElement getFirstVisibleButton(String buttonTitle) {
