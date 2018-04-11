@@ -1,12 +1,9 @@
 package io.syndesis.qe.templates;
 
-import cz.xtf.http.HttpClient;
-import io.fabric8.openshift.api.model.DoneableTemplate;
-import io.fabric8.openshift.client.dsl.TemplateResource;
+import io.fabric8.openshift.api.model.TagImportPolicy;
 import io.syndesis.qe.Component;
 import org.apache.commons.codec.binary.Base64;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -78,6 +75,12 @@ public class SyndesisTemplate {
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         OpenShiftUtils.getInstance().createResources(processedTemplate);
         //OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.openShiftRouteSuffix());
+        OpenShiftUtils.getInstance().getImageStreams().forEach(is -> {
+            if (!is.getSpec().getTags().isEmpty()) {
+                is.getSpec().getTags().get(0).setImportPolicy(new TagImportPolicy(false, false));
+            }
+            OpenShiftUtils.client().imageStreams().createOrReplace(is);
+        });
 
         //TODO: there's a bug in openshift-client, we need to initialize manually
         OpenShiftUtils.client().roleBindings().createOrReplaceWithNew()
