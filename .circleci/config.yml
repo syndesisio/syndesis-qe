@@ -41,20 +41,7 @@ jobs:
       - run:
           name: Execute tests
           command: |
-            if [ -n "${OPENSHIFT_TOKEN}" ]; then
-                curl -fsSL https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | sudo tar xz -C /usr/bin --strip-components 1
-                oc login --server "${OPENSHIFT_SERVER}" --token "${OPENSHIFT_TOKEN}"
-
-                oc get cm syndesis-qe -o jsonpath="{ .data.ui_test_properties }" -n syndesis-ci > test.properties
-                oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
-            else
-              echo "Setup OpenShift cluster credentials"
-            fi
-
-            nohup /usr/bin/Xvfb :99 -ac -screen 0 1920x1080x24 &
-            export DISPLAY=:99
-            ./mvnw clean test -B -P ui -Dcucumber.options="--tags ~@wip"
-
+            ./run-tests.sh "ui" "syndesis-e2e-tests"
       - run:
           name: Store Cucumber report
           when: always
@@ -84,18 +71,7 @@ jobs:
       - run:
           name: Execute tests
           command: |
-            if [ -n "${OPENSHIFT_TOKEN}" ]; then
-                curl -fsSL https://github.com/openshift/origin/releases/download/v3.6.0/openshift-origin-client-tools-v3.6.0-c4dd4cf-linux-64bit.tar.gz | sudo tar xz -C /usr/bin --strip-components 1
-                oc login --server "${OPENSHIFT_SERVER}" --token "${OPENSHIFT_TOKEN}"
-
-                oc get cm syndesis-qe -o jsonpath="{ .data.rest_test_properties }" -n syndesis-ci > test.properties
-                oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
-            else
-              echo "Setup OpenShift cluster credentials"
-            fi
-
-            ./mvnw clean test -B -P rest -Dcucumber.options="--tags ~@wip"
-
+            ./run-tests.sh "rest" "syndesis-rest-tests"
       - run:
           name: Store Cucumber report
           when: always
@@ -141,6 +117,27 @@ jobs:
             find . -type f -regex "\./.+/target/checkstyle-result.xml" -exec bash -c "cp {} ./checkstyle/\`echo {} | sed -e 's#^\./##' | sed -e 's#/#-#g'\`" \;
       - store_artifacts:
           path: ./checkstyle
+      - run:
+          name: Execute Test from Tag
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              echo "On master branch, skip in favour of full testsuite pass"
+              exit 0
+            fi
+            ./run-tests.sh
+      - run:
+          name: Store Cucumber report
+          when: always
+          command: |
+            mkdir -p ~/cucumber
+            cp -f rest-tests/target/cucumber/cucumber-junit.xml ~/cucumber/rest-junit.xml
+            cp -f ui-tests/target/cucumber/cucumber-junit.xml ~/cucumber/ui-junit.xml
+      - store_test_results:
+          path: ~/cucumber
+      - store_artifacts:
+          path: rest-tests/target/cucumber
+      - store_artifacts:
+          path: ui-tests/target/cucumber
       - <<: *save_m2
       - save_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}

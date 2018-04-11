@@ -54,6 +54,7 @@ public abstract class TestSuiteParent {
             if (TestConfiguration.namespaceCleanup()) {
                 log.info("Cleaning namespace");
                 OpenShiftUtils.getInstance().clean();
+                OpenShiftUtils.xtf().deleteProject(TestConfiguration.openShiftNamespace());
             } else {
                 log.info("Releasing namespace lock");
                 OpenShiftUtils.getInstance().deleteSecret(lockSecret);
