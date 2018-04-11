@@ -24,8 +24,8 @@ if [ -n "${OPENSHIFT_TOKEN}" ]; then
     curl -fsSL https://github.com/openshift/origin/releases/download/v3.7.2/openshift-origin-client-tools-v3.7.2-282e43f-linux-64bit.tar.gz | sudo tar xz -C /usr/bin --strip-components 1
     oc login --server "${OPENSHIFT_SERVER}" --token "${OPENSHIFT_TOKEN}"
 
-    oc get cm syndesis-qe -o jsonpath="{ .data.all_test_properties }" -n syndesis-ci > test.properties
-    oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-ci > credentials.json
+    oc get cm syndesis-qe -o jsonpath="{ .data.all_test_properties }" -n syndesis-qe-cci > test.properties
+    oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-qe-cci > credentials.json
 
   if [ -n "${CIRCLE_PR_NUMBER}" ]; then
     NAMESPACE="syndesis-${MAVEN_PROFILE}-tests-pr${CIRCLE_PR_NUMBER}"
