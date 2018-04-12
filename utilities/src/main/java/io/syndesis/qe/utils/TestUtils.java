@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import org.jboss.qa.dballoc.api.allocator.entity.JaxbAllocation;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,8 @@ import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorAction;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.IntegrationDeploymentState;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +33,6 @@ public final class TestUtils {
 
     /**
      * Finds an Action of a given connector.
-     *
      * TODO(tplevko): Rework this, when all connectors will be unified to follow the new writing style.
      *
      * @param connector
@@ -148,5 +151,38 @@ public final class TestUtils {
             rc.put(values[i].toString(), values[i + 1].toString());
         }
         return rc;
+    }
+
+    public static void updateCredentialJson(String connectionName, JaxbAllocation dbAllocation) {
+
+        Map<String, String> allocProperties = dbAllocation.getAllocationProperties().getProperties();
+
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
+
+        if (optional.isPresent()) {
+            TestUtils.resetDBProperties(optional.get(), allocProperties);
+        } else {
+            throw new RuntimeException("There is no " + connectionName + " input in your credential json!");
+        }
+    }
+
+    //        url -> db.jdbc_url, user -> db.username, password -> db.password, schema -> db.name
+    private static void resetDBProperties(Account account, Map<String, String> allocMap) {
+        Map<String, String> properties = account.getProperties();
+        if (properties == null) {
+            account.setProperties(new HashMap<>());
+            properties = account.getProperties();
+        }
+        switch (account.getService()) {
+            case "oracle12":
+            case "mysql":
+                properties.put("url", allocMap.get("db.jdbc_url"));
+                properties.put("user", allocMap.get("db.username"));
+                properties.put("password", allocMap.get("db.password"));
+                properties.put("schema", allocMap.get("db.name"));
+                log.info("UPDATED ACCOUNT {} PROPERTIES:", account.getService());
+                properties.entrySet().stream().forEach(n -> log.info("Key: *{}*, value: *{}*", n.getKey(), n.getValue()));
+                break;
+        }
     }
 }
