@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Execute tests
           command: |
-            ./run-tests.sh "ui" "syndesis-e2e-tests"
+            ./run-tests.sh "ui" "syndesis-ui-tests"
       - run:
           name: Store Cucumber report
           when: always
