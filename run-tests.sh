@@ -35,10 +35,8 @@ if [ -n "${OPENSHIFT_TOKEN}" ]; then
 
   echo "Using test namespace: ${NAMESPACE}"
   sed -i "s|NS_PLACEHOLDER|${NAMESPACE}|g" test.properties
+  oc project ${NAMESPACE}
 
-  echo "Grant access to namespace: ${NAMESPACE}"
-  oc new-project ${NAMESPACE}
-  oc adm policy add-role-to-group admin syndesis -n ${NAMESPACE}
 else
   echo "Setup OpenShift cluster credentials"
 fi
