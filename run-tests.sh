@@ -28,7 +28,7 @@ if [ -n "${OPENSHIFT_TOKEN}" ]; then
     oc get cm syndesis-qe -o jsonpath="{ .data.credentials }" -n syndesis-qe-cci > credentials.json
 
   if [ -n "${CIRCLE_PR_NUMBER}" ]; then
-    NAMESPACE="syndesis-${MAVEN_PROFILE}-tests-pr${CIRCLE_PR_NUMBER}"
+    NAMESPACE="syndesis-qe-pr"
   else
     NAMESPACE="syndesis-${MAVEN_PROFILE}-tests"
   fi
