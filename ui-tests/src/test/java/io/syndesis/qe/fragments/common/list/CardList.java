@@ -26,7 +26,7 @@ public class CardList extends AbstractUiElementsList {
 
     @Override
     public ElementsCollection getItemsCollection() {
-        ElementsCollection allItems = getRootElement().findAll(Element.CARD);
+        ElementsCollection allItems = getRootElement().shouldBe(visible).findAll(Element.CARD);
         return allItems;
     }
 
