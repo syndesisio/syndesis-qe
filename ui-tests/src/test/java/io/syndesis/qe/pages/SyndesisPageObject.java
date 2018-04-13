@@ -183,7 +183,7 @@ public abstract class SyndesisPageObject {
     }
 
     public String getElementText(By locator) {
-        SelenideElement element = this.getRootElement().find(locator);
+        SelenideElement element = this.getRootElement().shouldBe(visible).find(locator);
         return element.shouldBe(visible).getText();
     }
 
