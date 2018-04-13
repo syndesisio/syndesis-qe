@@ -91,7 +91,8 @@ Feature: Integration - Databucket
     #@wip this (disabled) functionality is not yet available
     Then she checks "Done" button is "Disabled"
     Then she fills periodic query input with "select * from contact" value
-    Then she fills period input with "10000" value
+    Then she fills period input with "10" value
+    Then she selects "Seconds" from sql dropdown
     #@wip time_unit_id to be specified after new update is available:
     #Then she selects "Miliseconds" from "time_unit_id" dropdown
     And clicks on the "Done" button
@@ -180,7 +181,8 @@ Feature: Integration - Databucket
     And she selects "Periodic SQL Invocation" integration action
     Then she checks "Done" button is "Disabled"
     Then she fills periodic query input with "select company as firma from contact limit 1;" value
-    Then she fills period input with "10000" value
+    Then she fills period input with "10" value
+    Then she selects "Seconds" from sql dropdown
 
     And clicks on the "Done" button
 
