@@ -34,6 +34,7 @@ public class CommonSteps {
     @Given("^clean default namespace")
     public void cleanNamespace() {
         OpenShiftUtils.getInstance().cleanAndAssert();
+        OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
     }
 
     @Given("^clean all builds")
