@@ -211,6 +211,7 @@ public class AtlasMapperGenerator {
 
         final Step mapperStep = new Step.Builder()
                 .stepKind(StepKind.mapper)
+                .name(mapping.getStep().getName())
                 .configuredProperties(TestUtils.map("atlasmapping", mapperString))
                 .action(getMapperStepAction(followingStep.getConnectorDescriptor().get()))
                 .id(UUID.randomUUID().toString())
