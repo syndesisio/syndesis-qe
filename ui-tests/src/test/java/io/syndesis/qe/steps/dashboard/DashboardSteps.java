@@ -3,13 +3,15 @@ package io.syndesis.qe.steps.dashboard;
 import static com.codeborne.selenide.Condition.visible;
 
 import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.dashboard.DashboardPage;
-import io.syndesis.qe.pages.integrations.list.IntegrationsListComponent;
+import io.syndesis.qe.pages.integrations.fragments.IntegrationsList;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -39,8 +41,8 @@ public class DashboardSteps {
     @When("^Camilla deletes the \"([^\"]*)\" integration in top 5 integrations$")
     public void deleteIntegrationOnDashboard(String integrationName) {
         log.info("Trying to delete {} on top 5 integrations table");
-        IntegrationsListComponent listComponent = new IntegrationsListComponent();
-        listComponent.clickDeleteIntegration(integrationName);
+        IntegrationsList integrationsList = new IntegrationsList(By.cssSelector("syndesis-dashboard-integrations"));
+        integrationsList.invokeActionOnItem(integrationName, ListAction.DELETE);
     }
 
     @Then("^Camilla can not see \"([^\"]*)\" integration in top 5 integrations anymore$")
