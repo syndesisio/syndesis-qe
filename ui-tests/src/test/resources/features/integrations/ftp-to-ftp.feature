@@ -25,25 +25,38 @@ Feature: Integration - FTP to FTP
       # select salesforce connection as 'from' point
     When Camilla selects the "FTP" connection
     And she selects "download" integration action
-    And she fills ftp download form with values
-      | fileName | directoryName | initialDelay | delay | delete |
-      | test.txt  | download             | 1000         | 500   | Yes    |
-    And clicks on the "Next" button
-    #And she fills specify output data type form with values
-    #  | kind       | specification      | name                | description      |
-    #  | 'Any Type' | some_specification | data_type_some_name | some_description |
-    And clicks on the "Done" button
+    And she fills in values
+      | File name expression               | test.txt |
+      | FTP directory                      | download |
+      | Milliseconds before polling starts | 1000     |
+      | Milliseconds before the next poll  | 500      |
+      | Delete file after download         | Yes      |
 
+    And clicks on the "Next" button
+#    And she fills in values
+#      | Select Type           | JSON Schema        |
+#      | Definition            | sample text        |
+#      | Data Type Name        | sample name        |
+#      | Data Type Description | sample description |
+    And clicks on the "Done" button
+#
     Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
     When Camilla selects the "FTP" connection
     And she selects "Upload" integration action
-    And she fills ftp upload form with values
-      | fileName    | directoryName | fileExist | tempPrefix    | tempFileName    |
-      | test.txt | upload       | Override  | copyingprefix | copying_test_out |
+    And she fills in values
+      | File name expression                | test.txt         |
+      | FTP directory                       | upload           |
+      | If file exists                      | Override         |
+      | Temporary file prefix while copying | copyingprefix    |
+      | Temporary file name while copying   | copying_test_out |
+
     And clicks on the "Next" button
-    #And she fills specify output data type form with values
-    # | kind       | specification      | name                | description      |
-    #  | 'Any Type' | some_specification | data_type_some_name | some_description |
+
+#    And she fills in values
+#      | Select Type           | JSON Schema        |
+#      | Definition            | sample text        |
+#      | Data Type Name        | sample name        |
+#      | Data Type Description | sample description |
     And clicks on the "Done" button
 
     Then Camilla is presented with the Syndesis page "Add to Integration"

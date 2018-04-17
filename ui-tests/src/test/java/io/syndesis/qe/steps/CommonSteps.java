@@ -14,11 +14,11 @@ import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.fragments.common.form.CoupledForm;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.connections.Connections;
-import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
 import io.syndesis.qe.pages.login.GitHubLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
@@ -31,7 +31,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -393,5 +392,10 @@ public class CommonSteps {
                 break;
         }
         return finalName;
+    }
+
+    @Then("^.*fills? in values$")
+    public void fillForm(DataTable data) {
+        new CoupledForm(new SyndesisRootPage().getRootElement()).fill(data.asMap(String.class, String.class));
     }
 }

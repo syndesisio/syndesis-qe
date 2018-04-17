@@ -16,19 +16,16 @@ public class ConnectionsList extends CardList {
     }
 
     @Override
-    public boolean invokeActionOnItem(String title, ListAction action) {
-        if(super.invokeActionOnItem(title, action)) {
-            return true;
-        } else {
-            KebabMenu kebabMenu = new KebabMenu(getItem(title).$(By.xpath(".//button")));
-            switch(action) {
-                case DELETE:
-                    kebabMenu.open();
-                    kebabMenu.getItemElement("Delete").shouldBe(visible).click();
-                    new ModalDialogPage().getButton("OK").shouldBe(visible).click();
-                    return false;
-                default:return false;
-            }
+    public void invokeActionOnItem(String title, ListAction action) {
+        KebabMenu kebabMenu = new KebabMenu(getItem(title).$(By.xpath(".//button")));
+        switch (action) {
+            case DELETE:
+                kebabMenu.open();
+                kebabMenu.getItemElement("Delete").shouldBe(visible).click();
+                new ModalDialogPage().getButton("OK").shouldBe(visible).click();
+                break;
+            default:
+                super.invokeActionOnItem(title, action);
         }
     }
 }

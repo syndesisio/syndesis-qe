@@ -2,9 +2,14 @@ package io.syndesis.qe.fragments.common.menu;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class KebabMenu {
 
@@ -32,4 +37,16 @@ public class KebabMenu {
         return menuButton.$(By.xpath("//a[text()='" + item + "']"));
     }
 
+    public void checkActionsSet(String[] expectedItems) {
+        Assertions.assertThat(getItemsStrings().containsAll(Arrays.asList(expectedItems)));
+    }
+
+    private List<String> getItemsStrings() {
+        List<String> strings = new ArrayList<String>();
+        for(SelenideElement item: menuButton.$$(By.xpath("//a"))) {
+            strings.add(item.getText());
+        }
+
+        return strings;
+    }
 }
