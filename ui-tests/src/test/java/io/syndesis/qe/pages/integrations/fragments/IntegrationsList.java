@@ -1,5 +1,6 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -30,7 +31,7 @@ public class IntegrationsList extends RowList {
 
     @Override
     public void invokeActionOnItem(String title, ListAction action) {
-        KebabMenu kebabMenu = new KebabMenu(getItem(title).$(By.xpath(".//button")));
+        KebabMenu kebabMenu = new KebabMenu(getItem(title).$(By.xpath(".//button")).should(exist));
         switch (action) {
             case DELETE:
                 kebabMenu.open();
@@ -47,18 +48,18 @@ public class IntegrationsList extends RowList {
     }
 
     public String getStatus(SelenideElement item) {
-        return $(Element.STATUS).getText().trim();
+        return $(Element.STATUS).shouldBe(visible).getText().trim();
     }
 
     public SelenideElement getKebabButton(SelenideElement item) {
-        return $(Button.KEBAB);
+        return $(Button.KEBAB).shouldBe(visible);
     }
 
     public String getDescription(SelenideElement item) {
-        return $(Element.DESCRIPTION).getText().trim();
+        return $(Element.DESCRIPTION).shouldBe(visible).getText().trim();
     }
 
     public KebabMenu getKebabMenu(SelenideElement item) {
-        return new KebabMenu(item.$(By.xpath(".//button")));
+        return new KebabMenu(item.shouldBe(visible).$(By.xpath(".//button")).should(exist));
     }
 }

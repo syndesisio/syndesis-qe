@@ -47,17 +47,17 @@ public class ReviewActions extends SyndesisPageObject implements WizardPhase {
     }
 
     public void setConnectorName(String name) {
-        $(Input.CONNECTOR_NAME).setValue(name);
+        $(Input.CONNECTOR_NAME).shouldBe(visible).setValue(name);
     }
     public void setDescription(String description) {
-        $(TextArea.DESCRIPTION).setValue(description);
+        $(TextArea.DESCRIPTION).shouldBe(visible).setValue(description);
     }
 
     public void setHost(String host) {
-        $(Input.HOST).setValue(host);
+        $(Input.HOST).shouldBe(visible).setValue(host);
     }
 
     public void setBaseUrl(String baseUrl) {
-        $(Input.BASE_URL).setValue(baseUrl);
+        $(Input.BASE_URL).shouldBe(visible).setValue(baseUrl);
     }
 }

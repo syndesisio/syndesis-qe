@@ -63,7 +63,7 @@ public class ConnectionSteps {
     @When("^clicks? on the kebab menu icon of each available connection$")
     public void clickAllKebabMenus() {
         for(SelenideElement connection: connectionsPage.getAllConnections()) {
-            new KebabMenu(connection.$(By.xpath(".//button"))).open();
+            new KebabMenu(connection.$(By.xpath(".//button")).shouldBe(visible)).open();
         }
     }
 
@@ -77,7 +77,7 @@ public class ConnectionSteps {
     public void checkAllVisibleKebabMenus(String action1, String action2, String action3) {
         List<String> actions = new ArrayList<>(Arrays.asList(action1, action2, action3));
         for(SelenideElement connection: connectionsPage.getAllConnections()) {
-            KebabMenu kebabMenu = new KebabMenu(connection.$(By.xpath(".//button")));
+            KebabMenu kebabMenu = new KebabMenu(connection.$(By.xpath(".//button")).shouldBe(visible));
 
             for(String item: actions) {
                 kebabMenu.getItemElement(item).shouldBe(visible);
@@ -89,14 +89,14 @@ public class ConnectionSteps {
 
     @Then("^she is presented with help block with text \"([^\"]*)\"$")
     public void helpBlockVisible(String helpText) {
-        SelenideElement helpBlock = $(By.className("help-block"));
+        SelenideElement helpBlock = $(By.className("help-block")).shouldBe(visible);
         helpBlock.shouldBe(visible);
         Assertions.assertThat(helpBlock.getText().equals(helpText)).isTrue();
     }
 
     @When("^clicks on the \"([^\"]*)\" kebab menu button of \"([^\"]*)\"$")
     public void clickOnKebabMenuButtonOfConnection(String button, String connectionName) throws Throwable {
-        KebabMenu kebabMenu = new KebabMenu(connectionsPage.getConnection(connectionName).$(By.xpath(".//button")));
+        KebabMenu kebabMenu = new KebabMenu(connectionsPage.getConnection(connectionName).$(By.xpath(".//button")).shouldBe(visible));
         kebabMenu.open();
         kebabMenu.getItemElement(button).shouldBe(visible).click();
     }
