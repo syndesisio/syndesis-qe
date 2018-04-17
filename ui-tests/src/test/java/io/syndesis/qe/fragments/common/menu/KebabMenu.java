@@ -34,7 +34,7 @@ public class KebabMenu {
     }
 
     public SelenideElement getItemElement(String item) {
-        return menuButton.$(By.xpath("//a[text()='" + item + "']"));
+        return menuButton.$(By.xpath("//a[text()='" + item + "']")).shouldBe(visible);
     }
 
     public void checkActionsSet(String[] expectedItems) {

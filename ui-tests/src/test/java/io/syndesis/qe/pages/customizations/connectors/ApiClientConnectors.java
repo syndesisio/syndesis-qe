@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import com.codeborne.selenide.CollectionCondition;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 
@@ -58,6 +59,6 @@ public class ApiClientConnectors extends SyndesisPageObject {
     }
 
     public void clickConnectorByTitle(String connectorName) {
-        $$(Element.CONNECTOR_TITLE).find(text(connectorName)).shouldBe(visible).click();
+        $$(Element.CONNECTOR_TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(connectorName)).shouldBe(visible).click();
     }
 }
