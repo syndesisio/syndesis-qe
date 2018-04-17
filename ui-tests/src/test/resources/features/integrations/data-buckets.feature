@@ -144,6 +144,15 @@ Feature: Integration - Databucket
 
     And she checks that there is no warning inside of step number "4"
 
+    ###################### step step NEW step ##################################
+    ##### test that 2 following SQL select steps do not break integration ######
+
+    And She adds integration "connection" on position "1"
+    When Camilla selects the "PostgresDB" connection
+    And she selects "Invoke SQL" integration action
+    Then she fills invoke query input with "select * from contact  limit 1;" value
+    And clicks on the "Done" button
+
     # finish and save integration
     When click on the "Save as Draft" button
     And she sets the integration name "Integration_with_buckets"
