@@ -15,7 +15,7 @@ public class ReviewEditConnectorDetails extends SyndesisPageObject implements Wi
 
     private static class Button {
 
-        public static By CREATE_CONNECTOR = By.xpath("//button[contains(.,'Create Connector')]");
+        public static By CREATE_CONNECTOR = By.xpath("//button[contains(.,'Create API Connector')]");
     }
 
     private static class Element {
