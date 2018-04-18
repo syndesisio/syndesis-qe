@@ -17,9 +17,9 @@ Feature: Integration - Openwire to Openwire
     And she is prompted to select a "Start" connection from a list of available connections
     When Camilla selects the "AMQ" connection
     And she selects "Subscribe for Messages" integration action
-    And sets jms subscribe inputs source data
-      | destinationName | destinationType |
-      | cheese          | Queue           |
+    And fill in values
+      | Destination Name | cheese |
+      | Destination Type | Queue  |
     And clicks on the "Next" button
     # skip custom DataShape definition
     And clicks on the "Done" button
@@ -28,9 +28,9 @@ Feature: Integration - Openwire to Openwire
     # select connection as 'finish' point
     When Camilla selects the "AMQ" connection
     And she selects "Publish Messages" integration action
-    And sets jms publish inputs source data
-      | destinationName | destinationType | persistent |
-      | apple           | Queue           | true       |
+    And fill in values
+      | Destination Name | apple |
+      | Destination Type | Queue |
     And click on the "Next" button
     # skip custom DataShape definition
     And click on the "Done" button
