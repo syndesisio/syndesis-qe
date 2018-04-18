@@ -58,8 +58,6 @@ public class SupportPage extends SyndesisPageObject {
     }
 
     public String getVersion() {
-        String versionString = getRootElement().$(Element.PRODUCT_VERSION).shouldBe(visible).getText();
-        log.info("Version string found: " + versionString);
-        return versionString;
+        return getRootElement().$(Element.PRODUCT_VERSION).shouldBe(visible).getText();
     }
 }
