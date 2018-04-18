@@ -1,5 +1,6 @@
 package io.syndesis.qe.steps;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
@@ -213,7 +214,8 @@ public class CommonSteps {
         }
 
         SelenideElement dropdownElementsTable = $(By.className("dropdown-menu")).shouldBe(visible);
-        ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"));
+        ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"))
+                .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
 
         dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
     }
