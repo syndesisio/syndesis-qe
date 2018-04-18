@@ -28,6 +28,7 @@
 		<org.json.version>20160810</org.json.version>
 		<commons.io.version>2.5</commons.io.version>
 		<resteasy.version>3.1.4.Final</resteasy.version>
+        <resteasy2.version>2.3.8.SP3-redhat-2</resteasy2.version>
 		<jackson.version>2.8.6</jackson.version>
 		<twitter4j.version>4.0.5</twitter4j.version>
 		<log4j.version>2.9.0</log4j.version>
@@ -50,6 +51,8 @@
 		<ftp.client.version>3.3</ftp.client.version>
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
 		<activemq.version>5.15.3</activemq.version>
+		<!--<dballocator.version>2.5.3</dballocator.version>-->
+		<dballocator.version>2.6.1</dballocator.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -171,6 +174,18 @@
 				<version>${atlas.mapper.version}</version>
 			</dependency>
 
+			<!--DB allocator -->
+			<dependency>
+				<groupId>org.jboss.qa.dballoc</groupId>
+				<artifactId>dballocator-client-rest</artifactId>
+				<version>${dballocator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.qa.dballoc</groupId>
+				<artifactId>dballocator-api</artifactId>
+				<version>${dballocator.version}</version>
+			</dependency>
+
 			<!-- test dependencies -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -223,17 +238,43 @@
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jackson2-provider</artifactId>
 				<version>${resteasy.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>resteasy-jaxrs</artifactId>
+						<groupId>org.jboss.resteasy</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-client</artifactId>
 				<version>${resteasy.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>resteasy-jaxrs</artifactId>
+						<groupId>org.jboss.resteasy</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-jackson-provider</artifactId>
 				<version>${resteasy.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>resteasy-jaxrs</artifactId>
+						<groupId>org.jboss.resteasy</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-jaxrs</artifactId>
+				<version>${resteasy2.version}</version>
+			</dependency>
+
+
+
 			<dependency>
 				<groupId>com.fasterxml.jackson.module</groupId>
 				<artifactId>jackson-module-parameter-names</artifactId>

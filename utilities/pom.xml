@@ -86,6 +86,24 @@
 			<artifactId>junit</artifactId>
 		</dependency>
 
+		<!--DB allocator API-->
+		<dependency>
+			<groupId>org.jboss.qa.dballoc</groupId>
+			<artifactId>dballocator-client-rest</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jboss.qa.dballoc</groupId>
+			<artifactId>dballocator-api</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-jaxrs -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+		</dependency>
+
+
 		<!-- test dependencies -->
 		<dependency>
 			<groupId>org.hibernate</groupId>

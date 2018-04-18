@@ -1,10 +1,13 @@
 package io.syndesis.qe.bdd;
 
+import cucumber.api.java.en.And;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.templates.FtpTemplate;
 
 import io.syndesis.qe.utils.TestUtils;
+
 import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.EnumSet;
@@ -26,10 +29,15 @@ import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonSteps {
+
+    @Autowired
+    DBAllocatorClient dbAllocatorClient;
+
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
@@ -130,5 +138,21 @@ public class CommonSteps {
     @Given("^clean FTP server$")
     public void cleanFTPServier() {
         FtpTemplate.cleanUp();
+    }
+
+    @Given("^allocate new \"([^\"]*)\" database for \"([^\"]*)\" connection$")
+    public void allocateNewDatabase(String dbLabel, String connectionName) {
+
+        dbAllocatorClient.allocate(dbLabel);
+
+        log.info("Allocated database: '{}'",dbAllocatorClient.getDbAllocation());
+
+        TestUtils.updateCredentialJson(connectionName.toLowerCase(), dbAllocatorClient.getDbAllocation());
+    }
+
+    @And("^frees allocated \"([^\"]*)\" database$")
+    public void freesAllocatedDatabase(String dbLabel) {
+        Assertions.assertThat(dbAllocatorClient.getDbLabel()).isEqualTo(dbLabel);
+        dbAllocatorClient.free();
     }
 }
