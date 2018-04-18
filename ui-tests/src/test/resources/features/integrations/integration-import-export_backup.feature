@@ -1,12 +1,15 @@
-@integration-import-export
+##################################################
+# This is disabled as second import always failed due to openshift resource not being properly deleted on time
+# and investigation wasn't successful so far - TODO
+# instead it is all in one scenario but if investigating bug it may be useful to run just one of them
+# so I did not delete these. Both scenarios are fully functional if run separately via their tag.
+##################################################
+
+@wip
+@integration-import-export-backup
 Feature: Integration - Import Export
 
-#
-#  1. integration-import both methods, for investigation one of them use integration-import-export_backup.feature
-#
-  @integration-import-export-classic-and-dnd
-  Scenario: Import both flows
-
+  Background: Clean application state
     Given clean application state
     Given "Camilla" logs into the Syndesis
     Given created connections
@@ -65,9 +68,17 @@ Feature: Integration - Import Export
     # now we have exported integration, we can clean state and try to import
     Given clean application state
 
+    Then Wait until there is no integration pod with name "integrationimportexporttest"
+
     Given "Camilla" logs into the Syndesis
     And "Camilla" navigates to the "Integrations" page
     And Camilla clicks on the "Import" button
+
+#
+#  1. integration-import classic method
+#
+  @integration-import-export-classic
+  Scenario: Import classic flow
 
     Then Camilla imports integraion "Integration_import_export_test"
 
@@ -77,7 +88,7 @@ Feature: Integration - Import Export
     When Camilla selects the "Integration_import_export_test" integration
     And she is presented with "Not Published" integration status on Integration Detail page
 
-    And she stays there for "1000" ms
+    And she stays there for "20000" ms
 
     # start integration and wait for published state
     And Camilla starts integration "Integration_import_export_test"
@@ -88,13 +99,8 @@ Feature: Integration - Import Export
 #
 #  2. integration-import with drag'n'drop
 #
-
-    When Camilla deletes the "Integration_import_export_test" integration
-    #wait for pod to be deleted
-    And she stays there for "15000" ms
-
-    And "Camilla" navigates to the "Integrations" page
-    And Camilla clicks on the "Import" button
+  @integration-import-export-with-drag-and-drop
+  Scenario: Import drag&drop
 
     And Camilla drags exported integration "Integration_import_export_test" file to drag and drop area
 
@@ -104,7 +110,7 @@ Feature: Integration - Import Export
     When Camilla selects the "Integration_import_export_test" integration
     And she is presented with "Not Published" integration status on Integration Detail page
 
-    And she stays there for "1000" ms
+    And she stays there for "20000" ms
 
     # start integration and wait for active state
     And Camilla starts integration "Integration_import_export_test"
