@@ -41,7 +41,7 @@ public class ExtensionSteps {
         CommonSteps commonSteps = new CommonSteps();
 
         String extensionsLink = "Extensions";
-        String importButton = "ImportIntegration Extension";
+        String importButton = "Import Extension";
 
         List<List<String>> dataTable = extensionsData.raw();
 
