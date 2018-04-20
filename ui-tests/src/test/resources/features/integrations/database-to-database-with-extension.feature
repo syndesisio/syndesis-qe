@@ -11,7 +11,6 @@ Feature: Integration - DB to DB with extension
 
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create
-    When "Camilla" logs into the Syndesis
     Then inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
     And "Camilla" navigates to the "Home" page
