@@ -91,23 +91,33 @@ public class AtlasMapperGenerator {
         followingStep.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
     }
 
-    private List<Field> processDataShapeIntoFields(String stepSpecification, DataShapeKinds dsKind) {
+    /**
+     * The dataShapeSpecification needs to be separated into fields, which could then be used for generation of mapping
+     * steps. This is different for the "Json", "Java" and also "Xml" data shape type. Java DS type is already the
+     * specification of field types, Json needs to be send to be sent first to Json inspection endpoint, to generate the
+     * fields. Support for XML will be added later.
+     *
+     * @param dataShapeSpecification
+     * @param dsKind
+     * @return
+     */
+    private List<Field> processDataShapeIntoFields(String dataShapeSpecification, DataShapeKinds dsKind) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
         List<Field> fields = null;
-        log.debug(stepSpecification);
+        log.debug(dataShapeSpecification);
 
         if (dsKind.equals(DataShapeKinds.JAVA)) {
             try {
-                JavaClass jClass = mapper.readValue(stepSpecification, JavaClass.class);
-                jClass = mapper.readValue(stepSpecification, JavaClass.class);
+                JavaClass jClass = mapper.readValue(dataShapeSpecification, JavaClass.class);
+                jClass = mapper.readValue(dataShapeSpecification, JavaClass.class);
                 List<JavaField> jfields = getJavaFields(jClass);
                 fields = jfields.stream().map(f -> (Field) f).collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("error: {}" + e);
             }
         } else if (dsKind.equals(DataShapeKinds.JSON_SCHEMA) || dsKind.equals(DataShapeKinds.JSON_INSTANCE)) {
-            JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(stepSpecification));
+            JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(dataShapeSpecification));
             try {
                 String mapperString = mapper.writeValueAsString(inspectionResponse);
                 log.debug(mapperString);
@@ -180,6 +190,16 @@ public class AtlasMapperGenerator {
         return source;
     }
 
+    /**
+     * This method is used to generate the "AtlasMapping" - the atlasMapping contains list of specifications of
+     * dataSources and a list of specifications of dataMappings. Both these a must have for a complete and working
+     * AtlasMapping.
+     *
+     * @param mapping
+     * @param precedingSteps
+     * @param followingStep
+     * @return
+     */
     public Step getAtlasMappingStep(StepDefinition mapping, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
 
         processPrecedingSteps(precedingSteps);
@@ -220,6 +240,14 @@ public class AtlasMapperGenerator {
         return mapperStep;
     }
 
+    /**
+     * Generates a list of mappings - using the user-specified "DataMapperStepDefinition" mapping step definitions.
+     *
+     * @param mappings
+     * @param precedingSteps
+     * @param followingStep
+     * @return
+     */
     private List<BaseMapping> generateBaseMappings(List<DataMapperStepDefinition> mappings, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
         List<BaseMapping> baseMapping = new ArrayList<>();
 
@@ -229,6 +257,14 @@ public class AtlasMapperGenerator {
         return baseMapping;
     }
 
+    /**
+     * Determines the MappingType and determines which kind of mapping step it should generate (MAP, COMBINE, SEPARATE).
+     *
+     * @param mappingDef
+     * @param precedingSteps
+     * @param followingStep
+     * @return
+     */
     private Mapping generateMapping(DataMapperStepDefinition mappingDef, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
         Mapping generatedMapping = null;
         if (mappingDef.getMappingType().equals(MappingType.MAP)) {
@@ -243,6 +279,15 @@ public class AtlasMapperGenerator {
         return generatedMapping;
     }
 
+    /**
+     * This method generates "combine" mapping - takes list of input fields and with specified SeparatorType - creates
+     * single output field.
+     *
+     * @param mappingDef - definition of mapping step obtained in step definition
+     * @param precedingSteps - all steps preceeding the output step
+     * @param followingStep - single step, to which the mapping is applied
+     * @return
+     */
     private Mapping generateCombineMapping(DataMapperStepDefinition mappingDef, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
         StepDefinition fromStep = precedingSteps.get(mappingDef.getFromStep() - 1);
 
@@ -272,6 +317,15 @@ public class AtlasMapperGenerator {
         return generatedMapping;
     }
 
+    /**
+     * This method generates "separate" mapping - takes single input field and using specified SeparatorType (coma,
+     * space, ...) - creates multiple output fields
+     *
+     * @param mappingDef - definition of mapping step obtained in step definition
+     * @param precedingSteps - all steps preceeding the output step
+     * @param followingStep - single step, to which the mapping is applied
+     * @return
+     */
     private Mapping generateSeparateMapping(DataMapperStepDefinition mappingDef, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
         StepDefinition fromStep = precedingSteps.get(mappingDef.getFromStep() - 1);
 
@@ -300,6 +354,14 @@ public class AtlasMapperGenerator {
         return generatedMapping;
     }
 
+    /**
+     * This method generates "map" type mapping - takes single input field and creates single output field
+     *
+     * @param mappingDef - definition of mapping step obtained in step definition
+     * @param precedingSteps - all steps preceeding the output step
+     * @param followingStep - single step, to which the mapping is applied
+     * @return
+     */
     private Mapping generateMapMapping(DataMapperStepDefinition mappingDef, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
 
         StepDefinition fromStep = precedingSteps.get(mappingDef.getFromStep() - 1);
@@ -339,6 +401,12 @@ public class AtlasMapperGenerator {
         return jsonInspectReq;
     }
 
+    /**
+     * Generates the list of JavaFields from nested list of JavaClasses and JavaFields.
+     *
+     * @param jClass
+     * @return
+     */
     private List<JavaField> getJavaFields(JavaClass jClass) {
         List<JavaField> fields = jClass.getJavaFields().getJavaField();
         List<JavaField> javaField = new ArrayList<>();
@@ -352,6 +420,14 @@ public class AtlasMapperGenerator {
         return javaField;
     }
 
+    /**
+     * Small hack - generated Mapper step action - this specification needs the input and output data shape. The input
+     * is "DataShapeKin.ANY" - marks it takes all the preceeding dataOutputShapes from preceeding steps. The
+     * outputDataShape corresponds to the inputDataShape of the following step.
+     *
+     * @param outputConnectorDescriptor
+     * @return
+     */
     public Action getMapperStepAction(ConnectorDescriptor outputConnectorDescriptor) {
         ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
         Action ts = new StepAction.Builder().descriptor(new StepDescriptor.Builder().build()).build();
