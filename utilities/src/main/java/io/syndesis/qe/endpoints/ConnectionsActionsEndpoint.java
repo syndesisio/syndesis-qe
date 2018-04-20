@@ -21,16 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ConnectionsActionsEndpoint extends AbstractEndpoint<ConnectorDescriptor> {
 
     public ConnectionsActionsEndpoint(String connectionId) {
-        super(Action.class, "/connections/" + connectionId + "/actions/");
+        super(Action.class, "/connections/" + connectionId + "/actions");
     }
 
     public ConnectorDescriptor postParamsAction(String actionName, Map<String, String> body) {
         log.debug("POST, destination : {}", getEndpointUrl() + actionName);
-        final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + actionName)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+        final Invocation.Builder invocation = createInvocation(actionName);
         final JsonNode response = invocation.post(Entity.entity(body, MediaType.APPLICATION_JSON), JsonNode.class);
         return transformJsonNode(response, ConnectorDescriptor.class);
     }

@@ -10,6 +10,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,11 +37,17 @@ public abstract class AbstractEndpoint<T> {
     private Class<T> type;
     protected Client client;
 
+    protected MultivaluedMap<String,Object> COMMON_HEADERS = new MultivaluedHashMap<>();
+
     public AbstractEndpoint(Class<?> type, String endpointName) {
         this.type = (Class<T>) type;
         this.endpointName = endpointName;
 
         client = RestUtils.getClient();
+
+        COMMON_HEADERS.add("X-Forwarded-User", "pista");
+        COMMON_HEADERS.add("X-Forwarded-Access-Token", "kral");
+        COMMON_HEADERS.add("SYNDESIS-XSRF-TOKEN", "awesome");
     }
 
     public T create(T obj) {
@@ -132,8 +140,7 @@ public abstract class AbstractEndpoint<T> {
         Invocation.Builder invocation = client
                 .target(getEndpointUrl(Optional.ofNullable(id)))
                 .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+                .headers(COMMON_HEADERS);
         return invocation;
     }
 
