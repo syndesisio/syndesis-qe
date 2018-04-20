@@ -61,7 +61,7 @@ public class ExtensionSteps {
                 log.warn("Extension {} already exists!", extensionName);
             } else {
                 commonSteps.clickOnButton(importButton);
-                commonSteps.validatePage("", "ImportIntegration Extension");
+                commonSteps.validatePage("", "Import Extension");
 
                 uploadFile(extensionFileName);
                 importDetails();
