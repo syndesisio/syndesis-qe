@@ -50,6 +50,8 @@
 		<ftp.client.version>3.3</ftp.client.version>
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
 		<activemq.version>5.15.3</activemq.version>
+		<jslack.version>1.0.26</jslack.version>
+
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -315,6 +317,13 @@
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-client</artifactId>
 				<version>${activemq.version}</version>
+			</dependency>
+
+
+			<dependency>
+				<groupId>com.github.seratch</groupId>
+				<artifactId>jslack</artifactId>
+				<version>${jslack.version}</version>
 			</dependency>
 
 		</dependencies>

@@ -175,6 +175,11 @@
 			<artifactId>activemq-client</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.seratch</groupId>
+			<artifactId>jslack</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
