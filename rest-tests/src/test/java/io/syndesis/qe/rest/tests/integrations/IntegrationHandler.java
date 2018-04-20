@@ -12,11 +12,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.common.model.integration.Integration;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.bdd.storage.StepsStorage;
-import io.syndesis.qe.endpoints.IntegrationsDeploymentEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.bdd.datamapper.AtlasMapperGenerator;
 import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.bdd.storage.StepsStorage;
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -107,9 +106,7 @@ public class IntegrationHandler {
      * @param integrationId id of integration to be published
      */
     private void publishIntegration(String integrationId) {
-
-        IntegrationsDeploymentEndpoint intDeployments = new IntegrationsDeploymentEndpoint(integrationId);
-        intDeployments.activate();
+        integrationsEndpoint.activateIntegration(integrationId);
     }
 
     /**
@@ -118,8 +115,9 @@ public class IntegrationHandler {
      * @param integrationId id of integration to be unpublished
      */
     private void unpublishIntegration(String integrationId) {
-        IntegrationsDeploymentEndpoint intDeployments = new IntegrationsDeploymentEndpoint(integrationId);
-        intDeployments.deactivate(1);
+        int integrationVersion = integrationsEndpoint.get(integrationId).getVersion();
+        log.info("Undeploying integration with integration version: {}", integrationVersion);
+        integrationsEndpoint.deactivateIntegration(integrationId, integrationVersion);
     }
 
     /**

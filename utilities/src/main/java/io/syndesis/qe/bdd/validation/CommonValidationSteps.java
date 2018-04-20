@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import cucumber.api.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
+import io.syndesis.common.model.integration.Integration;
+import io.syndesis.common.model.integration.IntegrationDeployment;
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
@@ -78,7 +81,11 @@ public class CommonValidationSteps {
 
     @Then("^validate integration: \"([^\"]*)\" pod scaled to (\\d+)$")
     public void verifyPodCount(String integrationName, int podCount) {
-        final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
+        log.info("Then validate the pod scaled to: {}", podCount);
+
+        final String sanitizedName = "i-" + integrationName.toLowerCase().replaceAll(" ", "-");
+        log.info("Pod name: {}", sanitizedName);
+
         try {
             final String errorMessage = "Wrong number of pods " + sanitizedName;
             OpenShiftWaitUtils.assertEventually(errorMessage, OpenShiftWaitUtils.areExactlyNPodsRunning("deploymentconfig", sanitizedName, podCount));
@@ -98,6 +105,32 @@ public class CommonValidationSteps {
 
     @Then("^switch Inactive and Active state on integration \"([^\"]*)\" for (\\d+) times and check pods up/down")
     public void verifyIntegrationOnOffNTimes(String integrationName, int switchNTimes) {
-        //TODO(tplevko): rework this.
+        final String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
+
+        for (int i = 0; i <= switchNTimes; i++) {
+
+            final IntegrationDeploymentState newDepState;
+            final Integration integration = integrationsEndpoint.get(integrationId);
+            int integrationVersion = integration.getVersion();
+
+            log.info("Getting integrationDeployment with deployment number: {}", integrationVersion);
+
+            IntegrationDeployment currentDeployment = integrationsEndpoint.getCurrentIntegrationDeployment(integrationId, integrationVersion);
+            if (currentDeployment.getCurrentState().equals(IntegrationDeploymentState.Published)) {
+                newDepState = IntegrationDeploymentState.Unpublished;
+                log.info("Unpublishing integration with integration version: {}", integrationVersion);
+                integrationsEndpoint.deactivateIntegration(integrationId, integrationVersion);
+            } else {
+                newDepState = IntegrationDeploymentState.Published;
+                log.info("Publishing integration: {}", integrationId);
+                integrationsEndpoint.activateIntegration(integrationId);
+            }
+
+            if (newDepState.equals(IntegrationDeploymentState.Published)) {
+                verifyPodCount(integrationName, 1);
+            } else {
+                verifyPodCount(integrationName, 0);
+            }
+        }
     }
 }

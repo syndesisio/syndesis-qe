@@ -28,7 +28,6 @@ import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsDeploymentEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import io.syndesis.qe.utils.TestUtils;
@@ -183,8 +182,6 @@ public class UiComplexSteps extends AbstractStep {
      * @param integrationId id of integration to be published
      */
     private void publishIntegration(String integrationId) {
-
-        IntegrationsDeploymentEndpoint intDeployments = new IntegrationsDeploymentEndpoint(integrationId);
-        intDeployments.activate();
+        integrationsEndpoint.activateIntegration(integrationId);
     }
 }

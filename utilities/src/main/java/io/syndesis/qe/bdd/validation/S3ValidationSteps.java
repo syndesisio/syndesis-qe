@@ -6,8 +6,8 @@ import java.util.List;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.S3Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,9 @@ public class S3ValidationSteps {
     @Then("^clean S3 to S3 scenario, removes two sample buckets with names: \"([^\"]*)\"")
     public void cleanupS3(List<String> bucketNames) {
         for (String bucket : bucketNames) {
-            s3Utils.deleteS3Bucket(S3BucketNameBuilder.getBucketName(bucket));
+            String bucketName = S3BucketNameBuilder.getBucketName(bucket);
+            log.debug("deleting bucket with name: {}", bucketName);
+            s3Utils.deleteS3Bucket(bucketName);
         }
         TestSupport.getInstance().resetDB();
     }
