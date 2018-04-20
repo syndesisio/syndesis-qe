@@ -10,8 +10,7 @@ Feature: Integration - Twitter to Salesforce
 
   Scenario: Create
     # create integration
-    When "Camilla" logs into the Syndesis
-    And "Camilla" navigates to the "Home" page
+    When "Camilla" navigates to the "Home" page
     And clicks on the "Create Integration" button to create a new integration.
     Then she is presented with a visual integration editor
     And she is prompted to select a "Start" connection from a list of available connections
