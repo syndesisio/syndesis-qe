@@ -1,20 +1,5 @@
 package io.syndesis.qe.steps.customizations.extensions;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import static org.hamcrest.Matchers.is;
-
-import static org.junit.Assert.assertThat;
-
-import org.openqa.selenium.By;
-
-import com.codeborne.selenide.SelenideElement;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
 import cucumber.api.DataTable;
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
@@ -27,6 +12,17 @@ import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
 import io.syndesis.qe.steps.CommonSteps;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class ExtensionSteps {
@@ -36,47 +32,55 @@ public class ExtensionSteps {
     private TechExtensionsListComponent techExtensionsListComponent = new TechExtensionsListComponent();
     private ModalDialogPage modalDialogPage = new ModalDialogPage();
 
+    private static final class NavigationElements {
+        public static final String CUSTOMIZATIONS_NAV = "Customizations";
+        public static final String EXTENSION_NAV = "Extensions";
+        public static final String EXTENSION_DETAILS_NAV = "Extensions Details";
+
+        public static final String IMPORT_EXTENSION_BUTTON = "Import Extension";
+    }
+
     @Given("^imported extensions$")
     public void importExtension(DataTable extensionsData) throws Throwable {
         CommonSteps commonSteps = new CommonSteps();
 
-        String extensionsLink = "Extensions";
-        String importButton = "Import Extension";
-
         List<List<String>> dataTable = extensionsData.raw();
 
         for (List<String> dataRow : dataTable) {
-            String extensionName = dataRow.get(0);
-            String extensionFileName = dataRow.get(1);
 
-            commonSteps.navigateTo("", "Customizations");
-            commonSteps.validatePage("", "Customizations");
+            commonSteps.navigateTo("", NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.validatePage("", NavigationElements.CUSTOMIZATIONS_NAV);
 
-            commonSteps.clickOnLink(extensionsLink);
-            commonSteps.validatePage("", "Extensions");
+            commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
+            commonSteps.validatePage("", NavigationElements.EXTENSION_NAV);
 
-            SelenideElement techExtensionItem = techExtensionsListComponent.getExtensionItem(extensionName);
+            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
+            commonSteps.validatePage("", NavigationElements.IMPORT_EXTENSION_BUTTON);
 
-            if (techExtensionItem != null) {
-                log.warn("Extension {} already exists!", extensionName);
-            } else {
-                commonSteps.clickOnButton(importButton);
-                commonSteps.validatePage("", "Import Extension");
 
-                uploadFile(extensionFileName);
-                importDetails();
+            uploadExtensionFromFile(dataRow.get(0), dataRow.get(1));
 
-                commonSteps.clickOnButton(importButton);
-                commonSteps.validatePage("", "Extension Details");
-            }
+            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
         }
     }
 
+    /**
+     * @deprecated use uploadExtensionFromFile method instead
+     */
+    @Deprecated
     @When("^Camilla upload extension \"([^\"]*)\"$")
     public void uploadFile(String extensionName) throws Throwable {
         //TODO temporary solution
         String techExtensionFolderUrl = TestConfiguration.techExtensionUrl();
         String techExtensionUrl = techExtensionFolderUrl + extensionName + ".jar";
+        Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
+        $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
+    }
+
+    @When("^Camilla upload extension with name \"([^\"]*)\" from relative path \"([^\"]*)\"$")
+    public void uploadExtensionFromFile(String extensionName, String extensionPath) throws Throwable {
+
+        String techExtensionUrl = extensionPath + extensionName;
         Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
         $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
     }

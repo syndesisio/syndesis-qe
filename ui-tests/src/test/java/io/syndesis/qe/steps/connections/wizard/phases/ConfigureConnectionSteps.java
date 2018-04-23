@@ -1,11 +1,11 @@
 package io.syndesis.qe.steps.connections.wizard.phases;
 
-import java.util.Optional;
-
 import cucumber.api.java.en.When;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnection;
+
+import java.util.Optional;
 
 public class ConfigureConnectionSteps {
 
@@ -22,12 +22,13 @@ public class ConfigureConnectionSteps {
             String nameTransformed = connectionName.toLowerCase().replaceAll(" ", "_");
             optional = AccountsDirectory.getInstance().getAccount(nameTransformed);
 
-            if(optional.isPresent()) {
+            if (optional.isPresent()) {
                 // if connectionName credentials exist with transformed name
                 configureConnectionPage.fillForm(optional.get().getProperties());
             } else {
-                // if it does not exist
-                throw new IllegalArgumentException("Credentials for " + connectionName + " were not found!");
+                if (!connectionName.equalsIgnoreCase("no credentials")) {
+                    throw new IllegalArgumentException("Credentials for " + connectionName + " were not found!");
+                }
             }
         }
     }
