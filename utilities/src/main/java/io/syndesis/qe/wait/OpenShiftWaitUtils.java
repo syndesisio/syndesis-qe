@@ -125,7 +125,7 @@ public class OpenShiftWaitUtils {
     }
 
     public static BooleanSupplier areNoPodsPresent(final String appName) {
-        return () -> OpenShiftUtils.getInstance().getLabeledPods("component", appName).size() == 0;
+        return () -> OpenShiftUtils.getInstance().getLabeledPods("syndesis.io/component", appName).size() == 0;
     }
 
     public static BooleanSupplier areNoPodsPresent(Predicate<Pod> podFilter) {

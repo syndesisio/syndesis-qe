@@ -63,6 +63,7 @@ public class CommonSteps {
         TWITTER,
         OPENSHIFT,
         SYNDESIS,
+        SLACK,
         S3
     }
 
@@ -176,6 +177,9 @@ public class CommonSteps {
                         break;
                     case S3:
                         return; //TODO: skip for now
+                    case SLACK:
+                        service = "slack";
+                        break;
                     default:
                         return; //skip for other cred
                 }
