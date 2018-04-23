@@ -5,9 +5,9 @@ Feature: Slack Connector
     Given clean application state
     Given "Camilla" logs into the Syndesis
 
-    Given imported extensions
-      | syndesis-extension-body-1.0.0.jar  | ../syndesis-extensions/syndesis-extension-body/target/  |
-      | syndesis-connector-timer-1.0.0.jar | ../syndesis-extensions/syndesis-connector-timer/target/ |
+    Given import extensions from syndesis-extensions folder
+      | syndesis-extension-body  |
+      | syndesis-connector-timer |
     Given created connections
       | slack | QE Slack       | QE Slack | SyndesisQE Slack test |
       | Timer | no credentials | Timer    | Timer description     |

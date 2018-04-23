@@ -5,7 +5,6 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.customizations.CustomizationsPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
@@ -15,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ExtensionSteps {
         public static final String IMPORT_EXTENSION_BUTTON = "Import Extension";
     }
 
-    @Given("^imported extensions$")
+    @Given("^import extensions$")
     public void importExtension(DataTable extensionsData) throws Throwable {
         CommonSteps commonSteps = new CommonSteps();
 
@@ -64,20 +64,44 @@ public class ExtensionSteps {
         }
     }
 
-    /**
-     * @deprecated use uploadExtensionFromFile method instead
-     */
-    @Deprecated
-    @When("^Camilla upload extension \"([^\"]*)\"$")
-    public void uploadFile(String extensionName) throws Throwable {
-        //TODO temporary solution
-        String techExtensionFolderUrl = TestConfiguration.techExtensionUrl();
-        String techExtensionUrl = techExtensionFolderUrl + extensionName + ".jar";
-        Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
-        $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
+    @Given("^import extensions from syndesis-extensions folder$")
+    public void importExtensionFromKnownFolder(DataTable extensionsData) throws Throwable {
+        CommonSteps commonSteps = new CommonSteps();
+
+        List<List<String>> dataTable = extensionsData.raw();
+
+        for (List<String> dataRow : dataTable) {
+
+            commonSteps.navigateTo("", NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.validatePage("", NavigationElements.CUSTOMIZATIONS_NAV);
+
+            commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
+            commonSteps.validatePage("", NavigationElements.EXTENSION_NAV);
+
+            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
+            commonSteps.validatePage("", NavigationElements.IMPORT_EXTENSION_BUTTON);
+
+
+            uploadExtensionFromFile(dataRow.get(0));
+
+            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
+        }
     }
 
-    @When("^Camilla upload extension with name \"([^\"]*)\" from relative path \"([^\"]*)\"$")
+
+    @When("^.*uploads? extension \"([^\"]*)\"$")
+    public void uploadFile(String extensionName) throws Throwable {
+        uploadExtensionFromFile(extensionName);
+    }
+
+    /**
+     * Uploads an extension from any relative path
+     *
+     * @param extensionName
+     * @param extensionPath
+     * @throws Throwable
+     */
+    @When("^.*uploads? extension with name \"([^\"]*)\" from relative path \"([^\"]*)\"$")
     public void uploadExtensionFromFile(String extensionName, String extensionPath) throws Throwable {
 
         String techExtensionUrl = extensionPath + extensionName;
@@ -85,7 +109,28 @@ public class ExtensionSteps {
         $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
     }
 
-    @When("^she see details about imported extension$")
+
+    /**
+     * Method will download extension .jar file from ../syndesis-extensions/extensionFolderName/target/*.jar
+     * You only have to specify folder name.
+     *
+     * @param extensionFolderName
+     * @throws Throwable
+     */
+    @When("^.*uploads? extension with name \"([^\"]*)\" from syndesis-extensions dir$")
+    public void uploadExtensionFromFile(String extensionFolderName) throws Throwable {
+        String defaultPath = "../syndesis-extensions/" + extensionFolderName + "/target/";
+
+        File[] files = new File(defaultPath).listFiles((dir, name) -> !name.contains("original") && name.endsWith(".jar"));
+        Assertions.assertThat(files).hasSize(1).doesNotContainNull();
+
+        String techExtensionUrl = defaultPath + files[0].getName();
+
+        Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
+        $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
+    }
+
+    @When("^.*sees? details about imported extension$")
     public void importDetails() throws Throwable {
         //TODO Deeper validation
         assertThat(techExtensionsImportPage.validate(), is(true));
