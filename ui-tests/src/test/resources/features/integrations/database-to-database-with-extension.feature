@@ -7,7 +7,7 @@ Feature: Integration - DB to DB with extension
     Given reset content of "todo" table
     Given reset content of "contact" table
     Given imported extensions
-    	| Log Message Body | syndesis-extension-log-body-1.0.0 |
+    	| syndesis-extension-log-body-1.0.0.jar | ../syndesis-extensions/syndesis-extension-log-body/target/ |
 
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create

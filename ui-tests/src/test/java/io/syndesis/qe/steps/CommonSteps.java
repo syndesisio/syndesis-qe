@@ -45,7 +45,6 @@ import java.util.Optional;
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.have;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -134,11 +133,15 @@ public class CommonSteps {
                 selectConnectionTypeSteps.selectConnectionType(connectionType);
                 configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
 
-                clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                // do nothing if connection does not require any credentials
+                if (!connectionCredentialsName.equalsIgnoreCase("no credentials")) {
 
-                scrollTo("top", "right");
-                clickOnButton("Next");
+                    clickOnButton("Validate");
+                    successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                    scrollTo("top", "right");
+                    clickOnButton("Next");
+                }
+
 
                 nameConnectionSteps.setConnectionName(connectionName);
                 nameConnectionSteps.setConnectionDescription(connectionDescription);

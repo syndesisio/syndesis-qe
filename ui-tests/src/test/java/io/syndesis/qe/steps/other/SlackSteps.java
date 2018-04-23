@@ -1,0 +1,20 @@
+package io.syndesis.qe.steps.other;
+
+import com.github.seratch.jslack.api.methods.SlackApiException;
+import cucumber.api.java.en.When;
+import io.syndesis.qe.utils.SlackConnector;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+
+import java.io.IOException;
+
+public class SlackSteps {
+    @Lazy
+    @Autowired
+    private SlackConnector slack;
+
+    @When("^.*checks? that last slack message equals \"([^\"]*)\" on channel \"([^\"]*)\"$")
+    public void sendMessage(String message, String channel) throws InterruptedException, SlackApiException, IOException {
+        slack.checkLastMessageFromChannel(message, channel);
+    }
+}
