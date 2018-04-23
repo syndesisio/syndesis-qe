@@ -10,11 +10,11 @@ import com.github.seratch.jslack.api.methods.response.channels.ChannelsListRespo
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Message;
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,6 +23,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
+@Lazy
 public class SlackConnector {
     private static final Slack slack = Slack.getInstance();
     private static String token;
