@@ -116,7 +116,7 @@ public final class TestUtils {
     }
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
-        final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("component", podName);
+        final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
         final LocalPortForward lpf = OpenShiftUtils.portForward(podToForward, remotePort, localPort);
         return lpf;
     }
