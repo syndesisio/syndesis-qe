@@ -39,8 +39,8 @@ public class DataMapper extends SyndesisPageObject {
         public static final By SECOND_SOURCE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]");
         public static final By FIRST_TARGET_POSITION = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-action > div > div.actionContainer > div.form-group.argument > input");
         public static final By SECOND_TARGET_POSITION = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-action > div > div > div.form-group.argument > input");
-        public static final By ACTION_SELECT = By.xpath("//label[text()='Action']/following-sibling::select");
-        public static final By SEPARATOR_SELECT = By.xpath("//label[text()='Separator:']/following-sibling::select");
+        public static final By ACTION_SELECT = By.xpath("//select[@id='selectAction']");
+        public static final By SEPARATOR_SELECT = By.xpath("//select[@id='select-separator']");
         public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
         public static final By BUCKET_IS_IN_OPEN_STATE = By.className("panel-collapse");
     }
