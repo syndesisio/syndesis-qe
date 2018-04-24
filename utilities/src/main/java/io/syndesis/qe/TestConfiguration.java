@@ -88,7 +88,7 @@ public class TestConfiguration {
 
     public static String syndesisTempalateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
 
-    public static String syndesisTempalateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
+    public static String syndesisTemplateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
 
     public static String syndesisBrowser() { return get().readValue(SYNDESIS_UI_BROWSER); }
 

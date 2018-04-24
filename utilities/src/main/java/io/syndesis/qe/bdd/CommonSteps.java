@@ -21,13 +21,16 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
+import io.syndesis.qe.Component;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
+import io.syndesis.qe.templates.FtpTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -51,7 +54,7 @@ public class CommonSteps {
     }
 
     @Then("^wait for Syndesis to become ready")
-    public void waitForSyndeisis() {
+    public void waitForSyndesis() {
         EnumSet<Component> components = EnumSet.allOf(Component.class);
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
