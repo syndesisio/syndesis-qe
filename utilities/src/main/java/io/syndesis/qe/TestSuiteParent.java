@@ -70,7 +70,7 @@ public abstract class TestSuiteParent {
             log.info("Deploying Syndesis to namespace");
             commonSteps.deploySyndesis();
             log.info("Waiting for Syndesis to get ready");
-            commonSteps.waitForSyndeisis();
+            commonSteps.waitForSyndesis();
         }
     }
 }
