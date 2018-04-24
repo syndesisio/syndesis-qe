@@ -32,8 +32,6 @@ public class TestConfiguration {
     public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
     public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
 
-    public static final String SYNDESIS_TECH_EXTENSION_URL = "syndesis.config.ui.tech.extension.url";
-
     public static final String SYNDESIS_TEMPLATE_URL = "syndesis.config.template.url";
     public static final String SYNDESIS_TEMPLATE_SA = "syndesis.config.template.sa";
 
@@ -86,8 +84,6 @@ public class TestConfiguration {
 
     public static String syndesisVersionsFile() { return get().readValue(SYNDESIS_VERSIONS_FILE); }
 
-    public static String techExtensionUrl() { return get().readValue(SYNDESIS_TECH_EXTENSION_URL); }
-
     public static String syndesisTempalateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
 
     public static String syndesisTempalateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
@@ -115,8 +111,6 @@ public class TestConfiguration {
 
         props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
         props.setProperty(OPENSHIFT_NAMESPACE_LOCK, "false");
-
-        props.setProperty(SYNDESIS_TECH_EXTENSION_URL, "../syndesis-extensions/syndesis-extension-log-body/target/");
 
         // to keep backward compatibility
         if (props.getProperty(SYNDESIS_URL_SUFFIX) != null && props.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {

@@ -1,13 +1,13 @@
 @integrations-database-to-database-with-extension
 Feature: Integration - DB to DB with extension
 
-  Background: 
+  Background:
     Given clean application state
     Given "Camilla" logs into the Syndesis
     Given reset content of "todo" table
     Given reset content of "contact" table
-    Given imported extensions
-    	| syndesis-extension-log-body-1.0.0.jar | ../syndesis-extensions/syndesis-extension-log-body/target/ |
+    Given import extensions from syndesis-extensions folder
+      | syndesis-extension-log-body |
 
   @tech-extension-create-integration-with-new-tech-extension
   Scenario: Create
