@@ -24,6 +24,6 @@ public class CommonHooks {
     @After
     public void closeDBConnection() {
         log.debug("Closing DB connection if it exists");
-        SampleDbConnectionManager.closeConnection();
+        SampleDbConnectionManager.closeConnections();
     }
 }

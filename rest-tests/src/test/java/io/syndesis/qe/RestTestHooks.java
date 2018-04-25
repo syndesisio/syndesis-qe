@@ -22,6 +22,6 @@ public class RestTestHooks {
     public void afterTest() {
         stepStorage.flushStepDefinitions();
         log.debug("Flushed steps from steps storage");
-        SampleDbConnectionManager.closeConnection();
+        SampleDbConnectionManager.closeConnections();
     }
 }
