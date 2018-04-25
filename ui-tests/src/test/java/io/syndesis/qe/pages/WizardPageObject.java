@@ -29,6 +29,14 @@ public abstract class WizardPageObject extends SyndesisPageObject {
         currentPosition++;
     }
 
+    /**
+     * uses step's navigateToNextWizardStep() method but expects a validation error
+     * that doesn't let the wizard move to the next step
+     */
+    public void nextStepWithValidationError() {
+        steps.get(currentPosition).goToNextWizardPhase();
+    }
+
     public SyndesisPageObject getCurrentStep() {
         return (SyndesisPageObject) steps.get(currentPosition);
     }
