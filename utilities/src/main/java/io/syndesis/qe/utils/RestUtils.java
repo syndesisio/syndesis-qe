@@ -1,6 +1,5 @@
 package io.syndesis.qe.utils;
 
-import cz.xtf.http.HttpUtil;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -25,6 +24,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
+import cz.xtf.http.HttpUtil;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.Route;
 import io.syndesis.qe.Component;
@@ -140,5 +140,14 @@ public final class RestUtils {
             }
             log.debug("rest endpoint URL: " + restUrl.get());
         }
+    }
+
+    /**
+     * Resets the URL and port-forward.
+     */
+    public static void reset() {
+        restUrl = Optional.empty();
+        TestUtils.terminateLocalPortForward(localPortForward);
+        localPortForward = null;
     }
 }

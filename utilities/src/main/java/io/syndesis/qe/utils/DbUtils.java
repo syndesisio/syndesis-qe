@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import org.assertj.core.api.Assertions;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,8 +9,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.assertj.core.api.Assertions;
 
 @Slf4j
 public class DbUtils {
@@ -127,6 +127,22 @@ public class DbUtils {
         log.debug("Number of records: " + records);
         return records;
     }
+
+    /**
+     * Checks if the connection is still alive.
+     * @return true/false
+     */
+    public boolean isConnectionValid() {
+        try {
+            log.info("Validating DB connection; When exception printed out, the connection is not valid");
+            return dbConnection.isValid(30);
+        } catch (Exception e) {
+            // This exception is *not* the same as mentioned in the info log ^ . The isValid method is printing out the exception by default.
+            e.printStackTrace();
+        }
+        return false;
+    }
+
 
     /**
      * Removes all data from specified table.

@@ -1,11 +1,5 @@
 package io.syndesis.qe.bdd;
 
-import io.syndesis.qe.Component;
-import io.syndesis.qe.templates.FtpTemplate;
-
-import io.syndesis.qe.templates.MysqlTemplate;
-import io.syndesis.qe.utils.TestUtils;
-
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
@@ -25,11 +19,11 @@ import io.syndesis.qe.Component;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
+import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
