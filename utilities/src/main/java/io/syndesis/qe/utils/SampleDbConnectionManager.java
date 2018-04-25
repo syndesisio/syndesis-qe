@@ -12,7 +12,6 @@ import java.util.Properties;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -29,11 +28,9 @@ public class SampleDbConnectionManager {
 
         switch (dbType) {
             case "postgresql":
-                log.info("*POSTRGRES*");
                 SampleDbConnectionManager.handleDbWrapper(dbType, 5432, 5432, "syndesis-db", "postgresql");
                 break;
             case "mysql":
-                log.info("*MYSQL*");
                 SampleDbConnectionManager.handleDbWrapper(dbType, 3306, 3306, "mysql", "mysql");
                 break;
         }
@@ -48,6 +45,7 @@ public class SampleDbConnectionManager {
 
     public static void closeConnections() {
         connectionsInfoMap.entrySet().stream().forEach(ent -> releaseDbWrapper(ent.getValue()));
+        connectionsInfoMap.clear();
     }
 
     //AUXILIARIES:
@@ -57,30 +55,24 @@ public class SampleDbConnectionManager {
         DbWrapper wrap;
 
         if (connectionsInfoMap.containsKey(dbType)) {
-            log.info("*0*");
             wrap = connectionsInfoMap.get(dbType);
         } else {
-            log.info("*1*");
             wrap = new DbWrapper(dbType);
         }
 
-        log.info("*2*");
         if (wrap.getLocalPortForward() == null || !wrap.getLocalPortForward().isAlive()) {
-            log.info("*3*");
             LocalPortForward localPortForward = createLocalPortForward(remotePort, localPort, podName);
             wrap.setLocalPortForward(localPortForward);
         }
         try {
             if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
-                log.info("*4*");
                 Connection dbConnection = SampleDbConnectionManager.createDbConnection(wrap.getLocalPortForward(), localPort, driver);
                 wrap.setDbConnection(dbConnection);
-                log.info("Putting dirver :*{}* and wrap: *{}* to map", driver, wrap.getDbType());
+                log.info("Putting driver :*{}* and wrap: *{}* to map", driver, wrap.getDbType());
                 connectionsInfoMap.put(driver, wrap);
                 Assertions.assertThat(connectionsInfoMap).isNotEmpty();
             }
         } catch (SQLException ex) {
-            log.info("*5*");
             log.error("Error: " + ex);
         }
     }

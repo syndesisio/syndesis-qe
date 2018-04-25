@@ -1,10 +1,11 @@
 package io.syndesis.qe.bdd.validation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.api.Assertions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DbValidationSteps {
 
-    private final DbUtils dbUtils;
+    private DbUtils dbUtils;
 
     public DbValidationSteps() {
         dbUtils = new DbUtils("postgresql");
@@ -52,10 +53,10 @@ public class DbValidationSteps {
                 2,
                 TimeUnit.SECONDS,
                 5);
-        Assertions.assertThat(contactCreated).as("Lead record has appeard in db 1").isEqualTo(true);
+        assertThat(contactCreated).as("Lead record has appeard in db 1").isEqualTo(true);
         log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         // Now we verify, the created lead contains the correct personal information.
-        Assertions.assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
+        assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
     }
 
     @Then("^validate SF on delete to DB created new task.*$")
@@ -67,46 +68,43 @@ public class DbValidationSteps {
                 2,
                 TimeUnit.SECONDS,
                 5);
-        Assertions.assertThat(contactCreated).as("Lead record has appeard in db 2").isEqualTo(true);
+        assertThat(contactCreated).as("Lead record has appeard in db 2").isEqualTo(true);
         log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         // Now we verify, the created lead contains the correct personal information.
-        Assertions.assertThat(getLeadTaskFromDb().toLowerCase()).isNotEmpty();
+        assertThat(getLeadTaskFromDb().toLowerCase()).isNotEmpty();
     }
 
     @Then("^validate add_lead procedure with last_name: \"([^\"]*)\", company: \"([^\"]*)\", period in ms: \"(\\w+)\"")
     public void validateAddLeadProcedure(String lastName, String company, Integer ms) throws InterruptedException {
         //wait for period cycle:
         Thread.sleep(ms + 1000);
-        final long start = System.currentTimeMillis();
         // We wait for at least 1 record to appear in DB (procedure goes on every 5 seconds).
         final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
                 5);
-        Assertions.assertThat(contactCreated).as("Lead record has appeard in DB, TODO table").isEqualTo(true);
-        Assertions.assertThat(getLeadTaskFromDb(lastName).contains(company));
+        assertThat(contactCreated).as("Lead record has appeared in DB, TODO table").isEqualTo(true);
+        assertThat(getLeadTaskFromDb(lastName).contains(company));
     }
 
     @Then("^inserts into \"([^\"]*)\" table on \"([^\"]*)\"$")
-    public void insertsIntoTable(String tableName, String dbType, DataTable data) throws SQLException {
+    public void insertsIntoTable(String tableName, String dbType, DataTable data) {
         dbUtils.setConnection(dbType);
         this.insertsIntoTable(tableName, data);
     }
 
     @Then("^inserts into \"([^\"]*)\" table$")
-    public void insertsIntoTable(String tableName, DataTable data) throws SQLException {
+    public void insertsIntoTable(String tableName, DataTable data) {
 
         List<List<String>> dataTable = data.raw();
 
         String sql = null;
         switch (tableName.toLowerCase()) {
             case "todo":
-//                INSERT INTO TODOx(task) VALUES('Joe');
                 sql = "INSERT INTO TODO(task) VALUES('%s'";
                 break;
             case "contact":
-//                INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
                 sql = "INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('%s'";
                 break;
         }
@@ -128,7 +126,7 @@ public class DbValidationSteps {
         int newId = dbUtils.executeSQLGetUpdateNumber(sql);
 
         //assert new row in database has been created:
-        Assertions.assertThat(newId).isEqualTo(1);
+        assertThat(newId).isEqualTo(1);
     }
 
     @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\" on \"(\\w+)\"$")
@@ -142,12 +140,11 @@ public class DbValidationSteps {
         Thread.sleep(ms + 1000);
 
         ResultSet rs;
-        List<Integer> completedAll = new ArrayList<>();
-        String sql = String.format("SELECT completed FROM TODO WHERE task LIKE '%s'", task);
+        String sql = String.format("SELECT completed FROM TODO WHERE task like '%s'", task);
         log.info("SQL **{}**", sql);
         rs = dbUtils.executeSQLGetResultSet(sql);
         while (rs.next()) {
-            Assertions.assertThat(rs.getInt("completed")).isEqualTo(val);
+            assertThat(rs.getInt("completed")).isEqualTo(val);
         }
     }
 
@@ -155,23 +152,39 @@ public class DbValidationSteps {
     public void checksNumberOfTodos(String task, Integer val, Integer ms) throws InterruptedException {
         Thread.sleep(ms + 1000);
         int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        Assertions.assertThat(number).isEqualTo(val);
+        assertThat(number).isEqualTo(val);
     }
 
     @Then("^validate that number of all todos with task \"([^\"]*)\" is greater than \"(\\w+)\"$")
     public void checkNumberOfTodosMoreThan(String task, Integer val) {
         int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        Assertions.assertThat(number).isGreaterThan(val);
+        assertThat(number).isGreaterThan(val);
+    }
+
+    @Then("^verify integration with task \"([^\"]*)\"")
+    public void verifyIntegrationWithTask(String task) {
+        if (!dbUtils.isConnectionValid()) {
+            SampleDbConnectionManager.closeConnections();
+            dbUtils = new DbUtils("postgresql");
+        }
+        int oldTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
+        try {
+            Thread.sleep(30000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int newTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
+        assertThat(newTaskCount).isGreaterThan(oldTaskCount + 5);
     }
 
     @And("^.*checks? that query \"([^\"]*)\" has some output$")
     public void checkValuesExistInTable(String query) {
-        Assertions.assertThat(dbUtils.getCountOfInvokedQuery(query)).isGreaterThanOrEqualTo(1);
+        assertThat(dbUtils.getCountOfInvokedQuery(query)).isGreaterThanOrEqualTo(1);
     }
 
     @And("^.*invokes? database query \"([^\"]*)\"")
-    public void invokeQuery(String query) throws SQLException {
-        Assertions.assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
+    public void invokeQuery(String query) {
+        assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
     }
 
     @Given("^.*reset content of \"([^\"]*)\" table")
