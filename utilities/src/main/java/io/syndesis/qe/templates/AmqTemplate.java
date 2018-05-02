@@ -85,7 +85,17 @@ public class AmqTemplate {
         amqpAccount.setService("amqp");
         amqpAccount.setProperties(amqpAccountParameters);
 
+        Account mqttAccount = new Account();
+        Map<String, String> mqttAccountParameters = new HashMap<>();
+        mqttAccountParameters.put("userName", "amq");
+        mqttAccountParameters.put("password", "topSecret");
+        mqttAccountParameters.put("brokerUrl", "tcp://broker-amq:1883");
+
+        mqttAccount.setService("MQTT");
+        mqttAccount.setProperties(mqttAccountParameters);
+
         AccountsDirectory.getInstance().addAccount("AMQ", openwireAccount);
         AccountsDirectory.getInstance().addAccount("AMQP", amqpAccount);
+        AccountsDirectory.getInstance().addAccount("QE MQTT", mqttAccount);
     }
 }
