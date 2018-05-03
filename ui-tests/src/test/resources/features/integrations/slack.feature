@@ -9,7 +9,7 @@ Feature: Slack Connector
       | syndesis-extension-body  |
       | syndesis-connector-timer |
     Given created connections
-      | slack | QE Slack       | QE Slack | SyndesisQE Slack test |
+      | Slack | QE Slack       | QE Slack | SyndesisQE Slack test |
       | Timer | no credentials | Timer    | Timer description     |
 
     And "Camilla" navigates to the "Home" page
