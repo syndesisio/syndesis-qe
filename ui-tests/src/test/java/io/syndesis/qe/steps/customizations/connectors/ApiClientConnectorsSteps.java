@@ -1,16 +1,21 @@
 package io.syndesis.qe.steps.customizations.connectors;
 
+import static com.codeborne.selenide.Condition.not;
+import static com.codeborne.selenide.Condition.visible;
+
 import static java.util.Arrays.asList;
 
 import io.fabric8.openshift.api.model.Route;
 import org.junit.Assert;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.customizations.connectors.wizard.WizardSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -20,9 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiClientConnectorsSteps {
 
     private static ApiClientConnectors apiClientConnectorsPage = new ApiClientConnectors();
+    private static ReviewActions reviewActions = new ReviewActions();
 
     @Then("^(\\w+) opens new Api Connector wizard$")
-    public void openNewApiConnectorWizard(String user) throws Throwable {
+    public void openNewApiConnectorWizard(String user) {
         apiClientConnectorsPage.startWizard();
     }
 
@@ -41,9 +47,40 @@ public class ApiClientConnectorsSteps {
         Assert.assertTrue("The connectors list should be of size <" + listSize + ">.", apiClientConnectorsPage.isConnectorsListLongAs(Integer.parseInt(listSize)));
     }
 
+    @Then("^checks? the error box (is|is not) present$")
+    public void checkErrorBoxPresent(String present) {
+        if (present.equals("is")) {
+            log.info("checking if ERRORBOX is visible");
+            Assert.assertTrue("The validation error box should exist", reviewActions.getValidationErrorBox().is(visible));
+        } else {
+            log.info("checking if ERRORBOX is not visible");
+            Assert.assertTrue("The validation error box should not exist", reviewActions.getValidationErrorBox().is(not(visible)));
+        }
+    }
+
     //***************************************************************************
     //******************************* bulk steps ********************************
     //***************************************************************************
+
+    @Then("^uploads? swagger file (.+)$")
+    public void uploadSwaggerFile(String filePath) {
+       uploadSwagger(new ArrayList<List<String>>(Arrays.asList(Arrays.asList("file", filePath))));
+    }
+
+    private void uploadSwagger(List<List<String>> sourceDataTable) {
+        CommonSteps commonSteps = new CommonSteps();
+        commonSteps.navigateTo("","Customizations");
+        commonSteps.validatePage("","Customizations");
+        commonSteps.clickOnLink("API Client Connectors");
+        commonSteps.validatePage("", "API Client Connectors");
+
+        openNewApiConnectorWizard("");
+
+        WizardSteps wizardSteps = new WizardSteps();
+
+        log.info("Setting up upload type and path of the swagger file");
+        wizardSteps.uploadSwaggerFile("", DataTable.create(sourceDataTable));
+    }
 
     @Then("^(\\w+) creates? new API connector$")
     public void createNewApiConnector(String user, DataTable properties) throws Throwable {
@@ -147,24 +184,14 @@ public class ApiClientConnectorsSteps {
             }
         }
 
-
         log.info("Validating \"Customizations\" and \"Client Api Connectors\" pages");
 
-        CommonSteps commonSteps = new CommonSteps();
-        commonSteps.navigateTo(user, "Customizations");
-        commonSteps.validatePage(user, "Customizations");
-        commonSteps.clickOnLink("API Client Connectors");
-        commonSteps.validatePage(user, "API Client Connectors");
-
-        openNewApiConnectorWizard(user);
-
         WizardSteps wizardSteps = new WizardSteps();
-
         if(sourceDataTable==null) {
             Assert.fail("Swagger upload type and path not set");
         }
-        log.info("Setting up upload type and path of the swagger file");
-        wizardSteps.uploadSwaggerFile(user, DataTable.create(sourceDataTable));
+
+        uploadSwagger(sourceDataTable);
 
         wizardSteps.navigateToNextWizardStep(user, "Review Actions");
         wizardSteps.navigateToNextWizardStep(user, "SpecifySecurity");

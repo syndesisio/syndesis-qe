@@ -22,6 +22,16 @@ public class ReviewEditConnectorDetails extends SyndesisPageObject implements Wi
         public static By ROOT = By.cssSelector("syndesis-api-connector-info");
     }
 
+    private static class Input {
+        public static By CONNECTOR_NAME = By.id("name");
+        public static By HOST = By.id("host");
+        public static By BASE_URL = By.id("basePath");
+    }
+
+    private static class TextArea {
+        public static By DESCRIPTION = By.id("description");
+    }
+
     @Override
     public void goToNextWizardPhase() {
         finish();
@@ -39,5 +49,20 @@ public class ReviewEditConnectorDetails extends SyndesisPageObject implements Wi
     @Override
     public boolean validate() {
         return getRootElement().exists();
+    }
+
+    public void setConnectorName(String name) {
+        $(Input.CONNECTOR_NAME).shouldBe(visible).setValue(name);
+    }
+    public void setDescription(String description) {
+        $(TextArea.DESCRIPTION).shouldBe(visible).setValue(description);
+    }
+
+    public void setHost(String host) {
+        $(Input.HOST).shouldBe(visible).setValue(host);
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        $(Input.BASE_URL).shouldBe(visible).setValue(baseUrl);
     }
 }

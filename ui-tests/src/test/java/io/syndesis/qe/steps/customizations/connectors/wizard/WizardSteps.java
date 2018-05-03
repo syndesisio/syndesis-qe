@@ -1,7 +1,5 @@
 package io.syndesis.qe.steps.customizations.connectors.wizard;
 
-import static java.util.Arrays.asList;
-
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -12,9 +10,8 @@ import java.util.Map;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.customizations.connectors.wizard.ApiClientConnectorWizard;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewEditConnectorDetails;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +21,19 @@ public class WizardSteps {
 
     private ApiClientConnectorWizard wizard = new ApiClientConnectorWizard();
     private UploadSwaggerSpecification uploadSwaggerSpecificationWizardPhase = new UploadSwaggerSpecification();
-    private ReviewActions reviewActionsWizardPhase = new ReviewActions();
+    private ReviewEditConnectorDetails reviewEditConnectorDetailsWizardPhase = new ReviewEditConnectorDetails();
     private SpecifySecurity specifySecurityWizardPhase = new SpecifySecurity();
 
     @And("^(\\w+) navigates to the next Api Connector wizard step \"([^\"]*)\"$")
     public void navigateToNextWizardStep(String user, String step) {
+        wizard.nextStep();
+
+        //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and displays
+        wizard.getCurrentStep().validate();
+    }
+
+    @And("^tries to navigate to the next Api Connector wizard step but expects validation error$")
+    public void navigateToNextWizardStepButExpectError() {
         wizard.nextStep();
 
         //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and displays
@@ -41,7 +46,7 @@ public class WizardSteps {
     }
 
     @Then("^(\\w+) uploads swagger file$")
-    public void uploadSwaggerFile(String user, DataTable fileParams) throws Throwable {
+    public void uploadSwaggerFile(String user, DataTable fileParams) {
         uploadSwaggerSpecificationWizardPhase.validate();
         List<List<String>> dataRows = fileParams.cells(0);
         List<String> sourceTypes = new ArrayList<String>();
@@ -113,21 +118,21 @@ public class WizardSteps {
 
     @Then("^.* sets? up the connector name \"([^\"]*)\"$")
     public void setUpConnectorName(String user, String name) {
-        reviewActionsWizardPhase.setConnectorName(name);
+        reviewEditConnectorDetailsWizardPhase.setConnectorName(name);
     }
 
     @Then("^.* sets? up description \"([^\"]*)\"$")
     public void setUpDescription(String user, String description) {
-        reviewActionsWizardPhase.setDescription(description);
+        reviewEditConnectorDetailsWizardPhase.setDescription(description);
     }
 
     @Then("^.* sets? up host \"([^\"]*)\"$")
     public void setUpHost(String user, String host) {
-        reviewActionsWizardPhase.setHost(host);
+        reviewEditConnectorDetailsWizardPhase.setHost(host);
     }
 
     @Then("^.* sets? up base url \"([^\"]*)\"$")
     public void setUpBaseUrl(String user, String baseUrl) {
-        reviewActionsWizardPhase.setBaseUrl(baseUrl);
+        reviewEditConnectorDetailsWizardPhase.setBaseUrl(baseUrl);
     }
 }

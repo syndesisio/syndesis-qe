@@ -18,18 +18,11 @@ public class ReviewActions extends SyndesisPageObject implements WizardPhase {
     }
 
     private static class Element {
-        public static By ROOT = By.cssSelector("syndesis-api-connector-review");
+        public static By ROOT = By.xpath("//syndesis-api-connector-review");
+        public static By VALIDATION_ERROR_BOX = By.xpath("//*[@class='syn-validation-error']");
     }
 
-    private static class Input {
-        public static By CONNECTOR_NAME = By.id("name");
-        public static By HOST = By.id("host");
-        public static By BASE_URL = By.id("basePath");
-    }
 
-    private static class TextArea {
-        public static By DESCRIPTION = By.id("description");
-    }
 
     @Override
     public void goToNextWizardPhase() {
@@ -46,18 +39,8 @@ public class ReviewActions extends SyndesisPageObject implements WizardPhase {
         return getRootElement().exists();
     }
 
-    public void setConnectorName(String name) {
-        $(Input.CONNECTOR_NAME).shouldBe(visible).setValue(name);
-    }
-    public void setDescription(String description) {
-        $(TextArea.DESCRIPTION).shouldBe(visible).setValue(description);
-    }
-
-    public void setHost(String host) {
-        $(Input.HOST).shouldBe(visible).setValue(host);
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        $(Input.BASE_URL).shouldBe(visible).setValue(baseUrl);
+    public SelenideElement getValidationErrorBox() {
+        //Don't put should method there. The method is used for finding out if the element is present or not.
+        return $(Element.VALIDATION_ERROR_BOX);
     }
 }
