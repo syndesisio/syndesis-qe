@@ -178,7 +178,7 @@ public class CommonSteps {
                     case S3:
                         return; //TODO: skip for now
                     case SLACK:
-                        service = "slack";
+                        service = "Slack";
                         break;
                     default:
                         return; //skip for other cred
