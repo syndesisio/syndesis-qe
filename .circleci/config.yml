@@ -22,6 +22,15 @@ save_m2: &save_m2
     paths:
       - repository/io/syndesis
 
+image_upgrade: &image_upgrade
+  run:
+    name: Upgrade image dependencies
+    command: |
+      curl https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+      sudo apt-get update
+      sudo apt-get -f upgrade google-chrome-stable
+
 jobs:
   e2e-tests:
     <<: *job_defaults
@@ -33,6 +42,7 @@ jobs:
       - restore_cache:
           key: syndesis-e2e-qe-mvn-{{ checksum "pom.xml" }}
       - <<: *load_m2
+      - <<: *image_upgrade
       - run:
           name: Build Extensions
           command: |
@@ -68,6 +78,7 @@ jobs:
       - restore_cache:
           key: syndesis-rest-qe-mvn-{{ checksum "pom.xml" }}
       - <<: *load_m2
+      - <<: *image_upgrade
       - run:
           name: Execute tests
           command: |
@@ -98,6 +109,7 @@ jobs:
       - restore_cache:
           key: syndesis-qe-mvn-{{ checksum "pom.xml" }}
       - <<: *load_m2
+      - <<: *image_upgrade
       - run:
           name: Checkout Syndesis
           command: |
