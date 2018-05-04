@@ -149,4 +149,13 @@ public final class TestUtils {
         }
         return rc;
     }
+
+    public static void sleepIgnoreInterrupt(long milis) {
+        try {
+            Thread.sleep(milis);
+        } catch (InterruptedException e) {
+            log.error("Sleep was interrupted!");
+            e.printStackTrace();
+        }
+    }
 }
