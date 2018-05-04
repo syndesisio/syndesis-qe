@@ -51,6 +51,7 @@
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
 		<activemq.version>5.15.3</activemq.version>
 		<jslack.version>1.0.26</jslack.version>
+		<mqttv3.version>1.2.0</mqttv3.version>
 
 	</properties>
 
@@ -324,6 +325,13 @@
 				<groupId>com.github.seratch</groupId>
 				<artifactId>jslack</artifactId>
 				<version>${jslack.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3 -->
+			<dependency>
+				<groupId>org.eclipse.paho</groupId>
+				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+				<version>${mqttv3.version}</version>
 			</dependency>
 
 		</dependencies>

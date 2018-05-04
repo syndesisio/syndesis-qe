@@ -148,7 +148,6 @@ credentials.json
           "clientCertificate":""
         }
    }
-
 }
 ```
 for ftp connection credentials:
