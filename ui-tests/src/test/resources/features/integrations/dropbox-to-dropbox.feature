@@ -6,7 +6,7 @@ Feature: Integration - Dropbox to Dropbox
     Given "Camilla" logs into the Syndesis
 
     Given created connections
-      | DropBox | QE Dropbox | QE Dropbox | SyndesisQE DropBox test |
+      | Dropbox | QE Dropbox | QE Dropbox | SyndesisQE Dropbox test |
     And "Camilla" navigates to the "Home" page
 
 #

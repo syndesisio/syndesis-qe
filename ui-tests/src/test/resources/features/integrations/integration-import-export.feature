@@ -73,6 +73,8 @@ Feature: Integration - Import Export
 
     Then "She" navigates to the "Integrations" page
 
+    Then she waits until integration "Integration_import_export_test" gets into "Unpublished" state
+
     # check draft status after import
     When Camilla selects the "Integration_import_export_test" integration
     And she is presented with "Not Published" integration status on Integration Detail page
@@ -99,6 +101,8 @@ Feature: Integration - Import Export
     And Camilla drags exported integration "Integration_import_export_test" file to drag and drop area
 
     Then "She" navigates to the "Integrations" page
+
+    Then she waits until integration "Integration_import_export_test" gets into "Unpublished" state
 
     # check draft status after import
     When Camilla selects the "Integration_import_export_test" integration
