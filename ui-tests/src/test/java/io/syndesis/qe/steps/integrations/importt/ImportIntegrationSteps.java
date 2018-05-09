@@ -1,5 +1,6 @@
 package io.syndesis.qe.steps.integrations.importt;
 
+import io.syndesis.qe.utils.TestUtils;
 import org.assertj.core.api.Assertions;
 
 import cucumber.api.java.en.And;
@@ -16,6 +17,8 @@ public class ImportIntegrationSteps {
     @And("^Camilla imports integraion \"([^\"]*)\"$")
     public void importIntegration(String integrationName) throws InterruptedException {
         importIntegrationPage.importIntegration(integrationName);
+        //give jenkins more time so the integration shows up in the list
+        TestUtils.sleepIgnoreInterrupt(3000);
         Assertions.assertThat(integrations.isIntegrationPresent(integrationName)).isTrue();
     }
 
