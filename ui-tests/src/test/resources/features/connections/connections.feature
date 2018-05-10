@@ -27,8 +27,11 @@ Feature: Connection - CRUD
 
     And she checks "Create" button is "Disabled"
 
-    And type "my sample tw conn" into connection name
-    And type "this connection is awesome" into connection description
+    And fills Name Connection form
+    | Connection Name | my sample tw conn         |
+    | Description     | this connection is awsome |
+#    And type "my sample tw conn" into connection name
+#    And type "this connection is awesome" into connection description
     And click on the "Create" button
     Then Camilla is presented with the Syndesis page "Connections"
 
