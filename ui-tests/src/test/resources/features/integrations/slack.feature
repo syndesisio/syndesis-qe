@@ -57,7 +57,7 @@ Feature: Slack Connector
     # add data mapper step
     And she selects "Set Body" integration step
     And she fills in values
-      | The body to set | test message |
+      | Body | test message |
 
 
 
