@@ -6,6 +6,7 @@ import cz.xtf.jms.JmsClient;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.qpid.jms.JmsConnectionFactory;
 
 @Slf4j
 public class JmsClientManager implements AutoCloseable {
@@ -15,6 +16,7 @@ public class JmsClientManager implements AutoCloseable {
     private String jmsPodName = "broker-amq";
     private String jmsUser = "amq";
     private String jmsPass = "topSecret";
+    private String protocol;
     private LocalPortForward jmsLocalPortForward = null;
     private JmsClient jmsClient;
 
@@ -23,6 +25,7 @@ public class JmsClientManager implements AutoCloseable {
     }
 
     private void initValues(String protocol) {
+        this.protocol = protocol;
         switch (protocol) {
             case "tcp":
             case "openwire":
@@ -56,11 +59,17 @@ public class JmsClientManager implements AutoCloseable {
 
     private JmsClient initClient() {
         if (jmsClient == null) {
-            ActiveMQConnectionFactory jmsFactory = new ActiveMQConnectionFactory();
-            jmsFactory.setBrokerURL(jmsUrl);
-            jmsFactory.setUserName(jmsUser);
-            jmsFactory.setPassword(jmsPass);
-            jmsClient = new JmsClient(jmsFactory);
+            switch (protocol) {
+                case "openwire":
+                    ActiveMQConnectionFactory jmsFactory = new ActiveMQConnectionFactory();
+                    jmsFactory.setBrokerURL(jmsUrl);
+                    jmsFactory.setUserName(jmsUser);
+                    jmsFactory.setPassword(jmsPass);
+                    jmsClient = new JmsClient(jmsFactory);
+                case "amqp":
+                    JmsConnectionFactory jmsConnectionFactory = new JmsConnectionFactory(jmsUser, jmsPass, jmsUrl);
+                    jmsClient = new JmsClient(jmsConnectionFactory);
+            }
         }
         return jmsClient;
     }
