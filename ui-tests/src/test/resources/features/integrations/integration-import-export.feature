@@ -1,14 +1,16 @@
 @integration-import-export
 Feature: Integration - Import Export
 
+  Background: Clean application state
+    Given clean application state
+    Given "Camilla" logs into the Syndesis
+
 #
 #  1. integration-import both methods, for investigation one of them use integration-import-export_backup.feature
 #
   @integration-import-export-classic-and-dnd
-  Scenario: Import both flows
+  Scenario: Import and export both flows
 
-    Given clean application state
-    Given "Camilla" logs into the Syndesis
     Given created connections
       | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
       | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
@@ -69,7 +71,7 @@ Feature: Integration - Import Export
     And "Camilla" navigates to the "Integrations" page
     And Camilla clicks on the "Import" button
 
-    Then Camilla imports integraion "Integration_import_export_test"
+    Then Camilla imports integration "Integration_import_export_test"
 
     Then "She" navigates to the "Integrations" page
 
@@ -115,3 +117,62 @@ Feature: Integration - Import Export
 
     And "Camilla" navigates to the "Integrations" page
     Then she waits until integration "Integration_import_export_test" gets into "Published" state
+
+
+#
+#  2. integration-import from different syndesis instance
+#
+  @integration-import-from-different-instance
+  Scenario: Import from different syndesis instance
+
+    And "Camilla" navigates to the "Integrations" page
+    And Camilla clicks on the "Import" button
+
+    # import from resources TODO
+    Then Camilla imports integration from relative file path "src/test/resources/integrations/Imported-integration-another-instance-export.zip"
+
+
+    # check that connections need credentials update TODO
+    Then "She" navigates to the "Connections" page
+    And she can see alert notification
+
+    # update connections credentials
+    When clicks on the "View" kebab menu button of "Imported salesforce connection"
+    Then Camilla is presented with "Imported salesforce connection" connection details
+    And she can see alert notification
+
+    Then click on the "Edit" button
+    And she fills "Salesforce" connection details from connection edit page
+    And click on the "Validate" button
+    And she can see success notification
+    And click on the "Save" button
+
+
+
+    Then "She" navigates to the "Integrations" page
+
+    #should be unpublished after import
+    Then she waits until integration "Imported-integration-another-instance" gets into "Unpublished" state
+
+    # check draft status after import
+    When Camilla selects the "Imported-integration-another-instance" integration
+
+
+    And she is presented with "Not Published" integration status on Integration Detail page
+
+    And she stays there for "1000" ms
+
+    # start integration and wait for published state:
+
+
+    And Camilla starts integration "Imported-integration-another-instance"
+
+    # TODO: following steps are workaround - we have to edit and publish integration so encryption stuff
+    # TODO: is taken from current syndesis instance, should be deleted changed back after fix
+    Then click on the "Edit Integration" button
+    Then click on the "Publish" button
+
+    And she stays there for "3000" ms
+
+    And "Camilla" navigates to the "Integrations" page
+    Then she waits until integration "Imported-integration-another-instance" gets into "Published" state
