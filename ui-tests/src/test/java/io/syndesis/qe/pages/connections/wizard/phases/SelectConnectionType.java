@@ -30,7 +30,7 @@ public class SelectConnectionType extends AbstractConnectionWizardStep {
     }
 
     public static final By ROOT = By.cssSelector("syndesis-connections-review");
-    private CardList connectionTypes = new CardList(By.cssSelector("syndesis-connections-connection-basics"));
+    private CardList connectionTypes = new CardList(By.cssSelector("syndesis-connections-list"));
 
 
     public void selectConnectionType(String title) {
