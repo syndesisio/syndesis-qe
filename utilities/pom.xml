@@ -185,6 +185,11 @@
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.qpid</groupId>
+			<artifactId>qpid-jms-client</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

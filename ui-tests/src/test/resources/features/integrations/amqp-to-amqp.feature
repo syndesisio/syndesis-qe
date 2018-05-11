@@ -1,4 +1,3 @@
-@wip
 @integrations-amqp-to-amqp
 Feature: Integration - AMQP to AMQP
 
@@ -21,10 +20,10 @@ Feature: Integration - AMQP to AMQP
     # select connection as 'start' point
     And she is prompted to select a "Start" connection from a list of available connections
     When Camilla selects the "AMQP" connection
-    And she selects "Subscribe" integration action
-    And sets jms subscribe inputs source data
-      | destinationName | destinationType | durableSubscriptionId | messageSelector |
-      | cheese          | Topic           | exampleSubscriber     | exampleSelector |
+    And she selects "Subscribe for Messages" integration action
+    And fill in values
+      | Destination Name | cheese |
+      | Destination Type | Queue  |
     And clicks on the "Next" button
 #    TODO(sveres) specify datatype
     And clicks on the "Done" button
@@ -32,11 +31,11 @@ Feature: Integration - AMQP to AMQP
 
     # select connection as 'finish' point
     When Camilla selects the "AMQP" connection
-    And she selects "Publish" integration action
+    And she selects "Publish messages" integration action
     # TODO: there's a mismatch between persistent on ActiveMQ and deliveryPersistent property on AMQP
-    And sets jms publish inputs source data
-      | destinationName | destinationType | deliveryPersistent |
-      | apple           | Topic           | true               |
+    And fill in values
+      | Destination Name | apple |
+      | Destination Type | Queue |
     And clicks on the "Next" button
 #    TODO(sveres) specify datatype
     And clicks on the "Done" button
@@ -49,4 +48,4 @@ Feature: Integration - AMQP to AMQP
     Then "Camilla" navigates to the "Integrations" page
     Then she waits until integration "AMQP publish-subscribe-request E2E" gets into "Published" state
 
-    Then verify that JMS message using "openwire" protocol, published on "topic" named "cheese" has arrived to "topic" named "apple" consumer
+    Then verify that JMS message using "amqp" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer
