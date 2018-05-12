@@ -26,6 +26,7 @@ import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
@@ -130,6 +131,9 @@ public class CommonSteps {
                 log.warn("Connection {} already exists!", connectionName);
             } else {
                 clickOnButton("Create Connection");
+
+                log.info("Sleeping for 10s so jenkins has more time to load all connectors");
+                TestUtils.sleepIgnoreInterrupt(10 * 1000);
 
                 selectConnectionTypeSteps.selectConnectionType(connectionType);
                 configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
