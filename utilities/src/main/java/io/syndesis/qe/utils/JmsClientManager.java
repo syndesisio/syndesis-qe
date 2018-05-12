@@ -43,7 +43,7 @@ public class JmsClientManager implements AutoCloseable {
 
         if (jmsLocalPortForward == null || !jmsLocalPortForward.isAlive()) {
             //can be the same pod twice forwarded to different ports? YES
-            Pod  pod = OpenShiftUtils.xtf().getAnyPod("app", jmsPodName);
+            Pod pod = OpenShiftUtils.xtf().getAnyPod("app", jmsPodName);
             log.info("POD NAME: *{}*", pod.getMetadata().getName());
             jmsLocalPortForward = OpenShiftUtils.portForward(pod, jmsPort, jmsPort);
         }
@@ -53,6 +53,7 @@ public class JmsClientManager implements AutoCloseable {
     public void close() {
         if (jmsClient != null) {
             jmsClient.disconnect();
+            jmsClient = null;
         }
         TestUtils.terminateLocalPortForward(jmsLocalPortForward);
     }
@@ -60,15 +61,18 @@ public class JmsClientManager implements AutoCloseable {
     private JmsClient initClient() {
         if (jmsClient == null) {
             switch (protocol) {
+                case "tcp":
                 case "openwire":
                     ActiveMQConnectionFactory jmsFactory = new ActiveMQConnectionFactory();
                     jmsFactory.setBrokerURL(jmsUrl);
                     jmsFactory.setUserName(jmsUser);
                     jmsFactory.setPassword(jmsPass);
                     jmsClient = new JmsClient(jmsFactory);
+                    break;
                 case "amqp":
                     JmsConnectionFactory jmsConnectionFactory = new JmsConnectionFactory(jmsUser, jmsPass, jmsUrl);
                     jmsClient = new JmsClient(jmsConnectionFactory);
+                    break;
             }
         }
         return jmsClient;
