@@ -35,6 +35,8 @@ public class TestConfiguration {
     public static final String SYNDESIS_TEMPLATE_URL = "syndesis.config.template.url";
     public static final String SYNDESIS_TEMPLATE_SA = "syndesis.config.template.sa";
 
+    public static final String JENKINS_DELAY = "jenkins.delay";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -95,6 +97,8 @@ public class TestConfiguration {
     public static boolean namespaceLock() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_LOCK)); }
 
     public static boolean useServerRoute() { return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE)); }
+
+    public static int getJenkinsDelay() { return Integer.parseInt(get().readValue(JENKINS_DELAY, "1")); }
 
     private Properties defaultValues() {
         final Properties props = new Properties();
