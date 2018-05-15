@@ -29,6 +29,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -445,5 +446,114 @@ public class CommonSteps {
     @Then("^.*fills? in values$")
     public void fillForm(DataTable data) {
         new Form(new SyndesisRootPage().getRootElement()).fillByLabel(data.asMap(String.class, String.class));
+    }
+
+
+    @When("^.*create connections using oauth$")
+    public void createConnectionsUsingOAuth(DataTable connectionsData) {
+
+        List<List<String>> dataTable = connectionsData.raw();
+
+        for (List<String> dataRow : dataTable) {
+            createConnectionUsingOAuth(dataRow.get(0), dataRow.get(1));
+        }
+    }
+
+
+    @When("^.*create connection \"([^\"]*)\" with name \"([^\"]*)\" using oauth$")
+    public void createConnectionUsingOAuth(String connectorName, String newConnectionName) {
+        Connections connectionsPage = new Connections();
+        NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
+
+        navigateTo("", "Connections");
+        validatePage("", "Connections");
+
+
+        ElementsCollection connections = connectionsPage.getAllConnections();
+        connections = connections.filter(exactText(newConnectionName));
+
+        Assertions.assertThat(connections.size()).as("Connection with name {} already exists!", newConnectionName)
+                .isEqualTo(0);
+
+        clickOnButton("Create Connection");
+
+        TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay());
+
+        selectConnectionTypeSteps.selectConnectionType(connectorName);
+
+
+        doOAuthValidation(connectorName);
+
+        //give it time to redirect
+        TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+
+        Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+                .containsIgnoringCase("Successfully%20authorized")
+                .containsIgnoringCase("connections/create");
+
+        nameConnectionSteps.setConnectionName(newConnectionName);
+
+        clickOnButton("Create");
+
+
+    }
+
+    public void doOAuthValidation(String type) {
+        clickOnButton("Connect " + type);
+        //give it time to redirect
+        TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+
+        if (type.equalsIgnoreCase("Twitter")) {
+            fillAndValidateTwitter();
+        } else if (type.equalsIgnoreCase("Salesforce")) {
+            fillAndValidateSalesforce();
+        }
+    }
+
+    private void fillAndValidateTwitter() {
+        Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+                .containsIgnoringCase("twitter");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("Twitter Listener");
+
+        if (optional.isPresent()) {
+
+            $(By.id("username_or_email")).shouldBe(visible).sendKeys(optional.get().getProperty("login"));
+            $(By.id("password")).shouldBe(visible).sendKeys(optional.get().getProperty("password"));
+            $(By.id("allow")).shouldBe(visible).click();
+
+            //give it time to redirect back on syndesis
+            TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+
+            Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+                    .containsIgnoringCase("Successfully%20authorized");
+
+        } else {
+
+            Assert.fail("Credentials for Twitter were not found.");
+
+        }
+    }
+
+    private void fillAndValidateSalesforce() {
+        Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+                .containsIgnoringCase("salesforce");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Salesforce");
+
+        if (optional.isPresent()) {
+
+            $(By.id("username")).shouldBe(visible).sendKeys(optional.get().getProperty("userName"));
+            $(By.id("password")).shouldBe(visible).sendKeys(optional.get().getProperty("password"));
+            $(By.id("Login")).shouldBe(visible).click();
+            //give it time to log in
+            TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+            log.info(WebDriverRunner.currentFrameUrl());
+            if (!WebDriverRunner.currentFrameUrl().contains("connections/create/review")) {
+                $(By.id("oaapprove")).shouldBe(visible).click();
+            }
+
+        } else {
+            Assert.fail("Credentials for Salesforce were not found.");
+        }
+
     }
 }
