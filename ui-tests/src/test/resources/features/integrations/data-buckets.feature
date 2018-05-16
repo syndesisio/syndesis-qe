@@ -227,7 +227,7 @@ Feature: Integration - Databucket
     And She adds integration "connection" on position "2"
     When Camilla selects the "PostgresDB" connection
     And she selects "Invoke SQL" integration action
-    Then she fills invoke query input with "select lead_source as myLeadSource from contact where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
+    Then she fills invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
     And clicks on the "Done" button
 
     ##################### step step step step NEW step ##################################
@@ -235,7 +235,7 @@ Feature: Integration - Databucket
     And She adds integration "connection" on position "3"
     When Camilla selects the "PostgresDB" connection
     And she selects "Invoke SQL" integration action
-    Then she fills invoke query input with "insert into contact values (:#COMPANY , :#MYNAME , :#MYSURNAME , :#LEAD, '1999-01-01')" value
+    Then she fills invoke query input with "insert into CONTACT values (:#COMPANY , :#MYNAME , :#MYSURNAME , :#LEAD, '1999-01-01')" value
     And clicks on the "Done" button
 
     ##################### check warnings ##################################
