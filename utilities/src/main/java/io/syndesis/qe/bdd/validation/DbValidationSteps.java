@@ -33,7 +33,7 @@ public class DbValidationSteps {
     private final DbUtils dbUtils;
 
     public DbValidationSteps() {
-        dbUtils = new DbUtils(SampleDbConnectionManager.getConnection());
+        dbUtils = new DbUtils("postgresql");
     }
 
     @Given("^remove all records from table \"([^\"]*)\"")
@@ -84,8 +84,14 @@ public class DbValidationSteps {
                 2,
                 TimeUnit.SECONDS,
                 5);
-        Assertions.assertThat(contactCreated).as("Lead record has appeard in DB, todo table").isEqualTo(true);
+        Assertions.assertThat(contactCreated).as("Lead record has appeard in DB, TODO table").isEqualTo(true);
         Assertions.assertThat(getLeadTaskFromDb(lastName).contains(company));
+    }
+
+    @Then("^inserts into \"([^\"]*)\" table on \"([^\"]*)\"$")
+    public void insertsIntoTable(String tableName, String dbType, DataTable data) throws SQLException {
+        dbUtils.setConnection(dbType);
+        this.insertsIntoTable(tableName, data);
     }
 
     @Then("^inserts into \"([^\"]*)\" table$")
@@ -97,7 +103,7 @@ public class DbValidationSteps {
         switch (tableName.toLowerCase()) {
             case "todo":
 //                INSERT INTO TODOx(task) VALUES('Joe');
-                sql = "INSERT INTO todo(task) VALUES('%s'";
+                sql = "INSERT INTO TODO(task) VALUES('%s'";
                 break;
             case "contact":
 //                INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
@@ -125,19 +131,24 @@ public class DbValidationSteps {
         Assertions.assertThat(newId).isEqualTo(1);
     }
 
+    @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\" on \"(\\w+)\"$")
+    public void checksThatAllTodosHaveCompletedValDb(String task, Integer val, Integer ms, String dbType) throws InterruptedException, SQLException {
+        dbUtils.setConnection(dbType);
+        this.checksThatAllTodosHaveCompletedVal(task, val, ms);
+    }
+
     @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\"$")
     public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) throws InterruptedException, SQLException {
         Thread.sleep(ms + 1000);
 
         ResultSet rs;
         List<Integer> completedAll = new ArrayList<>();
-        String sql = String.format("SELECT completed FROM todo WHERE task like '%s'", task);
+        String sql = String.format("SELECT completed FROM TODO WHERE task LIKE '%s'", task);
         log.info("SQL **{}**", sql);
         rs = dbUtils.executeSQLGetResultSet(sql);
         while (rs.next()) {
             Assertions.assertThat(rs.getInt("completed")).isEqualTo(val);
         }
-
     }
 
     @Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\", period in ms: \"(\\w+)\"$")
@@ -182,12 +193,12 @@ public class DbValidationSteps {
      */
     private String getLeadTaskFromDb(String task) {
         String leadTask = null;
-        log.info("***SELECT ID, TASK, COMPLETED FROM todo where task like '%" + task + "%'***");
-        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT ID, TASK, COMPLETED FROM todo where task like '%"
+        log.info("***SELECT id, task, completed FROM TODO WHERE task LIKE '%" + task + "%'***");
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO WHERE task LIKE '%"
                 + task + "%'");) {
             if (rs.next()) {
-                leadTask = rs.getString("TASK");
-                log.debug("TASK = " + leadTask);
+                leadTask = rs.getString("task");
+                log.debug("task = " + leadTask);
             }
         } catch (SQLException ex) {
             Assertions.fail("Error: " + ex);
@@ -197,10 +208,10 @@ public class DbValidationSteps {
 
     private String getLeadTaskFromDb() {
         String leadTask = null;
-        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT ID, TASK, COMPLETED FROM todo");) {
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO");) {
             if (rs.next()) {
-                leadTask = rs.getString("TASK");
-                log.debug("TASK = " + leadTask);
+                leadTask = rs.getString("task");
+                log.debug("task = " + leadTask);
             }
         } catch (SQLException ex) {
             Assertions.fail("Error: " + ex);

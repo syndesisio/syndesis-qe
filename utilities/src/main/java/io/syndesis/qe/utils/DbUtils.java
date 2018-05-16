@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.assertj.core.api.Assertions;
 
 @Slf4j
@@ -14,17 +15,15 @@ public class DbUtils {
 
     private Connection dbConnection;
 
-    public DbUtils(Connection dbConnection) {
-        this.dbConnection = dbConnection;
+    public DbUtils(String dbType) {
+        this.dbConnection = SampleDbConnectionManager.getConnection(dbType);
     }
-
 
     /**
      * ******************************************
      * BASIC METHODS
      * ******************************************
      */
-
 
     /**
      * Best to use with SELECT
@@ -62,13 +61,11 @@ public class DbUtils {
         return result;
     }
 
-
     /**
      * ******************************************
      * SPECIFIC METHODS
      * ******************************************
      */
-
 
     /**
      * Get number of records in specific table. You may specify column and value.
@@ -83,7 +80,7 @@ public class DbUtils {
      * getNumberOfRecordsInTable(myTable, desiredColumn, desiredValue)
      *
      * @param tableName
-     * @param args      check example
+     * @param args check example
      * @return
      */
     public int getNumberOfRecordsInTable(String tableName, String... args) {
@@ -93,11 +90,11 @@ public class DbUtils {
 
         int records = 0;
         try {
-            String sql = "SELECT COUNT(*) FROM " + tableName;
+            String sql = "SELECT COUNT(*) FROM " + tableName.toUpperCase();
 
             if (args.length == 2) {
                 //be specific
-                sql = "SELECT COUNT(*) FROM " + tableName + " WHERE " + args[0] + " LIKE '" + args[1] + "'";
+                sql = "SELECT COUNT(*) FROM " + tableName.toUpperCase() + " WHERE " + args[0] + " LIKE '" + args[1] + "'";
             }
             log.info("SQL: *{}*", sql);
             final ResultSet resultSet = executeSQLGetResultSet(sql);
@@ -131,23 +128,39 @@ public class DbUtils {
         return records;
     }
 
-
     /**
      * Removes all data from specified table.
      *
      * @param tableName
      */
     public void deleteRecordsInTable(String tableName) {
-        String sql = "Delete FROM " + tableName;
+        String sql = "Delete FROM " + tableName.toUpperCase();
         executeSQLGetUpdateNumber(sql);
-        log.debug("Cleared table: " + tableName);
+        log.debug("Cleared table: " + tableName.toUpperCase());
     }
 
     public void resetContactTable() {
         deleteRecordsInTable("contact");
         Assertions.assertThat(executeSQLGetUpdateNumber
-                ("insert into contact values " +
+                ("insert into CONTACT values " +
                         "('Joe', 'Jackson', 'Red Hat', 'db', '" + LocalDateTime.now().toLocalDate() + "')"))
                 .isEqualTo(1);
+    }
+
+    public void createSEmptyTableSchema() {
+
+        final String sqlQuery1 = "DROP TABLE CONTACT";
+        final String sqlQuery2 = "CREATE TABLE TODO";
+        final String sqlQuery3 = "CREATE TABLE CONTACT ( first_name VARCHAR(250), last_name VARCHAR(250), company VARCHAR(250), lead_source VARCHAR(250), create_date DATE)";
+        final String sqlQuery4 = "CREATE TABLE TODO ( id int, task VARCHAR(250), completed int)";
+
+        this.executeSQLGetUpdateNumber(sqlQuery1);
+        this.executeSQLGetUpdateNumber(sqlQuery2);
+        this.executeSQLGetUpdateNumber(sqlQuery3);
+        this.executeSQLGetUpdateNumber(sqlQuery4);
+    }
+
+    public void setConnection(String dbType) {
+        this.dbConnection = SampleDbConnectionManager.getConnection(dbType);
     }
 }

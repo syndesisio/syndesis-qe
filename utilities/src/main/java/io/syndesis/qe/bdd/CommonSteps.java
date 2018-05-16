@@ -3,7 +3,9 @@ package io.syndesis.qe.bdd;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.templates.FtpTemplate;
 
+import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.TestUtils;
+
 import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
@@ -108,12 +110,22 @@ public class CommonSteps {
 
     @Given("^execute SQL command \"([^\"]*)\"$")
     public void executeSql(String sqlCmd) {
-        new DbUtils(SampleDbConnectionManager.getConnection()).executeSQLGetUpdateNumber(sqlCmd);
+        this.executeSqlOnDriver(sqlCmd, "postgresql");
     }
 
-    @Given("^clean TODO table$")
-    public void cleanTodoTable() {
-        new DbUtils(SampleDbConnectionManager.getConnection()).deleteRecordsInTable("TODO");
+    @Given("^execute SQL command \"([^\"]*)\" on \"([^\"]*)\"$")
+    public void executeSqlOnDriver(String sqlCmd, String driver) {
+        new DbUtils(driver).executeSQLGetUpdateNumber(sqlCmd);
+    }
+
+    @Given("^clean \"([^\"]*)\" table$")
+    public void cleanDbTable(String dbTable) {
+        this.cleanDbTableOnDriver(dbTable, "postgresql");
+    }
+
+    @Given("^clean \"([^\"]*)\" table on \"([^\"]*)\"$")
+    public void cleanDbTableOnDriver(String dbTable, String driver) {
+        new DbUtils(driver).deleteRecordsInTable(dbTable);
     }
 
     @Given("^clean application state")
@@ -130,5 +142,21 @@ public class CommonSteps {
     @Given("^clean FTP server$")
     public void cleanFTPServier() {
         FtpTemplate.cleanUp();
+    }
+
+    @Given("^clean MySQL server$")
+    public void cleanMySQLServer() {
+        MysqlTemplate.cleanUp();
+    }
+
+    @Given("^deploy MySQL server$")
+    public void deployMySQLServer() {
+        MysqlTemplate.deploy();
+        ;
+    }
+
+    @Given("^create standard table schema on \"([^\"]*)\" driver$")
+    public void createStandardDBSchemaOn(String dbType) {
+        new DbUtils(dbType).createSEmptyTableSchema();
     }
 }
