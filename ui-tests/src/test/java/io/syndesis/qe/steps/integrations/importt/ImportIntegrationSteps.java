@@ -1,5 +1,6 @@
 package io.syndesis.qe.steps.integrations.importt;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.TestUtils;
 import org.assertj.core.api.Assertions;
 
@@ -18,7 +19,7 @@ public class ImportIntegrationSteps {
     public void importIntegration(String integrationName) throws InterruptedException {
         importIntegrationPage.importIntegration(integrationName);
         //give jenkins more time so the integration shows up in the list
-        TestUtils.sleepIgnoreInterrupt(3000);
+        TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
         Assertions.assertThat(integrations.isIntegrationPresent(integrationName)).isTrue();
     }
 
