@@ -132,8 +132,8 @@ public class CommonSteps {
             } else {
                 clickOnButton("Create Connection");
 
-                log.info("Sleeping for 10s so jenkins has more time to load all connectors");
-                TestUtils.sleepIgnoreInterrupt(10 * 1000);
+                log.info("Sleeping so jenkins has more time to load all connectors");
+                TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
 
                 selectConnectionTypeSteps.selectConnectionType(connectionType);
                 configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
