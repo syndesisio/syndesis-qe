@@ -71,9 +71,40 @@ public class CommonSteps {
     @Autowired
     private SelectConnectionTypeSteps selectConnectionTypeSteps = new SelectConnectionTypeSteps();
 
+    @And("^.*logs? out from Syndesis")
+    public void logout() {
+        $(By.id("userDropdown")).shouldBe(visible).click();
+        $(By.id("userDropdownMenu")).shouldBe(visible).click();
+
+        TestUtils.sleepIgnoreInterrupt(2000);
+
+        Assertions.assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
+                .containsIgnoringCase("login");
+    }
+
+
     @Given("^\"([^\"]*)\" logs into the Syndesis$")
     public void login(String username) throws Throwable {
-        Selenide.open(TestConfiguration.syndesisUrl());
+        doLogin(username, false);
+    }
+
+    @Given("^\"([^\"]*)\" logs into the Syndesis after logout$")
+    public void loginAfterLogOut(String username) throws Throwable {
+        doLogin(username, true);
+    }
+
+    /**
+     * If you want to log in for the first time (browser is not opened) set afterLogout = false
+     * If you want to log in again e.g. after logout (browser is already opened) set afterLogout = true
+     *
+     * @param username
+     * @param afterLogout
+     * @throws Throwable
+     */
+    private void doLogin(String username, boolean afterLogout) throws Throwable {
+        if (!afterLogout) {
+            Selenide.open(TestConfiguration.syndesisUrl());
+        }
 
         String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
