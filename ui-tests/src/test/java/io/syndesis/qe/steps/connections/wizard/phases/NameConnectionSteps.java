@@ -10,8 +10,6 @@ public class NameConnectionSteps {
 
     private final NameConnection nameConnectionPage = new NameConnection();
 
-    private final Form form = new Form(nameConnectionPage.getRootElement());
-
     @When("^types? \"([^\"]*)\" into connection name$")
     public void setConnectionName(String name) {
         nameConnectionPage.setName(name);
@@ -26,6 +24,6 @@ public class NameConnectionSteps {
 
     @When("^fills? Name Connection form$")
     public void fillNameConnectionForm(DataTable data) {
-        form.fillByLabel(data.asMap(String.class, String.class));
+        new Form(nameConnectionPage.getRootElement()).fillByLabel(data.asMap(String.class, String.class));
     }
 }
