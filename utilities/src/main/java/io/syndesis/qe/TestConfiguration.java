@@ -86,9 +86,9 @@ public class TestConfiguration {
 
     public static String syndesisVersionsFile() { return get().readValue(SYNDESIS_VERSIONS_FILE); }
 
-    public static String syndesisTempalateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
+    public static String syndesisTemplateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
 
-    public static String syndesisTempalateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
+    public static String syndesisTemplateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
 
     public static String syndesisBrowser() { return get().readValue(SYNDESIS_UI_BROWSER); }
 
@@ -166,6 +166,15 @@ public class TestConfiguration {
         source.stringPropertyNames().stream()
                 .filter(key -> overwrite || !this.properties.containsKey(key))
                 .forEach(key -> this.properties.setProperty(key, source.getProperty(key)));
+    }
+
+    /**
+     * Used to override syndesis version when the property is defined later than TestConfiguration is initialized.
+     * @param version syndesis version
+     */
+    public void overrideSyndesisVersion(String version) {
+        properties.setProperty(SYNDESIS_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", version));
+        properties.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", version));
     }
 
 }
