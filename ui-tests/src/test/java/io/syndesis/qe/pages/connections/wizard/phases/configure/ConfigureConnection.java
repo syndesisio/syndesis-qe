@@ -9,8 +9,8 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.Map;
 
-import io.syndesis.qe.pages.connections.wizard.phases.AbstractConnectionWizardStep;
 import io.syndesis.qe.fragments.common.form.Form;
+import io.syndesis.qe.pages.connections.wizard.phases.AbstractConnectionWizardStep;
 import lombok.Getter;
 
 @Getter
@@ -33,6 +33,6 @@ public class ConfigureConnection extends AbstractConnectionWizardStep {
     }
 
     public void fillForm(Map<String,String> data) {
-        form.fill(data);
+        form.fillByName(data);
     }
 }
