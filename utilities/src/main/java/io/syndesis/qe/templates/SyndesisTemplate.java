@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyndesisTemplate {
 
-    private static final String SUPPORT_SA_URL = TestConfiguration.syndesisTempalateSA();
-    private static final String TEMPLATE_URL = TestConfiguration.syndesisTempalateUrl();
+    private static final String SUPPORT_SA_URL = TestConfiguration.syndesisTemplateSA();
+    private static final String TEMPLATE_URL = TestConfiguration.syndesisTemplateUrl();
 
     public static Template getTemplate() {
         try (InputStream is = new URL(TEMPLATE_URL).openStream()) {
