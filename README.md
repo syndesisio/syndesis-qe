@@ -30,11 +30,17 @@ Test actions are mainly UI driven with additional 3rd party validation like Sale
 Typescript based tests that use Protractor and Cucumber BDD scenarios.
 
 
-### CI job
+### Creating a Pull Request
 
-Circle CI job is configured to be executed on OpenShift Dedicated cluster, with configuration located in `.circleci/config.yml`
+When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).
 
-https://circleci.com/gh/syndesisio/syndesis-qe
+If you want to run a different subset of tests, you can use `//test: @mytag1, @mytag2` in your PR description to trigger specific tests annotated by given tags.
+
+If you don't want to run the job for your PR at all (for example when you are changing small things in README file), you can use `//skip-ci` in your PR description.
+
+When the PR job fails because of test failures and you believe that you didn't cause the error, you can try to trigger the job once again. For this just comment `retest this please` in the PR and a new build will be triggered in few minutes.
+
+Please remember that each time you push something new (or amend something old) in the PR, a new build is triggered automatically, so you don't need to do anything else to get your PR rebuilt. 
 
 
 ### Scenarios
