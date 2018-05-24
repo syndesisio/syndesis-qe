@@ -15,7 +15,7 @@ import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.fragments.common.form.CoupledForm;
+import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
@@ -438,8 +438,12 @@ public class CommonSteps {
         return finalName;
     }
 
+    /**
+     * This is only general form step that may work in most cases but it's better to use specific form-filling steps for each page
+     * @param data
+     */
     @Then("^.*fills? in values$")
     public void fillForm(DataTable data) {
-        new CoupledForm(new SyndesisRootPage().getRootElement()).fill(data.asMap(String.class, String.class));
+        new Form(new SyndesisRootPage().getRootElement()).fillByLabel(data.asMap(String.class, String.class));
     }
 }
