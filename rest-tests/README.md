@@ -37,7 +37,7 @@ Several properties may influence coarse of the tests. Mandatory properties are s
 * **versions.file**
     * Properties file which contains expected dependencies versions of syndesis generated integrations
 
-### Credentials
+## Credentials
 
 These tests require access to third party services such as Twitter, and Salesforce. Also necessary are openshift and syndesis information. You will need at least:
 
