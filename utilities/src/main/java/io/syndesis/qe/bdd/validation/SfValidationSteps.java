@@ -164,10 +164,9 @@ public class SfValidationSteps {
     }
 
     private Optional<Contact> getSalesforceContact(ForceApi salesforce, String twitterName) {
-        final QueryResult<Contact> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Description,Title FROM contact where Title='"
+        final QueryResult<Contact> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Description,Title FROM contact where TwitterScreenName__c='"
                 + twitterName + "'", Contact.class);
-        final Optional<Contact> contact = queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
-        return contact;
+        return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
     }
 
     /**
