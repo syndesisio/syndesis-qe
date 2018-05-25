@@ -14,6 +14,7 @@ import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorAction;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.IntegrationDeploymentState;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import lombok.extern.slf4j.Slf4j;
@@ -156,6 +157,14 @@ public final class TestUtils {
         } catch (InterruptedException e) {
             log.error("Sleep was interrupted!");
             e.printStackTrace();
+        }
+    }
+
+    public static void getDelayOrJenkinsDelayIfHigher(int delayInSeconds) {
+        if(TestConfiguration.getJenkinsDelay() == 1) {
+            sleepIgnoreInterrupt(delayInSeconds * 1000);
+        } else {
+            sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
         }
     }
 }
