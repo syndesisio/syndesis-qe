@@ -1,7 +1,5 @@
 package io.syndesis.qe.templates;
 
-import io.fabric8.openshift.api.model.TagImportPolicy;
-import io.syndesis.qe.Component;
 import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
@@ -15,7 +13,9 @@ import java.util.concurrent.TimeUnit;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
+import io.fabric8.openshift.api.model.TagImportPolicy;
 import io.fabric8.openshift.api.model.Template;
+import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -24,11 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyndesisTemplate {
 
-    private static final String SUPPORT_SA_URL = TestConfiguration.syndesisTemplateSA();
-    private static final String TEMPLATE_URL = TestConfiguration.syndesisTemplateUrl();
+    private static String supportSaUrl = TestConfiguration.syndesisTemplateSA();
+    private static String templateUrl = TestConfiguration.syndesisTemplateUrl();
 
     public static Template getTemplate() {
-        try (InputStream is = new URL(TEMPLATE_URL).openStream()) {
+        // Refresh the template URL as it can change during multiple tests executions
+        templateUrl = TestConfiguration.syndesisTemplateUrl();
+        try (InputStream is = new URL(templateUrl).openStream()) {
             return OpenShiftUtils.client().templates().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read template ", ex);
@@ -36,7 +38,9 @@ public class SyndesisTemplate {
     }
 
     public static ServiceAccount getSupportSA() {
-        try (InputStream is = new URL(SUPPORT_SA_URL).openStream()) {
+        // Refresh the support SA URL as it can change during multiple tests executions
+        supportSaUrl = TestConfiguration.syndesisTemplateSA();
+        try (InputStream is = new URL(supportSaUrl).openStream()) {
             return OpenShiftUtils.client().serviceAccounts().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to read SA ", ex);
