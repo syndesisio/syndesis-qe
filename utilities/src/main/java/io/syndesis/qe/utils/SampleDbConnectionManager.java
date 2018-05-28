@@ -103,8 +103,6 @@ public class SampleDbConnectionManager {
 
         LocalPortForward localPortForward;
 
-        OpenShiftUtils.getInstance().getPods().stream().forEach(p -> log.info("PODS: *{}*", p.getMetadata().getName()));
-
         Optional<Pod> dbPodOpt = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().contains(podName)).findFirst();
 
         localPortForward = OpenShiftUtils.portForward(dbPodOpt.get(), remotePort, localPort);
