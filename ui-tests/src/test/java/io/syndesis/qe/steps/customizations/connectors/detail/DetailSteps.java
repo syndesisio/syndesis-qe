@@ -10,7 +10,7 @@ public class DetailSteps {
 
     private ApiClientConnectorDetail connectorDetailPage = new ApiClientConnectorDetail();
 
-    @Then("^(\\w+) edits property")
+    @Then("^edit property")
     public void editProperty(String userName, DataTable dataTable) {
         for (List<String> data : dataTable.raw()) {
             String propertyName = data.get(0);

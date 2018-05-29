@@ -25,7 +25,7 @@ public class DataMapperSteps {
 
     private DataMapper mapper = new DataMapper();
 
-    @When("^she creates mapping from \"([^\"]*)\" to \"([^\"]*)\"$")
+    @When("^create mapping from \"([^\"]*)\" to \"([^\"]*)\"$")
     public void createMapping(String source, String target) {
         mapper.createMapping(source, target);
     }
@@ -37,20 +37,20 @@ public class DataMapperSteps {
         }
     }
 
-    @Then("^she is presented with data mapper ui$")
+    @Then("^check visibility of data mapper ui$")
     public void dataMapperUIpresent() {
         log.info("data mapper ui must load and show fields count");
         assertThat(mapper.fieldsCount(), greaterThan(0));
     }
 
-    @When("^she selects \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
+    @When("^select \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
     public void selectFromDropDownByElement(String option, String selectAlias) {
         log.info(option);
         SelenideElement selectElement = mapper.getElementByAlias(selectAlias).shouldBe(visible);
         mapper.selectOption(selectElement, option);
     }
 
-    @Then("^she fills \"([^\"]*)\" selector-input with \"([^\"]*)\" value$")
+    @Then("^fill in \"([^\"]*)\" selector-input with \"([^\"]*)\" value$")
     public void fillActionConfigureField(String selectorAlias, String value) {
         SelenideElement inputElement = mapper.getElementByAlias(selectorAlias).shouldBe(visible);
         mapper.fillInput(inputElement, value);
@@ -71,40 +71,40 @@ public class DataMapperSteps {
         SelenideElement inputElement;
         SelenideElement selectElement;
 
-        // Then she fills "FirstCombine" selector-input with "FirstName" value
+        // Then fill in "FirstCombine" selector-input with "FirstName" value
         inputElement = mapper.getElementByAlias("FirstSource").shouldBe(visible);
         mapper.fillInput(inputElement, first);
 
-        // And she selects "Combine" from "ActionSelect" selector-dropdown
+        // And select "Combine" from "ActionSelect" selector-dropdown
         selectElement = mapper.getElementByAlias("ActionSelect").shouldBe(visible);
         mapper.selectOption(selectElement, "Combine");
 
-        // And she selects "Space" from "SeparatorSelect" selector-dropdown
+        // And select "Space" from "SeparatorSelect" selector-dropdown
         selectElement = mapper.getElementByAlias("SeparatorSelect").shouldBe(visible);
         mapper.selectOption(selectElement, separator);
 
-        // And clicks on the "Add Source" link
+        // And click on the "Add Source" link
         mapper.getButton("Add Source").shouldBe(visible).click();
 
-        // Then she fills "SecondCombine" selector-input with "LastName" value
+        // Then fill in "SecondCombine" selector-input with "LastName" value
         inputElement = mapper.getElementByAlias("SecondSource").shouldBe(visible);
         mapper.fillInputAndConfirm(inputElement, second);
 
-        // And she fills "FirstCombinePosition" selector-input with "2" value
+        // And fill in "FirstCombinePosition" selector-input with "2" value
         inputElement = mapper.getElementByAlias("FirstSourcePosition").shouldBe(visible);
         mapper.fillInput(inputElement, first_pos);
 
-        // And she fills "SecondCombinePosition" selector-input with "1" value
+        // And fill in "SecondCombinePosition" selector-input with "1" value
         inputElement = mapper.getElementByAlias("SecondSourcePosition").shouldBe(visible);
         mapper.fillInput(inputElement, sec_pos);
 
-        // Then she fills "TargetCombine" selector-input with "first_and_last_name" value
+        // Then fill in "TargetCombine" selector-input with "first_and_last_name" value
 //        inputElement = mapper.getElementByAlias("FirstTarget").shouldBe(visible);
 //        mapper.fillInputAndConfirm(inputElement, combined);
     }
 
-    //    And she separates "FirstName" into "company" as "2" and "email" as "1" using "Comma" separator
-    @Then("^she separates \"([^\"]*)\" into \"([^\"]*)\" as \"([^\"]*)\" and \"([^\"]*)\" as \"([^\"]*)\" using \"([^\"]*)\" separator$")
+    //    And separate "FirstName" into "company" as "2" and "email" as "1" using "Comma" separator
+    @Then("^separate \"([^\"]*)\" into \"([^\"]*)\" as \"([^\"]*)\" and \"([^\"]*)\" as \"([^\"]*)\" using \"([^\"]*)\" separator$")
     public void separatePresentFielsIntoTwo(String input, String output1, String first_pos, String output2, String second_pos, String separator) {
         SelenideElement inputElement;
         SelenideElement selectElement;

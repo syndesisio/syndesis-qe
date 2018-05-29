@@ -9,7 +9,7 @@ public class ChooseStepSteps {
 
     private ChooseStep chooseStep = new ChooseStep();
 
-    @When("^she selects \"([^\"]*)\" integration step$")
+    @When("^select \"([^\"]*)\" integration step$")
     public void chooseStep(String stepName) {
         log.info("Adding {} step to integration", stepName);
         chooseStep.chooseStep(stepName);

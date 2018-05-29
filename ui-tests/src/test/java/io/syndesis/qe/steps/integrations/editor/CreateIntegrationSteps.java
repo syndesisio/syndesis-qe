@@ -9,7 +9,7 @@ public class CreateIntegrationSteps {
 
     private CreateIntegration createIntegration = new CreateIntegration();
 
-    @When("^she sets the integration name \"([^\"]*)\"$")
+    @When("^set integration name \"([^\"]*)\"$")
     public void setIntegrationName(String integrationName) {
         createIntegration.setName(integrationName);
     }

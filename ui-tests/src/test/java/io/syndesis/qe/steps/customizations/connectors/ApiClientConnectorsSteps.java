@@ -27,23 +27,23 @@ public class ApiClientConnectorsSteps {
     private static ApiClientConnectors apiClientConnectorsPage = new ApiClientConnectors();
     private static ReviewActions reviewActions = new ReviewActions();
 
-    @Then("^(\\w+) opens new Api Connector wizard$")
-    public void openNewApiConnectorWizard(String user) {
+    @Then("^open new Api Connector wizard$")
+    public void openNewApiConnectorWizard() {
         apiClientConnectorsPage.startWizard();
     }
 
-    @Then("^(\\w+) opens the API connector \"([^\"]*)\" detail$")
-    public void openApiConnectorDetail(String userName, String connectorName) {
+    @Then("^open the API connector \"([^\"]*)\" detail$")
+    public void openApiConnectorDetail(String connectorName) {
         apiClientConnectorsPage.clickConnectorByTitle(connectorName);
     }
 
-    @Then("(\\w+) is presented with the new connector \"([^\"]*)\"$")
-    public void checkNewConnectorIsPresent(String user, String connectorName) throws Throwable {
+    @Then("check visibility of the new connector \"([^\"]*)\"$")
+    public void checkNewConnectorIsPresent(String connectorName) throws Throwable {
         Assert.assertTrue("Connector [" + connectorName + "] is not listed.", apiClientConnectorsPage.isConnectorPresent(connectorName));
     }
 
-    @Then("^(\\w+) is presented with a connectors list of size (\\d+)$")
-    public void checkConnectorsListSize(String userName, String listSize) {
+    @Then("^check visibility of a connectors list of size (\\d+)$")
+    public void checkConnectorsListSize(String listSize) {
         Assert.assertTrue("The connectors list should be of size <" + listSize + ">.", apiClientConnectorsPage.isConnectorsListLongAs(Integer.parseInt(listSize)));
     }
 
@@ -69,21 +69,21 @@ public class ApiClientConnectorsSteps {
 
     private void uploadSwagger(List<List<String>> sourceDataTable) {
         CommonSteps commonSteps = new CommonSteps();
-        commonSteps.navigateTo("","Customizations");
-        commonSteps.validatePage("","Customizations");
+        commonSteps.navigateTo("Customizations");
+        commonSteps.validatePage("Customizations");
         commonSteps.clickOnLink("API Client Connectors");
-        commonSteps.validatePage("", "API Client Connectors");
+        commonSteps.validatePage("API Client Connectors");
 
-        openNewApiConnectorWizard("");
+        openNewApiConnectorWizard();
 
         WizardSteps wizardSteps = new WizardSteps();
 
         log.info("Setting up upload type and path of the swagger file");
-        wizardSteps.uploadSwaggerFile("", DataTable.create(sourceDataTable));
+        wizardSteps.uploadSwaggerFile(DataTable.create(sourceDataTable));
     }
 
-    @Then("^(\\w+) creates? new API connector$")
-    public void createNewApiConnector(String user, DataTable properties) throws Throwable {
+    @Then("create new API connector$")
+    public void createNewApiConnector(DataTable properties) throws Throwable {
 
         log.info("Connector wizard started");
 
@@ -193,36 +193,36 @@ public class ApiClientConnectorsSteps {
 
         uploadSwagger(sourceDataTable);
 
-        wizardSteps.navigateToNextWizardStep(user, "Review Actions");
-        wizardSteps.navigateToNextWizardStep(user, "SpecifySecurity");
+        wizardSteps.navigateToNextWizardStep("Review Actions");
+        wizardSteps.navigateToNextWizardStep("SpecifySecurity");
 
         if(connectorName != null) {
             log.info("Setting up auth type");
-            wizardSteps.setUpSecurity(user, DataTable.create(securityDataTable));
-            wizardSteps.navigateToNextWizardStep(user, "Review/Edit Connector Details");
+            wizardSteps.setUpSecurity(DataTable.create(securityDataTable));
+            wizardSteps.navigateToNextWizardStep("Review/Edit Connector Details");
         }
 
         if(connectorName != null) {
             log.info("Setting up connector name");
-            wizardSteps.setUpConnectorName(user, connectorName);
+            wizardSteps.setUpConnectorName(connectorName);
         }
 
         if(description != null) {
             log.info("Setting up connector name");
-            wizardSteps.setUpDescription(user, description);
+            wizardSteps.setUpDescription(description);
         }
 
         if(host != null) {
             log.info("Setting up host");
-            wizardSteps.setUpHost(user, host);
+            wizardSteps.setUpHost(host);
         }
 
         if(baseUrl != null) {
             log.info("Setting up base url");
-            wizardSteps.setUpBaseUrl(user, baseUrl);
+            wizardSteps.setUpBaseUrl(baseUrl);
         }
 
-        wizardSteps.finishNewConnectorWizard(user);
-        checkNewConnectorIsPresent(user, connectorName);
+        wizardSteps.finishNewConnectorWizard();
+        checkNewConnectorIsPresent(connectorName);
     }
 }
