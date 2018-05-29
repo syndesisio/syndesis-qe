@@ -45,17 +45,17 @@ public class ConnectionSteps {
         connectionsPage.openConnectionDetail(connectionName);
     }
 
-    @Then("^Camilla can see the \"(\\w+)\" connection$")
+    @Then("^check visibility of the \"(\\w+)\" connection$")
     public void checkConnectionIsPresent(String connectionName) {
         connectionsPage.getConnection(connectionName).shouldBe(visible);
     }
 
-    @Then("^Camilla can not see the \"([^\"]*)\" connection anymore$")
+    @Then("^check that \"([^\"]*)\" connection is not visible$")
     public void checkConnectionIsNotPresent(String connectionName) {
         connectionsPage.getConnection(connectionName).shouldNot(exist);
     }
 
-    @When("^Camilla deletes the \"([^\"]*)\" connection$")
+    @When("^delete the \"([^\"]*)\" connection$")
     public void deleteConnection(String connectionName) {
         connectionsPage.deleteConnection(connectionName);
     }
@@ -67,13 +67,13 @@ public class ConnectionSteps {
         }
     }
 
-    @Then("^she is presented with \"(\\d+)\" connections$")
+    @Then("^check visibility of \"(\\d+)\" connections$")
     public void connectionsCount(Integer connectionCount) {
         log.info("There should be {} available", connectionCount);
         assertThat(connectionsPage.getAllConnections().size(), is(connectionCount));
     }
 
-    @Then("^she can see unveiled kebab menu of all connections, each of this menu consist of \"(\\w+)\", \"(\\w+)\" and \"(\\w+)\" actions$")
+    @Then("^check visibility of unveiled kebab menu of all connections, each of this menu consist of \"(\\w+)\", \"(\\w+)\" and \"(\\w+)\" actions$")
     public void checkAllVisibleKebabMenus(String action1, String action2, String action3) {
         List<String> actions = new ArrayList<>(Arrays.asList(action1, action2, action3));
         for(SelenideElement connection: connectionsPage.getAllConnections()) {
@@ -87,14 +87,14 @@ public class ConnectionSteps {
         }
     }
 
-    @Then("^she is presented with help block with text \"([^\"]*)\"$")
+    @Then("^check visibility of help block with text \"([^\"]*)\"$")
     public void helpBlockVisible(String helpText) {
         SelenideElement helpBlock = $(By.className("help-block")).shouldBe(visible);
         helpBlock.shouldBe(visible);
         Assertions.assertThat(helpBlock.getText().equals(helpText)).isTrue();
     }
 
-    @When("^clicks on the \"([^\"]*)\" kebab menu button of \"([^\"]*)\"$")
+    @When("^click on the \"([^\"]*)\" kebab menu button of \"([^\"]*)\"$")
     public void clickOnKebabMenuButtonOfConnection(String button, String connectionName) throws Throwable {
         KebabMenu kebabMenu = new KebabMenu(connectionsPage.getConnection(connectionName).$(By.xpath(".//button")).shouldBe(visible));
         kebabMenu.open();
@@ -121,8 +121,8 @@ public class ConnectionSteps {
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
 
-            cs.navigateTo("", "Connections");
-            cs.validatePage("", "Connections");
+            cs.navigateTo("Connections");
+            cs.validatePage("Connections");
 
             ElementsCollection connections = connectionsPage.getAllConnections();
             connections = connections.filter(exactText(connectionName));

@@ -19,8 +19,7 @@ public class SyndesisRootPage extends SyndesisPageObject {
     }
 
     public SelenideElement getRootElement() {
-        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-        return elementRoot;
+        return $(Element.ROOT).shouldBe(visible);
     }
 
     public boolean validate() {

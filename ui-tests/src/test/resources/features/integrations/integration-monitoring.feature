@@ -2,7 +2,7 @@
 Feature: Integration - Monitoring
 
   Background: Clean application state
-    Given "Camilla" logs into the Syndesis
+    Given log into the Syndesis
     And remove all records from table "todo"
     And remove all records from table "contact"
     When inserts into "contact" table
@@ -11,12 +11,12 @@ Feature: Integration - Monitoring
 
   @integration-monitoring-activity
   Scenario: Activity log
-    Then "Camilla" navigates to the "Integrations" page
-    And Camilla selects the "CRUD2-read-create E2E" integration
-    And Camilla is presented with "CRUD2-read-create E2E" integration details
-    Then clicks on the "Activity" tab
+    Then navigate to the "Integrations" page
+    And select the "CRUD2-read-create E2E" integration
+    And check visibility of "CRUD2-read-create E2E" integration details
+    Then click on the "Activity" tab
     And expands "first" activity row
-    Then clicks on the "View" Button of "Data Mapper" activity step
-    Then she is presented with the activity log
+    Then click on the "View" Button of "Data Mapper" activity step
+    Then check visibility of the activity log
     And validates that this log represents rest endpoint log of "CRUD2-read-create E2E" and "Data Mapper" activity step
     Then selects the "28-05-2016" till "28-03-2017" dates in calendar

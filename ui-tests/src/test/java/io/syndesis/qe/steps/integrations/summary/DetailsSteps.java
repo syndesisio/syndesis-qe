@@ -17,25 +17,25 @@ public class DetailsSteps {
 
     private Details detailPage = new Details();
 
-    @Then("^Camilla is presented with \"([^\"]*)\" integration details$")
+    @Then("^check visibility of \"([^\"]*)\" integration details$")
     public void verifyIntegrationDetails(String integrationName) {
         log.info("Integration detail editPage must show integration name");
         assertThat(detailPage.getIntegrationName(), is(integrationName));
     }
 
-    @When("^Camilla deletes the integration on detail page.*$")
+    @When("^delete the integration on detail page.*$")
     public void deleteIntegrationOnDetailPage() {
         detailPage.deleteIntegration();
     }
 
-    @Then("^she is presented with \"([^\"]*)\" integration status on Integration Detail page$")
+    @Then("^check visibility of \"([^\"]*)\" integration status on Integration Detail page$")
     public void checkStatusOnIntegrationDetail(String expectedStatus) {
         String status = detailPage.getIntegrationInfo();
         log.info("Status: {}", status);
         Assertions.assertThat(status.contains(expectedStatus)).isTrue();
     }
 
-    @And("^clicks on the \"([^\"]*)\" tab$")
+    @And("^click on the \"([^\"]*)\" tab$")
     public void clicksOnTheTab(String tabName) {
         detailPage.selectTab(tabName);
     }

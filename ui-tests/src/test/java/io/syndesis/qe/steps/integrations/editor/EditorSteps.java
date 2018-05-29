@@ -27,26 +27,26 @@ public class EditorSteps {
     private IntegrationFlowView flowViewComponent = new IntegrationFlowView();
     private ChooseConnection chooseConnection = new ChooseConnection();
 
-    @Then("^she is presented with a visual integration editor$")
+    @Then("^check visibility of visual integration editor$")
     public void verifyNewIntegrationEditorOpened() {
         editor.getRootElement().shouldBe(visible);
         chooseConnection.getRootElement().shouldBe(visible);
         flowViewComponent.getRootElement().shouldBe(visible);
     }
 
-    @Then("^she is presented with a visual integration editor for \"([^\"]*)\"$")
+    @Then("^check visibility of visual integration editor for \"([^\"]*)\"$")
     public void verifyEditorOpenedFor(String integrationName) {
         this.verifyNewIntegrationEditorOpened();
         log.info("editor must display integration name {}", integrationName);
         assertThat(flowViewComponent.getIntegrationName(), is(integrationName));
     }
 
-    @When("^she adds first step between START and STEP connection$")
+    @When("^add first step between START and STEP connection$")
     public void sheAddsFirstStep() throws Throwable {
         flowViewComponent.clickAddStepLink(0);
     }
 
-    @When("^she adds second step between STEP and FINISH connection$")
+    @When("^add second step between STEP and FINISH connection$")
     public void sheAddsSecond() throws Throwable {
         flowViewComponent.clickAddStepLink(1);
     }

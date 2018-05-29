@@ -38,7 +38,7 @@ public class ChooseConnectionSteps {
      *
      * @param position
      */
-    @Then("^she is prompted to select a \"([^\"]*)\" connection from a list of available connections$")
+    @Then("^check that position of connection to fill is \"([^\"]*)\"$")
     public void verifyTypeOfConnection(String position) {
         log.info("{} connection must be active", position);
         assertTrue("There was no active icon found for position " + position, integrationFlowView.verifyActivePosition(position));
