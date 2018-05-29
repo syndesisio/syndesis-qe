@@ -1,9 +1,12 @@
 package io.syndesis.qe.rest.tests.integrations;
 
+import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import io.syndesis.common.model.filter.FilterPredicate;
 import io.syndesis.common.model.integration.Step;
@@ -32,12 +35,21 @@ public class IntermediateSteps {
 
     @Given("^create basic TW to SF filter step")
     public void createBasicFilterStep() {
+        try {
+            this.createBasicFilterStepWord("text", "#backendTest", "contains");
+        } catch (Throwable throwable) {
+            Assertions.fail(throwable.getMessage());
+        }
+    }
+
+    @Given("^create basic filter step for \"([^\"]*)\" with word \"([^\"]*)\" and operation \"([^\"]*)\"")
+    public void createBasicFilterStepWord(String path, String value, String operation) {
         final Step basicFilter = new Step.Builder()
                 .stepKind(StepKind.ruleFilter)
                 .configuredProperties(TestUtils.map(
                         "type", "rule",
                         "predicate", FilterPredicate.AND.toString(),
-                        "rules", new FilterRulesBuilder().addPath("text").addValue("#backendTest").addOps("contains").build()
+                        "rules", new FilterRulesBuilder().addPath(path).addValue(value).addOps(operation).build()
                 ))
                 .id(UUID.randomUUID().toString())
                 .build();
@@ -55,5 +67,4 @@ public class IntermediateSteps {
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(basicFilter));
     }
-
 }
