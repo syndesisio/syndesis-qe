@@ -100,18 +100,20 @@ public class DbValidationSteps {
         List<List<String>> dataTable = data.raw();
 
         String sql = null;
-        switch (tableName.toLowerCase()) {
-            case "todo":
-                sql = "INSERT INTO TODO(task) VALUES('%s'";
-                break;
-            case "contact":
-                sql = "INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('%s'";
-                break;
-        }
 
         Iterator it;
         String next;
         for (List<String> list : dataTable) {
+            switch (tableName.toUpperCase()) {
+                case "TODO":
+//                INSERT INTO TODOx(task) VALUES('Joe');
+                    sql = "INSERT INTO TODO(task) VALUES('%s'";
+                    break;
+                case "CONTACT":
+//                INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
+                    sql = "INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('%s'";
+                    break;
+            }
             it = list.iterator();
             while (it.hasNext()) {
                 next = (String) it.next();
@@ -121,12 +123,11 @@ public class DbValidationSteps {
                     sql = String.format(sql, next) + ")";
                 }
             }
+            log.debug("SQL query: *{}*", sql);
+            int newId = dbUtils.executeSQLGetUpdateNumber(sql);
+            //assert new row in database has been created:
+            assertThat(newId).isEqualTo(1);
         }
-        log.info("SQL query: *{}*", sql);
-        int newId = dbUtils.executeSQLGetUpdateNumber(sql);
-
-        //assert new row in database has been created:
-        assertThat(newId).isEqualTo(1);
     }
 
     @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\" on \"(\\w+)\"$")
