@@ -1,4 +1,4 @@
-@integrations-database-to-database-with-extension
+@integrations-db-to-db-with-extension
 Feature: Integration - DB to DB with extension
 
   Background:
