@@ -1,3 +1,4 @@
+@kokos
 Feature: Integration - Salesforce to DB
 
   Background: Clean application state
@@ -5,7 +6,7 @@ Feature: Integration - Salesforce to DB
     And remove all records from table "todo"
     And create SF connection
 
-  @integrations-sf-db
+  @integrations-sf-db-create
   Scenario: On create
     And create SF "salesforce-on-create" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
@@ -19,7 +20,7 @@ Feature: Integration - Salesforce to DB
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     Then validate DB created new lead with first name: "John", last name: "Doe", email: "jdoe@acme.com"
 
-  @integrations-sf-db
+  @integrations-sf-db-delete
   Scenario: On delete
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "salesforce-on-delete" action step on field: "Lead"
@@ -31,7 +32,7 @@ Feature: Integration - Salesforce to DB
     Then delete lead from SF with email: "jdoe@acme.com"
     Then validate SF on delete to DB created new task with lead ID as task name
 
-  @integrations-sf-db
+  @integrations-sf-db-update
   Scenario: On update
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
     And create SF "salesforce-on-update" action step on field: "Lead"
