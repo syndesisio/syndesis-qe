@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * S3 bucket name has to contain some random string at the end - it prevents test failures, for instance for cases, when
  * someone creates bucket with name, which we would like to use in our tests (the names of buckets on S3 have to be
  * unique).
- *
+ * <p>
  * Jan 22, 2018 Red Hat
  *
  * @author tplevko@redhat.com
@@ -24,9 +24,8 @@ public final class S3BucketNameBuilder {
     }
 
     private static Optional<String> getRandomSalt() {
-        if (randomSalt.isPresent()) {
-        } else {
-            randomSalt = Optional.of(RandomStringUtils.randomAlphanumeric(8).toLowerCase());
+        if (!randomSalt.isPresent()) {
+            randomSalt = Optional.of(RandomStringUtils.randomAlphanumeric(3).toLowerCase());
         }
         log.debug(randomSalt.get());
         return randomSalt;

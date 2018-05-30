@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions;
 
 import java.io.IOException;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.utils.FtpClientManager;
 import io.syndesis.qe.utils.FtpUtils;
@@ -18,25 +20,39 @@ public class FtpValidationSteps {
         ftpUtils = new FtpUtils(FtpClientManager.getClient());
     }
 
-    @Then("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" to \"([^\"]*)\" directory$")
-    public void validateThatFileHasBeenTransferedFromToDirectory(String filename, String remoteFromDirectory, String remoteToDirectory) {
+    @Then("^puts \"([^\"]*)\" file with content \"([^\"]*)\" in the FTP directory: \"([^\"]*)\"$")
+    public void putsFileInTheFTPDirectory(String filename, String text, String remoteDirectory) {
         try {
-            boolean isThereFrom = ftpUtils.isThereFile(remoteFromDirectory + "/" + filename);
-            Assertions.assertThat(isThereFrom).isFalse();
-            boolean isThereTo = ftpUtils.isThereFile(remoteToDirectory + "/" + filename);
-            Assertions.assertThat(isThereTo).isTrue();
+            Assertions.assertThat(ftpUtils.uploadTestFile(filename, text, remoteDirectory)).isTrue();
+            Assertions.assertThat(ftpUtils.isThereFile(remoteDirectory + "/" + filename)).isTrue();
         } catch (IOException e) {
             Assertions.fail("Error: " + e);
         }
     }
 
-    @Then("^puts \"([^\"]*)\" file in the FTP \"([^\"]*)\" directory$")
-    public void putsFileInTheFTPDirectory(String filename, String remoteDirectory) {
+    @And("^validate that file \"([^\"]*)\" has been transfered to \"([^\"]*)\" FTP directory$")
+    public void validateThatFileHasBeenTransferedToDirectory(String filename, String remoteToDirectory) {
         try {
-            boolean result = ftpUtils.upload(String.format("../%s"), remoteDirectory);
-            Assertions.assertThat(result).isTrue();
-            boolean isThere = ftpUtils.isThereFile(remoteDirectory + "/" + filename);
-            Assertions.assertThat(isThere).isTrue();
+            Assertions.assertThat(ftpUtils.isThereFile(remoteToDirectory + "/" + filename)).isTrue();
+        } catch (IOException e) {
+            Assertions.fail("Error: " + e);
+        }
+    }
+
+    @And("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" FTP directory$")
+    public void validateFileIsNotThere(String filename, String remoteFromDirectory) {
+        try {
+            Assertions.assertThat(ftpUtils.isThereFile(remoteFromDirectory + "/" + filename)).isFalse();
+        } catch (IOException e) {
+            Assertions.fail("Error: " + e);
+        }
+    }
+
+    @Then("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" to \"([^\"]*)\" FTP directory$")
+    public void validateThatFileHasBeenTransferedFromToDirectory(String filename, String remoteFromDirectory, String remoteToDirectory) {
+        try {
+            Assertions.assertThat(ftpUtils.isThereFile(remoteFromDirectory + "/" + filename)).isFalse();
+            Assertions.assertThat(ftpUtils.isThereFile(remoteToDirectory + "/" + filename)).isTrue();
         } catch (IOException e) {
             Assertions.fail("Error: " + e);
         }

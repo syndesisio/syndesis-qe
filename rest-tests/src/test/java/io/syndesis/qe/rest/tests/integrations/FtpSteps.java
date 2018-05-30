@@ -32,7 +32,7 @@ public class FtpSteps {
     public FtpSteps() {
     }
 
-    @And("^creates start FTP download action with values$")
+    @And("^create start FTP download action with values$")
     public void setFtpDownloadData(DataTable sourceMappingData) {
 
         final Connection ftpConnection = connectionsEndpoint.get(RestConstants.FTP_CONNECTION_ID);
@@ -50,7 +50,7 @@ public class FtpSteps {
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
 
-    @And("^creates finish FTP upload action with values$")
+    @And("^create finish FTP upload action with values$")
     public void setFtpUploadData(DataTable sourceMappingData) {
 
         final Connection ftpConnection = connectionsEndpoint.get(RestConstants.FTP_CONNECTION_ID);
@@ -67,5 +67,4 @@ public class FtpSteps {
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
-
 }
