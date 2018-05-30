@@ -40,7 +40,7 @@ public class TodoSteps {
         getWebDriver().navigate().to(url);
     }
 
-    @Then("^.* checks? Todo list grows in \"([1-9][0-9]*)\" seconds?$")
+    @Then("^.*checks? Todo list grows in \"([1-9][0-9]*)\" seconds?$")
     public void checkListGrows(int seconds) {
         log.info("Checking Todo app list is growing in " + seconds + " seconds");
 

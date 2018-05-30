@@ -48,14 +48,14 @@ public class ExtensionSteps {
 
         for (List<String> dataRow : dataTable) {
 
-            commonSteps.navigateTo("", NavigationElements.CUSTOMIZATIONS_NAV);
-            commonSteps.validatePage("", NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.navigateTo(NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.validatePage(NavigationElements.CUSTOMIZATIONS_NAV);
 
             commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
-            commonSteps.validatePage("", NavigationElements.EXTENSION_NAV);
+            commonSteps.validatePage(NavigationElements.EXTENSION_NAV);
 
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
-            commonSteps.validatePage("", NavigationElements.IMPORT_EXTENSION_BUTTON);
+            commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
 
 
             uploadExtensionFromFile(dataRow.get(0), dataRow.get(1));
@@ -72,14 +72,14 @@ public class ExtensionSteps {
 
         for (List<String> dataRow : dataTable) {
 
-            commonSteps.navigateTo("", NavigationElements.CUSTOMIZATIONS_NAV);
-            commonSteps.validatePage("", NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.navigateTo(NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.validatePage(NavigationElements.CUSTOMIZATIONS_NAV);
 
             commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
-            commonSteps.validatePage("", NavigationElements.EXTENSION_NAV);
+            commonSteps.validatePage(NavigationElements.EXTENSION_NAV);
 
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
-            commonSteps.validatePage("", NavigationElements.IMPORT_EXTENSION_BUTTON);
+            commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
 
 
             uploadExtensionFromFile(dataRow.get(0));
@@ -101,7 +101,7 @@ public class ExtensionSteps {
      * @param extensionPath
      * @throws Throwable
      */
-    @When("^.*uploads? extension with name \"([^\"]*)\" from relative path \"([^\"]*)\"$")
+    @When("^upload extension with name \"([^\"]*)\" from relative path \"([^\"]*)\"$")
     public void uploadExtensionFromFile(String extensionName, String extensionPath) throws Throwable {
 
         String techExtensionUrl = extensionPath + extensionName;
@@ -117,7 +117,7 @@ public class ExtensionSteps {
      * @param extensionFolderName
      * @throws Throwable
      */
-    @When("^.*uploads? extension with name \"([^\"]*)\" from syndesis-extensions dir$")
+    @When("^upload extension with name \"([^\"]*)\" from syndesis-extensions dir$")
     public void uploadExtensionFromFile(String extensionFolderName) throws Throwable {
         String defaultPath = "../syndesis-extensions/" + extensionFolderName + "/target/";
 
@@ -130,7 +130,7 @@ public class ExtensionSteps {
         $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
     }
 
-    @When("^.*sees? details about imported extension$")
+    @When("^check visibility of details about imported extension$")
     public void importDetails() throws Throwable {
         //TODO Deeper validation
         assertThat(techExtensionsImportPage.validate(), is(true));
@@ -142,14 +142,14 @@ public class ExtensionSteps {
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name), is(true));
     }
 
-    @Then("^Camilla can not see \"([^\"]*)\" technical extension anymore$")
+    @Then("^check that technical extension \"([^\"]*)\" is not visible$")
     public void expectExtensionNonPresent(String name) throws Throwable {
         log.info("Verifying if extension {} is present", name);
         customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name), is(false));
     }
 
-    @Then("^Camilla choose \"([^\"]*)\" action on \"([^\"]*)\" technical extension$")
+    @Then("^select \"([^\"]*)\" action on \"([^\"]*)\" technical extension$")
     public void chooseActionOnTechExtensionItem(String action, String extensionName) throws Throwable {
         customizationsPage.getTechExtensionsListComponent().chooseActionOnExtension(extensionName, action);
     }
@@ -160,13 +160,13 @@ public class ExtensionSteps {
         throw new PendingException();
     }
 
-    @Then("^she can see \"([^\"]*)\" in step list$")
+    @Then("^check visibility of \"([^\"]*)\" in step list$")
     public void stepPresentInlist(String arg1) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         throw new PendingException();
     }
 
-    @Then("^she can see notification about integrations \"([^\"]*)\" in which is tech extension used$")
+    @Then("^check visibility of notification about integrations \"([^\"]*)\" in which is tech extension used$")
     public void usedInIntegrations(String integrations) throws Throwable {
         String[] integrationsNames = integrations.split(", ");
 

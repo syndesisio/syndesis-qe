@@ -37,12 +37,12 @@ public class IntegrationSteps {
     private Integrations integrations = new Integrations();
     private DataMapper dataMapper = new DataMapper();
 
-    @When("^Camilla selects the \"([^\"]*)\" integration.*$")
+    @When("^select the \"([^\"]*)\" integration.*$")
     public void selectIntegration(String itegrationName) {
         integrations.goToIntegrationDetail(itegrationName);
     }
 
-    @When("^Camilla deletes the \"([^\"]*)\" integration.*$")
+    @When("^delete the \"([^\"]*)\" integration.*$")
     public void deleteIntegration(String integrationName) {
         integrations.deleteIntegration(integrationName);
     }
@@ -54,14 +54,14 @@ public class IntegrationSteps {
         assertThat(integrations.isIntegrationPresent(name), is(true));
     }
 
-    @Then("^Camilla can not see \"([^\"]*)\" integration anymore$")
+    @Then("^check that integration \"([^\"]*)\" is not visible$")
     public void expectIntegrationNotPresent(String name) {
         // DOES NOT WORK - THROWS ERROR AS getElement has assert that its > 0 and if it does not exists its 0 TODO
         log.info("Verifying if integration {} is present", name);
         assertThat(integrations.isIntegrationPresent(name), is(false));
     }
 
-    @Then("^she waits until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
+    @Then("^wait until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
         SelenideElement integration = integrations.getIntegration(integrationName);
         assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> integrations.getIntegrationItemStatus(integration),
@@ -69,13 +69,13 @@ public class IntegrationSteps {
     }
 
     //Kebab menu test, #553 -> part #548, #549.
-    @When("^clicks on the kebab menu icon of each available Integration and checks whether menu is visible and has appropriate actions$")
+    @When("^click on the kebab menu icon of each available Integration and checks whether menu is visible and has appropriate actions$")
     public void clickOnAllKebabMenus() {
         integrations.checkAllIntegrationsKebabButtons();
     }
 
 
-    @And("^Camilla exports this integraion$")
+    @And("^export the integraion$")
     public void exportIntegration() throws InterruptedException {
         File exportedIntegrationFile = detailPage.exportIntegration();
         Assertions.assertThat(exportedIntegrationFile)
@@ -85,7 +85,7 @@ public class IntegrationSteps {
         ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
     }
 
-    @And("^Camilla starts integration \"([^\"]*)\"$")
+    @And("^start integration \"([^\"]*)\"$")
     public void startIntegration(String integrationName) {
         detailPage.clickOnKebabMenuAction("Publish");
         ModalDialogPage modal = new ModalDialogPage();

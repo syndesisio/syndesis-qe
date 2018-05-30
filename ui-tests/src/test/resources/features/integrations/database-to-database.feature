@@ -3,7 +3,7 @@ Feature: Integration - DB to DB
 
   Background: Clean application state
     Given clean application state
-    Given "Camilla" logs into the Syndesis
+    Given log into the Syndesis
 
     Given reset content of "todo" table
     Given reset content of "contact" table
@@ -16,44 +16,44 @@ Feature: Integration - DB to DB
     Then inserts into "todo" table
       | Joe |
 
-    When "Camilla" navigates to the "Home" page
-    And clicks on the "Create Integration" button to create a new integration.
-    Then she is presented with a visual integration editor
-    And she is prompted to select a "Start" connection from a list of available connections
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
       # select salesforce connection as 'from' point
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Periodic SQL Invocation" integration action
-    #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
-    Then she checks "Done" button is "Disabled"
-    Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "5" value
-    Then she selects "Seconds" from sql dropdown
-    And clicks on the "Done" button
+    When select the "PostgresDB" connection
+    And select "Periodic SQL Invocation" integration action
+    #Then check visibility of page "Periodic SQL Invocation"
+    Then check "Done" button is "Disabled"
+    Then fill in periodic query input with "SELECT * FROM CONTACT" value
+    Then fill in period input with "5" value
+    Then select "Seconds" from sql dropdown
+    And click on the "Done" button
 
     # select postgresDB connection as 'to' point
-    Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Invoke SQL" integration action
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
     #wip this query doesnt work ftb #698
-    Then she fills invoke query input with "UPDATE TODO SET completed=1 WHERE TASK = :#TASK" value
+    Then fill in invoke query input with "UPDATE TODO SET completed=1 WHERE TASK = :#TASK" value
 #    there is no done button:
-    And clicks on the "Done" button
+    And click on the "Done" button
 
       # add data mapper step
-    Then Camilla is presented with the Syndesis page "Add to Integration"
-    When Camilla clicks on the "Add a Step" button
-    And she selects "Data Mapper" integration step
-    Then she is presented with data mapper ui
-    And she creates mapping from "first_name" to "TASK"
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    And create mapping from "first_name" to "TASK"
 
-    And clicks on the "Done" button
-    And clicks on the "Publish" button
-    And she sets the integration name "CRUD1-read-update E2E"
-    And clicks on the "Publish" button
-    Then Camilla is presented with "CRUD1-read-update E2E" integration details
-    Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD1-read-update E2E" gets into "Published" state
+    And click on the "Done" button
+    And click on the "Publish" button
+    And set integration name "CRUD1-read-update E2E"
+    And click on the "Publish" button
+    Then check visibility of "CRUD1-read-update E2E" integration details
+    Then navigate to the "Integrations" page
+    Then wait until integration "CRUD1-read-update E2E" gets into "Published" state
 
     Then validate that all todos with task "Joe" have value completed "1", period in ms: "5000"
 
@@ -63,46 +63,46 @@ Feature: Integration - DB to DB
 #
   @db-connection-crud-2-read-create
   Scenario: Read & create operations
-    When "Camilla" navigates to the "Home" page
-    And clicks on the "Create Integration" button to create a new integration.
-    Then she is presented with a visual integration editor
-    And she is prompted to select a "Start" connection from a list of available connections
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
       # select salesforce connection as 'from' point
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Periodic SQL Invocation" integration action
-    #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
+    When select the "PostgresDB" connection
+    And select "Periodic SQL Invocation" integration action
+    #Then check visibility of page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
-    Then she checks "Done" button is "Disabled"
-    Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "5" value
-    Then she selects "Seconds" from sql dropdown
-    And clicks on the "Done" button
+    Then check "Done" button is "Disabled"
+    Then fill in periodic query input with "SELECT * FROM CONTACT" value
+    Then fill in period input with "5" value
+    Then select "Seconds" from sql dropdown
+    And click on the "Done" button
 
     # select postgresDB connection as 'to' point
-    Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Invoke SQL" integration action
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
 #    @wip - bug to be reported, wrong is: (:#TASK, 2). (:#TASK, :#MASK) is OK
-    Then she fills invoke query input with "INSERT INTO TODO(task, completed) VALUES (:#TASK, 2)" value
-    And clicks on the "Done" button
+    Then fill in invoke query input with "INSERT INTO TODO(task, completed) VALUES (:#TASK, 2)" value
+    And click on the "Done" button
 
       # add data mapper step
-    Then Camilla is presented with the Syndesis page "Add to Integration"
-    When Camilla clicks on the "Add a Step" button
-    And she selects "Data Mapper" integration step
-    Then she is presented with data mapper ui
-    And she creates mapping from "first_name" to "TASK"
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    And create mapping from "first_name" to "TASK"
 
 #    And scroll "top" "right"
-    And clicks on the "Done" button
-    And clicks on the "Publish" button
-    And she sets the integration name "CRUD2-read-create E2E"
-    And clicks on the "Publish" button
+    And click on the "Done" button
+    And click on the "Publish" button
+    And set integration name "CRUD2-read-create E2E"
+    And click on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
-    Then Camilla is presented with "CRUD2-read-create E2E" integration details
-    Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD2-read-create E2E" gets into "Published" state
+    Then check visibility of "CRUD2-read-create E2E" integration details
+    Then navigate to the "Integrations" page
+    Then wait until integration "CRUD2-read-create E2E" gets into "Published" state
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
 
@@ -116,46 +116,46 @@ Feature: Integration - DB to DB
     Then inserts into "todo" table
       | Jimmy |
 
-    When "Camilla" navigates to the "Home" page
-    And clicks on the "Create Integration" button to create a new integration.
-    Then she is presented with a visual integration editor
-    And she is prompted to select a "Start" connection from a list of available connections
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
       # select salesforce connection as 'from' point
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Periodic SQL Invocation" integration action
-    #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
+    When select the "PostgresDB" connection
+    And select "Periodic SQL Invocation" integration action
+    #Then check visibility of page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
-    Then she checks "Done" button is "Disabled"
-    Then she fills periodic query input with "SELECT * FROM CONTACT WHERE first_name = 'Joe'" value
-    Then she fills period input with "10" value
-    Then she selects "Seconds" from sql dropdown
-    And clicks on the "Done" button
+    Then check "Done" button is "Disabled"
+    Then fill in periodic query input with "SELECT * FROM CONTACT WHERE first_name = 'Joe'" value
+    Then fill in period input with "10" value
+    Then select "Seconds" from sql dropdown
+    And click on the "Done" button
 
     # select postgresDB connection as 'to' point
-    Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Invoke SQL" integration action
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
     #wip this query doesnt work ftb #698
-    Then she fills invoke query input with "DELETE FROM TODO WHERE task = :#TASK" value
-    And clicks on the "Done" button
+    Then fill in invoke query input with "DELETE FROM TODO WHERE task = :#TASK" value
+    And click on the "Done" button
 
     # add data mapper step
-    Then Camilla is presented with the Syndesis page "Add to Integration"
-    When Camilla clicks on the "Add a Step" button
-    And she selects "Data Mapper" integration step
-    Then she is presented with data mapper ui
-#    And she stays there for "16000" ms
-    And she creates mapping from "first_name" to "TASK"
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+#    And sleep for "16000" ms
+    And create mapping from "first_name" to "TASK"
 
-    And clicks on the "Done" button
-    And clicks on the "Publish" button
-    And she sets the integration name "CRUD3-read-delete E2E"
-    And clicks on the "Publish" button
+    And click on the "Done" button
+    And click on the "Publish" button
+    And set integration name "CRUD3-read-delete E2E"
+    And click on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
-    Then Camilla is presented with "CRUD3-read-delete E2E" integration details
-    Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD3-read-delete E2E" gets into "Published" state
+    Then check visibility of "CRUD3-read-delete E2E" integration details
+    Then navigate to the "Integrations" page
+    Then wait until integration "CRUD3-read-delete E2E" gets into "Published" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
@@ -171,46 +171,46 @@ Feature: Integration - DB to DB
     When inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
 
-    Then "Camilla" navigates to the "Home" page
-    And clicks on the "Create Integration" button to create a new integration.
-    Then she is presented with a visual integration editor
-    And she is prompted to select a "Start" connection from a list of available connections
+    Then navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
       # select salesforce connection as 'from' point
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Periodic SQL Invocation" integration action
-    #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
+    When select the "PostgresDB" connection
+    And select "Periodic SQL Invocation" integration action
+    #Then check visibility of page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
-    Then she checks "Done" button is "Disabled"
-    Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    Then she fills period input with "10" value
-    Then she selects "Seconds" from sql dropdown
-    And clicks on the "Done" button
+    Then check "Done" button is "Disabled"
+    Then fill in periodic query input with "SELECT * FROM CONTACT" value
+    Then fill in period input with "10" value
+    Then select "Seconds" from sql dropdown
+    And click on the "Done" button
 
     # select postgresDB connection as 'to' point
-    Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Invoke Stored Procedure" integration action
-    And she selects "add_lead" from "procedureName" dropdown
-    And clicks on the "Done" button
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke Stored Procedure" integration action
+    And select "add_lead" from "procedureName" dropdown
+    And click on the "Done" button
 
       # add data mapper step
-    Then Camilla is presented with the Syndesis page "Add to Integration"
-    When Camilla clicks on the "Add a Step" button
-    And she selects "Data Mapper" integration step
-    Then she is presented with data mapper ui
-    And she creates mapping from "company" to "company"
-    And she creates mapping from "last_name" to "first_and_last_name"
-    And she creates mapping from "lead_source" to "lead_source"
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    And create mapping from "company" to "company"
+    And create mapping from "last_name" to "first_and_last_name"
+    And create mapping from "lead_source" to "lead_source"
 
 #    And scroll "top" "right"
-    And clicks on the "Done" button
-    And clicks on the "Publish" button
-    And she sets the integration name "CRUD4-read-create-inbuilt E2E"
-    And clicks on the "Publish" button
-    Then Camilla is presented with "CRUD4-read-create-inbuilt E2E" integration details
-    Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "CRUD4-read-create-inbuilt E2E" gets into "Published" state
+    And click on the "Done" button
+    And click on the "Publish" button
+    And set integration name "CRUD4-read-create-inbuilt E2E"
+    And click on the "Publish" button
+    Then check visibility of "CRUD4-read-create-inbuilt E2E" integration details
+    Then navigate to the "Integrations" page
+    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Published" state
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 
 
@@ -225,62 +225,62 @@ Feature: Integration - DB to DB
     Then inserts into "todo" table
       | Jimmy |
 
-    When "Camilla" navigates to the "Home" page
-    And clicks on the "Create Integration" button to create a new integration.
-    Then she is presented with a visual integration editor
-    And she is prompted to select a "Start" connection from a list of available connections
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
       # select salesforce connection as 'from' point
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Periodic SQL Invocation" integration action
-    #Then Camilla is presented with the Syndesis page "Periodic SQL Invocation"
+    When select the "PostgresDB" connection
+    And select "Periodic SQL Invocation" integration action
+    #Then check visibility of page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
-    Then she checks "Done" button is "Disabled"
+    Then check "Done" button is "Disabled"
 #    wrong query:
-    Then she fills periodic query input with "SELECT * FROM CONTACT-A" value
-    Then she fills period input with "5" value
-    Then she selects "Seconds" from sql dropdown
-    And clicks on the "Done" button
-    And she can see alert notification
+    Then fill in periodic query input with "SELECT * FROM CONTACT-A" value
+    Then fill in period input with "5" value
+    Then select "Seconds" from sql dropdown
+    And click on the "Done" button
+    And check visibility of alert notification
     #@wip time_unit_id is not yet available
 
-    Then she fills periodic query input with "SELECT * FROM CONTACT" value
-    And clicks on the "Done" button
+    Then fill in periodic query input with "SELECT * FROM CONTACT" value
+    And click on the "Done" button
 
     # select postgresDB connection as 'to' point
-    #Then Camilla is presented with the Syndesis page "Choose a Finish Connection"
-    When Camilla selects the "PostgresDB" connection
-    And she selects "Invoke SQL" integration action
-    Then she fills invoke query input with "UPDATE TODO-A SET completed=1 WHERE task like '%:#TASK%'" value
-    And clicks on the "Done" button
-    And she can see alert notification
-    Then she fills invoke query input with "DELETE FROM TODO-A WHERE task like '%:#TASK%'" value
-    And clicks on the "Done" button
-    And she can see alert notification
-    Then she fills invoke query input with "INSERT INTO TODO-A(task) VALUES(:#TASK)" value
-    And clicks on the "Done" button
-    And she can see alert notification
+    #Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    Then fill in invoke query input with "UPDATE TODO-A SET completed=1 WHERE task like '%:#TASK%'" value
+    And click on the "Done" button
+    And check visibility of alert notification
+    Then fill in invoke query input with "DELETE FROM TODO-A WHERE task like '%:#TASK%'" value
+    And click on the "Done" button
+    And check visibility of alert notification
+    Then fill in invoke query input with "INSERT INTO TODO-A(task) VALUES(:#TASK)" value
+    And click on the "Done" button
+    And check visibility of alert notification
 #    correct one:
     #wip this query doesnt work ftb #698
-    Then she fills invoke query input with "DELETE FROM TODO WHERE task = :#TASK" value
-    And clicks on the "Done" button
+    Then fill in invoke query input with "DELETE FROM TODO WHERE task = :#TASK" value
+    And click on the "Done" button
 
       # add data mapper step
-    Then Camilla is presented with the Syndesis page "Add to Integration"
-    When Camilla clicks on the "Add a Step" button
-    And she selects "Data Mapper" integration step
-    Then she is presented with data mapper ui
-#    And she stays there for "5000" ms
-    And she creates mapping from "first_name" to "TASK"
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+#    And sleep for "5000" ms
+    And create mapping from "first_name" to "TASK"
 
-    And clicks on the "Done" button
-    And clicks on the "Publish" button
-    And she sets the integration name "DB Connection 5 SQL query checker E2E"
-    And clicks on the "Publish" button
+    And click on the "Done" button
+    And click on the "Publish" button
+    And set integration name "DB Connection 5 SQL query checker E2E"
+    And click on the "Publish" button
     #@wip there is no more h1 label with integration name there, syndesis #430
-    Then Camilla is presented with "DB Connection 5 SQL query checker E2E" integration details
-    Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "DB Connection 5 SQL query checker E2E" gets into "Published" state
+    Then check visibility of "DB Connection 5 SQL query checker E2E" integration details
+    Then navigate to the "Integrations" page
+    Then wait until integration "DB Connection 5 SQL query checker E2E" gets into "Published" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"

@@ -17,35 +17,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DashboardSteps {
 
-    @Then("^Integration \"([^\"]*)\" is present in top 5 integrations$")
+    @Then("^check that integration \"([^\"]*)\" is present in top 5 integrations$")
     public void expectIntegrationPresentinTopFive(String name) {
         log.info("Verifying integration {} is present in top 5 integrations", name);
         DashboardPage dashboardPage = new DashboardPage();
         Assertions.assertThat(dashboardPage.isIntegrationPresent(name));
     }
 
-    @Then("^Camilla can see \"([^\"]*)\" connection on dashboard page$")
+    @Then("^check visibility of \"([^\"]*)\" connection on dashboard page$")
     public void expectConnectionTitlePresent(String connectionName) {
         DashboardPage dashboardPage = new DashboardPage();
         SelenideElement connection = dashboardPage.getConnection(connectionName);
         connection.shouldBe(visible);
     }
 
-    @Then("^Camilla can not see \"([^\"]*)\" connection on dashboard page anymore$")
+    @Then("^check that connection \"([^\"]*)\" is not visible on dashboard page$")
     public void expectConnectionTitleNonPresent(String connectionName) {
         DashboardPage dashboardPage = new DashboardPage();
         SelenideElement connection = dashboardPage.getConnection(connectionName);
         connection.shouldNotBe(visible);
     }
 
-    @When("^Camilla deletes the \"([^\"]*)\" integration in top 5 integrations$")
+    @When("^delete the \"([^\"]*)\" integration in top 5 integrations$")
     public void deleteIntegrationOnDashboard(String integrationName) {
         log.info("Trying to delete {} on top 5 integrations table");
         IntegrationsList integrationsList = new IntegrationsList(By.cssSelector("syndesis-dashboard-integrations"));
         integrationsList.invokeActionOnItem(integrationName, ListAction.DELETE);
     }
 
-    @Then("^Camilla can not see \"([^\"]*)\" integration in top 5 integrations anymore$")
+    @Then("^check that integration \"([^\"]*)\" is not in top 5 integrations anymore$")
     public void expectIntegrationNotPresentOnDashboard(String name) {
         log.info("Verifying if integration {} is present", name);
         DashboardPage dashboardPage = new DashboardPage();

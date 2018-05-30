@@ -4,7 +4,7 @@ Feature: Integration - AMQP to AMQP
   Background: Clean application state and prepare what is needed
     Given clean application state
     Given deploy AMQ broker and add accounts
-    Given "Camilla" logs into the Syndesis
+    Given log into the Syndesis
     Given created connections
       | AMQP | AMQP | AMQP | AMQP on OpenShift |
 
@@ -13,39 +13,39 @@ Feature: Integration - AMQP to AMQP
 #
   @amqp-connection-publish-subscribe-request
   Scenario: Publish subscribe on topic
-    When "Camilla" navigates to the "Home" page
-    And clicks on the "Create Integration" button to create a new integration.
-    Then she is presented with a visual integration editor
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
 
     # select connection as 'start' point
-    And she is prompted to select a "Start" connection from a list of available connections
-    When Camilla selects the "AMQP" connection
-    And she selects "Subscribe for Messages" integration action
+    And check that position of connection to fill is "Start"
+    When select the "AMQP" connection
+    And select "Subscribe for Messages" integration action
     And fill in values
       | Destination Name | cheese |
       | Destination Type | Queue  |
-    And clicks on the "Next" button
+    And click on the "Next" button
 #    TODO(sveres) specify datatype
-    And clicks on the "Done" button
-    Then she is prompted to select a "Finish" connection from a list of available connections
+    And click on the "Done" button
+    Then check that position of connection to fill is "Finish"
 
     # select connection as 'finish' point
-    When Camilla selects the "AMQP" connection
-    And she selects "Publish messages" integration action
+    When select the "AMQP" connection
+    And select "Publish messages" integration action
     # TODO: there's a mismatch between persistent on ActiveMQ and deliveryPersistent property on AMQP
     And fill in values
       | Destination Name | apple |
       | Destination Type | Queue |
-    And clicks on the "Next" button
+    And click on the "Next" button
 #    TODO(sveres) specify datatype
-    And clicks on the "Done" button
+    And click on the "Done" button
 
     # final steps
-    When clicks on the "Publish" button
-    And she sets the integration name "AMQP publish-subscribe-request E2E"
-    And clicks on the "Publish" button
-    Then Camilla is presented with "AMQP publish-subscribe-request E2E" integration details
-    Then "Camilla" navigates to the "Integrations" page
-    Then she waits until integration "AMQP publish-subscribe-request E2E" gets into "Published" state
+    When click on the "Publish" button
+    And set integration name "AMQP publish-subscribe-request E2E"
+    And click on the "Publish" button
+    Then check visibility of "AMQP publish-subscribe-request E2E" integration details
+    Then navigate to the "Integrations" page
+    Then wait until integration "AMQP publish-subscribe-request E2E" gets into "Published" state
 
     Then verify that JMS message using "amqp" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer

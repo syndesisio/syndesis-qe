@@ -84,25 +84,24 @@ public class CommonSteps {
     }
 
 
-    @Given("^\"([^\"]*)\" logs into the Syndesis$")
-    public void login(String username) throws Throwable {
-        doLogin(username, false);
+    @Given("^log into the Syndesis$")
+    public void login() throws Throwable {
+        doLogin( false);
     }
 
-    @Given("^\"([^\"]*)\" logs into the Syndesis after logout$")
-    public void loginAfterLogOut(String username) throws Throwable {
-        doLogin(username, true);
+    @Given("^log into the Syndesis after logout$")
+    public void loginAfterLogOut() throws Throwable {
+        doLogin( true);
     }
 
     /**
      * If you want to log in for the first time (browser is not opened) set afterLogout = false
      * If you want to log in again e.g. after logout (browser is already opened) set afterLogout = true
      *
-     * @param username
      * @param afterLogout
      * @throws Throwable
      */
-    private void doLogin(String username, boolean afterLogout) throws Throwable {
+    private void doLogin(boolean afterLogout) throws Throwable {
         if (!afterLogout) {
             Selenide.open(TestConfiguration.syndesisUrl());
         }
@@ -153,8 +152,8 @@ public class CommonSteps {
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
 
-            navigateTo("", "Connections");
-            validatePage("", "Connections");
+            navigateTo("Connections");
+            validatePage("Connections");
 
             ElementsCollection connections = connectionsPage.getAllConnections();
             connections = connections.filter(exactText(connectionName));
@@ -241,8 +240,8 @@ public class CommonSteps {
         createConnections(accountsTalbe);
     }
 
-    @When("^\"([^\"]*)\" navigates? to the \"([^\"]*)\" page$")
-    public void navigateTo(String username, String title) {
+    @When("^navigate to the \"([^\"]*)\" page$")
+    public void navigateTo(String title) {
         SelenideElement selenideElement = $(By.className("nav-pf-vertical")).shouldBe(visible);
         ElementsCollection allLinks = selenideElement.findAll(By.className("list-group-item-value"));
         allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
@@ -263,17 +262,17 @@ public class CommonSteps {
         dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
     }
 
-    @Then("^\"(\\w+)\" is presented with the Syndesis home page$")
-    public void checkHomePageVisibility(String username) {
+    @Then("^check visibility of Syndesis home page$")
+    public void checkHomePageVisibility() {
         syndesisRootPage.getRootElement().shouldBe(visible);
     }
 
-    @Then("^(\\w+)? is presented with the \"([^\"]*)\" link$")
-    public void validateLink(String alias, String linkTitle) {
+    @Then("^check visibility of the \"([^\"]*)\" link$")
+    public void validateLink(String linkTitle) {
         new SyndesisRootPage().getLink(linkTitle).shouldBe(visible);
     }
 
-    @When(".*clicks? on the \"([^\"]*)\" button.*$")
+    @When("^click? on the \"([^\"]*)\" button.*$")
     public void clickOnButton(String buttonTitle) {
         if (buttonTitle.equals("Done")) {
             // this is hack to replace Done with Next if not present
@@ -303,12 +302,12 @@ public class CommonSteps {
         new SyndesisRootPage().getLinkRandom(linkTitle);
     }
 
-    @Then("^she is presented with the \"([^\"]*)\" button$")
+    @Then("^check visibility of the \"([^\"]*)\" button$")
     public void checkButtonIsVisible(String buttonTitle) {
         new SyndesisRootPage().getButton(buttonTitle).shouldBe(visible);
     }
 
-    @Then("^she is presented with the \"([^\"]*)\" tables$")
+    @Then("^check visibility of the \"([^\"]*)\" tables$")
     public void checkTableTitlesArePresent(String tableTitles) {
 
         String[] titles = tableTitles.split(",");
@@ -323,7 +322,7 @@ public class CommonSteps {
         table.shouldBe(visible);
     }
 
-    @Then("^she is presented with the \"([^\"]*)\" elements$")
+    @Then("^check visibility of the \"([^\"]*)\" elements$")
     public void expectElementsPresent(String elementClassNames) {
         String[] elementClassNamesArray = elementClassNames.split(",");
 
@@ -333,19 +332,19 @@ public class CommonSteps {
         }
     }
 
-    @Then("^she is presented with the \"([^\"]*)\"$")
+    @Then("^check visibility of the \"([^\"]*)\"$")
     public void expectElementPresent(String elementClassName) {
         SelenideElement element = new SyndesisRootPage().getElementByClassName(elementClassName);
         element.shouldBe(visible);
     }
 
-    @Then("^she can see success notification$")
+    @Then("^check visibility of success notification$")
     public void successNotificationIsPresent() {
         SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-success");
         allertSucces.shouldBe(visible);
     }
 
-    @Then("^she can see \"([^\"]*)\" in alert-success notification$")
+    @Then("^check visibility of \"([^\"]*)\" in alert-success notification$")
     public void successNotificationIsPresentWithError(String textMessage) {
         SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-success");
         allertSucces.shouldBe(visible);
@@ -354,7 +353,7 @@ public class CommonSteps {
         log.info("Text message {} was found.", textMessage);
     }
 
-    @Then("^she can see alert notification$")
+    @Then("^check visibility of alert notification$")
     public void checkSqlWarning() throws Throwable {
         SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-warning");
         allertSucces.shouldBe(visible);
@@ -389,28 +388,28 @@ public class CommonSteps {
         jse.executeScript("(browserX, browserY) => window.scrollTo(browserX, browserY)", x, y);
     }
 
-    @Then("^(\\w+) is presented with the Syndesis page \"([^\"]*)\"$")
-    public void validatePage(String userName, String pageName) {
+    @Then("^check visibility of page \"([^\"]*)\"$")
+    public void validatePage(String pageName) {
         SyndesisPage.get(pageName).validate();
     }
 
-    @And("^she selects \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
+    @And("^select \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
     public void selectsFromDropdown(String option, String selectId) throws Throwable {
         SelenideElement selectElement = $(String.format("select[name=\"%s\"]", selectId)).shouldBe(visible);
         selectElement.selectOption(option);
     }
 
-    @Then("^she stays there for \"(\\w+)\" ms$")
+    @Then("^sleep for \"(\\w+)\" ms$")
     public void sleep(Integer ms) {
         Selenide.sleep(ms);
     }
 
-    @Then("^she checks \"([^\"]*)\" button is \"([^\"]*)\"$")
+    @Then("^check \"([^\"]*)\" button is \"([^\"]*)\"$")
     public void sheCheckButtonStatus(String buttonTitle, String status) throws Throwable {
         new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
     }
 
-    @Then("^she is presented with dialog page \"([^\"]*)\"$")
+    @Then("^check visibility of dialog page \"([^\"]*)\"$")
     public void isPresentedWithDialogPage(String title) throws Throwable {
         String titleText = new ModalDialogPage().getTitleText();
         assertThat(titleText.equals(title), is(true));
@@ -465,8 +464,8 @@ public class CommonSteps {
         Connections connectionsPage = new Connections();
         NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
 
-        navigateTo("", "Connections");
-        validatePage("", "Connections");
+        navigateTo("Connections");
+        validatePage("Connections");
 
 
         ElementsCollection connections = connectionsPage.getAllConnections();

@@ -44,7 +44,7 @@ public class ConfigureStepSteps {
     private FtpUpload ftpUpload = new FtpUpload();
     private PeriodicSql periodicSql = new PeriodicSql();
 
-    @Then("^she is presented with \"([^\"]*)\" step configuration page$")
+    @Then("^check visibility of \"([^\"]*)\" step configuration page$")
     public void verifyConfigureStepPage(String stepType) {
         AbstractStep stepComponent = StepFactory.getStep(stepType, "");
         log.info("there must be add step editPage root element");
@@ -52,13 +52,13 @@ public class ConfigureStepSteps {
         assertThat(stepComponent.validate(), is(true));
     }
 
-    @Then("^she fills the configuration page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
+    @Then("^fill in the configuration page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
     public void fillStepConfiguration(String stepType, String parameter) {
         AbstractStep stepComponent = StepFactory.getStep(stepType, parameter);
         stepComponent.fillConfiguration();
     }
 
-    @Then("^she checks that basic filter step path input options contains \"([^\"]*)\" option$")
+    @Then("^check that basic filter step path input options contains \"([^\"]*)\" option$")
     public void checkBasicFilterStepOption(String option) {
         BasicFilter basicFilterStepComponent = new BasicFilter("");
         List<String> options = basicFilterStepComponent.getPathInputOptions();
@@ -87,7 +87,7 @@ public class ConfigureStepSteps {
     }
 
     // Twitter search specification
-    @Then("^she fills keywords field with random text to configure search action$")
+    @Then("^fill in keywords field with random text to configure search action$")
     public void fillKeywordsToTwitterSearch() {
         String value = Utils.randomString(20);
         twitterSearch.fillInput(value);
@@ -127,7 +127,7 @@ public class ConfigureStepSteps {
         }
     }
 
-    @And("^she fills ftp download form with values$")
+    @And("^fill in ftp download form with values$")
     public void setFtpDownloadData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
             for (String field : source.keySet()) {
@@ -138,7 +138,7 @@ public class ConfigureStepSteps {
         }
     }
 
-    @And("^she fills specify output data type form with values$")
+    @And("^fill in specify output data type form with values$")
     public void setOutputDataTypeData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
             for (String field : source.keySet()) {
@@ -149,7 +149,7 @@ public class ConfigureStepSteps {
         }
     }
 
-    @And("^she fills ftp upload form with values$")
+    @And("^fill in ftp upload form with values$")
     public void setFtpUploadData(DataTable sourceMappingData) {
         for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
             for (String field : source.keySet()) {
@@ -160,7 +160,7 @@ public class ConfigureStepSteps {
         }
     }
 
-    @Then("^she selects \"([^\"]*)\" from sql dropdown$")
+    @Then("^select \"([^\"]*)\" from sql dropdown$")
     public void selectsFromDopdownByClassName(String timeUnits) {
         periodicSql.selectSQLperiodUnits(timeUnits);
     }
