@@ -84,6 +84,29 @@ public class ConnectionsGeneralSteps {
         connectionsEndpoint.create(salesforceConnection);
     }
 
+
+    @Given("^create Dropbox connection")
+    public void createDropboxConnection() {
+
+        final Account dropboxAccount = accountsDirectory.getAccount("QE Dropbox").get();
+        final Connector dropboxConnector = connectorsEndpoint.get("dropbox");
+
+        final Connection dropboxConnection = new Connection.Builder()
+                .connector(dropboxConnector)
+                .connectorId(getConnectorId(dropboxConnector))
+                .id(RestConstants.DROPBOX_CONNECTION_ID)
+                .icon("fa-dropbox")
+                .name("New Fuse QE Dropbox")
+                .configuredProperties(TestUtils.map(
+                        "accessToken", dropboxAccount.getProperty("accessToken"),
+                        "clientIdentifier", dropboxAccount.getProperty("clientIdentifier")))
+                .tags(Arrays.asList("dropbox"))
+                .build();
+
+        log.info("Creating Dropbox connection *{}*", dropboxConnection.getName());
+        connectionsEndpoint.create(dropboxConnection);
+    }
+
     @Given("^create S3 connection using \"([^\"]*)\" bucket")
     public void createS3Connection(String s3Bucket) {
 

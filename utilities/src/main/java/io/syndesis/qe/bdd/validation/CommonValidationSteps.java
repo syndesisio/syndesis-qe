@@ -38,7 +38,7 @@ public class CommonValidationSteps {
     public CommonValidationSteps() {
     }
 
-    @Then("^wait for integration with name: \"([^\"]*)\" to become active")
+    @Then("^wait for integration with name: \"([^\"]*)\" to become active$")
     public void waitForIntegrationToBeActive(String integrationName) {
         final long start = System.currentTimeMillis();
         //wait for activation

@@ -40,7 +40,7 @@ public class S3Steps extends AbstractStep {
     public S3Steps() {
     }
 
-    @Given("^create S3 polling step with bucket: \"([^\"]*)\"")
+    @Given("^create S3 polling START action step with bucket: \"([^\"]*)\"$")
     public void createS3PollingStep(String bucketName) {
         final Connector s3Connector = connectorsEndpoint.get("aws-s3");
         final Connection s3Connection = connectionsEndpoint.get(S3BucketNameBuilder.getBucketName(bucketName));
@@ -61,18 +61,32 @@ public class S3Steps extends AbstractStep {
         steps.getStepDefinitions().add(new StepDefinition(s3Step));
     }
 
-    @Given("^create S3 copy step with bucket: \"([^\"]*)\"")
+    @Given("^create S3 copy FINISH action step with bucket: \"([^\"]*)\"$")
     public void createS3CopyStep(String bucketName) {
+        createS3CopyStepFile(bucketName, null);
+    }
+
+    @Given("^create S3 copy FINISH action step with bucket: \"([^\"]*)\" and filename: \"([^\"]*)\"$")
+    public void createS3CopyStepFile(String bucketName, String fileName) {
         final Connector s3Connector = connectorsEndpoint.get("aws-s3");
         final Connection s3Connection = connectionsEndpoint.get(S3BucketNameBuilder.getBucketName(bucketName));
-        final Action s3PollingAction = TestUtils.findConnectorAction(s3Connector, "aws-s3-copy-object-connector");
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(s3PollingAction, new HashMap(), S3BucketNameBuilder.getBucketName(bucketName));
+
+        Map<String, String> properties;
+        if(fileName != null){
+            properties = TestUtils.map("fileName", fileName);
+        } else {
+            properties = new HashMap<>();
+        }
+
+        final Action s3CopyAction = TestUtils.findConnectorAction(s3Connector, "aws-s3-copy-object-connector");
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(s3CopyAction, properties, S3BucketNameBuilder.getBucketName(bucketName));
 
         final Step s3Step = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .connection(s3Connection)
                 .id(UUID.randomUUID().toString())
-                .action(generateStepAction(s3PollingAction, connectorDescriptor))
+                .action(generateStepAction(s3CopyAction, connectorDescriptor))
+                .configuredProperties(properties)
                 .build();
 
         steps.getStepDefinitions().add(new StepDefinition(s3Step));
