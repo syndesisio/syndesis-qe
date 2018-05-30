@@ -371,10 +371,10 @@ public class AtlasMapperGenerator {
         generatedMapping.setMappingType(MappingType.MAP);
 
         Field in = fromStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
+                .stream().filter(f -> f.getPath().contains(mappingDef.getInputFields().get(0))).findFirst().get();
 
         Field out = followingStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
+                .stream().filter(f -> f.getPath().contains(mappingDef.getOutputFields().get(0))).findFirst().get();
 
         in.setDocId(fromStep.getStep().getId().get());
         out.setDocId(followingStep.getStep().getId().get());

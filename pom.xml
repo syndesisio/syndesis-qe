@@ -95,6 +95,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>io.syndesis.qe</groupId>
+				<artifactId>rest-tests</artifactId>
+				<version>${project.version}</version>
+				<type>test-jar</type>
+			</dependency>
+
+			<dependency>
 				<groupId>cz.xtf</groupId>
 				<artifactId>utilities</artifactId>
 				<version>${xtf.utilities.version}</version>
