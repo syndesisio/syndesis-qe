@@ -24,8 +24,8 @@ public class WizardSteps {
     private ReviewEditConnectorDetails reviewEditConnectorDetailsWizardPhase = new ReviewEditConnectorDetails();
     private SpecifySecurity specifySecurityWizardPhase = new SpecifySecurity();
 
-    @And("^(\\w+) navigates to the next Api Connector wizard step \"([^\"]*)\"$")
-    public void navigateToNextWizardStep(String user, String step) {
+    @And("^navigate to the next Api Connector wizard step \"([^\"]*)\"$")
+    public void navigateToNextWizardStep(String step) {
         wizard.nextStep();
 
         //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and displays
@@ -41,12 +41,12 @@ public class WizardSteps {
     }
 
     @And("^(\\w+) creates new connector$")
-    public void finishNewConnectorWizard(String user) {
+    public void finishNewConnectorWizard() {
         wizard.nextStep();
     }
 
-    @Then("^(\\w+) uploads swagger file$")
-    public void uploadSwaggerFile(String user, DataTable fileParams) {
+    @Then("^upload swagger file$")
+    public void uploadSwaggerFile(DataTable fileParams) {
         uploadSwaggerSpecificationWizardPhase.validate();
         List<List<String>> dataRows = fileParams.cells(0);
         List<String> sourceTypes = new ArrayList<String>();
@@ -61,7 +61,7 @@ public class WizardSteps {
     }
 
     @Then("(\\w+) sets up security$")
-    public void setUpSecurity(String user, DataTable properties) throws Throwable {
+    public void setUpSecurity(DataTable properties) throws Throwable {
         specifySecurityWizardPhase.validate();
 
         boolean authTypeSet = false;
@@ -96,20 +96,20 @@ public class WizardSteps {
     }
 
     @Then("(\\w+) sets up the connector details$")
-    public void setUpConnectorDetails(String user, DataTable properties) {
+    public void setUpConnectorDetails(DataTable properties) {
         for (List<String> property : properties.raw()) {
             switch (property.get(0)) {
                 case "name":
-                    setUpConnectorName(user,property.get(1));
+                    setUpConnectorName(property.get(1));
                     break;
                 case "description":
-                    setUpDescription(user,property.get(1));
+                    setUpDescription(property.get(1));
                     break;
                 case "host":
-                    setUpDescription(user,property.get(1));
+                    setUpDescription(property.get(1));
                     break;
                 case "baseUrl":
-                    setUpDescription(user,property.get(1));
+                    setUpDescription(property.get(1));
                     break;
                 default:
             }
@@ -117,22 +117,22 @@ public class WizardSteps {
     }
 
     @Then("^.* sets? up the connector name \"([^\"]*)\"$")
-    public void setUpConnectorName(String user, String name) {
+    public void setUpConnectorName(String name) {
         reviewEditConnectorDetailsWizardPhase.setConnectorName(name);
     }
 
     @Then("^.* sets? up description \"([^\"]*)\"$")
-    public void setUpDescription(String user, String description) {
+    public void setUpDescription(String description) {
         reviewEditConnectorDetailsWizardPhase.setDescription(description);
     }
 
     @Then("^.* sets? up host \"([^\"]*)\"$")
-    public void setUpHost(String user, String host) {
+    public void setUpHost(String host) {
         reviewEditConnectorDetailsWizardPhase.setHost(host);
     }
 
     @Then("^.* sets? up base url \"([^\"]*)\"$")
-    public void setUpBaseUrl(String user, String baseUrl) {
+    public void setUpBaseUrl(String baseUrl) {
         reviewEditConnectorDetailsWizardPhase.setBaseUrl(baseUrl);
     }
 }

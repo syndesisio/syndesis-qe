@@ -13,7 +13,7 @@ public class DetailSteps {
 
     private ConnectionDetail detailPage = new ConnectionDetail();
 
-    @Then("^Camilla is presented with \"([^\"]*)\" connection details")
+    @Then("^check visibility of \"([^\"]*)\" connection details")
     public void verifyConnectionDetails(String connectionName) {
         log.info("Connection detail page must show connection name");
         assertThat(detailPage.connectionName(), is(connectionName));

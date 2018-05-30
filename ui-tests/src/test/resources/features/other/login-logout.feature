@@ -3,7 +3,7 @@ Feature: Login logout
 
   Background: Clean application state
     Given clean application state
-    Given "Camilla" logs into the Syndesis
+    Given log into the Syndesis
     Given created connections
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
 
@@ -13,7 +13,7 @@ Feature: Login logout
 #
   @logout-test-logout
   Scenario: Log out
-    Then "Camilla" is presented with the Syndesis home page
+    Then check visibility of Syndesis home page
 
     Then log out from Syndesis
 
@@ -22,19 +22,19 @@ Feature: Login logout
 #
   @logout-test-logout-login
   Scenario: Log out and log in
-    Then "Camilla" is presented with the Syndesis home page
+    Then check visibility of Syndesis home page
 
     Then log out from Syndesis
 
-    Given "Camilla" logs into the Syndesis after logout
-    Then "Camilla" is presented with the Syndesis home page
+    Given log into the Syndesis after logout
+    Then check visibility of Syndesis home page
 
     # check access after logout
-    When "Camilla" navigates to the "Connections" page
-    Then Camilla is presented with the Syndesis page "Connections"
+    When navigate to the "Connections" page
+    Then check visibility of page "Connections"
 
-    When clicks on the "View" kebab menu button of "Twitter Listener"
-    Then Camilla is presented with "Twitter Listener" connection details
+    When click on the "View" kebab menu button of "Twitter Listener"
+    Then check visibility of "Twitter Listener" connection details
 
 
 #

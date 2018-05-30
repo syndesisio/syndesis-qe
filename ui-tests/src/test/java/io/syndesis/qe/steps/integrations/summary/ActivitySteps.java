@@ -26,12 +26,12 @@ public class ActivitySteps {
         detailPage.getIntegrationActivityListComponent().clickOnActivity(ord);
     }
 
-    @Then("^clicks on the \"([^\"]*)\" Button of \"([^\"]*)\" activity step$")
+    @Then("^click on the \"([^\"]*)\" Button of \"([^\"]*)\" activity step$")
     public void clicksOnTheButtonOfStep(String buttonName, String activityStepName) {
         detailPage.getIntegrationActivityListComponent().clickButtonOfActivityStep(buttonName, activityStepName);
     }
 
-    @Then("^she is presented with the activity log$")
+    @Then("^check visibility of the activity log$")
     public void sheIsPresentedWithTheLog() {
         detailPage.getIntegrationActivityListComponent().checkLogIsPresent();
     }

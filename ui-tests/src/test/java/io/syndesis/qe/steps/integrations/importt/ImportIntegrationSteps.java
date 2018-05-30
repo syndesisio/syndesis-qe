@@ -16,7 +16,7 @@ public class ImportIntegrationSteps {
     private Integrations integrations = new Integrations();
     private ImportIntegration importIntegrationPage = new ImportIntegration();
 
-    @And("^Camilla imports integration \"([^\"]*)\"$")
+    @And("^import integration \"([^\"]*)\"$")
     public void importIntegration(String integrationName) throws InterruptedException {
         importIntegrationPage.importIntegration(integrationName);
         //give jenkins more time so the integration shows up in the list
@@ -24,13 +24,13 @@ public class ImportIntegrationSteps {
         Assertions.assertThat(integrations.isIntegrationPresent(integrationName)).isTrue();
     }
 
-    @And("^Camilla drags exported integration \"([^\"]*)\" file to drag and drop area$")
+    @And("^drag exported integration \"([^\"]*)\" file to drag and drop area$")
     public void importIntegrationViaDragAndDrop(String integrationName) throws InterruptedException {
         importIntegrationPage.importIntegrationViaDragAndDrop(integrationName);
         Assertions.assertThat(integrations.isIntegrationPresent(integrationName)).isTrue();
     }
 
-    @And("^Camilla imports integration from relative file path \"([^\"]*)\"$")
+    @And("^import integration from relative file path \"([^\"]*)\"$")
     public void importIntegrationFromFile(String stringPathToFile) throws InterruptedException {
         importIntegrationPage.importIntegration(new File(stringPathToFile));
         //give jenkins more time so the integration shows up in the list

@@ -18,7 +18,7 @@ public class SelectConnectionTypeSteps {
     @Autowired
     private ConnectionWizard wizard;
 
-    @When("^Camilla selects \"([^\"]*)\" connection type$")
+    @When("^select \"([^\"]*)\" connection type$")
     public void selectConnectionType(String connectionName) {
         selectConnectionTypePage.selectConnectionType(connectionName);
 

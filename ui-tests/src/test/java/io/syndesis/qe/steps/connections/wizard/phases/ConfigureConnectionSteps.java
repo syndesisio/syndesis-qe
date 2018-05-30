@@ -17,12 +17,12 @@ public class ConfigureConnectionSteps {
 
     private final ConfigureConnection configureConnectionPage = new ConfigureConnection();
 
-    @When("^she fills \"([^\"]*)\" connection details$")
+    @When("^fill in \"([^\"]*)\" connection details$")
     public void fillConnectionDetails(String connectionName) {
         doFillConnectionDetails(connectionName, false);
     }
 
-    @When("^she fills \"([^\"]*)\" connection details from connection edit page$")
+    @When("^fill in \"([^\"]*)\" connection details from connection edit page$")
     public void fillConnectionDetailsFromConnectionEditPage(String connectionName) {
         doFillConnectionDetails(connectionName, true);
     }
