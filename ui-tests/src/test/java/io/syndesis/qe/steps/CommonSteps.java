@@ -6,6 +6,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -28,8 +29,11 @@ import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+
 import org.assertj.core.api.Assertions;
+
 import org.junit.Assert;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -50,7 +54,9 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
 import static org.hamcrest.Matchers.is;
+
 import static org.junit.Assert.assertThat;
 
 @Slf4j
@@ -83,15 +89,14 @@ public class CommonSteps {
                 .containsIgnoringCase("login");
     }
 
-
     @Given("^log into the Syndesis$")
     public void login() throws Throwable {
-        doLogin( false);
+        doLogin(false);
     }
 
     @Given("^log into the Syndesis after logout$")
     public void loginAfterLogOut() throws Throwable {
-        doLogin( true);
+        doLogin(true);
     }
 
     /**
@@ -177,7 +182,6 @@ public class CommonSteps {
                     scrollTo("top", "right");
                     clickOnButton("Next");
                 }
-
 
                 nameConnectionSteps.setConnectionName(connectionName);
                 nameConnectionSteps.setConnectionDescription(connectionDescription);
@@ -415,7 +419,6 @@ public class CommonSteps {
         assertThat(titleText.equals(title), is(true));
     }
 
-
     @Then("^.*removes? file \"([^\"]*)\" if it exists$")
     public void removeFileIfExists(String fileName) throws Throwable {
         Files.deleteIfExists(Paths.get(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + fileName));
@@ -440,13 +443,13 @@ public class CommonSteps {
 
     /**
      * This is only general form step that may work in most cases but it's better to use specific form-filling steps for each page
+     *
      * @param data
      */
     @Then("^.*fills? in values$")
     public void fillForm(DataTable data) {
         new Form(new SyndesisRootPage().getRootElement()).fillByLabel(data.asMap(String.class, String.class));
     }
-
 
     @When("^.*create connections using oauth$")
     public void createConnectionsUsingOAuth(DataTable connectionsData) {
@@ -458,7 +461,6 @@ public class CommonSteps {
         }
     }
 
-
     @When("^.*create connection \"([^\"]*)\" with name \"([^\"]*)\" using oauth$")
     public void createConnectionUsingOAuth(String connectorName, String newConnectionName) {
         Connections connectionsPage = new Connections();
@@ -466,7 +468,6 @@ public class CommonSteps {
 
         navigateTo("Connections");
         validatePage("Connections");
-
 
         ElementsCollection connections = connectionsPage.getAllConnections();
         connections = connections.filter(exactText(newConnectionName));
@@ -480,7 +481,6 @@ public class CommonSteps {
 
         selectConnectionTypeSteps.selectConnectionType(connectorName);
 
-
         doOAuthValidation(connectorName);
 
         //give it time to redirect
@@ -493,8 +493,6 @@ public class CommonSteps {
         nameConnectionSteps.setConnectionName(newConnectionName);
 
         clickOnButton("Create");
-
-
     }
 
     public void doOAuthValidation(String type) {
@@ -525,11 +523,9 @@ public class CommonSteps {
 
             Assertions.assertThat(WebDriverRunner.currentFrameUrl())
                     .containsIgnoringCase("Successfully%20authorized");
-
         } else {
 
             Assert.fail("Credentials for Twitter were not found.");
-
         }
     }
 
@@ -549,10 +545,8 @@ public class CommonSteps {
             if (!WebDriverRunner.currentFrameUrl().contains("connections/create/review")) {
                 $(By.id("oaapprove")).shouldBe(visible).click();
             }
-
         } else {
             Assert.fail("Credentials for Salesforce were not found.");
         }
-
     }
 }

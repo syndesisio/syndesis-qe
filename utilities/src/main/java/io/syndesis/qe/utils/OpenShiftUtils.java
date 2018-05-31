@@ -1,5 +1,9 @@
 package io.syndesis.qe.utils;
 
+import org.assertj.core.api.Assertions;
+
+import java.util.Optional;
+
 import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -11,11 +15,12 @@ import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftConfigBuilder;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * OpenShift utils.
- *
+ * <p>
  * Sep 8, 2017 Red Hat
  *
  * @author tplevko@redhat.com
@@ -87,4 +92,15 @@ public final class OpenShiftUtils {
         }
     }
 
+    public static Pod getPodByPartialName(String partialName) {
+        Optional<Pod> oPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getGenerateName().contains(partialName)).findFirst();
+        Assertions.assertThat(oPod.isPresent()).isTrue();
+        return oPod.get();
+    }
+
+    public static int extractPodSequenceNr(Pod pod) {
+        String podFullName = pod.getMetadata().getName();
+        String[] pole = podFullName.split("-");
+        return Integer.parseInt(pole[2]);
+    }
 }

@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import cz.xtf.http.HttpUtil;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
@@ -24,7 +27,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
-import cz.xtf.http.HttpUtil;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.Route;
 import io.syndesis.qe.Component;
@@ -47,12 +49,17 @@ public final class RestUtils {
     }
 
     public static Client getClient() throws RestClientException {
-        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJacksonProvider(Optional.empty(), Optional.empty());
+        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJackson2Provider(Optional.empty(), Optional.empty());
         return getClient(jackson2Provider);
     }
 
+    public static Client getInsecureClient() throws RestClientException {
+        final Client client = ClientBuilder.newClient();
+        return client;
+    }
+
     public static Client getWrappedClient() throws RestClientException {
-        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJacksonProvider(Optional.of(SerializationFeature.WRAP_ROOT_VALUE),
+        final ResteasyJackson2Provider jackson2Provider = RestUtils.createJackson2Provider(Optional.of(SerializationFeature.WRAP_ROOT_VALUE),
                 Optional.of(DeserializationFeature.UNWRAP_ROOT_VALUE));
         return getClient(jackson2Provider);
     }
@@ -69,7 +76,7 @@ public final class RestUtils {
         return client;
     }
 
-    private static ResteasyJackson2Provider createJacksonProvider(Optional<SerializationFeature> serialization, Optional<DeserializationFeature> deserialization) {
+    private static ResteasyJackson2Provider createJackson2Provider(Optional<SerializationFeature> serialization, Optional<DeserializationFeature> deserialization) {
         final ResteasyJackson2Provider jackson2Provider = new ResteasyJackson2Provider();
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Jdk8Module());

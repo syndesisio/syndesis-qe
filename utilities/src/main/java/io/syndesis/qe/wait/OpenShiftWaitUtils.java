@@ -15,7 +15,9 @@ import io.fabric8.kubernetes.api.model.PodCondition;
 import io.fabric8.openshift.api.model.Build;
 
 import io.syndesis.qe.utils.OpenShiftUtils;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class OpenShiftWaitUtils {
 
     protected static final OpenShiftUtil openshift = OpenShiftUtils.getInstance();
@@ -70,6 +72,14 @@ public class OpenShiftWaitUtils {
 
     private static boolean _areExactlyNPodsRunning(Predicate<Pod> podFilter, int n) {
         return openshift.getPods().stream().filter(podFilter).filter(OpenShiftWaitUtils::isPodRunning).count() == n;
+    }
+
+    private static boolean _areExactlyNPods(Predicate<Pod> podFilter, int n) {
+        return openshift.getPods().stream().filter(podFilter).count() == n;
+    }
+
+    public static BooleanSupplier areExactlyNPods(String podPartialName, int n) {
+        return () -> _areExactlyNPods(pod -> pod.getMetadata().getName().contains(podPartialName), n);
     }
 
     private static boolean _areNPodsReady(Predicate<Pod> podFilter, int n) {
@@ -221,5 +231,16 @@ public class OpenShiftWaitUtils {
 
     public static void assertEventually(String message, BooleanSupplier condition) throws InterruptedException {
         assertEventually(message, condition, DEFAULT_WAIT_INTERVAL, 5 * 60 * 1000);
+    }
+
+    public static void waitForPodIsReloaded(String podPartialName) throws InterruptedException, TimeoutException {
+        Pod pod = OpenShiftUtils.getPodByPartialName(podPartialName);
+        int currentNr = OpenShiftUtils.extractPodSequenceNr(pod);
+        int nextNr = currentNr + 1;
+
+        String podPartialNextName = podPartialName + "-" + nextNr;
+        log.info("Waiting for {} pod is reloaded", podPartialName);
+        waitFor(() -> (areExactlyNPods(podPartialName, 1).getAsBoolean() && areExactlyNPods(podPartialNextName, 1).getAsBoolean()));
+        log.info("Pod {} is READY!", podPartialName);
     }
 }
