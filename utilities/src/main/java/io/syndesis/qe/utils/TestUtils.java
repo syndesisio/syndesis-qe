@@ -15,8 +15,11 @@ import io.syndesis.common.model.action.ConnectorAction;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
+import io.syndesis.qe.utils.dballoc.DBAllocation;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,7 +33,7 @@ public final class TestUtils {
 
     /**
      * Finds an Action of a given connector.
-     *
+     * <p>
      * TODO(tplevko): Rework this, when all connectors will be unified to follow the new writing style.
      *
      * @param connector
@@ -161,10 +164,57 @@ public final class TestUtils {
     }
 
     public static void getDelayOrJenkinsDelayIfHigher(int delayInSeconds) {
-        if(TestConfiguration.getJenkinsDelay() == 1) {
+        if (TestConfiguration.getJenkinsDelay() == 1) {
             sleepIgnoreInterrupt(delayInSeconds * 1000);
         } else {
             sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
+        }
+    }
+
+    public static void setDatabaseCredentials(String connectionName, DBAllocation dbAllocation) {
+
+        Map<String, String> allocPropertiesMap = dbAllocation.getAllocationMap();
+
+        TestUtils.transhipExternalProperties(connectionName, allocPropertiesMap);
+    }
+
+    /**
+     * This is method for transhipping externally dynamicaly generated connection data(Database, etc.) into
+     * io.syndesis.qe.accounts.Account properties.
+     *
+     * @param connectionName name of the connection
+     * @param sourceMap
+     * @return Action with given prefix or null if no such action can be found.
+     */
+    private static void transhipExternalProperties(String connectionName, Map<String, String> sourceMap) {
+
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
+
+        Account account;
+
+        if (!optional.isPresent()) {
+            account = new Account();
+            account.setService(connectionName);
+            AccountsDirectory.getInstance().setAccount(connectionName, account);
+        } else {
+            account = optional.get();
+        }
+
+        Map<String, String> properties = account.getProperties();
+        if (properties == null) {
+            account.setProperties(new HashMap<String, String>());
+            properties = account.getProperties();
+        }
+        switch (account.getService()) {
+            case "oracle12":
+            case "mysql":
+                properties.put("url", sourceMap.get("db.jdbc_url"));
+                properties.put("user", sourceMap.get("db.username"));
+                properties.put("password", sourceMap.get("db.password"));
+                properties.put("schema", sourceMap.get("db.name"));
+                log.info("UPDATED ACCOUNT {} PROPERTIES:", account.getService());
+                properties.entrySet().stream().forEach(n -> log.info("Key: *{}*, value: *{}*", n.getKey(), n.getValue()));
+                break;
         }
     }
 }

@@ -61,4 +61,8 @@ public class AccountsDirectory {
     public Optional<Account> getAccount(String name) {
         return Optional.ofNullable(accounts.get(name));
     }
+
+    public void setAccount(String name, Account account) {
+        accounts.put(name, account);
+    }
 }
