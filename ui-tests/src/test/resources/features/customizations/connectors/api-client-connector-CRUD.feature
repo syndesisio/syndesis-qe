@@ -21,13 +21,13 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     And navigate to the next Api Connector wizard step "Specify Security"
     Then check visibility of page "Specify Security"
-    Then she sets up security
+    Then set up security
       | authType       | OAuth 2.0                             |
       | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
 
     And navigate to the next Api Connector wizard step "Review Edit Connector Details"
     Then check visibility of page "Review Edit Connector Details"
-    And she creates new connector
+    And create new connector
 
     Then check visibility of the new connector "Swagger Petstore"
 
@@ -47,13 +47,13 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     Then navigate to the next Api Connector wizard step "Specify Security"
     Then check visibility of page "Specify Security"
-    Then she sets up security
+    Then set up security
       | authType       | OAuth 2.0                             |
       | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
 
     Then navigate to the next Api Connector wizard step "Review Edit Connector Details"
     Then check visibility of page "Review Edit Connector Details"
-    And she creates new connector
+    And create new connector
 
     Then check visibility of the new connector "Swagger Petstore"
 
