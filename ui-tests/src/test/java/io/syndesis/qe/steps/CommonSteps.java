@@ -484,7 +484,7 @@ public class CommonSteps {
         doOAuthValidation(connectorName);
 
         //give it time to redirect
-        TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+        TestUtils.sleepForJenkinsDelayIfHigher(4);
 
         Assertions.assertThat(WebDriverRunner.currentFrameUrl())
                 .containsIgnoringCase("Successfully%20authorized")
@@ -498,7 +498,7 @@ public class CommonSteps {
     public void doOAuthValidation(String type) {
         clickOnButton("Connect " + type);
         //give it time to redirect
-        TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+        TestUtils.sleepForJenkinsDelayIfHigher(4);
 
         if (type.equalsIgnoreCase("Twitter")) {
             fillAndValidateTwitter();
@@ -519,7 +519,7 @@ public class CommonSteps {
             $(By.id("allow")).shouldBe(visible).click();
 
             //give it time to redirect back on syndesis
-            TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+            TestUtils.sleepForJenkinsDelayIfHigher(4);
 
             Assertions.assertThat(WebDriverRunner.currentFrameUrl())
                     .containsIgnoringCase("Successfully%20authorized");
@@ -540,7 +540,7 @@ public class CommonSteps {
             $(By.id("password")).shouldBe(visible).sendKeys(optional.get().getProperty("password"));
             $(By.id("Login")).shouldBe(visible).click();
             //give it time to log in
-            TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+            TestUtils.sleepForJenkinsDelayIfHigher(4);
             log.info(WebDriverRunner.currentFrameUrl());
             if (!WebDriverRunner.currentFrameUrl().contains("connections/create/review")) {
                 $(By.id("oaapprove")).shouldBe(visible).click();
