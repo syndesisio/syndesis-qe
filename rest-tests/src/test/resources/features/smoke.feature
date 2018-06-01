@@ -20,5 +20,7 @@ Feature: Representative rest test
     Then create integration with name: "DB to DB smoke rest test"
     Then wait for integration with name: "DB to DB smoke rest test" to become active
 
+    And sleep for jenkins delay or "15" seconds
+
     Then validate that number of all todos with task "Josef_first" is greater than "0"
     Then validate that number of all todos with task "Josef_second" is "0", period in ms: "1"
