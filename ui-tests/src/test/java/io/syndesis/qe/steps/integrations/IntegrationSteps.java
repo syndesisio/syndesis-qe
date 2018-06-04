@@ -50,7 +50,7 @@ public class IntegrationSteps {
     @Then("^Integration \"([^\"]*)\" is present in integrations list$")
     public void expectIntegrationPresent(String name) {
         log.info("Verifying integration {} is present", name);
-        TestUtils.getDelayOrJenkinsDelayIfHigher(4);
+        TestUtils.sleepForJenkinsDelayIfHigher(4);
         assertThat(integrations.isIntegrationPresent(name), is(true));
     }
 

@@ -1,12 +1,24 @@
 package io.syndesis.qe.bdd;
 
 import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.openshift.api.model.Build;
 import io.syndesis.qe.Component;
+import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
-
 import io.syndesis.qe.templates.MysqlTemplate;
+import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.utils.DbUtils;
+import io.syndesis.qe.utils.LogCheckerUtils;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
-
+import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,21 +30,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
-
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.openshift.api.model.Build;
-import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.templates.AmqTemplate;
-import io.syndesis.qe.templates.SyndesisTemplate;
-import io.syndesis.qe.utils.DbUtils;
-import io.syndesis.qe.utils.LogCheckerUtils;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonSteps {
@@ -181,11 +178,16 @@ public class CommonSteps {
     }
 
     @And("^wait until \"([^\"]*)\" pod is reloaded$")
-    public void waitUntilPodIsReady(String podName)  {
+    public void waitUntilPodIsReady(String podName) {
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded(podName);
         } catch (InterruptedException | TimeoutException e) {
             Assertions.fail(e.getMessage());
         }
+    }
+
+    @Then("^sleep for jenkins delay or \"([^\"]*)\" seconds")
+    public void sleepForJenkinsDelay(int secs) {
+        TestUtils.sleepForJenkinsDelayIfHigher(secs);
     }
 }

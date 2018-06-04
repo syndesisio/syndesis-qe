@@ -163,7 +163,7 @@ public final class TestUtils {
         }
     }
 
-    public static void getDelayOrJenkinsDelayIfHigher(int delayInSeconds) {
+    public static void sleepForJenkinsDelayIfHigher(int delayInSeconds) {
         if (TestConfiguration.getJenkinsDelay() == 1) {
             sleepIgnoreInterrupt(delayInSeconds * 1000);
         } else {

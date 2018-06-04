@@ -40,7 +40,7 @@ public class WizardSteps {
         wizard.getCurrentStep().validate();
     }
 
-    @And("^(\\w+) creates new connector$")
+    @And("^create new connector$")
     public void finishNewConnectorWizard() {
         wizard.nextStep();
     }
@@ -60,7 +60,7 @@ public class WizardSteps {
         uploadSwaggerSpecificationWizardPhase.upload(sourceTypes.get(0), urls.get(0));
     }
 
-    @Then("(\\w+) sets up security$")
+    @Then("set up security$")
     public void setUpSecurity(DataTable properties) throws Throwable {
         specifySecurityWizardPhase.validate();
 
