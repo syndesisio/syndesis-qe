@@ -4,6 +4,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.GetMetadataErrorException;
+import com.dropbox.core.v2.files.WriteMode;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +93,7 @@ public class DropBoxUtils {
             bw.flush();
             try (InputStream is = new FileInputStream(temp)) {
                 getClient().files().uploadBuilder(filePath)
-                        .uploadAndFinish(is);
+                        .withMode(WriteMode.OVERWRITE).uploadAndFinish(is);
             }
         } catch (IOException ex) {
             log.error("Error with tmp file: " + ex);
