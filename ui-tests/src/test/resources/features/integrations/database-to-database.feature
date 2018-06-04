@@ -199,9 +199,11 @@ Feature: Integration - DB to DB
     When click on the "Add a Step" button
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And create mapping from "company" to "company"
-    And create mapping from "last_name" to "first_and_last_name"
-    And create mapping from "lead_source" to "lead_source"
+
+    Then create data mapper mappings
+      | company     | company             |
+      | last_name   | first_and_last_name |
+      | lead_source | lead_source         |
 
 #    And scroll "top" "right"
     And click on the "Done" button

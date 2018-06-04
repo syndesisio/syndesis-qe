@@ -1,21 +1,22 @@
 package io.syndesis.qe.pages.integrations.editor.add.steps;
 
-import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.TestUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
 
 import java.util.Arrays;
 import java.util.List;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.CollectionCondition.size;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 /**
  * Created by sveres on 11/14/17.
@@ -87,18 +88,53 @@ public class DataMapper extends SyndesisPageObject {
         return Integer.parseInt(found[0]);
     }
 
+
+    /**
+     * This method can create all types of data mapper mappings.
+     * <p>
+     * If you want to combine or separate functions, just use it as in this example:
+     * <p>
+     * Basic:           createMapping("user", "firstName")
+     * Combine:         createMapping("user; address", "description")
+     * Separate:        createMapping("name", "firstName; lastName")
+     * <p>
+     * For combine and separate, data mapper will automatically use default separator - space. Separator setting is not
+     * implemented yet because it was not needed.
+     *
+     * @param source
+     * @param target
+     */
     public void createMapping(String source, String target) {
-        log.info("creating mapping from {} to {}", source, target);
+
         ElementsCollection dmColumns = this.dataMapperColumns();
         SelenideElement src = dmColumns.get(0);
         SelenideElement dest = dmColumns.get(1);
 
-        this.selectMapping(source, src);
-        this.selectMapping(target, dest);
+        if (source.contains(";")) {
+            String[] array = source.split(";");
+            for (String str : array) {
+                this.selectMapping(str.trim(), src);
+            }
+            this.selectMapping(target, dest);
+
+        } else if (target.contains(";")) {
+            this.selectMapping(source, src);
+
+            String[] array = target.split(";");
+            for (String str : array) {
+                this.selectMapping(str.trim(), dest);
+            }
+        } else {
+            this.selectMapping(source, src);
+            this.selectMapping(target, dest);
+        }
+
+        $(By.className("fa-plus")).shouldBe(visible).click();
+
     }
 
     /**
-     * @param mappingName for instance "User.ScreenName"
+     * @param mappingName      for instance "User.ScreenName"
      * @param containerElement start searching mapping fields from here
      */
     public void selectMapping(String mappingName, SelenideElement containerElement) {
@@ -110,8 +146,20 @@ public class DataMapper extends SyndesisPageObject {
             if (detailElement.find(Element.CHILDREN).exists()) {
                 // if there're childrenFields display element is expanded already, click otherwise
             } else {
-                detailElement.$(Element.LABEL).shouldBe(visible).click();
+
+                SelenideElement el = detailElement.$(Element.LABEL).shouldBe(visible);
+                el.scrollIntoView(true);
+                TestUtils.sleepIgnoreInterrupt(500);
+
+                new Actions(WebDriverRunner.getWebDriver())
+                        .moveToElement(el)
+                        .keyDown(Keys.LEFT_CONTROL)
+                        .click()
+                        .keyUp(Keys.LEFT_CONTROL)
+                        .perform();
+
             }
+
         });
     }
 
@@ -197,7 +245,7 @@ public class DataMapper extends SyndesisPageObject {
 
     public void openBucket(String bucketName) {
         SelenideElement bucket = getDataBucketElement(bucketName);
-        if(!bucket.$(Element.BUCKET_IS_IN_OPEN_STATE).isDisplayed()) {
+        if (!bucket.$(Element.BUCKET_IS_IN_OPEN_STATE).isDisplayed()) {
             bucket.click();
             getRootElement().hover();
         }
@@ -205,7 +253,7 @@ public class DataMapper extends SyndesisPageObject {
 
     public void closeBucket(String bucketName) {
         SelenideElement bucket = getDataBucketElement(bucketName);
-        if(bucket.$(Element.BUCKET_IS_IN_OPEN_STATE).isDisplayed()) {
+        if (bucket.$(Element.BUCKET_IS_IN_OPEN_STATE).isDisplayed()) {
             bucket.click();
             getRootElement().hover();
         }

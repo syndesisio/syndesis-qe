@@ -55,7 +55,9 @@ Feature: Integration - Databucket
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    When create mapping from "user.screenName" to "TASK"
+    Then create data mapper mappings
+      | user.screenName | TASK |
+
     And scroll "top" "right"
     And click on the "Done" button
 
@@ -133,11 +135,11 @@ Feature: Integration - Databucket
     Then open data bucket "1 - SQL Result"
     Then open data bucket "2 - SQL Result"
 
-    When create mapping from "company" to "TwitterScreenName__c"
-    When create mapping from "last_name" to "LastName"
-    When create mapping from "first_name" to "FirstName"
-
-    When create mapping from "firma" to "Description"
+    Then create data mapper mappings
+      | company    | TwitterScreenName__c |
+      | last_name  | LastName             |
+      | first_name | FirstName            |
+      | firma      | Description          |
 
     And scroll "top" "right"
     And click on the "Done" button
@@ -268,7 +270,7 @@ Feature: Integration - Databucket
     Then close data bucket "4 - SQL Result"
     Then open data bucket "4 - SQL Result"
 
-    Then create mappings from following table
+    Then create data mapper mappings
       | firma        | COMPANY   |
       | myname       | MYNAME    |
       | mysurname    | MYSURNAME |
@@ -291,7 +293,7 @@ Feature: Integration - Databucket
       | 4 - SQL Result | open |
 
     #change something so it is unique entry
-    Then create mappings from following table
+    Then create data mapper mappings
       | firma        | COMPANY   |
       | mysurname    | MYNAME    |
       | myname       | MYSURNAME |
@@ -313,7 +315,7 @@ Feature: Integration - Databucket
       | 3 - SQL Result | open |
 
 
-    Then create mappings from following table
+    Then create data mapper mappings
       | firma     | COMPANY   |
       | myname    | MYNAME    |
       | mysurname | MYSURNAME |
@@ -331,7 +333,7 @@ Feature: Integration - Databucket
       | 2 - SQL Result | open |
 
 
-    Then create mappings from following table
+    Then create data mapper mappings
       | firma     | COMPANY   |
       | mysurname | MYSURNAME |
 
