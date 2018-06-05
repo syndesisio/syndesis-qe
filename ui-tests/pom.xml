@@ -16,6 +16,11 @@
             <groupId>io.syndesis.qe</groupId>
             <artifactId>utilities</artifactId>
         </dependency>
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator-annotation-processor</artifactId>
+        </dependency>
 
         <!-- Logging -->
         <dependency>

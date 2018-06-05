@@ -6,7 +6,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
+import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Component;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
@@ -19,6 +22,7 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
+
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +40,8 @@ public class CommonSteps {
 
     @Autowired
     private DBAllocatorClient dbAllocatorClient;
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
@@ -134,8 +140,24 @@ public class CommonSteps {
 
     @Given("^clean application state")
     public void resetState() {
-        boolean resetStatus = TestUtils.waitForEvent(rc -> rc == 204, () -> TestSupport.getInstance().resetDbWithResponse(), TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 10);
-        Assertions.assertThat(resetStatus).as("Reset failed in given timeout").isTrue();
+        //check that postgreSQl connection has been created
+        int i = 0;
+        while (i < 10) {
+//            this wait does not work correctly, since resetDbWithResponse() is being called stochastically even after 204 code has been achieved:
+//            boolean resetStatus = TestUtils.waitForEvent(rc -> rc == 204, () -> TestSupport.getInstance().resetDbWithResponse(), TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 10);
+            int resetStatus = TestSupport.getInstance().resetDbWithResponse();
+            if (resetStatus == 204){
+                TestUtils.sleepIgnoreInterrupt(5000);
+                Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
+                if (optConnection.isPresent()) {
+                    Assertions.assertThat(optConnection.isPresent()).isTrue();
+                    log.info("POSTGRESDB CONNECTION *{}* IS PRESENT", optConnection.get().getName());
+                    return;
+                }
+            }
+            i++;
+        }
+        Assertions.fail("Default PostgresDB connection has not been created, please contact engineerig!");
     }
 
     @Given("^deploy FTP server$")
