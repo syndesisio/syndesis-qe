@@ -41,10 +41,11 @@ Feature: Integration - Import Export
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    When create mapping from "user.screenName" to "TwitterScreenName__c"
-    When create mapping from "text" to "Description"
-    When create mapping from "user.name" to "FirstName"
-    And separate "user.name" into "FirstName" as "1" and "LastName" as "2" using "Space [ ]" separator
+    Then create data mapper mappings
+      | user.screenName | TwitterScreenName__c |
+      | text            | Description          |
+      | user.name       | FirstName; LastName  |
+
     And scroll "top" "right"
     And click on the "Done" button
 

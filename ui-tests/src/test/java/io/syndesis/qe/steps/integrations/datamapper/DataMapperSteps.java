@@ -1,14 +1,6 @@
 package io.syndesis.qe.steps.integrations.datamapper;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.greaterThan;
-
-import static com.codeborne.selenide.Condition.visible;
-
 import com.codeborne.selenide.SelenideElement;
-
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -16,6 +8,10 @@ import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+
+import static com.codeborne.selenide.Condition.visible;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by sveres on 11/15/17.
@@ -25,14 +21,29 @@ public class DataMapperSteps {
 
     private DataMapper mapper = new DataMapper();
 
+    @Deprecated
     @When("^create mapping from \"([^\"]*)\" to \"([^\"]*)\"$")
     public void createMapping(String source, String target) {
         mapper.createMapping(source, target);
     }
 
-    @When("^.*creates? mappings from following table$")
-    public void createMapping(DataTable stepPositions) {
-        for (List<String> row : stepPositions.cells(0)) {
+    /**
+     * This step can create all types of data mapper mappings.
+     * <p>
+     * If you want to combine or separate functions, just use it as in this example:
+     * <p>
+     * Basic:           | user          | firstName             |
+     * Combine:         | user; address | description           |
+     * Separate:        | name          | firstName; lastName   |
+     * <p>
+     * For combine and separate, data mapper will automatically use default separator - space. Separator setting is not
+     * implemented yet because it was not needed.
+     *
+     * @param table
+     */
+    @When("^create data mapper mappings$")
+    public void createMapping(DataTable table) {
+        for (List<String> row : table.cells(0)) {
             mapper.createMapping(row.get(0), row.get(1));
         }
     }
@@ -64,6 +75,7 @@ public class DataMapperSteps {
      * @param combined  above two into this parameter.
      * @param separator used to estethically join first and second parameter.
      */
+    @Deprecated
     // And she combines "FirstName" as "2" with "LastName" as "1" to "first_and_last_name" using "Space" separator
     @Then("^she combines \"([^\"]*)\" as \"([^\"]*)\" with \"([^\"]*)\" as \"([^\"]*)\" to \"([^\"]*)\" using \"([^\"]*)\" separator$")
     public void combinePresentFielsWithAnother(String first, String first_pos,
@@ -104,6 +116,7 @@ public class DataMapperSteps {
     }
 
     //    And separate "FirstName" into "company" as "2" and "email" as "1" using "Comma" separator
+    @Deprecated
     @Then("^separate \"([^\"]*)\" into \"([^\"]*)\" as \"([^\"]*)\" and \"([^\"]*)\" as \"([^\"]*)\" using \"([^\"]*)\" separator$")
     public void separatePresentFielsIntoTwo(String input, String output1, String first_pos, String output2, String second_pos, String separator) {
         SelenideElement inputElement;

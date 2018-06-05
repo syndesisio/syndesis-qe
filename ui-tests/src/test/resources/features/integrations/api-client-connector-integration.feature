@@ -35,7 +35,10 @@ Feature: Integration - DB to API
 
     Then click on the "Add a Step" button
     When select "Data Mapper" integration step
-    And create mapping from "last_name" to "body.task"
+
+    Then create data mapper mappings
+      | last_name | body.task |
+
     And click on the "Done" button
 
     Then click on the "Publish" button
