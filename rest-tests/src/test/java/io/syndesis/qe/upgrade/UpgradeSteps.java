@@ -156,7 +156,7 @@ public class UpgradeSteps {
     }
 
     private void modifyUpgradeDbScript() {
-        String upgradeResourcesPath = new File("src/test/resources/upgrade").getAbsolutePath();
+        String upgradeResourcesPath = new File("src/test/resources/upgrade").toURI().toString();
         // Make the syndesis-cli migrate to newest version and use scripts from resources
         String upgradeDb;
         try {
