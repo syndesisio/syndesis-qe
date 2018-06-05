@@ -1,12 +1,26 @@
 package io.syndesis.qe.bdd;
 
 import cucumber.api.java.en.And;
+import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
+import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Component;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
@@ -19,23 +33,17 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class CommonSteps {
 
     @Autowired
     private DBAllocatorClient dbAllocatorClient;
+    @Autowired
+    private ConnectorsEndpoint connectorsEndpoint;
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
@@ -136,6 +144,13 @@ public class CommonSteps {
     public void resetState() {
         boolean resetStatus = TestUtils.waitForEvent(rc -> rc == 204, () -> TestSupport.getInstance().resetDbWithResponse(), TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 10);
         Assertions.assertThat(resetStatus).as("Reset failed in given timeout").isTrue();
+        Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
+        //check that postgreSQl connection has been created
+        if (!optConnection.isPresent()){
+            TestSupport.getInstance().createPostgresDBconnection(connectorsEndpoint, connectionsEndpoint);
+        }
+        optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
+        Assertions.assertThat(optConnection.isPresent()).isTrue();
     }
 
     @Given("^deploy FTP server$")
@@ -168,7 +183,7 @@ public class CommonSteps {
 
         dbAllocatorClient.allocate(dbLabel);
         log.info("Allocated database: '{}'", dbAllocatorClient.getDbAllocation());
-        TestUtils.setDatabaseCredentials(connectionName.toLowerCase(), dbAllocatorClient.getDbAllocation());
+        TestUtils.transhipExternalProperties(connectionName.toLowerCase(), dbAllocatorClient.getDbAllocation().getAllocationMap());
     }
 
     @Given("^free allocated \"([^\"]*)\" database$")

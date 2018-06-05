@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
@@ -11,6 +12,7 @@ import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.TestUtils;
@@ -145,5 +147,10 @@ public class ConnectionsGeneralSteps {
 
     private String getConnectorId(Connector connector) {
         return connector.getId().orElseThrow(() -> new IllegalArgumentException("Connector ID is null"));
+    }
+
+    @Given("^create PosgresDB connection$")
+    public void createPosgresDBConnection() {
+        TestSupport.getInstance().createPostgresDBconnection(connectorsEndpoint, connectionsEndpoint);
     }
 }

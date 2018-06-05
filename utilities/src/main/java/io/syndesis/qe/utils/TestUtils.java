@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import org.assertj.core.api.Assertions;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -171,13 +173,6 @@ public final class TestUtils {
         }
     }
 
-    public static void setDatabaseCredentials(String connectionName, DBAllocation dbAllocation) {
-
-        Map<String, String> allocPropertiesMap = dbAllocation.getAllocationMap();
-
-        TestUtils.transhipExternalProperties(connectionName, allocPropertiesMap);
-    }
-
     /**
      * This is method for transhipping externally dynamicaly generated connection data(Database, etc.) into
      * io.syndesis.qe.accounts.Account properties.
@@ -186,7 +181,7 @@ public final class TestUtils {
      * @param sourceMap
      * @return Action with given prefix or null if no such action can be found.
      */
-    private static void transhipExternalProperties(String connectionName, Map<String, String> sourceMap) {
+    public static void transhipExternalProperties(String connectionName, Map<String, String> sourceMap) {
 
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
 
@@ -208,6 +203,7 @@ public final class TestUtils {
         switch (account.getService()) {
             case "oracle12":
             case "mysql":
+            case "postgresdb":
                 properties.put("url", sourceMap.get("db.jdbc_url"));
                 properties.put("user", sourceMap.get("db.username"));
                 properties.put("password", sourceMap.get("db.password"));
