@@ -37,16 +37,14 @@ Feature: Integration - Salesforce to DB
     When click on the "Add a Step" button
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When create mapping from "Company" to "company"
-    And create mapping from "Email" to "email"
-    #And create mapping from "LeadSource" to "lead_source"
-    #Keep this mapping to verify #1924
-    And create mapping from "Phone" to "phone"
-    #And create mapping from "Status" to "lead_status"
-    #And create mapping from "Rating" to "rating"
-    And create mapping from "FirstName" to "first_and_last_name"
-      #   A. ONE STEP:
-    And she combines "FirstName" as "1" with "LastName" as "2" to "first_and_last_name" using "Space [ ]" separator
+
+    Then create data mapper mappings
+      | Company             | company             |
+      | Email               | email               |
+      | Phone               | phone               |
+      | FirstName; LastName | first_and_last_name |
+
+
 #    THIS "combine step" is temporary commented out.
 #    It works separately but not in combination with below "separate step".
 #    UNTIL ids for datamapper input fields are available. It has no meaning to spend a lot of time
