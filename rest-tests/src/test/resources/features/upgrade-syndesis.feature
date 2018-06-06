@@ -1,4 +1,3 @@
-@manual
 Feature: Syndesis Upgrade
 
   Background:
