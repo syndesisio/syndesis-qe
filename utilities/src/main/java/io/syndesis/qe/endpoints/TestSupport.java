@@ -45,21 +45,21 @@ public final class TestSupport {
      * @return HTTP response code
      */
     public int resetDbWithResponse() {
-        log.info("Resetting syndesis DB.");
-
+        String url = getEndpointUrl();
         final Invocation.Builder invocation = client
-                .target(getEndpointUrl())
+                .target(url)
                 .request(MediaType.APPLICATION_JSON)
                 .header("X-Forwarded-User", "pista")
                 .header("X-Forwarded-Access-Token", "kral");
         int responseCode = invocation.get().getStatus();
+        log.info("syndesis-db has been reset, via url: *{}*, responseCode:*{}*", url, responseCode);
         log.debug("Reset endpoint reponse: {}", responseCode);
         return responseCode;
     }
 
     public String getEndpointUrl() {
         String restEndpoint = String.format("%s%s%s%s", RestUtils.getRestUrl(), apiPath, ENDPOINT_NAME, "/reset-db");
-        log.info("Reset endpoint URL: *{}*", restEndpoint);
+        log.debug("Reset endpoint URL: *{}*", restEndpoint);
         return restEndpoint;
     }
 }
