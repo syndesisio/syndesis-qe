@@ -65,7 +65,7 @@ public class IntegrationSteps {
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
         SelenideElement integration = integrations.getIntegration(integrationName);
         assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> integrations.getIntegrationItemStatus(integration),
-                TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 1));
+                TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 1));
     }
 
     //Kebab menu test, #553 -> part #548, #549.

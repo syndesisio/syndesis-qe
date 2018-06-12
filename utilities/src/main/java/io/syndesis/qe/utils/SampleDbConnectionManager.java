@@ -12,6 +12,8 @@ import java.util.Properties;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,15 +30,34 @@ public class SampleDbConnectionManager {
 
         switch (dbType) {
             case "postgresql":
-                SampleDbConnectionManager.handleDbWrapper(dbType, 5432, 5432, "syndesis-db", "postgresql");
+                SampleDbConnectionManager.handlePortForwardDatabases(dbType, 5432, 5432, "syndesis-db", "postgresql");
                 break;
             case "mysql":
-                SampleDbConnectionManager.handleDbWrapper(dbType, 3306, 3306, "mysql", "mysql");
+                SampleDbConnectionManager.handlePortForwardDatabases(dbType, 3306, 3306, "mysql", "mysql");
+                break;
+            case "oracle12":
+                SampleDbConnectionManager.handleExternalDatabases(dbType);
                 break;
         }
 
         Assertions.assertThat(connectionsInfoMap.get(dbType).getDbConnection()).isNotNull();
         return connectionsInfoMap.get(dbType).getDbConnection();
+    }
+
+    //    AUXILIARIES:
+    private static void handleExternalDatabases(String dbType) {
+        DbWrapper wrap = SampleDbConnectionManager.getWrap(dbType);
+        try {
+            if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
+                Connection dbConnection = SampleDbConnectionManager.createDbConnection(dbType);
+                wrap.setDbConnection(dbConnection);
+                log.info("Putting driver :*{}* and wrap: *{}* to map", dbType, wrap.getDbType());
+                connectionsInfoMap.put(dbType, wrap);
+                Assertions.assertThat(connectionsInfoMap).isNotEmpty();
+            }
+        } catch (SQLException ex) {
+            log.error("Error: " + ex);
+        }
     }
 
     public static Connection getConnection() {
@@ -50,15 +71,9 @@ public class SampleDbConnectionManager {
 
     //AUXILIARIES:
 
-    private static void handleDbWrapper(String dbType, int remotePort, int localPort, String podName, String driver) {
+    private static void handlePortForwardDatabases(String dbType, int remotePort, int localPort, String podName, String driver) {
         //        check whether portForward and connection are alive:
-        DbWrapper wrap;
-
-        if (connectionsInfoMap.containsKey(dbType)) {
-            wrap = connectionsInfoMap.get(dbType);
-        } else {
-            wrap = new DbWrapper(dbType);
-        }
+        DbWrapper wrap = SampleDbConnectionManager.getWrap(dbType);
 
         if (wrap.getLocalPortForward() == null || !wrap.getLocalPortForward().isAlive()) {
             LocalPortForward localPortForward = createLocalPortForward(remotePort, localPort, podName);
@@ -99,6 +114,24 @@ public class SampleDbConnectionManager {
         return dbConnection;
     }
 
+    private static Connection createDbConnection(String dbType) throws SQLException {
+
+        final Properties props = new Properties();
+
+        Optional<Account> optAccount = AccountsDirectory.getInstance().getAccount(dbType);
+        Assertions.assertThat(optAccount.isPresent()).isTrue();
+        Account account = optAccount.get();
+
+        props.setProperty("user", account.getProperty("user"));
+        props.setProperty("password", account.getProperty("password"));
+
+        String dbUrl = account.getProperties().get("url");
+
+        log.info("DB endpoint URL: *{}*", dbUrl);
+        Connection dbConnection = DriverManager.getConnection(dbUrl, props);
+        return dbConnection;
+    }
+
     private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String podName) {
 
         LocalPortForward localPortForward;
@@ -125,5 +158,15 @@ public class SampleDbConnectionManager {
         }
 
         TestUtils.terminateLocalPortForward(wrap.getLocalPortForward());
+    }
+
+    private static DbWrapper getWrap(String dbType) {
+        DbWrapper wrap;
+        if (connectionsInfoMap.containsKey(dbType)) {
+            wrap = connectionsInfoMap.get(dbType);
+        } else {
+            wrap = new DbWrapper(dbType);
+        }
+        return wrap;
     }
 }

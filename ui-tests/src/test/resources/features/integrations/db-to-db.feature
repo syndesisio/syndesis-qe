@@ -1,4 +1,4 @@
-@integrations-database-to-database
+@integrations-db-to-db
 Feature: Integration - DB to DB
 
   Background: Clean application state
