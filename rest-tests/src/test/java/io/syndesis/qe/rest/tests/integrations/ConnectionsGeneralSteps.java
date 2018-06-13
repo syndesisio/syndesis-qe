@@ -135,11 +135,9 @@ public class ConnectionsGeneralSteps {
 
     @Given("^create the FTP connection using \"([^\"]*)\" template")
     public void createFtpConnection(String ftpTemplate) {
-
-        connectionsEndpoint.list().forEach(c -> log.info(c.getName()));
         final Connector ftpConnector = connectorsEndpoint.get("ftp");
         final Account ftpAccount = accountsDirectory.getAccount(ftpTemplate).get();
-        log.info("Template name:  {}", ftpTemplate);
+        log.info("Template name: {}", ftpTemplate);
 
         final Connection ftpConnection = new Connection.Builder()
                 .connector(ftpConnector)
@@ -147,23 +145,35 @@ public class ConnectionsGeneralSteps {
                 .id(RestConstants.FTP_CONNECTION_ID)
                 .name("New Fuse QE FTP")
                 .configuredProperties(TestUtils.map(
-//                        "binary", ftpAccount.getProperty("binary"),
-//                        "connectTimeout", ftpAccount.getProperty("connectTimeout"),
-//                        "disconnect", ftpAccount.getProperty("disconnect"),
                         "host", ftpAccount.getProperty("host"),
-//                        "maximumReconnectAttempts", ftpAccount.getProperty("maximumReconnectAttempts"),
-//                        "passiveMode", ftpAccount.getProperty("passiveMode"),
-//                        "password", ftpAccount.getProperty("password"),
                         "port", ftpAccount.getProperty("port")
-//                        "reconnectDelay", ftpAccount.getProperty("reconnectDelay"),
-//                        "timeout", ftpAccount.getProperty("timeout"),
-//                        "username", ftpAccount.getProperty("username")
                 ))
                 .icon("fa-ftp")
                 .tags(Arrays.asList("ftp"))
                 .build();
         log.info("Creating ftp connection {}", ftpConnection.getName());
         connectionsEndpoint.create(ftpConnection);
+    }
+
+    @Given("^create the AMQ connection")
+    public void createAmqConnection() {
+        final Connector amqConnector = connectorsEndpoint.get("activemq");
+        final Account amqAccount = accountsDirectory.getAccount("AMQ").get();
+        final Connection amqConnection = new Connection.Builder()
+                .name("Fuse QE ActiveMQ")
+                .connector(amqConnector)
+                .connectorId(getConnectorId(amqConnector))
+                .id(RestConstants.AMQ_CONNECTION_ID)
+                .configuredProperties(TestUtils.map(
+                        "brokerUrl", amqAccount.getProperty("brokerUrl"),
+                        "username", amqAccount.getProperty("username"),
+                        "password", amqAccount.getProperty("password")
+                ))
+                .icon("fa-puzzle-piece")
+                .tags(Arrays.asList("amq", "activemq"))
+                .build();
+        log.info("Creating amq connection {}", amqConnection.getName());
+        connectionsEndpoint.create(amqConnection);
     }
 
     private String getConnectorId(Connector connector) {

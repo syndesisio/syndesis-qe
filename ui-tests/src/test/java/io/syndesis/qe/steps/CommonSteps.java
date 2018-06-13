@@ -1,11 +1,40 @@
 package io.syndesis.qe.steps;
 
+import static org.junit.Assert.assertThat;
+
+import static org.hamcrest.Matchers.is;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
+import org.junit.Assert;
+
+import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -29,30 +58,6 @@ import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class CommonSteps {
@@ -90,12 +95,12 @@ public class CommonSteps {
     }
 
     @Given("^log into the Syndesis$")
-    public void login() throws Throwable {
+    public void login() {
         doLogin(false);
     }
 
     @Given("^log into the Syndesis after logout$")
-    public void loginAfterLogOut() throws Throwable {
+    public void loginAfterLogOut() {
         doLogin(true);
     }
 
@@ -103,10 +108,9 @@ public class CommonSteps {
      * If you want to log in for the first time (browser is not opened) set afterLogout = false
      * If you want to log in again e.g. after logout (browser is already opened) set afterLogout = true
      *
-     * @param afterLogout
-     * @throws Throwable
+     * @param afterLogout flag to indicate that browser is already open
      */
-    private void doLogin(boolean afterLogout) throws Throwable {
+    private void doLogin(boolean afterLogout) {
         if (!afterLogout) {
             Selenide.open(TestConfiguration.syndesisUrl());
         }
@@ -229,6 +233,7 @@ public class CommonSteps {
                     default:
                         return; //skip for other cred
                 }
+
                 //type
                 tmpList.set(0, service);
                 //name
@@ -248,7 +253,6 @@ public class CommonSteps {
         DataTable accountsTalbe = DataTable.create(oneAccountList);
 
         createConnections(accountsTalbe);
-
     }
 
     @When("^navigate to the \"([^\"]*)\" page$")
@@ -366,7 +370,7 @@ public class CommonSteps {
     }
 
     @Then("^check visibility of alert notification$")
-    public void checkSqlWarning() throws Throwable {
+    public void checkSqlWarning() {
         SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-warning");
         allertSucces.shouldBe(visible);
     }
@@ -376,7 +380,6 @@ public class CommonSteps {
      *
      * @param topBottom possible values: top, bottom
      * @param leftRight possible values: left, right
-     * @returns {Promise<any>}
      */
     @When("^scroll \"([^\"]*)\" \"([^\"]*)\"$")
     public void scrollTo(String topBottom, String leftRight) {
@@ -406,7 +409,7 @@ public class CommonSteps {
     }
 
     @And("^select \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
-    public void selectsFromDropdown(String option, String selectId) throws Throwable {
+    public void selectsFromDropdown(String option, String selectId) {
         SelenideElement selectElement = $(String.format("select[name=\"%s\"]", selectId)).shouldBe(visible);
         selectElement.selectOption(option);
     }
@@ -417,12 +420,12 @@ public class CommonSteps {
     }
 
     @Then("^check \"([^\"]*)\" button is \"([^\"]*)\"$")
-    public void sheCheckButtonStatus(String buttonTitle, String status) throws Throwable {
+    public void sheCheckButtonStatus(String buttonTitle, String status) {
         new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
     }
 
     @Then("^check visibility of dialog page \"([^\"]*)\"$")
-    public void isPresentedWithDialogPage(String title) throws Throwable {
+    public void isPresentedWithDialogPage(String title) {
         String titleText = new ModalDialogPage().getTitleText();
         assertThat(titleText.equals(title), is(true));
     }
