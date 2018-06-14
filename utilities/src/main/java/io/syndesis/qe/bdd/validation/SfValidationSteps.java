@@ -4,6 +4,8 @@ import static org.junit.Assert.fail;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.apache.activemq.command.ActiveMQBytesMessage;
+
 import org.assertj.core.api.Assertions;
 
 import com.force.api.ApiConfig;
@@ -161,18 +163,22 @@ public class SfValidationSteps {
                 .get().getProperty("screenName")).isPresent()).isEqualTo(false);
     }
 
-    @When("^publish message with id to queue \"([^\"]*)\"$")
-    public void publishMessageWithId(String queueName) {
-        sendMessageToQueue(queueName, "{\"Id\":\"" + leadId + "\"}");
+    @When("^publish message with content \'([^\']*)\' to queue \"([^\"]*)\"$")
+    public void publishMessage(String content, String queueName) {
+        sendMessageToQueue(queueName, content.replaceAll("LEAD_ID", leadId));
+    }
+
+    @Then("^verify that lead json object was received from queue \"([^\"]*)\"$")
+    public void verifyLeadJsonReceived(String queueName) {
+        Message m = getMessageFromQueue(queueName);
+        final String message = new String(((ActiveMQBytesMessage)m).getContent().getData());
+        assertThat(message).contains(leadId);
     }
 
     @Then("^verify that lead was deleted$")
     public void verifyLeadRemoval() {
-        try {
-            Thread.sleep(5000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // Add a delay for the integration processing
+        TestUtils.sleepIgnoreInterrupt(5000L);
         try {
             getLeadWithId(leadId);
             fail("Getting deleted lead should result in exception");
@@ -258,10 +264,10 @@ public class SfValidationSteps {
         }
     }
 
-    private Message getMessageFromQueue(String queueName, String content) {
+    private Message getMessageFromQueue(String queueName) {
         try(JmsClientManager manager = new JmsClientManager("tcp")) {
             JmsClient jmsClient = manager.getClient();
-            return jmsClient.addQueue(queueName).receiveMessage(content);
+            return jmsClient.addQueue(queueName).receiveMessage(30000L);
         } catch (Exception e) {
             e.printStackTrace();
             Assertions.fail(e.getMessage());

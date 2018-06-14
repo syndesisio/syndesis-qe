@@ -1,5 +1,17 @@
 package io.syndesis.qe.bdd;
 
+import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -9,7 +21,6 @@ import io.fabric8.openshift.api.model.Build;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
@@ -23,18 +34,6 @@ import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import org.assertj.core.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
-
 @Slf4j
 public class CommonSteps {
 
@@ -42,6 +41,8 @@ public class CommonSteps {
     private DBAllocatorClient dbAllocatorClient;
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
+
+    private boolean amqDeployed = false;
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
@@ -116,6 +117,14 @@ public class CommonSteps {
     @Given("^deploy AMQ broker and add accounts$")
     public void deployAMQBroker() {
         AmqTemplate.deploy();
+    }
+
+    @Given("^deploy AMQ broker if it doesnt exist$")
+    public void deployAMQBrokerIfMissing() {
+        if (!amqDeployed) {
+            AmqTemplate.deploy();
+            amqDeployed = true;
+        }
     }
 
     @Given("^execute SQL command \"([^\"]*)\"$")
