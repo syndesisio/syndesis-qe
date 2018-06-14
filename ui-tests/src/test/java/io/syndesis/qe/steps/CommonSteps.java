@@ -72,7 +72,8 @@ public class CommonSteps {
         OPENSHIFT,
         SYNDESIS,
         SLACK,
-        S3
+        S3,
+        FTP
     }
 
     @Autowired

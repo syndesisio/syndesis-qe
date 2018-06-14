@@ -8,12 +8,12 @@ Feature: Integration - FTP to FTP
 
   Scenario: Download upload
     When create the FTP connection using "FTP" template
-    And creates start FTP download action with values
+    And create start FTP download action with values
       | fileName | directoryName | initialDelay | delay | delete |
       | test.txt | download      | 1000         | 500   | true   |
-    And creates finish FTP upload action with values
+    And create finish FTP upload action with values
       | fileName  | directoryName | fileExist | tempPrefix    | tempFileName        |
       | test.txt  | upload        | Override  | copyingprefix | copying_test_out    |
     Then create integration with name: "FTP to FTP rest test"
     And wait for integration with name: "FTP to FTP rest test" to become active
-    And validate that file "test.txt" has been transfered from "/download" to "/upload" directory
+    And validate that file "test.txt" has been transfered from "/download" to "/upload" FTP directory

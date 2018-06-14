@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * This validation steps can be used to create/delete and content validation of S3 steps. There is a specific issue with
  * S3 buckets - the name they use has to be unique, so the names specified by the scenario will be extended with random
  * string, to enhance the possibility, that the name we want to use is not already taken by some other S3 bucket.
- *
+ * <p>
  * Jan 3, 2018 Red Hat
  *
  * @author tplevko@redhat.com
@@ -29,13 +29,21 @@ public class S3ValidationSteps {
         s3Utils = new S3Utils();
     }
 
-    @Then("^clean S3 to S3 scenario, removes two sample buckets with names: \"([^\"]*)\"")
+    @Then("^clean S3 to S3 scenario, remove two sample buckets with names: \"([^\"]*)\"")
     public void cleanupS3(List<String> bucketNames) {
         for (String bucket : bucketNames) {
             String bucketName = S3BucketNameBuilder.getBucketName(bucket);
             log.debug("deleting bucket with name: {}", bucketName);
             s3Utils.deleteS3Bucket(bucketName);
         }
+        TestSupport.getInstance().resetDB();
+    }
+
+    @Then("^clean S3, remove sample bucket with name: \"([^\"]*)\"")
+    public void cleanupS3bucket(String bucket) {
+        String bucketName = S3BucketNameBuilder.getBucketName(bucket);
+        log.debug("deleting bucket with name: {}", bucketName);
+        s3Utils.deleteS3Bucket(bucketName);
         TestSupport.getInstance().resetDB();
     }
 
