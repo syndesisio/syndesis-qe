@@ -68,4 +68,4 @@ Feature: Integration - FTP to FTP
     Then wait until integration "ftp-to-ftp E2E" gets into "Published" state
     Then sleep for jenkins delay or "5" seconds
 #    to be done:
-    Then validate that file "test.txt" has been transfered from "/download" to "/upload" directory
+    Then validate that file "test.txt" has been transfered from "/download" to "/upload" FTP directory

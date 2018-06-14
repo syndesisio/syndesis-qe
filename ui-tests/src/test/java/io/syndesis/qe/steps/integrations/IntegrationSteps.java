@@ -101,24 +101,24 @@ public class IntegrationSteps {
 
 
 
-    @And("^.*checks? that data bucket \"([^\"]*)\" is available$")
+    @And("^.*check that data bucket \"([^\"]*)\" is available$")
     public void checkPreviousDataBuckets(String bucket) {
         //there is condition for element to be visible
         dataMapper.getDataBucketElement(bucket);
     }
 
-    @And("^.*opens? data bucket \"([^\"]*)\"$")
+    @And("^.*open data bucket \"([^\"]*)\"$")
     public void openDataBucket(String bucket) {
         //check if it exists included
         dataMapper.openBucket(bucket);
     }
 
-    @And("^.*closes? data bucket \"([^\"]*)\"$")
+    @And("^.*close data bucket \"([^\"]*)\"$")
     public void closeDataBucket(String bucket) {
         dataMapper.closeBucket(bucket);
     }
 
-    @And("^.*performs? action with data bucket")
+    @And("^.*perform action with data bucket")
     public void performActionWithBucket(DataTable table) {
         List<List<String>> rows = table.cells(0);
         String action;
@@ -135,10 +135,4 @@ public class IntegrationSteps {
             }
         }
     }
-
-
-
-
-
-
 }

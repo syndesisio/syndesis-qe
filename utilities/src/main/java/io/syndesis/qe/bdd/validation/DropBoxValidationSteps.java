@@ -1,4 +1,4 @@
-package io.syndesis.qe.steps.other;
+package io.syndesis.qe.bdd.validation;
 
 import com.dropbox.core.DbxException;
 import cucumber.api.java.en.When;
@@ -12,24 +12,24 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class DropBoxSteps {
+public class DropBoxValidationSteps {
     @Lazy
     @Autowired
     private DropBoxUtils dropBoxUtils;
 
-    @When("^.*uploads? file with path \"([^\"]*)\" and content \"([^\"]*)\" on Dropbox$")
+    @When("upload file with path \"([^\"]*)\" and content \"([^\"]*)\" on Dropbox$")
     public void uploadFile(String filePath, String content) throws IOException, DbxException, TimeoutException, InterruptedException {
         dropBoxUtils.uploadFile(filePath, content);
     }
 
 
-    @When("^.*checks? that file with path \"([^\"]*)\" exists? on Dropbox$")
+    @When("check that file with path \"([^\"]*)\" exists on Dropbox$")
     public void checkThatFileExists(String filePath) throws IOException, DbxException, TimeoutException, InterruptedException {
         boolean fileExists = TestUtils.waitForEvent(r -> r, () -> dropBoxUtils.checkIfFileExists(filePath), TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15);
         Assertions.assertThat(fileExists).isTrue();
     }
 
-    @When("^.*deletes? file with path \"([^\"]*)\" from Dropbox$")
+    @When("delete file with path \"([^\"]*)\" from Dropbox$")
     public void deleteFile(String filePath) throws DbxException {
         dropBoxUtils.deleteFile(filePath);
         Assertions.assertThat(dropBoxUtils.checkIfFileExists(filePath)).isFalse();

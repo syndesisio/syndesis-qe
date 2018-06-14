@@ -13,6 +13,7 @@ public final class RestConstants {
     public static final String SALESFORCE_CONNECTION_ID = "fuseqe-salesforce";
     public static final String TWITTER_CONNECTION_ID = "fuseqe-twitter";
     public static final String FTP_CONNECTION_ID = "fuseqe-ftp";
+    public static final String DROPBOX_CONNECTION_ID = "fuseqe-dropbox";
     public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
     public static final String TODO_APP_NAME = "todo";
 }
