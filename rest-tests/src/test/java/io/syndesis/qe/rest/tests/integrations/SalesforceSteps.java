@@ -2,9 +2,12 @@ package io.syndesis.qe.rest.tests.integrations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 import io.syndesis.common.model.action.Action;
@@ -43,11 +46,20 @@ public class SalesforceSteps extends AbstractStep {
 
     @Given("^create SF \"([^\"]*)\" action step on field: \"([^\"]*)\"$")
     public void createSfStepWithAction(String action, String field) {
+        List<List<String>> rawTable = Arrays.asList(
+                Arrays.asList("sObjectName", field)
+        );
+        createSfStepWithActionAndProperties(action, DataTable.create(rawTable));
+    }
 
+    @Given("^create SF \"([^\"]*)\" action step with properties$")
+    public void createSfStepWithActionAndProperties(String action, DataTable props) {
         final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
         final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.SALESFORCE_CONNECTION_ID);
         final Action sfAction = TestUtils.findConnectorAction(salesforceConnector, action);
-        final Map<String, String> properties = TestUtils.map("sObjectName", field);
+
+        Map<String, String> properties = props.asMap(String.class, String.class);
+
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(sfAction, properties, RestConstants.SALESFORCE_CONNECTION_ID);
         final Step salesforceStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
