@@ -58,6 +58,9 @@ public class SettingsPage extends SyndesisPageObject {
                     updateTwitterAccount("Twitter Listener");
                     fillOAuthItem(listItem, "Twitter Listener");
                     break;
+                case "Combined Concur 3.0 Swagger API":
+                    //TODO: fill when creating concur connector tests when development is ready
+                    break;
                 default:
                     Assert.fail("Unknown oauth list item found: " + text + ", can not set it!");
             }
