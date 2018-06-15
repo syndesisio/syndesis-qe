@@ -21,7 +21,7 @@ Feature: Customization - Extensions CRUD
     Then check visibility of details about imported extension
 
     When click on the "Import Extension" button
-    Then check visibility of page "Extension Details"
+    Then check visibility of page "Extensions"
 
     When navigate to the "Customizations" page
     And click on the "Extensions" link
@@ -46,7 +46,7 @@ Feature: Customization - Extensions CRUD
     Then check visibility of details about imported extension
 
     When click on the "Update" button
-    Then check visibility of page "Extension Details"
+    Then check visibility of page "Extensions"
 
     When navigate to the "Customizations" page
     And click on the "Extensions" link
