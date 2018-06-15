@@ -42,7 +42,7 @@ public class CommonSteps {
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
 
-    private boolean amqDeployed = false;
+    private static boolean amqDeployed = false;
 
     @Given("^clean default namespace")
     public void cleanNamespace() {

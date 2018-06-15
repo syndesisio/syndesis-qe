@@ -44,7 +44,7 @@ Feature: Integration - SalesForce producers
       | sObjectName   | Lead  |
       | sObjectIdName | Email |
     And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
-    And create integration with name: "AMQ-SF-AMQ fetch record"
-    Then wait for integration with name: "AMQ-SF-AMQ fetch record" to become active
+    And create integration with name: "AMQ-SF-AMQ fetch record with external id"
+    Then wait for integration with name: "AMQ-SF-AMQ fetch record with external id" to become active
     When publish message with content '{"Id":"jdoe@acme.com"}' to queue "sf-producers-input"
     Then verify that lead json object was received from queue "sf-producers-output"

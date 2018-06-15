@@ -30,7 +30,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -203,14 +202,20 @@ public class CommonSteps {
     public void validateCredentials() {
         Map<String, Account> accounts = AccountsDirectory.getInstance().getAccounts();
         List<List<String>> oneAccountList = new ArrayList<>();
-        List<String> tmpList = Arrays.asList("a", "s", "d", "f");
 
         accounts.keySet().forEach(key -> {
+            List<String> tmpList = new ArrayList<>();
             Optional<Account> currentAccount = AccountsDirectory.getInstance().getAccount(key);
             if (currentAccount.isPresent()) {
 
                 String service = currentAccount.get().getService();
-                Credentials current = Credentials.valueOf(service.toUpperCase().replace(" ", "_"));
+                Credentials current;
+                try {
+                    current = Credentials.valueOf(service.toUpperCase().replace(" ", "_"));
+                }  catch (IllegalArgumentException ex) {
+                    log.error("Unable to find enum value for " + service.toUpperCase().replace(" ", "_") + " account. Skipping");
+                    return;
+                }
 
                 switch (current) {
                     case DROPBOX:
@@ -235,13 +240,13 @@ public class CommonSteps {
                 }
 
                 //type
-                tmpList.set(0, service);
+                tmpList.add(service);
                 //name
-                tmpList.set(1, key);
+                tmpList.add(key);
                 //connection name
-                tmpList.set(2, "my " + key + " connection");
+                tmpList.add("my " + key + " connection");
                 //description
-                tmpList.set(3, "some description");
+                tmpList.add("some description");
 
                 log.trace("Inserting: " + tmpList.toString());
                 oneAccountList.add(new ArrayList<>(tmpList));
@@ -439,8 +444,8 @@ public class CommonSteps {
      * When connector name is changed in the product just create new case here instead of changing it in the whole
      * testsuite string by string.
      *
-     * @param name
-     * @return
+     * @param name connector name
+     * @return connector name
      */
     private String validateConnectorName(String name) {
         String finalName = name;
@@ -455,7 +460,7 @@ public class CommonSteps {
     /**
      * This is only general form step that may work in most cases but it's better to use specific form-filling steps for each page
      *
-     * @param data
+     * @param data data
      */
     @Then("^.*fills? in values$")
     public void fillForm(DataTable data) {
