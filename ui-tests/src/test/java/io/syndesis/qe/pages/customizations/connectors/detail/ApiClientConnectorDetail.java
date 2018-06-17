@@ -39,7 +39,7 @@ public class ApiClientConnectorDetail extends SyndesisPageObject {
     }
 
     public SelenideElement getTextToEditElement(String propertyName) {
-        return getEditablePropertyLabel(propertyName).$(By.xpath("./../span"));
+        return getEditablePropertyLabel(propertyName).$(By.xpath("./following-sibling::*/descendant-or-self::span[@class='syn-form-row__input--editor']"));
     }
 
     public SelenideElement getTextEditor(String id) {
