@@ -33,6 +33,7 @@ public class SampleDbConnectionManager {
                 SampleDbConnectionManager.handlePortForwardDatabases(dbType, 5432, 5432, "syndesis-db", "postgresql");
                 break;
             case "mysql":
+                log.info("0.");
                 SampleDbConnectionManager.handlePortForwardDatabases(dbType, 3306, 3306, "mysql", "mysql");
                 break;
             case "oracle12":
@@ -40,6 +41,9 @@ public class SampleDbConnectionManager {
                 break;
         }
 
+        log.info("mysql should be true:*{}*", connectionsInfoMap.containsKey(dbType));
+//        log.info("1.");
+//        log.info("1.");
         Assertions.assertThat(connectionsInfoMap.get(dbType).getDbConnection()).isNotNull();
         return connectionsInfoMap.get(dbType).getDbConnection();
     }
@@ -74,18 +78,21 @@ public class SampleDbConnectionManager {
     private static void handlePortForwardDatabases(String dbType, int remotePort, int localPort, String podName, String driver) {
         //        check whether portForward and connection are alive:
         DbWrapper wrap = SampleDbConnectionManager.getWrap(dbType);
-
+        log.info("1.");
         if (wrap.getLocalPortForward() == null || !wrap.getLocalPortForward().isAlive()) {
+            log.info("2.");
             LocalPortForward localPortForward = createLocalPortForward(remotePort, localPort, podName);
             wrap.setLocalPortForward(localPortForward);
         }
         try {
             if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
+                log.info("3.");
                 Connection dbConnection = SampleDbConnectionManager.createDbConnection(wrap.getLocalPortForward(), localPort, driver);
                 wrap.setDbConnection(dbConnection);
                 log.info("Putting driver :*{}* and wrap: *{}* to map", driver, wrap.getDbType());
                 connectionsInfoMap.put(driver, wrap);
-                Assertions.assertThat(connectionsInfoMap).isNotEmpty();
+                Assertions.assertThat(connectionsInfoMap).containsKey(driver);
+                Assertions.assertThat(connectionsInfoMap).containsValue(wrap);
             }
         } catch (SQLException ex) {
             log.error("Error: " + ex);
@@ -133,13 +140,13 @@ public class SampleDbConnectionManager {
     }
 
     private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String podName) {
-
+        log.info("4.");
         LocalPortForward localPortForward;
 
         Optional<Pod> dbPodOpt = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().contains(podName)).findFirst();
 
         localPortForward = OpenShiftUtils.portForward(dbPodOpt.get(), remotePort, localPort);
-
+        log.info("5.");
         return localPortForward;
     }
 
