@@ -118,7 +118,7 @@ public class DbUtils {
             final ResultSet resultSet = executeSQLGetResultSet(query);
 
             //inefficient but it works :/ our table has 2 rows so it is not a problem...
-            while (resultSet.next()) {
+            while (resultSet != null && resultSet.next()) {
                 records++;
             }
         } catch (SQLException ex) {

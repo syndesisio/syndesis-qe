@@ -6,7 +6,6 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -27,13 +26,11 @@ import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-
 import org.assertj.core.api.Assertions;
-
 import org.junit.Assert;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -54,9 +51,7 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-
 import static org.hamcrest.Matchers.is;
-
 import static org.junit.Assert.assertThat;
 
 @Slf4j
@@ -73,7 +68,8 @@ public class CommonSteps {
         SYNDESIS,
         SLACK,
         S3,
-        FTP
+        FTP,
+        GOOGLE_MAIL
     }
 
     @Autowired
@@ -158,6 +154,10 @@ public class CommonSteps {
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
 
+            if (connectionType.equalsIgnoreCase("Google Mail")) {
+                GMailUtils.createAccessToken();
+            }
+
             navigateTo("Connections");
             validatePage("Connections");
 
@@ -203,7 +203,7 @@ public class CommonSteps {
             if (currentAccount.isPresent()) {
 
                 String service = currentAccount.get().getService();
-                Credentials current = Credentials.valueOf(service.toUpperCase());
+                Credentials current = Credentials.valueOf(service.toUpperCase().replace(" ", "_"));
 
                 switch (current) {
                     case DROPBOX:
@@ -220,10 +220,12 @@ public class CommonSteps {
                     case SLACK:
                         service = "Slack";
                         break;
+                    case GOOGLE_MAIL:
+                        service = "Google Mail";
+                        break;
                     default:
                         return; //skip for other cred
                 }
-
                 //type
                 tmpList.set(0, service);
                 //name
@@ -243,6 +245,7 @@ public class CommonSteps {
         DataTable accountsTalbe = DataTable.create(oneAccountList);
 
         createConnections(accountsTalbe);
+
     }
 
     @When("^navigate to the \"([^\"]*)\" page$")
