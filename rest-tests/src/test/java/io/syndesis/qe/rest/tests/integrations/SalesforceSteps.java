@@ -9,9 +9,7 @@ import java.util.UUID;
 
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
 import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.ConnectorAction;
 import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;

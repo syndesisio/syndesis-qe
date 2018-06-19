@@ -48,12 +48,12 @@ public class CommonValidationSteps {
         final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
         final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 10);
-        Assertions.assertThat(activated).isEqualTo(true);
+        Assertions.assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
     }
 
     @Then(value = "^verify there is s2i build running for integration: \"([^\"]*)\"$")
-    public void verifyIntegrationBuildRunning(int numberOfBuilds, String integrationName) {
+    public void verifyIntegrationBuildRunning(String integrationName) {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
         final List<Build> builds = new ArrayList<>(OpenShiftUtils.getInstance().getBuilds());
         Assertions.assertThat(builds).isNotEmpty();
