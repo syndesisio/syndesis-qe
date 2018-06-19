@@ -6,7 +6,7 @@ Feature: Integration - MQTT to MQTT
     Given deploy AMQ broker and add accounts
     Given log into the Syndesis
     Given created connections
-      | MQTT | QE MQTT | MQTT test connection | some description |
+      | MQTT Message Broker | QE MQTT | MQTT test connection | some description |
 
 
 #

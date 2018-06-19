@@ -7,7 +7,7 @@ Feature: Google mail Connector
     And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
     And log into the Syndesis
     And created connections
-      | Google Mail | QE Google Mail | My GMail Connector | SyndesisQE Slack test |
+      | Gmail | QE Google Mail | My GMail Connector | SyndesisQE Slack test |
     And navigate to the "Home" page
 
 #
