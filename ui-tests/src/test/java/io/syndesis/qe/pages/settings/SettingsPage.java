@@ -58,8 +58,14 @@ public class SettingsPage extends SyndesisPageObject {
                     updateTwitterAccount("Twitter Listener");
                     fillOAuthItem(listItem, "Twitter Listener");
                     break;
-                case "Combined Concur 3.0 Swagger API":
+                case "SAP Concur":
                     //TODO: fill when creating concur connector tests when development is ready
+                    log.info("Concur oauth has no test yet");
+                    break;
+                case "Gmail":
+                    fillOAuthItem(listItem, "QE Google Mail");
+                    //TODO: we should create test for googli connector using oauth
+                    log.info("Gmail oauth has no test yet");
                     break;
                 default:
                     Assert.fail("Unknown oauth list item found: " + text + ", can not set it!");
