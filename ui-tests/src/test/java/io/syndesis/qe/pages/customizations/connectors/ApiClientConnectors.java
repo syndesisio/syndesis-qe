@@ -35,6 +35,11 @@ public class ApiClientConnectors extends SyndesisPageObject {
         return $(Element.ROOT).shouldBe(exist);
     }
 
+    public SelenideElement getConnectorItem(String connectorName) {
+        return getRootElement().findAll(Element.CONNECTOR_TITLE).find(text(connectorName)).$(By.xpath("./ancestor::div[@class='list-pf-item']"));
+        //        return getRootElement().$(By.xpath("//div[@class='list-pf-title' AND text()='" + connectorName + "']/ancestor::div[@class='list-pf-item']"));
+    }
+
     @Override
     public boolean validate() {
         return getRootElement().exists();
@@ -60,5 +65,9 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     public void clickConnectorByTitle(String connectorName) {
         $$(Element.CONNECTOR_TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(connectorName)).shouldBe(visible).click();
+    }
+
+    public SelenideElement getDeleteButton(String connectorName) {
+        return getConnectorItem(connectorName).$(By.xpath(".//button[contains(.,\"Delete\")]"));
     }
 }
