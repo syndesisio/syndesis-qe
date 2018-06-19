@@ -15,9 +15,11 @@ import com.force.api.QueryResult;
 
 import javax.jms.Message;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -56,9 +58,11 @@ public class SfValidationSteps {
     }
 
     @Given("^clean SF, removes all leads with email: \"([^\"]*)\"")
-    public void cleanupSfDb(String email) {
+    public void cleanupSfDb(@Delimiter(",") List<String> emails) {
         TestSupport.getInstance().resetDB();
-        deleteAllSalesforceLeadsWithEmail(salesforce, email);
+        for (String email : emails) {
+            deleteAllSalesforceLeadsWithEmail(salesforce, email);
+        }
     }
 
     //twitter_talky
@@ -175,6 +179,18 @@ public class SfValidationSteps {
         assertThat(message).contains(leadId);
     }
 
+    @Then("^verify that lead was created")
+    public void verifyLeadCreated() {
+        Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, "joedoe@acme.com");
+        assertThat(lead.get()).isInstanceOf(Lead.class);
+        assertThat(lead.get().getFirstName()).isEqualTo("Joe");
+    }
+
+    @Then("^verify that lead creation response was received from queue \"([^\"]*)\"$")
+    public void verifyLeadCreatedResponse(String queueName) {
+        log.error("TODO: avano: https://github.com/syndesisio/syndesis/issues/2853");
+    }
+
     @Then("^verify that lead was deleted$")
     public void verifyLeadRemoval() {
         // Add a delay for the integration processing
@@ -185,6 +201,20 @@ public class SfValidationSteps {
         } catch (ApiException ex) {
             assertThat(ex.getMessage()).contains("The requested resource does not exist");
         }
+    }
+
+    @Then("^verify that lead was updated$")
+    public void verifyLeadUpdated() {
+        // Add a delay for the integration processing
+        TestUtils.sleepIgnoreInterrupt(5000L);
+        assertThat(getLeadWithId(leadId).getEmail()).isEqualTo("joedoe@acme.com");
+    }
+
+    @Then("^verify that lead name was updated$")
+    public void verifyLeadNameUpdate() {
+        // Add a delay for the integration processing
+        TestUtils.sleepIgnoreInterrupt(5000L);
+        assertThat(getLeadWithId(leadId).getFirstName()).isEqualTo("Joe");
     }
 
     private Lead getLeadWithId(String leadId) {
