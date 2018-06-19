@@ -77,6 +77,9 @@ public class CommonSteps {
 
     @And("^.*logs? out from Syndesis")
     public void logout() {
+        if(TestConfiguration.syndesisBrowser().equalsIgnoreCase("firefox")) {
+            Assert.fail("Logout does not work on firefox, issue: https://github.com/syndesisio/syndesis/issues/2561");
+        }
         $(By.id("userDropdown")).shouldBe(visible).click();
         $(By.id("userDropdownMenu")).shouldBe(visible).click();
 
@@ -154,7 +157,7 @@ public class CommonSteps {
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
 
-            if (connectionType.equalsIgnoreCase("Google Mail")) {
+            if (connectionType.equalsIgnoreCase("Gmail")) {
                 GMailUtils.createAccessToken();
             }
 
@@ -221,7 +224,7 @@ public class CommonSteps {
                         service = "Slack";
                         break;
                     case GOOGLE_MAIL:
-                        service = "Google Mail";
+                        service = "Gmail";
                         break;
                     default:
                         return; //skip for other cred

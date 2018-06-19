@@ -6,7 +6,7 @@ Feature: Integration - AMQP to AMQP
     Given deploy AMQ broker and add accounts
     Given log into the Syndesis
     Given created connections
-      | AMQP | AMQP | AMQP | AMQP on OpenShift |
+      | AMQP Message Broker | AMQP | AMQP | AMQP on OpenShift |
 
 #
 #  1. publish-subscribe-request
