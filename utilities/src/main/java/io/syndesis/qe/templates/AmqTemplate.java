@@ -48,7 +48,7 @@ public class AmqTemplate {
         AmqTemplate.addAccounts();
     }
 
-    private static void cleanUp() {
+    public static void cleanUp() {
         OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "broker-amq".equals(dc.getMetadata().getName())).findFirst()
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
