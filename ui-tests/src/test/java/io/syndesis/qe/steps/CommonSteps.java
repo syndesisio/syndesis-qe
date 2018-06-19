@@ -296,6 +296,7 @@ public class CommonSteps {
         }
         log.info(syndesisRootPage.getButton(buttonTitle).toString());
         syndesisRootPage.getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
