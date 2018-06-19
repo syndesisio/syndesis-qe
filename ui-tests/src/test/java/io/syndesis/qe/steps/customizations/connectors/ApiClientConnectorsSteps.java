@@ -58,6 +58,11 @@ public class ApiClientConnectorsSteps {
         }
     }
 
+    @Then("^delete connector([^\"]*)$")
+    public void deleteConnector(String name) {
+        apiClientConnectorsPage.getDeleteButton(name).shouldBe(visible).click();
+    }
+
     //***************************************************************************
     //******************************* bulk steps ********************************
     //***************************************************************************
