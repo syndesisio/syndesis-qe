@@ -33,7 +33,7 @@ public class CardList extends AbstractUiElementsList {
 
     @Override
     public SelenideElement getItem(String title) {
-        return getTitle(title).shouldBe(visible).$(By.xpath("./ancestor::*[@class='card-pf-body']"));
+        return getTitle(title).$(By.xpath("./ancestor::*[@class='card-pf-body']"));
     }
 
     @Override

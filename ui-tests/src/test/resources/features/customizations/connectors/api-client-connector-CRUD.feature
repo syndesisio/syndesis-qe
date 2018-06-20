@@ -84,10 +84,28 @@ Feature: Customization - API Connector CRUD
     And click on the "Delete" button
     Then check visibility of page "Modal Dialog"
     When click on the modal dialog "Cancel" button
-    And check visibility of a connectors list of size 1
+    And check visibility of a connectors list of size 2
     Then check visibility of page "API Client Connectors"
-    Then click on the "Delete" button
+
+    #create new connection from the connector
+    And navigate to the "Connections" page
+    And click on the "Create Connection" button
+    And select "Swagger Petstore" connection type
+    And click on the "Next" button
+    And fill Name Connection form
+      | Connection Name | Petstore conn |
+    And click on the "Create" button
+
+    Then navigate to the "Customizations" page
+    And click on the "API Client Connectors" link
+
+    #delete created connector
+    Then delete connector Swagger Petstore
     And check visibility of page "Modal Dialog"
     When click on the modal dialog "Delete" button
     Then check visibility of page "API Client Connectors"
-    And check visibility of a connectors list of size 0
+    And check visibility of a connectors list of size 1
+
+    #check the connection's been deleted too
+    Then navigate to the "Connections" page
+    And check that "Petstore conn" connection is not visible
