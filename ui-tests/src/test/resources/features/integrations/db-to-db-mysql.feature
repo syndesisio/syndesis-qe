@@ -6,7 +6,7 @@ Feature: Integration - DB to DB mysql
     Given log into the Syndesis
     Given clean MySQL server
     Given deploy MySQL server
-    And   sleep for "10000" ms
+    And   sleep for "120000" ms
     Given create standard table schema on "mysql" driver
 
     When inserts into "contact" table on "mysql"

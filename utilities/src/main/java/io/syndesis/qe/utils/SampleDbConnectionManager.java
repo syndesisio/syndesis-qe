@@ -40,6 +40,7 @@ public class SampleDbConnectionManager {
                 break;
         }
 
+        Assertions.assertThat(connectionsInfoMap).containsKey(dbType);
         Assertions.assertThat(connectionsInfoMap.get(dbType).getDbConnection()).isNotNull();
         return connectionsInfoMap.get(dbType).getDbConnection();
     }
@@ -74,7 +75,6 @@ public class SampleDbConnectionManager {
     private static void handlePortForwardDatabases(String dbType, int remotePort, int localPort, String podName, String driver) {
         //        check whether portForward and connection are alive:
         DbWrapper wrap = SampleDbConnectionManager.getWrap(dbType);
-
         if (wrap.getLocalPortForward() == null || !wrap.getLocalPortForward().isAlive()) {
             LocalPortForward localPortForward = createLocalPortForward(remotePort, localPort, podName);
             wrap.setLocalPortForward(localPortForward);
@@ -85,10 +85,11 @@ public class SampleDbConnectionManager {
                 wrap.setDbConnection(dbConnection);
                 log.info("Putting driver :*{}* and wrap: *{}* to map", driver, wrap.getDbType());
                 connectionsInfoMap.put(driver, wrap);
-                Assertions.assertThat(connectionsInfoMap).isNotEmpty();
+                Assertions.assertThat(connectionsInfoMap).containsKey(driver);
+                Assertions.assertThat(connectionsInfoMap).containsValue(wrap);
             }
         } catch (SQLException ex) {
-            log.error("Error: " + ex);
+            log.error("ERROR: *{}* ", ex.getStackTrace());
         }
     }
 
@@ -133,13 +134,11 @@ public class SampleDbConnectionManager {
     }
 
     private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String podName) {
-
         LocalPortForward localPortForward;
 
         Optional<Pod> dbPodOpt = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().contains(podName)).findFirst();
 
         localPortForward = OpenShiftUtils.portForward(dbPodOpt.get(), remotePort, localPort);
-
         return localPortForward;
     }
 
