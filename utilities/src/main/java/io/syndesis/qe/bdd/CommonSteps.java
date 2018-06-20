@@ -151,7 +151,7 @@ public class CommonSteps {
                 Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
                 if (optConnection.isPresent()) {
                     Assertions.assertThat(optConnection.isPresent()).isTrue();
-                    log.info("POSTGRESDB CONNECTION *{}* IS PRESENT", optConnection.get().getName());
+                    log.info("DEFAULT POSTGRESDB CONNECTION *{}* IS PRESENT", optConnection.get().getName());
                     return;
                 }
             }
