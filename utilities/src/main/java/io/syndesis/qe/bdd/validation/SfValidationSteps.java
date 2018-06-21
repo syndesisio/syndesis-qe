@@ -1,24 +1,37 @@
 package io.syndesis.qe.bdd.validation;
 
+import static org.junit.Assert.fail;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import org.apache.activemq.command.ActiveMQBytesMessage;
+
 import org.assertj.core.api.Assertions;
 
 import com.force.api.ApiConfig;
+import com.force.api.ApiException;
 import com.force.api.ForceApi;
 import com.force.api.QueryResult;
 
+import javax.jms.Message;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import cz.xtf.jms.JmsClient;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.salesforce.Contact;
 import io.syndesis.qe.salesforce.Lead;
+import io.syndesis.qe.utils.JmsClientManager;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import twitter4j.TwitterException;
 
 /**
  * Validation steps for Salesforce related integrations.
@@ -29,7 +42,6 @@ import twitter4j.TwitterException;
  */
 @Slf4j
 public class SfValidationSteps {
-
     private final ForceApi salesforce;
     private final AccountsDirectory accountsDirectory;
     private String leadId;
@@ -46,26 +58,27 @@ public class SfValidationSteps {
     }
 
     @Given("^clean SF, removes all leads with email: \"([^\"]*)\"")
-    public void cleanupSfDb(String email) {
+    public void cleanupSfDb(@Delimiter(",") List<String> emails) {
         TestSupport.getInstance().resetDB();
-        deleteAllSalesforceLeadsWithEmail(salesforce, email);
+        for (String email : emails) {
+            deleteAllSalesforceLeadsWithEmail(salesforce, email);
+        }
     }
 
     //twitter_talky
     @Given("^clean SF contacts related to TW account: \"([^\"]*)\"")
-    public void cleanupSfContacts(String twAccount) throws TwitterException {
+    public void cleanupSfContacts(String twAccount) {
         deleteSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount).get().getProperty("screenName"));
     }
 
     @Then("^create SF lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\" and company: \"([^\"]*)\"")
     public void createNewSalesforceLead(String firstName, String lastName, String email, String companyName) {
-
         final Lead lead = new Lead();
         lead.setFirstName(firstName);
         lead.setLastName(lastName);
         lead.setCompany(companyName);
         lead.setEmail(email);
-        salesforce.createSObject("lead", lead);
+        leadId = salesforce.createSObject("lead", lead);
     }
 
     @Then("^delete lead from SF with email: \"([^\"]*)\"")
@@ -106,9 +119,9 @@ public class SfValidationSteps {
     public void checkSalesforceContactHasDescription(String name, String description) {
 
         final Optional<Contact> contact = getSalesforceContactByLastName(salesforce, name);
-        Assertions.assertThat(contact.isPresent()).isTrue();
+        assertThat(contact.isPresent()).isTrue();
 
-        Assertions.assertThat(String.valueOf(contact.get().getDescription()))
+        assertThat(String.valueOf(contact.get().getDescription()))
                 .isNotEmpty()
                 .isEqualToIgnoringCase(description);
     }
@@ -129,29 +142,83 @@ public class SfValidationSteps {
     }
 
     @Then("^validate contact for TW account: \"([^\"]*)\" is present in SF with description: \"([^\"]*)\"")
-    public void validateIntegration(String twAccount, String record) throws TwitterException {
+    public void validateIntegration(String twAccount, String record) {
         log.info("Waiting until a contact appears in salesforce...");
         final long start = System.currentTimeMillis();
-        final boolean contactCreated = TestUtils.waitForEvent(contact -> contact.isPresent(),
+        final boolean contactCreated = TestUtils.waitForEvent(Optional::isPresent,
                 () -> getSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount).get().getProperty("screenName")),
                 TimeUnit.MINUTES,
                 3,
                 TimeUnit.SECONDS,
                 5);
-        Assertions.assertThat(contactCreated).as("Contact has appeard in salesforce").isEqualTo(true);
+        assertThat(contactCreated).as("Contact has appeard in salesforce").isEqualTo(true);
         log.info("Contact appeared in salesforce. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
 
         final Contact createdContact = getSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount).get().getProperty("screenName")).get();
-        Assertions.assertThat(createdContact.getDescription()).startsWith(record);
-        Assertions.assertThat(createdContact.getFirstName()).isNotEmpty();
-        Assertions.assertThat(createdContact.getLastname()).isNotEmpty();
+        assertThat(createdContact.getDescription()).startsWith(record);
+        assertThat(createdContact.getFirstName()).isNotEmpty();
+        assertThat(createdContact.getLastname()).isNotEmpty();
         log.info("Salesforce contains contact with T integration test finished.");
     }
 
     @Then("check SF does not contain contact for tw accound: \"([^\"]*)\"")
     public void checkSfDoesNotContain(String twAccount) {
-        Assertions.assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount)
+        assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount)
                 .get().getProperty("screenName")).isPresent()).isEqualTo(false);
+    }
+
+    @When("^publish message with content \'([^\']*)\' to queue \"([^\"]*)\"$")
+    public void publishMessage(String content, String queueName) {
+        sendMessageToQueue(queueName, content.replaceAll("LEAD_ID", leadId));
+    }
+
+    @Then("^verify that lead json object was received from queue \"([^\"]*)\"$")
+    public void verifyLeadJsonReceived(String queueName) {
+        Message m = getMessageFromQueue(queueName);
+        final String message = new String(((ActiveMQBytesMessage)m).getContent().getData());
+        assertThat(message).contains(leadId);
+    }
+
+    @Then("^verify that lead was created")
+    public void verifyLeadCreated() {
+        Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, "joedoe@acme.com");
+        assertThat(lead.get()).isInstanceOf(Lead.class);
+        assertThat(lead.get().getFirstName()).isEqualTo("Joe");
+    }
+
+    @Then("^verify that lead creation response was received from queue \"([^\"]*)\"$")
+    public void verifyLeadCreatedResponse(String queueName) {
+        log.error("TODO: avano: https://github.com/syndesisio/syndesis/issues/2853");
+    }
+
+    @Then("^verify that lead was deleted$")
+    public void verifyLeadRemoval() {
+        // Add a delay for the integration processing
+        TestUtils.sleepIgnoreInterrupt(5000L);
+        try {
+            getLeadWithId(leadId);
+            fail("Getting deleted lead should result in exception");
+        } catch (ApiException ex) {
+            assertThat(ex.getMessage()).contains("The requested resource does not exist");
+        }
+    }
+
+    @Then("^verify that lead was updated$")
+    public void verifyLeadUpdated() {
+        // Add a delay for the integration processing
+        TestUtils.sleepIgnoreInterrupt(5000L);
+        assertThat(getLeadWithId(leadId).getEmail()).isEqualTo("joedoe@acme.com");
+    }
+
+    @Then("^verify that lead name was updated$")
+    public void verifyLeadNameUpdate() {
+        // Add a delay for the integration processing
+        TestUtils.sleepIgnoreInterrupt(5000L);
+        assertThat(getLeadWithId(leadId).getFirstName()).isEqualTo("Joe");
+    }
+
+    private Lead getLeadWithId(String leadId) {
+        return salesforce.getSObject("lead", leadId).as(Lead.class);
     }
 
     private void deleteSalesforceContact(ForceApi salesforce, String screenName) {
@@ -172,7 +239,8 @@ public class SfValidationSteps {
     /**
      * Looks for leads with specified first and last name and deletes them if it finds any.
      *
-     * @param salesforce
+     * @param salesforce salesforce object instance
+     * @param email email
      */
     private void deleteAllSalesforceLeadsWithEmail(ForceApi salesforce, String email) {
         final Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, email);
@@ -188,8 +256,7 @@ public class SfValidationSteps {
         final QueryResult<Lead> queryResult = salesforce.query("SELECT Id,FirstName,LastName,Email,Company FROM lead where Email = '"
                 + emailAddress + "'", Lead.class
         );
-        final Optional<Lead> lead = queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
-        return lead;
+        return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
     }
 
     private Optional<Contact> getSalesforceContactByEmail(ForceApi salesforce, String emailAddress) {
@@ -217,4 +284,25 @@ public class SfValidationSteps {
         }
     }
 
+    private void sendMessageToQueue(String queueName, String content) {
+        try(JmsClientManager manager = new JmsClientManager("tcp")) {
+            JmsClient jmsClient = manager.getClient();
+            jmsClient.addQueue(queueName).sendMessage(content);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        }
+    }
+
+    private Message getMessageFromQueue(String queueName) {
+        try(JmsClientManager manager = new JmsClientManager("tcp")) {
+            JmsClient jmsClient = manager.getClient();
+            return jmsClient.addQueue(queueName).receiveMessage(30000L);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assertions.fail(e.getMessage());
+        }
+
+        return null;
+    }
 }

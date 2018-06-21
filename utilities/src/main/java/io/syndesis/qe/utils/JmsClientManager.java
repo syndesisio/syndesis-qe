@@ -1,16 +1,15 @@
 package io.syndesis.qe.utils;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.qpid.jms.JmsConnectionFactory;
 
 import cz.xtf.jms.JmsClient;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.qpid.jms.JmsConnectionFactory;
 
 @Slf4j
 public class JmsClientManager implements AutoCloseable {
-
     private String jmsUrl;
     private int jmsPort;
     private String jmsPodName = "broker-amq";
@@ -40,11 +39,9 @@ public class JmsClientManager implements AutoCloseable {
     }
 
     public JmsClient getClient() {
-
         if (jmsLocalPortForward == null || !jmsLocalPortForward.isAlive()) {
             //can be the same pod twice forwarded to different ports? YES
             Pod pod = OpenShiftUtils.xtf().getAnyPod("app", jmsPodName);
-            log.info("POD NAME: *{}*", pod.getMetadata().getName());
             jmsLocalPortForward = OpenShiftUtils.portForward(pod, jmsPort, jmsPort);
         }
         return this.initClient();
