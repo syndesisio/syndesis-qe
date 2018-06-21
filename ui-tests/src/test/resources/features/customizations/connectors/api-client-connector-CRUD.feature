@@ -84,7 +84,7 @@ Feature: Customization - API Connector CRUD
     And click on the "Delete" button
     Then check visibility of page "Modal Dialog"
     When click on the modal dialog "Cancel" button
-    And check visibility of a connectors list of size 2
+    And check visibility of a connectors list of size 1
     Then check visibility of page "API Client Connectors"
 
     #create new connection from the connector
@@ -104,7 +104,7 @@ Feature: Customization - API Connector CRUD
     And check visibility of page "Modal Dialog"
     When click on the modal dialog "Delete" button
     Then check visibility of page "API Client Connectors"
-    And check visibility of a connectors list of size 1
+    And check visibility of a connectors list of size 0
 
     #check the connection's been deleted too
     Then navigate to the "Connections" page
