@@ -36,15 +36,15 @@ public final class TestUtils {
      * <p>
      * TODO(tplevko): Rework this, when all connectors will be unified to follow the new writing style.
      *
-     * @param connector
-     * @param connectorPrefix
+     * @param connector connector
+     * @param connectorPrefix connector prefix
      * @return Action with given prefix or null if no such action can be found.
      */
     public static Action findConnectorAction(Connector connector, String connectorPrefix) {
         Optional<ConnectorAction> action;
         action = connector.getActions()
                 .stream()
-                .filter(a -> a.getId().get().toString().contains(connectorPrefix))
+                .filter(a -> a.getId().get().contains(connectorPrefix))
                 .findFirst();
 
         if (!action.isPresent()) {
@@ -70,7 +70,6 @@ public final class TestUtils {
      * @return True if predicate become true within a timeout, otherwise returns false.
      */
     public static <T> boolean waitForEvent(Predicate<T> predicate, Supplier<T> supplier, TimeUnit unit, long timeout, TimeUnit sleepUnit, long sleepTime) {
-
         final long start = System.currentTimeMillis();
         long elapsed = 0;
         while (!predicate.test(supplier.get()) && unit.toMillis(timeout) >= elapsed) {
@@ -88,7 +87,6 @@ public final class TestUtils {
     }
 
     public static boolean waitForPublishing(IntegrationOverviewEndpoint e, IntegrationOverview i, TimeUnit unit, long timeout) {
-
         return waitForState(e, i, IntegrationDeploymentState.Published, unit, timeout);
     }
 
@@ -103,7 +101,6 @@ public final class TestUtils {
      * @return True if integration is activated within a timeout. False otherwise.
      */
     public static boolean waitForState(IntegrationOverviewEndpoint e, IntegrationOverview i, IntegrationDeploymentState state, TimeUnit unit, long timeout) {
-
         return waitForEvent(
                 //                integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
                 integration -> integration.getCurrentState() == state,
@@ -121,8 +118,7 @@ public final class TestUtils {
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
         final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
-        final LocalPortForward lpf = OpenShiftUtils.portForward(podToForward, remotePort, localPort);
-        return lpf;
+        return OpenShiftUtils.portForward(podToForward, remotePort, localPort);
     }
 
     public static void terminateLocalPortForward(LocalPortForward lpf) {
@@ -144,7 +140,7 @@ public final class TestUtils {
      * Creates map from objects.
      *
      * @param values key1, value1, key2, value2, ...
-     * @return
+     * @return map instance with objects
      */
     public static Map<String, String> map(Object... values) {
         final HashMap<String, String> rc = new HashMap<>();
@@ -172,7 +168,6 @@ public final class TestUtils {
     }
 
     public static void setDatabaseCredentials(String connectionName, DBAllocation dbAllocation) {
-
         Map<String, String> allocPropertiesMap = dbAllocation.getAllocationMap();
 
         TestUtils.transhipExternalProperties(connectionName, allocPropertiesMap);
@@ -183,11 +178,9 @@ public final class TestUtils {
      * io.syndesis.qe.accounts.Account properties.
      *
      * @param connectionName name of the connection
-     * @param sourceMap
-     * @return Action with given prefix or null if no such action can be found.
+     * @param sourceMap source map
      */
     private static void transhipExternalProperties(String connectionName, Map<String, String> sourceMap) {
-
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
 
         Account account;
@@ -202,7 +195,7 @@ public final class TestUtils {
 
         Map<String, String> properties = account.getProperties();
         if (properties == null) {
-            account.setProperties(new HashMap<String, String>());
+            account.setProperties(new HashMap<>());
             properties = account.getProperties();
         }
         switch (account.getService()) {
@@ -212,8 +205,8 @@ public final class TestUtils {
                 properties.put("user", sourceMap.get("db.username"));
                 properties.put("password", sourceMap.get("db.password"));
                 properties.put("schema", sourceMap.get("db.name"));
-                log.info("UPDATED ACCOUNT {} PROPERTIES:", account.getService());
-                properties.entrySet().stream().forEach(n -> log.info("Key: *{}*, value: *{}*", n.getKey(), n.getValue()));
+                log.debug("UPDATED ACCOUNT {} PROPERTIES:", account.getService());
+                properties.forEach((key, value) -> log.debug("Key: *{}*, value: *{}*", key, value));
                 break;
         }
     }
