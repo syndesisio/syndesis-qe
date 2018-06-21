@@ -1,13 +1,5 @@
 package io.syndesis.qe.utils;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.syndesis.common.model.action.Action;
@@ -21,6 +13,14 @@ import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import io.syndesis.qe.utils.dballoc.DBAllocation;
 import lombok.extern.slf4j.Slf4j;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * @author jknetl
@@ -36,7 +36,7 @@ public final class TestUtils {
      * <p>
      * TODO(tplevko): Rework this, when all connectors will be unified to follow the new writing style.
      *
-     * @param connector connector
+     * @param connector       connector
      * @param connectorPrefix connector prefix
      * @return Action with given prefix or null if no such action can be found.
      */
@@ -61,12 +61,12 @@ public final class TestUtils {
      * Waits until a predicate is true or timeout exceeds.
      *
      * @param predicate predicate
-     * @param supplier supplier of values to test by predicate
-     * @param unit TimeUnit for timeout
-     * @param timeout how long to wait for event
+     * @param supplier  supplier of values to test by predicate
+     * @param unit      TimeUnit for timeout
+     * @param timeout   how long to wait for event
      * @param sleepUnit TimeUnit of sleep interval between tests
      * @param sleepTime how long to wait between individual tests (in miliseconds)
-     * @param <T> Type of tested value by a predicate
+     * @param <T>       Type of tested value by a predicate
      * @return True if predicate become true within a timeout, otherwise returns false.
      */
     public static <T> boolean waitForEvent(Predicate<T> predicate, Supplier<T> supplier, TimeUnit unit, long timeout, TimeUnit sleepUnit, long sleepTime) {
@@ -93,10 +93,10 @@ public final class TestUtils {
     /**
      * Waits until integration reaches a specified state or timeout exceeds.
      *
-     * @param e Integration endpoint to obtain current state
-     * @param i integration
-     * @param state desired integration state
-     * @param unit Time unit
+     * @param e       Integration endpoint to obtain current state
+     * @param i       integration
+     * @param state   desired integration state
+     * @param unit    Time unit
      * @param timeout timeout
      * @return True if integration is activated within a timeout. False otherwise.
      */
@@ -160,11 +160,7 @@ public final class TestUtils {
     }
 
     public static void sleepForJenkinsDelayIfHigher(int delayInSeconds) {
-        if (TestConfiguration.getJenkinsDelay() == 1) {
-            sleepIgnoreInterrupt(delayInSeconds * 1000);
-        } else {
-            sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
-        }
+        sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() > delayInSeconds ? TestConfiguration.getJenkinsDelay() : delayInSeconds * 1000);
     }
 
     public static void setDatabaseCredentials(String connectionName, DBAllocation dbAllocation) {
@@ -178,7 +174,7 @@ public final class TestUtils {
      * io.syndesis.qe.accounts.Account properties.
      *
      * @param connectionName name of the connection
-     * @param sourceMap source map
+     * @param sourceMap      source map
      */
     private static void transhipExternalProperties(String connectionName, Map<String, String> sourceMap) {
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
