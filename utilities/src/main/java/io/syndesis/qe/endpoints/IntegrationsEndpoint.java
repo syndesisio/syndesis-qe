@@ -70,7 +70,7 @@ public class IntegrationsEndpoint extends AbstractEndpoint<Integration> {
     }
 
     @Data
-    private class TargetStateRequest {
+    public class TargetStateRequest {
 
         private IntegrationDeploymentState targetState;
 
