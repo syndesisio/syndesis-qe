@@ -57,6 +57,7 @@
 		<qpid.version>0.32.0</qpid.version>
 		<google.oauth.version>1.23.0</google.oauth.version>
 		<google.apis.version>v1-rev91-1.23.0</google.apis.version>
+		<github.core.version>2.1.5</github.core.version>
 
 	</properties>
 
@@ -375,6 +376,12 @@
 				<version>${google.apis.version}</version>
 			</dependency>
 
+			<!-- https://mvnrepository.com/artifact/org.eclipse.mylyn.github/org.eclipse.egit.github.core -->
+			<dependency>
+				<groupId>org.eclipse.mylyn.github</groupId>
+				<artifactId>org.eclipse.egit.github.core</artifactId>
+				<version>${github.core.version}</version>
+			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
