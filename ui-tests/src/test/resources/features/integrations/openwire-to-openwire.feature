@@ -6,7 +6,7 @@ Feature: Integration - Openwire to Openwire
     Given deploy AMQ broker and add accounts
     Given log into the Syndesis
     Given created connections
-      | AMQ | AMQ | AMQ | AMQ connection is awesome |
+      | AMQ Message Broker | AMQ | AMQ | AMQ connection is awesome |
 
   Scenario: Publish subscribe on queue
     When navigate to the "Home" page

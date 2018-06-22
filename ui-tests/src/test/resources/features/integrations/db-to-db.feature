@@ -243,6 +243,7 @@ Feature: Integration - DB to DB
     Then fill in period input with "5" value
     Then select "Seconds" from sql dropdown
     And click on the "Done" button
+    # Issue:https://github.com/syndesisio/syndesis/issues/2823
     And check visibility of alert notification
     #@wip time_unit_id is not yet available
 
