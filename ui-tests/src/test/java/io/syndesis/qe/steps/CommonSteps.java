@@ -497,6 +497,8 @@ public class CommonSteps {
 
         selectConnectionTypeSteps.selectConnectionType(connectorName);
 
+        //jenkins did validation before it reached correct page, lets wait a second
+        TestUtils.sleepForJenkinsDelayIfHigher(1);
         doOAuthValidation(connectorName);
 
         //give it time to redirect

@@ -5,6 +5,7 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.connections.wizard.phases.NameConnection;
 import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.TestUtils;
 
 public class NameConnectionSteps {
 
@@ -25,5 +26,6 @@ public class NameConnectionSteps {
     @When("^fills? Name Connection form$")
     public void fillNameConnectionForm(DataTable data) {
         new Form(nameConnectionPage.getRootElement()).fillByLabel(data.asMap(String.class, String.class));
+        TestUtils.sleepForJenkinsDelayIfHigher(1);
     }
 }
