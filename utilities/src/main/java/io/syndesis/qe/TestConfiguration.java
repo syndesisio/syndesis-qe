@@ -36,6 +36,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_TEMPLATE_SA = "syndesis.config.template.sa";
 
     public static final String JENKINS_DELAY = "jenkins.delay";
+    public static final String TESTSUITE_TIMEOUT = "syndesis.config.timeout";
 
     public static final String DB_ALLOCATOR_URL = "syndesis.dballocator.url";
 
@@ -101,6 +102,8 @@ public class TestConfiguration {
     public static boolean useServerRoute() { return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE)); }
 
     public static int getJenkinsDelay() { return Integer.parseInt(get().readValue(JENKINS_DELAY, "1")); }
+
+    public static int getConfigTimeout() {return Integer.parseInt(get().readValue(TESTSUITE_TIMEOUT, "300")); }
 
     public static String getDbAllocatorUrl(){ return get().readValue(DB_ALLOCATOR_URL, "localhost:8080"); }
 
