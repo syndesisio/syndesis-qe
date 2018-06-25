@@ -64,6 +64,11 @@ syndesis.config.url.suffix=192.168.64.2.nip.io
 syndesis.config.ui.url=https://syndesis.192.168.64.2.nip.io
 syndesis.config.ui.username=developer
 syndesis.config.ui.password=developer
+#timeout in seconds, if not set default is 300
+syndesis.config.timeout=300
+#delay in seconds, if not set default is 1
+jenkins.delay=7
+
 
 ```
 
