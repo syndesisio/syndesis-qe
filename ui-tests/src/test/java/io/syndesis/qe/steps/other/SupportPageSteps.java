@@ -44,9 +44,10 @@ public class SupportPageSteps {
 
     @When("^.*checks? version string$")
     public void checkVersionString() {
+        String nightlyVersion = System.getProperty("syndesis.nightly.version");
         Assertions.assertThat(supportPage.getVersion())
                 .isNotEmpty()
-                .containsIgnoringCase(System.getProperty("syndesis.version"));
+                .containsIgnoringCase(nightlyVersion == null ? System.getProperty("syndesis.version") : nightlyVersion);
     }
 
 
