@@ -1,29 +1,26 @@
 package io.syndesis.qe.fragments.common.form;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.junit.Assert;
-
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.openqa.selenium.By;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 @Getter
 @Slf4j
 public class Form {
     private SelenideElement rootElement;
-    private final List<String> selectValues = new ArrayList<> (Arrays.asList("yes","checked","check","select","selected"));
-    private final List<String> unselectValues = new ArrayList<> (Arrays.asList("no","unchecked","uncheck","unselect","unselected"));
+    private final List<String> selectValues = new ArrayList<>(Arrays.asList("yes", "checked", "check", "select", "selected"));
+    private final List<String> unselectValues = new ArrayList<>(Arrays.asList("no", "unchecked", "uncheck", "unselect", "unselected"));
 
 
     public Form(SelenideElement rootElement) {
@@ -40,16 +37,22 @@ public class Form {
 
     /**
      * Finds the input elements by element attribute and fills the data in
+     *
      * @param data [attribute - value]
      */
     public void fillBy(FillBy fillBy, Map<String, String> data) {
 
         String attribute = "";
+        List<SelenideElement> inputs = new ArrayList<>();
+        inputs.addAll(getRootElement().findAll(By.cssSelector("input")));
 
-        switch(fillBy) {
-            case ID: attribute = "id";
+        switch (fillBy) {
+            case ID:
+                attribute = "id";
+                inputs.add(getRootElement().findAll(By.tagName("textarea")).first());
                 break;
-            case NAME: attribute = "name";
+            case NAME:
+                attribute = "name";
                 break;
             default:
                 Assert.fail("Input fillBy attribute not set.");
@@ -59,8 +62,7 @@ public class Form {
             throw new IllegalArgumentException("can't find any data");
         }
 
-        ElementsCollection inputs = getRootElement().findAll(By.cssSelector("input"));
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
 
         for (SelenideElement input : inputs) {
             String name = input.getAttribute(attribute);
@@ -70,11 +72,17 @@ public class Form {
         for (String key : data.keySet()) {
             if (keys.contains(key)) {
                 log.info("fill value in {} ", key);
-                SelenideElement input = getRootElement().$(String.format("input[" + attribute + "=\"%s\"", key)).shouldBe(visible);
+                SelenideElement input;
+
+                if (attribute.equalsIgnoreCase("id")) {
+                    input = getRootElement().$(By.id(key)).shouldBe(visible);
+                } else {
+                    input = getRootElement().$(String.format("input[" + attribute + "=\"%s\"", key)).shouldBe(visible);
+                }
                 input.clear();
                 input.sendKeys(data.get(key));
             } else {
-                log.info("Input {} is not present on form!", key);
+                log.error("Input {} is not present on form!", key);
             }
         }
     }
@@ -82,6 +90,7 @@ public class Form {
 
     /**
      * Finds the input elements by label and fills the data in
+     *
      * @param data [label - value]
      */
     public void fillByLabel(Map<String, String> data) {
@@ -89,7 +98,7 @@ public class Form {
             throw new IllegalArgumentException("There are no data to be filled into a form.");
         }
 
-        for(String label: data.keySet()) {
+        for (String label : data.keySet()) {
             log.info("Filling form: " + label);
 
             //selecting element by a visible label (case insensitive)
@@ -111,16 +120,16 @@ public class Form {
                             + label.toLowerCase() + "']/following-sibling::*[position()=1]/descendant-or-self::*[self::input or self::textarea or self::select]"
                             + "|"
 
-                    /**
-                     * usually checkboxes:
-                     * [] checkbox label
-                     *
-                     * <label>
-                     *      <input, textarea, select></>
-                     *      <span>label<span/>
-                     * </label>
-                     *
-                     */
+                            /**
+                             * usually checkboxes:
+                             * [] checkbox label
+                             *
+                             * <label>
+                             *      <input, textarea, select></>
+                             *      <span>label<span/>
+                             * </label>
+                             *
+                             */
                             + "//label/span[translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
                             + label.toLowerCase() + "']/preceding-sibling::*[position()=1]/self::*[self::input or self::textarea or self::select]";
 
@@ -131,7 +140,7 @@ public class Form {
 
                 case "input":
                     String inputType = element.getAttribute("type");
-                    if(inputType == null) {
+                    if (inputType == null) {
                         //default value
                         inputType = "text";
                     }

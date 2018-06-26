@@ -467,6 +467,10 @@ public class CommonSteps {
         new Form(new SyndesisRootPage().getRootElement()).fillByLabel(data.asMap(String.class, String.class));
     }
 
+    @Then("^.*fill in values by element ID")
+    public void fillFormViaID(DataTable data) {
+        new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
+    }
     @When("^.*create connections using oauth$")
     public void createConnectionsUsingOAuth(DataTable connectionsData) {
 
