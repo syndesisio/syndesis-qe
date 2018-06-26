@@ -64,8 +64,6 @@ public class SettingsPage extends SyndesisPageObject {
                     break;
                 case "Gmail":
                     fillOAuthItem(listItem, "QE Google Mail");
-                    //TODO: we should create test for googli connector using oauth
-                    log.info("Gmail oauth has no test yet");
                     break;
                 default:
                     Assert.fail("Unknown oauth list item found: " + text + ", can not set it!");
