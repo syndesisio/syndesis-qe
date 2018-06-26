@@ -5,36 +5,35 @@ Feature: Connections - OAuth
     Given clean application state
     And clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
-
-
-    Given log into the Syndesis
+    And log into the Syndesis
 
 #
 #  1. test oauth connections in an integration
 #
   @oauth-create-integration
   Scenario: Create integration using connections with OAuth
-    And navigate to the "Settings" page
-
-    Then settings item "Salesforce" has button "Register"
-    Then fill all oauth settings
-
+    When navigate to the "Settings" page
+    And settings item "Salesforce" has button "Register"
+    And fill all oauth settings
     Then create connections using oauth
+      | Gmail      | Test-Gmail-connection      |
       | Salesforce | Test-Salesforce-connection |
       | Twitter    | Test-Twitter-connection    |
-
-
-    # vyrobit integraci, spustit, checknout ze se stalo co se melo stat
+    #  TODO: SAP connection test when issue with concur credentials and oauth callback is resolved
+    #  for more info ask mcada or tplevko
+    #  | SAP Concur | Test-Concur-connection     |
 
     # create integration
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
-    And check that position of connection to fill is "Start"
+
+    When check that position of connection to fill is "Start"
     # select twitter connection
-    When select the "Test-Twitter-connection" connection
+    And select the "Test-Twitter-connection" connection
     And select "Mention" integration action
     Then check that position of connection to fill is "Finish"
+
     # select salesforce connection
     When select the "Test-Salesforce-connection" connection
     And select "Create or update record" integration action
@@ -49,13 +48,12 @@ Feature: Connections - OAuth
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    Then create data mapper mappings
+    When create data mapper mappings
       | user.screenName | TwitterScreenName__c |
       | text            | Description          |
       | user.name       | FirstName; LastName  |
-
     And scroll "top" "right"
-    And click on the "Done" button
+    Then click on the "Done" button
 
     # finish and save integration
     When click on the "Save as Draft" button
@@ -63,20 +61,20 @@ Feature: Connections - OAuth
     And click on the "Publish" button
     # assert integration is present in list
     Then check visibility of "Twitter to Salesforce oauth" integration details
-    And navigate to the "Integrations" page
-    And Integration "Twitter to Salesforce oauth" is present in integrations list
-    # wait for integration to get in active state
-    Then wait until integration "Twitter to Salesforce oauth" gets into "Running" state
-    #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
 
-    #there was a problem that integration was not listening instantly after publishing so delay is necessary
-    And sleep for "15000" ms
+    When navigate to the "Integrations" page
+    Then Integration "Twitter to Salesforce oauth" is present in integrations list
+    # wait for integration to get in active state
+    And wait until integration "Twitter to Salesforce oauth" gets into "Running" state
+
+    #there is a problem that integration is not listening instantly after publishing so delay is necessary - probably start-up time
+    When sleep for "15000" ms
     Then check SF does not contain contact for tw accound: "twitter_talky"
-    Then tweet a message from twitter_talky to "Twitter Listener" with text "OAuth syndesis test"
+
+    When tweet a message from twitter_talky to "Twitter Listener" with text "OAuth syndesis test"
     # give salesforce time to create contact
     And sleep for "5000" ms
     Then validate contact for TW account: "twitter_talky" is present in SF with description: "OAuth syndesis test"
-    Given clean application state
+    And clean application state
     And clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
-
