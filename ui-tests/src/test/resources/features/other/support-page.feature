@@ -78,7 +78,7 @@ Feature: Support page
     # wait for integration to get in active state
     And navigate to the "Integrations" page
 
-    Then wait until integration "my-integration" gets into "Published" state
+    Then wait until integration "my-integration" gets into "Running" state
 
     #TODO: create integration - use rest steps so it is easier?
     When navigate to the "Support" page in help menu

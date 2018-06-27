@@ -59,7 +59,7 @@ Feature: Integration - Import Export
     And navigate to the "Integrations" page
     And Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Integration_import_export_test" gets into "Published" state
+    Then wait until integration "Integration_import_export_test" gets into "Running" state
 
     # export the integration for import tests
     When select the "Integration_import_export_test" integration
@@ -87,7 +87,7 @@ Feature: Integration - Import Export
 
     # check draft status after import
     When select the "Integration_import_export_test" integration
-    And check visibility of "Not Published" integration status on Integration Detail page
+    And check visibility of "Stopped" integration status on Integration Detail page
 
     And sleep for "20000" ms
 
@@ -95,7 +95,7 @@ Feature: Integration - Import Export
     And start integration "Integration_import_export_test"
 
     And navigate to the "Integrations" page
-    Then wait until integration "Integration_import_export_test" gets into "Published" state
+    Then wait until integration "Integration_import_export_test" gets into "Running" state
 
 #
 #  2. integration-import with drag'n'drop
@@ -109,7 +109,7 @@ Feature: Integration - Import Export
 
     # check draft status after import
     When select the "Integration_import_export_test" integration
-    And check visibility of "Not Published" integration status on Integration Detail page
+    And check visibility of "Stopped" integration status on Integration Detail page
 
     And sleep for "20000" ms
 
@@ -117,4 +117,4 @@ Feature: Integration - Import Export
     And start integration "Integration_import_export_test"
 
     And navigate to the "Integrations" page
-    Then wait until integration "Integration_import_export_test" gets into "Published" state
+    Then wait until integration "Integration_import_export_test" gets into "Running" state

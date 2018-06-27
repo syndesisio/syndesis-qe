@@ -53,7 +53,7 @@ Feature: Integration - DB to DB
     And click on the "Publish" button
     Then check visibility of "CRUD1-read-update E2E" integration details
     Then navigate to the "Integrations" page
-    Then wait until integration "CRUD1-read-update E2E" gets into "Published" state
+    Then wait until integration "CRUD1-read-update E2E" gets into "Running" state
 
     Then validate that all todos with task "Joe" have value completed "1", period in ms: "5000"
 
@@ -102,7 +102,7 @@ Feature: Integration - DB to DB
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then check visibility of "CRUD2-read-create E2E" integration details
     Then navigate to the "Integrations" page
-    Then wait until integration "CRUD2-read-create E2E" gets into "Published" state
+    Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
 
@@ -155,7 +155,7 @@ Feature: Integration - DB to DB
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then check visibility of "CRUD3-read-delete E2E" integration details
     Then navigate to the "Integrations" page
-    Then wait until integration "CRUD3-read-delete E2E" gets into "Published" state
+    Then wait until integration "CRUD3-read-delete E2E" gets into "Running" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
@@ -212,7 +212,7 @@ Feature: Integration - DB to DB
     And click on the "Publish" button
     Then check visibility of "CRUD4-read-create-inbuilt E2E" integration details
     Then navigate to the "Integrations" page
-    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Published" state
+    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 
 
@@ -283,7 +283,7 @@ Feature: Integration - DB to DB
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then check visibility of "DB Connection 5 SQL query checker E2E" integration details
     Then navigate to the "Integrations" page
-    Then wait until integration "DB Connection 5 SQL query checker E2E" gets into "Published" state
+    Then wait until integration "DB Connection 5 SQL query checker E2E" gets into "Running" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
     Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"

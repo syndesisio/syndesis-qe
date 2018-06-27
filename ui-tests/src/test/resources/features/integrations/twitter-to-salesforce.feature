@@ -69,5 +69,5 @@ Feature: Integration - Twitter to Salesforce
     And navigate to the "Integrations" page
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Twitter to Salesforce E2E" gets into "Published" state
+    Then wait until integration "Twitter to Salesforce E2E" gets into "Running" state
     #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
