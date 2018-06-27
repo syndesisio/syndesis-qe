@@ -76,24 +76,28 @@ jenkins.delay=7
 credentials.json
 ```json
 {
-  "twitter_listen": {
+  "twitter_listener": {
     "service": "twitter",
     "properties": {
-      "screenName": "************",
-      "consumerKey": "*************************",
-      "consumerSecret": "**************************************************",
-      "accessToken": "**************************************************",
-      "accessTokenSecret": "*********************************************"
+      "screenName": "****",
+      "accessToken": "****",
+      "accessTokenSecret": "****",
+      "consumerKey": "****",
+      "consumerSecret": "*****",
+      "login": "****",
+      "password": "****"
     }
   },
   "twitter_talky": {
     "service": "twitter",
     "properties": {
-      "screenName": "************",
-      "consumerKey": "*************************",
-      "consumerSecret": "**************************************************",
-      "accessToken": "**************************************************",
-      "accessTokenSecret": "*********************************************"
+      "screenName": "****",
+      "consumerKey": "****",
+      "consumerSecret": "****",
+      "accessToken": "****",
+      "accessTokenSecret": "****",
+      "login": "****",
+      "password": "****"
     }
   },
   "salesforce": {
@@ -101,18 +105,54 @@ credentials.json
     "properties": {
       "instanceUrl": "https://developer.salesforce.com",
       "loginUrl": "https://login.salesforce.com",
-      "clientId": "*************************************************************************************",
-      "clientSecret": "*******************",
-      "userName": "**********************",
-      "password": "*********"
+      "clientId": "****",
+      "clientSecret": "****",
+      "userName": "****",
+      "password": "****"
+    }
+  },
+  "QE Salesforce": {
+    "service": "salesforce",
+    "properties": {
+      "instanceUrl": "https://developer.salesforce.com",
+      "loginUrl": "https://login.salesforce.com",
+      "clientId": "****",
+      "clientSecret": "****",
+      "userName": "****",
+      "password": "****"
+    }
+  },
+  "Twitter Listener": {
+    "service": "twitter",
+    "properties": {
+      "screenName": "****",
+      "accessToken": "****",
+      "accessTokenSecret": "****",
+      "consumerKey": "****",
+      "consumerSecret": "****"
     }
   },
   "s3": {
     "service": "s3",
     "properties": {
-      "region": "********",
-      "accessKey": "********************",
-      "secretKey": "*****************************************"
+      "region": "****",
+      "accessKey": "****",
+      "secretKey": "****"
+    }
+  },
+  "syndesis": {
+    "service": "syndesis",
+    "properties": {
+      "instanceUrl": "****",
+      "login": "****",
+      "password": "****"
+    }
+  },
+  "QE Dropbox": {
+    "service": "dropbox",
+    "properties": {
+      "accessToken": "****",
+      "clientIdentifier": "****"
     }
   },
   "ftp": {
@@ -124,41 +164,44 @@ credentials.json
       "host": "ftpd",
       "maximumReconnectAttempts": "3",
       "passiveMode": "Yes",
-      "password": "",
-      "port": "2121",
+      "password": "****",
+      "port": "****",
       "reconnectDelay": "1000",
       "timeout": "30000",
-      "username": "anonymous"
+      "username": "****"
     }
   },
-  "QE Dropbox": {
-  	  "service": "dropbox",
-  	  "properties": {
-  	  	"accessToken": "**************",
-  		"clientIdentifier": "**************"
-  	  }
-    },
-    "amq": {
-        "service": "amq",
-        "properties": {
-          "brokerUrl": "tcp://broker-amq:61616",
-          "username": "amq",
-          "password": "topSecret",
-          "clientId": "zzz"
-        }
-      },
-   "amqp": {
-        "service": "amqp",
-        "properties": {
-          "connectionUri": "amqp://broker-amq:5672",
-          "username": "amq",
-          "password": "topSecret",
-          "clientID": "zzz",
-          "skipCertificateCheck":"Disable",
-          "brokerCertificate":"",
-          "clientCertificate":""
-        }
-   }
+  "QE Slack": {
+    "service": "slack",
+    "properties": {
+      "webhookUrl": "****",
+      "Token": "****"
+    }
+  },
+  "QE Google Mail": {
+    "service": "Google Mail",
+    "properties": {
+      "clientId": "****",
+      "clientSecret": "****",
+      "applicationName": "****",
+      "refreshToken": "****",
+      "userId": "****",
+      "email": "****",
+      "password": "****"
+    }
+  },
+  "telegram": {
+    "service": "telegram",
+    "properties": {
+      "authorizationToken": "****"
+    }
+  },
+  "GitHub": {
+    "service": "GitHub",
+    "properties": {
+      "PersonalAccessToken": "****"
+    }
+  }
 }
 ```
 for ftp connection credentials:
