@@ -67,7 +67,7 @@ Feature: Connections - OAuth
     And navigate to the "Integrations" page
     And Integration "Twitter to Salesforce oauth" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Twitter to Salesforce oauth" gets into "Published" state
+    Then wait until integration "Twitter to Salesforce oauth" gets into "Running" state
     #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
 
     #there was a problem that integration was not listening instantly after publishing so delay is necessary

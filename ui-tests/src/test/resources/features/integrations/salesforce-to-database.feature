@@ -77,7 +77,7 @@ Feature: Integration - Salesforce to DB
     Then check visibility of "Salesforce to PostresDB E2E" integration details
     And navigate to the "Integrations" page
       # wait for integration to get in active state
-    Then wait until integration "Salesforce to PostresDB E2E" gets into "Published" state
+    Then wait until integration "Salesforce to PostresDB E2E" gets into "Running" state
 #    VALIDATION:
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
     And validate DB created new lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk"

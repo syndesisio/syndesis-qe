@@ -47,7 +47,7 @@ Feature: Integration - Dropbox to Dropbox
     Then click on the "Publish" button
 
     Then navigate to the "Integrations" page
-    And wait until integration "dropbox-to-dropbox" gets into "Published" state
+    And wait until integration "dropbox-to-dropbox" gets into "Running" state
 
     Then check that file with path "/testOutputFile.txt" exists on Dropbox
 
