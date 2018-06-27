@@ -64,7 +64,7 @@ Feature: Integration - DB to DB with extension
     And navigate to the "Integrations" page
     And Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Published" state
+    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
 
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 

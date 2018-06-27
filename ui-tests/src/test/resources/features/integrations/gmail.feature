@@ -57,7 +57,7 @@ Feature: Google mail Connector
 
     Then Integration "Integration_gmail_send" is present in integrations list
     # wait for integration to get in active state
-    And wait until integration "Integration_gmail_send" gets into "Published" state
+    And wait until integration "Integration_gmail_send" gets into "Running" state
 
     #give gmail time to receive mail
     When sleep for "10000" ms
@@ -108,7 +108,7 @@ Feature: Google mail Connector
     When navigate to the "Integrations" page
     Then Integration "Integration_gmail_receive" is present in integrations list
     # wait for integration to get in active state
-    And wait until integration "Integration_gmail_receive" gets into "Published" state
+    And wait until integration "Integration_gmail_receive" gets into "Running" state
 
     #give gmail time to receive mail
     When send an e-mail

@@ -165,7 +165,7 @@ Feature: Integration - Databucket
 
     And Integration "Integration_with_buckets" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Integration_with_buckets" gets into "Published" state
+    Then wait until integration "Integration_with_buckets" gets into "Running" state
 
 
     # validate salesforce contacts
@@ -372,7 +372,7 @@ Feature: Integration - Databucket
     And Integration "Integration_with_buckets" is present in integrations list
 
     # wait for integration to get in active state
-    Then wait until integration "Integration_with_buckets" gets into "Published" state
+    Then wait until integration "Integration_with_buckets" gets into "Running" state
 
     # stay to invoke at least one cycle of integration
     And sleep for "10000" ms
