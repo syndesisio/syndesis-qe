@@ -74,7 +74,7 @@ Feature: Slack Connector
 
     And Integration "Integration_with_slack" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Integration_with_slack" gets into "Published" state
+    Then wait until integration "Integration_with_slack" gets into "Running" state
 
 
     Then check that last slack message equals "test message" on channel "test"
@@ -131,7 +131,7 @@ Feature: Slack Connector
 
     And Integration "Integration_with_slack" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Integration_with_slack" gets into "Published" state
+    Then wait until integration "Integration_with_slack" gets into "Running" state
 
 
     Then check that last slack message equals "Red Hat" on channel "test"

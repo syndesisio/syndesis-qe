@@ -56,6 +56,6 @@ Feature: Integration - DB to DB mysql
     #@wip there is no more h1 label with integration name there, syndesis #430
     Then check visibility of "CRUD2-read-create E2E" integration details
     Then navigate to the "Integrations" page
-    Then wait until integration "CRUD2-read-create E2E" gets into "Published" state
+    Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
 
     Then validate that all todos with task "Josef_mysql" have value completed "2", period in ms: "5000" on "mysql"

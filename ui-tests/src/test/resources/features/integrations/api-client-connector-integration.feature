@@ -46,7 +46,7 @@ Feature: Integration - DB to API
     Then click on the "Publish" button
 
     When navigate to the "Integrations" page
-    Then wait until integration "Todo integration" gets into "Published" state
+    Then wait until integration "Todo integration" gets into "Running" state
 
     When she goes to Todo app
     Then check Todo list grows in "15" second
