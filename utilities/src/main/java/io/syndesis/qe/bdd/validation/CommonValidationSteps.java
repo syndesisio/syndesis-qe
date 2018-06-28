@@ -53,12 +53,13 @@ public class CommonValidationSteps {
             log.error("Pod list: ");
             for (Pod pod : OpenShiftUtils.client().pods().list().getItems()) {
                 log.error(pod.getMetadata().getName());
+
+                if(pod.getMetadata().getName().contains(integrationName)) {
+                    log.error("....................Printing integration pod info...................");
+                    log.error(pod.toString());
+                    log.error(OpenShiftUtils.client().pods().withName(pod.getMetadata().getName()).getLog());
+                }
             }
-
-            final String iPodName = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().contains(integrationName)).findFirst().get().getMetadata().getName();
-            log.error("Integration pod: " + OpenShiftUtils.client().pods().withName(iPodName).toString());
-
-            log.error("Integration pod logs: " + OpenShiftUtils.client().pods().withName(iPodName).getLog());
         }
         Assertions.assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
