@@ -87,7 +87,7 @@ public class IntegrationSteps {
 
     @And("^start integration \"([^\"]*)\"$")
     public void startIntegration(String integrationName) {
-        detailPage.clickOnKebabMenuAction("Publish");
+        detailPage.clickOnKebabMenuAction("Start");
         ModalDialogPage modal = new ModalDialogPage();
         modal.getButton("OK").shouldBe(visible).click();
     }
