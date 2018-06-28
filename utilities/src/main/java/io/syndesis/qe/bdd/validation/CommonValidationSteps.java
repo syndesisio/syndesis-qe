@@ -47,7 +47,19 @@ public class CommonValidationSteps {
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
         final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
-        final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 10);
+        final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 9);
+        if (!activated) {
+            log.error("Integration was not active after 9 minutes");
+            log.error("Pod list: ");
+            for (Pod pod : OpenShiftUtils.client().pods().list().getItems()) {
+                log.error(pod.getMetadata().getName());
+            }
+
+            final String iPodName = OpenShiftUtils.getPodByPartialName(integrationName).getMetadata().getName();
+            log.error("Integration pod: " + OpenShiftUtils.getPodByPartialName(integrationName).toString());
+
+            log.error("Integration pod logs: " + OpenShiftUtils.client().pods().withName(iPodName).getLog());
+        }
         Assertions.assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
     }
