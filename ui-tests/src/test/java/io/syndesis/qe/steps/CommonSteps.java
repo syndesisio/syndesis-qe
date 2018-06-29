@@ -73,7 +73,8 @@ public class CommonSteps {
         SLACK,
         S3,
         FTP,
-        GOOGLE_MAIL
+        GOOGLE_MAIL,
+        TELEGRAM
     }
 
     @Autowired
@@ -81,7 +82,7 @@ public class CommonSteps {
 
     @And("^.*logs? out from Syndesis")
     public void logout() {
-        if(TestConfiguration.syndesisBrowser().equalsIgnoreCase("firefox")) {
+        if (TestConfiguration.syndesisBrowser().equalsIgnoreCase("firefox")) {
             Assert.fail("Logout does not work on firefox, issue: https://github.com/syndesisio/syndesis/issues/2561");
         }
         $(By.id("userDropdown")).shouldBe(visible).click();
@@ -146,7 +147,7 @@ public class CommonSteps {
     }
 
     @Given("^created connections$")
-    public void createConnections(DataTable connectionsData) {
+    public void createConnectionsAndValidate(DataTable connectionsData) {
         Connections connectionsPage = new Connections();
 
         ConfigureConnectionSteps configureConnectionSteps = new ConfigureConnectionSteps();
@@ -159,6 +160,11 @@ public class CommonSteps {
             String connectionCredentialsName = dataRow.get(1);
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
+            boolean validate = true;
+            if ((dataRow.size() == 5) && "no validation".equals(dataRow.get(4))) {
+                log.info("I AM HERE");
+                validate = false;
+            }
 
             if (connectionType.equalsIgnoreCase("Gmail")) {
                 GMailUtils.createAccessToken();
@@ -183,9 +189,10 @@ public class CommonSteps {
 
                 // do nothing if connection does not require any credentials
                 if (!connectionCredentialsName.equalsIgnoreCase("no credentials")) {
-
-                    clickOnButton("Validate");
-                    successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                    if (validate) {
+                        clickOnButton("Validate");
+                        successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                    }
                     scrollTo("top", "right");
                     clickOnButton("Next");
                 }
@@ -198,7 +205,7 @@ public class CommonSteps {
         }
     }
 
-    @And("^.*validate credentials$")
+    @And("^validate credentials$")
     public void validateCredentials() {
         Map<String, Account> accounts = AccountsDirectory.getInstance().getAccounts();
         List<List<String>> oneAccountList = new ArrayList<>();
@@ -212,11 +219,10 @@ public class CommonSteps {
                 Credentials current;
                 try {
                     current = Credentials.valueOf(service.toUpperCase().replace(" ", "_"));
-                }  catch (IllegalArgumentException ex) {
+                } catch (IllegalArgumentException ex) {
                     log.error("Unable to find enum value for " + service.toUpperCase().replace(" ", "_") + " account. Skipping");
                     return;
                 }
-
                 switch (current) {
                     case DROPBOX:
                         service = "DropBox";
@@ -235,6 +241,8 @@ public class CommonSteps {
                     case GOOGLE_MAIL:
                         service = "Gmail";
                         break;
+                    case TELEGRAM:
+                        return; //there is no 'Validate' button in Telegram connection for the time being.
                     default:
                         return; //skip for other cred
                 }
@@ -257,7 +265,7 @@ public class CommonSteps {
         log.debug("Final status of list: " + oneAccountList.toString());
         DataTable accountsTalbe = DataTable.create(oneAccountList);
 
-        createConnections(accountsTalbe);
+        createConnectionsAndValidate(accountsTalbe);
     }
 
     @When("^navigate to the \"([^\"]*)\" page$")
@@ -462,12 +470,12 @@ public class CommonSteps {
      *
      * @param data data
      */
-    @Then("^.*fills? in values$")
+    @Then("fill in values$")
     public void fillForm(DataTable data) {
         new Form(new SyndesisRootPage().getRootElement()).fillByLabel(data.asMap(String.class, String.class));
     }
 
-    @When("^.*create connections using oauth$")
+    @When("create connections using oauth$")
     public void createConnectionsUsingOAuth(DataTable connectionsData) {
 
         List<List<String>> dataTable = connectionsData.raw();
@@ -477,7 +485,7 @@ public class CommonSteps {
         }
     }
 
-    @When("^.*create connection \"([^\"]*)\" with name \"([^\"]*)\" using oauth$")
+    @When("create connection \"([^\"]*)\" with name \"([^\"]*)\" using oauth$")
     public void createConnectionUsingOAuth(String connectorName, String newConnectionName) {
         Connections connectionsPage = new Connections();
         NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
@@ -513,7 +521,9 @@ public class CommonSteps {
         clickOnButton("Create");
     }
 
-    public void doOAuthValidation(String type) {
+    //AUXILIARIES:
+
+    private void doOAuthValidation(String type) {
         clickOnButton("Connect " + type);
         //give it time to redirect
         TestUtils.sleepForJenkinsDelayIfHigher(4);

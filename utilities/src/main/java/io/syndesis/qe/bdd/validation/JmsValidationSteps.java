@@ -1,5 +1,6 @@
 package io.syndesis.qe.bdd.validation;
 
+import cucumber.api.PendingException;
 import cz.xtf.jms.JmsClient;
 import org.assertj.core.api.Assertions;
 
