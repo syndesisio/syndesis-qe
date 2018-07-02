@@ -36,7 +36,7 @@ public class IntegrationsList extends RowList {
             case DELETE:
                 kebabMenu.open();
                 kebabMenu.getItemElement("Delete").shouldBe(visible).click();
-                new ModalDialogPage().getButton("OK").shouldBe(visible).click();
+                new ModalDialogPage().getButton("Delete").shouldBe(visible).click();
                 break;
             default:
                 super.invokeActionOnItem(title, action);
