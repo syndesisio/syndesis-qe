@@ -24,7 +24,6 @@ Feature: Integration - Import Export
     # select twitter connection
     When select the "Twitter Listener" connection
     And select "Mention" integration action
-    And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
     # select salesforce connection
