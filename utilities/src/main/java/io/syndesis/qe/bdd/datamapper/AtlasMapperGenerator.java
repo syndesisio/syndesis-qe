@@ -37,7 +37,6 @@ import io.atlasmap.xml.v2.XmlDataSource;
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.action.StepAction;
 import io.syndesis.common.model.action.StepDescriptor;
 import io.syndesis.common.model.integration.Step;
@@ -73,8 +72,8 @@ public class AtlasMapperGenerator {
      */
     private void processPrecedingSteps(List<StepDefinition> precedingSteps) {
         for (StepDefinition s : precedingSteps) {
-            String stepSpecification = s.getConnectorDescriptor().get().getOutputDataShape().get().getSpecification();
-            DataShapeKinds dsKind = s.getConnectorDescriptor().get().getOutputDataShape().get().getKind();
+            String stepSpecification = s.getStep().getAction().get().getOutputDataShape().get().getSpecification();
+            DataShapeKinds dsKind = s.getStep().getAction().get().getOutputDataShape().get().getKind();
             s.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
         }
     }
@@ -86,8 +85,8 @@ public class AtlasMapperGenerator {
      * @param followingStep
      */
     private void processFolowingStep(StepDefinition followingStep) {
-        String stepSpecification = followingStep.getConnectorDescriptor().get().getInputDataShape().get().getSpecification();
-        DataShapeKinds dsKind = followingStep.getConnectorDescriptor().get().getInputDataShape().get().getKind();
+        String stepSpecification = followingStep.getStep().getAction().get().getInputDataShape().get().getSpecification();
+        DataShapeKinds dsKind = followingStep.getStep().getAction().get().getInputDataShape().get().getKind();
         followingStep.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
     }
 
@@ -110,7 +109,6 @@ public class AtlasMapperGenerator {
         if (dsKind.equals(DataShapeKinds.JAVA)) {
             try {
                 JavaClass jClass = mapper.readValue(dataShapeSpecification, JavaClass.class);
-                jClass = mapper.readValue(dataShapeSpecification, JavaClass.class);
                 List<JavaField> jfields = getJavaFields(jClass);
                 fields = jfields.stream().map(f -> (Field) f).collect(Collectors.toList());
             } catch (IOException e) {
@@ -141,7 +139,7 @@ public class AtlasMapperGenerator {
     private List<DataSource> processSources(List<StepDefinition> precedingSteps) {
         List<DataSource> sources = new ArrayList<>();
         for (StepDefinition s : precedingSteps) {
-            DataShape outDataShape = s.getConnectorDescriptor().get().getOutputDataShape().get();
+            DataShape outDataShape = s.getStep().getAction().get().getOutputDataShape().get();
             sources.add(createDataSource(outDataShape, s, DataSourceType.SOURCE));
         }
         return sources;
@@ -154,9 +152,8 @@ public class AtlasMapperGenerator {
      * @return
      */
     private DataSource processTarget(StepDefinition followingStep) {
-        DataSource target = null;
-        DataShape inDataShape = followingStep.getConnectorDescriptor().get().getInputDataShape().get();
-        target = createDataSource(inDataShape, followingStep, DataSourceType.TARGET);
+        DataShape inDataShape = followingStep.getStep().getAction().get().getInputDataShape().get();
+        DataSource target = createDataSource(inDataShape, followingStep, DataSourceType.TARGET);
         return target;
     }
 
@@ -233,7 +230,7 @@ public class AtlasMapperGenerator {
                 .stepKind(StepKind.mapper)
                 .name(mapping.getStep().getName())
                 .configuredProperties(TestUtils.map("atlasmapping", mapperString))
-                .action(getMapperStepAction(followingStep.getConnectorDescriptor().get()))
+                .action(getMapperStepAction(followingStep.getStep().getAction().get().getInputDataShape().get()))
                 .id(UUID.randomUUID().toString())
                 .build();
 
@@ -425,17 +422,17 @@ public class AtlasMapperGenerator {
      * is "DataShapeKin.ANY" - marks it takes all the preceeding dataOutputShapes from preceeding steps. The
      * outputDataShape corresponds to the inputDataShape of the following step.
      *
-     * @param outputConnectorDescriptor
+     * @param outputConnectorInputDataShape
      * @return
      */
-    public Action getMapperStepAction(ConnectorDescriptor outputConnectorDescriptor) {
+    public Action getMapperStepAction(DataShape outputConnectorInputDataShape) {
         ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
         Action ts = new StepAction.Builder().descriptor(new StepDescriptor.Builder().build()).build();
         try {
             DataShape inputDataShape = new DataShape.Builder().kind(DataShapeKinds.ANY).name("All preceding outputs").build();
             JSONObject json = new JSONObject(mapper.writeValueAsString(ts));
             JSONObject inputDataType = new JSONObject(mapper.writeValueAsString(inputDataShape));
-            JSONObject outputDataType = new JSONObject(mapper.writeValueAsString(outputConnectorDescriptor.getInputDataShape().get()));
+            JSONObject outputDataType = new JSONObject(mapper.writeValueAsString(outputConnectorInputDataShape));
 
             json.getJSONObject("descriptor").put("inputDataShape", inputDataType);
             json.getJSONObject("descriptor").put("outputDataShape", outputDataType);
