@@ -31,7 +31,6 @@ Feature: Integration - DB to API
 
     Then select the "Todo connection" connection
     And select "Create new task" integration action
-    And click on the "Done" button
 
     Then click on the "Add a Step" button
     When select "Data Mapper" integration step
