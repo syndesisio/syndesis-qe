@@ -82,6 +82,8 @@ Feature: Integration - Salesforce to DB
     Then wait until integration "Salesforce to PostresDB E2E" gets into "Running" state
 #    VALIDATION:
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
+    # give it more time to propagate lead from sf to db
+    And sleep for jenkins delay or "10" seconds
     And validate DB created new lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk"
 #    And remove all records from table "todo"
     Given clean SF, removes all leads with email: "k1stieranka1@istrochem.sk"
