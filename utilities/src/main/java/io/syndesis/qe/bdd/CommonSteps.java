@@ -65,7 +65,7 @@ public class CommonSteps {
     public void waitForSyndesis() {
         EnumSet<Component> components = EnumSet.allOf(Component.class);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(components.size());
         components.forEach(c -> {
             Runnable runnable = () ->
                     OpenShiftUtils.xtf().waiters()
@@ -78,7 +78,7 @@ public class CommonSteps {
 
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(10, TimeUnit.MINUTES)) {
+            if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
                 Assertions.fail("Syndesis wasn't initilized in time");
             }
