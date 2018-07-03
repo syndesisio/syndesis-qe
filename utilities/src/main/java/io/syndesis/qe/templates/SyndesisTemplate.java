@@ -75,6 +75,7 @@ public class SyndesisTemplate {
         templateParams.put("OPENSHIFT_PROJECT", TestConfiguration.openShiftNamespace());
         templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
         templateParams.put("TEST_SUPPORT_ENABLED", "true");
+        templateParams.put("MAX_INTEGRATIONS_PER_USER", "5");
         // process & create
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         OpenShiftUtils.getInstance().createResources(processedTemplate);

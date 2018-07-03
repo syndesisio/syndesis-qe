@@ -154,7 +154,7 @@ public class ConnectionsGeneralSteps {
         connectionsEndpoint.create(ftpConnection);
     }
 
-    @Given("^create the AMQ connection")
+    @Given("^create AMQ connection")
     public void createAmqConnection() {
         final Connector amqConnector = connectorsEndpoint.get("activemq");
         final Account amqAccount = accountsDirectory.getAccount("AMQ").get();
@@ -171,8 +171,27 @@ public class ConnectionsGeneralSteps {
                 .icon("fa-puzzle-piece")
                 .tags(Arrays.asList("amq", "activemq"))
                 .build();
-        log.info("Creating amq connection {}", amqConnection.getName());
+        log.info("Creating ActiveMQ connection {}", amqConnection.getName());
         connectionsEndpoint.create(amqConnection);
+    }
+
+    @Given("^create Kafka connection$")
+    public void createKafkaConnection() {
+        final Connector kafkaConnector = connectorsEndpoint.get("kafka");
+        final Account kafkaAccount = accountsDirectory.getAccount("kafka").get();
+        final Connection kafkaConnection = new Connection.Builder()
+                .name("Fuse QE Kafka")
+                .connector(kafkaConnector)
+                .connectorId(getConnectorId(kafkaConnector))
+                .id(RestConstants.KAFKA_CONNECTION_ID)
+                .configuredProperties(TestUtils.map(
+                        "brokers", kafkaAccount.getProperty("brokerUrl")
+                ))
+                .icon("fa-puzzle-piece")
+                .tags(Arrays.asList("kafka"))
+                .build();
+        log.info("Creating Kafka connection {}", kafkaConnection.getName());
+        connectionsEndpoint.create(kafkaConnection);
     }
 
     private String getConnectorId(Connector connector) {

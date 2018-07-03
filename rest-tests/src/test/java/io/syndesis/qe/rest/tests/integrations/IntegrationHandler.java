@@ -4,8 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +55,6 @@ public class IntegrationHandler {
                 .build();
 
         log.info("Creating integration {}", integration.getName());
-        log.debug("Integration request: *{}*", Entity.entity(integration, MediaType.APPLICATION_JSON));
 
         String integrationId = integrationsEndpoint.create(integration).getId().get();
         log.info("Publish integration with ID: {}", integrationId);
