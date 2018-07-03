@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AmqTemplate {
 
     public static void deploy() {
-        Template template = null;
+        Template template;
         try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
             template = OpenShiftUtils.client().templates().load(is).get();
         } catch (IOException ex) {
@@ -41,7 +41,7 @@ public class AmqTemplate {
         try {
             OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
         } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for syndesis-server failed ", e);
+            log.error("Wait for broker failed ", e);
         }
 
         //this is not part of deployment, but let's have it the same method:
@@ -69,7 +69,6 @@ public class AmqTemplate {
         openwireAccountParameters.put("username", "amq");
         openwireAccountParameters.put("password", "topSecret");
         openwireAccountParameters.put("brokerUrl", "tcp://broker-amq:61616");
-        //openwireAccountParameters.put("clientID", UUID.randomUUID().toString());
         openwireAccount.setService("amq");
         openwireAccount.setProperties(openwireAccountParameters);
 

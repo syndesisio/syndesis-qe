@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.apache.activemq.command.ActiveMQBytesMessage;
+import org.apache.activemq.command.ActiveMQTextMessage;
 
 import org.assertj.core.api.Assertions;
 
@@ -13,6 +14,7 @@ import com.force.api.ApiException;
 import com.force.api.ForceApi;
 import com.force.api.QueryResult;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 
 import java.util.List;
@@ -79,6 +81,7 @@ public class SfValidationSteps {
         lead.setCompany(companyName);
         lead.setEmail(email);
         leadId = salesforce.createSObject("lead", lead);
+        log.debug("Created lead with id " + leadId);
     }
 
     @Then("^delete lead from SF with email: \"([^\"]*)\"")
@@ -175,7 +178,18 @@ public class SfValidationSteps {
     @Then("^verify that lead json object was received from queue \"([^\"]*)\"$")
     public void verifyLeadJsonReceived(String queueName) {
         Message m = getMessageFromQueue(queueName);
-        final String message = new String(((ActiveMQBytesMessage)m).getContent().getData());
+        String message = null;
+        if (m instanceof ActiveMQBytesMessage) {
+            message = new String(((ActiveMQBytesMessage)m).getContent().getData());
+        } else {
+            try {
+                message = ((ActiveMQTextMessage) m).getText();
+            } catch (JMSException e) {
+                log.error("Unable to get text from message", e);
+                e.printStackTrace();
+            }
+        }
+        log.debug("Got message: " + message);
         assertThat(message).contains(leadId);
     }
 

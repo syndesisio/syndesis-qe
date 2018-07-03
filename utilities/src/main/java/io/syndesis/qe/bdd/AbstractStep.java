@@ -9,6 +9,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import java.io.IOException;
 import java.util.Map;
 
+import io.syndesis.common.model.DataShape;
+import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.util.Json;
@@ -48,5 +50,36 @@ public abstract class AbstractStep {
             log.error("Error: " + ex);
         }
         return ts;
+    }
+
+    /**
+     * Sets the custom datashape to the action object.
+     * @param action action
+     * @param connectorDescriptor action's connector descriptor to fill other values
+     * @param direction "in" for InputDataShape, "out" for OutputDataShape
+     * @param kind {@link DataShapeKinds} value
+     * @param datashape Datashape specification
+     * @return action object with datashapes
+     */
+    public Action withCustomDatashape(Action action, ConnectorDescriptor connectorDescriptor, String direction, DataShapeKinds kind, String datashape) {
+        // This will set datashapes and property definitions from the connectorDescriptor
+        Action a = generateStepAction(action, connectorDescriptor);
+        ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
+        try {
+            JSONObject json = new JSONObject(mapper.writeValueAsString(a));
+            DataShape ds = new DataShape.Builder()
+                    .name(kind.toString())
+                    .description(kind.toString())
+                    .kind(kind)
+                    .specification(datashape)
+                    .build();
+
+            json.getJSONObject("descriptor").put("in".equals(direction) ? "inputDataShape" : "outputDataShape", new JSONObject(mapper.writeValueAsString(ds)));
+
+            a = Json.reader().forType(Action.class).readValue(json.toString());
+        } catch (IOException ex) {
+            log.error("Error: " + ex);
+        }
+        return a;
     }
 }

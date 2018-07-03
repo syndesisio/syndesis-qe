@@ -1,58 +1,51 @@
-package io.syndesis.qe.steps.other;
+package io.syndesis.qe.utils;
 
-import cucumber.api.java.en.When;
-import io.syndesis.qe.TestConfiguration;
-import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import static org.assertj.core.api.Assertions.fail;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
-import static io.fabric8.kubernetes.client.dsl.base.OperationSupport.JSON;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-@Slf4j
-public class InvokeHtmlRequest {
-
-    /**
-     * @param webhookToken token set when creating the integration
-     * @param body
-     * @throws IOException
-     */
-    @When("^.*invoke post request to integration \"([^\"]*)\" with webhook \"([^\"]*)\" and body (.*)$")
-    public void invokeRequest(String integrationName, String webhookToken, String body) throws IOException {
-        log.info("Body to set: " + body);
-        //example of webhook url: "https://i-webhook-test-syndesis.192.168.42.2.nip.io/webhook/test-webhook"
-        String combinedUrl = TestConfiguration.syndesisUrl()
-                .replace("syndesis", "i-" + integrationName + "-syndesis") + "/webhook/" + webhookToken;
-        log.info("Combined URL: " + combinedUrl);
-
-        assertThat(doPostRequest(combinedUrl, body))
-                .isEqualTo(204);
+public final class HttpUtils {
+    private HttpUtils() {
     }
 
-    private int doPostRequest(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
+    public static Response doPostRequest(String url, String content) {
+        return doPostRequest(url, content, "application/json", null);
+    }
+
+    public static Response doPostRequest(String url, String content, String contentType, Headers headers) {
+        RequestBody body = RequestBody.create(MediaType.parse(contentType), content);
+        Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
-                .post(body)
-                .build();
-        Response response = getClient().newCall(request).execute();
-        return response.code();
+                .post(body);
+        if (headers != null) {
+            requestBuilder.headers(headers);
+        }
+
+        try {
+            return getClient().newCall(requestBuilder.build()).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    private OkHttpClient getClient() {
+    private static OkHttpClient getClient() {
         // Create a trust manager that does not validate certificate chains
         final TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
