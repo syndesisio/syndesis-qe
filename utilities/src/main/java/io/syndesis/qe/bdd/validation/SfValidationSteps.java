@@ -48,7 +48,7 @@ public class SfValidationSteps {
 
     public SfValidationSteps() {
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
+        final Account salesforceAccount = accountsDirectory.getAccount("QE Salesforce").get();
         salesforce = new ForceApi(new ApiConfig()
                 .setClientId(salesforceAccount.getProperty("clientId"))
                 .setClientSecret(salesforceAccount.getProperty("clientSecret"))

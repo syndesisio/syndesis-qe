@@ -185,7 +185,7 @@ public class CommonSteps {
                 if (!connectionCredentialsName.equalsIgnoreCase("no credentials")) {
 
                     clickOnButton("Validate");
-                    successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                    successNotificationIsPresentWithError(connectionType + " has been successfully validated.");
                     scrollTo("top", "right");
                     clickOnButton("Next");
                 }
@@ -367,9 +367,9 @@ public class CommonSteps {
 
     @Then("^check visibility of \"([^\"]*)\" in alert-success notification$")
     public void successNotificationIsPresentWithError(String textMessage) {
-        SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-success");
-        allertSucces.shouldBe(visible);
-        Assertions.assertThat(allertSucces.getText().equals(textMessage)).isTrue();
+        SelenideElement successAlert = new SyndesisRootPage().getElementByClassName("alert-success");
+        successAlert.shouldBe(visible);
+        Assertions.assertThat(successAlert.getText()).isEqualTo(textMessage);
 
         log.info("Text message {} was found.", textMessage);
     }

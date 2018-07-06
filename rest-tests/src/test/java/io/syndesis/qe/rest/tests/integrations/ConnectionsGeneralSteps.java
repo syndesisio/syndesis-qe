@@ -45,7 +45,7 @@ public class ConnectionsGeneralSteps {
                 .connector(twitterConnector)
                 .connectorId(getConnectorId(twitterConnector))
                 .id(RestConstants.TWITTER_CONNECTION_ID)
-                .name("New Fuse QE twitter listen")
+                .name("Fuse QE twitter listen")
                 .configuredProperties(TestUtils.map(
                         "accessToken", twitterAccount.getProperty("accessToken"),
                         "accessTokenSecret", twitterAccount.getProperty("accessTokenSecret"),
@@ -61,8 +61,7 @@ public class ConnectionsGeneralSteps {
 
     @Given("^create SF connection")
     public void createSalesforceConnection() {
-
-        final Account salesforceAccount = accountsDirectory.getAccount("salesforce").get();
+        final Account salesforceAccount = accountsDirectory.getAccount("QE Salesforce").get();
         final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
 
         final Connection salesforceConnection = new Connection.Builder()
@@ -70,7 +69,7 @@ public class ConnectionsGeneralSteps {
                 .connectorId(getConnectorId(salesforceConnector))
                 .id(RestConstants.SALESFORCE_CONNECTION_ID)
                 .icon("fa-puzzle-piece")
-                .name("New Fuse QE salesforce")
+                .name("Fuse QE salesforce")
                 .configuredProperties(TestUtils.map(
                         "clientId", salesforceAccount.getProperty("clientId"),
                         "clientSecret", salesforceAccount.getProperty("clientSecret"),
@@ -96,7 +95,7 @@ public class ConnectionsGeneralSteps {
                 .connectorId(getConnectorId(dropboxConnector))
                 .id(RestConstants.DROPBOX_CONNECTION_ID)
                 .icon("fa-dropbox")
-                .name("New Fuse QE Dropbox")
+                .name("Fuse QE Dropbox")
                 .configuredProperties(TestUtils.map(
                         "accessToken", dropboxAccount.getProperty("accessToken"),
                         "clientIdentifier", dropboxAccount.getProperty("clientIdentifier")))
@@ -118,7 +117,7 @@ public class ConnectionsGeneralSteps {
                 .connector(s3Connector)
                 .connectorId(getConnectorId(s3Connector))
                 .id(S3BucketNameBuilder.getBucketName(s3Bucket))
-                .name("New Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
+                .name("Fuse QE s3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
                 .icon("fa-puzzle-piece")
                 .configuredProperties(TestUtils.map(
                         "accessKey", s3Account.getProperty("accessKey"),
@@ -143,7 +142,7 @@ public class ConnectionsGeneralSteps {
                 .connector(ftpConnector)
                 .connectorId(getConnectorId(ftpConnector))
                 .id(RestConstants.FTP_CONNECTION_ID)
-                .name("New Fuse QE FTP")
+                .name("Fuse QE FTP")
                 .configuredProperties(TestUtils.map(
                         "host", ftpAccount.getProperty("host"),
                         "port", ftpAccount.getProperty("port")
