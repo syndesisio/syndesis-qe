@@ -20,7 +20,7 @@ Feature: Connection - CRUD
 
     When fill in "Twitter Listener" connection details
     Then click on the "Validate" button
-    Then check visibility of "Twitter has been successfully validated" in alert-success notification
+    Then check visibility of "Twitter has been successfully validated." in alert-success notification
 
     Then scroll "top" "right"
     And click on the "Next" button
@@ -87,7 +87,7 @@ Feature: Connection - CRUD
 
     When fill in "Twitter Listener" connection details
     Then click on the "Validate" button
-    Then check visibility of "Twitter has been successfully validated" in alert-success notification
+    Then check visibility of "Twitter has been successfully validated." in alert-success notification
 
     Then scroll "top" "right"
     And click on the "Next" button
