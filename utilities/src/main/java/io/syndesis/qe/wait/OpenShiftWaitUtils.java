@@ -236,11 +236,12 @@ public class OpenShiftWaitUtils {
     public static void waitForPodIsReloaded(String podPartialName) throws InterruptedException, TimeoutException {
         Pod pod = OpenShiftUtils.getPodByPartialName(podPartialName);
         int currentNr = OpenShiftUtils.extractPodSequenceNr(pod);
+        log.info("Current pod number: " + currentNr);
         int nextNr = currentNr + 1;
 
         String podPartialNextName = podPartialName + "-" + nextNr;
-        log.info("Waiting for {} pod is reloaded", podPartialName);
-        waitFor(() -> (areExactlyNPods(podPartialName, 1).getAsBoolean() && areExactlyNPods(podPartialNextName, 1).getAsBoolean()));
+        log.info("Waiting for {} pod is reloaded", podPartialNextName);
+        waitFor(() -> (areExactlyNPods(podPartialNextName, 1).getAsBoolean()));
         log.info("Pod {} is READY!", podPartialName);
     }
 }

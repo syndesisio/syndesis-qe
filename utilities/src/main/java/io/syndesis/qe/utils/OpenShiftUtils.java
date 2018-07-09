@@ -93,7 +93,11 @@ public final class OpenShiftUtils {
     }
 
     public static Pod getPodByPartialName(String partialName) {
-        Optional<Pod> oPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getGenerateName().contains(partialName)).findFirst();
+        Optional<Pod> oPod = OpenShiftUtils.getInstance().getPods().stream()
+                .filter(p -> p.getMetadata().getName().contains(partialName))
+                .filter(p -> !p.getMetadata().getName().contains("deploy"))
+                .filter(p -> !p.getMetadata().getName().contains("build"))
+                .findFirst();
         Assertions.assertThat(oPod.isPresent()).isTrue();
         return oPod.get();
     }
