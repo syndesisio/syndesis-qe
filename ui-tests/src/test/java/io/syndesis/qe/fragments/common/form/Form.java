@@ -1,6 +1,5 @@
 package io.syndesis.qe.fragments.common.form;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +48,7 @@ public class Form {
         switch (fillBy) {
             case ID:
                 attribute = "id";
-                inputs.add(getRootElement().findAll(By.tagName("textarea")).first());
+                inputs.addAll(getRootElement().findAll(By.tagName("textarea")));
                 break;
             case NAME:
                 attribute = "name";
@@ -63,8 +62,11 @@ public class Form {
         }
 
         List<String> keys = new ArrayList<>();
+        log.debug("Size of inputs is " + inputs.size());
 
         for (SelenideElement input : inputs) {
+            log.trace("Current input is:");
+            log.trace(input.toString());
             String name = input.getAttribute(attribute);
             keys.add(name);
         }
