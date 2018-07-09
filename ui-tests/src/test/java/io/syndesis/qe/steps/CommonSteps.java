@@ -1,39 +1,11 @@
 package io.syndesis.qe.steps;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
-
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.junit.Assert;
-
-import org.assertj.core.api.Assertions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -57,6 +29,30 @@ import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class CommonSteps {
@@ -73,7 +69,8 @@ public class CommonSteps {
         SLACK,
         S3,
         FTP,
-        GOOGLE_MAIL
+        GOOGLE_MAIL,
+        SAP_CONCUR
     }
 
     @Autowired
@@ -81,7 +78,7 @@ public class CommonSteps {
 
     @And("^.*logs? out from Syndesis")
     public void logout() {
-        if(TestConfiguration.syndesisBrowser().equalsIgnoreCase("firefox")) {
+        if (TestConfiguration.syndesisBrowser().equalsIgnoreCase("firefox")) {
             Assert.fail("Logout does not work on firefox, issue: https://github.com/syndesisio/syndesis/issues/2561");
         }
         $(By.id("userDropdown")).shouldBe(visible).click();
@@ -89,7 +86,7 @@ public class CommonSteps {
 
         TestUtils.sleepIgnoreInterrupt(2000);
 
-        Assertions.assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
+        assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
                 .containsIgnoringCase("login");
     }
 
@@ -212,7 +209,7 @@ public class CommonSteps {
                 Credentials current;
                 try {
                     current = Credentials.valueOf(service.toUpperCase().replace(" ", "_"));
-                }  catch (IllegalArgumentException ex) {
+                } catch (IllegalArgumentException ex) {
                     log.error("Unable to find enum value for " + service.toUpperCase().replace(" ", "_") + " account. Skipping");
                     return;
                 }
@@ -234,6 +231,9 @@ public class CommonSteps {
                         break;
                     case GOOGLE_MAIL:
                         service = "Gmail";
+                        break;
+                    case SAP_CONCUR:
+                        service = "SAP Concur";
                         break;
                     default:
                         return; //skip for other cred
@@ -369,7 +369,7 @@ public class CommonSteps {
     public void successNotificationIsPresentWithError(String textMessage) {
         SelenideElement successAlert = new SyndesisRootPage().getElementByClassName("alert-success");
         successAlert.shouldBe(visible);
-        Assertions.assertThat(successAlert.getText()).isEqualTo(textMessage);
+        assertThat(successAlert.getText()).isEqualTo(textMessage);
 
         log.info("Text message {} was found.", textMessage);
     }
@@ -492,7 +492,7 @@ public class CommonSteps {
         ElementsCollection connections = connectionsPage.getAllConnections();
         connections = connections.filter(exactText(newConnectionName));
 
-        Assertions.assertThat(connections.size()).as("Connection with name {} already exists!", newConnectionName)
+        assertThat(connections.size()).as("Connection with name " + newConnectionName + " already exists!")
                 .isEqualTo(0);
 
         clickOnButton("Create Connection");
@@ -508,7 +508,7 @@ public class CommonSteps {
         //give it time to redirect
         TestUtils.sleepForJenkinsDelayIfHigher(4);
 
-        Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+        assertThat(WebDriverRunner.currentFrameUrl())
                 .containsIgnoringCase("Successfully%20authorized")
                 .containsIgnoringCase("connections/create");
 
@@ -517,33 +517,43 @@ public class CommonSteps {
         clickOnButton("Create");
     }
 
-    public void doOAuthValidation(String type) {
+    private void doOAuthValidation(String type) {
         clickOnButton("Connect " + type);
         //give it time to redirect
-        TestUtils.sleepForJenkinsDelayIfHigher(4);
-
-        if (type.equalsIgnoreCase("Twitter")) {
-            fillAndValidateTwitter();
-        } else if (type.equalsIgnoreCase("Salesforce")) {
-            fillAndValidateSalesforce();
+        TestUtils.sleepIgnoreInterrupt(10 * 1000);
+        switch (type) {
+            case "Twitter":
+                fillAndValidateTwitter();
+                break;
+            case "Salesforce":
+                fillAndValidateSalesforce();
+                break;
+            case "Gmail":
+                fillAndValidateGmail();
+                break;
+            case "SAP Concur":
+                fillAndValidateConcur();
+                break;
+            default:
+                fail("Unknown oauth option: " + type);
         }
     }
 
     private void fillAndValidateTwitter() {
-        Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+        assertThat(WebDriverRunner.currentFrameUrl())
                 .containsIgnoringCase("twitter");
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("Twitter Listener");
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount("Twitter Listener");
 
-        if (optional.isPresent()) {
+        if (account.isPresent()) {
 
-            $(By.id("username_or_email")).shouldBe(visible).sendKeys(optional.get().getProperty("login"));
-            $(By.id("password")).shouldBe(visible).sendKeys(optional.get().getProperty("password"));
+            $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.get().getProperty("login"));
+            $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
             $(By.id("allow")).shouldBe(visible).click();
 
             //give it time to redirect back on syndesis
             TestUtils.sleepForJenkinsDelayIfHigher(4);
 
-            Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+            assertThat(WebDriverRunner.currentFrameUrl())
                     .containsIgnoringCase("Successfully%20authorized");
         } else {
 
@@ -552,14 +562,14 @@ public class CommonSteps {
     }
 
     private void fillAndValidateSalesforce() {
-        Assertions.assertThat(WebDriverRunner.currentFrameUrl())
+        assertThat(WebDriverRunner.currentFrameUrl())
                 .containsIgnoringCase("salesforce");
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Salesforce");
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Salesforce");
 
-        if (optional.isPresent()) {
+        if (account.isPresent()) {
 
-            $(By.id("username")).shouldBe(visible).sendKeys(optional.get().getProperty("userName"));
-            $(By.id("password")).shouldBe(visible).sendKeys(optional.get().getProperty("password"));
+            $(By.id("username")).shouldBe(visible).sendKeys(account.get().getProperty("userName"));
+            $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
             $(By.id("Login")).shouldBe(visible).click();
             //give it time to log in
             TestUtils.sleepForJenkinsDelayIfHigher(4);
@@ -570,5 +580,29 @@ public class CommonSteps {
         } else {
             Assert.fail("Credentials for Salesforce were not found.");
         }
+    }
+
+    private void fillAndValidateGmail() {
+        assertThat(WebDriverRunner.currentFrameUrl())
+                .containsIgnoringCase("google");
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Google Mail");
+
+        if (account.isPresent()) {
+
+            $(By.id("identifierId")).shouldBe(visible).sendKeys(account.get().getProperty("email"));
+            $(By.id("identifierNext")).shouldBe(visible).click();
+
+            $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(account.get().getProperty("password"));
+            $(By.id("passwordNext")).shouldBe(visible).click();
+            //give it time to log in
+            TestUtils.sleepForJenkinsDelayIfHigher(4);
+
+        } else {
+            Assert.fail("Credentials for Salesforce were not found.");
+        }
+    }
+
+    private void fillAndValidateConcur() {
+        //  TODO: SAP connection validation when issue with concur credentials and oauth callback is resolved
     }
 }
