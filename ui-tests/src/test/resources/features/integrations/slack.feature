@@ -1,3 +1,5 @@
+# @sustainer: mcada@redhat.com
+
 @slack
 Feature: Slack Connector
 

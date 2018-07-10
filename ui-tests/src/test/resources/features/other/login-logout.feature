@@ -1,3 +1,5 @@
+# @sustainer: mcada@redhat.com
+
 @logout-test
 Feature: Login logout
 

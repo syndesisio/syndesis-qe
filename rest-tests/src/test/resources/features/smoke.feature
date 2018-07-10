@@ -1,3 +1,5 @@
+# @sustainer: tplevko@redhat.com
+
 @smoke
 Feature: Representative rest test
 

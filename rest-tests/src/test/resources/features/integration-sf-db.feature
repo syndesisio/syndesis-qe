@@ -1,3 +1,5 @@
+# @sustainer: tplevko@redhat.com
+
 Feature: Integration - Salesforce to DB
 
   Background: Clean application state
