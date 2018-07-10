@@ -142,7 +142,7 @@ Feature: Integration - Import Export
     And check visibility of alert notification
 
     Then click on the "Edit" button
-    And fill in "Salesforce" connection details from connection edit page
+    And fill in "QE Salesforce" connection details from connection edit page
     And click on the "Validate" button
     And check visibility of success notification
     And click on the "Save" button

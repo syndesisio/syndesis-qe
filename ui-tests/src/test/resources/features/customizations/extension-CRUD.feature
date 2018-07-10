@@ -66,7 +66,7 @@ Feature: Customization - Extensions CRUD
     Then check visibility of page "Extensions"
 
     When select "Delete" action on "Log Message Body" technical extension
-    Then check visibility of dialog page "Warning!"
+    Then check visibility of dialog page "Confirm Delete?"
 
     When click on the modal dialog "Delete" button
     Then check that technical extension "Log Message Body" is not visible
