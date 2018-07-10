@@ -26,7 +26,7 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     private static class Input {
         public static By CHOOSE_FILE = By.xpath("//input[@type='file']");
         public static By URL = By.name("swaggerFileUrl");
-        public static By UPLOAD_A_SWAGGER_FILE = By.xpath("//input[@type='radio' and ../text()[contains(.,'Upload a Swagger file')]]");
+        public static By UPLOAD_A_OPENAPI_FILE = By.xpath("//input[@type='radio' and ../text()[contains(.,'Upload a OpenAPI file')]]");
         public static By USE_A_URL = By.xpath("//input[@type='radio' and ../text()[contains(.,'Use a URL')]]");
     }
 
@@ -59,7 +59,7 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     }
 
     public void uploadFileFromPath(String path) {
-        $(Input.UPLOAD_A_SWAGGER_FILE).shouldBe(visible).click();
+        $(Input.UPLOAD_A_OPENAPI_FILE).shouldBe(visible).click();
         $(Input.CHOOSE_FILE).shouldBe(visible).uploadFile(new File(getClass().getClassLoader().getResource(path).getFile()));
     }
 
