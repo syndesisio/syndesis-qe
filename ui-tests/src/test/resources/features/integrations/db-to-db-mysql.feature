@@ -1,3 +1,5 @@
+# @sustainer: mastepan@redhat.com
+
 @integrations-db-to-db-mysql
 Feature: Integration - DB to DB mysql
 
