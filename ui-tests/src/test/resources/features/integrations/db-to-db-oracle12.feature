@@ -1,3 +1,5 @@
+# @sustainer: mastepan@redhat.com
+
 @integrations-db-to-db-oracle12
 Feature: Integration - DB to DB oracle12
 

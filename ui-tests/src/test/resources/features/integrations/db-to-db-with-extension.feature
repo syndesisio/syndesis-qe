@@ -1,3 +1,5 @@
+# @sustainer: mastepan@redhat.com
+
 @integrations-db-to-db-with-extension
 Feature: Integration - DB to DB with extension
 
