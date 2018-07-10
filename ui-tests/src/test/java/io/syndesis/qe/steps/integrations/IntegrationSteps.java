@@ -89,7 +89,7 @@ public class IntegrationSteps {
     public void startIntegration(String integrationName) {
         detailPage.clickOnKebabMenuAction("Start");
         ModalDialogPage modal = new ModalDialogPage();
-        modal.getButton("OK").shouldBe(visible).click();
+        modal.getButton("Start").shouldBe(visible).click();
     }
 
     @And("^Wait until there is no integration pod with name \"([^\"]*)\"$")
