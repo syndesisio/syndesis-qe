@@ -78,14 +78,22 @@ public class CommonSteps {
 
     @And("^.*logs? out from Syndesis")
     public void logout() {
-        if (TestConfiguration.syndesisBrowser().equalsIgnoreCase("firefox")) {
-            Assert.fail("Logout does not work on firefox, issue: https://github.com/syndesisio/syndesis/issues/2561");
-        }
         $(By.id("userDropdown")).shouldBe(visible).click();
         $(By.id("userDropdownMenu")).shouldBe(visible).click();
 
-        TestUtils.sleepIgnoreInterrupt(2000);
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
+        assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
+                .containsIgnoringCase("/logout");
 
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
+        $(By.className("btn")).shouldBe(visible).click();
+
+        //There is an issue with firefox and logout - you have to refresh the page to make it work
+        //https://github.com/syndesisio/syndesis/issues/3016
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
+        WebDriverRunner.getWebDriver().navigate().refresh();
+
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
         assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
                 .containsIgnoringCase("login");
     }
