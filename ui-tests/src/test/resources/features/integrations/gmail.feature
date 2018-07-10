@@ -1,3 +1,5 @@
+# @sustainer: mcada@redhat.com
+
 @gmail
 Feature: Google mail Connector
 

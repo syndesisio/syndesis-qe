@@ -1,3 +1,5 @@
+# @sustainer: avano@redhat.com
+
 @integration-sf-producers
 
 Feature: Integration - SalesForce producers
