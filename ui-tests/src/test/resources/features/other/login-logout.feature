@@ -4,8 +4,8 @@
 Feature: Login logout
 
   Background: Clean application state
-    Given clean application state
     Given log into the Syndesis
+    Given clean application state
     Given created connections
       | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
 

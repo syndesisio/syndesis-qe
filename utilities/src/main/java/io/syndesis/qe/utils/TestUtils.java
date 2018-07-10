@@ -160,6 +160,7 @@ public final class TestUtils {
     }
 
     public static void sleepForJenkinsDelayIfHigher(int delayInSeconds) {
+        log.debug("sleeping for " + delayInSeconds + " seconds");
         sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() > delayInSeconds ? TestConfiguration.getJenkinsDelay() : delayInSeconds * 1000);
     }
 
