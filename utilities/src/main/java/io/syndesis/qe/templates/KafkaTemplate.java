@@ -28,17 +28,14 @@ import okhttp3.Response;
 @Slf4j
 public class KafkaTemplate {
     private static final String[] KAFKA_STRIMZI_RESOURCES = new String[] {
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/01-service-account.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/02-role.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/03-role-binding.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/04-service-account-kafka.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/05-role-kafka.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/06-role-binding-kafka.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/install/cluster-operator/07-deployment.yaml",
+            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/01-service-account.yaml",
+            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/02-role.yaml",
+            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/03-role-binding.yaml",
+            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/04-deployment.yaml",
     };
 
     private static final String KAFKA_TEMPLATE =
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/master/examples/templates/cluster-operator/ephemeral-template.yaml";
+            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/templates/cluster-operator/ephemeral-template.yaml";
 
     public static void deploy() {
         if (!isUserAdmin()) {
