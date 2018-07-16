@@ -1,5 +1,11 @@
 package io.syndesis.qe.templates;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.IntOrString;
@@ -11,21 +17,12 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-
 @Slf4j
 public class FtpTemplate {
-
-
     private static final String APP_NAME = "ftpd";
     private static final String LABEL_NAME = "app";
 
     public static void deploy() {
-
         List<ContainerPort> ports = new LinkedList<>();
         ports.add(new ContainerPortBuilder()
                 .withName("ftp-cmd")

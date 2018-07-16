@@ -16,7 +16,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.version>3.3</maven.compiler.version>
 		<maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
-		<surefire.version>2.19.1</surefire.version>
+		<surefire.version>2.22.0</surefire.version>
 		<checkstyle.version>3.0.0</checkstyle.version>
 
 		<apache.http.commons.version>4.5.3</apache.http.commons.version>
@@ -58,7 +58,6 @@
 		<google.oauth.version>1.23.0</google.oauth.version>
 		<google.apis.version>v1-rev91-1.23.0</google.apis.version>
 		<github.core.version>2.1.5</github.core.version>
-
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -376,7 +375,6 @@
 				<version>${google.apis.version}</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/org.eclipse.mylyn.github/org.eclipse.egit.github.core -->
 			<dependency>
 				<groupId>org.eclipse.mylyn.github</groupId>
 				<artifactId>org.eclipse.egit.github.core</artifactId>

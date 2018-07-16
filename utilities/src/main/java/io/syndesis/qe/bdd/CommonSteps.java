@@ -24,6 +24,7 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
+import io.syndesis.qe.templates.KafkaTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.DbUtils;
@@ -125,6 +126,11 @@ public class CommonSteps {
             AmqTemplate.deploy();
             amqDeployed = true;
         }
+    }
+
+    @Given("^deploy Kafka broker and add account$")
+    public void deployKafka() {
+        KafkaTemplate.deploy();
     }
 
     @Given("^execute SQL command \"([^\"]*)\"$")

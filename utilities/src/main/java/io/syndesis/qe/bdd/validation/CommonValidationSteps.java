@@ -54,7 +54,7 @@ public class CommonValidationSteps {
             for (Pod pod : OpenShiftUtils.client().pods().list().getItems()) {
                 log.error(pod.getMetadata().getName());
 
-                if(pod.getMetadata().getName().contains(integrationName)) {
+                if(pod.getMetadata().getName().toLowerCase().contains(integrationName.replaceAll(" ", "-").toLowerCase())) {
                     log.error("....................Printing integration pod info...................");
                     log.error(pod.toString());
                     log.error(OpenShiftUtils.client().pods().withName(pod.getMetadata().getName()).getLog());

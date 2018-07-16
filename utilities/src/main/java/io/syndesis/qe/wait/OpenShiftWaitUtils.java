@@ -221,6 +221,10 @@ public class OpenShiftWaitUtils {
         waitFor(condition, null, DEFAULT_WAIT_INTERVAL, 5 * 60 * 1000);
     }
 
+    public static void waitFor(BooleanSupplier condition, long timeout) throws TimeoutException, InterruptedException {
+        waitFor(condition, null, DEFAULT_WAIT_INTERVAL, timeout);
+    }
+
     public static void assertEventually(String message, BooleanSupplier condition, long interval, long timeout) throws InterruptedException {
         try {
             waitFor(condition, null, interval, timeout);

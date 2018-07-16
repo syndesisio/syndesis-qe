@@ -15,7 +15,6 @@ import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftConfigBuilder;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**

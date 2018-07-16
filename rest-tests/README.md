@@ -10,6 +10,16 @@ You may run the tests against a syndesis instance deployed on OpenShift as follo
 mvn clean install -Dcredentials.file=<PATH_TO_CREDENTIALS_FILE>
 ```
 
+##### Kafka deployment
+
+If you want to deploy Kafka manually, or if you want to run Kafka test, you need to have admin privileges in the cluster. If you are using minishift, you can use:
+
+```
+oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer
+```
+
+to add admin rights to developer user.
+
 ### Running parts of test suite
 
 There are cucumber tests deactivated by default. These tests contain tags namely:
