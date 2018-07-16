@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import io.fabric8.kubernetes.api.model.CronJob;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
@@ -78,7 +80,11 @@ public class SyndesisTemplate {
         templateParams.put("MAX_INTEGRATIONS_PER_USER", "5");
         // process & create
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
-        OpenShiftUtils.getInstance().createResources(processedTemplate);
+        for (HasMetadata hasMetadata : processedTemplate.getItems()) {
+            if (!(hasMetadata instanceof CronJob)) {
+                OpenShiftUtils.getInstance().createResources(hasMetadata);
+            }
+        }
         //OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.openShiftRouteSuffix());
         OpenShiftUtils.getInstance().getImageStreams().forEach(is -> {
             if (!is.getSpec().getTags().isEmpty()) {
