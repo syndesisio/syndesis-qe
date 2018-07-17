@@ -1,9 +1,5 @@
 package io.syndesis.qe.utils;
 
-import org.assertj.core.api.Assertions;
-
-import java.util.Optional;
-
 import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -16,6 +12,12 @@ import io.fabric8.openshift.client.OpenShiftConfigBuilder;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 /**
  * OpenShift utils.
@@ -62,19 +64,19 @@ public final class OpenShiftUtils {
 
     public static Route createRestRoute(String openShiftNamespace, String urlSuffix) {
         final Route route = new RouteBuilder()
-                    .withNewMetadata()
-                        .withName(Component.SERVER.getName())
-                    .endMetadata()
-                    .withNewSpec()
-                        .withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
-                        .withWildcardPolicy("None")
-                        .withNewTls()
-                            .withTermination("edge")
-                        .endTls()
-                        .withNewTo()
-                            .withKind("Service").withName(Component.SERVER.getName())
-                        .endTo()
-                    .endSpec()
+                .withNewMetadata()
+                .withName(Component.SERVER.getName())
+                .endMetadata()
+                .withNewSpec()
+                .withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
+                .withWildcardPolicy("None")
+                .withNewTls()
+                .withTermination("edge")
+                .endTls()
+                .withNewTo()
+                .withKind("Service").withName(Component.SERVER.getName())
+                .endTo()
+                .endSpec()
                 .build();
         return client().resource(route).createOrReplace();
     }
@@ -105,5 +107,21 @@ public final class OpenShiftUtils {
         String podFullName = pod.getMetadata().getName();
         String[] pole = podFullName.split("-");
         return Integer.parseInt(pole[2]);
+    }
+
+    public static String getIntegrationLogs(String integrationName) {
+        Optional<Pod> integrationPod = OpenShiftUtils.getInstance().getPods().stream()
+                .filter(p -> !p.getMetadata().getName().contains("build"))
+                .filter(p -> p.getMetadata().getName().contains(integrationName.replaceAll("[\\s_]", "-"))).findFirst();
+        if (integrationPod.isPresent()) {
+            String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
+            assertThat(logText)
+                    .isNotEmpty();
+            return logText;
+        } else {
+            fail("No pod found for pod name: " + integrationName);
+        }
+        //this can not happen due to assert
+        return null;
     }
 }

@@ -13,13 +13,14 @@ import java.util.Map;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.executeJavaScript;
 
 @Getter
 @Slf4j
 public class Form {
     private SelenideElement rootElement;
-    private final List<String> selectValues = new ArrayList<>(Arrays.asList("yes", "checked", "check", "select", "selected"));
-    private final List<String> unselectValues = new ArrayList<>(Arrays.asList("no", "unchecked", "uncheck", "unselect", "unselected"));
+    private final List<String> selectValues = new ArrayList<>(Arrays.asList("yes", "checked", "check", "select", "selected", "true"));
+    private final List<String> unselectValues = new ArrayList<>(Arrays.asList("no", "unchecked", "uncheck", "unselect", "unselected", "false"));
 
 
     public Form(SelenideElement rootElement) {
@@ -49,6 +50,7 @@ public class Form {
             case ID:
                 attribute = "id";
                 inputs.addAll(getRootElement().findAll(By.tagName("textarea")));
+                inputs.addAll(getRootElement().findAll(By.tagName("select")));
                 break;
             case NAME:
                 attribute = "name";
@@ -65,8 +67,8 @@ public class Form {
         log.debug("Size of inputs is " + inputs.size());
 
         for (SelenideElement input : inputs) {
-            log.trace("Current input is:");
-            log.trace(input.toString());
+            log.debug("Current input is:");
+            log.debug(input.toString());
             String name = input.getAttribute(attribute);
             keys.add(name);
         }
@@ -81,8 +83,13 @@ public class Form {
                 } else {
                     input = getRootElement().$(String.format("input[" + attribute + "=\"%s\"", key)).shouldBe(visible);
                 }
-                input.clear();
-                input.sendKeys(data.get(key));
+                if (input.parent().$(By.tagName("select")).exists()) {
+                    log.info("trying to set " + data.get(key) + " into element" + input.toString());
+                    input.selectOptionContainingText(data.get(key));
+                } else {
+                    input.clear();
+                    input.sendKeys(data.get(key));
+                }
             } else {
                 log.error("Input {} is not present on form!", key);
             }

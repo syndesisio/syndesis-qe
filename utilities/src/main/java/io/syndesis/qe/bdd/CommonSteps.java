@@ -1,17 +1,5 @@
 package io.syndesis.qe.bdd;
 
-import org.assertj.core.api.Assertions;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
-
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -35,6 +23,19 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class CommonSteps {
@@ -84,10 +85,10 @@ public class CommonSteps {
         try {
             if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
-                Assertions.fail("Syndesis wasn't initilized in time");
+                fail("Syndesis wasn't initilized in time");
             }
         } catch (InterruptedException e) {
-            Assertions.fail("Syndesis wasn't initilized in time");
+            fail("Syndesis wasn't initilized in time");
         }
     }
 
@@ -104,17 +105,17 @@ public class CommonSteps {
             if (buildPod.isPresent()) {
                 try {
                     boolean[] patternsInLogs = LogCheckerUtils.findPatternsInLogs(buildPod.get(), Pattern.compile(".*Downloading: \\b.*"));
-                    Assertions.assertThat(patternsInLogs).containsOnly(false);
+                    assertThat(patternsInLogs).containsOnly(false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            Assertions.assertThat(build.getStatus().getPhase()).isEqualTo("Complete");
+            assertThat(build.getStatus().getPhase()).isEqualTo("Complete");
             // % 1_000L is there to parse OpenShift ms format
-            Assertions.assertThat(build.getStatus().getDuration() % 1_000L).isLessThan(duration * 60 * 1000);
+            assertThat(build.getStatus().getDuration() % 1_000L).isLessThan(duration * 60 * 1000);
         } else {
-            Assertions.fail("No build found for integration with name " + sanitizedName);
+            fail("No build found for integration with name " + sanitizedName);
         }
     }
 
@@ -164,18 +165,18 @@ public class CommonSteps {
 //            this wait does not work correctly, since resetDbWithResponse() is being called stochastically even after 204 code has been achieved:
 //            boolean resetStatus = TestUtils.waitForEvent(rc -> rc == 204, () -> TestSupport.getInstance().resetDbWithResponse(), TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 10);
             int resetStatus = TestSupport.getInstance().resetDbWithResponse();
-            if (resetStatus == 204){
+            if (resetStatus == 204) {
                 TestUtils.sleepIgnoreInterrupt(5000);
                 Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
+                assertThat(optConnection.isPresent()).isTrue();
                 if (optConnection.isPresent()) {
-                    Assertions.assertThat(optConnection.isPresent()).isTrue();
                     log.info("DEFAULT POSTGRESDB CONNECTION *{}* IS PRESENT", optConnection.get().getName());
                     return;
                 }
             }
             i++;
         }
-        Assertions.fail("Default PostgresDB connection has not been created, please contact engineerig!");
+        fail("Default PostgresDB connection has not been created, please contact engineerig!");
     }
 
     @Given("^deploy FTP server$")
@@ -213,7 +214,7 @@ public class CommonSteps {
 
     @Given("^free allocated \"([^\"]*)\" database$")
     public void freeAllocatedDatabase(String dbLabel) {
-        Assertions.assertThat(dbAllocatorClient.getDbAllocation().getDbLabel()).isEqualTo(dbLabel);
+        assertThat(dbAllocatorClient.getDbAllocation().getDbLabel()).isEqualTo(dbLabel);
         dbAllocatorClient.free();
     }
 
@@ -222,7 +223,7 @@ public class CommonSteps {
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded(podName);
         } catch (InterruptedException | TimeoutException e) {
-            Assertions.fail(e.getMessage());
+            fail(e.getMessage());
         }
     }
 

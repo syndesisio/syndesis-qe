@@ -11,6 +11,7 @@ import io.syndesis.qe.pages.integrations.Integrations;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
 import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -134,5 +135,10 @@ public class IntegrationSteps {
                 dataMapper.getDataBucketElement(row.get(0));
             }
         }
+    }
+
+    @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"([^\"]*)\"$")
+    public void checkThatLogsContain(String integrationName, String text) {
+        Assertions.assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).containsIgnoringCase(text);
     }
 }
