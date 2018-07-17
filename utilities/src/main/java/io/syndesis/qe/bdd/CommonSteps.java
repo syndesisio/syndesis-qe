@@ -20,6 +20,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Component;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.AmqTemplate;
@@ -47,6 +48,8 @@ public class CommonSteps {
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
+        OpenShiftUtils.client().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
+        OpenShiftUtils.client().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.getInstance().cleanAndAssert();
         OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
     }
