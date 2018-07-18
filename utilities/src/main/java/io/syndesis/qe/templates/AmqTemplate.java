@@ -12,6 +12,7 @@ import io.fabric8.openshift.api.model.Template;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,31 +20,32 @@ import lombok.extern.slf4j.Slf4j;
 public class AmqTemplate {
 
     public static void deploy() {
-        Template template;
-        try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
-            template = OpenShiftUtils.client().templates().load(is).get();
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to read template ", ex);
+        if (!TestUtils.isDcDeployed("broker-amq")) {
+            Template template;
+            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
+                template = OpenShiftUtils.client().templates().load(is).get();
+            } catch (IOException ex) {
+                throw new IllegalArgumentException("Unable to read template ", ex);
+            }
+
+            Map<String, String> templateParams = new HashMap<>();
+            templateParams.put("MQ_USERNAME", "amq");
+            templateParams.put("MQ_PASSWORD", "topSecret");
+
+            // try to clean previous broker
+            cleanUp();
+            OpenShiftUtils.client().templates().withName("syndesis-amq").delete();
+
+            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
+
+            OpenShiftUtils.getInstance().createResources(processedTemplate);
+
+            try {
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
+            } catch (InterruptedException | TimeoutException e) {
+                log.error("Wait for broker failed ", e);
+            }
         }
-
-        Map<String, String> templateParams = new HashMap<>();
-        templateParams.put("MQ_USERNAME", "amq");
-        templateParams.put("MQ_PASSWORD", "topSecret");
-
-        // try to clean previous broker
-        cleanUp();
-        OpenShiftUtils.client().templates().withName("syndesis-amq").delete();
-
-        KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
-
-        OpenShiftUtils.getInstance().createResources(processedTemplate);
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for broker failed ", e);
-        }
-
         //this is not part of deployment, but let's have it the same method:
         AmqTemplate.addAccounts();
     }
