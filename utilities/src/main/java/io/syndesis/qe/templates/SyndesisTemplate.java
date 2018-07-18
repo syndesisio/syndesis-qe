@@ -85,7 +85,6 @@ public class SyndesisTemplate {
                 OpenShiftUtils.getInstance().createResources(hasMetadata);
             }
         }
-        //OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.openShiftRouteSuffix());
         OpenShiftUtils.getInstance().getImageStreams().forEach(is -> {
             if (!is.getSpec().getTags().isEmpty()) {
                 is.getSpec().getTags().get(0).setImportPolicy(new TagImportPolicy(false, false));

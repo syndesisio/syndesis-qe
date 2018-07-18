@@ -197,4 +197,23 @@ public class ConnectionsGeneralSteps {
     private String getConnectorId(Connector connector) {
         return connector.getId().orElseThrow(() -> new IllegalArgumentException("Connector ID is null"));
     }
+
+    @Given("^create HTTP connection$")
+    public void createHTTPConnection() {
+        final Connector httpConnector = connectorsEndpoint.get("http4");
+        final Account httpAccount = accountsDirectory.getAccount("http").get();
+        final Connection httpConnection = new Connection.Builder()
+                .name("Fuse QE HTTP")
+                .connector(httpConnector)
+                .connectorId(getConnectorId(httpConnector))
+                .id(RestConstants.HTTP_CONNECTION_ID)
+                .configuredProperties(TestUtils.map(
+                        "baseUrl", httpAccount.getProperty("baseUrlHttp")
+                ))
+                .icon("fa-puzzle-piece")
+                .tags(Arrays.asList("http"))
+                .build();
+        log.info("Creating HTTP connection {}", httpConnection.getName());
+        connectionsEndpoint.create(httpConnection);
+    }
 }
