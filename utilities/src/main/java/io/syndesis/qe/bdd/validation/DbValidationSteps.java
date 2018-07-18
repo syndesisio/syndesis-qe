@@ -2,6 +2,7 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.TestConfiguration;
 import org.assertj.core.api.Assertions;
 
 import java.sql.ResultSet;
@@ -151,7 +152,7 @@ public class DbValidationSteps {
 
     @Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\", period in ms: \"(\\w+)\"$")
     public void checksNumberOfTodos(String task, Integer val, Integer ms) throws InterruptedException {
-        Thread.sleep(ms + 1000);
+        Thread.sleep(TestConfiguration.getJenkinsDelay() * 1000 + ms);
         int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
         assertThat(number).isEqualTo(val);
     }
