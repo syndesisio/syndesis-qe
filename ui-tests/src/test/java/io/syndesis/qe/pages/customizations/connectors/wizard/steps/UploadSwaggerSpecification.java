@@ -26,7 +26,7 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     private static class Input {
         public static By CHOOSE_FILE = By.xpath("//input[@type='file']");
         public static By URL = By.name("swaggerFileUrl");
-        public static By UPLOAD_A_OPENAPI_FILE = By.xpath("//input[@type='radio' and ../text()[contains(.,'Upload a OpenAPI file')]]");
+        public static By UPLOAD_A_OPENAPI_FILE = By.xpath("//input[@type='radio' and ../text()[contains(.,'Upload an OpenAPI file')]]");
         public static By USE_A_URL = By.xpath("//input[@type='radio' and ../text()[contains(.,'Use a URL')]]");
     }
 
