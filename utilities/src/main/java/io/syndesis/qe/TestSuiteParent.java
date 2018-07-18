@@ -51,7 +51,7 @@ public abstract class TestSuiteParent {
     @AfterClass
     public static void tearDown() {
         if (lockSecret != null) {
-            if (TestConfiguration.namespaceCleanup()) {
+            if (TestConfiguration.namespaceCleanupAfter()) {
                 log.info("Cleaning namespace");
                 OpenShiftUtils.getInstance().clean();
             } else {
