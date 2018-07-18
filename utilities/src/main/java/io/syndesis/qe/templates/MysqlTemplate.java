@@ -9,6 +9,7 @@ import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -109,10 +110,6 @@ public class MysqlTemplate {
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        try {
-            Thread.sleep(5 * 1000);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-        }
+        TestUtils.sleepIgnoreInterrupt(5000);
     }
 }

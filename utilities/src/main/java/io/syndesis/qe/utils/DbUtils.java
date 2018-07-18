@@ -166,12 +166,13 @@ public class DbUtils {
     public void createSEmptyTableSchema() {
 
         final String sqlQuery1 = "DROP TABLE CONTACT";
-        final String sqlQuery2 = "CREATE TABLE TODO";
+        final String sqlQuery2 = "DROP TABLE TODO";
         final String sqlQuery3 = "CREATE TABLE CONTACT ( first_name VARCHAR(250), last_name VARCHAR(250), company VARCHAR(250), lead_source VARCHAR(250), create_date DATE)";
         final String sqlQuery4 = "CREATE TABLE TODO ( id int, task VARCHAR(250), completed int)";
 
-        this.executeSQLGetUpdateNumber(sqlQuery1);
-        this.executeSQLGetUpdateNumber(sqlQuery2);
+        if(this.executeSQLGetUpdateNumber(sqlQuery1) == -1 || this.executeSQLGetUpdateNumber(sqlQuery2) == -1) {
+            log.error("Errors thrown due to not existing table when trying to drop the table, safe to ignore");
+        }
         this.executeSQLGetUpdateNumber(sqlQuery3);
         this.executeSQLGetUpdateNumber(sqlQuery4);
     }
