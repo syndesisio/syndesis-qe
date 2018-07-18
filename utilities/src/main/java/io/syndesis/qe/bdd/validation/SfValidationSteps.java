@@ -4,18 +4,10 @@ import static org.junit.Assert.fail;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.activemq.command.ActiveMQBytesMessage;
-import org.apache.activemq.command.ActiveMQTextMessage;
-
-import org.assertj.core.api.Assertions;
-
 import com.force.api.ApiConfig;
 import com.force.api.ApiException;
 import com.force.api.ForceApi;
 import com.force.api.QueryResult;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,13 +17,12 @@ import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import cz.xtf.jms.JmsClient;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.salesforce.Contact;
 import io.syndesis.qe.salesforce.Lead;
-import io.syndesis.qe.utils.JmsClientManager;
+import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -172,25 +163,13 @@ public class SfValidationSteps {
 
     @When("^publish message with content \'([^\']*)\' to queue \"([^\"]*)\"$")
     public void publishMessage(String content, String queueName) {
-        sendMessageToQueue(queueName, content.replaceAll("LEAD_ID", leadId));
+        JMSUtils.sendMessageToQueue(queueName, content.replaceAll("LEAD_ID", leadId));
     }
 
     @Then("^verify that lead json object was received from queue \"([^\"]*)\"$")
     public void verifyLeadJsonReceived(String queueName) {
-        Message m = getMessageFromQueue(queueName);
-        String message = null;
-        if (m instanceof ActiveMQBytesMessage) {
-            message = new String(((ActiveMQBytesMessage)m).getContent().getData());
-        } else {
-            try {
-                message = ((ActiveMQTextMessage) m).getText();
-            } catch (JMSException e) {
-                log.error("Unable to get text from message", e);
-                e.printStackTrace();
-            }
-        }
-        log.debug("Got message: " + message);
-        assertThat(message).contains(leadId);
+        final String text = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queueName);
+        assertThat(text).contains(leadId);
     }
 
     @Then("^verify that lead was created")
@@ -296,27 +275,5 @@ public class SfValidationSteps {
             log.debug("Deleting salesforce contact: {}", contact.get());
             deleteAllSalesforceContactsWithEmail(salesforce, email);
         }
-    }
-
-    private void sendMessageToQueue(String queueName, String content) {
-        try(JmsClientManager manager = new JmsClientManager("tcp")) {
-            JmsClient jmsClient = manager.getClient();
-            jmsClient.addQueue(queueName).sendMessage(content);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail(e.getMessage());
-        }
-    }
-
-    private Message getMessageFromQueue(String queueName) {
-        try(JmsClientManager manager = new JmsClientManager("tcp")) {
-            JmsClient jmsClient = manager.getClient();
-            return jmsClient.addQueue(queueName).receiveMessage(30000L);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail(e.getMessage());
-        }
-
-        return null;
     }
 }

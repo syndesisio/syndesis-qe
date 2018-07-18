@@ -1,9 +1,12 @@
 package io.syndesis.qe.bdd.validation;
 
-import cz.xtf.jms.JmsClient;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.assertj.core.api.Assertions;
 
 import cucumber.api.java.en.Then;
+import cz.xtf.jms.JmsClient;
+import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.JmsClientManager;
 
 public class JmsValidationSteps {
@@ -49,4 +52,9 @@ public class JmsValidationSteps {
         }
     }
 
+    @Then("^verify that JMS message with content \"([^\"]*)\" was received from \"([^\"]*)\" \"([^\"]*)\"$")
+    public void verifyThatJMSMessageWithContentWasReceivedFrom(String content, String type, String destination) {
+        final String message = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(type.toUpperCase()), destination);
+        assertThat(message).isEqualTo(content);
+    }
 }
