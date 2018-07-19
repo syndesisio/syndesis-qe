@@ -67,14 +67,21 @@ Feature: Customization - API Connector CRUD
       | security | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
       | details  | connectorName  | Swagger Petstore                      |
 
-    Then open the API connector "Swagger Petstore" detail
-    And check visibility of page "Connector Details"
+    And open the API connector "Swagger Petstore" detail
+    Then check visibility of page "Connector Details"
 
-    Then edit property
-      | Connector Name | Swagger Petstore-1           | name        |
-      | Description    | Description-1                | description |
-      | Host           | http://petstore.swagger.io-1 | host        |
-      | Base URL       | /v2-1                        | basePath    |
+    When click on the "Edit" button
+    And fill in values by element ID
+      | name        | Swagger Petstore-1           |
+      | description | Description-1                |
+      | host        | http://petstore.swagger.io-1 |
+      | basePath    | /v2-1                        |
+    And click on the "Save" button
+    Then validate connector detail values
+      | name        | Swagger Petstore-1           |
+      | description | Description-1                |
+      | host        | http://petstore.swagger.io-1 |
+      | basePath    | /v2-1                        |
 
   @delete-api-connector
   Scenario: Delete
@@ -97,7 +104,7 @@ Feature: Customization - API Connector CRUD
     And fill Name Connection form
       | Connection Name | Petstore conn |
     And click on the "Create" button
-
+    And sleep for jenkins delay or "3" seconds
     Then navigate to the "Customizations" page
     And click on the "API Client Connectors" link
 
