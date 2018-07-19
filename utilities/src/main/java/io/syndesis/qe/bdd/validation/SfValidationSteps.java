@@ -162,8 +162,8 @@ public class SfValidationSteps {
     }
 
     @When("^publish message with content \'([^\']*)\' to queue \"([^\"]*)\"$")
-    public void publishMessage(String content, String queueName) {
-        JMSUtils.sendMessageToQueue(queueName, content.replaceAll("LEAD_ID", leadId));
+    public void publishMessage(String content, String name) {
+        JMSUtils.sendMessage(JMSUtils.Destination.QUEUE, name, content.replaceAll("LEAD_ID", leadId));
     }
 
     @Then("^verify that lead json object was received from queue \"([^\"]*)\"$")

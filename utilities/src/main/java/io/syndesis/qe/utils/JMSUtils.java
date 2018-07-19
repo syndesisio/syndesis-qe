@@ -52,10 +52,15 @@ public final class JMSUtils {
         return text;
     }
 
-    public static void sendMessageToQueue(String queueName, String content) {
+    public static void sendMessage(Destination type, String name, String content) {
         try(JmsClientManager manager = new JmsClientManager("tcp")) {
             JmsClient jmsClient = manager.getClient();
-            jmsClient.addQueue(queueName).sendMessage(content);
+            if (type.equals(Destination.QUEUE)) {
+                jmsClient.addQueue(name);
+            } else {
+                jmsClient.addTopic(name);
+            }
+            jmsClient.sendMessage(content);
         } catch (Exception e) {
             log.error("Unable to send message to queue", e);
             e.printStackTrace();

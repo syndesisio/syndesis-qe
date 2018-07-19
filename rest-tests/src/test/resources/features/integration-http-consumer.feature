@@ -1,7 +1,7 @@
 # @sustainer: avano@redhat.com
 
+@integration-http
 @integration-http-consumer
-
 Feature: Integration - HTTP consumer
   Background:
     Given clean application state
@@ -16,7 +16,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-get"
     When create integration with name: "HTTP-GET-AMQ"
     Then wait for integration with name: "HTTP-GET-AMQ" to become active
-      And verify that endpoint "GET" was executed
+    When clear endpoint events
+    Then verify that endpoint "GET" was executed
       And verify that JMS message with content "get" was received from "queue" "http-get"
 
   @integration-http-consumer-post
@@ -25,7 +26,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-post"
     When create integration with name: "HTTP-POST-AMQ"
     Then wait for integration with name: "HTTP-POST-AMQ" to become active
-      And verify that endpoint "POST" was executed
+    When clear endpoint events
+    Then verify that endpoint "POST" was executed
       And verify that JMS message with content "post" was received from "queue" "http-post"
 
   @integration-http-consumer-put
@@ -34,7 +36,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-put"
     When create integration with name: "HTTP-PUT-AMQ"
     Then wait for integration with name: "HTTP-PUT-AMQ" to become active
-      And verify that endpoint "PUT" was executed
+    When clear endpoint events
+    Then verify that endpoint "PUT" was executed
       And verify that JMS message with content "put" was received from "queue" "http-put"
 
   @integration-http-consumer-delete
@@ -43,7 +46,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-delete"
     When create integration with name: "HTTP-DELETE-AMQ"
     Then wait for integration with name: "HTTP-DELETE-AMQ" to become active
-      And verify that endpoint "DELETE" was executed
+    When clear endpoint events
+    Then verify that endpoint "DELETE" was executed
       And verify that JMS message with content "delete" was received from "queue" "http-delete"
 
   @integration-http-consumer-patch
@@ -52,7 +56,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-patch"
     When create integration with name: "HTTP-PATCH-AMQ"
     Then wait for integration with name: "HTTP-PATCH-AMQ" to become active
-      And verify that endpoint "PATCH" was executed
+    When clear endpoint events
+    Then verify that endpoint "PATCH" was executed
       And verify that JMS message with content "patch" was received from "queue" "http-patch"
 
   @integration-http-consumer-options
@@ -61,7 +66,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-options"
     When create integration with name: "HTTP-OPTIONS-AMQ"
     Then wait for integration with name: "HTTP-OPTIONS-AMQ" to become active
-      And verify that endpoint "OPTIONS" was executed
+    When clear endpoint events
+    Then verify that endpoint "OPTIONS" was executed
       And verify that JMS message with content "options" was received from "queue" "http-options"
 
   @integration-http-consumer-trace
@@ -70,7 +76,8 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-trace"
     When create integration with name: "HTTP-TRACE-AMQ"
     Then wait for integration with name: "HTTP-TRACE-AMQ" to become active
-      And verify that endpoint "TRACE" was executed
+    When clear endpoint events
+    Then verify that endpoint "TRACE" was executed
 
   @integration-http-consumer-head
   Scenario: Integration - HTTP consumer
@@ -78,4 +85,5 @@ Feature: Integration - HTTP consumer
       And create AMQ "publish" action step with destination type "queue" and destination name "http-head"
     When create integration with name: "HTTP-HEAD-AMQ"
     Then wait for integration with name: "HTTP-HEAD-AMQ" to become active
-      And verify that endpoint "HEAD" was executed
+    When clear endpoint events
+    Then verify that endpoint "HEAD" was executed

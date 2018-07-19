@@ -27,21 +27,19 @@ public class HTTPSteps {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
 
-    private Connector httpConnector;
-    private Connection httpConnection;
-    private Action httpAction;
-    private Map<String, String> properties;
-
-    @Given("^create HTTP \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
-    public void createHTTPStepWithPeriod(String method, long period, String timeunit) {
-        httpConnector = connectorsEndpoint.get("http4");
-        httpConnection = connectionsEndpoint.get(RestConstants.HTTP_CONNECTION_ID);
-        httpAction = TestUtils.findConnectorAction(httpConnector, "http4-invoke-url");
-        properties = TestUtils.map(
+    private void createStep(String method, long period, String timeunit) {
+        final Connector httpConnector = connectorsEndpoint.get("http4");
+        final Connection httpConnection = connectionsEndpoint.get(RestConstants.HTTP_CONNECTION_ID);
+        final String action = period == -1 ? "http4-invoke-url" : "http4-periodic-invoke-url";
+        final Action httpAction = TestUtils.findConnectorAction(httpConnector, action);
+        final Map<String, String> properties = TestUtils.map(
                 "path", "/",
-                "httpMethod", method,
-                "schedulerExpression", TimeUnit.MILLISECONDS.convert(period, TimeUnit.valueOf(timeunit))
+                "httpMethod", method
         );
+
+        if (period != -1) {
+            properties.put("schedulerExpression", TimeUnit.MILLISECONDS.convert(period, TimeUnit.valueOf(timeunit)) + "");
+        }
 
         final Step httpStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
@@ -52,5 +50,15 @@ public class HTTPSteps {
                 .build();
 
         steps.getStepDefinitions().add(new StepDefinition(httpStep));
+    }
+
+    @Given("^create HTTP \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
+    public void createHTTPStepWithPeriod(String method, long period, String timeunit) {
+        createStep(method, period, timeunit);
+    }
+
+    @Given("^create HTTP \"([^\"]*)\" step$")
+    public void createHTTPStep(String method) {
+        createStep(method, -1, null);
     }
 }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -20,14 +21,26 @@ public class HTTPValidationSteps {
     // Static to have this lpf shared between tests
     private static LocalPortForward localPortForward;
 
-    @Then("^verify that endpoint \"([^\"]*)\" was executed$")
-    public void verifyThatEndpointWasExecuted(String method) {
+    @When("^clear endpoint events$")
+    public void clear() {
         if (localPortForward == null || !localPortForward.isAlive()) {
-            log.info("lpf null or is not alive");
             localPortForward = TestUtils.createLocalPortForward(OpenShiftUtils.getPodByPartialName("endpoints"), 8080, 28080);
         }
         // Clear all events
         HttpUtils.doDeleteRequest("http://localhost:28080/clearEvents");
+    }
+
+    @Then("^verify that endpoint \"([^\"]*)\" was executed$")
+    public void verifyThatEndpointWasExecuted(String method) {
+        verify(method, false);
+    }
+
+    @Then("^verify that endpoint \"([^\"]*)\" was executed once$")
+    public void verifyThatEndpointWasExecutedOnce(String method) {
+        verify(method, true);
+    }
+
+    private void verify(String method, boolean once) {
         // Let the integration running
         TestUtils.sleepIgnoreInterrupt(30000L);
         // Get new events
@@ -40,7 +53,11 @@ public class HTTPValidationSteps {
             ex.printStackTrace();
         }
 
-        assertThat(events).size().isGreaterThanOrEqualTo(5);
+        if (once) {
+            assertThat(events).size().isEqualTo(1);
+        } else {
+            assertThat(events).size().isGreaterThanOrEqualTo(5);
+        }
         for (String event : events.values()) {
             assertThat(method.equals(event));
         }
