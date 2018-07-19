@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.Assertions;
 
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import cz.xtf.jms.JmsClient;
 import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.JmsClientManager;
@@ -56,5 +57,10 @@ public class JmsValidationSteps {
     public void verifyThatJMSMessageWithContentWasReceivedFrom(String content, String type, String destination) {
         final String message = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(type.toUpperCase()), destination);
         assertThat(message).isEqualTo(content);
+    }
+
+    @When("^publish message with content \"([^\"]*)\" to \"([^\"]*)\" with name \"([^\"]*)\"")
+    public void publishMessageToDestinationWithName(String content, String type, String name) {
+        JMSUtils.sendMessage(JMSUtils.Destination.valueOf(type.toUpperCase()), name, content);
     }
 }
