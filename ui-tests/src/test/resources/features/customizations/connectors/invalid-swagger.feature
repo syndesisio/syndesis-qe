@@ -16,7 +16,7 @@ Feature: Customization - API Connector - Invalid swagger
     Then check visibility of page "API Client Connectors"
     And open new Api Connector wizard
     And check visibility of page "Upload Swagger Specification"
-    Then upload swagger file swagger/connectors/invalid/kie-server-swagger.json
+    Then upload swagger file src/test/resources/swagger/connectors/invalid/kie-server-swagger.json
     And navigate to the next Api Connector wizard step "Review Actions"
     And check the error box is not present
     And check visibility of page "Review Actions"
