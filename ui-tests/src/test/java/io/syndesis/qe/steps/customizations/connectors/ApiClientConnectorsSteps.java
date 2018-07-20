@@ -1,25 +1,29 @@
 package io.syndesis.qe.steps.customizations.connectors;
 
-import static com.codeborne.selenide.Condition.not;
-import static com.codeborne.selenide.Condition.visible;
-
-import static java.util.Arrays.asList;
-
-import io.fabric8.openshift.api.model.Route;
-import org.junit.Assert;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.codeborne.selenide.ElementsCollection;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
+import io.fabric8.openshift.api.model.Route;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.customizations.connectors.wizard.WizardSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.not;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$;
+import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Slf4j
 public class ApiClientConnectorsSteps {
@@ -39,22 +43,22 @@ public class ApiClientConnectorsSteps {
 
     @Then("check visibility of the new connector \"([^\"]*)\"$")
     public void checkNewConnectorIsPresent(String connectorName) throws Throwable {
-        Assert.assertTrue("Connector [" + connectorName + "] is not listed.", apiClientConnectorsPage.isConnectorPresent(connectorName));
+        assertTrue("Connector [" + connectorName + "] is not listed.", apiClientConnectorsPage.isConnectorPresent(connectorName));
     }
 
     @Then("^check visibility of a connectors list of size (\\d+)$")
     public void checkConnectorsListSize(String listSize) {
-        Assert.assertTrue("The connectors list should be of size <" + listSize + ">.", apiClientConnectorsPage.isConnectorsListLongAs(Integer.parseInt(listSize)));
+        assertTrue("The connectors list should be of size <" + listSize + ">.", apiClientConnectorsPage.isConnectorsListLongAs(Integer.parseInt(listSize)));
     }
 
     @Then("^checks? the error box (is|is not) present$")
     public void checkErrorBoxPresent(String present) {
         if (present.equals("is")) {
             log.info("checking if ERRORBOX is visible");
-            Assert.assertTrue("The validation error box should exist", reviewActions.getValidationErrorBox().is(visible));
+            assertTrue("The validation error box should exist", reviewActions.getValidationErrorBox().is(visible));
         } else {
             log.info("checking if ERRORBOX is not visible");
-            Assert.assertTrue("The validation error box should not exist", reviewActions.getValidationErrorBox().is(not(visible)));
+            assertTrue("The validation error box should not exist", reviewActions.getValidationErrorBox().is(not(visible)));
         }
     }
 
@@ -67,9 +71,12 @@ public class ApiClientConnectorsSteps {
     //******************************* bulk steps ********************************
     //***************************************************************************
 
-    @Then("^uploads? swagger file (.+)$")
+    @Then("^upload swagger file (.+)$")
     public void uploadSwaggerFile(String filePath) {
-       uploadSwagger(new ArrayList<List<String>>(Arrays.asList(Arrays.asList("file", filePath))));
+        log.debug("File path: " + filePath);
+        ElementsCollection col = $$(By.tagName("input")).filter(attribute("type", "file"));
+        assertThat(col).size().isEqualTo(1);
+        col.get(0).uploadFile(new File(filePath));
     }
 
     private void uploadSwagger(List<List<String>> sourceDataTable) {
@@ -101,7 +108,7 @@ public class ApiClientConnectorsSteps {
 
         /**
          * Specify Security wizard phase
-        **/
+         **/
         //| security | authType | <authType> {HTTP Basic Authentication, OAuth 2.0, ...} |
         //| security | authorizationUrl | <authorizationUrl> |
         //| security | accessTokenUrl | <accessTokenUrl> |
@@ -129,7 +136,7 @@ public class ApiClientConnectorsSteps {
                     switch (property.get(1)) {
                         //| source | file | <path> |
                         case "file":
-                        //| source | url | <path> |
+                            //| source | url | <path> |
                         case "url":
                             log.info("Setting up upload type and path properties of the swagger file");
                             List<String> row = asList(property.get(1), property.get(2));
@@ -144,9 +151,9 @@ public class ApiClientConnectorsSteps {
                     switch (property.get(1)) {
                         //| security | authType | <authType> {HTTP Basic Authentication, OAuth 2.0, ...} |
                         case "authType":
-                        //| security | authorizationUrl | <authorizationUrl> |
+                            //| security | authorizationUrl | <authorizationUrl> |
                         case "authorizationUrl":
-                        //| security | accessTokenUrl | <accessTokenUrl> |
+                            //| security | accessTokenUrl | <accessTokenUrl> |
                         case "accessTokenUrl":
                             log.info("Setting up access token url property");
                             List<String> row = asList(property.get(1), property.get(2));
@@ -158,7 +165,7 @@ public class ApiClientConnectorsSteps {
                     break;
 
                 case "details":
-                    switch(property.get(1)) {
+                    switch (property.get(1)) {
                         //| details | connectorName | <connectorName> |
                         case "connectorName":
                             log.info("Setting up connector name property");
@@ -192,8 +199,8 @@ public class ApiClientConnectorsSteps {
         log.info("Validating \"Customizations\" and \"Client Api Connectors\" pages");
 
         WizardSteps wizardSteps = new WizardSteps();
-        if(sourceDataTable==null) {
-            Assert.fail("Swagger upload type and path not set");
+        if (sourceDataTable == null) {
+            fail("Swagger upload type and path not set");
         }
 
         uploadSwagger(sourceDataTable);
@@ -201,28 +208,28 @@ public class ApiClientConnectorsSteps {
         wizardSteps.navigateToNextWizardStep("Review Actions");
         wizardSteps.navigateToNextWizardStep("SpecifySecurity");
 
-        if(connectorName != null) {
+        if (connectorName != null) {
             log.info("Setting up auth type");
             wizardSteps.setUpSecurity(DataTable.create(securityDataTable));
             wizardSteps.navigateToNextWizardStep("Review/Edit Connector Details");
         }
 
-        if(connectorName != null) {
+        if (connectorName != null) {
             log.info("Setting up connector name");
             wizardSteps.setUpConnectorName(connectorName);
         }
 
-        if(description != null) {
+        if (description != null) {
             log.info("Setting up connector name");
             wizardSteps.setUpDescription(description);
         }
 
-        if(host != null) {
+        if (host != null) {
             log.info("Setting up host");
             wizardSteps.setUpHost(host);
         }
 
-        if(baseUrl != null) {
+        if (baseUrl != null) {
             log.info("Setting up base url");
             wizardSteps.setUpBaseUrl(baseUrl);
         }
