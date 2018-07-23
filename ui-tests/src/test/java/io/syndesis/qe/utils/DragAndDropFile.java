@@ -53,7 +53,7 @@ public class DragAndDropFile {
                 "input.style.height = '100px';" +
                 "input.style.width = '100px';" +
                 "input.name = 'uploadfile';" +
-                "document.querySelector(\"syndesis-import-integration-component\").insertBefore(input, document.querySelector(\"syndesis-import-integration-component\").children[0]);");
+                "document.querySelector(\"syndesis-integration-import-page-component\").insertBefore(input, document.querySelector(\"syndesis-integration-import-page-component\").children[0]);");
     }
 
     public static void dispatchFileDragAndDropEvent(String eventName, Object to, SelenideElement fileInputId) {
