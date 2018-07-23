@@ -6,6 +6,8 @@ import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
 import org.assertj.core.api.Assertions;
 
 import java.util.List;
@@ -19,6 +21,7 @@ import io.syndesis.qe.pages.integrations.editor.Editor;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseConnection;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 
 @Slf4j
 public class EditorSteps {
@@ -26,6 +29,10 @@ public class EditorSteps {
     private Editor editor = new Editor();
     private IntegrationFlowView flowViewComponent = new IntegrationFlowView();
     private ChooseConnection chooseConnection = new ChooseConnection();
+
+    private static final class Element {
+        public static final By EXPANDER = By.xpath("//button[contains(@class, 'toggle-collapsed')]");
+    }
 
     @Then("^check visibility of visual integration editor$")
     public void verifyNewIntegrationEditorOpened() {
@@ -146,6 +153,15 @@ public class EditorSteps {
     public void checkIfWarningIsVisibleInRange(int start, int finish) {
         for (int i = start; i <= finish; i++) {
             Assertions.assertThat(flowViewComponent.getStepWarningElement(i).isDisplayed()).isFalse();
+        }
+    }
+
+    @When("^open integration flow details")
+    public void openIntegrationFlowDetails() {
+        SelenideElement expander = editor.getRootElement().$(Element.EXPANDER);
+        if(expander.exists()) {
+            log.info("Expander is closed, opening details");
+            expander.click();
         }
     }
 }
