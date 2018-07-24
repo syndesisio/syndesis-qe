@@ -45,6 +45,30 @@ public final class HttpUtils {
         return null;
     }
 
+    public static Response doGetRequest(String url) {
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(url)
+                .get();
+        try {
+            return getClient().newCall(requestBuilder.build()).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Response doDeleteRequest(String url) {
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(url)
+                .delete();
+        try {
+            return getClient().newCall(requestBuilder.build()).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private static OkHttpClient getClient() {
         // Create a trust manager that does not validate certificate chains
         final TrustManager[] trustAllCerts = new TrustManager[]{

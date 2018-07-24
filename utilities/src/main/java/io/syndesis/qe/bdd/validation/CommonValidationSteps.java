@@ -63,6 +63,10 @@ public class CommonValidationSteps {
         }
         Assertions.assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+        if (System.getenv("WORKSPACE") != null) {
+            log.info("Running on Jenkins, adding 2 min sleep");
+            TestUtils.sleepIgnoreInterrupt(120000L);
+        }
     }
 
     @Then(value = "^verify there is s2i build running for integration: \"([^\"]*)\"$")

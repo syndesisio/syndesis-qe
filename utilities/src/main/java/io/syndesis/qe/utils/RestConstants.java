@@ -18,4 +18,6 @@ public final class RestConstants {
     public static final String TODO_APP_NAME = "todo";
     public static final String AMQ_CONNECTION_ID = "fuseqe-amq";
     public static final String KAFKA_CONNECTION_ID = "fuseqe-kafka";
+    public static final String HTTP_CONNECTION_ID = "fuseqe-http";
+    public static final String HTTPS_CONNECTION_ID = "fuseqe-https";
 }

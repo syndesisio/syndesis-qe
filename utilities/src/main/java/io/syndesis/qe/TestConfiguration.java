@@ -16,6 +16,7 @@ public class TestConfiguration {
     public static final String OPENSHIFT_TOKEN = "syndesis.config.openshift.token";
     public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
     public static final String OPENSHIFT_NAMESPACE_CLEANUP = "syndesis.config.openshift.namespace.cleanup";
+    public static final String OPENSHIFT_NAMESPACE_CLEANUP_AFTER = "syndesis.config.openshift.namespace.cleanup.after";
     public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
     public static final String OPENSHIFT_NAMESPACE_LOCK = "syndesis.config.openshift.namespace.lock";
 
@@ -97,6 +98,8 @@ public class TestConfiguration {
 
     public static boolean namespaceCleanup() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP)); }
 
+    public static boolean namespaceCleanupAfter() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP_AFTER)); }
+
     public static boolean namespaceLock() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_LOCK)); }
 
     public static boolean useServerRoute() { return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE)); }
@@ -121,6 +124,7 @@ public class TestConfiguration {
         props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
 
         props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
+        props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP_AFTER, props.getProperty(OPENSHIFT_NAMESPACE_CLEANUP));
         props.setProperty(OPENSHIFT_NAMESPACE_LOCK, "false");
 
         // to keep backward compatibility
