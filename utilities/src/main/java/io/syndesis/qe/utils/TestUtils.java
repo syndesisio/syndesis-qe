@@ -1,7 +1,16 @@
 package io.syndesis.qe.utils;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorAction;
 import io.syndesis.common.model.connection.Connector;
@@ -13,14 +22,6 @@ import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import io.syndesis.qe.utils.dballoc.DBAllocation;
 import lombok.extern.slf4j.Slf4j;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * @author jknetl
@@ -119,6 +120,15 @@ public final class TestUtils {
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
         final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
         return OpenShiftUtils.portForward(podToForward, remotePort, localPort);
+    }
+
+    public static LocalPortForward createLocalPortForward(Pod pod, int remotePort, int localPort) {
+        return OpenShiftUtils.portForward(pod, remotePort, localPort);
+    }
+
+    public static boolean isDcDeployed(String dcName) {
+        DeploymentConfig dc = OpenShiftUtils.client().deploymentConfigs().withName(dcName).get();
+        return dc != null && dc.getStatus().getReadyReplicas() > 0;
     }
 
     public static void terminateLocalPortForward(LocalPortForward lpf) {

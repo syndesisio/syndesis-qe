@@ -4,7 +4,7 @@ Feature: Integration - Kafka producer / consumer
   Background:
     Given clean SF, removes all leads with email: "jdoe@acme.com"
       And deploy Kafka broker and add account
-      And deploy AMQ broker if it doesnt exist
+      And deploy AMQ broker and add accounts
       And create AMQ connection
       And create SF connection
       And create Kafka connection
