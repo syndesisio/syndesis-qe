@@ -187,10 +187,14 @@ public class CommonSteps {
                 configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
 
                 // do nothing if connection does not require any credentials
-                if (!connectionCredentialsName.equalsIgnoreCase("no credentials")) {
+                if (!(connectionCredentialsName.equalsIgnoreCase("no credentials") ||
+                        connectionDescription.equalsIgnoreCase("no validation"))) {
 
                     clickOnButton("Validate");
                     successNotificationIsPresentWithError(connectionType + " has been successfully validated.");
+                    scrollTo("top", "right");
+                    clickOnButton("Next");
+                } else if (connectionDescription.equalsIgnoreCase("no validation")) {
                     scrollTo("top", "right");
                     clickOnButton("Next");
                 }
@@ -479,6 +483,7 @@ public class CommonSteps {
     public void fillFormViaID(DataTable data) {
         new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
     }
+
     @When("^.*create connections using oauth$")
     public void createConnectionsUsingOAuth(DataTable connectionsData) {
 
