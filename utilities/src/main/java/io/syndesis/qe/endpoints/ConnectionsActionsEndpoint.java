@@ -25,7 +25,7 @@ public class ConnectionsActionsEndpoint extends AbstractEndpoint<ConnectorDescri
     }
 
     public ConnectorDescriptor postParamsAction(String actionName, Map<String, String> body) {
-        log.debug("POST, destination : {}", getEndpointUrl() + actionName);
+        log.debug("POST, destination : {}", getEndpointUrl() + "/" + actionName);
         final Invocation.Builder invocation = createInvocation(actionName);
         final JsonNode response = invocation.post(Entity.entity(body, MediaType.APPLICATION_JSON), JsonNode.class);
         return transformJsonNode(response, ConnectorDescriptor.class);

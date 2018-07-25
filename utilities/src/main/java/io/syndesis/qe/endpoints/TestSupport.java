@@ -1,11 +1,14 @@
 package io.syndesis.qe.endpoints;
 
+import static org.junit.Assert.fail;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,15 +39,24 @@ public final class TestSupport {
      * Resets Syndesis database.
      */
     public void resetDB() {
-        resetDbWithResponse();
+        int tries = 0;
+        while (tries < 10) {
+            if (resetDbWithResponse() == 204) {
+                return;
+            }
+            TestUtils.sleepIgnoreInterrupt(5000L);
+            tries++;
+        }
+        fail("Unable to successfully reset DB after 10 tries");
     }
+
 
     /**
      * Resets Syndesis database.
      *
      * @return HTTP response code
      */
-    public int resetDbWithResponse() {
+    private int resetDbWithResponse() {
         String url = getEndpointUrl();
         final Invocation.Builder invocation = client
                 .target(url)
