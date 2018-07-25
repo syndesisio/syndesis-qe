@@ -91,7 +91,7 @@ public class Form {
                     input.sendKeys(data.get(key));
                 }
             } else {
-                log.error("Input {} is not present on form!", key);
+                log.warn("Input {} is not present on form!", key);
             }
         }
     }
