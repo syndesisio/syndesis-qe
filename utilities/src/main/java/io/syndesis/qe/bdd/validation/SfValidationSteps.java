@@ -267,13 +267,4 @@ public class SfValidationSteps {
         return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
 
     }
-
-    private void deleteAllSalesforceContactsWithEmail(ForceApi salesforce, String email) {
-        final Optional<Contact> contact = getSalesforceContactByEmail(salesforce, email);
-        if (contact.isPresent()) {
-            salesforce.deleteSObject("contact", String.valueOf(contact.get().getId()));
-            log.debug("Deleting salesforce contact: {}", contact.get());
-            deleteAllSalesforceContactsWithEmail(salesforce, email);
-        }
-    }
 }

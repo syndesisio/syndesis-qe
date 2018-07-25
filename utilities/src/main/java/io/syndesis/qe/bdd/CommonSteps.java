@@ -1,5 +1,19 @@
 package io.syndesis.qe.bdd;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.EnumSet;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -24,22 +38,11 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class CommonSteps {
+    @Autowired
+    private DBAllocatorClient dbAllocatorClient;
 
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
@@ -121,21 +124,15 @@ public class CommonSteps {
         //check that postgreSQl connection has been created
         int i = 0;
         while (i < 10) {
-//            this wait does not work correctly, since resetDbWithResponse() is being called stochastically even after 204 code has been achieved:
-//            boolean resetStatus = TestUtils.waitForEvent(rc -> rc == 204, () -> TestSupport.getInstance().resetDbWithResponse(), TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 10);
-            int resetStatus = TestSupport.getInstance().resetDbWithResponse();
-            if (resetStatus == 204) {
-                TestUtils.sleepIgnoreInterrupt(5000);
-                Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
-                assertThat(optConnection.isPresent()).isTrue();
-                if (optConnection.isPresent()) {
-                    log.info("DEFAULT POSTGRESDB CONNECTION *{}* IS PRESENT", optConnection.get().getName());
-                    return;
-                }
+            TestSupport.getInstance().resetDB();
+            Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
+            assertThat(optConnection.isPresent()).isTrue();
+            if (optConnection.isPresent()) {
+                return;
             }
             i++;
         }
-        fail("Default PostgresDB connection has not been created, please contact engineerig!");
+        fail("Default PostgresDB connection has not been created, please contact engineering!");
     }
 
     @Then("^sleep for jenkins delay or \"([^\"]*)\" seconds")
