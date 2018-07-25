@@ -19,9 +19,7 @@ public class ImportIntegrationSteps {
     @And("^import integration \"([^\"]*)\"$")
     public void importIntegration(String integrationName) throws InterruptedException {
         importIntegrationPage.importIntegration(integrationName);
-        //give jenkins more time so the integration shows up in the list
-        TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
-        Assertions.assertThat(integrations.isIntegrationPresent(integrationName)).isTrue();
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
     }
 
     @And("^drag exported integration \"([^\"]*)\" file to drag and drop area$")
