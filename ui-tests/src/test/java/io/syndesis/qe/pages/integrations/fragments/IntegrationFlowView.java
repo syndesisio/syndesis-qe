@@ -39,7 +39,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By STEP_INSERT = By.className("step-insert");
 
         public static final By POPOVER_CLASS = By.className("popover");
-        public static final By CONNECTION_INFO_CLASS = By.className("fa-info-circle");
+        public static final By STEP_DETAILS = By.className("step-details");
         public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
 
 
@@ -180,13 +180,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public String getConnectionPropertiesText(SelenideElement connectionStep) {
-        SelenideElement infoIcon = connectionStep.$(Element.CONNECTION_INFO_CLASS).shouldBe(visible);
-        //open popup
-        infoIcon.click();
-        String text = getPopoverText();
-        //hide popup
-        infoIcon.click();
-        return text;
+        return connectionStep.$(Element.STEP_DETAILS).shouldBe(visible).getText();
     }
 
 }
