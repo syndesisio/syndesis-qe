@@ -43,11 +43,12 @@ Feature: Integration - Databucket
     Then check that text "Add a data mapping step" is "visible" in step warning inside of step number "2"
     And check that there is no warning inside of step number "0"
 
+    And open integration flow details
     And check that in connection info popover for step number "0" is following text
-      | Connection Properties | Twitter Listener | Action | Mention | Output Data Type | Twitter Mention |
+      | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
     And check that in connection info popover for step number "2" is following text
-      | Connection Properties | Name | PostgresDB | Action | Invoke SQL | Input Data Type | SQL Parameter |
+      | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
 
 
 
@@ -65,10 +66,10 @@ Feature: Integration - Databucket
     # check pop ups
 
     And check that in connection info popover for step number "0" is following text
-      | Connection Properties | Twitter Listener | Action | Mention | Output Data Type | Twitter Mention |
+      | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
     And check that in connection info popover for step number "4" is following text
-      | Connection Properties | Name | PostgresDB | Action | Invoke SQL | Input Data Type | SQL Parameter |
+      | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
 
     And check that there is no warning inside of step number "4"
     And check that there is no warning inside of step number "0"
@@ -126,7 +127,7 @@ Feature: Integration - Databucket
 
     #And check that there is no warning inside of step number "2"
     And check that in connection info popover for step number "2" is following text
-      | Connection Properties | Name | PostgresDB | Action | Invoke SQL | Output Data Type | SQL Result |
+      | Name | PostgresDB | Action | Invoke SQL | Data Type | SQL Result |
 
     Then add second step between STEP and FINISH connection
     # add data mapper step
