@@ -4,11 +4,13 @@
 
 Feature: Integration - SalesForce producers
   Background:
-    Given clean SF, removes all leads with email: "jdoe@acme.com,joedoe@acme.com"
+    Given clean SF, removes all leads with email: "jdoeprod@acme.com,joedoeprod@acme.com"
       And deploy AMQ broker and add accounts
+      And clean "queue" with name "sf-producers-input"
+      And clean "queue" with name "sf-producers-output"
       And create AMQ connection
       And create SF connection
-      And create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
+      And create SF lead with first name: "John", last name: "Doe", email: "jdoeprod@acme.com" and company: "ACME"
       And create AMQ "subscribe" action step with destination type "queue" and destination name "sf-producers-input"
 
   @integration-sf-producers-delete-record
@@ -26,7 +28,7 @@ Feature: Integration - SalesForce producers
       | sObjectIdName | Email |
       And create integration with name: "AMQ-SF delete record with external id"
     Then wait for integration with name: "AMQ-SF delete record with external id" to become active
-    When publish message with content '{"Id":"jdoe@acme.com"}' to queue "sf-producers-input"
+    When publish message with content '{"Id":"jdoeprod@acme.com"}' to queue "sf-producers-input"
     Then verify that lead was deleted
 
   @integration-sf-producers-fetch-record
@@ -46,7 +48,7 @@ Feature: Integration - SalesForce producers
       And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
       And create integration with name: "AMQ-SF-AMQ fetch record with external id"
     Then wait for integration with name: "AMQ-SF-AMQ fetch record with external id" to become active
-    When publish message with content '{"Id":"jdoe@acme.com"}' to queue "sf-producers-input"
+    When publish message with content '{"Id":"jdoeprod@acme.com"}' to queue "sf-producers-input"
     Then verify that lead json object was received from queue "sf-producers-output"
 
   @integration-sf-producers-create-record
@@ -55,7 +57,7 @@ Feature: Integration - SalesForce producers
       And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
       And create integration with name: "AMQ-SF-AMQ new record"
     Then wait for integration with name: "AMQ-SF-AMQ new record" to become active
-    When publish message with content '{"FirstName":"Joe", "LastName":"Doe","Email":"joedoe@acme.com","Company":"XYZ"}' to queue "sf-producers-input"
+    When publish message with content '{"FirstName":"Joe", "LastName":"Doe","Email":"joedoeprod@acme.com","Company":"XYZ"}' to queue "sf-producers-input"
     Then verify that lead creation response was received from queue "sf-producers-output"
 
   @integration-sf-producers-update-record
@@ -63,8 +65,8 @@ Feature: Integration - SalesForce producers
     When create SF "update-sobject" action step on field: "Lead"
       And create integration with name: "AMQ-SF update record"
     Then wait for integration with name: "AMQ-SF update record" to become active
-    When publish message with content '{"Id":"LEAD_ID", "Email":"joedoe@acme.com"}' to queue "sf-producers-input"
-    Then verify that lead was updated
+    When publish message with content '{"Id":"LEAD_ID", "Email":"joedoeprod@acme.com"}' to queue "sf-producers-input"
+    Then verify that leads email was updated to "joedoeprod@acme.com"
 
   @integration-sf-producers-upsert-record-insert
   Scenario: Upsert record - insert
@@ -75,8 +77,8 @@ Feature: Integration - SalesForce producers
       And create integration with name: "AMQ-SF-AMQ upsert insert record"
     Then wait for integration with name: "AMQ-SF-AMQ upsert insert record" to become active
     # This user does not exist, will be created
-    When publish message with content '{"Email":"joedoe@acme.com", "Firstname":"Joe", "Lastname":"Doe", "Company":"XYZ"}' to queue "sf-producers-input"
-    Then verify that lead was created
+    When publish message with content '{"Email":"joedoeprod@acme.com", "Firstname":"Joe", "Lastname":"Doe", "Company":"XYZ"}' to queue "sf-producers-input"
+    Then verify that lead with email "joedoeprod@acme.com" was created
       And verify that lead creation response was received from queue "sf-producers-output"
 
   @integration-sf-producers-upsert-record-update
@@ -88,6 +90,6 @@ Feature: Integration - SalesForce producers
       And create integration with name: "AMQ-SF-AMQ upsert update record"
     Then wait for integration with name: "AMQ-SF-AMQ upsert update record" to become active
     # This user does exist, but with first name John
-    When publish message with content '{"Email":"jdoe@acme.com", "Firstname":"Joe", "Lastname":"Doe", "Company":"XYZ"}' to queue "sf-producers-input"
+    When publish message with content '{"Email":"jdoeprod@acme.com", "Firstname":"Joe", "Lastname":"Doe", "Company":"XYZ"}' to queue "sf-producers-input"
     Then verify that lead name was updated
       And verify that lead creation response was received from queue "sf-producers-output"
