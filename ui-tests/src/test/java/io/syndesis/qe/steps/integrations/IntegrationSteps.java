@@ -7,6 +7,7 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
 import io.syndesis.qe.pages.integrations.Integrations;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
 import io.syndesis.qe.pages.integrations.summary.Details;
@@ -19,6 +20,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +29,8 @@ import static com.codeborne.selenide.Condition.visible;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Assert;
 
 /**
  * Created by sveres on 11/15/17.
@@ -137,8 +141,94 @@ public class IntegrationSteps {
         }
     }
 
+
     @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"([^\"]*)\"$")
     public void checkThatLogsContain(String integrationName, String text) {
         Assertions.assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).containsIgnoringCase(text);
+    }
+    @Then("^check starting integration ([^\"]*) status on Integrations page$")
+    public void checkStartingStatusOnIntegrationsPage( String integrationName) {
+        checkStartingStatus(integrationName, "Integrations");
+    }
+
+    //base starting status checking method used in step methods
+    public void checkStartingStatus( String integrationName, String checkedPage) {
+        List<IntegrationStartingStatus> statuses = new ArrayList<>();
+        statuses.add(IntegrationStartingStatus.ASSEMBLING);
+        statuses.add(IntegrationStartingStatus.BUILDING);
+        statuses.add(IntegrationStartingStatus.DEPLOYING);
+        statuses.add(IntegrationStartingStatus.STARTING);
+
+        int lastStatusIndex = 0;
+        int matchingStatesNumber = 0;
+        StringBuilder statusesMessage = new StringBuilder("");
+        String lastStatus = "";
+
+        //polling every 200 ms for 10 minutes
+        for (int i = 0; i < 5 * 60 * 10; i++) {
+            if (lastStatusIndex == statuses.size() - 1) {
+                switch (checkedPage) {
+                    case "Home":
+                    case "Integrations":
+                        log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim());
+                        Assertions.assertThat(integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim()).isEqualToIgnoringWhitespace("Running");
+                        break;
+                    case "Integration detail":
+                        log.info("Status changed to: " + detailPage.getPublishedVersion().getText().trim());
+                        Assertions.assertThat(detailPage.getPublishedVersion().getText()).isEqualToIgnoringWhitespace("Published version 1");
+                        break;
+                    default:
+                        Assert.fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
+                }
+                break;
+            }
+
+            String status = "";
+            try {
+                switch (checkedPage) {
+                    case "Home":
+                    case "Integrations":
+                        status = integrations.getIntegrationItemStartingStatus(integrations.getIntegration(integrationName));
+                        break;
+                    case "Integration detail":
+                        status = detailPage.getStartingStatus();
+                        break;
+                    default:
+                        Assert.fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
+                }
+            } catch(Throwable t) {
+                lastStatusIndex = statuses.size()-1;
+                continue;
+            }
+
+            if (!lastStatus.equals(status)) {
+                lastStatus = status;
+                statusesMessage.append(" " + status);
+            }
+
+            for (int j = lastStatusIndex; j < statuses.size(); j++) {
+                if (statuses.get(j).getStatus().equals(status)) {
+                    if (matchingStatesNumber == 0) {
+                        matchingStatesNumber++;
+                        lastStatusIndex = j;
+                        log.info("Status changed to: " + status);
+                    } else {
+                        if (lastStatusIndex < j) {
+                            matchingStatesNumber++;
+                            lastStatusIndex = j;
+                            log.info("Status changed to: " + status);
+                        }
+                    }
+                }
+                else {}
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        Assertions.assertThat(matchingStatesNumber).isGreaterThanOrEqualTo(2).withFailMessage("Spotted statuses' order:" + statusesMessage.toString());
     }
 }

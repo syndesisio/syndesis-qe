@@ -21,7 +21,8 @@ public class IntegrationsList extends RowList {
 
     private static final class Element {
         public static final By ITEM = By.xpath("//*[contains(@class,'list-pf-item')]");
-        public static final By STATUS = By.xpath(".//div[contains(@class,'status')]/span");
+        public static final By STATUS = By.xpath("//syndesis-integration-status//div[contains(@class,'status')]/span");
+        public static final By STARTING_STATUS = By.xpath("//syndesis-integration-status-detail//*[@class='statusDetail']//i");
         public static final By DESCRIPTION = By.className("description");
     }
 
@@ -49,6 +50,10 @@ public class IntegrationsList extends RowList {
 
     public String getStatus(SelenideElement item) {
         return $(Element.STATUS).shouldBe(visible).getText().trim();
+    }
+
+    public String getStartingStatus(SelenideElement item) {
+        return $(Element.STARTING_STATUS).shouldBe(visible).getText().trim();
     }
 
     public SelenideElement getKebabButton(SelenideElement item) {

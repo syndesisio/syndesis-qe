@@ -65,6 +65,10 @@ public class Integrations extends SyndesisPageObject {
         return integrationsList.getStatus(getIntegrationName(item));
     }
 
+    public String getIntegrationItemStartingStatus(SelenideElement item) {
+        return integrationsList.getStartingStatus(item);
+    }
+
     public SelenideElement getKebabButtonFromItem(SelenideElement item) {
         return integrationsList.getKebabButton(item);
     }
