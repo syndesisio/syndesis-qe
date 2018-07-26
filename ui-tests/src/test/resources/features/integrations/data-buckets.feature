@@ -64,7 +64,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     # check pop ups
-
+    And open integration flow details
     And check that in connection info popover for step number "0" is following text
       | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
@@ -126,6 +126,7 @@ Feature: Integration - Databucket
     Then check visibility of the "Add a Step" button
 
     #And check that there is no warning inside of step number "2"
+    And open integration flow details
     And check that in connection info popover for step number "2" is following text
       | Name | PostgresDB | Action | Invoke SQL | Data Type | SQL Result |
 
