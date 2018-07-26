@@ -29,6 +29,8 @@ public class Details extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-integration-detail-page");
         public static final By STATUS = By.cssSelector("syndesis-integration-status");
+        public static final By STARTING_STATUS = By.cssSelector("syndesis-integration-status-detail");
+        public static final By PUBLISHED_VERSION = By.xpath("//h1[@class='integration-detail__name']/following-sibling::div");
         public static final By TITLE = By.cssSelector("h1 > syndesis-editable-text");
         public static final By KEBEB_OPEN_MENU = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
@@ -98,6 +100,10 @@ public class Details extends SyndesisPageObject {
         return this.getElementText(Element.STATUS);
     }
 
+    public String getStartingStatus() {
+        return $(Element.STARTING_STATUS).$(By.xpath(".//i")).text();
+    }
+
     public String getIntegrationInfo() {
         return this.getElementText(Element.INFO);
     }
@@ -130,5 +136,9 @@ public class Details extends SyndesisPageObject {
     public void selectTab(String tabName) {
         ElementsCollection allTabs = $(Element.ROOT).findAll(Element.TAB).shouldBe(sizeGreaterThan(0));
         allTabs.stream().filter(s -> tabName.equals(s.getText())).findFirst().get().shouldBe(visible).click();
+    }
+
+    public SelenideElement getPublishedVersion() {
+        return $(Element.PUBLISHED_VERSION);
     }
 }
