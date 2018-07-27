@@ -170,7 +170,7 @@ public final class RestUtils {
     private static class ErrorLogger implements ClientResponseFilter {
         @Override
         public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
-            if (responseContext.getStatus() > 299) {
+            if (responseContext.getStatus() > 299 && !requestContext.getUri().toString().contains("reset-db")) {
                 log.error("Error while invoking " + requestContext.getUri().toString());
                 log.error("  Request:");
                 log.error("    Headers:");
