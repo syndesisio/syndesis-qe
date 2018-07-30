@@ -1,14 +1,16 @@
 package io.syndesis.qe.bdd.validation;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.S3Utils;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -59,14 +61,8 @@ public class S3ValidationSteps {
 
     @Then("^validate bucket with name \"([^\"]*)\" contains file with name \"([^\"]*)\" and text \"([^\"]*)\"")
     public void validateIntegration(String bucketName, String fileName, String text) {
-
-        try {
-            //TODO(tplevko): make waiting more dynamic
-            Thread.sleep(20000);
-        } catch (InterruptedException ex) {
-            log.error("Error: " + ex);
-        }
-        Assertions.assertThat(s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).isEqualTo(true);
-        Assertions.assertThat(s3Utils.readTextFileContentFromBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).contains(text);
+        assertThat(TestUtils.waitForEvent(r -> r, () -> s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName),
+                TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isTrue();
+        assertThat(s3Utils.readTextFileContentFromBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).contains(text);
     }
 }
