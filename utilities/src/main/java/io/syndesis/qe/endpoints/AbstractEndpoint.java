@@ -74,9 +74,8 @@ public abstract class AbstractEndpoint<T> {
             response = invocation.get(JsonNode.class);
         } catch (NotFoundException ex) {
             log.error("Not found: " + id);
-            List<T> found = list();
             log.error("Found:");
-            found.forEach(t -> log.error("  " + t.toString()));
+            list().forEach(t -> log.error("  " + t.toString()));
         }
         return transformJsonNode(response, type);
     }

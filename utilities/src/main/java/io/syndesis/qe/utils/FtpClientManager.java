@@ -27,7 +27,7 @@ public class FtpClientManager {
     private FtpClientManager() {
     }
 
-    public static  FTPClient getClient() {
+    public static FTPClient getClient() {
         if (localPortForward == null || !localPortForward.isAlive()) {
             localPortForward = OpenShiftUtils.portForward(OpenShiftUtils.xtf().getAnyPod("app", ftpPodName), ftpPort, ftpPort);
             //since we use passive FTP connection, we need to forward data ports also
@@ -56,7 +56,6 @@ public class FtpClientManager {
     }
 
     private static FTPClient initClient() {
-
         FTPClient ftpClient = new FTPClient();
         try {
             ftpClient.connect(ftpServer, ftpPort);
