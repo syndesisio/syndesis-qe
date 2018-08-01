@@ -110,16 +110,21 @@ public final class OpenShiftUtils {
     }
 
     public static String getIntegrationLogs(String integrationName) {
+        return getPodLogs(integrationName.replaceAll("[\\s_]", "-"));
+    }
+
+    public static String getPodLogs(String podPartialName) {
         Optional<Pod> integrationPod = OpenShiftUtils.getInstance().getPods().stream()
                 .filter(p -> !p.getMetadata().getName().contains("build"))
-                .filter(p -> p.getMetadata().getName().contains(integrationName.replaceAll("[\\s_]", "-"))).findFirst();
+                .filter(p -> !p.getMetadata().getName().contains("deploy"))
+                .filter(p -> p.getMetadata().getName().contains(podPartialName)).findFirst();
         if (integrationPod.isPresent()) {
             String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
             assertThat(logText)
                     .isNotEmpty();
             return logText;
         } else {
-            fail("No pod found for pod name: " + integrationName);
+            fail("No pod found for pod name: " + podPartialName);
         }
         //this can not happen due to assert
         return null;

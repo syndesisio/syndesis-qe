@@ -18,6 +18,9 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 @Slf4j
 public class OpenShiftWaitUtils {
 
@@ -251,5 +254,27 @@ public class OpenShiftWaitUtils {
         // UI even gives 60s after integration gets into running state, lets go with 30 here
         TestUtils.sleepForJenkinsDelayIfHigher(30);
         log.info("Pod {} is READY!", podPartialName);
+    }
+
+    /**
+     * Method waits until pod with @param podPartialName appears
+     * Build and deploy pods are ignored
+     *
+     * @param podPartialName
+     */
+    public static void waitUntilPodAppears(String podPartialName) {
+        try {
+            waitFor(() -> isPodPresent(podPartialName), 5*60*1000);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Error thrown while checking if pod exists", e);
+        }
+    }
+
+    private static boolean isPodPresent(String podPartialName) {
+        Optional<Pod> integrationPod = OpenShiftUtils.getInstance().getPods().stream()
+                .filter(p -> !p.getMetadata().getName().contains("build"))
+                .filter(p -> !p.getMetadata().getName().contains("deploy"))
+                .filter(p -> p.getMetadata().getName().contains(podPartialName)).findFirst();
+        return integrationPod.isPresent();
     }
 }
