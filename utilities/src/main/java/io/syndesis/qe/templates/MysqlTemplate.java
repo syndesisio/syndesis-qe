@@ -14,12 +14,13 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class MysqlTemplate {
@@ -106,10 +107,23 @@ public class MysqlTemplate {
     }
 
     public static void cleanUp() {
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
-                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
-                .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        TestUtils.sleepIgnoreInterrupt(5000);
+        try {
+            OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
+                    .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
+            OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
+                    .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
+            TestUtils.sleepIgnoreInterrupt(5000);
+        } catch (Exception e) {
+            log.error("Error thrown while trying to delete mysql database. It is just deletion, it should not affect following tests.", e);
+        }
+    }
+
+    public static void waitUntilMysqlIsReady() {
+        try {
+            OpenShiftWaitUtils.waitUntilPodAppears("mysql");
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 300L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("MySQL database never started in pod.", e);
+        }
     }
 }
