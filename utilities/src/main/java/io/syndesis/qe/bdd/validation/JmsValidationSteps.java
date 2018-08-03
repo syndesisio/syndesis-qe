@@ -65,7 +65,7 @@ public class JmsValidationSteps {
         JMSUtils.sendMessage(JMSUtils.Destination.valueOf(type.toUpperCase()), name, content);
     }
 
-    @Given("^clean \"([^\"]*)\" with name \"([^\"]*)\"")
+    @Given("^clean destination type \"([^\"]*)\" with name \"([^\"]*)\"")
     public void cleanDestination(String type, String name) {
         JMSUtils.clear(JMSUtils.Destination.valueOf(type.toUpperCase()), name);
     }

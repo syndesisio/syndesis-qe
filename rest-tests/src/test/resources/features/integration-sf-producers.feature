@@ -6,8 +6,8 @@ Feature: Integration - SalesForce producers
   Background:
     Given clean SF, removes all leads with email: "jdoeprod@acme.com,joedoeprod@acme.com"
       And deploy AMQ broker and add accounts
-      And clean "queue" with name "sf-producers-input"
-      And clean "queue" with name "sf-producers-output"
+      And clean destination type "queue" with name "sf-producers-input"
+      And clean destination type "queue" with name "sf-producers-output"
       And create AMQ connection
       And create SF connection
       And create SF lead with first name: "John", last name: "Doe", email: "jdoeprod@acme.com" and company: "ACME"

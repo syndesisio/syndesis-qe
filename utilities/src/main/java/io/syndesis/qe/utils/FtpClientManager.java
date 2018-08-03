@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -73,6 +75,7 @@ public class FtpClientManager {
                 TestUtils.sleepIgnoreInterrupt(30000L);
             }
         }
+        fail("Unable to create FTP client after 3 retries");
         return null;
     }
 }

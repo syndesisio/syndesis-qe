@@ -41,7 +41,6 @@ public class FtpUtils {
         try (InputStream is = IOUtils.toInputStream(text, "UTF-8")) {
             ftpClient.storeFile("/" + remoteDirectory + "/" + testFileName, is);
         } catch (IOException ex) {
-            ex.printStackTrace();
             fail("Unable to upload test file: ", ex);
         }
     }
