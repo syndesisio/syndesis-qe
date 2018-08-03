@@ -87,7 +87,6 @@ public class SampleDbConnectionManager {
                 Assertions.assertThat(connectionsInfoMap).containsValue(wrap);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             log.error("ERROR: *{}* ", ex);
         }
     }

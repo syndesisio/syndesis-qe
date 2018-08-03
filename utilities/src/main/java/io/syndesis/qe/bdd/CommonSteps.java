@@ -11,10 +11,8 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -25,25 +23,14 @@ import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.templates.AmqTemplate;
-import io.syndesis.qe.templates.FtpTemplate;
-import io.syndesis.qe.templates.HTTPEndpointsTemplate;
-import io.syndesis.qe.templates.KafkaTemplate;
-import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.SyndesisTemplate;
-import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonSteps {
-    @Autowired
-    private DBAllocatorClient dbAllocatorClient;
-
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
 
@@ -126,7 +113,6 @@ public class CommonSteps {
         while (i < 10) {
             TestSupport.getInstance().resetDB();
             Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
-            assertThat(optConnection.isPresent()).isTrue();
             if (optConnection.isPresent()) {
                 return;
             }
