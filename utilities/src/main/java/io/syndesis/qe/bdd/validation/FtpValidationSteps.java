@@ -15,10 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FtpValidationSteps {
 
-    private final FtpUtils ftpUtils;
+    private final FtpUtils ftpUtils = new FtpUtils();
 
     public FtpValidationSteps() {
-        ftpUtils = new FtpUtils(FtpClientManager.getClient());
     }
 
     @Then("^put \"([^\"]*)\" file with content \"([^\"]*)\" in the FTP directory: \"([^\"]*)\"$")
@@ -28,7 +27,7 @@ public class FtpValidationSteps {
 
     @And("^validate that file \"([^\"]*)\" has been transfered to \"([^\"]*)\" FTP directory$")
     public void validateThatFileHasBeenTransferedToDirectory(String filename, String remoteToDirectory) {
-        assertThat(TestUtils.waitForEvent(r -> r, () -> ftpUtils.isThereFile(remoteToDirectory, filename),
+        assertThat(TestUtils.waitForEvent(r -> r, () -> ftpUtils.isFileThere(remoteToDirectory, filename),
                 TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isTrue();
     }
 
@@ -39,13 +38,13 @@ public class FtpValidationSteps {
 
     @And("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" FTP directory$")
     public void validateFileIsNotThere(String filename, String remoteFromDirectory) {
-        assertThat(ftpUtils.isThereFile(remoteFromDirectory, filename)).isFalse();
+        assertThat(ftpUtils.isFileThere(remoteFromDirectory, filename)).isFalse();
     }
 
     @Then("^validate that file \"([^\"]*)\" has been transfered from \"([^\"]*)\" to \"([^\"]*)\" FTP directory$")
     public void validateThatFileHasBeenTransferedFromToDirectory(String filename, String remoteFromDirectory, String remoteToDirectory) {
-        assertThat(TestUtils.waitForEvent(r -> r, () -> ftpUtils.isThereFile(remoteToDirectory, filename),
+        assertThat(TestUtils.waitForEvent(r -> r, () -> ftpUtils.isFileThere(remoteToDirectory, filename),
                 TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isTrue();
-        assertThat(ftpUtils.isThereFile(remoteFromDirectory, filename)).isFalse();
+        assertThat(ftpUtils.isFileThere(remoteFromDirectory, filename)).isFalse();
     }
 }

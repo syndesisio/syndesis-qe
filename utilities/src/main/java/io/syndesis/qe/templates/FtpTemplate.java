@@ -24,7 +24,7 @@ public class FtpTemplate {
     private static final String LABEL_NAME = "app";
 
     public static void deploy() {
-        if (!TestUtils.isDcDeployed("ftpd")) {
+        if (!TestUtils.isDcDeployed(APP_NAME)) {
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
                     .withName("ftp-cmd")
