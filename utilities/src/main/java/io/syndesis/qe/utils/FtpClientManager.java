@@ -56,17 +56,23 @@ public class FtpClientManager {
     }
 
     private static FTPClient initClient() {
-        FTPClient ftpClient = new FTPClient();
-        try {
-            ftpClient.connect(ftpServer, ftpPort);
-            ftpClient.login(ftpUser, ftpPass);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            log.info("Connected: {}", ftpClient.isConnected());
-            return ftpClient;
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return null;
+        int i = 0;
+        while (i < 3) {
+            FTPClient ftpClient = new FTPClient();
+            try {
+                ftpClient.connect(ftpServer, ftpPort);
+                ftpClient.login(ftpUser, ftpPass);
+                ftpClient.enterLocalPassiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                log.info("Connected: {}", ftpClient.isConnected());
+                return ftpClient;
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                log.info("Retrying in 30 seconds");
+                i++;
+                TestUtils.sleepIgnoreInterrupt(30000L);
+            }
         }
+        return null;
     }
 }
