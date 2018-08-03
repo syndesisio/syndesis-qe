@@ -1,5 +1,10 @@
 package io.syndesis.qe.bdd.validation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import java.util.concurrent.TimeoutException;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -12,16 +17,8 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.TimeoutException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 @Slf4j
 public class OpenshiftValidationSteps {
-
-    private static boolean amqDeployed = false;
-
     @Then("^wait until mysql database starts$")
     public void waitUntilDatabaseStarts() {
         MysqlTemplate.waitUntilMysqlIsReady();
@@ -60,10 +57,7 @@ public class OpenshiftValidationSteps {
 
     @Given("^deploy AMQ broker if it doesnt exist$")
     public void deployAMQBrokerIfMissing() {
-        if (!amqDeployed) {
-            AmqTemplate.deploy();
-            amqDeployed = true;
-        }
+        AmqTemplate.deploy();
     }
 
     @Given("^deploy Kafka broker and add account$")

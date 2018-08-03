@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -68,8 +69,14 @@ public abstract class AbstractEndpoint<T> {
     public T get(String id) {
         log.debug("GET : {}", getEndpointUrl(Optional.ofNullable(id)));
         final Invocation.Builder invocation = this.createInvocation(id);
-        final JsonNode response = invocation.get(JsonNode.class);
-
+        JsonNode response = null;
+        try {
+            response = invocation.get(JsonNode.class);
+        } catch (NotFoundException ex) {
+            log.error("Not found: " + id);
+            log.error("Found:");
+            list().forEach(t -> log.error("  " + t.toString()));
+        }
         return transformJsonNode(response, type);
     }
 

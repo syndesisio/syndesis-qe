@@ -6,7 +6,6 @@ Feature: Integration - FTP to FTP
   Background: Clean application state
     Given clean application state
     Given log into the Syndesis
-    Given clean FTP server
     Given deploy FTP server
     Given created connections
       | FTP | FTP | FTP | FTP on OpenShift |
@@ -28,11 +27,11 @@ Feature: Integration - FTP to FTP
     When select the "FTP" connection
     And select "download" integration action
     And fill in values
-      | File name expression               | test.txt |
-      | FTP directory                      | download |
-      | Milliseconds before polling starts | 1000     |
-      | Milliseconds before the next poll  | 500      |
-      | Delete file after download         | Yes      |
+      | File name expression               | ui-ftp-ftp.txt |
+      | FTP directory                      | download       |
+      | Milliseconds before polling starts | 1000           |
+      | Milliseconds before the next poll  | 500            |
+      | Delete file after download         | Yes            |
 
     And click on the "Next" button
 #    And fill in values
@@ -46,7 +45,7 @@ Feature: Integration - FTP to FTP
     When select the "FTP" connection
     And select "Upload" integration action
     And fill in values
-      | File name expression                | test.txt         |
+      | File name expression                | ui-ftp-ftp.txt   |
       | FTP directory                       | upload           |
       | If file exists                      | Override         |
       | Temporary file prefix while copying | copyingprefix    |
@@ -69,5 +68,6 @@ Feature: Integration - FTP to FTP
     Then navigate to the "Integrations" page
     Then wait until integration "ftp-to-ftp E2E" gets into "Running" state
     Then sleep for jenkins delay or "5" seconds
+    When put "ui-ftp-ftp.txt" file with content "Hello" in the FTP directory: "download"
 #    to be done:
-    Then validate that file "test.txt" has been transfered from "/download" to "/upload" FTP directory
+    Then validate that file "ui-ftp-ftp.txt" has been transfered from "/download" to "/upload" FTP directory

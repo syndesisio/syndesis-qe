@@ -172,9 +172,9 @@ public class SfValidationSteps {
         assertThat(text).contains(leadId);
     }
 
-    @Then("^verify that lead was created")
-    public void verifyLeadCreated() {
-        Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, "joedoe@acme.com");
+    @Then("^verify that lead with email \"([^\"]*)\" was created")
+    public void verifyLeadCreated(String email) {
+        Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, email);
         assertThat(lead.get()).isInstanceOf(Lead.class);
         assertThat(lead.get().getFirstName()).isEqualTo("Joe");
     }
@@ -196,11 +196,11 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^verify that lead was updated$")
-    public void verifyLeadUpdated() {
+    @Then("^verify that leads email was updated to \"([^\"]*)\"$")
+    public void verifyLeadUpdated(String email) {
         // Add a delay for the integration processing
         TestUtils.sleepIgnoreInterrupt(5000L);
-        assertThat(getLeadWithId(leadId).getEmail()).isEqualTo("joedoe@acme.com");
+        assertThat(getLeadWithId(leadId).getEmail()).isEqualTo(email);
     }
 
     @Then("^verify that lead name was updated$")
@@ -266,14 +266,5 @@ public class SfValidationSteps {
         );
         return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
 
-    }
-
-    private void deleteAllSalesforceContactsWithEmail(ForceApi salesforce, String email) {
-        final Optional<Contact> contact = getSalesforceContactByEmail(salesforce, email);
-        if (contact.isPresent()) {
-            salesforce.deleteSObject("contact", String.valueOf(contact.get().getId()));
-            log.debug("Deleting salesforce contact: {}", contact.get());
-            deleteAllSalesforceContactsWithEmail(salesforce, email);
-        }
     }
 }

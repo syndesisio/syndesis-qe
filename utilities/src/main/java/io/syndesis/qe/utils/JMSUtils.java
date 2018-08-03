@@ -16,15 +16,8 @@ public final class JMSUtils {
     }
 
     public static Message getMessage(Destination type, String destinationName) {
-        Message m;
         try(JmsClientManager manager = new JmsClientManager("tcp")) {
-            JmsClient jmsClient = manager.getClient();
-            if (Destination.QUEUE.equals(type)) {
-                m = jmsClient.addQueue(destinationName).receiveMessage(60000L);
-            } else {
-                m = jmsClient.addTopic(destinationName).receiveMessage(60000L);
-            }
-            return m;
+            return withDestination(manager, type, destinationName).receiveMessage(60000L);
         } catch (Exception e) {
             log.error("Unable to get message from JMS", e);
             e.printStackTrace();
@@ -54,16 +47,27 @@ public final class JMSUtils {
 
     public static void sendMessage(Destination type, String name, String content) {
         try(JmsClientManager manager = new JmsClientManager("tcp")) {
-            JmsClient jmsClient = manager.getClient();
-            if (type.equals(Destination.QUEUE)) {
-                jmsClient.addQueue(name);
-            } else {
-                jmsClient.addTopic(name);
-            }
-            jmsClient.sendMessage(content);
+            withDestination(manager, type, name).sendMessage(content);
         } catch (Exception e) {
             log.error("Unable to send message to queue", e);
             e.printStackTrace();
         }
+    }
+
+    public static void clear(Destination type, String name) {
+        Message m = getMessage(type, name);
+        while (m != null) {
+            m = getMessage(type, name);
+        }
+    }
+
+    private static JmsClient withDestination(JmsClientManager manager, Destination type, String name) {
+        JmsClient c = manager.getClient();
+        if (Destination.QUEUE == type) {
+            c.addQueue(name);
+        } else {
+            c.addTopic(name);
+        }
+        return c;
     }
 }

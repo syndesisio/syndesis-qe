@@ -32,7 +32,7 @@ public class AmqTemplate {
             templateParams.put("MQ_USERNAME", "amq");
             templateParams.put("MQ_PASSWORD", "topSecret");
 
-            // try to clean previous broker
+            // try to delete previous broker
             cleanUp();
             OpenShiftUtils.client().templates().withName("syndesis-amq").delete();
 
