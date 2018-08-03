@@ -52,7 +52,6 @@ public class SampleDbConnectionManager {
             if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
                 Connection dbConnection = SampleDbConnectionManager.createDbConnection(dbType);
                 wrap.setDbConnection(dbConnection);
-                log.info("Putting driver :*{}* and wrap: *{}* to map", dbType, wrap.getDbType());
                 connectionsInfoMap.put(dbType, wrap);
                 Assertions.assertThat(connectionsInfoMap).isNotEmpty();
             }
@@ -66,7 +65,7 @@ public class SampleDbConnectionManager {
     }
 
     public static void closeConnections() {
-        connectionsInfoMap.entrySet().stream().forEach(ent -> releaseDbWrapper(ent.getValue()));
+        connectionsInfoMap.forEach((key, value) -> releaseDbWrapper(value));
         connectionsInfoMap.clear();
     }
 
@@ -83,13 +82,12 @@ public class SampleDbConnectionManager {
             if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
                 Connection dbConnection = SampleDbConnectionManager.createDbConnection(wrap.getLocalPortForward(), localPort, driver);
                 wrap.setDbConnection(dbConnection);
-                log.info("Putting driver :*{}* and wrap: *{}* to map", driver, wrap.getDbType());
                 connectionsInfoMap.put(driver, wrap);
                 Assertions.assertThat(connectionsInfoMap).containsKey(driver);
                 Assertions.assertThat(connectionsInfoMap).containsValue(wrap);
             }
         } catch (SQLException ex) {
-            log.error("ERROR: *{}* ", ex.getStackTrace());
+            log.error("ERROR: *{}* ", ex);
         }
     }
 
@@ -110,9 +108,8 @@ public class SampleDbConnectionManager {
         } catch (IllegalStateException ex) {
             dbUrl = String.format("jdbc:%s://%s:%s/sampledb", driver, "127.0.0.1", localPort);
         }
-        log.info("DB endpoint URL: " + dbUrl);
-        Connection dbConnection = DriverManager.getConnection(dbUrl, props);
-        return dbConnection;
+        log.debug("DB endpoint URL: " + dbUrl);
+        return DriverManager.getConnection(dbUrl, props);
     }
 
     private static Connection createDbConnection(String dbType) throws SQLException {
@@ -128,9 +125,8 @@ public class SampleDbConnectionManager {
 
         String dbUrl = account.getProperties().get("url");
 
-        log.info("DB endpoint URL: *{}*", dbUrl);
-        Connection dbConnection = DriverManager.getConnection(dbUrl, props);
-        return dbConnection;
+        log.debug("DB endpoint URL: *{}*", dbUrl);
+        return DriverManager.getConnection(dbUrl, props);
     }
 
     private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String podName) {

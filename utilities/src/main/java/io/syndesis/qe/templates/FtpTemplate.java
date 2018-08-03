@@ -109,7 +109,7 @@ public class FtpTemplate {
     public static void cleanUp() {
         OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service ->  APP_NAME.equals(service.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         try {
             Thread.sleep(5 * 1000);

@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -27,7 +29,7 @@ public class FtpClientManager {
     private FtpClientManager() {
     }
 
-    public static  FTPClient getClient() {
+    public static FTPClient getClient() {
         if (localPortForward == null || !localPortForward.isAlive()) {
             localPortForward = OpenShiftUtils.portForward(OpenShiftUtils.xtf().getAnyPod("app", ftpPodName), ftpPort, ftpPort);
             //since we use passive FTP connection, we need to forward data ports also
@@ -56,18 +58,24 @@ public class FtpClientManager {
     }
 
     private static FTPClient initClient() {
-
-        FTPClient ftpClient = new FTPClient();
-        try {
-            ftpClient.connect(ftpServer, ftpPort);
-            ftpClient.login(ftpUser, ftpPass);
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            log.info("Connected: {}", ftpClient.isConnected());
-            return ftpClient;
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            return null;
+        int i = 0;
+        while (i < 3) {
+            FTPClient ftpClient = new FTPClient();
+            try {
+                ftpClient.connect(ftpServer, ftpPort);
+                ftpClient.login(ftpUser, ftpPass);
+                ftpClient.enterLocalPassiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                log.info("Connected: {}", ftpClient.isConnected());
+                return ftpClient;
+            } catch (IOException e) {
+                log.error(e.getMessage());
+                log.info("Retrying in 30 seconds");
+                i++;
+                TestUtils.sleepIgnoreInterrupt(30000L);
+            }
         }
+        fail("Unable to create FTP client after 3 retries");
+        return null;
     }
 }

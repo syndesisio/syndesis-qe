@@ -1,6 +1,7 @@
 package io.syndesis.qe.bdd.validation;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -61,7 +62,7 @@ public class CommonValidationSteps {
                 }
             }
         }
-        Assertions.assertThat(activated).isTrue();
+        assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         if (System.getenv("WORKSPACE") != null) {
             log.info("Running on Jenkins, adding 2 min sleep");
@@ -73,15 +74,15 @@ public class CommonValidationSteps {
     public void verifyIntegrationBuildRunning(String integrationName) {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
         final List<Build> builds = new ArrayList<>(OpenShiftUtils.getInstance().getBuilds());
-        Assertions.assertThat(builds).isNotEmpty();
-        Assertions.assertThat(builds).filteredOn(build -> build.getMetadata().getLabels().get("buildconfig").contentEquals(sanitizedName)).isNotEmpty();
+        assertThat(builds).isNotEmpty();
+        assertThat(builds).filteredOn(build -> build.getMetadata().getLabels().get("buildconfig").contentEquals(sanitizedName)).isNotEmpty();
         log.info("There is build with name {} running", sanitizedName);
     }
 
     @Then(value = "^verify there are no s2i builds running for integration: \"([^\"]*)\"$")
     public void verifyNoIntegrationBuildRunning(String integrationName) {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
-        Assertions.assertThat(new ArrayList<>(OpenShiftUtils.getInstance().getBuilds())).filteredOn(build -> build.getMetadata().getLabels().get("buildconfig").contentEquals(sanitizedName)).isEmpty();
+        assertThat(new ArrayList<>(OpenShiftUtils.getInstance().getBuilds())).filteredOn(build -> build.getMetadata().getLabels().get("buildconfig").contentEquals(sanitizedName)).isEmpty();
         log.info("There is no builds with name {} running", sanitizedName);
     }
 
@@ -93,7 +94,7 @@ public class CommonValidationSteps {
         final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
         log.debug("Actual state: {} and desired state: {}", integrationOverview.getCurrentState().name(), integrationState);
-        Assertions.assertThat(integrationOverview.getCurrentState().name()).isEqualTo(integrationState);
+        assertThat(integrationOverview.getCurrentState().name()).isEqualTo(integrationState);
     }
 
     @Then("^validate integration: \"([^\"]*)\" pod scaled to (\\d+)$")
@@ -116,7 +117,7 @@ public class CommonValidationSteps {
         }
         final List<Pod> pods = OpenShiftUtils.getInstance().getPods().stream().filter(
                 b -> b.getMetadata().getName().contains(sanitizedName)).collect(Collectors.toList());
-        Assertions.assertThat(pods.stream().filter(p -> p.getStatus().getPhase().contentEquals("Running")).count() == podCount);
+        assertThat(pods.stream().filter(p -> p.getStatus().getPhase().contentEquals("Running")).count() == podCount);
         log.info("There are {} pods with name {} running", podCount, sanitizedName);
     }
 
