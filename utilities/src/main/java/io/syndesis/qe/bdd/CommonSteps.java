@@ -42,11 +42,7 @@ import static org.assertj.core.api.Assertions.fail;
 public class CommonSteps {
 
     @Autowired
-    private DBAllocatorClient dbAllocatorClient;
-    @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
-
-    private static boolean amqDeployed = false;
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
@@ -120,49 +116,6 @@ public class CommonSteps {
         }
     }
 
-    @Given("^deploy AMQ broker and add accounts$")
-    public void deployAMQBroker() {
-        AmqTemplate.deploy();
-    }
-
-    @Given("^deploy AMQ broker if it doesnt exist$")
-    public void deployAMQBrokerIfMissing() {
-        if (!amqDeployed) {
-            AmqTemplate.deploy();
-            amqDeployed = true;
-        }
-    }
-
-    @Given("^deploy Kafka broker and add account$")
-    public void deployKafka() {
-        KafkaTemplate.deploy();
-    }
-
-    @Given("^deploy HTTP endpoints")
-    public void deployHTTPEndpoints() {
-        HTTPEndpointsTemplate.deploy();
-    }
-
-    @Given("^execute SQL command \"([^\"]*)\"$")
-    public void executeSql(String sqlCmd) {
-        this.executeSqlOnDriver(sqlCmd, "postgresql");
-    }
-
-    @Given("^execute SQL command \"([^\"]*)\" on \"([^\"]*)\"$")
-    public void executeSqlOnDriver(String sqlCmd, String driver) {
-        new DbUtils(driver).executeSQLGetUpdateNumber(sqlCmd);
-    }
-
-    @Given("^clean \"([^\"]*)\" table$")
-    public void cleanDbTable(String dbTable) {
-        this.cleanDbTableOnDriver(dbTable, "postgresql");
-    }
-
-    @Given("^clean \"([^\"]*)\" table on \"([^\"]*)\"$")
-    public void cleanDbTableOnDriver(String dbTable, String driver) {
-        new DbUtils(driver).deleteRecordsInTable(dbTable);
-    }
-
     @Given("^clean application state")
     public void resetState() {
         //check that postgreSQl connection has been created
@@ -183,54 +136,6 @@ public class CommonSteps {
             i++;
         }
         fail("Default PostgresDB connection has not been created, please contact engineerig!");
-    }
-
-    @Given("^deploy FTP server$")
-    public void deployFTPServier() {
-        FtpTemplate.deploy();
-    }
-
-    @Given("^clean FTP server$")
-    public void cleanFTPServier() {
-        FtpTemplate.cleanUp();
-    }
-
-    @Given("^clean MySQL server$")
-    public void cleanMySQLServer() {
-        MysqlTemplate.cleanUp();
-    }
-
-    @Given("^deploy MySQL server$")
-    public void deployMySQLServer() {
-        MysqlTemplate.deploy();
-    }
-
-    @Given("^create standard table schema on \"([^\"]*)\" driver$")
-    public void createStandardDBSchemaOn(String dbType) {
-        new DbUtils(dbType).createSEmptyTableSchema();
-    }
-
-    @Given("^allocate new \"([^\"]*)\" database for \"([^\"]*)\" connection$")
-    public void allocateNewDatabase(String dbLabel, String connectionName) {
-
-        dbAllocatorClient.allocate(dbLabel);
-        log.info("Allocated database: '{}'", dbAllocatorClient.getDbAllocation());
-        TestUtils.setDatabaseCredentials(connectionName.toLowerCase(), dbAllocatorClient.getDbAllocation());
-    }
-
-    @Given("^free allocated \"([^\"]*)\" database$")
-    public void freeAllocatedDatabase(String dbLabel) {
-        assertThat(dbAllocatorClient.getDbAllocation().getDbLabel()).isEqualTo(dbLabel);
-        dbAllocatorClient.free();
-    }
-
-    @And("^wait until \"([^\"]*)\" pod is reloaded$")
-    public void waitUntilPodIsReady(String podName) {
-        try {
-            OpenShiftWaitUtils.waitForPodIsReloaded(podName);
-        } catch (InterruptedException | TimeoutException e) {
-            fail(e.getMessage());
-        }
     }
 
     @Then("^sleep for jenkins delay or \"([^\"]*)\" seconds")

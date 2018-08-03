@@ -1,9 +1,19 @@
 package io.syndesis.qe.bdd.validation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
+import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.utils.DbUtils;
+import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,16 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.utils.DbUtils;
-import io.syndesis.qe.utils.RestConstants;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * DB related validation steps.
@@ -33,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 public class DbValidationSteps {
 
     private DbUtils dbUtils;
+
+    @Autowired
+    private DBAllocatorClient dbAllocatorClient;
 
     public DbValidationSteps() {
         dbUtils = new DbUtils("postgresql");
@@ -198,6 +202,46 @@ public class DbValidationSteps {
             dbUtils.deleteRecordsInTable(tableName);
         }
     }
+
+    @Given("^execute SQL command \"([^\"]*)\"$")
+    public void executeSql(String sqlCmd) {
+        this.executeSqlOnDriver(sqlCmd, "postgresql");
+    }
+
+    @Given("^execute SQL command \"([^\"]*)\" on \"([^\"]*)\"$")
+    public void executeSqlOnDriver(String sqlCmd, String driver) {
+        new DbUtils(driver).executeSQLGetUpdateNumber(sqlCmd);
+    }
+
+    @Given("^clean \"([^\"]*)\" table$")
+    public void cleanDbTable(String dbTable) {
+        this.cleanDbTableOnDriver(dbTable, "postgresql");
+    }
+
+    @Given("^clean \"([^\"]*)\" table on \"([^\"]*)\"$")
+    public void cleanDbTableOnDriver(String dbTable, String driver) {
+        new DbUtils(driver).deleteRecordsInTable(dbTable);
+    }
+
+    @Given("^create standard table schema on \"([^\"]*)\" driver$")
+    public void createStandardDBSchemaOn(String dbType) {
+        new DbUtils(dbType).createSEmptyTableSchema();
+    }
+
+    @Given("^allocate new \"([^\"]*)\" database for \"([^\"]*)\" connection$")
+    public void allocateNewDatabase(String dbLabel, String connectionName) {
+
+        dbAllocatorClient.allocate(dbLabel);
+        log.info("Allocated database: '{}'", dbAllocatorClient.getDbAllocation());
+        TestUtils.setDatabaseCredentials(connectionName.toLowerCase(), dbAllocatorClient.getDbAllocation());
+    }
+
+    @Given("^free allocated \"([^\"]*)\" database$")
+    public void freeAllocatedDatabase(String dbLabel) {
+        assertThat(dbAllocatorClient.getDbAllocation().getDbLabel()).isEqualTo(dbLabel);
+        dbAllocatorClient.free();
+    }
+
 
 //AUXILIARIES:
 
