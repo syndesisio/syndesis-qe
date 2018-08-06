@@ -1,5 +1,5 @@
-@telegram
 @ignore
+@telegram
 Feature: Integration - Telegram to Telegram
   #
   # Telegram is semi-automated test due to inability of telegram bots to read bot messages.
