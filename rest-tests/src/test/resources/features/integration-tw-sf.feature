@@ -15,7 +15,7 @@ Feature: Integration - Twitter to Salesforce
 	And start mapper definition with name: "mapping 1"
     Then SEPARATE using Step 1 and strategy "Space" and source "user/name" into targets
         | /FirstName | /LastName |
-    Then MAP using Step 1 and field "user/screenName" to "/Title"
+    Then MAP using Step 1 and field "user/screenName" to "/TwitterScreenName__c"
     Then MAP using Step 1 and field "text" to "/Description"
 
     And create SF "salesforce-create-sobject" action step on field: "Contact"
