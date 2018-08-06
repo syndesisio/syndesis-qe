@@ -15,15 +15,13 @@ Feature: Connections - OAuth
   @oauth-create-integration
   Scenario: Create integration using connections with OAuth
     When navigate to the "Settings" page
-    And settings item "Salesforce" has button "Register"
-    And fill all oauth settings
+    Then check that settings item "Salesforce" has button "Register"
+    When fill all oauth settings
     Then create connections using oauth
+      | SAP Concur | Test-Concur-connection     |
       | Gmail      | Test-Gmail-connection      |
       | Salesforce | Test-Salesforce-connection |
       | Twitter    | Test-Twitter-connection    |
-    #  TODO: SAP connection test when issue with concur credentials and oauth callback is resolved
-    #  for more info ask mcada or tplevko
-    #  | SAP Concur | Test-Concur-connection     |
 
     # create integration
     When navigate to the "Home" page
