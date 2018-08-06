@@ -1,10 +1,22 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
+import org.apache.commons.lang3.StringUtils;
+
+import org.assertj.core.api.Assertions;
+
+import java.io.IOException;
+import java.util.Optional;
+
 import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.DoneablePod;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.dsl.PodResource;
+import io.fabric8.kubernetes.client.utils.Serialization;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -12,12 +24,8 @@ import io.fabric8.openshift.client.OpenShiftConfigBuilder;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import okhttp3.Headers;
+import okhttp3.Response;
 
 /**
  * OpenShift utils.
@@ -128,5 +136,68 @@ public final class OpenShiftUtils {
         }
         //this can not happen due to assert
         return null;
+    }
+
+    /**
+     * Some of the resources can't be created by f8 client, therefore we manually post them to corresponding endpoint.
+     * @param kind kind of the resource
+     * @param o object instance
+     */
+    public static void create(String kind, Object o) {
+        try {
+            final String content = Serialization.jsonMapper().writeValueAsString(o);
+            StringBuilder url = new StringBuilder();
+            String[] kinds = new String[] {"serviceaccount", "role", "rolebinding", "clusterrole", "clusterrolebinding", "deployment"};
+            if (StringUtils.equalsAnyIgnoreCase(kind, kinds)) {
+                url.append("/api")
+                        .append(kind.toLowerCase().equals("serviceaccount") ? "" : "s")
+                        .append("/")
+                        .append(((HasMetadata)o).getApiVersion())
+                        .append("/namespaces/")
+                        .append(TestConfiguration.openShiftNamespace())
+                        .append("/")
+                        .append(kind.toLowerCase())
+                        .append("s");
+            } else {
+                // This can be created by the client, so create it
+                getInstance().createResources((HasMetadata) o);
+                return;
+            }
+
+            Response response = invokeApi(url.toString(), content);
+            // 409 means that the resource already exists - this is the case for clusterrole / clusterbinding that are tied to the whole
+            // cluster obviously - therefore it is ok to continue with 409
+            if (response.code() != 409) {
+                Assertions.assertThat(response.code()).isGreaterThanOrEqualTo(200);
+                Assertions.assertThat(response.code()).isLessThan(300);
+            }
+        } catch (IOException e) {
+            log.error("Unable to create role ", e);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
+     * @param url api path
+     * @param body body to send as JSON
+     * @return response object
+     */
+    public static Response invokeApi(String url, String body) {
+        url = TestConfiguration.openShiftUrl() + url;
+        log.debug(url);
+        Response response = HttpUtils.doPostRequest(
+                url,
+                body,
+                "application/json",
+                Headers.of("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken())
+        );
+        log.debug("Response code: " + response.code());
+        try {
+            log.debug("Response: " + response.body().string());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 }
