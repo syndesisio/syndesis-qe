@@ -175,7 +175,8 @@ public class SyndesisTemplate {
             integration.put("limit", 5);
             integration.put("stateCheckInterval", 120);
             crd.getSpec().getAdditionalProperties().put("TestSupport", true);
-            OpenShiftUtils.invokeApi("/apis/syndesis.io/v1alpha1/namespaces/myproject/syndesises", Serialization.jsonMapper().writeValueAsString(crd));
+            crd.getSpec().getAdditionalProperties().put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
+            OpenShiftUtils.invokeApi("/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises", Serialization.jsonMapper().writeValueAsString(crd));
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }

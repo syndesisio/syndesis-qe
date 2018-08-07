@@ -168,12 +168,11 @@ public final class OpenShiftUtils {
             // 409 means that the resource already exists - this is the case for clusterrole / clusterbinding that are tied to the whole
             // cluster obviously - therefore it is ok to continue with 409
             if (response.code() != 409) {
-                Assertions.assertThat(response.code()).isGreaterThanOrEqualTo(200);
-                Assertions.assertThat(response.code()).isLessThan(300);
+                assertThat(response.code()).isGreaterThanOrEqualTo(200);
+                assertThat(response.code()).isLessThan(300);
             }
         } catch (IOException e) {
-            log.error("Unable to create role ", e);
-            e.printStackTrace();
+            fail("Unable to create resource", e);
         }
     }
 
