@@ -35,6 +35,11 @@ public class TestConfiguration {
 
     public static final String SYNDESIS_TEMPLATE_URL = "syndesis.config.template.url";
     public static final String SYNDESIS_TEMPLATE_SA = "syndesis.config.template.sa";
+    public static final String SYNDESIS_TEMPLATE_VERSION = "syndesis.config.template.version";
+    public static final String SYNDESIS_TEMPLATE_USE_OPERATOR = "syndesis.config.template.use.operator";
+    public static final String SYNDESIS_OPERATOR_CRD_URL = "syndesis.config.operator.crd";
+    public static final String SYNDESIS_OPERATOR_URL = "syndesis.config.operator.url";
+    public static final String SYNDESIS_OPERATOR_TEMPLATE_URL = "syndesis.config.operator.template.url";
 
     public static final String JENKINS_DELAY = "jenkins.delay";
     public static final String TESTSUITE_TIMEOUT = "syndesis.config.timeout";
@@ -94,6 +99,22 @@ public class TestConfiguration {
 
     public static String syndesisTemplateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
 
+    public static boolean useOperator() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_TEMPLATE_USE_OPERATOR));
+    }
+
+    public static String syndesisOperatorCrdUrl() {
+        return get().readValue(SYNDESIS_OPERATOR_CRD_URL);
+    }
+
+    public static String syndesisOperatorUrl() {
+        return get().readValue(SYNDESIS_OPERATOR_URL);
+    }
+
+    public static String syndesisOperatorTemplateUrl() {
+        return get().readValue(SYNDESIS_OPERATOR_TEMPLATE_URL);
+    }
+
     public static String syndesisBrowser() { return get().readValue(SYNDESIS_UI_BROWSER); }
 
     public static boolean namespaceCleanup() { return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP)); }
@@ -132,14 +153,30 @@ public class TestConfiguration {
             props.setProperty(OPENSHIFT_ROUTE_SUFFIX, props.getProperty(SYNDESIS_URL_SUFFIX));
         }
 
-        // pom defined property
-        String syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
+        String syndesisVersion;
+        if (System.getProperty(SYNDESIS_TEMPLATE_VERSION) != null) {
+            syndesisVersion = System.getProperty(SYNDESIS_TEMPLATE_VERSION);
+        } else {
+            // pom defined property
+            syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
+        }
         if (props.getProperty(SYNDESIS_TEMPLATE_URL) == null) {
             props.setProperty(SYNDESIS_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", syndesisVersion));
         }
         if (props.getProperty(SYNDESIS_TEMPLATE_SA) == null) {
             props.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", syndesisVersion));
         }
+        if (props.getProperty(SYNDESIS_OPERATOR_CRD_URL) == null) {
+            props.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", syndesisVersion));
+        }
+        if (props.getProperty(SYNDESIS_OPERATOR_URL) == null) {
+            props.setProperty(SYNDESIS_OPERATOR_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", syndesisVersion));
+        }
+        if (props.getProperty(SYNDESIS_OPERATOR_TEMPLATE_URL) == null) {
+            props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", syndesisVersion));
+        }
+
+        props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
 
         return props;
     }

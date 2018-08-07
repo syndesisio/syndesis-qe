@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.syndesis.common.model.action.Action;
@@ -215,6 +216,19 @@ public final class TestUtils {
                 log.debug("UPDATED ACCOUNT {} PROPERTIES:", account.getService());
                 properties.forEach((key, value) -> log.debug("Key: *{}*, value: *{}*", key, value));
                 break;
+        }
+    }
+
+    /**
+     * Checks if the user is cluster admin.
+     * @return true/false
+     */
+    public static boolean isUserAdmin() {
+        try {
+            OpenShiftUtils.client().users().list();
+            return true;
+        } catch (KubernetesClientException ex) {
+            return false;
         }
     }
 }
