@@ -1,5 +1,7 @@
 package io.syndesis.qe.templates;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,7 +47,7 @@ public class KafkaTemplate {
                     OpenShiftUtils.create(hasMetadata.getKind(), hasMetadata);
                 }
             } catch (IOException ex) {
-                throw new IllegalArgumentException("Unable to process " + resource, ex);
+                fail("Unable to process " + resource, ex);
             }
         }
 
