@@ -10,12 +10,14 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.steps.integrations.IntegrationSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DetailsSteps {
 
     private Details detailPage = new Details();
+    private IntegrationSteps integrationSteps = new IntegrationSteps();
 
     @Then("^check visibility of \"([^\"]*)\" integration details$")
     public void verifyIntegrationDetails(String integrationName) {
@@ -38,5 +40,10 @@ public class DetailsSteps {
     @And("^click on the \"([^\"]*)\" tab$")
     public void clicksOnTheTab(String tabName) {
         detailPage.selectTab(tabName);
+    }
+
+    @Then("^check starting integration status on Integration Detail page$")
+    public void checkStartingStatusOnIntegrationDetail() {
+        integrationSteps.checkStartingStatus("","Integration detail");
     }
 }
