@@ -44,6 +44,7 @@ public class CommonSteps {
         } catch (KubernetesClientException ex) {
             // Probably user does not have permissions to delete.. a nice exception will be printed when deploying
         }
+        OpenShiftUtils.client().serviceAccounts().withName("syndesis-oauth-client").delete();
         OpenShiftUtils.getInstance().cleanAndAssert();
         OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
     }
@@ -54,9 +55,14 @@ public class CommonSteps {
         OpenShiftUtils.getInstance().getBuilds().forEach(OpenShiftUtils.getInstance()::deleteBuild);
     }
 
-    @When("^deploy Syndesis from template")
+    @When("^deploy Syndesis$")
     public void deploySyndesis() {
         SyndesisTemplate.deploy();
+    }
+
+    @When("^deploy Syndesis from template$")
+    public void deploySyndesisFromTemplate() {
+        SyndesisTemplate.deployUsingTemplate();
     }
 
     @Then("^wait for Syndesis to become ready")

@@ -35,7 +35,7 @@ public class RestTestHooks {
     public void getLogs(Scenario scenario){
         if (scenario.isFailed()) {
             log.warn("Scenario {} failed, saving server logs and integration logs to scenario", scenario.getName());
-            scenario.embed(OpenShiftUtils.getInstance().getPodLog(OpenShiftUtils.getPodByPartialName("syndesis-server")).getBytes(), "text/plain");
+            scenario.embed(OpenShiftUtils.getInstance().getPodLog(OpenShiftUtils.getPodByPartialName("syndesis-server").get()).getBytes(), "text/plain");
             // There can be multiple integration pods for one test
             List<Pod> integrationPods = OpenShiftUtils.client().pods().list().getItems().stream().filter(
                     p -> p.getMetadata().getName().startsWith("i-")

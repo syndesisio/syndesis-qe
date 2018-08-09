@@ -10,23 +10,29 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -90,18 +96,36 @@ public class UpgradeSteps {
     public void syndesisUpgrade() {
         ProcessBuilder pb = new ProcessBuilder(Paths.get(UPGRADE_FOLDER, "upgrade.sh").toString(),
                 "--template ", UPGRADE_TEMPLATE,
-                "--oc-login", "oc login " + TestConfiguration.openShiftUrl() + " --token=" + TestConfiguration.openShiftToken(),
                 "--backup", BACKUP_DIR,
                 "--migration", Paths.get(UPGRADE_FOLDER, "migration").toString());
         pb.directory(new File(UPGRADE_FOLDER));
 
         try {
-            Process p = pb.inheritIO().start();
+            Process p = pb.start();
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
             p.waitFor();
         } catch (Exception e) {
             log.error("Error while running upgrade script: ", e);
             e.printStackTrace();
         }
+    }
+
+    @When("^perform syndesis upgrade to newer version using operator$")
+    public void upgradeUsingOperator() {
+        OpenShiftUtils.client().imageStreams().withName("syndesis-operator").edit()
+                .editSpec()
+                    .editFirstTag()
+                        .withName(System.getProperty("syndesis.version"))
+                        .editFrom()
+                            .withName("docker.io/syndesis/syndesis-operator:" + System.getProperty("syndesis.upgrade.version"))
+                        .endFrom()
+                    .endTag()
+                .endSpec()
+                .done();
     }
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
@@ -123,7 +147,8 @@ public class UpgradeSteps {
         String template;
         try {
             template = FileUtils.readFileToString(new File(UPGRADE_TEMPLATE), "UTF-8");
-            template = template.replaceAll("latest", System.getProperty("syndesis.upgrade.version"));
+            String version = StringUtils.substringBefore(StringUtils.substringAfter(template, "syndesis: ").substring(1), "\"");
+            template = template.replaceAll(version, System.getProperty("syndesis.upgrade.version"));
 
             // Modify deployment config
             // This is easier than messing with yaml directly and it adds the env for syndesis-meta and syndesis-server
@@ -209,6 +234,25 @@ public class UpgradeSteps {
         }
     }
 
+    @Then("^wait until upgrade pod is finished$")
+    public void waitForUpgrade() {
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName("syndesis-upgrade");
+        int retries = 0;
+        while (!pod.isPresent() && retries < 30) {
+            TestUtils.sleepIgnoreInterrupt(5000L);
+            retries++;
+            pod = OpenShiftUtils.getPodByPartialName("syndesis-upgrade");
+        }
+
+        retries = 0;
+        log.info("Waiting for syndesis-upgrade pod to complete");
+        // 10 minutes
+        while (!"Completed".equals(pod.get().getStatus().getPhase()) && retries < 120) {
+            TestUtils.sleepIgnoreInterrupt(5000L);
+            retries++;
+        }
+    }
+
     private void verifyTestModifications(boolean rollback) {
         // ConfigMap label change
         ConfigMap cm = OpenShiftUtils.client().configMaps().withName("syndesis-ui-config").get();
@@ -266,6 +310,26 @@ public class UpgradeSteps {
             } catch (IOException e) {
                 log.error("Unable to copy syndesis-cli.jar");
             }
+        }
+    }
+
+    @And("^clean upgrade modifications$")
+    public void cleanUpgradeModifications() {
+        log.info("Running \"git checkout .\" in \"" + SYNDESIS + "\"");
+        ProcessBuilder pb = new ProcessBuilder("git", "checkout", ".");
+        pb.directory(new File(SYNDESIS));
+
+        try {
+            Process p = pb.start();
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+            p.waitFor();
+        } catch (Exception e) {
+            log.error("Error while running script: ", e);
+            e.printStackTrace();
         }
     }
 }
