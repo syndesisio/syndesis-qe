@@ -7,7 +7,7 @@ Feature: Integration - Twitter to Salesforce
     Given clean application state
     Given clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
-    And create the TW connection using "twitter_listener" template
+    And create the TW connection using "Twitter Listener" template
     And create SF connection
     And create TW mention step with "twitter-mention-action" action
     And create basic TW to SF filter step
@@ -22,7 +22,7 @@ Feature: Integration - Twitter to Salesforce
     When create integration with name: "Twitter to salesforce contact rest test"
     Then wait for integration with name: "Twitter to salesforce contact rest test" to become active
     Then check SF does not contain contact for tw accound: "twitter_talky"
-    Then tweet a message from twitter_talky to "twitter_listener" with text "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
+    Then tweet a message from twitter_talky to "Twitter Listener" with text "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
     Then validate contact for TW account: "twitter_talky" is present in SF with description: "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
     Given clean application state
     And clean SF contacts related to TW account: "twitter_talky"
