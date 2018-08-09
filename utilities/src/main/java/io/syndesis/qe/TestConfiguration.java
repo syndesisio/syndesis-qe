@@ -223,6 +223,9 @@ public class TestConfiguration {
     public void overrideSyndesisVersion(String version) {
         properties.setProperty(SYNDESIS_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", version));
         properties.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", version));
+        properties.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", version));
+        properties.setProperty(SYNDESIS_OPERATOR_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", version));
+        properties.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", version));
     }
 
 }
