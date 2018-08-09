@@ -3,7 +3,11 @@ package io.syndesis.qe.rest.tests.integrations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
@@ -82,7 +86,6 @@ public class ConnectionsGeneralSteps {
         log.info("Creating salesforce connection {}", salesforceConnection.getName());
         connectionsEndpoint.create(salesforceConnection);
     }
-
 
     @Given("^create Dropbox connection")
     public void createDropboxConnection() {
@@ -216,4 +219,50 @@ public class ConnectionsGeneralSteps {
         log.info("Creating HTTP connection {}", httpConnection.getName());
         connectionsEndpoint.create(httpConnection);
     }
+
+    @Given("^create \"([^\"]*)\" connection$")
+    public void connectionIsCreated(String id, DataTable properties) {
+        String connectorId = "";
+        final Map<String, String> connectionProperties = new HashMap<>();
+
+        for (Map<String, String> source : properties.asMaps(String.class, String.class)) {
+            for (Map.Entry<String, String> field : source.entrySet()) {
+                if (field.getKey().equals("connectorId")) {
+                    connectorId = field.getValue();
+                }
+                connectionProperties.put(field.getKey(), field.getValue());
+            }
+
+            final Connection connection = new Connection.Builder()
+                    .name(id)
+                    .connector(connectorsEndpoint.get(connectorId))
+                    .connectorId(connectorId)
+                    .id(id)
+                    .configuredProperties(connectionProperties)
+                    .icon("fa-puzzle-piece")
+                    .tags(Arrays.asList(id, connectorId))
+                    .build();
+            log.info("Creating connection {}", connection.getName());
+            connectionsEndpoint.create(connection);
+        }
+    }
+
+    @And("^create \"([^\"]*)\" connection from \"([^\"]*)\" template$")
+    public void createConnectionFromTemplate(String id, String template) {
+        final Account account = accountsDirectory.getAccount(template).get();
+
+        final Connection connection = new Connection.Builder()
+                .name(id)
+                .connector(connectorsEndpoint.get(account.getService()))
+                .connectorId(account.getService())
+                .id(id)
+                .configuredProperties(account.getProperties())
+                .icon("fa-puzzle-piece")
+                .tags(Arrays.asList(id, account.getService()))
+                .build();
+        log.info("Creating connection {}", connection.getName());
+        connectionsEndpoint.create(connection);
+
+    }
 }
+

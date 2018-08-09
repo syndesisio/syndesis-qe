@@ -27,7 +27,7 @@
 		<hamcrest.version>1.3</hamcrest.version>
 		<org.json.version>20160810</org.json.version>
 		<commons.io.version>2.5</commons.io.version>
-		<resteasy.version>3.5.1.Final</resteasy.version>
+		<resteasy.version>3.6.1.Final</resteasy.version>
 		<jackson.version>2.8.6</jackson.version>
 		<twitter4j.version>4.0.5</twitter4j.version>
 		<log4j.version>2.9.0</log4j.version>
@@ -235,6 +235,11 @@
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
 				<artifactId>resteasy-client</artifactId>
+				<version>${resteasy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.resteasy</groupId>
+				<artifactId>resteasy-multipart-provider</artifactId>
 				<version>${resteasy.version}</version>
 			</dependency>
 			<dependency>
