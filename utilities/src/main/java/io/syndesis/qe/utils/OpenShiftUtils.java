@@ -5,8 +5,6 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import org.apache.commons.lang3.StringUtils;
 
-import org.assertj.core.api.Assertions;
-
 import java.io.IOException;
 import java.util.Optional;
 
@@ -101,14 +99,13 @@ public final class OpenShiftUtils {
         }
     }
 
-    public static Pod getPodByPartialName(String partialName) {
+    public static Optional<Pod> getPodByPartialName(String partialName) {
         Optional<Pod> oPod = OpenShiftUtils.getInstance().getPods().stream()
                 .filter(p -> p.getMetadata().getName().contains(partialName))
                 .filter(p -> !p.getMetadata().getName().contains("deploy"))
                 .filter(p -> !p.getMetadata().getName().contains("build"))
                 .findFirst();
-        Assertions.assertThat(oPod.isPresent()).isTrue();
-        return oPod.get();
+        return oPod;
     }
 
     public static int extractPodSequenceNr(Pod pod) {

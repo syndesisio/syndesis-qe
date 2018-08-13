@@ -1,13 +1,13 @@
 # @sustainer: avano@redhat.com
 
-@syndesis-upgrade
-Feature: Syndesis Upgrade
+@syndesis-upgrade-operator
+Feature: Syndesis Upgrade Using Operator
 
   Background:
     When get upgrade versions
     Given clean default namespace
       And clean upgrade modifications
-      And deploy Syndesis from template
+      And deploy Syndesis
       And wait for Syndesis to become ready
       And verify syndesis "given" version
     When inserts into "contact" table
@@ -20,19 +20,9 @@ Feature: Syndesis Upgrade
       And wait for integration with name: "upgrade" to become active
       And verify integration with task "X"
 
-  @upgrade
-  Scenario: Syndesis Upgrade
-    When perform test modifications
-      And perform syndesis upgrade to newer version
-    Then verify syndesis "upgraded" version
-      And verify successful test modifications
-      And verify integration with task "X"
-
-  @rollback
-  Scenario: Syndesis Upgrade rollback
-    When perform test modifications
-      And add rollback cause to upgrade script
-      And perform syndesis upgrade to newer version
-    Then verify syndesis "given" version
-      And verify test modifications rollback
+  Scenario: Syndesis Upgrade Using Operator
+    When perform syndesis upgrade to newer version using operator
+    Then wait until upgrade pod is finished
+      And wait for Syndesis to become ready
+      And verify syndesis "upgraded" version
       And verify integration with task "X"
