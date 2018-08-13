@@ -1,5 +1,8 @@
 package io.syndesis.qe.wait;
 
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,13 +16,9 @@ import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.PodCondition;
 import io.fabric8.openshift.api.model.Build;
-
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @Slf4j
 public class OpenShiftWaitUtils {
@@ -242,8 +241,9 @@ public class OpenShiftWaitUtils {
     }
 
     public static void waitForPodIsReloaded(String podPartialName) throws InterruptedException, TimeoutException {
-        Pod pod = OpenShiftUtils.getPodByPartialName(podPartialName);
-        int currentNr = OpenShiftUtils.extractPodSequenceNr(pod);
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podPartialName);
+        assertThat(pod.isPresent()).isTrue();
+        int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
         log.info("Current pod number: " + currentNr);
         int nextNr = currentNr + 1;
 

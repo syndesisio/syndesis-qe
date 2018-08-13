@@ -54,7 +54,7 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void deployUsingTemplate() {
+    public static void deployUsingTemplate() {
         log.info("Deploying using template");
         OpenShiftUtils.getInstance().cleanAndAssert();
 
@@ -92,7 +92,6 @@ public class SyndesisTemplate {
                 OpenShiftUtils.getInstance().createResources(hasMetadata);
             }
         }
-
 
         //TODO: there's a bug in openshift-client, we need to initialize manually
         OpenShiftUtils.client().roleBindings().createOrReplaceWithNew()
