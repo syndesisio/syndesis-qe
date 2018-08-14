@@ -29,7 +29,6 @@ import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
@@ -49,10 +49,9 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class CommonSteps {
@@ -245,8 +244,8 @@ public class CommonSteps {
                         service = "Gmail";
                         break;
                     case SAP_CONCUR:
-                        service = "SAP Concur";
-                        break;
+                        //concur only works via OAUTH, there is another test fot it
+                        return; //TODO: skip for now
                     default:
                         return; //skip for other cred
                 }
@@ -444,7 +443,7 @@ public class CommonSteps {
     @Then("^check visibility of dialog page \"([^\"]*)\"$")
     public void isPresentedWithDialogPage(String title) {
         String titleText = new ModalDialogPage().getTitleText();
-        assertThat(titleText.equals(title), is(true));
+        assertThat(titleText).isEqualToIgnoringCase(title);
     }
 
     @Then("^.*removes? file \"([^\"]*)\" if it exists$")
@@ -510,16 +509,14 @@ public class CommonSteps {
 
         clickOnButton("Create Connection");
 
+        //sometimes page is loaded but connections are not so we need to wait here a bit
         TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay());
 
         selectConnectionTypeSteps.selectConnectionType(connectorName);
 
-        //jenkins did validation before it reached correct page, lets wait a second
+        //slenide did validation before it reached correct page, but lets wait a second (it helps, trust me!)
         TestUtils.sleepForJenkinsDelayIfHigher(1);
         doOAuthValidation(connectorName);
-
-        //give it time to redirect
-        TestUtils.sleepForJenkinsDelayIfHigher(4);
 
         assertThat(WebDriverRunner.currentFrameUrl())
                 .containsIgnoringCase("Successfully%20authorized")
@@ -532,51 +529,43 @@ public class CommonSteps {
 
     private void doOAuthValidation(String type) {
         clickOnButton("Connect " + type);
-        //give it time to redirect
-        TestUtils.sleepIgnoreInterrupt(10 * 1000);
         switch (type) {
             case "Twitter":
+                waitForCallbackRedirect("twitter");
                 fillAndValidateTwitter();
                 break;
             case "Salesforce":
+                waitForCallbackRedirect("salesforce");
                 fillAndValidateSalesforce();
                 break;
             case "Gmail":
+                waitForCallbackRedirect("google");
                 fillAndValidateGmail();
                 break;
             case "SAP Concur":
+                waitForCallbackRedirect("concursolutions");
                 fillAndValidateConcur();
                 break;
             default:
                 fail("Unknown oauth option: " + type);
         }
+        waitForCallbackRedirect(TestConfiguration.syndesisUrl());
     }
 
     private void fillAndValidateTwitter() {
-        assertThat(WebDriverRunner.currentFrameUrl())
-                .containsIgnoringCase("twitter");
         Optional<Account> account = AccountsDirectory.getInstance().getAccount("Twitter Listener");
 
         if (account.isPresent()) {
-
             $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.get().getProperty("login"));
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
             $(By.id("allow")).shouldBe(visible).click();
 
-            //give it time to redirect back on syndesis
-            TestUtils.sleepForJenkinsDelayIfHigher(4);
-
-            assertThat(WebDriverRunner.currentFrameUrl())
-                    .containsIgnoringCase("Successfully%20authorized");
         } else {
-
-            Assert.fail("Credentials for Twitter were not found.");
+            fail("Credentials for Twitter were not found.");
         }
     }
 
     private void fillAndValidateSalesforce() {
-        assertThat(WebDriverRunner.currentFrameUrl())
-                .containsIgnoringCase("salesforce");
         Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Salesforce");
 
         if (account.isPresent()) {
@@ -585,19 +574,17 @@ public class CommonSteps {
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
             $(By.id("Login")).shouldBe(visible).click();
             //give it time to log in
-            TestUtils.sleepForJenkinsDelayIfHigher(4);
+            TestUtils.sleepForJenkinsDelayIfHigher(10);
             log.info(WebDriverRunner.currentFrameUrl());
             if (!WebDriverRunner.currentFrameUrl().contains("connections/create/review")) {
                 $(By.id("oaapprove")).shouldBe(visible).click();
             }
         } else {
-            Assert.fail("Credentials for Salesforce were not found.");
+            fail("Credentials for Salesforce were not found.");
         }
     }
 
     private void fillAndValidateGmail() {
-        assertThat(WebDriverRunner.currentFrameUrl())
-                .containsIgnoringCase("google");
         Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Google Mail");
 
         if (account.isPresent()) {
@@ -607,15 +594,32 @@ public class CommonSteps {
 
             $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(account.get().getProperty("password"));
             $(By.id("passwordNext")).shouldBe(visible).click();
-            //give it time to log in
-            TestUtils.sleepForJenkinsDelayIfHigher(4);
 
         } else {
-            Assert.fail("Credentials for Salesforce were not found.");
+            fail("Credentials for QE Google Mail were not found.");
         }
     }
 
     private void fillAndValidateConcur() {
-        //  TODO: SAP connection validation when issue with concur credentials and oauth callback is resolved
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Concur");
+
+        if (account.isPresent()) {
+
+            $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
+            $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
+            TestUtils.sleepForJenkinsDelayIfHigher(3);
+            $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
+            $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
+        } else {
+            fail("Credentials for QE Concur were not found.");
+        }
+    }
+
+    private void waitForCallbackRedirect(String expectedPartOfUrl) {
+        try {
+            waitFor(() -> WebDriverRunner.currentFrameUrl().contains(expectedPartOfUrl.toLowerCase()), 60 * 1000);
+        } catch (InterruptedException | TimeoutException e) {
+            fail("Error while redirecting to " + expectedPartOfUrl, e);
+        }
     }
 }
