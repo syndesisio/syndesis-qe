@@ -59,7 +59,7 @@ public class SettingsPage extends SyndesisPageObject {
                     fillOAuthItem(listItem, "Twitter Listener");
                     break;
                 case "SAP Concur":
-                    //TODO: fill when creating concur connector tests when development is ready
+                    fillOAuthItem(listItem, "QE Concur");
                     log.info("Concur oauth has no test yet");
                     break;
                 case "Gmail":

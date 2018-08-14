@@ -14,7 +14,7 @@ public class SettingsSteps {
 
     private SettingsPage settingsPage = new SettingsPage();
 
-    @Then("^settings item \"(\\w+)\" has button \"(\\w+)\"$")
+    @Then("^check that settings item \"(\\w+)\" has button \"(\\w+)\"$")
     public void settingsItemHasButton(String itemTitle, String buttonTitle) {
         assertThat(settingsPage.checkButtonOfItem(itemTitle, buttonTitle), is(true));
     }
