@@ -68,7 +68,6 @@ Feature: Connection - CRUD
     Then check visibility of page "Connections"
 
   # now we know there is at least one connection
-    And click on the kebab menu icon of each available connection
     Then check visibility of unveiled kebab menu of all connections, each of this menu consist of "View", "Edit" and "Delete" actions
 
   # garbage collection
