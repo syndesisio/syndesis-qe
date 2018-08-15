@@ -41,6 +41,11 @@ public class KebabMenu {
         return found.first();
     }
 
+    public boolean isItemElementVisible(String item) {
+        ElementsCollection found = menuButton.parent().$$(By.className("dropdown-item")).filter(Condition.exactText(item));
+        return found.size() == 1;
+    }
+
     public void checkActionsSet(String[] expectedItems) {
         assertThat(getItemsStrings().containsAll(Arrays.asList(expectedItems)));
     }

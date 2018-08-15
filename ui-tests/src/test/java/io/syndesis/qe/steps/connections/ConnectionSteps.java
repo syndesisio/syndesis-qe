@@ -1,25 +1,7 @@
 package io.syndesis.qe.steps.connections;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
-
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import org.assertj.core.api.Assertions;
-import org.openqa.selenium.By;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -30,7 +12,23 @@ import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public class ConnectionSteps {
@@ -60,12 +58,6 @@ public class ConnectionSteps {
         connectionsPage.deleteConnection(connectionName);
     }
 
-    @When("^clicks? on the kebab menu icon of each available connection$")
-    public void clickAllKebabMenus() {
-        for(SelenideElement connection: connectionsPage.getAllConnections()) {
-            new KebabMenu(connection.$(By.xpath(".//button")).shouldBe(visible)).open();
-        }
-    }
 
     @Then("^check visibility of \"(\\d+)\" connections$")
     public void connectionsCount(Integer connectionCount) {
@@ -76,14 +68,24 @@ public class ConnectionSteps {
     @Then("^check visibility of unveiled kebab menu of all connections, each of this menu consist of \"(\\w+)\", \"(\\w+)\" and \"(\\w+)\" actions$")
     public void checkAllVisibleKebabMenus(String action1, String action2, String action3) {
         List<String> actions = new ArrayList<>(Arrays.asList(action1, action2, action3));
-        for(SelenideElement connection: connectionsPage.getAllConnections()) {
+        for (SelenideElement connection : connectionsPage.getAllConnections()) {
             KebabMenu kebabMenu = new KebabMenu(connection.$(By.xpath(".//button")).shouldBe(visible));
-
-            for(String item: actions) {
-                kebabMenu.getItemElement(item).shouldBe(visible);
+            try {
+                kebabMenu.open();
+                TestUtils.sleepIgnoreInterrupt(1000);
+                for (String item : actions) {
+                    if (!kebabMenu.isItemElementVisible(item)) {
+                        kebabMenu.open();
+                        assertTrue(kebabMenu.isItemElementVisible(item));
+                    }
+                }
+            } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                kebabMenu = new KebabMenu(connection.$(By.xpath(".//button")).shouldBe(visible));
+                kebabMenu.open();
+                for (String item : actions) {
+                    kebabMenu.getItemElement(item).shouldBe(visible);
+                }
             }
-
-            kebabMenu.close();
         }
     }
 
