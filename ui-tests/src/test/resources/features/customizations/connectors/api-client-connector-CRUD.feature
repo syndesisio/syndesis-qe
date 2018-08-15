@@ -83,7 +83,7 @@ Feature: Customization - API Connector CRUD
       | host        | http://petstore.swagger.io-1 |
       | basePath    | /v2-1                        |
 
-  @delete-api-connector
+  @create-delete-api-connector
   Scenario: Delete
     When create new API connector
       | source   | file           | swagger/connectors/petstore.json      |
@@ -97,14 +97,9 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "API Client Connectors"
 
     #create new connection from the connector
-    And navigate to the "Connections" page
-    And click on the "Create Connection" button
-    And select "Swagger Petstore" connection type
-    And click on the "Next" button
-    And fill Name Connection form
-      | Connection Name | Petstore conn |
-    And click on the "Create" button
-    And sleep for jenkins delay or "3" seconds
+    And created connections
+      | Swagger Petstore | no credentials | Petstore conn | no validation |
+
     Then navigate to the "Customizations" page
     And click on the "API Client Connectors" link
 

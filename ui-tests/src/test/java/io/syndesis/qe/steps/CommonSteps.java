@@ -174,35 +174,47 @@ public class CommonSteps {
             ElementsCollection connections = connectionsPage.getAllConnections();
             connections = connections.filter(exactText(connectionName));
 
-            if (connections.size() != 0) {
-                log.warn("Connection {} already exists!", connectionName);
-            } else {
-                clickOnButton("Create Connection");
-
-                log.info("Sleeping so jenkins has more time to load all connectors");
-                TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
-
-                selectConnectionTypeSteps.selectConnectionType(connectionType);
-                configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
-
-                // do nothing if connection does not require any credentials
-                if (!(connectionCredentialsName.equalsIgnoreCase("no credentials") ||
-                        connectionDescription.equalsIgnoreCase("no validation"))) {
-
-                    clickOnButton("Validate");
-                    successNotificationIsPresentWithError(connectionType + " has been successfully validated.");
-                    scrollTo("top", "right");
-                    clickOnButton("Next");
-                } else if (connectionDescription.equalsIgnoreCase("no validation")) {
-                    scrollTo("top", "right");
-                    clickOnButton("Next");
+            try {
+                if (connections.size() != 0) {
+                    log.warn("Connection {} already exists!", connectionName);
+                    continue;
                 }
-
-                nameConnectionSteps.setConnectionName(connectionName);
-                nameConnectionSteps.setConnectionDescription(connectionDescription);
-
-                clickOnButton("Create");
+            } catch (org.openqa.selenium.StaleElementReferenceException e) {
+                //this may happen if page was "reloaded" before connections.size was processed, give it second try
+                connections = connectionsPage.getAllConnections();
+                connections = connections.filter(exactText(connectionName));
+                if (connections.size() != 0) {
+                    log.warn("Connection {} already exists!", connectionName);
+                    continue;
+                }
             }
+
+            clickOnButton("Create Connection");
+
+            log.info("Sleeping so jenkins has more time to load all connectors");
+            TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
+
+            selectConnectionTypeSteps.selectConnectionType(connectionType);
+            configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
+
+            // do nothing if connection does not require any credentials
+            if (!(connectionCredentialsName.equalsIgnoreCase("no credentials") ||
+                    connectionDescription.equalsIgnoreCase("no validation"))) {
+
+                clickOnButton("Validate");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated.");
+                scrollTo("top", "right");
+                clickOnButton("Next");
+            } else if (connectionDescription.equalsIgnoreCase("no validation")) {
+                scrollTo("top", "right");
+                clickOnButton("Next");
+            }
+
+            nameConnectionSteps.setConnectionName(connectionName);
+            nameConnectionSteps.setConnectionDescription(connectionDescription);
+
+            clickOnButton("Create");
+
         }
     }
 
