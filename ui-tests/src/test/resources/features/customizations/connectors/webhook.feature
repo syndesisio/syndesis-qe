@@ -51,7 +51,8 @@ Feature: Webhook extension
     When navigate to the "Integrations" page
     Then wait until integration "webhook-test" gets into "Running" state
 
-    When invoke post request to integration "webhook-test" with webhook "test-webhook" and body {"author":"New Author","title":"Book Title"}
+    And select the "webhook-test" integration
+    And invoke post request to webhook with body {"author":"New Author","title":"Book Title"}
     # give integration time to invoke DB request
     And sleep for jenkins delay or "3" seconds
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere' AND company = 'New Author'" has some output

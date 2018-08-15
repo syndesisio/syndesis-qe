@@ -1,31 +1,31 @@
 package io.syndesis.qe.steps.other;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.IOException;
-
 import cucumber.api.java.en.When;
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 public class InvokeHttpRequest {
-    /**
-     * @param webhookToken token set when creating the integration
-     * @param body
-     * @throws IOException
-     */
-    @When("^.*invoke post request to integration \"([^\"]*)\" with webhook \"([^\"]*)\" and body (.*)$")
-    public void invokeRequest(String integrationName, String webhookToken, String body) {
-        log.info("Body to set: " + body);
-        //example of webhook url: "https://i-webhook-test-syndesis.192.168.42.2.nip.io/webhook/test-webhook"
-        String combinedUrl = TestConfiguration.syndesisUrl()
-                .replace("syndesis", "i-" + integrationName + "-syndesis") + "/webhook/" + webhookToken;
-        log.info("Combined URL: " + combinedUrl);
 
-        assertThat(HttpUtils.doPostRequest(combinedUrl, body).code())
+    /**
+     * Only works when you are currently on integration details page, because we have to get
+     * webhook url from the page
+     *
+     * @param body
+     */
+    @When("^invoke post request to webhook with body (.*)$")
+    public void invokeWebhookRequest(String body) {
+        log.debug("Body to set: " + body);
+
+        String url = $(By.className("pfng-block-copy-preview-txt")).shouldBe(visible).getText();
+
+        log.info("WebHook URL: " + url);
+        assertThat(HttpUtils.doPostRequest(url, body).code())
                 .isEqualTo(204);
     }
-
 }
