@@ -11,7 +11,6 @@ import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
 import io.syndesis.qe.steps.CommonSteps;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -21,6 +20,7 @@ import java.util.List;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -122,11 +122,14 @@ public class ExtensionSteps {
         String defaultPath = "../syndesis-extensions/" + extensionFolderName + "/target/";
 
         File[] files = new File(defaultPath).listFiles((dir, name) -> !name.contains("original") && name.endsWith(".jar"));
-        Assertions.assertThat(files).hasSize(1).doesNotContainNull();
+        assertThat(files).hasSize(1).doesNotContainNull();
 
         String techExtensionUrl = defaultPath + files[0].getName();
 
         Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
+
+        assertThat(techExtensionJar.toFile()).exists();
+
         $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
     }
 
