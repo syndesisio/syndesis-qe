@@ -1,4 +1,4 @@
-@ignore
+@manual
 @telegram
 Feature: Integration - Telegram to Telegram
   #
