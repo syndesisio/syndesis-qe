@@ -32,6 +32,7 @@ public class EditorSteps {
 
     private static final class Element {
         public static final By EXPANDER = By.xpath("//button[contains(@class, 'toggle-collapsed')]");
+        public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
     }
 
     @Then("^check visibility of visual integration editor$")
@@ -158,10 +159,9 @@ public class EditorSteps {
 
     @When("^open integration flow details")
     public void openIntegrationFlowDetails() {
-        SelenideElement expander = editor.getRootElement().$(Element.EXPANDER);
-        if(expander.exists()) {
+        if(editor.getRootElement().$(Element.HIDDEN_DETAILED_VIEW).exists()) {
             log.info("Expander is closed, opening details");
-            expander.click();
+            editor.getRootElement().$(Element.EXPANDER).shouldBe(visible).click();
         }
     }
 }
