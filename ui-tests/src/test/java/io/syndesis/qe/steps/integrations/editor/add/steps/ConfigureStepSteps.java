@@ -1,20 +1,7 @@
 package io.syndesis.qe.steps.integrations.editor.add.steps;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-
-import static com.codeborne.selenide.Condition.visible;
-
-import org.assertj.core.api.Assertions;
-
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
-import java.util.List;
-import java.util.Map;
-
 import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -31,6 +18,14 @@ import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.Map;
+
+import static com.codeborne.selenide.Condition.visible;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class ConfigureStepSteps {
@@ -49,7 +44,7 @@ public class ConfigureStepSteps {
         AbstractStep stepComponent = StepFactory.getStep(stepType, "");
         log.info("there must be add step editPage root element");
         stepComponent.getRootElement().shouldBe(visible);
-        assertThat(stepComponent.validate(), is(true));
+        assertThat(stepComponent.validate()).isTrue();
     }
 
     @Then("^fill in the configuration page for \"([^\"]*)\" step with \"([^\"]*)\" parameter$")
@@ -63,7 +58,7 @@ public class ConfigureStepSteps {
         BasicFilter basicFilterStepComponent = new BasicFilter("");
         List<String> options = basicFilterStepComponent.getPathInputOptions();
 
-        Assertions.assertThat(options.contains(option)).isTrue();
+        assertThat(options.contains(option)).isTrue();
     }
 
     @Then("^add new basic filter rule with \"([^\"]*)\" parameters$")
