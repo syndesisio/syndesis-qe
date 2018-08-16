@@ -46,9 +46,17 @@ public final class HttpUtils {
     }
 
     public static Response doGetRequest(String url) {
+        return doGetRequest(url, null);
+    }
+
+    public static Response doGetRequest(String url, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .get();
+        if (headers != null) {
+            requestBuilder.headers(headers);
+        }
+
         try {
             return getClient().newCall(requestBuilder.build()).execute();
         } catch (IOException e) {
@@ -58,9 +66,17 @@ public final class HttpUtils {
     }
 
     public static Response doDeleteRequest(String url) {
+        return doDeleteRequest(url, null);
+    }
+
+    public static Response doDeleteRequest(String url, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .delete();
+        if (headers != null) {
+            requestBuilder.headers(headers);
+        }
+
         try {
             return getClient().newCall(requestBuilder.build()).execute();
         } catch (IOException e) {
