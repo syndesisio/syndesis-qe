@@ -18,15 +18,12 @@ Feature: Slack Connector
 #
 #  1. Check that slack message exists
 #
+  @deprecated
   @slack-check-message-body
   Scenario: Check message
 
     Given import extensions from syndesis-extensions folder
       | syndesis-extension-body  |
-      | syndesis-connector-timer |
-
-    Given created connections
-      | Timer | no credentials | Timer | Timer description |
 
     And navigate to the "Home" page
 
@@ -39,8 +36,8 @@ Feature: Slack Connector
     When select the "Timer" connection
     And select "Simple Timer" integration action
     And fill in values
-      | period | 200s |
-    And click on the "Next" button
+      | period        | 200     |
+      | select-period | Seconds |
     And click on the "Done" button
 
 
