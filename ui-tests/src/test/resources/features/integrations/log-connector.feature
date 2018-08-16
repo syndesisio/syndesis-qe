@@ -8,7 +8,6 @@ Feature: Log Connector
     And reset content of "contact" table
     And log into the Syndesis
     And created connections
-      | Timer | no credentials | Timer | Timer description |
       | Log   | no credentials | Log   | Log description   |
     And navigate to the "Home" page
 
