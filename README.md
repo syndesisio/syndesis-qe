@@ -5,7 +5,6 @@
 
 ```bash
 ├── docs
-├── manual
 ├── rest-tests
 ├── ui-tests
 ├── ui-tests-protractor
@@ -14,9 +13,6 @@
 
 #### docs
 On-going initiative to provide comprehensive guide to current code structure.
-
-#### manual
-BDD scenarios to be tested manually for now.
 
 #### rest-tests
 Java based tests that use Cucumber scenarios.
@@ -28,6 +24,45 @@ Test actions are mainly UI driven with additional 3rd party validation like Sale
 
 #### ui-tests-protractor (Deprecated)
 Typescript based tests that use Protractor and Cucumber BDD scenarios.
+
+
+
+### Prepare syndesis instance
+Updated: 16.8.2018
+
+#### Prerequisites:
+Installed minishift
+Following lines in /etc/hosts file, insert your minishift ip:
+
+	`${minishift_ip} syndesis.my-minishift.syndesis.io`
+	`${minishift_ip} todo-syndesis.my-minishift.syndesis.io`
+
+Due to --route option when installing syndesis and updated /etc/hosts file we don't
+have to update all third party applications and their callbacks for every minishift/openshift IP.
+
+For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+
+#### Enable the admin user on Minishift. Needs to be done only once and then restart minishift
+`minishift addons enable admin-user`
+
+#### Create a minishift instance
+`minishift start --memory 4192`
+
+#### Switch to admin
+`oc login -u system:admin`
+
+#### Register CRD and grant permissions to "developer"
+`syndesis --setup --grant developer --cluster`
+
+#### Switch to account developer
+`oc login -u developer`
+
+#### Clone Syndesis
+`git clone https://github.com/syndesisio/syndesis.git`
+
+#### Install Syndesis
+`syndesis/tools/bin/syndesis install --local -y -p syndesis --route syndesis.my-minishift.syndesis.io --test-support`
+
 
 
 ### Creating a Pull Request
@@ -53,25 +88,38 @@ Every scenario is wrapped with appropriate tags to target specific execution on 
 NOTE: Successful execution of tests requires fully configured credentials.
 All the callback URLs, Oauth tokens, etc. for Salesforce and Twitter accounts.
 
-Placed to the root of `syndesis-qe` directory.
+
+#### Example of test.properties to run on minishift
+File `test.properties` should be located in root of syndesis-qe folder.
+Working example can be found in jenkins nightly build run logs.
+
+For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
 
 test.properties
 ```
 syndesis.config.openshift.url=https://192.168.64.2:8443
-syndesis.config.openshift.token=<openshift-token>
 syndesis.config.openshift.namespace=syndesis
-syndesis.config.url.suffix=192.168.64.2.nip.io
-syndesis.config.ui.url=https://syndesis.192.168.64.2.nip.io
-syndesis.config.ui.username=developer
-syndesis.config.ui.password=developer
+syndesis.config.openshift.route.suffix=my-minishift.syndesis.io
+
+syndesis.dballocator.url=http://dballocator.mw.lab.eng.bos.redhat.com:8080
+
 #timeout in seconds, if not set default is 300
 syndesis.config.timeout=300
+
 #delay in seconds, if not set default is 1
 jenkins.delay=7
 
-
+syndesis.config.ui.url=https://syndesis.my-minishift.syndesis.io
+syndesis.config.ui.username=developer
+syndesis.config.ui.password=developer
+syndesis.config.ui.browser=firefox
 ```
 
+#### Example of credentials.json
+File `credentials.json` should be located in root of syndesis-qe folder.
+Working example on demand.
+
+For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
 
 credentials.json
 ```json
@@ -214,6 +262,12 @@ For the test execution at least `syndesis-rest` modules are required in current 
 ```
 cd <syndesis-project-dir>
 ./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash
+```
+
+Working with extensions requires syndesis-extensions submodule compiled
+```
+cd syndesis-extensions
+mvn clean install
 ```
 
 #### Test suite execution
