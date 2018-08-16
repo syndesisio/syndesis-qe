@@ -26,13 +26,13 @@ public class BasicFilter extends AbstractStep {
     }
 
     private static final class Input {
-        public static final By PATH = By.cssSelector("input[name='path']");
-        public static final By VALUE = By.cssSelector("input[name='value']");
+        public static final By PATH = By.cssSelector("input[ng-reflect-name='path']");
+        public static final By VALUE = By.cssSelector("input[ng-reflect-name='value']");
     }
 
     private static final class Select {
-        public static final By PREDICATE = By.cssSelector("select[name='predicate']");
-        public static final By OP = By.cssSelector("select[name='op']");
+        public static final By PREDICATE = By.id("basicFilterPredicateSelect");
+        public static final By OP = By.cssSelector("select[ng-reflect-name='op']");
     }
 
     private static final class Link {
@@ -40,7 +40,7 @@ public class BasicFilter extends AbstractStep {
     }
 
     private static final class DataList {
-        public static final By PATH_LIST = By.id("pathList");
+        public static final By PATH_LIST = By.id("path-list-0");
     }
 
     public SelenideElement getRootElement() {
