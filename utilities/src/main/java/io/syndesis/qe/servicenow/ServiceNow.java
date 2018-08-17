@@ -53,13 +53,7 @@ public class ServiceNow {
     }
 
     public static Incident createIncident(Incident i) {
-        String json = null;
-        try {
-            json = om.writeValueAsString(i);
-        } catch (JsonProcessingException e) {
-            fail("Unable to convert incident to json", e);
-        }
-
+        String json = getIncidentJson(i);
         log.debug(String.format("Sending incident Json: %s", json));
 
         Response r = HttpUtils.doPostRequest(
@@ -70,16 +64,8 @@ public class ServiceNow {
         );
 
         assertThat(r.code()).isEqualTo(201);
-        try {
-            String responseBody = r.body().string();
-            log.debug("Response body: " + responseBody);
-            List<Incident> incidents = parseResponse(responseBody);
-            assertThat(incidents).hasSize(1);
-            return incidents.get(0);
-        } catch (IOException e) {
-            fail("Unable to unmarshall incident response", e);
-        }
-        return null;
+
+        return getIncidentFromResponse(r);
     }
 
     public static List<Incident> getIncidents(int limit) {
@@ -121,6 +107,22 @@ public class ServiceNow {
         assertThat(r.code()).isEqualTo(204);
     }
 
+    public static Incident updateIncident(String sysId, Incident incident) {
+        String json = getIncidentJson(incident);
+        log.debug(String.format("Sending incident Json: %s", json));
+
+        Response r = HttpUtils.doPutRequest(
+                String.format("%s/%s", url, sysId),
+                json,
+                "application/json",
+                Headers.of("Authorization", "Basic " + Base64.getEncoder().encodeToString((userName + ":" + password).getBytes()))
+        );
+
+        assertThat(r.code()).isEqualTo(200);
+
+        return getIncidentFromResponse(r);
+    }
+
     /**
      * Service-Now API returns single object when there is 1 record, but list of records when there are more records.
      *
@@ -141,6 +143,28 @@ public class ServiceNow {
             } catch (IOException e1) {
                 fail("Unable to unmarshall incident response", e);
             }
+        }
+        return null;
+    }
+
+    private static Incident getIncidentFromResponse(Response r) {
+        try {
+            String responseBody = r.body().string();
+            log.debug("Response body: " + responseBody);
+            List<Incident> incidents = parseResponse(responseBody);
+            assertThat(incidents).hasSize(1);
+            return incidents.get(0);
+        } catch (IOException e) {
+            fail("Unable to unmarshall incident response", e);
+        }
+        return null;
+    }
+
+    private static String getIncidentJson(Incident i) {
+        try {
+            return om.writeValueAsString(i);
+        } catch (JsonProcessingException e) {
+            fail("Unable to convert incident to json", e);
         }
         return null;
     }
