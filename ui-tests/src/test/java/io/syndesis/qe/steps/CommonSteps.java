@@ -28,6 +28,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -80,9 +81,11 @@ public class CommonSteps {
         $(By.id("userDropdown")).shouldBe(visible).click();
         $(By.id("userDropdownMenu")).shouldBe(visible).click();
 
-        TestUtils.sleepForJenkinsDelayIfHigher(3);
-        assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
-                .containsIgnoringCase("/logout");
+        try {
+            OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("/logout"), 20 * 1000);
+        } catch (InterruptedException | TimeoutException e) {
+            fail("Log out did not go as expected.");
+        }
 
         TestUtils.sleepForJenkinsDelayIfHigher(3);
         $(By.className("btn")).shouldBe(visible).click();
@@ -92,9 +95,11 @@ public class CommonSteps {
         TestUtils.sleepForJenkinsDelayIfHigher(3);
         WebDriverRunner.getWebDriver().navigate().refresh();
 
-        TestUtils.sleepForJenkinsDelayIfHigher(3);
-        assertThat(WebDriverRunner.getWebDriver().getCurrentUrl())
-                .containsIgnoringCase("login");
+        try {
+            OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("login"), 20 * 1000);
+        } catch (InterruptedException | TimeoutException e) {
+            fail("Log in page was never loaded");
+        }
     }
 
     @Given("^log into the Syndesis$")
