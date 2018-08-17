@@ -7,8 +7,6 @@ Feature: Log Connector
     Given clean application state
     And reset content of "contact" table
     And log into the Syndesis
-    And created connections
-      | Log   | no credentials | Log   | Log description   |
     And navigate to the "Home" page
 
 #
