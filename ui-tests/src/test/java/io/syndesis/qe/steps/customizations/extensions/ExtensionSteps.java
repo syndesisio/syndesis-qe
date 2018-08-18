@@ -22,7 +22,6 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class ExtensionSteps {
@@ -136,20 +135,20 @@ public class ExtensionSteps {
     @When("^check visibility of details about imported extension$")
     public void importDetails() throws Throwable {
         //TODO Deeper validation
-        assertThat(techExtensionsImportPage.validate(), is(true));
+        assertThat(techExtensionsImportPage.validate()).isTrue();
     }
 
     @Then("^extension \"([^\"]*)\" is present in list$")
     public void expectExtensionPresent(String name) throws Throwable {
         log.info("Verifying if extension {} is present", name);
-        assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name), is(true));
+        assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name)).isTrue();
     }
 
     @Then("^check that technical extension \"([^\"]*)\" is not visible$")
     public void expectExtensionNonPresent(String name) throws Throwable {
         log.info("Verifying if extension {} is present", name);
         customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);
-        assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name), is(false));
+        assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name)).isFalse();
     }
 
     @Then("^select \"([^\"]*)\" action on \"([^\"]*)\" technical extension$")
