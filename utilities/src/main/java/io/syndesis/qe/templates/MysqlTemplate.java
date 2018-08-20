@@ -123,6 +123,7 @@ public class MysqlTemplate {
             OpenShiftWaitUtils.waitUntilPodAppears("mysql");
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 300L);
         } catch (TimeoutException | InterruptedException e) {
+            log.error(OpenShiftUtils.getPodLogs("mysql"));
             fail("MySQL database never started in pod.", e);
         }
     }
