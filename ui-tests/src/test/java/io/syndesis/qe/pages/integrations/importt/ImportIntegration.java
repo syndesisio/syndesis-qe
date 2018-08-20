@@ -4,6 +4,7 @@ import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.DragAndDropFile;
+import io.syndesis.qe.utils.TestUtils;
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -50,9 +51,7 @@ public class ImportIntegration extends SyndesisPageObject {
 
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + integrationName + "-export.zip";
         File exportedIntegrationFile = new File(filePath);
-
         importIntegration(exportedIntegrationFile);
-
     }
 
     /**
@@ -68,6 +67,6 @@ public class ImportIntegration extends SyndesisPageObject {
                 $(Element.DRAG_AND_DROP_PLACE).shouldBe(visible),
                 Element.FINISHED_PROGRESS_BAR);
 
-        getButton("Done").shouldBe(visible).click();
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
     }
 }

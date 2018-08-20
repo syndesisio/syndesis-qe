@@ -6,7 +6,6 @@ import io.syndesis.qe.pages.integrations.Integrations;
 import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 
 import java.io.File;
 
@@ -25,7 +24,6 @@ public class ImportIntegrationSteps {
     @And("^drag exported integration \"([^\"]*)\" file to drag and drop area$")
     public void importIntegrationViaDragAndDrop(String integrationName) throws InterruptedException {
         importIntegrationPage.importIntegrationViaDragAndDrop(integrationName);
-        Assertions.assertThat(integrations.isIntegrationPresent(integrationName)).isTrue();
     }
 
     @And("^import integration from relative file path \"([^\"]*)\"$")
