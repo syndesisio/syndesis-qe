@@ -46,6 +46,8 @@ public class TestConfiguration {
 
     public static final String DB_ALLOCATOR_URL = "syndesis.dballocator.url";
 
+    public static final String PROD_REPOSITORY = "syndesis.config.prod.repository";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -131,6 +133,10 @@ public class TestConfiguration {
 
     public static String getDbAllocatorUrl(){ return get().readValue(DB_ALLOCATOR_URL, "localhost:8080"); }
 
+    public static String prodRepository() {
+        return get().readValue(PROD_REPOSITORY);
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -160,21 +166,17 @@ public class TestConfiguration {
             // pom defined property
             syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
         }
+
         if (props.getProperty(SYNDESIS_TEMPLATE_URL) == null) {
             props.setProperty(SYNDESIS_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", syndesisVersion));
-        }
-        if (props.getProperty(SYNDESIS_TEMPLATE_SA) == null) {
-            props.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", syndesisVersion));
-        }
-        if (props.getProperty(SYNDESIS_OPERATOR_CRD_URL) == null) {
-            props.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", syndesisVersion));
         }
         if (props.getProperty(SYNDESIS_OPERATOR_URL) == null) {
             props.setProperty(SYNDESIS_OPERATOR_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", syndesisVersion));
         }
-        if (props.getProperty(SYNDESIS_OPERATOR_TEMPLATE_URL) == null) {
-            props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", syndesisVersion));
-        }
+
+        props.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", "master"));
+        props.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", "master"));
+        props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/master/install/operator/deploy/syndesis.yml", "master"));
 
         props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
 
