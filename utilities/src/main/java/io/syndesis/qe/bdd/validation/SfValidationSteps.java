@@ -1,18 +1,9 @@
 package io.syndesis.qe.bdd.validation;
 
-import static org.junit.Assert.fail;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.force.api.ApiConfig;
 import com.force.api.ApiException;
 import com.force.api.ForceApi;
 import com.force.api.QueryResult;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
 import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -24,7 +15,17 @@ import io.syndesis.qe.salesforce.Contact;
 import io.syndesis.qe.salesforce.Lead;
 import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Validation steps for Salesforce related integrations.
@@ -125,8 +126,13 @@ public class SfValidationSteps {
     @Then("^.*checks? that contact from SF with last name: \"([^\"]*)\" has description \"([^\"]*)\"$")
     public void checkSalesforceContactHasDescription(String name, String description) {
 
+        try {
+            OpenShiftWaitUtils.waitFor(() -> getSalesforceContactByLastName(salesforce, name).isPresent(), 30 * 1000);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Salesforce contact with last name " + name + " was not found. ", e);
+        }
+
         final Optional<Contact> contact = getSalesforceContactByLastName(salesforce, name);
-        assertThat(contact.isPresent()).isTrue();
 
         assertThat(String.valueOf(contact.get().getDescription()))
                 .isNotEmpty()
@@ -246,7 +252,7 @@ public class SfValidationSteps {
      * Looks for leads with specified first and last name and deletes them if it finds any.
      *
      * @param salesforce salesforce object instance
-     * @param email email
+     * @param email      email
      */
     private void deleteAllSalesforceLeadsWithEmail(ForceApi salesforce, String email) {
         final Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, email);
