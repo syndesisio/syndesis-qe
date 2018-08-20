@@ -5,6 +5,7 @@ Feature: Integration - Import Export
 
   Background: Clean application state
     Given clean application state
+    And reset content of "contact" table
     And log into the Syndesis
 
 #
@@ -14,8 +15,7 @@ Feature: Integration - Import Export
   Scenario: Import and export both flows
 
     Given created connections
-      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-      | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
+      | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
 
     # create integration
     When navigate to the "Home" page
@@ -23,9 +23,14 @@ Feature: Integration - Import Export
     And check visibility of visual integration editor
     Then check that position of connection to fill is "Start"
 
-    # select twitter connection
-    When select the "Twitter Listener" connection
-    And select "Mention" integration action
+    When select the "PostgresDB" connection
+    And select "Periodic SQL Invocation" integration action
+    Then check "Done" button is "Disabled"
+    And fill in periodic query input with "select * from contact" value
+    And fill in period input with "1000" value
+    And select "Seconds" from sql dropdown
+    And click on the "Done" button
+
     Then check that position of connection to fill is "Finish"
 
     # select salesforce connection
@@ -42,10 +47,11 @@ Feature: Integration - Import Export
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    When create data mapper mappings
-      | user.screenName | TwitterScreenName__c |
-      | text            | Description          |
-      | user.name       | FirstName; LastName  |
+    And create data mapper mappings
+      | company    | TwitterScreenName__c |
+      | last_name  | LastName             |
+      | first_name | FirstName            |
+      | company    | Description          |
 
     And scroll "top" "right"
     And click on the "Done" button
@@ -61,6 +67,11 @@ Feature: Integration - Import Export
     Then Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
+
+    # validate salesforce contacts
+    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
+    # clean-up in salesforce
+    Then delete contact from SF with last name: "Jackson"
 
     # export the integration for import tests
     When select the "Integration_import_export_test" integration
@@ -87,6 +98,11 @@ Feature: Integration - Import Export
     And navigate to the "Integrations" page
     Then wait until integration "Integration_import_export_test" gets into "Running" state
 
+    # validate salesforce contacts
+    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
+    # clean-up in salesforce
+    Then delete contact from SF with last name: "Jackson"
+
 #
 #  2. integration-import with drag'n'drop
 #
@@ -99,7 +115,8 @@ Feature: Integration - Import Export
     Then drag exported integration "Integration_import_export_test" file to drag and drop area
 
     When navigate to the "Integrations" page
-    Then wait until integration "Integration_import_export_test" gets into "Stopped" state
+    Then Integration "Integration_import_export_test" is present in integrations list
+    And wait until integration "Integration_import_export_test" gets into "Stopped" state
 
     # check draft status after import
     When select the "Integration_import_export_test" integration
@@ -109,6 +126,11 @@ Feature: Integration - Import Export
     And start integration "Integration_import_export_test"
     And navigate to the "Integrations" page
     Then wait until integration "Integration_import_export_test" gets into "Running" state
+
+    # validate salesforce contacts
+    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
+    # clean-up in salesforce
+    Then delete contact from SF with last name: "Jackson"
 
 #
 #  2. integration-import from different syndesis instance
@@ -121,36 +143,34 @@ Feature: Integration - Import Export
     # import from resources TODO
     Then import integration from relative file path "src/test/resources/integrations/Imported-integration-another-instance-export.zip"
 
-    # check that connections need credentials update TODO
+    # check that connections need credentials update
     When navigate to the "Connections" page
     And check visibility of alert notification
     # update connections credentials
-    And click on the "View" kebab menu button of "Imported salesforce connection"
-    And check visibility of "Imported salesforce connection" connection details
+    And click on the "View" kebab menu button of "QE Salesforce"
+    And check visibility of "QE Salesforce" connection details
     Then check visibility of alert notification
 
     When click on the "Edit" button
     And fill in "QE Salesforce" connection details from connection edit page
     And click on the "Validate" button
     Then check visibility of success notification
-
     When click on the "Save" button
     And navigate to the "Integrations" page
-    #should be unpublished after import
-    Then wait until integration "Imported-integration-another-instance" gets into "Stopped" state
 
-    # check draft status after import
-    When select the "Imported-integration-another-instance" integration
+    #should be unpublished after import
+    When select the "Integration_import_export_test" integration
     Then check visibility of "Stopped" integration status on Integration Detail page
 
     When sleep for jenkins delay or "3" seconds
     # start integration and wait for published state:
-    And start integration "Imported-integration-another-instance"
-    # TODO: following steps are workaround - we have to edit and publish integration so encryption stuff
-    # TODO: is taken from current syndesis instance, should be deleted changed back after fix
-    And click on the "Edit Integration" button
-    Then click on the "Publish" button
+    And start integration "Integration_import_export_test"
 
     When sleep for jenkins delay or "3" seconds
     And navigate to the "Integrations" page
-    Then wait until integration "Imported-integration-another-instance" gets into "Running" state
+    Then wait until integration "Integration_import_export_test" gets into "Running" state
+
+    # validate salesforce contacts
+    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
+    # clean-up in salesforce
+    Then delete contact from SF with last name: "Jackson"

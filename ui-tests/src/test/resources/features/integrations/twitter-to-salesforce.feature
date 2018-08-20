@@ -5,6 +5,7 @@ Feature: Integration - Twitter to Salesforce
 
   Background: Clean application state
     Given clean application state
+    Given clean SF contacts related to TW account: "twitter_talky"
     Given log into the Syndesis
     Given created connections
       | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
@@ -72,3 +73,10 @@ Feature: Integration - Twitter to Salesforce
     # wait for integration to get in active state
     Then wait until integration "Twitter to Salesforce E2E" gets into "Running" state
     #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
+
+    Then tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
+
+    # validate salesforce contacts
+    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
+    # clean-up in salesforce
+    Then delete contact from SF with last name: "Jackson"
