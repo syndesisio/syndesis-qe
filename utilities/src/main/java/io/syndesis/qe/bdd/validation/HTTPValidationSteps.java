@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -66,4 +67,20 @@ public class HTTPValidationSteps {
             assertThat(method.equals(event));
         }
     }
+
+    @Then("^verify that after \"([^\"]*)\" seconds there were \"([^\"]*)\" calls$")
+    public void verifyThatAfterSecondsWasCalls(int seconds, int calls) {
+        clear();
+        TestUtils.sleepIgnoreInterrupt(seconds * 1000L);
+        Response r = HttpUtils.doGetRequest("http://localhost:28080/events");
+        Map<Long, String> events = null;
+        try {
+            events = new Gson().fromJson(r.body().string(), Map.class);
+        } catch (IOException ex) {
+            log.error("Unable to convert from json to map", ex);
+            ex.printStackTrace();
+        }
+        assertThat(events).size().isGreaterThanOrEqualTo(calls);
+    }
+
 }
