@@ -27,11 +27,11 @@ Feature: Integration - Telegram to Telegram
 #
 #  Instructions for semi-automatic test:
 #  Just run this test, it will prepare an integration. Start the integration. Then send a telegram message "/qqq"
-#  from tplevko's telegram account to channel "syndesisGroupReceive" and the integration should process it and send
-#  the same message to channel "testBotSyndesis". Sending message to "testBotSyndesis" should not trigger any response
+#  from tplevko's telegram account to channel "testBotSyndesis" and the integration should process it and send
+#  the same message to channel "syndesisGroupReceive". Sending message to "syndesisGroupReceive" should not trigger any response
 #  from the integration.
 #
-#  Currently (27.7.2018) it does not work and there is a bug: https://github.com/syndesisio/syndesis/issues/3168
+#  Currently (23.8.2018) it does not work as expected and there is a bug: https://github.com/syndesisio/syndesis/issues/3168
 #
 #  @telegram-receive-publish
   @telegram-test
@@ -43,18 +43,15 @@ Feature: Integration - Telegram to Telegram
 
     When select the "Telegram test connection" connection
     And select "Receive Messages" integration action
+    Then check visibility of page "Choose a Finish Connection"
+
+    When select the "Telegram test connection" connection
+    And select "Send a Text Message" integration action
     # telegram needs ID of chat, its not name but some hidden ID
     # to get ID, you have to get updates via curl with bot and find it in json response:
     # curl https://api.telegram.org/bot<insert-bot-token-here>/getUpdates
     And fill in values by element ID
       | chatId | -299979044 |
-    And click on the "Done" button
-    Then check visibility of page "Choose a Finish Connection"
-
-    When select the "Telegram test connection" connection
-    And select "Send a Text Message" integration action
-    And fill in values by element ID
-      | chatId | 467639851 |
     And click on the "Done" button
     Then check visibility of page "Add to Integration"
 
@@ -133,9 +130,6 @@ Feature: Integration - Telegram to Telegram
 
     When select the "Telegram test connection" connection
     And select "Receive Messages" integration action
-    And fill in values by element ID
-      | chatId | 467639851 |
-    And click on the "Done" button
     Then check visibility of page "Choose a Finish Connection"
 
     When select the "PostgresDB" connection
