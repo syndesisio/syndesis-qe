@@ -28,10 +28,13 @@ Typescript based tests that use Protractor and Cucumber BDD scenarios.
 
 
 ### Prepare syndesis instance
-Updated: 16.8.2018
+Updated: 24.8.2018
 
 #### Prerequisites:
 Installed minishift
+
+Correctly set test.properties
+
 Following lines in /etc/hosts file, insert your minishift ip:
 
 	`${minishift_ip} syndesis.my-minishift.syndesis.io`
@@ -42,28 +45,29 @@ have to update all third party applications and their callbacks for every minish
 
 For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
 
-#### Enable the admin user on Minishift. Needs to be done only once and then restart minishift
-`minishift addons enable admin-user`
 
 #### Create a minishift instance
-`minishift start --memory 4192`
+`minishift start`
 
-#### Switch to admin
-`oc login -u system:admin`
+#### Add admin rights to developer user
+`oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer`
 
-#### Register CRD and grant permissions to "developer"
-`syndesis --setup --grant developer --cluster`
+#### Run following testsuite command
+Read paragraph `Execution` to find out what to do to successfully run the testsuite.
 
-#### Switch to account developer
-`oc login -u developer`
+`mvn clean install -P rest -Dcucumber.options=\"--tags @integration-ftp-ftp\" -Dsyndesis.config.openshift.namespace.lock=true -Dsyndesis.config.openshift.namespace.cleanup=true -Dsyndesis.config.openshift.namespace.cleanup.after=false`
 
-#### Clone Syndesis
-`git clone https://github.com/syndesisio/syndesis.git`
+To select syndesis version, add another maven parameter:
 
-#### Install Syndesis
-`syndesis/tools/bin/syndesis install --local -y -p syndesis --route syndesis.my-minishift.syndesis.io --test-support`
+	`-Dsyndesis.config.template.version=<version>`
+
+To install syndesis from operator template, add maven parameter:
+
+	`-Dsyndesis.config.operator.url=<url-to-operator.yml>`
 
 
+When testsuite output text says `Waiting for Syndesis to get ready`, you can kill mvn execution
+as the deployment process already started and the run is no longer required.
 
 ### Creating a Pull Request
 
@@ -260,6 +264,7 @@ All values are just examples / proposals. Need to be updated in accordance with
 For the test execution at least `syndesis-rest` modules are required in current SNAPSHOT version.
 
 ```
+git clone https://github.com/syndesisio/syndesis.git
 cd <syndesis-project-dir>
 ./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash
 ```
