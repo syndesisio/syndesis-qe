@@ -267,22 +267,27 @@ public class SyndesisTemplate {
     }
 
     private static void addIndyRepo() {
-        Optional<ConfigMap> cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
-                .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-        int retries = 0;
-        while (!cm.isPresent() && retries < 12) {
-            TestUtils.sleepIgnoreInterrupt(10000L);
-            cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
-                    .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-            if (retries == 11) {
-                fail("Unable to find syndesis-server-config configmap after 12 tries");
+        if (System.getProperty("syndesis.version").contains("redhat")) {
+            if (TestConfiguration.prodRepository() == null) {
+                fail("Trying to deploy prod version using operator and system property " + TestConfiguration.PROD_REPOSITORY + " is not set!");
             }
-            retries++;
-        }
-        String data = cm.get().getData().get("application.yml").replaceAll("https://repo1.maven.org/maven2",
-                TestConfiguration.prodRepository());
+            Optional<ConfigMap> cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
+                    .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
+            int retries = 0;
+            while (!cm.isPresent() && retries < 12) {
+                TestUtils.sleepIgnoreInterrupt(10000L);
+                cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
+                        .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
+                if (retries == 11) {
+                    fail("Unable to find syndesis-server-config configmap after 12 tries");
+                }
+                retries++;
+            }
+            String data = cm.get().getData().get("application.yml").replaceAll("https://repo1.maven.org/maven2",
+                    TestConfiguration.prodRepository());
 
-        OpenShiftUtils.client().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
+            OpenShiftUtils.client().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
+        }
     }
 
     /**
