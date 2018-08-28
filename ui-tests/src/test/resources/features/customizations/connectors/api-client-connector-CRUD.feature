@@ -23,7 +23,7 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     And navigate to the next Api Connector wizard step "Specify Security"
     Then check visibility of page "Specify Security"
-    Then set up security
+    Then set up api connector security
       | authType       | OAuth 2.0                             |
       | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
 
@@ -49,7 +49,7 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     Then navigate to the next Api Connector wizard step "Specify Security"
     Then check visibility of page "Specify Security"
-    Then set up security
+    Then set up api connector security
       | authType       | OAuth 2.0                             |
       | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
 
