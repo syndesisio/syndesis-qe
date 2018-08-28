@@ -60,7 +60,7 @@ public class WizardSteps {
         uploadSwaggerSpecificationWizardPhase.upload(sourceTypes.get(0), urls.get(0));
     }
 
-    @Then("set up security$")
+    @Then("set up api connector security$")
     public void setUpSecurity(DataTable properties) throws Throwable {
         specifySecurityWizardPhase.validate();
 
