@@ -3,6 +3,7 @@ package io.syndesis.qe.pages;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static org.junit.Assert.assertThat;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
@@ -18,7 +19,9 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,6 +37,14 @@ public abstract class SyndesisPageObject {
 
     public SelenideElement getButton(String buttonTitle, SelenideElement differentRoot) {
         log.info("searching for button {}", buttonTitle);
+
+        try {
+            OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
+                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+        } catch (TimeoutException | InterruptedException e1) {
+            fail(buttonTitle + " not found", e1);
+        }
+
         return differentRoot.shouldBe(visible).findAll(By.tagName("button"))
                 .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
     }

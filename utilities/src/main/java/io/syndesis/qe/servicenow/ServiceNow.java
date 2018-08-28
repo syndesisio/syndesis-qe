@@ -160,7 +160,7 @@ public class ServiceNow {
         return null;
     }
 
-    private static String getIncidentJson(Incident i) {
+    public static String getIncidentJson(Incident i) {
         try {
             return om.writeValueAsString(i);
         } catch (JsonProcessingException e) {
