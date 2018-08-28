@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -20,6 +21,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+@Slf4j
 public final class HttpUtils {
     private HttpUtils() {
     }
@@ -30,6 +32,10 @@ public final class HttpUtils {
 
     public static Response doPostRequest(String url, String content, String contentType, Headers headers) {
         RequestBody body = RequestBody.create(MediaType.parse(contentType), content);
+        return doPostRequest(url, body, headers);
+    }
+
+    public static Response doPostRequest(String url, RequestBody body, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .post(body);
@@ -40,6 +46,8 @@ public final class HttpUtils {
         try {
             return getClient().newCall(requestBuilder.build()).execute();
         } catch (IOException e) {
+            log.error("Post invocation failed!", e);
+            //print whole stacktrace
             e.printStackTrace();
         }
         return null;
