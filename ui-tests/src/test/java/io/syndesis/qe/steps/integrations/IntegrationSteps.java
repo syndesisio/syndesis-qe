@@ -16,21 +16,17 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static com.codeborne.selenide.Condition.visible;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Assert;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Created by sveres on 11/15/17.
@@ -56,21 +52,24 @@ public class IntegrationSteps {
     public void expectIntegrationPresent(String name) {
         log.info("Verifying integration {} is present", name);
         TestUtils.sleepForJenkinsDelayIfHigher(4);
-        assertThat(integrations.isIntegrationPresent(name), is(true));
+        assertThat(integrations.isIntegrationPresent(name)).isTrue();
     }
 
     @Then("^check that integration \"([^\"]*)\" is not visible$")
     public void expectIntegrationNotPresent(String name) {
         // DOES NOT WORK - THROWS ERROR AS getElement has assert that its > 0 and if it does not exists its 0 TODO
         log.info("Verifying if integration {} is present", name);
-        assertThat(integrations.isIntegrationPresent(name), is(false));
+        assertThat(integrations.isIntegrationPresent(name)).isFalse();
     }
 
     @Then("^wait until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
         SelenideElement integration = integrations.getIntegration(integrationName);
-        assertTrue(TestUtils.waitForEvent(status -> status.equals(integrationStatus), () -> integrations.getIntegrationItemStatus(integration),
-                TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 1));
+        assertThat(TestUtils.waitForEvent(
+                status -> status.equals(integrationStatus),
+                () -> integrations.getIntegrationItemStatus(integration),
+                TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 1)
+        ).isTrue();
     }
 
     //Kebab menu test, #553 -> part #548, #549.
@@ -83,7 +82,7 @@ public class IntegrationSteps {
     @And("^export the integraion$")
     public void exportIntegration() throws InterruptedException {
         File exportedIntegrationFile = detailPage.exportIntegration();
-        Assertions.assertThat(exportedIntegrationFile)
+        assertThat(exportedIntegrationFile)
                 .exists()
                 .isFile()
                 .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
@@ -102,8 +101,6 @@ public class IntegrationSteps {
         OpenShiftWaitUtils.assertEventually("Pod with name " + integartionPodName + "is still running.",
                 OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
     }
-
-
 
 
     @And("^.*check that data bucket \"([^\"]*)\" is available$")
@@ -143,16 +140,21 @@ public class IntegrationSteps {
 
 
     @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"([^\"]*)\"$")
-    public void checkThatLogsContain(String integrationName, String text) {
-        Assertions.assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).containsIgnoringCase(text);
+    public void checkThatLogsContain(final String integrationName, final String text) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getIntegrationLogs(integrationName).contains(text), 60 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).containsIgnoringCase(text);
+        }
     }
+
     @Then("^check starting integration ([^\"]*) status on Integrations page$")
-    public void checkStartingStatusOnIntegrationsPage( String integrationName) {
+    public void checkStartingStatusOnIntegrationsPage(String integrationName) {
         checkStartingStatus(integrationName, "Integrations");
     }
 
     //base starting status checking method used in step methods
-    public void checkStartingStatus( String integrationName, String checkedPage) {
+    public void checkStartingStatus(String integrationName, String checkedPage) {
         List<IntegrationStartingStatus> statuses = new ArrayList<>();
         statuses.add(IntegrationStartingStatus.ASSEMBLING);
         statuses.add(IntegrationStartingStatus.BUILDING);
@@ -171,14 +173,14 @@ public class IntegrationSteps {
                     case "Home":
                     case "Integrations":
                         log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim());
-                        Assertions.assertThat(integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim()).isEqualToIgnoringWhitespace("Running");
+                        assertThat(integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim()).isEqualToIgnoringWhitespace("Running");
                         break;
                     case "Integration detail":
                         log.info("Status changed to: " + detailPage.getPublishedVersion().getText().trim());
-                        Assertions.assertThat(detailPage.getPublishedVersion().getText()).isEqualToIgnoringWhitespace("Published version 1");
+                        assertThat(detailPage.getPublishedVersion().getText()).isEqualToIgnoringWhitespace("Published version 1");
                         break;
                     default:
-                        Assert.fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
+                        fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
                 }
                 break;
             }
@@ -194,10 +196,10 @@ public class IntegrationSteps {
                         status = detailPage.getStartingStatus();
                         break;
                     default:
-                        Assert.fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
+                        fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
                 }
-            } catch(Throwable t) {
-                lastStatusIndex = statuses.size()-1;
+            } catch (Throwable t) {
+                lastStatusIndex = statuses.size() - 1;
                 continue;
             }
 
@@ -219,8 +221,8 @@ public class IntegrationSteps {
                             log.info("Status changed to: " + status);
                         }
                     }
+                } else {
                 }
-                else {}
             }
             try {
                 Thread.sleep(200);
@@ -229,6 +231,6 @@ public class IntegrationSteps {
             }
         }
 
-        Assertions.assertThat(matchingStatesNumber).isGreaterThanOrEqualTo(2).withFailMessage("Spotted statuses' order:" + statusesMessage.toString());
+        assertThat(matchingStatesNumber).isGreaterThanOrEqualTo(2).withFailMessage("Spotted statuses' order:" + statusesMessage.toString());
     }
 }
