@@ -115,7 +115,7 @@ public final class OpenShiftUtils {
     }
 
     public static String getIntegrationLogs(String integrationName) {
-        return getPodLogs(integrationName.replaceAll("[\\s_]", "-"));
+        return getPodLogs(integrationName.replaceAll("[\\s_]", "-").toLowerCase());
     }
 
     public static String getPodLogs(String podPartialName) {
