@@ -1,6 +1,7 @@
 package io.syndesis.qe.upgrade;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,12 +17,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.ConfigMap;
@@ -43,7 +46,7 @@ public class UpgradeSteps {
     private static final String UPGRADE_FOLDER = Paths.get(SYNDESIS, "tools", "upgrade").toFile().toString();
     private static final String UPGRADE_TEMPLATE = Paths.get(SYNDESIS, "install", "syndesis.yml").toString();
     private static final String VERSION_ENDPOINT = "/api/v1/version";
-    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://hub.docker.com/v2/repositories/syndesis/syndesis-server/tags/";
+    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://hub.docker.com/v2/repositories/syndesis/syndesis-server/tags/?page_size=1024";
     private static final String BACKUP_DIR = "/tmp/backup";
 
     @Autowired
@@ -54,6 +57,8 @@ public class UpgradeSteps {
     @When("^get upgrade versions$")
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
+            // Parse "1.5"
+            double version = Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3));
             Request request = new Request.Builder()
                     .url(DOCKER_HUB_SYNDESIS_TAGS_URL)
                     .build();
@@ -71,25 +76,48 @@ public class UpgradeSteps {
                 tags.add(((JSONObject) o).getString("name"));
             }
 
-            // Use only daily tags
-            Pattern pattern = Pattern.compile("^\\d\\.\\d(\\.\\d+)?-\\d{8}$");
+            // Use only daily tags corresponding to the latest major version
+            Pattern pattern = Pattern.compile("^" + (version + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?-\\d{8}$");
 
+            Collections.sort(tags);
+            Collections.reverse(tags);
             for (String tag : tags) {
                 Matcher matcher = pattern.matcher(tag);
                 if (matcher.matches()) {
                     if (System.getProperty("syndesis.upgrade.version") == null) {
                         log.info("Setting syndesis.upgrade.version to " + tag);
                         System.setProperty("syndesis.upgrade.version", tag);
-                    } else {
-                        log.info("Setting syndesis.version to " + tag);
-                        System.setProperty("syndesis.version", tag);
-                        break;
                     }
                 }
             }
 
-            TestConfiguration.get().overrideSyndesisVersion(System.getProperty("syndesis.version"));
+            // Get penultimate version - not daily
+            outer:
+            while (version >= 1.0) {
+                version -= 0.1;
+                pattern = Pattern.compile("^" + (version + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$");
+                for (String tag : tags) {
+                    Matcher matcher = pattern.matcher(tag);
+                    if (matcher.matches()) {
+                        log.info("Setting syndesis.version to " + tag);
+                        System.setProperty("syndesis.version", tag);
+                        break outer;
+                    }
+                }
+            }
         }
+
+        if (System.getProperty("syndesis.upgrade.old.version") != null) {
+            // Allow to define daily tag using custom property, because you can't define daily version as "syndesis.version"
+            // because there are no artifacts
+            System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.old.version"));
+        }
+
+        TestConfiguration.get().overrideSyndesisVersion(System.getProperty("syndesis.version"));
+
+        log.info("Upgrade:");
+        log.info("Old version: " + System.getProperty("syndesis.version"));
+        log.info("New version: " + System.getProperty("syndesis.upgrade.version"));
     }
 
     @When("^perform syndesis upgrade to newer version$")
@@ -97,6 +125,7 @@ public class UpgradeSteps {
         ProcessBuilder pb = new ProcessBuilder(Paths.get(UPGRADE_FOLDER, "upgrade.sh").toString(),
                 "--template ", UPGRADE_TEMPLATE,
                 "--backup", BACKUP_DIR,
+                "--oc-login", "oc login " + TestConfiguration.openShiftUrl() + " --token=" + OpenShiftUtils.client().getConfiguration().getOauthToken(),
                 "--migration", Paths.get(UPGRADE_FOLDER, "migration").toString());
         pb.directory(new File(UPGRADE_FOLDER));
 
@@ -138,8 +167,19 @@ public class UpgradeSteps {
         modifyTemplate();
         modifyDbScripts();
         modifyUpgradeDbScript();
-        copyStatefulScript();
+        copyStatefulScripts();
         getSyndesisCli();
+    }
+
+    @When("^modify s2i tag in syndesis-server-config$")
+    public void modifyS2iTag() {
+        // Workaround until https://github.com/syndesisio/syndesis/issues/3464 is figured out
+        Map<String, String> data = OpenShiftUtils.client().configMaps().withName("syndesis-server-config").get().getData();
+        String yaml = data.get("application.yml");
+        yaml = yaml.replaceAll("syndesis-s2i:" + System.getProperty("syndesis.version"),
+                "syndesis-s2i:" + System.getProperty("syndesis.upgrade.version"));
+        data.put("application.yml", yaml);
+        OpenShiftUtils.client().configMaps().withName("syndesis-server-config").edit().withData(data).done();
     }
 
     private void modifyTemplate() {
@@ -165,19 +205,8 @@ public class UpgradeSteps {
         integrationId = integrationsEndpoint.getIntegrationId("upgrade").get();
         String upgradeResourcesPath = new File("src/test/resources/upgrade").getAbsolutePath();
         // Replace placeholder in upgrade scripts
-        try {
-            File destination = Paths.get(upgradeResourcesPath, "up-98.js").toFile();
-            destination.delete();
-            String content = FileUtils.readFileToString(Paths.get(upgradeResourcesPath, "up-98-template.js").toFile(), "UTF-8");
-            FileUtils.write(destination, content.replaceAll("INTEGRATION_ID", integrationId), "UTF-8", false);
-
-            destination = Paths.get(upgradeResourcesPath, "up-99.js").toFile();
-            destination.delete();
-            content = FileUtils.readFileToString(Paths.get(upgradeResourcesPath, "up-99-template.js").toFile(), "UTF-8");
-            FileUtils.write(destination, content.replaceAll("INTEGRATION_ID", integrationId), "UTF-8", false);
-        } catch (IOException e) {
-            log.error("Unable to modify db scripts", e);
-        }
+        createFileFromTemplate(upgradeResourcesPath, "up-98-template.js", "INTEGRATION_ID", integrationId);
+        createFileFromTemplate(upgradeResourcesPath, "up-99-template.js", "INTEGRATION_ID", integrationId);
     }
 
     private void modifyUpgradeDbScript() {
@@ -200,14 +229,14 @@ public class UpgradeSteps {
 
     }
 
-    private void copyStatefulScript() {
+    private void copyStatefulScripts() {
         // Move the config change script to resource folder
         try {
             FileUtils.copyFile(new File("src/test/resources/upgrade/99-change-ui-config.sh"),
                 Paths.get(UPGRADE_FOLDER, "migration", "resource",
                     System.getProperty("syndesis.upgrade.version"), "99-change-ui-config.sh").toFile());
         } catch (IOException e) {
-            log.error("Unable to modify copy script", e);
+            fail("Unable to copy scripts", e);
         }
     }
 
@@ -247,7 +276,7 @@ public class UpgradeSteps {
         retries = 0;
         log.info("Waiting for syndesis-upgrade pod to complete");
         // 10 minutes
-        while (!"Completed".equals(pod.get().getStatus().getPhase()) && retries < 120) {
+        while (!"Completed".equals(pod.get().getStatus().getReason()) && retries < 120) {
             TestUtils.sleepIgnoreInterrupt(5000L);
             retries++;
         }
@@ -313,7 +342,18 @@ public class UpgradeSteps {
         }
     }
 
-    @And("^clean upgrade modifications$")
+    private void createFileFromTemplate(String folder, String templateFileName, String whatToReplace, String whatToUse) {
+        try {
+            File dest = Paths.get(folder, templateFileName.replaceAll("-template", "")).toFile();
+            dest.delete();
+            String content = FileUtils.readFileToString(Paths.get(folder, templateFileName).toFile(), "UTF-8");
+            FileUtils.write(dest, content.replaceAll(whatToReplace, whatToUse), "UTF-8", false);
+        } catch (IOException e) {
+            fail("Unable to modify scripts", e);
+        }
+    }
+
+    @Given("^clean upgrade modifications$")
     public void cleanUpgradeModifications() {
         log.info("Running \"git checkout .\" in \"" + SYNDESIS + "\"");
         ProcessBuilder pb = new ProcessBuilder("git", "checkout", ".");

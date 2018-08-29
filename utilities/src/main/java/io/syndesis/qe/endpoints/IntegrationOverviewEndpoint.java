@@ -24,7 +24,7 @@ public class IntegrationOverviewEndpoint extends AbstractEndpoint<IntegrationOve
     }
 
     public IntegrationOverview getOverview(String integrationId) {
-        log.debug("GET : {}", getEndpointUrl() + integrationId + "/overview");
+        log.debug("GET : {}", getEndpointUrl() + "/" + integrationId + "/overview");
         final Invocation.Builder invocation = this.createInvocation(integrationId + "/overview");
         final JsonNode response = invocation.get(JsonNode.class);
 
