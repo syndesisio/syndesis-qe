@@ -12,6 +12,7 @@ import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.RandomStringUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -196,6 +197,17 @@ public class DbValidationSteps {
     @And("^.*invokes? database query \"([^\"]*)\"")
     public void invokeQuery(String query) {
         assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
+    }
+
+    @And("^insert into contact database randomized concur contact with name \"([^\"]*)\" and list ID \"([^\"]*)\"")
+    public void createContactRowForConcur(String name, String listId) {
+        String surname = RandomStringUtils.randomAlphabetic(12);
+        String lead = RandomStringUtils.randomAlphabetic(12);
+
+        String query = "insert into CONTACT values ('" + name + "' , '" + surname + "', '" + listId + "' , '" + lead + "', '1999-01-01')";
+        log.info("Invoking query:");
+        log.info(query);
+        invokeQuery(query);
     }
 
     @Given("^.*reset content of \"([^\"]*)\" table")
