@@ -111,7 +111,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
 
-        stepElement.hover();
+        stepElement.scrollIntoView(true).hover();
 
         getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
     }
@@ -121,7 +121,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
 
-        stepElement.hover();
+        stepElement.scrollIntoView(true).hover();
 
         getRootElement().$(Link.ADD_CONNECTION).shouldBe(visible).click();
     }
