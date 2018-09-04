@@ -15,8 +15,14 @@ public class SlackSteps {
     private SlackConnector slack;
 
     @When("^.*checks? that last slack message equals \"([^\"]*)\" on channel \"([^\"]*)\"$")
-    public void sendMessage(String message, String channel) throws InterruptedException, SlackApiException, IOException {
+    public void checkMessage(String message, String channel) throws SlackApiException, IOException {
         TestUtils.sleepForJenkinsDelayIfHigher(2);
         slack.checkLastMessageFromChannel(message, channel);
+    }
+
+    @When("^.*send? message \"([^\"]*)\" on channel \"([^\"]*)\"$")
+    public void sendMessage(String message, String channel) throws InterruptedException, SlackApiException, IOException {
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
+        slack.sendMessage(message, channel);
     }
 }
