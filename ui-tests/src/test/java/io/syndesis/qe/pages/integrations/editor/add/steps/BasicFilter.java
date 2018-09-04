@@ -26,17 +26,17 @@ public class BasicFilter extends AbstractStep {
     }
 
     private static final class Input {
-        public static final By PATH = By.cssSelector("input[ng-reflect-name='path']");
-        public static final By VALUE = By.cssSelector("input[ng-reflect-name='value']");
+        public static final By PATH = By.cssSelector("input[formcontrolname='path']");
+        public static final By VALUE = By.cssSelector("input[formcontrolname='value']");
     }
 
     private static final class Select {
         public static final By PREDICATE = By.id("basicFilterPredicateSelect");
-        public static final By OP = By.cssSelector("select[ng-reflect-name='op']");
+        public static final By OP = By.cssSelector("select[formcontrolname='op']");
     }
 
     private static final class Link {
-        public static final By ADD_RULE = By.cssSelector("a.add-rule");
+        public static final By ADD_RULE = By.cssSelector(".add-rule");
     }
 
     private static final class DataList {
