@@ -1,5 +1,5 @@
 @soak-deployment
-@Ignore
+@ignore
 Feature: soak deployment
 
   #scenario expects that web services are already deployed
