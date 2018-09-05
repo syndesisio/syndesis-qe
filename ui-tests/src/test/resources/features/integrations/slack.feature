@@ -10,7 +10,8 @@ Feature: Slack Connector
 
 
     Given created connections
-      | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
+      | Slack | QE Slack producer | QE Slack producer | SyndesisQE Slack test |
+      | Slack | QE Slack consumer | QE Slack consumer | SyndesisQE Slack test |
 
     And navigate to the "Home" page
 
@@ -43,7 +44,7 @@ Feature: Slack Connector
 
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Slack" connection
+    When select the "QE Slack producer" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
@@ -103,7 +104,7 @@ Feature: Slack Connector
 
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Slack" connection
+    When select the "QE Slack producer" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
@@ -135,3 +136,62 @@ Feature: Slack Connector
 
     Then check that last slack message equals "Red Hat" on channel "test"
 
+#
+#  3. Check that slack message is save to DB. The data mapper and basic filter are used.
+#
+  @slack-to-db
+  Scenario: Check message in DB
+    # create integration
+    And click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # select slack connection as start integration
+    When select the "QE Slack consumer" connection
+    And select "Read Messages" integration action
+    Then select "test" from "channel" dropdown
+    And click on the "Done" button.
+
+    # select postgresDB connection as finish integration
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert into CONTACT values (:#AUTOR , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
+    And click on the "Done" button
+
+    # add data mapper step
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    And create mapping from "username" to "AUTOR"
+    And create mapping from "text" to "COMPANY"
+    And click on the "Done" button
+
+    # add basic filter step
+    When click on the "Add a Step" button
+    Then check visibility of the "Add a step" link
+    And click on the "Add a step" link
+    And select "Basic Filter" integration step
+    And check visibility of "Basic Filter" step configuration page
+    Then fill in the configuration page for "Basic Filter" step with "ANY of the following, text, contains, Red Hat testSlack" parameter
+    And click on the "Done" button
+
+    # finish and save integration
+    When click on the "Save as Draft" button
+    And set integration name "slack-to-db"
+    And click on the "Publish" button
+
+    # assert integration is present in list
+    Then check visibility of "slack-to-db" integration details
+
+    When navigate to the "Integrations" page
+    Then Integration "slack-to-db" is present in integrations list
+    And wait until integration "slack-to-db" gets into "Running" state
+
+    When send message "Red Hat testSlack" on channel "test"
+    And send message "Red Hat test incorrect Slack" on channel "test"
+    And sleep for "10000" ms
+
+    Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
+    Then checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
