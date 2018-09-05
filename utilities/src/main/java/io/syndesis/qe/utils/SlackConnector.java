@@ -35,10 +35,10 @@ public class SlackConnector {
      * is API Token for slack workspace custom integration called "Bots".
      */
     public SlackConnector() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Slack");
+        Optional<Account> accountInfo = AccountsDirectory.getInstance().getAccount("QE Slack consumer");
 
-        if (optional.isPresent()) {
-            SlackConnector.token = optional.get().getProperties().get("Token");
+        if (accountInfo.isPresent()) {
+            SlackConnector.token = accountInfo.get().getProperties().get("token");
         } else {
             throw new InvalidParameterException("Credentials for QE Slack connector not found!");
         }
