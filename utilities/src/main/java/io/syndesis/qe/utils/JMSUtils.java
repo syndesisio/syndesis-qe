@@ -16,8 +16,12 @@ public final class JMSUtils {
     }
 
     public static Message getMessage(Destination type, String destinationName) {
+        return getMessage(type, destinationName, 60000L);
+    }
+
+    public static Message getMessage(Destination type, String destinationName, long timeout) {
         try(JmsClientManager manager = new JmsClientManager("tcp")) {
-            return withDestination(manager, type, destinationName).receiveMessage(60000L);
+            return withDestination(manager, type, destinationName).receiveMessage(timeout);
         } catch (Exception e) {
             log.error("Unable to get message from JMS", e);
             e.printStackTrace();
@@ -55,9 +59,9 @@ public final class JMSUtils {
     }
 
     public static void clear(Destination type, String name) {
-        Message m = getMessage(type, name);
+        Message m = getMessage(type, name, 5000L);
         while (m != null) {
-            m = getMessage(type, name);
+            m = getMessage(type, name, 5000L);
         }
     }
 
