@@ -1,9 +1,18 @@
 package io.syndesis.qe.bdd.validation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import com.force.api.ApiConfig;
 import com.force.api.ApiException;
 import com.force.api.ForceApi;
 import com.force.api.QueryResult;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -17,15 +26,6 @@ import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Validation steps for Salesforce related integrations.
@@ -198,9 +198,10 @@ public class SfValidationSteps {
         assertThat(lead.get().getFirstName()).isEqualTo("Joe");
     }
 
-    @Then("^verify that lead creation response was received from queue \"([^\"]*)\"$")
-    public void verifyLeadCreatedResponse(String queueName) {
-        log.error("TODO: avano: https://github.com/syndesisio/syndesis/issues/2853");
+    @Then("^verify that lead creation response with email \"([^\"]*)\" was received from queue \"([^\"]*)\"$")
+    public void verifyLeadCreatedResponse(String email, String queueName) {
+        assertThat(JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queueName)).isEqualTo(String.format("{\"id\":\"%s\"}",
+                getSalesforceLeadByEmail(salesforce, email).get().getId()));
     }
 
     @Then("^verify that lead was deleted$")

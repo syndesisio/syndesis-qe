@@ -1,5 +1,7 @@
 package io.syndesis.qe.bdd.datamapper;
 
+import static org.assertj.core.api.Fail.fail;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -115,7 +117,7 @@ public class AtlasMapperGenerator {
                 log.error("error: {}" + e);
             }
         } else if (dsKind.equals(DataShapeKinds.JSON_SCHEMA) || dsKind.equals(DataShapeKinds.JSON_INSTANCE)) {
-            JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(dataShapeSpecification));
+            JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(dataShapeSpecification, dsKind));
             try {
                 String mapperString = mapper.writeValueAsString(inspectionResponse);
                 log.debug(mapperString);
@@ -140,7 +142,10 @@ public class AtlasMapperGenerator {
         List<DataSource> sources = new ArrayList<>();
         for (StepDefinition s : precedingSteps) {
             DataShape outDataShape = s.getStep().getAction().get().getOutputDataShape().get();
-            sources.add(createDataSource(outDataShape, s, DataSourceType.SOURCE));
+            // Steps with "ANY" are ignored for sources and only those that have proper datashape are used
+            if (outDataShape.getKind() != DataShapeKinds.ANY) {
+                sources.add(createDataSource(outDataShape, s, DataSourceType.SOURCE));
+            }
         }
         return sources;
     }
@@ -153,8 +158,10 @@ public class AtlasMapperGenerator {
      */
     private DataSource processTarget(StepDefinition followingStep) {
         DataShape inDataShape = followingStep.getStep().getAction().get().getInputDataShape().get();
-        DataSource target = createDataSource(inDataShape, followingStep, DataSourceType.TARGET);
-        return target;
+        if (inDataShape.getKind() == DataShapeKinds.ANY) {
+            fail("Unable to map to \"ANY\" datashape!");
+        }
+        return createDataSource(inDataShape, followingStep, DataSourceType.TARGET);
     }
 
     /**
@@ -387,14 +394,16 @@ public class AtlasMapperGenerator {
      * @param specification
      * @return
      */
-    private JsonInspectionRequest generateJsonInspectionRequest(String specification) {
-
+    private JsonInspectionRequest generateJsonInspectionRequest(String specification, DataShapeKinds dsKind) {
         log.debug(specification);
 
         JsonInspectionRequest jsonInspectReq = new JsonInspectionRequest();
         jsonInspectReq.setJsonData(specification);
-        jsonInspectReq.setType(InspectionType.SCHEMA);
-
+        if (dsKind == DataShapeKinds.JSON_SCHEMA) {
+            jsonInspectReq.setType(InspectionType.SCHEMA);
+        } else {
+            jsonInspectReq.setType(InspectionType.INSTANCE);
+        }
         return jsonInspectReq;
     }
 
