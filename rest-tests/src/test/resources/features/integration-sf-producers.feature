@@ -54,11 +54,14 @@ Feature: Integration - SalesForce producers
   @integration-sf-producers-create-record
   Scenario: Create a new record
     When create SF "create-sobject" action step on field: "Lead"
-      And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
+      And start mapper definition with name: "integration-sf-producers-create-record"
+      And MAP using Step 2 and field "id" to "/id"
+      And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output" with datashape type "JSON_INSTANCE" and specification '{"id":"abc"}'
       And create integration with name: "AMQ-SF-AMQ new record"
     Then wait for integration with name: "AMQ-SF-AMQ new record" to become active
     When publish message with content '{"FirstName":"Joe", "LastName":"Doe","Email":"joedoeprod@acme.com","Company":"XYZ"}' to queue "sf-producers-input"
-    Then verify that lead creation response was received from queue "sf-producers-output"
+    Then verify that lead with email "joedoeprod@acme.com" was created
+      And verify that lead creation response with email "joedoeprod@acme.com" was received from queue "sf-producers-output"
 
   @integration-sf-producers-update-record
   Scenario: Update record
@@ -73,13 +76,15 @@ Feature: Integration - SalesForce producers
     When create SF "upsert-sobject" action step with properties
       | sObjectName   | Lead  |
       | sObjectIdName | Email |
-      And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
+      And start mapper definition with name: "integration-sf-producers-upsert-record-insert"
+      And MAP using Step 2 and field "id" to "/id"
+      And create AMQ "publish" action step with destination type "queue" and destination name "sf-producers-output" with datashape type "JSON_INSTANCE" and specification '{"id":"abc"}'
       And create integration with name: "AMQ-SF-AMQ upsert insert record"
     Then wait for integration with name: "AMQ-SF-AMQ upsert insert record" to become active
     # This user does not exist, will be created
     When publish message with content '{"Email":"joedoeprod@acme.com", "Firstname":"Joe", "Lastname":"Doe", "Company":"XYZ"}' to queue "sf-producers-input"
     Then verify that lead with email "joedoeprod@acme.com" was created
-      And verify that lead creation response was received from queue "sf-producers-output"
+      And verify that lead creation response with email "joedoeprod@acme.com" was received from queue "sf-producers-output"
 
   @integration-sf-producers-upsert-record-update
   Scenario: Upsert record - update
@@ -92,4 +97,3 @@ Feature: Integration - SalesForce producers
     # This user does exist, but with first name John
     When publish message with content '{"Email":"jdoeprod@acme.com", "Firstname":"Joe", "Lastname":"Doe", "Company":"XYZ"}' to queue "sf-producers-input"
     Then verify that lead name was updated
-      And verify that lead creation response was received from queue "sf-producers-output"

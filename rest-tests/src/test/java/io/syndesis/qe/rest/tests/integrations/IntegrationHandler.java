@@ -136,8 +136,9 @@ public class IntegrationHandler {
             //mapping can be done on steps that preceed mapper step and the single step, which follows the mapper step.
             log.info("Found mapper step, creating new atlas mapping.");
             for (int i = 0; i < mappers.size(); i++) {
+                // Get only those that have some action defined
                 List<StepDefinition> precedingSteps = steps.getStepDefinitions().subList(0, steps.getStepDefinitions().indexOf(mappers.get(i)))
-                        .stream().filter(s -> s.getConnectorDescriptor().isPresent()).collect(Collectors.toList());
+                        .stream().filter(s -> s.getStep().getAction().isPresent()).collect(Collectors.toList());
                 StepDefinition followingStep = steps.getStepDefinitions().get(steps.getStepDefinitions().indexOf(mappers.get(i)) + 1);
                 if (mappers.get(i).getStep().getConfiguredProperties().containsKey("atlasmapping")) {
                     //TODO(tplevko): think of some way to substitute placeholders for the step ID's
