@@ -14,7 +14,6 @@ import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,6 +25,7 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -93,7 +93,7 @@ public class ConnectionSteps {
     public void helpBlockVisible(String helpText) {
         SelenideElement helpBlock = $(By.className("help-block")).shouldBe(visible);
         helpBlock.shouldBe(visible);
-        Assertions.assertThat(helpBlock.getText().equals(helpText)).isTrue();
+        assertThat(helpBlock.getText().equals(helpText)).isTrue();
     }
 
     @When("^click on the \"([^\"]*)\" kebab menu button of \"([^\"]*)\"$")
@@ -147,4 +147,16 @@ public class ConnectionSteps {
             }
         }
     }
+
+    @Then("^check that connection authentication type has (\\d+) options? and contains text \"([^\"]*)\"$")
+    public void testAuthenticationType(int expectedSize, String expectedString) {
+        ElementsCollection optionsFound = $(By.id("authenticationType")).shouldBe(visible).$$(By.tagName("option"));
+        assertThat(optionsFound).hasSize(expectedSize);
+        boolean expectedTextIsPresent = false;
+        for(SelenideElement e : optionsFound) {
+            expectedTextIsPresent = e.getText().contains(expectedString);
+        }
+        assertThat(expectedTextIsPresent).isTrue();
+    }
+
 }
