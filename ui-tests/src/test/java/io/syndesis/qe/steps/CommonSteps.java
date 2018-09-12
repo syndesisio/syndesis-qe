@@ -255,6 +255,9 @@ public class CommonSteps {
                     case S3:
                         return; //TODO: skip for now
                     case SLACK:
+                        if(key.equalsIgnoreCase("QE Slack consumer")){
+                            return; //skip, 1.4.x doesn't support token in the Slack connection
+                        }
                         service = "Slack";
                         break;
                     case GOOGLE_MAIL:
