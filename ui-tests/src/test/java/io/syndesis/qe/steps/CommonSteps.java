@@ -247,8 +247,8 @@ public class CommonSteps {
                         service = "DropBox";
                         break;
                     case SALESFORCE:
-                        service = "Salesforce";
-                        break;
+                        //disable salesforce validation as it is not stable and smoke tests should be stable
+                        return;
                     case TWITTER:
                         service = "Twitter";
                         break;
