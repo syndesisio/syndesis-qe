@@ -1,4 +1,4 @@
-@Ignore
+@disabled
 @Soak
 Feature: Simple soak test
 
