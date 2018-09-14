@@ -10,7 +10,7 @@ Feature: Slack Connector
 
 
     Given created connections
-      | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
+      | Slack | QE Slack producer | QE Slack producer | SyndesisQE Slack test |
 
     And navigate to the "Home" page
 
@@ -43,7 +43,7 @@ Feature: Slack Connector
 
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Slack" connection
+    When select the "QE Slack producer" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
@@ -103,7 +103,7 @@ Feature: Slack Connector
 
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Slack" connection
+    When select the "QE Slack producer" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
