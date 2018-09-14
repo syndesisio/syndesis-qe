@@ -1,28 +1,25 @@
 package io.syndesis.qe.pages;
 
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static org.junit.Assert.assertThat;
-
-import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.is;
-
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
-import static com.codeborne.selenide.Condition.disabled;
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.disabled;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @Slf4j
 public abstract class SyndesisPageObject {
@@ -39,8 +36,16 @@ public abstract class SyndesisPageObject {
         log.info("searching for button {}", buttonTitle);
 
         try {
-            OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+            //ugly but necessary due to syndesis page refreshing periodically
+            try {
+                OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
+                        .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
+                OpenShiftWaitUtils.waitFor(() -> $(By.tagName("syndesis-root")).shouldBe(visible).findAll(By.tagName("button"))
+                        .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+            }
+
         } catch (TimeoutException | InterruptedException e1) {
             fail(buttonTitle + " not found", e1);
         }
@@ -58,7 +63,7 @@ public abstract class SyndesisPageObject {
     /**
      * Fill form with given data. It will look for ui element for every map entry.
      *
-     * @param data key,value data. Key is used for element lookup
+     * @param data           key,value data. Key is used for element lookup
      * @param parrentElement search inputs in child elements of this one
      */
     public void fillForm(Map<By, String> data, SelenideElement parrentElement) {
@@ -115,7 +120,7 @@ public abstract class SyndesisPageObject {
         return this.getRootElement().$(elementLocator);
     }
 
-    public SelenideElement getTitleByText(String text){
+    public SelenideElement getTitleByText(String text) {
         log.info("searching for title {}", text);
         return this.getRootElement().find(By.cssSelector(String.format("h2:contains('%s')", text)));
     }
@@ -204,9 +209,9 @@ public abstract class SyndesisPageObject {
         this.getButton(buttonTitle).waitUntil(this.conditionValueOf(status), 5 * 1000).is(this.conditionValueOf(status));
     }
 
-    public Condition conditionValueOf(String status){
+    public Condition conditionValueOf(String status) {
         Condition condition;
-        switch(status){
+        switch (status) {
             case "Active":
             case "Visible":
                 condition = visible;

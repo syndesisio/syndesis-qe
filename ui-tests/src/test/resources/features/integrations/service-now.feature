@@ -42,6 +42,7 @@ Feature: Integration - ServiceNow-amq/log
     And set integration name "service-now-2-amq"
     And click on the "Publish" button
     And create incident with "QACUSTOM4" number
+    And navigate to the "Integrations" page
     And wait until integration "service-now-2-amq" gets into "Running" state
     Then verify that received incident from "incidents" queue contains "QACUSTOM4"
 
@@ -67,6 +68,7 @@ Feature: Integration - ServiceNow-amq/log
     When click on the "Publish" button
     And set integration name "amq-2-snow"
     And click on the "Publish" button
+    And navigate to the "Integrations" page
     Then wait until integration "amq-2-snow" gets into "Running" state
 
     Then send "QACREATED1" incident to "incidents-create" queue and verify it was created in SN

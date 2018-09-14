@@ -22,7 +22,7 @@ public class InvokeHttpRequest {
     public void invokeWebhookRequest(String body) {
         log.debug("Body to set: " + body);
 
-        String url = $(By.className("pfng-block-copy-preview-txt")).shouldBe(visible).getText();
+        String url = $(By.className("pfng-block-copy-preview-txt")).shouldBe(visible).getAttribute("value");
 
         log.info("WebHook URL: " + url);
         assertThat(HttpUtils.doPostRequest(url, body).code())
