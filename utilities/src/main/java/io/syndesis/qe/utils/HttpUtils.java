@@ -93,6 +93,27 @@ public final class HttpUtils {
         return null;
     }
 
+    public static Response doPutRequest(String url, String content, String contentType) {
+        return doPutRequest(url, content, contentType, null);
+    }
+
+    public static Response doPutRequest(String url, String content, String contentType, Headers headers) {
+        RequestBody body = RequestBody.create(MediaType.parse(contentType), content);
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(url)
+                .put(body);
+        if (headers != null) {
+            requestBuilder.headers(headers);
+        }
+
+        try {
+            return getClient().newCall(requestBuilder.build()).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private static OkHttpClient getClient() {
         // Create a trust manager that does not validate certificate chains
         final TrustManager[] trustAllCerts = new TrustManager[]{
