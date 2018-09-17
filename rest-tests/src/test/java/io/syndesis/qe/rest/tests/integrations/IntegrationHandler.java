@@ -1,5 +1,6 @@
 package io.syndesis.qe.rest.tests.integrations;
 
+import io.syndesis.common.model.integration.Flow;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,9 +50,14 @@ public class IntegrationHandler {
         processMapperSteps();
 
         Integration integration = new Integration.Builder()
-                .steps(steps.getSteps())
                 .name(integrationName)
                 .description("Awkward integration.")
+                .addFlow(
+                    new Flow.Builder()
+                        .steps(steps.getSteps())
+                        .description(integrationName + "Flow")
+                        .build()
+                )
                 .build();
 
         log.info("Creating integration {}", integration.getName());
