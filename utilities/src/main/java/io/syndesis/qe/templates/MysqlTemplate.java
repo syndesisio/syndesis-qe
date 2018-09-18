@@ -121,7 +121,19 @@ public class MysqlTemplate {
     public static void waitUntilMysqlIsReady() {
         try {
             OpenShiftWaitUtils.waitUntilPodAppears("mysql");
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 300L);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 1000 * 300L);
+            int i = 1;
+            String firstLogs = "";
+            String secondLogs = "a";
+            while (i < 10 && firstLogs.length() < secondLogs.length()) {
+                log.info("Checking for additional mysql pod logs...");
+                firstLogs = OpenShiftUtils.getPodLogs("mysql");
+                TestUtils.sleepIgnoreInterrupt(1000 * 20L);
+                secondLogs = OpenShiftUtils.getPodLogs("mysql");
+                i++;
+            }
+            //sometimes database pod is ready but not yet listening for connections, lets wait here a minute
+            TestUtils.sleepIgnoreInterrupt(1000 * 60L);
         } catch (TimeoutException | InterruptedException e) {
             log.error(OpenShiftUtils.getPodLogs("mysql"));
             fail("MySQL database never started in pod.", e);
