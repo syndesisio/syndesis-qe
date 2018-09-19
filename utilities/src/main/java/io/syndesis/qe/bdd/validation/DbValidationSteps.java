@@ -230,6 +230,12 @@ public class DbValidationSteps {
         }
     }
 
+    @Given("^.*truncate \"([^\"]*)\" table")
+    public void truncateTable(String tableName) {
+        // no special handling for contact table, use resetTableContent if that's what you need
+        dbUtils.truncateTable(tableName);
+    }
+
     @Given("^execute SQL command \"([^\"]*)\"$")
     public void executeSql(String sqlCmd) {
         this.executeSqlOnDriver(sqlCmd, "postgresql");

@@ -36,6 +36,8 @@ public class Details extends SyndesisPageObject {
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
         public static final By INFO = By.className("integration-detail__info");
 
+        public static final By MULTIFLOW_COUNT = By.cssSelector("#multi-flow div.icon span.badge");
+
         public static final By TAB = By.cssSelector("li.syn-tabs__tab > a");
     }
 
@@ -122,6 +124,10 @@ public class Details extends SyndesisPageObject {
         Thread.sleep(5000);
 
         return new File(filePath);
+    }
+
+    public int getFlowCount(){
+        return Integer.parseInt($(Element.MULTIFLOW_COUNT).shouldBe(visible).getText());
     }
 
     public void clickOnKebabMenuAction(String action) {
