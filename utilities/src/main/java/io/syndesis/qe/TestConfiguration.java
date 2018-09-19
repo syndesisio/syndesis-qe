@@ -15,6 +15,7 @@ public class TestConfiguration {
     public static final String OPENSHIFT_URL = "syndesis.config.openshift.url";
     public static final String OPENSHIFT_TOKEN = "syndesis.config.openshift.token";
     public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
+    public static final String OPENSHIFT_SAR_NAMESPACE = "syndesis.config.openshift.sar_namespace";
     public static final String OPENSHIFT_NAMESPACE_CLEANUP = "syndesis.config.openshift.namespace.cleanup";
     public static final String OPENSHIFT_NAMESPACE_CLEANUP_AFTER = "syndesis.config.openshift.namespace.cleanup.after";
     public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
@@ -80,6 +81,9 @@ public class TestConfiguration {
     public static String openShiftToken() { return get().readValue(OPENSHIFT_TOKEN); }
 
     public static String openShiftNamespace() { return get().readValue(OPENSHIFT_NAMESPACE); }
+
+    // Namespace for the subject access review. If unspecified, will use the same namespace as for the deployment.
+    public static String openShiftSARNamespace() { return get().readValue(OPENSHIFT_SAR_NAMESPACE, get().readValue(OPENSHIFT_NAMESPACE)); }
 
     public static String openShiftRouteSuffix() { return get().readValue(OPENSHIFT_ROUTE_SUFFIX); }
 

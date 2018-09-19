@@ -104,6 +104,8 @@ test.properties
 syndesis.config.openshift.url=https://192.168.64.2:8443
 syndesis.config.openshift.namespace=syndesis
 syndesis.config.openshift.route.suffix=my-minishift.syndesis.io
+# namespace for the subject access review (if not specified, will use the same namespace as for the deployment)
+syndesis.config.openshift.sar_namespace=syndesis
 
 syndesis.dballocator.url=http://dballocator.mw.lab.eng.bos.redhat.com:8080
 
