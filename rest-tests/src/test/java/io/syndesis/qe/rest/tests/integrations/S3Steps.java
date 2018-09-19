@@ -42,12 +42,20 @@ public class S3Steps extends AbstractStep {
 
     @Given("^create S3 polling START action step with bucket: \"([^\"]*)\"$")
     public void createS3PollingStep(String bucketName) {
+        createS3PollingStep(bucketName, null);
+    }
+
+    @Given("^create S3 polling START action step with bucket: \"([^\"]*)\" and prefix \"([^\"]*)\"$")
+    public void createS3PollingStep(String bucketName, String prefix) {
         final Connector s3Connector = connectorsEndpoint.get("aws-s3");
         final Connection s3Connection = connectionsEndpoint.get(S3BucketNameBuilder.getBucketName(bucketName));
         final Action s3PollingAction = TestUtils.findConnectorAction(s3Connector, "aws-s3-polling-bucket-connector");
         final Map<String, String> properties = TestUtils.map(TestUtils.map("deleteAfterRead", "false",
                 "maxMessagesPerPoll", "10",
                 "delay", "1000"));
+        if (prefix != null) {
+            properties.put("prefix", prefix);
+        }
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(s3PollingAction, properties, S3BucketNameBuilder.getBucketName(bucketName));
 
         final Step s3Step = new Step.Builder()
@@ -86,6 +94,37 @@ public class S3Steps extends AbstractStep {
                 .connection(s3Connection)
                 .id(UUID.randomUUID().toString())
                 .action(generateStepAction(s3CopyAction, connectorDescriptor))
+                .configuredProperties(properties)
+                .build();
+
+        steps.getStepDefinitions().add(new StepDefinition(s3Step));
+    }
+
+    @Given("^create S3 delete FINISH action step with bucket: \"([^\"]*)\"$")
+    public void createS3DeleteStep(String bucketName) {
+        createS3DeleteStepFile(bucketName, null);
+    }
+
+    @Given("^create S3 delete FINISH action step with bucket: \"([^\"]*)\" and filename: \"([^\"]*)\"$")
+    public void createS3DeleteStepFile(String bucketName, String fileName) {
+        final Connector s3Connector = connectorsEndpoint.get("aws-s3");
+        final Connection s3Connection = connectionsEndpoint.get(S3BucketNameBuilder.getBucketName(bucketName));
+
+        Map<String, String> properties;
+        if(fileName != null){
+            properties = TestUtils.map("fileName", fileName);
+        } else {
+            properties = new HashMap<>();
+        }
+
+        final Action s3DeleteAction = TestUtils.findConnectorAction(s3Connector, "aws-s3-delete-object-connector");
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(s3DeleteAction, properties, S3BucketNameBuilder.getBucketName(bucketName));
+
+        final Step s3Step = new Step.Builder()
+                .stepKind(StepKind.endpoint)
+                .connection(s3Connection)
+                .id(UUID.randomUUID().toString())
+                .action(generateStepAction(s3DeleteAction, connectorDescriptor))
                 .configuredProperties(properties)
                 .build();
 
