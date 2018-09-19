@@ -92,6 +92,7 @@ public class SyndesisTemplate {
         templateParams.put("ROUTE_HOSTNAME", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
         templateParams.put("OPENSHIFT_MASTER", TestConfiguration.openShiftUrl());
         templateParams.put("OPENSHIFT_PROJECT", TestConfiguration.openShiftNamespace());
+        templateParams.put("SAR_PROJECT", TestConfiguration.openShiftSARNamespace());
         templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
         templateParams.put("TEST_SUPPORT_ENABLED", "true");
         templateParams.put("MAX_INTEGRATIONS_PER_USER", "5");
