@@ -1,5 +1,6 @@
 package io.syndesis.qe.steps.integrations.editor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import static org.hamcrest.Matchers.is;
@@ -164,4 +165,15 @@ public class EditorSteps {
             editor.getRootElement().$(Element.EXPANDER).shouldBe(visible).click();
         }
     }
+
+    @Then("^check flow title is \"([^\"]*)\"$")
+    public void checkFlowTitleIs(String title) throws Throwable {
+        assertEquals("Wrong flow title", title, flowViewComponent.getFlowTitle());
+    }
+
+    @Then("^check there are (\\d+) integration steps$")
+    public void checkNumberOfIntegrationSteps(int n){
+        assertEquals("Wrong number of steps", n, flowViewComponent.getNumberOfSteps());
+    }
+
 }

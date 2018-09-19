@@ -1,5 +1,7 @@
 package io.syndesis.qe.steps.integrations.editor.add;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -8,6 +10,7 @@ import static org.hamcrest.Matchers.is;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
 
+import cucumber.api.PendingException;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -49,4 +52,14 @@ public class ChooseConnectionSteps {
         connectionsList.invokeActionOnItem(connectionName, ListAction.CLICK);
     }
 
+
+    @Then("^check that connections list does not contain \"([^\"]*)\" connection$")
+    public void checkThatConnectionsListDoesNotContainConnection(String connection) throws Throwable {
+        assertFalse("Did not expect to find connection " + connection, connectionsList.getItem(connection).isDisplayed());
+    }
+
+    @Then("^check that connection \"([^\"]*)\" is marked as Tech Preview$")
+    public void checkThatConnectionIsMarkedAsTechPreview(String connection) throws Throwable {
+        assertTrue(connection + " should be marked as tech preview", connectionsList.isConnectionTechPreview(connection));
+    }
 }
