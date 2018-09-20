@@ -5,11 +5,14 @@ import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static com.codeborne.selenide.Condition.visible;
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 
@@ -51,6 +54,11 @@ public class DataMapperSteps {
     @Then("^check visibility of data mapper ui$")
     public void dataMapperUIpresent() {
         log.info("data mapper ui must load and show fields count");
+        try {
+            OpenShiftWaitUtils.waitFor(() -> mapper.validate(), 1000 * 30);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Data mapper was not loaded in 30s!", e);
+        }
         assertThat(mapper.fieldsCount(), greaterThan(0));
     }
 
