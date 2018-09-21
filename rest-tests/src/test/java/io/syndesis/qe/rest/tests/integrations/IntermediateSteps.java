@@ -52,6 +52,7 @@ public class IntermediateSteps {
                         "rules", new FilterRulesBuilder().addPath(path).addValue(value).addOps(operation).build()
                 ))
                 .id(UUID.randomUUID().toString())
+                .name("Rule Filter " + path)
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(basicFilter));
     }
