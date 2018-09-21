@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.BadRequestException;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Then;
@@ -55,6 +56,7 @@ public class IntegrationHandler {
                 .addFlow(
                     new Flow.Builder()
                         .steps(steps.getSteps())
+                        .id(UUID.randomUUID().toString())
                         .description(integrationName + "Flow")
                         .build()
                 )
