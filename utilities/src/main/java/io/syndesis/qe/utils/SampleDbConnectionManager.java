@@ -1,5 +1,10 @@
 package io.syndesis.qe.utils;
 
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.LocalPortForward;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 
 import java.sql.Connection;
@@ -10,11 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.client.LocalPortForward;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Nov 15, 2017 Red Hat
@@ -56,7 +57,7 @@ public class SampleDbConnectionManager {
                 Assertions.assertThat(connectionsInfoMap).isNotEmpty();
             }
         } catch (SQLException ex) {
-            log.error("Error: " + ex);
+            fail("Error when handling external database", ex);
         }
     }
 
@@ -112,7 +113,7 @@ public class SampleDbConnectionManager {
         return DriverManager.getConnection(dbUrl, props);
     }
 
-    private static Connection createDbConnection(String dbType) throws SQLException {
+    private static Connection createDbConnection(String dbType) {
 
         final Properties props = new Properties();
 
@@ -126,7 +127,12 @@ public class SampleDbConnectionManager {
         String dbUrl = account.getProperties().get("url");
 
         log.debug("DB endpoint URL: *{}*", dbUrl);
-        return DriverManager.getConnection(dbUrl, props);
+        try {
+            return DriverManager.getConnection(dbUrl, props);
+        } catch (SQLException e) {
+            fail("Error creating DB connection.", e);
+        }
+        return null;
     }
 
     private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String podName) {
