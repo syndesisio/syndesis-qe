@@ -66,7 +66,10 @@ public class SettingsPage extends SyndesisPageObject {
                     fillOAuthItem(listItem, "QE Google Mail");
                     break;
                 default:
-                    Assert.fail("Unknown oauth list item found: " + text + ", can not set it!");
+                    log.error("Unknown oauth list item found: '" + text + "' !!!");
+                    //close listitem
+                    listItem.$(By.className("list-pf-title")).click();
+                    continue;
             }
             getButton("Save").shouldBe(visible).click();
             //alert-success should show
