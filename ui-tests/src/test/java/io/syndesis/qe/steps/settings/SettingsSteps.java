@@ -24,13 +24,6 @@ public class SettingsSteps {
         settingsPage.clickButton(itemTitle, buttonTitle);
     }
 
-    @When("^fill form in \"(\\w+)\" settings item$")
-    public void fillSettingsItemForm(String itemTitle) {
-        //TODO(dsimansk: )
-        //Map<String, String> toFill = this.world.testConfig.settings[itemTitle];
-        //settings.fillSettingsItemForm(itemTitle, toFill);
-    }
-
     @When("^.*fills? all oauth settings$")
     public void fillAllOAuthSettings() {
         settingsPage.fillAllOAuthSettings();
