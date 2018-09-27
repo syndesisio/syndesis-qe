@@ -9,6 +9,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -19,11 +20,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PreDestroy;
 
 /**
  * Aws S3 utils.
@@ -33,10 +42,16 @@ import lombok.extern.slf4j.Slf4j;
  * @author tplevko@redhat.com
  */
 @Slf4j
+@Lazy
+@Component
 public class S3Utils {
 
     private final AccountsDirectory accountsDirectory;
     private final AmazonS3 s3client;
+    /**
+     *   holder for buckets created by this instance
+     */
+    private Map<String, Bucket> bucketsCreated;
 
     public S3Utils() {
         accountsDirectory = AccountsDirectory.getInstance();
@@ -50,6 +65,7 @@ public class S3Utils {
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(Regions.US_WEST_1)
                 .build();
+        bucketsCreated = new HashMap<>();
     }
 
     public void forceCreateS3Bucket(String bucketName) {
@@ -59,7 +75,7 @@ public class S3Utils {
 
     public void createS3Bucket(String bucketName, boolean force) {
 
-        if (s3client.doesBucketExistV2(bucketName)) {
+        if (doesBucketExist(bucketName)) {
             if (force) {
                 deleteS3Bucket(bucketName);
             } else {
@@ -68,7 +84,16 @@ public class S3Utils {
                 return;
             }
         }
-        s3client.createBucket(bucketName);
+        bucketsCreated.put(bucketName, s3client.createBucket(bucketName));
+    }
+
+    /**
+     * Method that checks if bucket exists in S3 instance.
+     * @param bucketName name of the bucket
+     * @return true if exists, false otherwise
+     */
+    public boolean doesBucketExist(String bucketName) {
+        return s3client.doesBucketExistV2(bucketName);
     }
 
     public void deleteS3Bucket(String bucketName) {
@@ -79,6 +104,7 @@ public class S3Utils {
                 s3client.deleteObject(bucketName, summary.getKey());
             }
             s3client.deleteBucket(bucketName);
+            bucketsCreated.remove(bucketName);
         } catch (AmazonServiceException e) {
             log.error("Could not delete the S3 bucket: {}", e.getErrorMessage());
         }
@@ -144,5 +170,16 @@ public class S3Utils {
             log.error("Error copying file from s3: " + ex);
         }
         return writer.toString();
+    }
+
+    /**
+     * Method to delete all the buckets created by this instance of S3Utils.
+     */
+    @PreDestroy
+    public void deleteAllBuckets() {
+        Set<String> bucketNames = new HashSet<>(bucketsCreated.keySet());
+        for (String bucketName:bucketNames) {
+            deleteS3Bucket(bucketName);
+        }
     }
 }
