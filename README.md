@@ -261,10 +261,11 @@ cd <syndesis-project-dir>
 ```
 
 Working with extensions requires syndesis-extensions submodule compiled. 
-**NOTE** If you didn't clone syndesis-qe repository with *--recurse-submodules* option as mentioned before, you have to clone
- syndesis-extensions from this [repo](https://github.com/syndesisio/syndesis-extensions).
+**NOTE** If you didn't clone syndesis-qe repository with *--recurse-submodules* option as mentioned before, you have run following commands:
 ```
-cd <syndesis-qe-project-dir>/syndesis-extensions
+cd <syndesis-qe-project-dir>
+git submodule update --init --recursive
+cd syndesis-extensions
 mvn clean install
 ```
 
