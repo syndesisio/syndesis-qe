@@ -18,8 +18,7 @@ Feature: Connections - OAuth
     Then check that settings item "Salesforce" has button "Register"
     When fill all oauth settings
     Then create connections using oauth
-# concur is currently not working - our credentials have been invalidated
-#      | SAP Concur | Test-Concur-connection     |
+      | SAP Concur | Test-Concur-connection     |
       | Gmail      | Test-Gmail-connection      |
       | Salesforce | Test-Salesforce-connection |
       | Twitter    | Test-Twitter-connection    |
