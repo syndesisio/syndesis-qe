@@ -37,7 +37,6 @@ Feature: File transfer
     Then wait for integration with name: "S3 to FTP rest test" to become active
     When create a new text file in bucket "syndesis-server-bucket-from" with name "test_aws.txt" and text "Hello from AWS!"
     Then validate that file "test_aws.txt" has been transfered to "/upload" FTP directory
-      And clean S3, remove sample bucket with name: "syndesis-server-bucket-from"
 
   @integrations-dropbox-s3
   Scenario: Dropbox to S3
@@ -50,5 +49,4 @@ Feature: File transfer
       And upload file with path "/s3/test_dbx.txt" and content "Hello from Dropbox!" on Dropbox
     Then wait for integration with name: "Dropbox to S3 rest test" to become active
       And validate bucket with name "syndesis-server-bucket-to" contains file with name "test_dbx.txt" and text "Hello from Dropbox!"
-      And clean S3, remove sample bucket with name: "syndesis-server-bucket-to"
       And delete file with path "/s3/test_dbx.txt" from Dropbox

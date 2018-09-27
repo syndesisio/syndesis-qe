@@ -7,11 +7,13 @@ import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
-import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.S3Utils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.SoftAssertions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * This validation steps can be used to create/delete and content validation of S3 steps. There is a specific issue with
@@ -27,26 +29,10 @@ public class S3ValidationSteps {
 
     private final S3Utils s3Utils;
 
-    public S3ValidationSteps() {
-        s3Utils = new S3Utils();
-    }
-
-    @Then("^clean S3 to S3 scenario, remove two sample buckets with names: \"([^\"]*)\"")
-    public void cleanupS3(List<String> bucketNames) {
-        for (String bucket : bucketNames) {
-            String bucketName = S3BucketNameBuilder.getBucketName(bucket);
-            log.debug("deleting bucket with name: {}", bucketName);
-            s3Utils.deleteS3Bucket(bucketName);
-        }
-        TestSupport.getInstance().resetDB();
-    }
-
-    @Then("^clean S3, remove sample bucket with name: \"([^\"]*)\"")
-    public void cleanupS3bucket(String bucket) {
-        String bucketName = S3BucketNameBuilder.getBucketName(bucket);
-        log.debug("deleting bucket with name: {}", bucketName);
-        s3Utils.deleteS3Bucket(bucketName);
-        TestSupport.getInstance().resetDB();
+    @Autowired
+    @Lazy
+    public S3ValidationSteps(S3Utils s3Utils) {
+        this.s3Utils = s3Utils;
     }
 
     @Given("^create sample buckets on S3 with name \"([^\"]*)\"")
@@ -64,5 +50,39 @@ public class S3ValidationSteps {
         assertThat(TestUtils.waitForEvent(r -> r, () -> s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName),
                 TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isTrue();
         assertThat(s3Utils.readTextFileContentFromBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).contains(text);
+    }
+
+    @Then("^validate bucket with name \"([^\"]*)\" does not contain file with name \"([^\"]*)\"")
+    public void checkFileNotInBucket(String bucketName, String fileName) {
+        assertThat(TestUtils.waitForEvent(r -> r, () -> s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName),
+                TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isFalse();
+    }
+
+    @Then("^check that buckets do exist: \"([^\"]*)\"")
+    public void checkBucketsDoExist(List<String> bucketNames) {
+        checkBucketsPresence(bucketNames, true);
+    }
+
+    @Then("^check that buckets do not exist: \"([^\"]*)\"")
+    public void checkBucketsDontExist(List<String> bucketNames) {
+        checkBucketsPresence(bucketNames, false);
+    }
+
+    /**
+     * Method that checks presence of given buckets in S3 instance.
+     * @param bucketNames name of the buckets to check
+     * @param shouldExist expected state to be checked against, true - should exist, false - shouldn't exist
+     */
+    private void checkBucketsPresence(List<String> bucketNames, boolean shouldExist){
+        SoftAssertions softly = new SoftAssertions();
+        for(String bucket: bucketNames){
+            String bucketName = S3BucketNameBuilder.getBucketName(bucket);
+            log.debug("Checking presence of bucket {}.", bucketName);
+            softly
+                .assertThat(s3Utils.doesBucketExist(bucketName))
+                .as("Bucket " + bucketName + " should "+ (shouldExist ? "" : "not ") + "exist.")
+                .isEqualTo(shouldExist);
+        }
+        softly.assertAll();
     }
 }
