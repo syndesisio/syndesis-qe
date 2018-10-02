@@ -35,7 +35,7 @@ public class SlackConnector {
      * is API Token for slack workspace custom integration called "Bots".
      */
     public SlackConnector() {
-        Optional<Account> accountInfo = AccountsDirectory.getInstance().getAccount("QE Slack consumer");
+        Optional<Account> accountInfo = AccountsDirectory.getInstance().getAccount("QE Slack");
 
         if (accountInfo.isPresent()) {
             SlackConnector.token = accountInfo.get().getProperties().get("token");
