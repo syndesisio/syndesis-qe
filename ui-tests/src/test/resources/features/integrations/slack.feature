@@ -10,8 +10,7 @@ Feature: Slack Connector
 
 
     Given created connections
-      | Slack | QE Slack producer | QE Slack producer | SyndesisQE Slack test |
-      | Slack | QE Slack consumer | QE Slack consumer | SyndesisQE Slack test |
+      | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
 
     And navigate to the "Home" page
 
@@ -44,7 +43,7 @@ Feature: Slack Connector
 
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Slack producer" connection
+    When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
@@ -104,7 +103,7 @@ Feature: Slack Connector
 
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Slack producer" connection
+    When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
@@ -147,7 +146,7 @@ Feature: Slack Connector
     And check that position of connection to fill is "Start"
 
     # select slack connection as start integration
-    When select the "QE Slack consumer" connection
+    When select the "QE Slack" connection
     And select "Read Messages" integration action
     Then select "test" from "channel" dropdown
     And click on the "Done" button.
