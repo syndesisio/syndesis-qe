@@ -1,14 +1,16 @@
 # Syndesis QE
-Updated: 11.9.2018
+Updated: 4.10.2018
 
 ##### Table of Contents
-- [Structure](#structure)
-- [Prepare minishift instance](#prepare-minishift-instance)
-- [Scenarios](#scenarios)
-- [Configuration](#configuration)
-- [Execution](#execution)
-- [Running on remote OpenShift instance](#running-on-remote-openshift-instance)
-- [Creating a Pull Request](#creating-a-pull-request)
+
+* [Structure](#structure)
+* [Prepare minishift instance](#prepare-minishift-instance)
+* [Scenarios](#scenarios)
+* [Configuration](#configuration)
+* [Execution](#execution)
+  * [Most common problems](#most-common-problems)
+* [Running on remote OpenShift instance](#running-on-remote-openshift-instance)
+* [Creating a Pull Request](#creating-a-pull-request)
 
 ### Structure
 
@@ -300,16 +302,6 @@ You can use various parameters. From the previous command, parameter:
 * *syndesis.config.openshift.namespace.cleanup* - cleanup namespace before the tests
 * *syndesis.config.openshift.namespace.lock* - cleanup namespace after the tests (it can be useful to set this to false during debugging phase)
 
-**NOTE** - if you set syndesis.config.openshift.namespace.lock parameter to true and you stop tests during running, the lock will not be released! 
-It causes that the next tests stuck for the 60 minutes on **Waiting to obtain namespace lock**. If you don't want to
-wait, just delete *test-lock* secret and *syndesis* project from minishift and run the tests again.
-
-```
-oc login -u developer -p developer
-oc delete secret test-lock
-oc delete project syndesis
-```
-
 To select syndesis version, add another maven parameter:
 
 	-Dsyndesis.config.template.version=<version>
@@ -318,8 +310,19 @@ To install syndesis from operator template, add maven parameter:
 
 	-Dsyndesis.config.operator.url=<url-to-operator.yml>
 
-When testsuite output text says `Waiting for Syndesis to get ready`, you can kill mvn execution
-as the deployment process already started and the run is no longer required.
+##### Most common problems
+* If you set *syndesis.config.openshift.namespace.lock* parameter to true and you stop tests during running, the lock will not be released! 
+It causes that the next tests stuck for the 60 minutes on ***Waiting to obtain namespace lock***. If you don't want to
+wait, open terminal and just delete *test-lock* secret from *syndesis* project. At the moment, tests should continue.
+
+```
+oc login -u developer -p developer
+oc project syndesis
+oc delete secret test-lock
+```
+
+*  If tests failed at ***java.lang.IllegalArgumentException: bound must be positive***, 
+just add -Dsyndesis.config.openshift.namespace.lock=true parameter to the command.
 
 #### Debugging
 
@@ -354,7 +357,7 @@ If you want to run the tests on the existing remote OpenShift instance, follow t
   ```
 * First, create a new namespace for testing. E.g. **testingnamespace**
   ```
-  oc create project testingnamespace
+  oc new-project testingnamespace
   ```
 * After that, update *test.properties* according to the remote instance. E.g.
     ```
