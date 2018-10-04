@@ -65,10 +65,11 @@ public class IntegrationSteps {
     @Then("^wait until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
         SelenideElement integration = integrations.getIntegration(integrationName);
+        TestUtils.sleepForJenkinsDelayIfHigher(10);
         assertThat(TestUtils.waitForEvent(
                 status -> status.equals(integrationStatus),
                 () -> integrations.getIntegrationItemStatus(integration),
-                TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 1)
+                TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
         ).isTrue();
     }
 
