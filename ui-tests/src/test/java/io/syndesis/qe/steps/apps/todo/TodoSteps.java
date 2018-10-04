@@ -33,7 +33,7 @@ public class TodoSteps {
         AccountsDirectory.getInstance().addAccount("todo", todoAppAccount);
     }
 
-    @Then("^.* goes to Todo app$")
+    @Then("^navigate to Todo app$")
     public void openTodoApp() {
         String url = "http://" + OpenShiftUtils.getInstance().getRoute("todo").getSpec().getHost();
         log.info("Opening Todo app on url: " + url);
