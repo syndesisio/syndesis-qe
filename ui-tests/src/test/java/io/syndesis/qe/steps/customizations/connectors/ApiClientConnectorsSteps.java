@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.api.model.RouteBuilder;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.steps.CommonSteps;
@@ -184,10 +185,34 @@ public class ApiClientConnectorsSteps {
                         //| details | routeHost | <routeName> |
                         case "routeHost":
                             log.info("Setting up hostname of the used route property");
-                            Route route = OpenShiftUtils.getInstance().getRoute(property.get(2));
-                            route.getSpec().getTls().setInsecureEdgeTerminationPolicy("Allow");
-                            OpenShiftUtils.client().routes().createOrReplace(route);
-                            host = "http://" + route.getSpec().getHost();
+                            if (property.get(2).equalsIgnoreCase("todo")) {
+                                final Route route = new RouteBuilder()
+                                        .withNewMetadata()
+                                        .withName("todo2")
+                                        .endMetadata()
+                                        .withNewSpec()
+                                        .withPath("/api")
+                                        .withWildcardPolicy("None")
+                                        .withNewTls()
+                                        .withTermination("edge")
+                                        .withInsecureEdgeTerminationPolicy("Allow")
+                                        .endTls()
+                                        .withNewTo()
+                                        .withKind("Service").withName("todo")
+                                        .endTo()
+                                        .endSpec()
+                                        .build();
+                                OpenShiftUtils.client().routes().createOrReplace(route);
+
+                                Route route2 = OpenShiftUtils.getInstance().getRoute("todo2");
+                                host = "http://" + route2.getSpec().getHost();
+                                log.info("Route host: " + host);
+                            } else {
+                                Route route = OpenShiftUtils.getInstance().getRoute(property.get(2));
+                                route.getSpec().getTls().setInsecureEdgeTerminationPolicy("Allow");
+                                OpenShiftUtils.client().routes().createOrReplace(route);
+                                host = "http://" + route.getSpec().getHost();
+                            }
                         case "baseUrl":
                             baseUrl = property.get(2);
                     }
