@@ -11,6 +11,7 @@ Updated: 4.10.2018
   * [Most common problems](#most-common-problems)
 * [Running on remote OpenShift instance](#running-on-remote-openshift-instance)
 * [Creating a Pull Request](#creating-a-pull-request)
+* [Advanced debugging](#advanced-debugging)
 
 ### Structure
 
@@ -398,3 +399,35 @@ If you don't want to run the job for your PR at all (for example when you are ch
 When the PR job fails because of test failures and you believe that you didn't cause the error, you can try to trigger the job once again. For this just comment `retest this please` in the PR and a new build will be triggered in few minutes.
 
 Please remember that each time you push something new (or amend something old) in the PR, a new build is triggered automatically, so you don't need to do anything else to get your PR rebuilt.
+
+### Advanced debugging
+
+#### HotSwap
+HotSwap is a very useful technique on how to change the code during debugging. It saves a lot of times. 
+Especially in UI testing. You can stop debugger to the point where the test fails due to 
+test mistakes (e.g. label was changed), look into the debbuger for the correct value, drop frame and run method again 
+without restart all tests.
+
+The following steps show how to debug and use it in the IntelliJ Idea.
+
+* In the UI project, right-click on the CucumberTest class and click Run. It fails, but it created JUnit configuration
+* Edit JUnit configuration and add parameters to the VM Options.
+ *cucumber.options* and *syndesis.version* are mandatory!
+    e.g.
+    ```
+    -ea
+    "-Dcucumber.options=--tags @slack-to-db"
+    -Dsyndesis.config.openshift.namespace.lock=true
+    -Dsyndesis.config.openshift.namespace.cleanup=true
+    -Dsyndesis.config.openshift.namespace.cleanup.after=false
+    -Dsyndesis.version=master
+    ```
+    As you can see, the running scenario is specified in the cucumber.options tag.
+* Add breakpoint where you want and run debug (Shift-F9).
+* When you change something, you have to recompile the particular class. *(Build -> Recompile Ctrl+Shift+F9)*
+* After that, you have to drop frame. In the Debugger view, right-click on the top frame and select *Drop Frame*. 
+    It causes that last frame (e.g. function) will be running again with the changed code.
+    
+[Video with example](https://drive.google.com/file/d/16G-UDrRGLE-YvuRJUMlVpGi1z5vkjc4r/view?usp=sharing)
+
+For more information see [Altering the program's execution flow](https://www.jetbrains.com/help/idea/altering-the-program-s-execution-flow.html#reload_classes)
