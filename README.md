@@ -430,4 +430,18 @@ The following steps show how to debug and use it in the IntelliJ Idea.
     
 [Video with example](https://drive.google.com/file/d/16G-UDrRGLE-YvuRJUMlVpGi1z5vkjc4r/view?usp=sharing)
 
+* In some cases, after step to the next line, the code throws exception and you lose the frame stack. When you want to 
+ignore exception, in the debugger view click on *View Breakpoints* (Ctrl+Shift+F8) and select that you want to stop program 
+on Java Exception Breakpoints and specify particular exception. After that, program stop before
+throwing an exception and you just drop frames which are on the frame with your method.
+
+* In some cases, you want to try find UI label with **Trial and Error** method. 
+It means that you are changing the name unless you find the correct one. But, of course, you don't want to 
+throw exception every time when you set incorrect name. For this, just stop debugger in code, open debugger 
+and in the variables view you can add and edit any variables you want. 
+When variables throws exception, it will not affect tests (main) executions.
+
+[Video with example of *Exception Breakpoints* and *Trial and Error*](https://drive.google.com/open?id=1baPJx7YncTn36B6N-VFy85lZciskC1NE)
+
+
 For more information see [Altering the program's execution flow](https://www.jetbrains.com/help/idea/altering-the-program-s-execution-flow.html#reload_classes)
