@@ -24,7 +24,9 @@ import java.util.Optional;
 @Slf4j
 public class OnFailHooks {
 
-    @After
+    //disabled since ENG do not want us to create labels on GH issues like we did before :(
+    //TODO: implement another way to save known issues and have something like a library of previous issues
+    //@After
     public void invokeLibrary(Scenario scenario) {
         if (!scenario.isFailed()) {
             return;
