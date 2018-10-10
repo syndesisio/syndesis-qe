@@ -6,12 +6,13 @@ Feature: Integration - Databucket
   Background: Clean application state
     Given clean application state
     Given reset content of "contact" table
+    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
     Given log into the Syndesis
 
     Given created connections
-      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-      | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
-      | DropBox    | QE Dropbox       | QE Dropbox       | SyndesisQE DropBox test             |
+      | Twitter    | Twitter Listener | Twitter Listener   | SyndesisQE Twitter listener account |
+      | DropBox    | QE Dropbox       | QE Dropbox         | SyndesisQE DropBox test             |
+      | Gmail      | QE Google Mail   | My GMail Connector | SyndesisQE GMail test               |
     And navigate to the "Home" page
 
 #
@@ -80,8 +81,6 @@ Feature: Integration - Databucket
 #
   @data-buckets-usage
   Scenario: Create
-    # clean salesforce before tests
-    Given clean SF contacts related to TW account: "Twitter Listener"
 
     # create integration
     And click on the "Create Integration" button to create a new integration.
@@ -96,22 +95,19 @@ Feature: Integration - Databucket
     Then check "Done" button is "Disabled"
     Then fill in periodic query input with "select * from contact" value
     Then fill in period input with "10" value
-    Then select "Seconds" from sql dropdown
+    Then select "Minutes" from sql dropdown
     #@wip time_unit_id to be specified after new update is available:
     #Then select "Miliseconds" from "time_unit_id" dropdown
     And click on the "Done" button
 
-
     Then check that position of connection to fill is "Finish"
 
-    When select the "QE Salesforce" connection
-    And select "Create or update record" integration action
-    And select "Contact" from "sObjectName" dropdown
-    And click on the "Next" button
-    And select "TwitterScreenName" from "sObjectIdName" dropdown
+    When select the "My GMail Connector" connection
+    And select "Send Email" integration action
+    And fill in values
+      | Email to      | jbossqa.fuse@gmail.com |
+#      | Email subject | syndesis-test          |
     And click on the "Done" button
-
-
 
     # add another connection
     When click on the "Add a Connection" button
@@ -139,10 +135,8 @@ Feature: Integration - Databucket
     Then open data bucket "2 - SQL Result"
 
     Then create data mapper mappings
-      | company    | TwitterScreenName__c |
-      | last_name  | LastName             |
-      | first_name | FirstName            |
-      | firma      | Description          |
+      | company  | text     |
+      | firma    | subject  |
 
     And scroll "top" "right"
     And click on the "Done" button
@@ -170,13 +164,10 @@ Feature: Integration - Databucket
     # wait for integration to get in active state
     Then wait until integration "Integration_with_buckets" gets into "Running" state
 
-
-    # validate salesforce contacts
-    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
-    # clean-up in salesforce
-    Then delete contact from SF with last name: "Jackson"
-
-
+    #give gmail time to receive mail
+    When sleep for "10000" ms
+    Then check that email from "jbossqa.fuse@gmail.com" with subject "Red Hat" and text "Red Hat" exists
+    And delete emails from "jbossqa.fuse@gmail.com" with subject "Red Hat"
 
 
 #
