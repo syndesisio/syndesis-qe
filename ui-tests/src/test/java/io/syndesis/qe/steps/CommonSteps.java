@@ -50,6 +50,7 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
@@ -622,6 +623,11 @@ public class CommonSteps {
 
         if (account.isPresent()) {
 
+            $$(By.tagName("input")).stream().
+                    filter((e) ->
+                            e.getAttribute("name").equalsIgnoreCase("type") &&
+                            e.getAttribute("value").equalsIgnoreCase("username"))
+                    .findFirst().get().click();
             $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
             $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
             TestUtils.sleepForJenkinsDelayIfHigher(3);
