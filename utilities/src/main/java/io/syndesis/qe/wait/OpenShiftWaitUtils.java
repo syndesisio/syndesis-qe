@@ -270,11 +270,24 @@ public class OpenShiftWaitUtils {
         }
     }
 
+    public static void waitUntilPodIsRunning(String podPartialName) {
+        try {
+            waitFor(() -> isPodPresent(podPartialName), 5*60*1000);
+            waitFor(() -> isPodRunning(podPartialName), 5*60*1000);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Error thrown while checking if pod exists", e);
+        }
+    }
+
     private static boolean isPodPresent(String podPartialName) {
-        Optional<Pod> integrationPod = OpenShiftUtils.getInstance().getPods().stream()
-                .filter(p -> !p.getMetadata().getName().contains("build"))
-                .filter(p -> !p.getMetadata().getName().contains("deploy"))
-                .filter(p -> p.getMetadata().getName().contains(podPartialName)).findFirst();
-        return integrationPod.isPresent();
+        return OpenShiftUtils.getPodByPartialName(podPartialName).isPresent();
+    }
+
+    /**
+     * Check whether pod state is running, return false if pod is not present
+     */
+    private static boolean isPodRunning(String podPartialName){
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podPartialName);
+        return pod.filter(OpenShiftWaitUtils::isPodRunning).isPresent();
     }
 }
