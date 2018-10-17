@@ -3,10 +3,12 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.DoneablePod;
@@ -119,10 +121,9 @@ public final class OpenShiftUtils {
     }
 
     public static String getPodLogs(String podPartialName) {
-        Optional<Pod> integrationPod = OpenShiftUtils.getInstance().getPods().stream()
-                .filter(p -> !p.getMetadata().getName().contains("build"))
-                .filter(p -> !p.getMetadata().getName().contains("deploy"))
-                .filter(p -> p.getMetadata().getName().contains(podPartialName)).findFirst();
+        // pod has to be in running state because pod in ContainerCreating state causes exception
+        OpenShiftWaitUtils.waitUntilPodIsRunning(podPartialName);
+        Optional<Pod> integrationPod = getPodByPartialName(podPartialName);
         if (integrationPod.isPresent()) {
             String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
             assertThat(logText)

@@ -62,6 +62,10 @@ public class IntegrationSteps {
         assertThat(integrations.isIntegrationPresent(name)).isFalse();
     }
 
+    /*
+     * State != starting state
+     * State is state of integration. e.g. "Running", "Stopped"
+     */
     @Then("^wait until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
         SelenideElement integration = integrations.getIntegration(integrationName);
@@ -70,6 +74,22 @@ public class IntegrationSteps {
                 status -> status.equals(integrationStatus),
                 () -> integrations.getIntegrationItemStatus(integration),
                 TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
+        ).isTrue();
+    }
+
+    /*
+     * State != starting state
+     * Starting state is state during publication of integration e.g.
+     * "Assembling ( 1 / 4 )", "Building ( 2 / 4 )" ,"Deploying ( 3 / 4 )", "Starting ( 4 / 4 )"
+     */
+    @Then("^wait until integration \"([^\"]*)\" starting status gets into \"([^\"]*)\" state$")
+    public void waitForIntegrationStartingState(String integrationName, String integrationStatus) {
+        SelenideElement integration = integrations.getIntegration(integrationName);
+        TestUtils.sleepForJenkinsDelayIfHigher(10);
+        assertThat(TestUtils.waitForEvent(
+                status -> status.equals(integrationStatus),
+                () -> integrations.getIntegrationItemStartingStatus(integration),
+                TimeUnit.MINUTES, 10, TimeUnit.MILLISECONDS, 30)
         ).isTrue();
     }
 
@@ -146,6 +166,16 @@ public class IntegrationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getIntegrationLogs(integrationName).contains(text), 60 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
             assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).containsIgnoringCase(text);
+        }
+    }
+
+    @Then("^.*validate that logs of integration \"([^\"]*)\" doesn't contains string \"([^\"]*)\"$")
+    public void checkThatLogsDoesNotContain(final String integrationName, final String text) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getIntegrationLogs(integrationName).contains(text), 60 * 1000L);
+            fail("Log for integration: " + integrationName + " contains string: " + text);
+        } catch (TimeoutException | InterruptedException e) {
+            assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).doesNotContain(text);
         }
     }
 
