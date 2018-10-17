@@ -184,6 +184,11 @@ public class DbValidationSteps {
         assertThat(newTaskCount).isGreaterThan(oldTaskCount + 5);
     }
 
+    @And("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")
+    public void checkNumberValuesExistInTable(String query, Integer number) {
+        assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(number);
+    }
+
     @And("^.*checks? that query \"([^\"]*)\" has some output$")
     public void checkValuesExistInTable(String query) {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isGreaterThanOrEqualTo(1);
