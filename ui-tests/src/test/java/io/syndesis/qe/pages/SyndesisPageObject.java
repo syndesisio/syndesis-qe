@@ -179,6 +179,13 @@ public abstract class SyndesisPageObject {
         }
     }
 
+    public void fillTextarea(String elementId, String value) {
+        SelenideElement textarea = this.getElementById(elementId);
+        assertThat(textarea.getTagName(), is("textarea"));
+        textarea.shouldBe(visible).clear();
+        textarea.shouldBe(visible).sendKeys(value);
+    }
+
     public void setElementValue(String value, SelenideElement element) {
         switch (element.getTagName()) {
             case "input":
