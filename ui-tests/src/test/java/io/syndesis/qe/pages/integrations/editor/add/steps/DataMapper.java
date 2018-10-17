@@ -258,4 +258,16 @@ public class DataMapper extends SyndesisPageObject {
             getRootElement().hover();
         }
     }
+
+    public void addConstant(String value, String type) {
+        SelenideElement constantsDiv = getRootElement().$(By.id("Constants")).shouldBe(visible);
+        SelenideElement plusIcon = constantsDiv.$(By.cssSelector("i.link")).shouldBe(visible);
+        plusIcon.shouldBe(visible).click();
+        SelenideElement dialog = getRootElement().$(By.id("modalWindow")).shouldBe(visible);
+        SelenideElement constantFieldEdit = dialog.$(By.tagName("constant-field-edit")).shouldBe(visible);
+        constantFieldEdit.$(By.id("name")).shouldBe(visible).sendKeys(value);
+        SelenideElement select = constantFieldEdit.$(By.cssSelector("select")).shouldBe(visible);
+        select.selectOption(type);
+        dialog.$(By.cssSelector("button.btn-primary")).shouldBe(visible).click();
+    }
 }

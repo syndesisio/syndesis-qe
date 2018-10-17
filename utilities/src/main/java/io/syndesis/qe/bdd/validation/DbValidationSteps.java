@@ -194,6 +194,11 @@ public class DbValidationSteps {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isGreaterThanOrEqualTo(1);
     }
 
+    @And("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
+    public void checkValuesExistInTable(String query, Integer count ) {
+        assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(count);
+    }
+
     @Then("^.*checks? that query \"([^\"]*)\" has no output$")
     public void checkValuesNotExistInTable(String query) {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(0);

@@ -26,7 +26,8 @@ import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
-import io.syndesis.qe.utils.GMailUtils;
+import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -76,6 +77,9 @@ public class CommonSteps {
 
     @Autowired
     private SelectConnectionTypeSteps selectConnectionTypeSteps = new SelectConnectionTypeSteps();
+
+    @Autowired
+    private GoogleAccounts googleAccounts;
 
     @And("^.*logs? out from Syndesis")
     public void logout() {
@@ -170,8 +174,10 @@ public class CommonSteps {
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
 
-            if (connectionType.equalsIgnoreCase("Gmail")) {
-                GMailUtils.createAccessToken();
+            if (connectionType.equalsIgnoreCase("Gmail") ||
+                    connectionType.equalsIgnoreCase("Google Calendar")) {
+                Account a = AccountUtils.get(connectionCredentialsName);
+                a.getProperties().put("accessToken", googleAccounts.getGoogleAccountForTestAccount(connectionCredentialsName).getCredential().getAccessToken());
             }
 
             navigateTo("Connections");
