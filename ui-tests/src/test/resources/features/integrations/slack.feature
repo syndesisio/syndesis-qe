@@ -194,3 +194,84 @@ Feature: Slack Connector
 
     Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
     Then checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
+
+#
+#  4. Check Maximum Messages to Retrieve and Delay function in SLACK consumer ( GH issue: #3761 )
+#
+  @slack-to-db-delay-and-maxmessage
+  Scenario: Check message in DB
+    # create integration
+    Given click on the "Create Integration" button to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # select slack connection as start integration
+    When select the "QE Slack" connection
+    Then select "Read Messages" integration action
+    And select "random" from "channel" dropdown
+    And fill in values by element ID
+      | maxResults | 2  |
+      | delay      | 60 |
+    And select "Seconds" from "select-delay" dropdown
+    And click on the "Done" button.
+
+    # select postgresDB connection as finish integration
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert into CONTACT values (:#AUTOR , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
+    And click on the "Done" button
+
+    # add data mapper step
+    Then check visibility of page "Add to Integration"
+    When click on the "Add a Step" button
+    Then select "Data Mapper" integration step
+    And check visibility of data mapper ui
+    Then create mapping from "username" to "AUTOR"
+    And create mapping from "text" to "COMPANY"
+    And click on the "Done" button
+
+    # finish and save integration
+    When click on the "Save as Draft" button
+    And set integration name "slack-to-db-delay-and-maxmessage"
+    And send message "message1" on channel "random"
+    And send message "message2" on channel "random"
+    And send message "message3" on channel "random"
+    And send message "message4" on channel "random"
+    And click on the "Publish" button
+
+    # assert integration is present in list
+    Then check visibility of "slack-to-db-delay-and-maxmessage" integration details
+
+    When navigate to the "Integrations" page
+    Then Integration "slack-to-db-delay-and-maxmessage" is present in integrations list
+    And wait until integration "slack-to-db-delay-and-maxmessage" gets into "Running" state
+    And sleep for "10000" ms
+
+    # test Maximum Messages to Retrieve after start
+    Then checks that query "select * from contact where company = 'message1'" has no output
+    And checks that query "select * from contact where company = 'message2'" has no output
+    And checks that query "select * from contact where company = 'message3' AND first_name = 'syndesis-bot'" has "1" output
+    And checks that query "select * from contact where company = 'message4' AND first_name = 'syndesis-bot'" has "1" output
+
+    # test delay
+    Then send message "messageDelayed" on channel "random"
+    And checks that query "select * from contact where company = 'messageDelayed'" has no output
+    And sleep for "60000" ms
+    Then checks that query "select * from contact where company = 'messageDelayed' AND first_name = 'syndesis-bot'" has "1" output
+
+    # test Maximum Messages to Retrive after delay
+    Then send message "message5" on channel "random"
+    And send message "message6" on channel "random"
+    And send message "message7" on channel "random"
+    And send message "message8" on channel "random"
+    And sleep for "60000" ms
+    #After first delay it should consume only two messages (Max)
+    Then checks that query "select * from contact where company = 'message5' AND first_name = 'syndesis-bot'" has "1" output
+    And checks that query "select * from contact where company = 'message6' AND first_name = 'syndesis-bot'" has "1" output
+    And checks that query "select * from contact where company = 'message7'" has no output
+    And checks that query "select * from contact where company = 'message8'" has no output
+    And sleep for "60000" ms
+    #After next delay it should consume next two messages
+    Then checks that query "select * from contact where company = 'message7' AND first_name = 'syndesis-bot'" has "1" output
+    And checks that query "select * from contact where company = 'message8' AND first_name = 'syndesis-bot'" has "1" output
