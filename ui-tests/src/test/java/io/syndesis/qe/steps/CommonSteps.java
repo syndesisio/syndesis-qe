@@ -444,7 +444,9 @@ public class CommonSteps {
 
     @And("^select \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
     public void selectsFromDropdown(String option, String selectId) {
-        SelenideElement selectElement = $(String.format("select[name=\"%s\"]", selectId)).shouldBe(visible);
+        //search by name or by id because some dropdowns have only id
+        SelenideElement selectElement = $(String.format("select[name=\"%s\"], select[id=\"%s\"]", selectId, selectId))
+                .shouldBe(visible);
         selectElement.selectOption(option);
     }
 
