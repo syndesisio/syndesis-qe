@@ -4,10 +4,10 @@ import com.codeborne.selenide.ElementsCollection;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import io.fabric8.openshift.api.model.Route;
-import io.fabric8.openshift.api.model.RouteBuilder;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.steps.apps.todo.TodoSteps;
 import io.syndesis.qe.steps.customizations.connectors.wizard.WizardSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -186,24 +186,9 @@ public class ApiClientConnectorsSteps {
                         case "routeHost":
                             log.info("Setting up hostname of the used route property");
                             if (property.get(2).equalsIgnoreCase("todo")) {
-                                final Route route = new RouteBuilder()
-                                        .withNewMetadata()
-                                        .withName("todo2")
-                                        .endMetadata()
-                                        .withNewSpec()
-                                        .withPath("/api")
-                                        .withWildcardPolicy("None")
-                                        .withNewTls()
-                                        .withTermination("edge")
-                                        .withInsecureEdgeTerminationPolicy("Allow")
-                                        .endTls()
-                                        .withNewTo()
-                                        .withKind("Service").withName("todo")
-                                        .endTo()
-                                        .endSpec()
-                                        .build();
-                                OpenShiftUtils.client().routes().createOrReplace(route);
-
+                                if(OpenShiftUtils.getInstance().getRoute("todo2")==null){
+                                    new TodoSteps().createDefaultRouteForTodo("todo2", "/api");
+                                }
                                 Route route2 = OpenShiftUtils.getInstance().getRoute("todo2");
                                 host = "http://" + route2.getSpec().getHost();
                                 log.info("Route host: " + host);

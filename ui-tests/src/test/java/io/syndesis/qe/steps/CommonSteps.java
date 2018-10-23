@@ -347,6 +347,13 @@ public class CommonSteps {
         new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();
     }
 
+    // e.g. clicks on the "1". "Add a step" link.
+    @When(".*clicks? on the \"(\\d+)\". \"([^\"]*)\" link.*$")
+    public void clickOnLink(int position, String linkTitle) {
+        int index = position - 1; // e.g. first position is 0 index
+        new SyndesisRootPage().getLink(linkTitle, index).shouldBe(visible).click();
+    }
+
     @When(".*clicks? on the random \"([^\"]*)\" link.*$")
     public void clickOnLinkRandom(String linkTitle) {
         new SyndesisRootPage().getLinkRandom(linkTitle);
