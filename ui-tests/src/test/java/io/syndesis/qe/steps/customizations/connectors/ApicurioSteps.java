@@ -1,21 +1,21 @@
 package io.syndesis.qe.steps.customizations.connectors;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.TimeoutException;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
@@ -26,19 +26,16 @@ import static org.assertj.core.api.Assertions.fail;
 @Slf4j
 public class ApicurioSteps {
 
-    @Autowired
-    private CommonSteps commonSteps;
-
     private static class Elements {
         public static final By SYNDESIS_ROOT = By.cssSelector("syndesis-root");
 
         //apicurio gui elements
         public static By WARNING_ICON = By.className("validation-icon");
-        public static By PROBLEMS_CONTAINER = By.className("editor-validation");
+        public static By PROBLEMS_CONTAINER = By.className("editor-problem-drawer");
         public static By OPERATIONS_CONTAINER = By.className("editor-outline");
         public static By PATH_SECTION = By.id("path-section-body");
 
-        public static By VALIDATION_PROBLEM = By.className("validation-problem");
+        public static By VALIDATION_PROBLEM = By.className("drawer-pf-notification");
         public static By INFO_SECTION = By.id("info-section-body");
         public static By ADD_OPERATION = By.cssSelector("button.icon-button");
         public static By OPERATION_KEBAB = By.id("dropdownKebab");
@@ -48,39 +45,44 @@ public class ApicurioSteps {
 
         //security elements
         public static By SECURITY_SECTION = By.className("security-section");
-        public static By SECURITY_REQUIREMENTS_SECTION = By.className("security-requirements-section");
-        public static By BUTTON_ADD_SCHEME = By.xpath("//button[contains(text(), \"Add Scheme\")]");
-        public static By BUTTON_ADD_REQUIREMENT = By.xpath("//button[contains(text(), \"Add Requirement\")]");
-
+        public static By BUTTON_ADD_SCHEME = By.cssSelector("button[title*='Add a security scheme']");
+        public static By BUTTON_ADD_REQUIREMENT = By.cssSelector("button[title*='Add a security requirement']");
 
         //modal dialog elements
         public static By MODAL_DIALOG = By.className("modal-dialog");
         public static By MODAL_FOOTER = By.className("modal-footer");
         public static By MODAL_SUBMIT_ADD = By.xpath("//button[contains(text(), \"Add\")]");
-        public static By MODAL_SUBMIT_OK = By.xpath("//button[contains(text(), \"OK\")]");
         public static By MODAL_PATH_INPUT = By.id("path");
-        public static By MODAL_SCHEME_NAME_INPUT = By.id("schemeName");
-        public static By MODAL_TYPE_INPUT = By.id("type");
-        public static By MODAL_DROPDOWN_MENU = By.className("dropdown-menu");
-        public static By MODAL_SECURITY_CHECKBOX = By.className("list-view-pf-checkbox");
 
         //syndesis apicurio-review page elements
-        public static By WARNINGS = By.className("connector-actions__label--warning");
-        public static By ERRORS = By.className("connector-actions__label--error");
-        public static By OPERATIONS = By.className("connector-actions");
+        public static By WARNINGS = By.className("openapi-review-actions__label--warning");
+        public static By ERRORS = By.className("openapi-review-actions__label--error");
+        public static By OPERATIONS = By.className("openapi-review-actions");
         public static By OPERATION_ITEM = By.tagName("li");
 
         //specify security elements
         public static By AUTHENTICATION_CONTAINER = By.tagName("syndesis-api-connector-auth");
-
     }
 
     private static class TextFormElements {
         //apicurio text editing elements
-        public static By TEXT_EDITOR = By.tagName("inline-text-editor");
         public static By INPUT_TEXT = By.cssSelector("input.form-control");
-        public static By EDIT = By.className("overlay-action");
-        public static By SAVE = By.cssSelector("button[type*='submit']");
+        public static By SUMMARY = By.className("summary");
+        public static By SAVE = By.cssSelector("button[title*='Save changes.']");
+    }
+
+    private static class SecurityPageElements {
+        public static By NAME = By.id("securitySchemeName");
+        public static By SAVE = By.xpath("//button[contains(text(), 'Save')]");
+        public static By EDITOR = By.tagName("security-scheme-editor");
+        public static By SECURITY_TYPE_DROPDOWN = By.className("dropdown-toggle");
+        public static By SECURITY_DROPDOWN_MENU = By.className("dropdown-menu");
+        public static By ACTION_HEADER = By.className("action-header");
+
+        //security requirements page
+        public static By SECURITY_REQUIREMENT = By.xpath("//*[contains(.,'ImmovableName')]");
+        public static By SECURITY_REQUIREMENT_ITEMS = By.className("list-group-item-heading");
+
     }
 
     @Then("^check that apicurio shows (\\d+) imported operations$")
@@ -126,18 +128,16 @@ public class ApicurioSteps {
         SelenideElement firstProblemElement = $(Elements.PROBLEMS_CONTAINER).shouldBe(visible)
                 .$$(Elements.VALIDATION_PROBLEM).get(0);
         assertThat(firstProblemElement).isNotNull();
-        assertThat(firstProblemElement.text()).containsIgnoringCase("OP-001");
+        assertThat(firstProblemElement.text()).containsIgnoringCase("Operation Summary should be less than 120 characters");
 
         try {
-            firstProblemElement.shouldBe(visible).click();
+            firstProblemElement.shouldBe(visible).$(By.tagName("a")).shouldBe(visible).click();
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             $(Elements.PROBLEMS_CONTAINER).shouldBe(visible)
-                    .$$(Elements.VALIDATION_PROBLEM).get(0).shouldBe(visible).click();
+                    .$$(Elements.VALIDATION_PROBLEM).get(0).shouldBe(visible).$(By.tagName("a")).shouldBe(visible).click();
         }
 
-        clickOnButtonInApicurio("Go To Problem");
-        $(Elements.INFO_SECTION).shouldBe(visible).$(TextFormElements.TEXT_EDITOR).shouldBe(visible).hover();
-        $(TextFormElements.EDIT).shouldBe(visible).click();
+        $(Elements.INFO_SECTION).shouldBe(visible).$(TextFormElements.SUMMARY).shouldBe(visible).click();
 
         SelenideElement input = $(Elements.INFO_SECTION).$(TextFormElements.INPUT_TEXT).shouldBe(visible);
 
@@ -193,41 +193,52 @@ public class ApicurioSteps {
         $(Elements.SECURITY_SECTION).shouldBe(visible).$(By.tagName("span")).click();
         $(Elements.SECURITY_SECTION).shouldBe(visible).$(Elements.BUTTON_ADD_SCHEME).shouldBe(visible).click();
 
-        SelenideElement nameInput = $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_SCHEME_NAME_INPUT).shouldBe(visible);
+        SelenideElement nameInput = $(SecurityPageElements.NAME).shouldBe(visible);
 
         try {
-            nameInput.clear();
             nameInput.sendKeys("ImmovableName");
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
-            $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_SCHEME_NAME_INPUT).shouldBe(visible).clear();
-            $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_SCHEME_NAME_INPUT).shouldBe(visible)
+            $(SecurityPageElements.NAME).shouldBe(visible)
                     .sendKeys("ImmovableName");
         }
 
         //select security option
-        $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_TYPE_INPUT).shouldBe(visible).click();
-        $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_DROPDOWN_MENU).shouldBe(visible)
+        $(SecurityPageElements.EDITOR).shouldBe(visible).$(SecurityPageElements.SECURITY_TYPE_DROPDOWN).shouldBe(visible).click();
+        $(SecurityPageElements.EDITOR).shouldBe(visible).$(SecurityPageElements.SECURITY_DROPDOWN_MENU).shouldBe(visible)
                 .$(By.xpath("//a[contains(text(), \"" + schemeType + "\")]")).shouldBe(visible).click();
 
         if (schemeType.equalsIgnoreCase("API Key")) {
-            $(By.id("name")).sendKeys("headerName");
+            $(By.id("name20")).sendKeys("headerName");
+            //TODO: not supported from syndesis yet and needs more settings here
         }
 
         if (schemeType.equalsIgnoreCase("OAuth 2")) {
-            $(By.id("authorizationUrl")).sendKeys("https://hihi");
+            $(By.id("flow")).shouldBe(visible).click();
+            $(By.id("flow")).shouldBe(visible).parent().$(By.xpath("//a[contains(text(), \"Password\")]")).shouldBe(visible).click();
+            $(By.id("tokenUrl")).sendKeys("https://hihi");
         }
 
-        //confirm modal window
-        $(Elements.MODAL_FOOTER).shouldBe(visible).$(Elements.MODAL_SUBMIT_OK).shouldBe(visible).click();
-        $(Elements.SECURITY_REQUIREMENTS_SECTION).shouldBe(visible).scrollTo();
+        ElementsCollection saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);
+        assertThat(saveButtons.size()).isGreaterThan(1);
+        saveButtons.get(2).shouldBe(visible).click();
 
-        //child span element selected so the click is inside of the element
-        $(Elements.SECURITY_REQUIREMENTS_SECTION).shouldBe(visible).$(By.tagName("span")).click();
-        TestUtils.sleepForJenkinsDelayIfHigher(5);
+        $(Elements.BUTTON_ADD_REQUIREMENT).shouldBe(visible).click();
 
-        $(Elements.SECURITY_REQUIREMENTS_SECTION).shouldBe(visible).$(Elements.BUTTON_ADD_REQUIREMENT).shouldBe(visible).click();
-        $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_SECURITY_CHECKBOX).shouldBe(visible).click();
-        $(Elements.MODAL_FOOTER).shouldBe(visible).$(Elements.MODAL_SUBMIT_OK).shouldBe(visible).click();
+        try {
+            OpenShiftWaitUtils.waitFor(() -> $(SecurityPageElements.SECURITY_REQUIREMENT).exists(), 60 * 1000L);
+        } catch (InterruptedException | TimeoutException e) {
+            fail("Security requirement was not found.");
+        }
+
+        ElementsCollection items = $$(SecurityPageElements.SECURITY_REQUIREMENT_ITEMS)
+                .shouldBe(sizeGreaterThanOrEqual(1)).filterBy(text("ImmovableName"));
+        assertThat(items).hasSize(1);
+        items.first().click();
+
+        saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);
+        assertThat(saveButtons.size()).isGreaterThan(1);
+        saveButtons.get(2).shouldBe(visible).click();
+
     }
 
     @Then("^check that api connector authentication section contains text \"([^\"]*)\"$")

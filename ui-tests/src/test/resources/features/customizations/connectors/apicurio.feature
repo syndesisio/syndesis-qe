@@ -65,6 +65,7 @@ Feature: Customization - API Connector - ApicurIO GUI
   @apicurio-check-security-settings-no-security
   Scenario: check different security settings
     When click on the "Cancel" button
+    And click on the modal dialog "Yes" button
     And click on the "Next" button
     Then check that api connector authentication section contains text "No Security"
 
@@ -125,7 +126,8 @@ Feature: Customization - API Connector - ApicurIO GUI
     When click on the "Next" button
     Then check that api connector authentication section contains text "OAuth 2.0"
     And fill in values
-      | Access Token URL | https://hehe |
+      | Access Token URL  | https://hehe                            |
+      | Authorization URL | http://petstore.swagger.io/oauth/dialog |
 
     When click on the "Next" button
     And click on the "Create API Connector" button
