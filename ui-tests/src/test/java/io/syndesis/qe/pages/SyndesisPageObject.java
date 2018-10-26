@@ -71,7 +71,11 @@ public abstract class SyndesisPageObject {
         for (By locator : data.keySet()) {
             value = data.get(locator);
             SelenideElement inputElement = parrentElement.find(locator).shouldBe(visible);
-            inputElement.sendKeys(value);
+            if ("select".equalsIgnoreCase(inputElement.getTagName())) {
+                inputElement.selectOption(value);
+            } else {
+                inputElement.sendKeys(value);
+            }
         }
     }
 
@@ -177,13 +181,6 @@ public abstract class SyndesisPageObject {
             input.shouldBe(visible).clear();
             input.shouldBe(visible).sendKeys(value);
         }
-    }
-
-    public void fillTextarea(String elementId, String value) {
-        SelenideElement textarea = this.getElementById(elementId);
-        assertThat(textarea.getTagName(), is("textarea"));
-        textarea.shouldBe(visible).clear();
-        textarea.shouldBe(visible).sendKeys(value);
     }
 
     public void setElementValue(String value, SelenideElement element) {

@@ -6,7 +6,7 @@ import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
 import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
+import cucumber.api.java.en.When;
 import io.syndesis.qe.utils.GoogleCalendarUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +22,29 @@ public class GoogleCalendarSteps {
     @Autowired
     private GoogleCalendarUtils gcu;
 
-    @And("^created calendars$")
-    public void createdACalendarForUser(DataTable calendarsData) throws IOException {
-        List<Map<String,String>> valueRows = calendarsData.asMaps(String.class, String.class);
-        for (Map<String,String> row : valueRows) {
+    @When("^create calendars$")
+    public void createCalendar(DataTable calendarsData) throws IOException {
+        List<Map<String, String>> valueRows = calendarsData.asMaps(String.class, String.class);
+        for (Map<String, String> row : valueRows) {
             String testAccount = row.get("google_account");
-            Calendar c = new Calendar();
-            c.setSummary(row.get("calendar_summary"));
+            String calendar_summary = row.get("calendar_summary");
+            Calendar c = gcu.getPreviouslyCreatedCalendar(testAccount, calendar_summary);
+            // remove a previously created calendar with matching summary (aka title)
+            if (c != null) {
+                gcu.deleteCalendar(testAccount, c.getId());
+            }
+            c = new Calendar();
+            c.setSummary(calendar_summary);
             c.setDescription(row.get("calendar_description"));
-            gcu.insertCalendar(testAccount, c);
+            c = gcu.insertCalendar(testAccount, c);
         }
     }
 
-    @And("^following \"([^\"]*)\" events in calendar \"([^\"]*)\" with account \"([^\"]*)\"$")
-    public void existingEventsInCalendarWithAccount(String eventTime, String calendarName, String account, DataTable events) throws IOException {
-        List<Map<String,String>> valueRows = events.asMaps(String.class, String.class);
+    @When("^create following \"([^\"]*)\" events in calendar \"([^\"]*)\" with account \"([^\"]*)\"$")
+    public void createFollowingEventsInCalendarWithAccount(String eventTime, String calendarName, String account, DataTable events) throws IOException {
+        List<Map<String, String>> valueRows = events.asMaps(String.class, String.class);
         String prefix = ((eventTime.equalsIgnoreCase("all")) ? "" : eventTime).trim();
-        for (Map<String,String> row : valueRows) {
+        for (Map<String, String> row : valueRows) {
             String eventName = row.get("summary").trim();
             if (!eventName.startsWith(prefix)) {
                 continue;
@@ -52,7 +58,7 @@ public class GoogleCalendarSteps {
             e.setDescription(eventDescription);
             if (attendeesString != null) {
                 List<EventAttendee> attendees = new ArrayList<>();
-                for(String s:attendeesString.split(",")){
+                for (String s : attendeesString.split(",")) {
                     EventAttendee eA = new EventAttendee();
                     eA.setEmail(s.trim());
                     attendees.add(eA);
@@ -78,9 +84,9 @@ public class GoogleCalendarSteps {
         String dateValue = row.get(dateValueIdentifier);
         String timeValue = row.get(timeValueIdentifier);
 
-        if (dateValue!=null && !dateValue.isEmpty()) { // if date value are provided set it
-            if (timeValue!=null && !timeValue.isEmpty()) {
-                edt.setDateTime(DateTime.parseRfc3339(dateValue+"T"+timeValue));
+        if (dateValue != null && !dateValue.isEmpty()) { // if date value are provided set it
+            if (timeValue != null && !timeValue.isEmpty()) {
+                edt.setDateTime(DateTime.parseRfc3339(dateValue + "T" + timeValue));
             } else {
                 edt.setDate(DateTime.parseRfc3339(dateValue));
             }
@@ -92,14 +98,14 @@ public class GoogleCalendarSteps {
         return edt;
     }
 
-    @And("^updated event \"([^\"]*)\" in calendar \"([^\"]*)\" for user \"([^\"]*)\" with values$")
+    @When("^update event \"([^\"]*)\" in calendar \"([^\"]*)\" for user \"([^\"]*)\" with values$")
     public void updateEventInCalendarForUserWithValues(String eventSummary, String calendarName, String account, DataTable properties) throws Throwable {
         String calendarId = gcu.getPreviouslyCreatedCalendar(account, calendarName).getId();
         Event e = gcu.getEventBySummary(account, calendarId, eventSummary);
-        if (e==null) {
+        if (e == null) {
             throw new IllegalStateException(String.format("Looking for non-existent event %s in calendar %s", eventSummary, calendarName));
         }
-        for(List<String> list:properties.asLists(String.class)){
+        for (List<String> list : properties.asLists(String.class)) {
             String key = list.get(0);
             String value = list.get(1);
             e.set(key, value);

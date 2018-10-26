@@ -44,6 +44,12 @@ public class DataMapper extends SyndesisPageObject {
         public static final By SEPARATOR_SELECT = By.xpath("//select[@id='select-separator']");
         public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
         public static final By BUCKET_IS_IN_OPEN_STATE = By.className("panel-collapse");
+        public static final By CONSTANTS_BUCKET = By.id("Constants");
+        public static final By MODAL_WINDOW = By.id("modalWindow");
+        public static final By CONSTANT_FIELD_EDIT_ELEMENT = By.tagName("constant-field-edit");
+        public static final By CONSTANT_VALUE_FIELD = By.id("name");
+        public static final By CONSTANT_TYPE_SELECT = By.cssSelector("select");
+        public static final By PRIMARY_BUTTON = By.cssSelector("button.btn-primary");
     }
 
     @Override
@@ -260,14 +266,14 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public void addConstant(String value, String type) {
-        SelenideElement constantsDiv = getRootElement().$(By.id("Constants")).shouldBe(visible);
+        SelenideElement constantsDiv = getRootElement().$(Element.CONSTANTS_BUCKET).shouldBe(visible);
         SelenideElement plusIcon = constantsDiv.$(By.cssSelector("i.link")).shouldBe(visible);
         plusIcon.shouldBe(visible).click();
-        SelenideElement dialog = getRootElement().$(By.id("modalWindow")).shouldBe(visible);
-        SelenideElement constantFieldEdit = dialog.$(By.tagName("constant-field-edit")).shouldBe(visible);
-        constantFieldEdit.$(By.id("name")).shouldBe(visible).sendKeys(value);
-        SelenideElement select = constantFieldEdit.$(By.cssSelector("select")).shouldBe(visible);
+        SelenideElement dialog = getRootElement().$(Element.MODAL_WINDOW).shouldBe(visible);
+        SelenideElement constantFieldEdit = dialog.$(Element.CONSTANT_FIELD_EDIT_ELEMENT).shouldBe(visible);
+        constantFieldEdit.$(Element.CONSTANT_VALUE_FIELD).shouldBe(visible).sendKeys(value);
+        SelenideElement select = constantFieldEdit.$(Element.CONSTANT_TYPE_SELECT).shouldBe(visible);
         select.selectOption(type);
-        dialog.$(By.cssSelector("button.btn-primary")).shouldBe(visible).click();
+        dialog.$(Element.PRIMARY_BUTTON).shouldBe(visible).click();
     }
 }

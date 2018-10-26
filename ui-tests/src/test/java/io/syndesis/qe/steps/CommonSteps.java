@@ -27,6 +27,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -177,7 +178,8 @@ public class CommonSteps {
             if (connectionType.equalsIgnoreCase("Gmail") ||
                     connectionType.equalsIgnoreCase("Google Calendar")) {
                 Account a = AccountUtils.get(connectionCredentialsName);
-                a.getProperties().put("accessToken", googleAccounts.getGoogleAccountForTestAccount(connectionCredentialsName).getCredential().getAccessToken());
+                GoogleAccount googleAccount = googleAccounts.getGoogleAccountForTestAccount(connectionCredentialsName);
+                a.getProperties().put("accessToken", googleAccount.getCredential().getAccessToken());
             }
 
             navigateTo("Connections");
