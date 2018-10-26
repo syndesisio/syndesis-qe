@@ -62,9 +62,12 @@ public class GoogleCalendarUtils {
      * @return Calendar instance created before
      */
     public Calendar getPreviouslyCreatedCalendar(String accountName, String calendarName) {
+        if (!this.calendars.containsKey(accountName)) {
+            return null;
+        }
         return calendars.get(accountName).stream()
                 .filter(it -> it.getSummary().equals(calendarName))
-                .findFirst().orElseThrow(() -> new IllegalStateException("Calendar was not created."));
+                .findFirst().orElse(null);
     }
 
     /**

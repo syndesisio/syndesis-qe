@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.Map;
 
-
 import static org.assertj.core.api.Assertions.fail;
 
 /**
@@ -38,7 +37,8 @@ public class GoogleAccount {
 
     /**
      * Method to generate an access token for the provided arguments.
-     * @param clientId client-id of the configured application
+     *
+     * @param clientId     client-id of the configured application
      * @param clientSecret client-secret for the client-id
      * @param refreshToken refresh-token issued by google auth provider
      * @return TokenResponse with access-token set as its field
@@ -62,6 +62,7 @@ public class GoogleAccount {
 
     /**
      * Method to create a google credential from given testing account.
+     *
      * @param account id of testing account to use
      * @return Credential with client-id, client-secret, refresh-token and access-token
      */
@@ -84,6 +85,7 @@ public class GoogleAccount {
 
     /**
      * Get credential of the Google Account.
+     *
      * @return
      */
     public Credential getCredential() {
@@ -92,10 +94,11 @@ public class GoogleAccount {
 
     /**
      * Get a calendar client for this Google Account.
+     *
      * @return Calendar client instance
      */
     public Calendar calendar() {
-        if (calendarClient==null) {
+        if (calendarClient == null) {
             calendarClient = new Calendar.Builder(credential.getTransport(), credential.getJsonFactory(), credential)
                     .setApplicationName(account.getProperty("applicationName"))
                     .build();
@@ -105,6 +108,7 @@ public class GoogleAccount {
 
     /**
      * Get a gmail client for this Google Account.
+     *
      * @return Gmail client instance
      */
     public Gmail gmail() {
