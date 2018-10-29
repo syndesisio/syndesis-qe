@@ -93,6 +93,11 @@ public abstract class SyndesisPageObject {
         return this.getRootElement().find(By.linkText(linkTitle));
     }
 
+    public SelenideElement getLink(String linkTitle, int index) {
+        ElementsCollection links = this.getLinks(linkTitle);
+        return links.get(index);
+    }
+
     public ElementsCollection getLinks(String linkTitle) {
         return this.getRootElement().findAll(By.linkText(linkTitle));
     }

@@ -1,6 +1,7 @@
 package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.assertj.core.api.Assertions;
 
@@ -10,6 +11,11 @@ import cucumber.api.java.en.When;
 import cz.xtf.jms.JmsClient;
 import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.JmsClientManager;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 
 public class JmsValidationSteps {
 
@@ -68,5 +74,26 @@ public class JmsValidationSteps {
     @Given("^clean destination type \"([^\"]*)\" with name \"([^\"]*)\"")
     public void cleanDestination(String type, String name) {
         JMSUtils.clear(JMSUtils.Destination.valueOf(type.toUpperCase()), name);
+    }
+
+    /**
+     * Load JMS message from resource and send it to the topic/queue with name
+     * @param resourceName - name of resource file with the message
+     * @param type - queue or topic
+     * @param name - name of topic/queue
+     */
+    @When("^publish JMS message from resource \"([^\"]*)\" to \"([^\"]*)\" with name \"([^\"]*)\"")
+    public void publishMessageFromResourceToDestinationWithName(String resourceName, String type, String name) throws IOException {
+
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        URL fileUrl = classLoader.getResource("jms_messages/"+resourceName);
+        if(fileUrl==null){
+            fail("File with name " + resourceName + " doesn't exist in the resources");
+        }
+
+
+        File file = new File(fileUrl.getFile());
+        String jmsMessage = new String(Files.readAllBytes(file.toPath()));
+        JMSUtils.sendMessage(JMSUtils.Destination.valueOf(type.toUpperCase()), name, jmsMessage);
     }
 }

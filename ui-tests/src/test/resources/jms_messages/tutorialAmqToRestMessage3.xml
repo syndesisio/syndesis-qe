@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inventoryReceived>
+  <item id="XYZ123" damaged="false" vendor="Good Inc."/>
+  <item id="ABC789" damaged="true" vendor="My Fancy Vendor"/>
+</inventoryReceived>

@@ -112,6 +112,25 @@
                     </systemProperties>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>download-fuse-online-sample-extension</id>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>http://github.com/syndesisio/fuse-online-sample-extension/releases/download/1.4.8/sample-damage-reporter-extension-1.4.8.jar</url>
+                            <outputFileName>sample-damage-reporter-extension-1.4.8.jar</outputFileName>
+                            <outputDirectory>${project.basedir}/src/test/resources/extensions/</outputDirectory>
+                            <md5>74efd8dff436eb83ee9c02ac88e5f98d</md5>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
