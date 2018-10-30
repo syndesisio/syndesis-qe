@@ -11,6 +11,8 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
@@ -29,6 +31,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.GoogleAccounts;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +59,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.data.MapEntry.entry;
 
 @Slf4j
 public class CommonSteps {
@@ -643,7 +647,7 @@ public class CommonSteps {
             $$(By.tagName("input")).stream().
                     filter((e) ->
                             e.getAttribute("name").equalsIgnoreCase("type") &&
-                            e.getAttribute("value").equalsIgnoreCase("username"))
+                                    e.getAttribute("value").equalsIgnoreCase("username"))
                     .findFirst().get().click();
             $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
             $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
@@ -662,4 +666,50 @@ public class CommonSteps {
             fail("Error while redirecting to " + expectedPartOfUrl, e);
         }
     }
+
+    @When("^set 3scale discovery variable to \"([^\"]*)\"")
+    public void set3scaleEnvVar(String value) {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-server");
+
+        List<EnvVar> vars = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
+
+        Optional<EnvVar> exposeVia3Scale = vars.stream().filter(a -> a.getName().equalsIgnoreCase("CONTROLLERS_EXPOSE_VIA3SCALE")).findFirst();
+        if (exposeVia3Scale.isPresent()) {
+            exposeVia3Scale.get().setValue(value);
+        } else {
+            fail("variable CONTROLLERS_EXPOSE_VIA3SCALE not found in deployment config of syndesis-server");
+        }
+
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);
+        OpenShiftUtils.getInstance().updateDeploymentconfig(dc);
+
+        try {
+            OpenShiftWaitUtils.waitForPodIsReloaded("syndesis-server");
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("syndesis-server").get()), 60 * 1000 * 10L);
+        } catch (InterruptedException | TimeoutException e) {
+            fail("Server was not reloaded after deployment config change", e);
+        }
+        // even though server is in ready state, inside app is still starting so we have to wait a lot just to be sure
+        TestUtils.sleepForJenkinsDelayIfHigher(120);
+
+        WebDriverRunner.getWebDriver().navigate().refresh();
+    }
+
+    @Then("^check that 3scale annotations are present on integration \"([^\"]*)\"")
+    public void check3scaleAnnotations(String integrationName) {
+        Map<String, String> annotations = OpenShiftUtils.getInstance().getService(("i-" + integrationName).toLowerCase()).getMetadata().getAnnotations();
+
+        assertThat(annotations)
+                .contains(entry("discovery.3scale.net/description-path", "/openapi.json"))
+                .contains(entry("discovery.3scale.net/port", "8080"))
+                .contains(entry("discovery.3scale.net/scheme", "http"));
+    }
+
+    //TODO: should be refactored after asmigala is done with api provider tests
+    @When("^select first api provider operation$")
+    public void clickFirstOperation() {
+        $$(By.className("list-pf-title")).first().shouldBe(visible).click();
+    }
+
 }
+

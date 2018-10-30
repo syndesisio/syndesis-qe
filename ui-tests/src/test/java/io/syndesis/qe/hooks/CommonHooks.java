@@ -1,5 +1,6 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
@@ -11,9 +12,13 @@ import com.codeborne.selenide.WebDriverRunner;
 
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public class CommonHooks {
+
+    @Autowired
+    CommonSteps cs;
 
     @After
     public void afterScreenshot(Scenario scenario) {
@@ -39,5 +44,11 @@ public class CommonHooks {
     public void cleanMYSQLserver() {
         log.info("Deleting MYSQL server");
         MysqlTemplate.cleanUp();
+    }
+
+    @After("@3scale")
+    public void default3scaleAnnotation() {
+        log.info("Setting 3scale discovery to false");
+        cs.set3scaleEnvVar("false");
     }
 }
