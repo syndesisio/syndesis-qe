@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Google Account representation, holds all important info got from the credentials.json.
- * It also holds the access_token generated on creation. That's why there has to be only
+ * It also holds the access_token generated explicitly. That's why there has to be only
  * a single instance of this class for a particular account definition. Otherwise there could
  * come issues with previously created access_tokens being invalidated.
  */
@@ -33,31 +33,6 @@ public class GoogleAccount {
     public GoogleAccount(String accountName) {
         account = AccountUtils.get(accountName);
         credential = createGoogleCredential(account);
-    }
-
-    /**
-     * Method to generate an access token for the provided arguments.
-     *
-     * @param clientId     client-id of the configured application
-     * @param clientSecret client-secret for the client-id
-     * @param refreshToken refresh-token issued by google auth provider
-     * @return TokenResponse with access-token set as its field
-     */
-    private static TokenResponse generateAccessToken(String clientId, String clientSecret, String refreshToken) {
-        TokenResponse response = null;
-        try {
-            response = new GoogleRefreshTokenRequest(
-                    new NetHttpTransport(),
-                    new JacksonFactory(),
-                    refreshToken,
-                    clientId,
-                    clientSecret)
-                    .execute();
-        } catch (IOException e) {
-            log.error("Access token error", e);
-            fail("Could not generate access token.", e);
-        }
-        return response;
     }
 
     /**
@@ -78,9 +53,12 @@ public class GoogleAccount {
                 .setTransport(new NetHttpTransport())
                 .setClientSecrets(clientId, clientSecret)
                 .build();
-        TokenResponse response = generateAccessToken(clientId, clientSecret, refreshToken);
-        credential.setAccessToken(response.getAccessToken());
+        credential.setRefreshToken(refreshToken);
         return credential;
+    }
+
+    public void renewAccessToken() throws IOException {
+        credential.refreshToken();
     }
 
     /**

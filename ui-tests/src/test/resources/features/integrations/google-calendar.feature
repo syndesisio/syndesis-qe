@@ -5,6 +5,7 @@ Feature: Google Calendar Connector
     Given clean application state
     And reset content of "TODO" table
     And log into the Syndesis
+    And renew access token for "QE Google Calendar" google account
     And created connections
       | Google Calendar | QE Google Calendar | My Google Calendar Connector | SyndesisQE Google Calendar test |
     And navigate to the "Home" page

@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+
+import java.io.IOException;
 
 /**
  * This class defines Google accounts available for the test suite. Each account instance is annotated by a @Bean annotation
@@ -12,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
  * leading to invalidation of the previously created ones.
  */
 @Configuration
+@Lazy
 public class GoogleAccounts {
 
     @Autowired
@@ -22,12 +26,16 @@ public class GoogleAccounts {
     }
 
     @Bean(name="QE Google Mail")
-    public GoogleAccount qeGoogleAccount() {
-        return new GoogleAccount("QE Google Mail");
+    public GoogleAccount qeGoogleAccount() throws IOException {
+        GoogleAccount googleAccount = new GoogleAccount("QE Google Mail");
+        googleAccount.renewAccessToken();
+        return googleAccount;
     }
 
     @Bean(name="QE Google Calendar")
-    public GoogleAccount qeGoogleCalendarAccount() {
-        return new GoogleAccount("QE Google Calendar");
+    public GoogleAccount qeGoogleCalendarAccount() throws IOException {
+        GoogleAccount googleAccount = new GoogleAccount("QE Google Calendar");
+        googleAccount.renewAccessToken();
+        return googleAccount;
     }
 }
