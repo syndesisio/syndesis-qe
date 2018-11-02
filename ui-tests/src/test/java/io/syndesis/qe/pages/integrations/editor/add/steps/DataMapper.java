@@ -153,9 +153,9 @@ public class DataMapper extends SyndesisPageObject {
 
                 new Actions(WebDriverRunner.getWebDriver())
                         .moveToElement(el)
-                        .keyDown(Keys.LEFT_CONTROL)
+                        .keyDown(Keys.META)
                         .click()
-                        .keyUp(Keys.LEFT_CONTROL)
+                        .keyUp(Keys.META)
                         .perform();
 
             }
