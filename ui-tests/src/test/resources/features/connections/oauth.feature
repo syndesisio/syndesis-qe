@@ -69,7 +69,7 @@ Feature: Connections - OAuth
 
     #there is a problem that integration is not listening instantly after publishing so delay is necessary - probably start-up time
     When sleep for "15000" ms
-    Then check SF does not contain contact for tw accound: "twitter_talky"
+    Then check SF does not contain contact for tw account: "twitter_talky"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "OAuth syndesis test"
     # give salesforce time to create contact
