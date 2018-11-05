@@ -163,34 +163,6 @@ Feature: Google Calendar Connector
     And verify that event "updated_summary" exists in calendar "syndesis-test1" using account "QE Google Calendar"
     And verify that event "updated_summary" with description "this_event_has_ended" exists in calendar "syndesis-test1" using account "QE Google Calendar"
 
-  # Tests update event form.
-  # Fails due to #3814 and inability to write into date/time fields using selenium.
-  @google-calendar-update-event
-  Scenario: Test Update event
-    Given navigate to the "Home" page
-    And create following "all" events in calendar "syndesis-test1" with account "QE Google Calendar"
-      | summary     | start_date | end_date   | description  | attendees              |
-      | past_event1 | 2018-10-01 | 2018-10-01 | An old event | jbossqa.fuse@gmail.com |
-    When click on the "Create Integration" button to create a new integration.
-    Then check visibility of visual integration editor
-    And check that position of connection to fill is "Start"
-    When select the "Timer" connection
-    And select "Simple Timer" integration action
-    And click on the "Done" button
-    Then check that position of connection to fill is "Finish"
-    When select the "My Google Calendar Connector" connection
-    And select "Update Event" integration action
-    And fill in update event form using calendar "syndesis-test1", old summary "past_event1", summary "updated_summary" and description "This event has ended. Recording: xy" for user "QE Google Calendar"
-    And click on the "Done" button
-    And click on the "Save as Draft" button
-    And set integration name "google_calendar_update_event"
-    And click on the "Publish" button
-    Then check visibility of "google_calendar_update_event" integration details
-    And navigate to the "Integrations" page
-    And Integration "google_calendar_update_event" is present in integrations list
-    And wait until integration "google_calendar_update_event" gets into "Running" state
-    And verify that event "updated_summary" with description "this_event_has_ended" exists in calendar "syndesis-test1" using account "QE Google Calendar"
-
   # Parameterized tests for Get Events action. See examples section for actual config.
   @google-calendar-get-events
   Scenario Outline: Test get events action - <name> on <events_to_create> events
