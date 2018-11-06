@@ -1,21 +1,13 @@
 package io.syndesis.qe.utils;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.auth.oauth2.TokenResponse;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleRefreshTokenRequest;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
+
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -26,93 +18,28 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@Component
 @Slf4j
 public class GMailUtils {
-    private static Gmail client;
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final NetHttpTransport TRANSPORT = new NetHttpTransport();
 
-    private static Gmail getClient() {
-        if (client == null) {
-            makeClient();
+    private Gmail client;
+
+    private GoogleAccount ga;
+
+    public GMailUtils(GoogleAccount googleAccount) {
+        this.ga = googleAccount;
+    }
+
+    private Gmail getClient() {
+        if(client == null){
+            client = ga.gmail();
         }
         return client;
     }
 
-    public static void createAccessToken() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Google Mail");
-        assertThat(account.isPresent()).isTrue();
-
-        TokenResponse response = null;
-        try {
-            response = new GoogleRefreshTokenRequest(
-                    new NetHttpTransport(),
-                    new JacksonFactory(),
-                    account.get().getProperty("refreshToken"),
-                    account.get().getProperty("clientId"),
-                    account.get().getProperty("clientSecret"))
-                    .execute();
-        } catch (IOException e) {
-            fail("Could not generate access token.", e);
-        }
-
-        account.get().getProperties().put("accessToken", response.getAccessToken());
-        log.info("Access token successfully generated and saved into credentials account.");
-    }
-
-    private static Credential createGoogleCredentials(String clientId, String clientSecret) throws Exception {
-        return new GoogleCredential.Builder()
-                .setJsonFactory(JSON_FACTORY)
-                .setTransport(TRANSPORT)
-                .setClientSecrets(clientId, clientSecret)
-                .build();
-    }
-
-    private static void makeClient() {
-        String clientId = null;
-        String clientSecret = null;
-        String refreshToken = null;
-        String applicationName = null;
-
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Google Mail");
-
-        if (account.isPresent()) {
-            clientId = account.get().getProperties().get("clientId");
-            clientSecret = account.get().getProperties().get("clientSecret");
-            refreshToken = account.get().getProperties().get("refreshToken");
-            applicationName = account.get().getProperties().get("applicationName");
-
-        } else {
-            fail("Credentials for QE Google Mail connector were not found!");
-        }
-
-        assertThat(clientId).isNotNull();
-        assertThat(clientSecret).isNotNull();
-        assertThat(refreshToken).isNotNull();
-        assertThat(applicationName).isNotNull();
-
-        try {
-            Credential credentials = createGoogleCredentials(clientId, clientSecret);
-            //more info here https://developers.google.com/identity/protocols/OAuth2
-            credentials.setRefreshToken(refreshToken);
-            createAccessToken();
-            credentials.setAccessToken(account.get().getProperty("accessToken"));
-
-            client = new Gmail.Builder(TRANSPORT, JSON_FACTORY, credentials)
-                    .setApplicationName(applicationName)
-                    .build();
-
-        } catch (Exception e) {
-            fail("Could not create Gmail client.", e);
-        }
-    }
 
     /**
      * Create a MimeMessage using the parameters provided.
@@ -176,7 +103,7 @@ public class GMailUtils {
      * @throws MessagingException
      * @throws IOException
      */
-    private static Message sendMessage(String userId, MimeMessage emailContent)
+    private Message sendMessage(String userId, MimeMessage emailContent)
             throws MessagingException, IOException {
 
         Message message = createMessageWithEmail(emailContent);
@@ -186,7 +113,7 @@ public class GMailUtils {
         return message;
     }
 
-    public static void sendEmail(String from, String to, String subject, String text) {
+    public void sendEmail(String from, String to, String subject, String text) {
         try {
             Message m = sendMessage("me", createEmail(to, from, subject, text));
             log.info("Message successfully sent.");
@@ -195,7 +122,7 @@ public class GMailUtils {
         }
     }
 
-    public static Message getMessageByMailId(final String mailId) throws IOException {
+    public Message getMessageByMailId(final String mailId) throws IOException {
         return getClient().users().messages().get("me", mailId)
                 .setQuotaUser("me")
                 .setPrettyPrint(true)
@@ -211,7 +138,7 @@ public class GMailUtils {
      * @param query  String used to filter the Messages listed.
      * @throws IOException
      */
-    public static List<Message> getMessagesMatchingQuery(String userId,
+    public List<Message> getMessagesMatchingQuery(String userId,
                                                          String query) throws IOException {
 
         ListMessagesResponse response = getClient().users().messages().list(userId).setQ(query).execute();
@@ -243,7 +170,7 @@ public class GMailUtils {
      * @param labelsToRemove List of label ids to remove.
      * @throws IOException
      */
-    public static void modifyMessage(String userId, String messageId,
+    public void modifyMessage(String userId, String messageId,
                                      List<String> labelsToAdd, List<String> labelsToRemove) throws IOException {
 
         ModifyMessageRequest mods = new ModifyMessageRequest().setAddLabelIds(labelsToAdd)
@@ -262,14 +189,14 @@ public class GMailUtils {
      * @param msgId ID of Message to trash.
      * @throws IOException
      */
-    public static void trashMessage(String msgId)
+    public void trashMessage(String msgId)
             throws IOException {
 
         getClient().users().messages().trash("me", msgId).execute();
         log.info("Message with id: " + msgId + " has been trashed.");
     }
 
-    public static void deleteMessages(String from, String subject) {
+    public void deleteMessages(String from, String subject) {
         try {
             List<Message> messages = getMessagesMatchingQuery("me", "subject:" + subject + " AND from:" + from);
 
@@ -299,7 +226,7 @@ public class GMailUtils {
      * @throws IOException
      * @throws MessagingException
      */
-    public static MimeMessage getMimeMessage(String messageId)
+    public MimeMessage getMimeMessage(String messageId)
             throws IOException, MessagingException {
 
         Message message = getClient().users().messages().get("me", messageId).setFormat("raw").execute();

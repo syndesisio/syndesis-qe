@@ -71,7 +71,11 @@ public abstract class SyndesisPageObject {
         for (By locator : data.keySet()) {
             value = data.get(locator);
             SelenideElement inputElement = parrentElement.find(locator).shouldBe(visible);
-            inputElement.sendKeys(value);
+            if ("select".equalsIgnoreCase(inputElement.getTagName())) {
+                inputElement.selectOption(value);
+            } else {
+                inputElement.sendKeys(value);
+            }
         }
     }
 

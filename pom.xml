@@ -56,7 +56,8 @@
 		<mqttv3.version>1.2.0</mqttv3.version>
 		<qpid.version>0.32.0</qpid.version>
 		<google.oauth.version>1.23.0</google.oauth.version>
-		<google.apis.version>v1-rev91-1.23.0</google.apis.version>
+		<google.apis.version>v1-rev96-1.25.0</google.apis.version>
+		<google.apis.calendar.version>v3-rev347-1.25.0</google.apis.calendar.version>
 		<github.core.version>2.1.5</github.core.version>
 	</properties>
 
@@ -378,6 +379,11 @@
 				<groupId>com.google.apis</groupId>
 				<artifactId>google-api-services-gmail</artifactId>
 				<version>${google.apis.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.apis</groupId>
+				<artifactId>google-api-services-calendar</artifactId>
+				<version>${google.apis.calendar.version}</version>
 			</dependency>
 
 			<dependency>
