@@ -1,18 +1,18 @@
 package io.syndesis.qe.templates;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.KubernetesList;
-import io.fabric8.openshift.api.model.Template;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.client.utils.Serialization;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -22,15 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class KafkaTemplate {
-    private static final String[] KAFKA_STRIMZI_RESOURCES = new String[] {
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/01-service-account.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/02-role.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/03-role-binding.yaml",
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/install/cluster-operator/04-deployment.yaml",
-    };
-
-    private static final String KAFKA_TEMPLATE =
-            "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.4.0/examples/templates/cluster-operator/ephemeral-template.yaml";
+    private static final String KAFKA_RESOURCES = Paths.get("../utilities/src/main/resources/kafka/strimzi-cluster-operator-0.8.2.yaml").toAbsolutePath().toString();
+    private static final String KAFKA_DEPLOYMENT = Paths.get("../utilities/src/main/resources/kafka/strimzi-deployment.yaml").toAbsolutePath().toString();
+    private static final String KAFKA_CR = "https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/0.8.2/examples/kafka/kafka-ephemeral.yaml";
 
     public static void deploy() {
         if (!TestUtils.isUserAdmin()) {
@@ -40,35 +34,30 @@ public class KafkaTemplate {
             log.error("If you are using minishift, you can use \"oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer\"");
             throw new RuntimeException("Kafka deployment needs user with admin rights!");
         }
-        for (String resource : KAFKA_STRIMZI_RESOURCES) {
-            try (InputStream is = new URL(resource).openStream()) {
-                List<HasMetadata> list = OpenShiftUtils.client().load(is).get();
-                for (HasMetadata hasMetadata : list) {
-                    OpenShiftUtils.create(hasMetadata.getKind(), hasMetadata);
-                }
-            } catch (IOException ex) {
-                fail("Unable to process " + resource, ex);
-            }
+
+        List<String> resources = new ArrayList<>();
+        resources.add(KAFKA_RESOURCES);
+        resources.add(KAFKA_DEPLOYMENT);
+
+        for (String resource : resources) {
+            log.info("Creating " + resource);
+            OpenShiftUtils.create(resource);
         }
 
-        Template template;
-        try (InputStream is = new URL(KAFKA_TEMPLATE).openStream()) {
-            template = OpenShiftUtils.client().templates().load(is).get();
+        try (InputStream is = new URL(KAFKA_CR).openStream()) {
+            CustomResourceDefinition crd = OpenShiftUtils.client().customResourceDefinitions().load(is).get();
+            Map<String, Object> kafka = (Map)crd.getSpec().getAdditionalProperties().get("kafka");
+            kafka.put("replicas", 1);
+            ((Map)kafka.get("config")).put("offsets.topic.replication.factor", 1);
+            ((Map)kafka.get("config")).put("transaction.state.log.replication.factor", 1);
+            ((Map)kafka.get("config")).put("transaction.state.log.min.isr", 1);
+            Map<String, Object> zookeeper = (Map)crd.getSpec().getAdditionalProperties().get("zookeeper");
+            zookeeper.put("replicas", 1);
+
+            OpenShiftUtils.invokeApi("/apis/kafka.strimzi.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/kafkas", Serialization.jsonMapper().writeValueAsString(crd));
         } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to read template ", ex);
+            throw new IllegalArgumentException("Unable to create kafka custom resource", ex);
         }
-
-        Map<String, String> templateParams = new HashMap<>();
-        templateParams.put("KAFKA_NODE_COUNT", "1");
-        templateParams.put("ZOOKEEPER_NODE_COUNT", "1");
-        templateParams.put("KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR", "1");
-        templateParams.put("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1");
-
-        OpenShiftUtils.client().templates().withName("strimzi-ephemeral").delete();
-
-        KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
-
-        OpenShiftUtils.getInstance().createResources(processedTemplate);
 
         try {
             OpenShiftWaitUtils.waitFor(
@@ -85,7 +74,7 @@ public class KafkaTemplate {
     private static void addAccount() {
         Account kafka = new Account();
         Map<String, String> kafkaParameters = new HashMap<>();
-        kafkaParameters.put("brokerUrl", "my-cluster-kafka:9092");
+        kafkaParameters.put("brokerUrl", "my-cluster-kafka-brokers:9092");
         kafka.setService("kafka");
         kafka.setProperties(kafkaParameters);
         AccountsDirectory.getInstance().getAccounts().put("kafka", kafka);

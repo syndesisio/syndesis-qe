@@ -3,26 +3,24 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 
+import cz.xtf.openshift.OpenShiftBinaryClient;
 import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.DoneablePod;
-import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.dsl.PodResource;
-import io.fabric8.kubernetes.client.utils.Serialization;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftConfigBuilder;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import okhttp3.Response;
@@ -137,41 +135,18 @@ public final class OpenShiftUtils {
     }
 
     /**
-     * Some of the resources can't be created by f8 client, therefore we manually post them to corresponding endpoint.
-     * @param kind kind of the resource
-     * @param o object instance
+     * Creates the resource using binary oc client.
+     * @param resource path to resource file to use with -f
      */
-    public static void create(String kind, Object o) {
-        try {
-            final String content = Serialization.jsonMapper().writeValueAsString(o);
-            StringBuilder url = new StringBuilder();
-            String[] kinds = new String[] {"serviceaccount", "role", "rolebinding", "clusterrole", "clusterrolebinding", "deployment"};
-            if (StringUtils.equalsAnyIgnoreCase(kind, kinds)) {
-                url.append("/api")
-                        .append(kind.toLowerCase().equals("serviceaccount") ? "" : "s")
-                        .append("/")
-                        .append(((HasMetadata)o).getApiVersion())
-                        .append("/namespaces/")
-                        .append(TestConfiguration.openShiftNamespace())
-                        .append("/")
-                        .append(kind.toLowerCase())
-                        .append("s");
-            } else {
-                // This can be created by the client, so create it
-                getInstance().createResources((HasMetadata) o);
-                return;
-            }
-
-            Response response = invokeApi(url.toString(), content);
-            // 409 means that the resource already exists - this is the case for clusterrole / clusterbinding that are tied to the whole
-            // cluster obviously - therefore it is ok to continue with 409
-            if (response.code() != 409) {
-                assertThat(response.code()).isGreaterThanOrEqualTo(200);
-                assertThat(response.code()).isLessThan(300);
-            }
-        } catch (IOException e) {
-            fail("Unable to create resource", e);
-        }
+    public static void create(String resource) {
+        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
+                "Unable to create resource " + resource,
+                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
+                "apply",
+                "--overwrite=false",
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", resource
+        );
     }
 
     /**

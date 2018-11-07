@@ -184,6 +184,13 @@ public class TestConfiguration {
 
         props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
 
+        // Copy syndesis properties to their xtf counterparts - used by binary oc client
+        System.setProperty("xtf.config.master.url", properties.getProperty(OPENSHIFT_URL));
+        System.setProperty("xtf.config.master.username", properties.getProperty(SYNDESIS_UI_USERNAME));
+        System.setProperty("xtf.config.master.password", properties.getProperty(SYNDESIS_UI_PASSWORD));
+
+        // Set oc version - this version of the client will be used as the binary client
+        System.setProperty("xtf.config.openshift.version", "3.10.70");
         return props;
     }
 
