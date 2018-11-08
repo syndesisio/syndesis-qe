@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -153,35 +152,7 @@ public class SyndesisTemplate {
     }
 
     private static void deployOperator() {
-        try (InputStream is = new URL(TestConfiguration.syndesisOperatorUrl()).openStream()) {
-            log.info("Deploying operator");
-            List<HasMetadata> objects = OpenShiftUtils.client().load(is).get();
-            for (HasMetadata object : objects) {
-                OpenShiftUtils.create(object.getKind(), object);
-            }
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to load CRD", ex);
-        }
-
-        // Re-add service account to the rolebindings, because for some reason it works with OC and not with client/api
-        OpenShiftUtils.client().roleBindings().createOrReplaceWithNew()
-                .withNewMetadata()
-                .withName("syndesis-operator:view")
-                .endMetadata()
-                .withNewRoleRef().withName("view").endRoleRef()
-                .addNewSubject().withKind("ServiceAccount").withName("syndesis-operator").withNamespace(TestConfiguration.openShiftNamespace()).endSubject()
-                .addToUserNames(String.format("system:serviceaccount:%s:%s", TestConfiguration.openShiftNamespace(), "syndesis-operator"))
-                .done();
-
-        OpenShiftUtils.client().roleBindings().createOrReplaceWithNew()
-                .withNewMetadata()
-                .withName("syndesis-operator:edit")
-                .endMetadata()
-                .withNewRoleRef().withName("edit").endRoleRef()
-                .addNewSubject().withKind("ServiceAccount").withName("syndesis-operator").withNamespace(TestConfiguration.openShiftNamespace()).endSubject()
-                .addToUserNames(String.format("system:serviceaccount:%s:%s", TestConfiguration.openShiftNamespace(), "syndesis-operator"))
-                .done();
-
+        OpenShiftUtils.create(TestConfiguration.syndesisOperatorUrl());
         importProdImage("operator");
     }
 
