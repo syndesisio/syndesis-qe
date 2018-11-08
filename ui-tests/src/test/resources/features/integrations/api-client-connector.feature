@@ -90,7 +90,7 @@ Feature: Integration - DB to API
     Then check visibility of data mapper ui
     When open data bucket "3 - Response"
     And create data mapper mappings
-      | task | COMPANY |
+      | body.task | COMPANY |
     And click on the "Done" button
 
     And click on the "Publish" button
@@ -99,4 +99,6 @@ Feature: Integration - DB to API
 
     When navigate to the "Integrations" page
     Then wait until integration "db_custom_api_db" gets into "Running" state
+    # we have to wait here so integration has time to trigger the insert
+    And sleep for jenkins delay or "30" seconds
     And check that query "select * from contact where company = 'malphite'" has some output
