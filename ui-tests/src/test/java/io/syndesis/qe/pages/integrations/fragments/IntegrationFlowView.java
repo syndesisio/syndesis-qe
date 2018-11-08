@@ -111,7 +111,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
 
-        stepElement.scrollIntoView(true).hover();
+        stepElement.shouldBe(visible).scrollIntoView(true).hover();
 
         getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
     }
