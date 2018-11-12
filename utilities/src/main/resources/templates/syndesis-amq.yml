@@ -71,14 +71,15 @@ objects:
       description: The broker's OpenWire port.
     labels:
       application: ${APPLICATION_NAME}
-      app: ${APPLICATION_NAME}-amq
-      component: amq
-    name: ${APPLICATION_NAME}-amq
+    name: ${APPLICATION_NAME}-amq-tcp
   spec:
     ports:
     - name: openwire
       port: 61616
       targetPort: 61616
+    - name: stomp
+      port: 61613
+      targetPort: 61613
     - name: amqp
       port: 5672
       targetPort: 5672
@@ -119,7 +120,7 @@ objects:
           - name: AMQ_PASSWORD
             value: ${MQ_PASSWORD}
           - name: AMQ_TRANSPORTS
-            value: openwire,amqp,mqtt
+            value: openwire,stomp,amqp,mqtt
           - name: AMQ_QUEUES
             value: ${MQ_QUEUES}
           - name: AMQ_TOPICS
@@ -133,6 +134,9 @@ objects:
             protocol: TCP
           - containerPort: 61616
             name: tcp
+            protocol: TCP
+          - containerPort: 61613
+            name: stomp
             protocol: TCP
           - containerPort: 5672
             name: amqp

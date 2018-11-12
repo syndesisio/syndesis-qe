@@ -139,4 +139,27 @@ public class CommonSteps {
         RestUtils.reset();
         RestUtils.getRestUrl();
     }
+
+    @Then("^wait for Todo to become ready$")
+    public void waitForTodo() {
+        log.info("Waiting for Todo to get ready");
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        Runnable runnable = () ->
+                    OpenShiftUtils.xtf().waiters()
+                            .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
+                            .interval(TimeUnit.SECONDS, 20)
+                            .timeout(TimeUnit.MINUTES, 12)
+                            .assertEventually();
+            executorService.submit(runnable);
+
+        executorService.shutdown();
+        try {
+            if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
+                executorService.shutdownNow();
+                fail("Todo app wasn't initilized in time");
+            }
+        } catch (InterruptedException e) {
+            fail("Waiting for Todo app was interrupted with exception: " + e.getMessage());
+        }
+    }
 }
