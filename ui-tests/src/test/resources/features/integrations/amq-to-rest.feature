@@ -1,9 +1,12 @@
+# @sustainer: mkralik@redhat.com
+
 @integrations-amq-to-rest
 Feature: Integration - AMQ to REST
 
   Background: Clean application state and prepare what is needed
     Given log into the Syndesis
     And clean application state
+    And wait for Todo to become ready
     And reset content of "todo" table
     And Set Todo app credentials
     And deploy AMQ broker and add accounts
