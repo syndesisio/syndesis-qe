@@ -1,6 +1,5 @@
 package io.syndesis.qe.rest.tests.integrations;
 
-import io.syndesis.common.model.integration.Flow;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.syndesis.common.model.integration.Flow;
 import io.syndesis.common.model.integration.Integration;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.bdd.datamapper.AtlasMapperGenerator;
@@ -50,20 +50,35 @@ public class IntegrationHandler {
 
         processMapperSteps();
 
-        Integration integration = new Integration.Builder()
-                .name(integrationName)
-                .description("Awkward integration.")
-                .addFlow(
-                    new Flow.Builder()
-                        .steps(steps.getSteps())
-                        .id(UUID.randomUUID().toString())
-                        .description(integrationName + "Flow")
-                        .build()
-                )
-                .build();
+        // For updating from 7.1 to 7.2 there was the change in "flows" introduced
+        // In update there is an integration created in 7.1 version and then also in 7.2, so it must support both ways
+        // TODO(avano): Can be reverted when master is related to 7.3
+        Integration integration;
+        if (System.getProperty("syndesis.upgrade.version") != null && !System.getProperty("syndesis.version")
+                .equals(System.getProperty("syndesis.upgrade.version"))) {
+            // Syndesis was not upgraded yet, so use old version
+            integration = new Integration.Builder()
+                    .name(integrationName)
+                    .description("Awkward integration.")
+                    .steps(steps.getSteps())
+                    .build();
+        } else {
+            // Syndesis was already updated to 7.2, so we can use the flow
+            // Or we don't do upgrade
+            integration = new Integration.Builder()
+                    .name(integrationName)
+                    .description("Awkward integration.")
+                    .addFlow(
+                            new Flow.Builder()
+                                    .id(UUID.randomUUID().toString())
+                                    .description(integrationName + "Flow")
+                                    .steps(steps.getSteps())
+                                    .build()
+                    )
+                    .build();
+        }
 
         log.info("Creating integration {}", integration.getName());
-
         String integrationId = integrationsEndpoint.create(integration).getId().get();
         log.info("Publish integration with ID: {}", integrationId);
         if (desiredState.contentEquals("Published")) {
