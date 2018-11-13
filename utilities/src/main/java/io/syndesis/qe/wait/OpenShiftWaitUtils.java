@@ -1,7 +1,12 @@
 package io.syndesis.qe.wait;
 
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import cz.xtf.openshift.OpenShiftUtil;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodCondition;
+import io.fabric8.openshift.api.model.Build;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
@@ -12,13 +17,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import cz.xtf.openshift.OpenShiftUtil;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodCondition;
-import io.fabric8.openshift.api.model.Build;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @Slf4j
 public class OpenShiftWaitUtils {
@@ -249,7 +249,9 @@ public class OpenShiftWaitUtils {
 
         String podPartialNextName = podPartialName + "-" + nextNr;
         log.info("Waiting for {} pod is reloaded", podPartialNextName);
-        waitFor(() -> (areExactlyNPods(podPartialNextName, 1).getAsBoolean()));
+        waitFor(() -> (areExactlyNPods(podPartialNextName, 1).getAsBoolean()), 60 * 1000 * 10L);
+        waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialName).get()), 60 * 1000 * 10L);
+
         //There was an issue with meta pod not listening straight after deploying - waiting a bit here
         // UI even gives 60s after integration gets into running state, lets go with 30 here
         TestUtils.sleepForJenkinsDelayIfHigher(30);
@@ -264,7 +266,7 @@ public class OpenShiftWaitUtils {
      */
     public static void waitUntilPodAppears(String podPartialName) {
         try {
-            waitFor(() -> isPodPresent(podPartialName), 5*60*1000);
+            waitFor(() -> isPodPresent(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
             fail("Error thrown while checking if pod exists", e);
         }
@@ -272,8 +274,9 @@ public class OpenShiftWaitUtils {
 
     public static void waitUntilPodIsRunning(String podPartialName) {
         try {
-            waitFor(() -> isPodPresent(podPartialName), 5*60*1000);
-            waitFor(() -> isPodRunning(podPartialName), 5*60*1000);
+            waitFor(() -> isPodPresent(podPartialName), 5 * 60 * 1000);
+            waitFor(() -> isPodRunning(podPartialName), 5 * 60 * 1000);
+
         } catch (TimeoutException | InterruptedException e) {
             fail("Error thrown while checking if pod exists", e);
         }
@@ -286,7 +289,7 @@ public class OpenShiftWaitUtils {
     /**
      * Check whether pod state is running, return false if pod is not present
      */
-    private static boolean isPodRunning(String podPartialName){
+    private static boolean isPodRunning(String podPartialName) {
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podPartialName);
         return pod.filter(OpenShiftWaitUtils::isPodRunning).isPresent();
     }

@@ -75,9 +75,17 @@ public class ApiClientConnectorsSteps {
     @Then("^upload swagger file (.+)$")
     public void uploadSwaggerFile(String filePath) {
         log.debug("File path: " + filePath);
-        ElementsCollection col = $$(By.tagName("input")).filter(attribute("type", "file"));
-        assertThat(col).size().isEqualTo(1);
-        col.get(0).uploadFile(new File(filePath));
+        ElementsCollection col;
+        try {
+            col = $$(By.tagName("input")).filter(attribute("type", "file"));
+            assertThat(col).size().isEqualTo(1);
+            col.get(0).uploadFile(new File(filePath));
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            log.error("An error happened, retrying once");
+            col = $$(By.tagName("input")).filter(attribute("type", "file"));
+            assertThat(col).size().isEqualTo(1);
+            col.get(0).uploadFile(new File(filePath));
+        }
     }
 
     private void uploadSwagger(List<List<String>> sourceDataTable) {
