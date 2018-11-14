@@ -3,6 +3,9 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import cucumber.api.java.en.When;
@@ -44,5 +47,14 @@ public class ServiceNowValidationSteps {
         ServiceNow.deleteIncident(created.getSysId());
         assertThat(created.getNumber()).isEqualToIgnoringCase(i.getNumber());
         assertThat(created.getDescription()).contains(description);
+    }
+
+    @When("^delete incidents with \"([^\"]*)\" number$")
+    public void deleteIncidentsWithNumber(String numbers) {
+        final String[] incidentNumbers = numbers.split(",");
+        List<Incident> incidents = new ArrayList<>();
+
+        Arrays.asList(incidentNumbers).forEach(number -> incidents.addAll(ServiceNow.getFilteredIncidents("number=" + number, 100)));
+        incidents.forEach(incident -> ServiceNow.deleteIncident(incident.getSysId()));
     }
 }
