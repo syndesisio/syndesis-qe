@@ -1,5 +1,6 @@
 package io.syndesis.qe.servicenow.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigInteger;
@@ -10,6 +11,7 @@ import lombok.Data;
  * Class representing incident object.
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Incident {
     private Boolean active;
     @JsonProperty("activity_due")
