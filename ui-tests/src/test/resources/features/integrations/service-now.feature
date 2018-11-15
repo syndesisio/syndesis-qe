@@ -6,6 +6,7 @@ Feature: Integration - ServiceNow-amq/log
     Given clean application state
     Given log into the Syndesis
     Given clean destination type "queue" with name "incidents"
+    Given delete incidents with "QACUSTOM4,QACREATED1" number
     Given clean "TODO" table
     Given created connections
       | ServiceNow         | Servicenow | ServiceNow | Service-Now connection |
