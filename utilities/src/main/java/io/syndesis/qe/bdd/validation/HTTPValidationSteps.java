@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -26,11 +25,13 @@ public class HTTPValidationSteps {
 
     @When("^clear endpoint events$")
     public void clear() {
-        if (localPortForward == null || !localPortForward.isAlive()) {
-            Optional<Pod> pod = OpenShiftUtils.getPodByPartialName("endpoints");
-            assertThat(pod.isPresent()).isTrue();
-            localPortForward = TestUtils.createLocalPortForward(pod.get(), 8080, 28080);
+        if (localPortForward != null) {
+            TestUtils.terminateLocalPortForward(localPortForward);
         }
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName("endpoints");
+        assertThat(pod.isPresent()).isTrue();
+        localPortForward = TestUtils.createLocalPortForward(pod.get(), 8080, 28080);
+
         // Clear all events
         HttpUtils.doDeleteRequest("http://localhost:28080/clearEvents");
     }

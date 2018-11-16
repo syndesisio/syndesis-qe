@@ -292,7 +292,7 @@ public class SyndesisTemplate {
         @JsonIgnore
         private String name;
 
-        public ImageStreamImport(String apiVersion, Map metadata, String image, String name) {
+        ImageStreamImport(String apiVersion, Map metadata, String image, String name) {
             this.apiVersion = apiVersion;
             this.metadata = metadata;
             this.image = image;

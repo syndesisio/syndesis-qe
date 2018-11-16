@@ -27,6 +27,7 @@ import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -136,5 +137,11 @@ public class CommonSteps {
     @Then("^sleep for jenkins delay or \"([^\"]*)\" seconds")
     public void sleepForJenkinsDelay(int secs) {
         TestUtils.sleepForJenkinsDelayIfHigher(secs);
+    }
+
+    @When("^refresh server port-forward")
+    public void refreshPortForward() {
+        RestUtils.reset();
+        RestUtils.getRestUrl();
     }
 }

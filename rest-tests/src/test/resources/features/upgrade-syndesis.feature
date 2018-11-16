@@ -1,6 +1,5 @@
 # @sustainer: avano@redhat.com
 
-@ignore
 @syndesis-upgrade
 Feature: Syndesis Upgrade
 
@@ -11,6 +10,8 @@ Feature: Syndesis Upgrade
       And deploy Syndesis from template
       And wait for Syndesis to become ready
       And verify syndesis "given" version
+      And deploy HTTP endpoints
+      And create HTTP connection
     When inserts into "contact" table
       | X | Y | Z | db |
       And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
@@ -24,10 +25,19 @@ Feature: Syndesis Upgrade
   @upgrade
   Scenario: Syndesis Upgrade
     When perform test modifications
+      And modify s2i tag in syndesis-server-config
       And perform syndesis upgrade to newer version
     Then verify syndesis "upgraded" version
       And verify successful test modifications
       And verify integration with task "X"
+    When refresh server port-forward
+      And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
+      And create HTTP "GET" step
+      And create integration with name: "timer-to-http"
+      And wait for integration with name: "timer-to-http" to become active
+    Then verify that after "2.5" seconds there were "2" calls
 
   @rollback
   Scenario: Syndesis Upgrade rollback
@@ -37,3 +47,11 @@ Feature: Syndesis Upgrade
     Then verify syndesis "given" version
       And verify test modifications rollback
       And verify integration with task "X"
+    When refresh server port-forward
+      And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
+      And create HTTP "GET" step
+      And create integration with name: "timer-to-http"
+      And wait for integration with name: "timer-to-http" to become active
+    Then verify that after "2.5" seconds there were "2" calls
