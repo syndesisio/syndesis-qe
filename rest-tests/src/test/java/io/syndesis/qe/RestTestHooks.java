@@ -29,6 +29,7 @@ public class RestTestHooks {
         stepStorage.flushStepDefinitions();
         log.debug("Flushed steps from steps storage");
         SampleDbConnectionManager.closeConnections();
+        System.clearProperty("syndesis.upgrade.version");
     }
 
     @After
