@@ -45,7 +45,12 @@ public class IntegrationsList extends RowList {
     }
 
     public String getStatus(String title) {
-        return getItem(title).find(Element.STATUS).getText().trim();
+        SelenideElement statusElement = getItem(title).find(Element.STATUS);
+        if (statusElement.exists()) {
+            return statusElement.getText().trim();
+        } else {
+            return "";
+        }
     }
 
     public String getStatus(SelenideElement item) {
