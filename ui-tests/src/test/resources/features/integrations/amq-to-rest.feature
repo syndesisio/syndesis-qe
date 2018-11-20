@@ -22,8 +22,8 @@ Feature: Integration - AMQ to REST
       | details  | routeHost     | todo                      |
       | details  | baseUrl       | /api                      |
     And created connections
-      | AMQ Message Broker | AMQ               | AMQ             | AMQ on OpenShift |
-      | Todo connector     | todo              | TODO connection | no validation    |
+      | AMQ Message Broker | AMQ  | AMQ             | AMQ on OpenShift |
+      | Todo connector     | todo | TODO connection | no validation    |
 
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page
@@ -36,7 +36,7 @@ Feature: Integration - AMQ to REST
     And select "Subscribe for Messages" integration action
     And fill in values
       | Destination Name | inventoryReceived |
-      | Destination Type | Queue  |
+      | Destination Type | Queue             |
     And click on the "Next" button
     And click on the "Done" button
 
@@ -68,20 +68,18 @@ Feature: Integration - AMQ to REST
     When navigate to the "Integrations" page
     Then wait until integration "AMQ to TODO integration" gets into "Running" state
 
-    # [WIP] - workaround for now due to https://github.com/syndesisio/todo-example/issues/16
-    #  test should go to the Todo app and use JMS form instead of code (for real quickstart testing)
-    #  e.g. When navigate to Todo app ; Then check Todo list grows in "15" second
+    When navigate to Todo app
+    And publish JMS message on Todo app page from resource "tutorialAmqToRestMessage1.xml"
+    Then check Todo list has "1" items
+    And check that "1". task on Todo app page contains text "Task: Contact Joe Doe, 987 654 321. Damaged items: ABC789."
 
-    And publish JMS message from resource "tutorialAmqToRestMessage1.xml" to "queue" with name "inventoryReceived"
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%Contact Joe Doe%ABC789%'" has "1" output
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%Contact John Smith%XYZ123%'" has no output
+    When publish JMS message on Todo app page from resource "tutorialAmqToRestMessage2.xml"
+    Then check Todo list has "2" items
+    And check that "1". task on Todo app page contains text "Task: Contact Joe Doe, 987 654 321. Damaged items: ABC789."
+    And check that "2". task on Todo app page contains text "Task: Contact John Smith, 123 456 789. Damaged items: XYZ123. Contact Joe Doe, 987 654 321. Damaged items: ABC789."
 
-    And publish JMS message from resource "tutorialAmqToRestMessage2.xml" to "queue" with name "inventoryReceived"
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%Contact Joe Doe%ABC789%'" has "2" output
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%Contact John Smith%XYZ123%Contact Joe Doe%ABC789%'" has "1" output
-
-    And publish JMS message from resource "tutorialAmqToRestMessage3.xml" to "queue" with name "inventoryReceived"
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%Contact Joe Doe%ABC789%'" has "2" output
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%Contact John Smith%XYZ123%Contact Joe Doe%ABC789%'" has "1" output
-    And checks that query "SELECT * FROM todo WHERE task LIKE '%No contact found%ABC789%'" has "1" output
-    And checks that query "SELECT * FROM todo " has "3" output
+    When publish JMS message on Todo app page from resource "tutorialAmqToRestMessage3.xml"
+    Then check Todo list has "3" items
+    And check that "1". task on Todo app page contains text "Task: Contact Joe Doe, 987 654 321. Damaged items: ABC789."
+    And check that "2". task on Todo app page contains text "Task: Contact John Smith, 123 456 789. Damaged items: XYZ123. Contact Joe Doe, 987 654 321. Damaged items: ABC789."
+    And check that "3". task on Todo app page contains text "Task: No contact found. Damaged items: ABC789."
