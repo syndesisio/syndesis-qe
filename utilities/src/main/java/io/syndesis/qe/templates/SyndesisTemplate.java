@@ -3,12 +3,15 @@ package io.syndesis.qe.templates;
 import static org.assertj.core.api.Fail.fail;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -17,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import cz.xtf.openshift.OpenShiftBinaryClient;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.CronJob;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -157,8 +161,39 @@ public class SyndesisTemplate {
     }
 
     private static void deployOperator() {
-        OpenShiftUtils.create(TestConfiguration.syndesisOperatorUrl());
+        log.info("Deploying operator");
+        String[] json = new String[1];
+        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
+                "Unable to process operator resource " + TestConfiguration.syndesisOperatorUrl(),
+                istream -> json[0] = IOUtils.toString(istream, "UTF-8"),
+                "process",
+                "-p", "NAMESPACE=" + TestConfiguration.openShiftNamespace(),
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", TestConfiguration.syndesisOperatorUrl()
+        );
+
+        try {
+            FileUtils.writeStringToFile(new File("/tmp/operator"), json[0], "UTF-8");
+        } catch (IOException e) {
+            fail("Unable to create temporary file for operator", e);
+        }
+
+        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
+                "Unable to create operator resource " + TestConfiguration.syndesisOperatorUrl(),
+                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
+                "create",
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", "/tmp/operator"
+        );
+
         importProdImage("operator");
+
+        log.info("Waiting for syndesis-operator to be ready");
+        OpenShiftUtils.xtf().waiters()
+                .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-operator")
+                .interval(TimeUnit.SECONDS, 20)
+                .timeout(TimeUnit.MINUTES, 10)
+                .assertEventually();
     }
 
     private static void deploySyndesisViaOperator() {
