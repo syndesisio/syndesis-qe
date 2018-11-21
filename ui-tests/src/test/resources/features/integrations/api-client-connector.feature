@@ -6,6 +6,7 @@ Feature: Integration - DB to API
   Background:
     Given log into the Syndesis
     And clean application state
+    And wait for Todo to become ready
     And Set Todo app credentials
     And reset content of "TODO" table
     And reset content of "contact" table
