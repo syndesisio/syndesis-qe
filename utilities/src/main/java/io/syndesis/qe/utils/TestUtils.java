@@ -129,7 +129,7 @@ public final class TestUtils {
 
     public static boolean isDcDeployed(String dcName) {
         DeploymentConfig dc = OpenShiftUtils.client().deploymentConfigs().withName(dcName).get();
-        return dc != null && dc.getStatus().getReadyReplicas() > 0;
+        return dc != null && dc.getStatus().getReadyReplicas() != null && dc.getStatus().getReadyReplicas() > 0;
     }
 
     public static void terminateLocalPortForward(LocalPortForward lpf) {

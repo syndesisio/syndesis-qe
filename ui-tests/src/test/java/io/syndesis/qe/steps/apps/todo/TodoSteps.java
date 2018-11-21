@@ -2,15 +2,20 @@ package io.syndesis.qe.steps.apps.todo;
 
 import static com.codeborne.selenide.Selenide.sleep;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static org.assertj.core.api.Assertions.fail;
 
 import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.When;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.syndesis.qe.steps.customizations.connectors.ApiClientConnectorsSteps;
 import org.assertj.core.api.Assertions;
 
-import com.codeborne.selenide.Selenide;
-
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +56,8 @@ public class TodoSteps {
         log.info("Checking Todo app list is growing in " + seconds + " seconds");
 
         int startCount = todoPage.getListItemsCount();
-        sleep(seconds*1000);
-        Selenide.refresh();
+        sleep(seconds * 1000);
+        todoPage.refresh();
 
         int endCount = todoPage.getListItemsCount();
         Assertions.assertThat(startCount).isLessThan(endCount);
@@ -61,8 +66,8 @@ public class TodoSteps {
     //Because app can have another route and url should set dynamically, url is added to the original DataTable
     @Then("create new TODO API connector via URL$")
     public void createNewTodoApiConnector(DataTable properties) throws Throwable {
-        if(OpenShiftUtils.getInstance().getRoute("todo2")==null
-                || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")){
+        if (OpenShiftUtils.getInstance().getRoute("todo2") == null
+                || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")) {
             new TodoSteps().createDefaultRouteForTodo("todo2", "/");
         }
         String host = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
@@ -77,7 +82,42 @@ public class TodoSteps {
         new ApiClientConnectorsSteps().createNewApiConnector(updatedDataTable);
     }
 
-    public void createDefaultRouteForTodo(String name, String path){
+    @Then("^check Todo list has \"(\\w+)\" items")
+    public void checkNumberOfItems(int numberOfItems) {
+        log.info("Checking Todo app list contains " + numberOfItems + " items/");
+        int endCount = todoPage.getListItemsCount();
+        Assertions.assertThat(numberOfItems).isEqualTo(endCount);
+    }
+
+
+    @When("^publish JMS message on Todo app page from resource \"([^\"]*)\"$")
+    public void publishMessageFromResourceToDestinationWithName(String resourceName) throws IOException {
+        log.info("Publish JMS message via Todo app");
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        URL fileUrl = classLoader.getResource("jms_messages/" + resourceName);
+        if (fileUrl == null) {
+            fail("File with name " + resourceName + " doesn't exist in the resources");
+        }
+
+        File file = new File(fileUrl.getFile());
+        String jmsMessage = new String(Files.readAllBytes(file.toPath()));
+        todoPage.setJmsForm(jmsMessage);
+        todoPage.sentJmsMessage();
+        sleep(3 * 1000);
+        todoPage.refresh();
+    }
+
+    /**
+     * first task e.g. check that "1". task ...
+     */
+    @Then("^check that \"(\\w+)\". task on Todo app page contains text \"([^\"]*)\"$")
+    public void checkNumberValuesExistInTable(int index, String text) {
+        String message = todoPage.getMessageFromTodo(index - 1);
+        Assertions.assertThat(message).contains(text);
+    }
+
+
+    public void createDefaultRouteForTodo(String name, String path) {
         final Route route = new RouteBuilder()
                 .withNewMetadata()
                 .withName(name)
