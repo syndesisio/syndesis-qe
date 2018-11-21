@@ -6,6 +6,7 @@ Feature: Integration - Twitter to Salesforce
   Background: Clean application state
     Given clean application state
     Given clean SF contacts related to TW account: "twitter_talky"
+    Given clean all tweets in twitter_talky account
     Given log into the Syndesis
     Given created connections
       | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
@@ -35,7 +36,7 @@ Feature: Integration - Twitter to Salesforce
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    Then create data mapper mappings
+    When create data mapper mappings
       | user.screenName | TwitterScreenName__c |
       | text            | Description          |
       | user.name       | FirstName; LastName  |
@@ -44,39 +45,47 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Done" button
 
     # add basic filter step
-    When click on the "Add a Step" button
+    And click on the "Add a Step" button
     Then check visibility of the "Add a step" link
-    And click on the "Add a step" link
+    When click on the "Add a step" link
     And select "Basic Filter" integration step
-    And check visibility of "Basic Filter" step configuration page
+    Then check visibility of "Basic Filter" step configuration page
     And check that basic filter step path input options contains "text" option
-    Then fill in the configuration page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
+    When fill in the configuration page for "Basic Filter" step with "ANY of the following, text, contains, #syndesis4ever" parameter
     And click on the "Done" button
 
      # add advanced filter step
-    When click on the "Add a Step" button
+    And click on the "Add a Step" button
     Then check visibility of the "Add a step" link
-    And click on the "Add a step" link
+    When click on the "Add a step" link
     And select "Advanced Filter" integration step
-    And check visibility of "Advanced Filter" step configuration page
-    Then fill in the configuration page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
+    Then check visibility of "Advanced Filter" step configuration page
+    When fill in the configuration page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    And click on the "Save as Draft" button
     And set integration name "Twitter to Salesforce E2E"
     And click on the "Publish" button
     # assert integration is present in list
     Then check visibility of "Twitter to Salesforce E2E" integration details
-    And navigate to the "Integrations" page
+    When navigate to the "Integrations" page
     And Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Twitter to Salesforce E2E" gets into "Running" state
     #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
 
-    Then tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat #syndesis4ever"
+    And sleep for "30000" ms
+    Then check SF does not contain contact for tw account: "twitter_talky"
 
-    # validate salesforce contacts
-    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat #e2e"
+    And sleep for "30000" ms
+    Then check SF does not contain contact for tw account: "twitter_talky"
+
+    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat #e2e #syndesis4ever"
+    And sleep for "30000" ms
+    Then check SF contains contact for tw account: "twitter_talky"
+    And check that contact from SF with last name: "Talky" has description "Red Hat #e2e #syndesis4ever @syndesis_listen"
     # clean-up in salesforce
-    Then delete contact from SF with last name: "Jackson"
+    When delete contact from SF with last name: "Talky"
