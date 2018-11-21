@@ -176,7 +176,7 @@ public class TestConfiguration {
 
         props.setProperty(SYNDESIS_TEMPLATE_SA, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml", "master"));
         props.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", "1.4.x"));
-        props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/master/install/operator/deploy/syndesis.yml", "1.4.x"));
+        props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", "1.4.x"));
 
         props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
 
