@@ -1,5 +1,5 @@
 # Syndesis QE
-Updated: 4.10.2018
+Updated: 20.11.2018
 
 ##### Table of Contents
 
@@ -10,7 +10,9 @@ Updated: 4.10.2018
 * [Execution](#execution)
   * [Most common problems](#most-common-problems)
 * [Running on remote OpenShift instance](#running-on-remote-openshift-instance)
-* [Creating a Pull Request](#creating-a-pull-request)
+* [Contributing](#contributing)
+  * [Checkstyle](#checkstyle)
+  * [Creating a Pull Request](#creating-a-pull-request)
 * [Advanced debugging](#advanced-debugging)
 
 ### Structure
@@ -50,8 +52,14 @@ Correctly set test.properties and credentials.json (described later)
 
 Added FUSE repositories to maven due to dependencies
 
-Before you import maven project to the IDE, you have to installed *Lombok* and *Cucumber* plugins to the IDE.
+Before you import maven project to the IDE, you have to install 
+**Lombok** and 
+**Cucumber** plugins to your IDE. 
 
+For IntelliJ Idea you can use these plugins 
+[Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin) and
+[Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
+ 
 For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
 
 #### Create a minishift instance
@@ -388,8 +396,27 @@ If you want to run the tests on the existing remote OpenShift instance, follow t
 	```
 After that, you can run the tests on the remote OpenShift instances. 
 Remember to delete project after testing.
-### Creating a Pull Request
+### Contributing
 
+#### Checkstyle
+Before you start contributing, please set up checkstyle in your IDE.
+For IntelliJ Idea, you have to install **[CheckStyle-IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea)* plugin.
+After that, open Settings > Editor > CodeStyle and click on cogwheel, select Import Scheme > CheckStyle configuration and
+choose checkstyle.xml file from this repository.
+
+**NOTE** IntelliJ Idea doesn't provide auto-format code after saving (because it provides auto-saving) by default. When you want to
+reformat your code, you can use shortcut **CTRL+ALT+L** or you can install and configure **[Save Actions](https://plugins.jetbrains.com/plugin/7642-save-actions)**
+
+You can also use *Reformat Code* checkbox in *Commit Changes*
+dialog before you commit changes.  
+
+**Commit changes** dialog provides a useful view of your changes before commit. There, you can see the diff between 
+original and changed file. So you can make sure that you commit only changes which you want. Also, you can set commit message 
+and commit changes via this dialog. 
+
+![Commit changes](docs/readme_images/idea_commit_changes.png)
+
+#### Creating a Pull Request
 When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).
 
 If you want to run a different subset of tests, you can use `//test: @mytag1,@mytag2` in your PR description to trigger specific tests annotated by given tags.
