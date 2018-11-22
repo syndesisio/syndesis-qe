@@ -167,8 +167,11 @@ public class TestConfiguration {
         if (System.getProperty(SYNDESIS_TEMPLATE_VERSION) != null) {
             syndesisVersion = System.getProperty(SYNDESIS_TEMPLATE_VERSION);
         } else {
-            // pom defined property
-            syndesisVersion = System.getProperty("syndesis.version").endsWith("SNAPSHOT") ? "master" : System.getProperty("syndesis.version");
+            syndesisVersion = "master";
+            // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
+            if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !System.getProperty("syndesis.version").contains("redhat")) {
+                syndesisVersion = System.getProperty("syndesis.version");
+            }
         }
 
         if (props.getProperty(SYNDESIS_TEMPLATE_URL) == null) {
