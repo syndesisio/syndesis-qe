@@ -2,6 +2,7 @@ package io.syndesis.qe.utils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClients;
@@ -9,7 +10,9 @@ import org.apache.http.ssl.SSLContextBuilder;
 
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataWriter;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -75,6 +78,8 @@ public final class RestUtils {
         final Client client = new ResteasyClientBuilder()
                 .providerFactory(new ResteasyProviderFactory()) // this is needed otherwise default jackson2provider is used, which causes problems with JDK8 Optional
                 .register(jackson2Provider)
+                .register(new MultipartFormDataWriter()) // needed to POST mutipart form data (necessary for API provider)
+                .register(new StringTextStar()) // needed to serialize text/plain (again for API provider)
                 .register(new ErrorLogger())
                 .httpEngine(engine)
                 .build();
@@ -103,7 +108,8 @@ public final class RestUtils {
             final SSLContextBuilder builder = new SSLContextBuilder();
             builder.loadTrustMaterial((TrustStrategy) (X509Certificate[] chain, String authType) -> true);
             final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                    builder.build());
+                    builder.build(),
+                    new NoopHostnameVerifier()); // needed to connections to API Provider integrations
             httpclient = HttpClients
                     .custom()
                     .setSSLSocketFactory(sslsf)

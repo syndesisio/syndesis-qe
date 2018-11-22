@@ -23,6 +23,10 @@ import io.syndesis.qe.pages.integrations.editor.add.connection.actions.ftp.FtpDo
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsPublish;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsRequest;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsSubscribe;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.ChooseOperation;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.NameApiProviderIntegration;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ReviewApiProviderActions;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.UploadApiProviderSpecification;
 
 public enum SyndesisPage {
     CONNECTIONS(new Connections()),
@@ -51,6 +55,11 @@ public enum SyndesisPage {
     PUBLISH_MESSAGES(new JmsPublish()),
     REQUEST_RESPONSE_USING_MESSAGES(new JmsRequest()),
     DOWNLOAD(new FtpDownload()),
+
+    UPLOAD_API_PROVIDER_SPECIFICATION(new UploadApiProviderSpecification()),
+    REVIEW_API_PROVIDER_ACTIONS(new ReviewApiProviderActions()),
+    CHOOSE_OPERATION(new ChooseOperation()),
+    NAME_API_PROVIDER_INTEGRATION(new NameApiProviderIntegration()),
 
 //    REQUEST_RESPONSE_USING_MESSAGES(new IntegrationActivity()),
 
