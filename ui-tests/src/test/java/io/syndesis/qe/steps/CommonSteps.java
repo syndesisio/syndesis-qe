@@ -566,6 +566,11 @@ public class CommonSteps {
         clickOnButton("Create");
     }
 
+    @When("go back in browser history")
+    public void clickBrowserBackButton(){
+        Selenide.back();
+    }
+
     private void doOAuthValidation(String type) {
         clickOnButton("Connect " + type);
         switch (type) {
