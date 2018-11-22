@@ -1,5 +1,5 @@
 # @sustainer: mcada@redhat.com
-
+@stage-smoke
 @log-connector
 Feature: Log Connector
 

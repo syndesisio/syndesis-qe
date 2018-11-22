@@ -17,7 +17,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.openshift.api.model.Build;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Component;
@@ -62,7 +61,7 @@ public class CommonSteps {
     }
 
     @Then("^wait for Syndesis to become ready")
-    public void waitForSyndesis() {
+    public static void waitForSyndesis() {
         EnumSet<Component> components = EnumSet.allOf(Component.class);
 
         ExecutorService executorService = Executors.newFixedThreadPool(components.size());

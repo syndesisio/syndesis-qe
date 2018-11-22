@@ -1,3 +1,4 @@
+@stage-smoke
 @integrations-mqtt
 Feature: Integration - MQTT to MQTT
 

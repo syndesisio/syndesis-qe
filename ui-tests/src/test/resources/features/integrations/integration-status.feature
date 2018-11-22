@@ -1,5 +1,5 @@
 # @sustainer: mastepan@redhat.com
-
+@stage-smoke
 @integration-check-starting-status
 Feature: Integration - DB to DB
 

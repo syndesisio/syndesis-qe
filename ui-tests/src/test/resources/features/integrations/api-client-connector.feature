@@ -1,5 +1,5 @@
 # @sustainer: mastepan@redhat.com
-
+@stage-smoke
 @api-connector-integration
 Feature: Integration - DB to API
 
