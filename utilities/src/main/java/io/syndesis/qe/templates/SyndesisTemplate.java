@@ -140,6 +140,7 @@ public class SyndesisTemplate {
         patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.client().deploymentConfigs().withName("broker-amq").delete();
+        OpenShiftUtils.client().services().withName("broker-amq-tcp").delete();
     }
 
     private static void deployCrd() {
