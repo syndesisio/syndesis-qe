@@ -89,6 +89,12 @@ directory of `*-tests` module, e.g. [UI scenarios](https://github.com/syndesisio
 
 Every scenario is wrapped with appropriate tags to target specific execution on demand.
 
+#### GitHub issue tags
+
+A scenario may optionally be tagged with one or more tags in the form `@gh-<issue-number>`. 
+If such a scenario fails, the relevant GitHub issues are checked and a summary is written in the cucumber report.
+See javadoc of the OnFailHooks class for more info.
+
 ### Configuration
 NOTE: Successful execution of tests requires fully configured credentials.
 All the callback URLs, Oauth tokens, etc. for Salesforce and Twitter accounts.
