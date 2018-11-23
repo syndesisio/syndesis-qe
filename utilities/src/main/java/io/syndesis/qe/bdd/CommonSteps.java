@@ -3,11 +3,15 @@ package io.syndesis.qe.bdd;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,11 +28,13 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.Headers;
 
 @Slf4j
 public class CommonSteps {
@@ -37,6 +43,7 @@ public class CommonSteps {
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
+        undeploySyndesis();
         OpenShiftUtils.client().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.client().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.client().serviceAccounts().withName("syndesis-oauth-client").delete();
@@ -62,17 +69,87 @@ public class CommonSteps {
 
     @Then("^wait for Syndesis to become ready")
     public static void waitForSyndesis() {
-        final int timeout = TestUtils.isJenkins() ? 20 : 12;
+        waitFor(true);
+    }
+
+    /**
+     * Undeploys deployed syndesis resources.
+     */
+    public static void undeploySyndesis() {
+        if (OpenShiftUtils.getPodByPartialName("syndesis-operator").isPresent()) {
+            for (String s : customResourceNames()) {
+                undeployCustomResource(s);
+            }
+            CommonSteps.waitForUndeployment();
+        }
+    }
+
+    /**
+     * Gets the Set of deployed syndesis custom resources.
+     * @return set containing names of deployed syndesis custom resources.
+     */
+    private static Set<String> customResourceNames() {
+        final Set<String> names = new HashSet<>();
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises";
+        try {
+            String responseBody = OpenShiftUtils.invokeApi(
+                    HttpUtils.Method.GET,
+                    url,
+                    null,
+                    Headers.of("Accept", "application/json")
+            ).body().string();
+            JSONArray items = new JSONObject(responseBody).getJSONArray("items");
+
+            for (int i = 0; i < items.length(); i++) {
+                names.add(((JSONObject)items.get(i)).getJSONObject("metadata").getString("name"));
+            }
+        } catch (IOException e) {
+            fail("Unable to process response from " + url, e);
+        }
+        return names;
+    }
+
+    /**
+     * Undeploys syndesis custom resource using openshift API.
+     * @param name custom resource name
+     */
+    private static void undeployCustomResource(String name) {
+        log.info("Undeploying Syndesis custom resource \"" + name + "\"");
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises/" + name;
+        OpenShiftUtils.invokeApi(HttpUtils.Method.DELETE, url, null, null);
+    }
+
+    /**
+     * Waits for syndesis to be undeployed.
+     */
+    public static void waitForUndeployment() {
+        waitFor(false);
+    }
+
+    /**
+     * Waits for syndesis deployment / undeployment.
+     * @param deploy true if waiting for deploy, false otherwise
+     */
+    private static void waitFor(boolean deploy) {
         EnumSet<Component> components = EnumSet.allOf(Component.class);
 
         ExecutorService executorService = Executors.newFixedThreadPool(components.size());
         components.forEach(c -> {
-            Runnable runnable = () ->
+            Runnable runnable = () -> {
+                if (deploy) {
                     OpenShiftUtils.xtf().waiters()
                             .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
                             .interval(TimeUnit.SECONDS, 20)
-                            .timeout(TimeUnit.MINUTES, timeout)
+                            .timeout(TimeUnit.MINUTES, 12)
                             .assertEventually();
+                } else {
+                    OpenShiftUtils.xtf().waiters()
+                            .areExactlyNPodsRunning(0, "syndesis.io/component", c.getName())
+                            .interval(TimeUnit.SECONDS, 20)
+                            .timeout(TimeUnit.MINUTES, 12)
+                            .assertEventually();
+                }
+            };
             executorService.submit(runnable);
         });
 
@@ -80,10 +157,10 @@ public class CommonSteps {
         try {
             if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
-                fail("Syndesis wasn't initilized in time");
+                fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
             }
         } catch (InterruptedException e) {
-            fail("Syndesis wasn't initilized in time");
+            fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
         }
     }
 

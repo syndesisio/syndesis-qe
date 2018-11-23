@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.api.model.CronJob;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -32,6 +31,7 @@ import io.fabric8.openshift.api.model.TagImportPolicy;
 import io.fabric8.openshift.api.model.Template;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.Data;
@@ -102,9 +102,7 @@ public class SyndesisTemplate {
         // process & create
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         for (HasMetadata hasMetadata : processedTemplate.getItems()) {
-            if (!(hasMetadata instanceof CronJob)) {
-                OpenShiftUtils.getInstance().createResources(hasMetadata);
-            }
+            OpenShiftUtils.getInstance().createResources(hasMetadata);
         }
 
         //TODO: there's a bug in openshift-client, we need to initialize manually
@@ -162,6 +160,13 @@ public class SyndesisTemplate {
     private static void deployOperator() {
         OpenShiftUtils.create(TestConfiguration.syndesisOperatorUrl());
         importProdImage("operator");
+
+        log.info("Waiting for syndesis-operator to be ready");
+        OpenShiftUtils.xtf().waiters()
+                .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-operator")
+                .interval(TimeUnit.SECONDS, 20)
+                .timeout(TimeUnit.MINUTES, 10)
+                .assertEventually();
     }
 
     private static void deploySyndesisViaOperator() {
@@ -176,7 +181,11 @@ public class SyndesisTemplate {
             crd.getSpec().getAdditionalProperties().put("TestSupport", true);
             crd.getSpec().getAdditionalProperties().put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
-            OpenShiftUtils.invokeApi("/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises", Serialization.jsonMapper().writeValueAsString(crd));
+            OpenShiftUtils.invokeApi(
+                    HttpUtils.Method.POST,
+                    "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises",
+                    Serialization.jsonMapper().writeValueAsString(crd)
+            );
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -217,6 +226,7 @@ public class SyndesisTemplate {
                 Response r;
                 log.info("Importing image from imagestream " + is.getMetadata().getName());
                 r = OpenShiftUtils.invokeApi(
+                        HttpUtils.Method.POST,
                         String.format("/apis/image.openshift.io/v1/namespaces/%s/imagestreamimports", TestConfiguration.openShiftNamespace()),
                         ImageStreamImport.getJson(
                                 new ImageStreamImport(is.getApiVersion(), metadata, is.getSpec().getTags().get(0).getFrom().getName(), is.getSpec().getTags().get(0).getName())
