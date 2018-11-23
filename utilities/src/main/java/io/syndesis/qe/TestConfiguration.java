@@ -48,6 +48,7 @@ public class TestConfiguration {
     public static final String DB_ALLOCATOR_URL = "syndesis.dballocator.url";
 
     public static final String PROD_REPOSITORY = "syndesis.config.prod.repository";
+    public static final String UPSTREAM_REPOSITORY = "syndesis.config.upstream.repository";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -139,6 +140,10 @@ public class TestConfiguration {
 
     public static String prodRepository() {
         return get().readValue(PROD_REPOSITORY);
+    }
+
+    public static String upstreamRepository() {
+        return get().readValue(UPSTREAM_REPOSITORY);
     }
 
     private Properties defaultValues() {
