@@ -324,6 +324,15 @@ To select syndesis version, add another maven parameter:
 To install syndesis from operator template, add maven parameter:
 
 	-Dsyndesis.config.operator.url=<url-to-operator.yml>
+	
+
+##### Using internal nexus
+Maven central is used when building integrations in minishift. That can occasionally fail, because a request limit is reached.
+In such a case (and perhaps in any case), you can add the following test property to use the internal nexus instead:
+```
+syndesis.config.upstream.repository=http://nexus.fuse-qe.eng.rdu2.redhat.com/repository/maven-central
+```
+
 
 ##### Most common problems
 * If you set *syndesis.config.openshift.namespace.lock* parameter to true and you stop tests during running, the lock will not be released! 

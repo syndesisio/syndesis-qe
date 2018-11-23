@@ -140,7 +140,7 @@ public class SyndesisTemplate {
         deployOperator();
         importProdImages();
         deploySyndesisViaOperator();
-        addIndyRepo();
+        fixMavenRepos();
         patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.client().deploymentConfigs().withName("broker-amq").delete();
@@ -278,28 +278,50 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void addIndyRepo() {
+    private static void fixMavenRepos() {
+        String replacementRepo = null;
         if (System.getProperty("syndesis.version").contains("redhat")) {
-            if (TestConfiguration.prodRepository() == null) {
+            if (TestConfiguration.prodRepository() != null) {
+                replacementRepo = TestConfiguration.prodRepository();
+            } else {
                 fail("Trying to deploy prod version using operator and system property " + TestConfiguration.PROD_REPOSITORY + " is not set!");
             }
-            Optional<ConfigMap> cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
-                    .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-            int retries = 0;
-            while (!cm.isPresent() && retries < 12) {
-                TestUtils.sleepIgnoreInterrupt(10000L);
-                cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
-                        .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-                if (retries == 11) {
-                    fail("Unable to find syndesis-server-config configmap after 12 tries");
-                }
-                retries++;
+        } else {
+            if (TestConfiguration.upstreamRepository() != null) {
+                replacementRepo = TestConfiguration.upstreamRepository();
+            } else {
+                // no replacement, will use maven central
+                return;
             }
-            String data = cm.get().getData().get("application.yml").replaceAll("https://repo1.maven.org/maven2",
-                    TestConfiguration.prodRepository());
-
-            OpenShiftUtils.client().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
         }
+
+        Optional<ConfigMap> cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
+                .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
+        int retries = 0;
+        while (!cm.isPresent() && retries < 12) {
+            TestUtils.sleepIgnoreInterrupt(10000L);
+            cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
+                    .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
+            if (retries == 11) {
+                fail("Unable to find syndesis-server-config configmap after 12 tries");
+            }
+            retries++;
+        }
+        String data = cm.get().getData().get("application.yml");
+
+        // ensure maven repos in config map (not there by default in upstream)
+        // we should ideally parse the yaml, but this should be good for now
+        if (!data.contains("maven:")) {
+            String mavenRepos = "\nmaven:\n" +
+                    "  repositories:\n" +
+                    "    01_maven_central: https://repo1.maven.org/maven2\n" +
+                    "    02_redhat_ea_repository: https://maven.repository.redhat.com/ga/\n" +
+                    "    03_jboss_ea: https://repository.jboss.org/\n";
+            data += mavenRepos;
+        }
+        data = data.replaceAll("https://repo1.maven.org/maven2", replacementRepo);
+
+        OpenShiftUtils.client().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
     }
 
     /**
