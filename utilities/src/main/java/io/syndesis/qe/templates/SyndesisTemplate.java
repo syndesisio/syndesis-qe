@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 import cz.xtf.openshift.OpenShiftBinaryClient;
 import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.api.model.CronJob;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -36,6 +35,7 @@ import io.fabric8.openshift.api.model.TagImportPolicy;
 import io.fabric8.openshift.api.model.Template;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.Data;
@@ -104,9 +104,7 @@ public class SyndesisTemplate {
         // process & create
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         for (HasMetadata hasMetadata : processedTemplate.getItems()) {
-            if (!(hasMetadata instanceof CronJob)) {
-                OpenShiftUtils.getInstance().createResources(hasMetadata);
-            }
+            OpenShiftUtils.getInstance().createResources(hasMetadata);
         }
 
         //TODO: there's a bug in openshift-client, we need to initialize manually
@@ -147,9 +145,9 @@ public class SyndesisTemplate {
     }
 
     private static void deployCrd() {
+        log.info("Creating custom resource definition from " + TestConfiguration.syndesisOperatorCrdUrl());
         try (InputStream is = new URL(TestConfiguration.syndesisOperatorCrdUrl()).openStream()) {
             CustomResourceDefinition crd = OpenShiftUtils.client().customResourceDefinitions().load(is).get();
-            log.info("Creating CRD");
             OpenShiftUtils.client().customResourceDefinitions().create(crd);
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load CRD", ex);
@@ -161,7 +159,7 @@ public class SyndesisTemplate {
     }
 
     private static void deployOperator() {
-        log.info("Deploying operator");
+        log.info("Deploying operator from " + TestConfiguration.syndesisOperatorUrl());
         String[] json = new String[1];
         OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
                 "Unable to process operator resource " + TestConfiguration.syndesisOperatorUrl(),
@@ -197,7 +195,7 @@ public class SyndesisTemplate {
     }
 
     private static void deploySyndesisViaOperator() {
-        log.info("Deploying syndesis resource");
+        log.info("Deploying syndesis resource from " + TestConfiguration.syndesisOperatorTemplateUrl());
         try (InputStream is = new URL(TestConfiguration.syndesisOperatorTemplateUrl()).openStream()) {
             CustomResourceDefinition crd = OpenShiftUtils.client().customResourceDefinitions().load(is).get();
             Map<String, Object> integration = (Map)crd.getSpec().getAdditionalProperties().get("integration");
@@ -206,7 +204,11 @@ public class SyndesisTemplate {
             crd.getSpec().getAdditionalProperties().put("TestSupport", true);
             crd.getSpec().getAdditionalProperties().put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
-            OpenShiftUtils.invokeApi("/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises", Serialization.jsonMapper().writeValueAsString(crd));
+            OpenShiftUtils.invokeApi(
+                    HttpUtils.Method.POST,
+                    "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises",
+                    Serialization.jsonMapper().writeValueAsString(crd)
+            );
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -247,6 +249,7 @@ public class SyndesisTemplate {
                 Response r;
                 log.info("Importing image from imagestream " + is.getMetadata().getName());
                 r = OpenShiftUtils.invokeApi(
+                        HttpUtils.Method.POST,
                         String.format("/apis/image.openshift.io/v1/namespaces/%s/imagestreamimports", TestConfiguration.openShiftNamespace()),
                         ImageStreamImport.getJson(
                                 new ImageStreamImport(is.getApiVersion(), metadata, is.getSpec().getTags().get(0).getFrom().getName(), is.getSpec().getTags().get(0).getName())
