@@ -46,7 +46,7 @@ public class GMailSteps {
     public void checkMails(String from, String subject, String text) {
         try {
             List<Message> messages = gmu.getMessagesMatchingQuery("me", "subject:" + subject + " AND from:" + from);
-            assertThat(messages.size()).isEqualTo(1);
+            assertThat(messages.size()).isGreaterThanOrEqualTo(1);
 
             MimeMessage mime = gmu.getMimeMessage(messages.get(0).getId());
             assertThat(mime.getSubject()).isEqualToIgnoringCase(subject);
