@@ -6,13 +6,13 @@ Feature: Integration - Databucket
   Background: Clean application state
     Given clean application state
     Given reset content of "contact" table
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
+    And delete emails from "jbossqa.fuse@gmail.com" with subject "Red Hat"
     Given log into the Syndesis
 
     Given created connections
-      | Twitter    | Twitter Listener | Twitter Listener   | SyndesisQE Twitter listener account |
-      | DropBox    | QE Dropbox       | QE Dropbox         | SyndesisQE DropBox test             |
-      | Gmail      | QE Google Mail   | My GMail Connector | SyndesisQE GMail test               |
+      | Twitter | Twitter Listener | Twitter Listener   | SyndesisQE Twitter listener account |
+      | DropBox | QE Dropbox       | QE Dropbox         | SyndesisQE DropBox test             |
+      | Gmail   | QE Google Mail   | My GMail Connector | SyndesisQE GMail test               |
     And navigate to the "Home" page
 
 #
@@ -105,8 +105,7 @@ Feature: Integration - Databucket
     When select the "My GMail Connector" connection
     And select "Send Email" integration action
     And fill in values
-      | Email to      | jbossqa.fuse@gmail.com |
-#      | Email subject | syndesis-test          |
+      | Email to | jbossqa.fuse@gmail.com |
     And click on the "Done" button
 
     # add another connection
@@ -135,8 +134,8 @@ Feature: Integration - Databucket
     Then open data bucket "2 - SQL Result"
 
     Then create data mapper mappings
-      | company  | text     |
-      | firma    | subject  |
+      | company | text    |
+      | firma   | subject |
 
     And scroll "top" "right"
     And click on the "Done" button
@@ -336,6 +335,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     ##################### step MAPPING step step step step ##################################
+    And scroll "top" "left"
     And add integration "step" on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
