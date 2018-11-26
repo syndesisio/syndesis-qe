@@ -47,23 +47,29 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public void fillAllOAuthSettings() {
-        for (SelenideElement listItem : getSettingsItems()) {
+        // previously used foreach lead to stale elements
+        for (int i = 0; i < getSettingsItems().size(); i++) {
+            SelenideElement listItem = getSettingsItems().get(i);
             listItem.shouldBe(visible).click();
             String text = listItem.$(By.className("list-pf-title")).getText();
+            String credentialsName = null;
             switch (text) {
                 case "Salesforce":
-                    fillOAuthItem(listItem, "QE Salesforce");
+                    credentialsName = "QE Salesforce";
                     break;
                 case "Twitter":
                     updateTwitterAccount("Twitter Listener");
-                    fillOAuthItem(listItem, "Twitter Listener");
+                    credentialsName = "Twitter Listener";
                     break;
                 case "SAP Concur":
-                    fillOAuthItem(listItem, "QE Concur");
+                    credentialsName = "QE Concur";
                     log.info("Concur oauth has no test yet");
                     break;
                 case "Gmail":
-                    fillOAuthItem(listItem, "QE Google Mail");
+                    credentialsName = "QE Google Mail";
+                    break;
+                case "Google Calendar":
+                    credentialsName = "QE Google Calendar";
                     break;
                 default:
                     log.error("Unknown oauth list item found: '" + text + "' !!!");
@@ -71,12 +77,18 @@ public class SettingsPage extends SyndesisPageObject {
                     listItem.$(By.className("list-pf-title")).click();
                     continue;
             }
-            getButton("Save").shouldBe(visible).click();
-            //alert-success should show
-            $(By.className("alert-success")).shouldBe(visible);
-            //close list item details
-            listItem.$(By.className("list-pf-title")).click();
+            fillGivenOAuthSetting(listItem, credentialsName);
         }
+    }
+
+    public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {
+        listItem.shouldBe(visible).click();
+        fillOAuthItem(listItem, credentialsName);
+        getButton("Save").shouldBe(visible).click();
+        //alert-success should show
+        $(By.className("alert-success")).shouldBe(visible);
+        //close list item details
+        getRootElement().$(By.cssSelector("div[class*='list-pf-item active']")).$(By.className("list-pf-title")).click();
     }
 
     public void fillOAuthItem(SelenideElement item, String credentialsName) {

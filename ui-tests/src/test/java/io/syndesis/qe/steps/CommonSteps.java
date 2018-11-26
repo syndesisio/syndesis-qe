@@ -583,8 +583,10 @@ public class CommonSteps {
                 fillAndValidateSalesforce();
                 break;
             case "Gmail":
-                waitForCallbackRedirect("google");
-                fillAndValidateGmail();
+                loginToGoogleIfNeeded("QE Google Mail");
+                break;
+            case "Google Calendar":
+                loginToGoogleIfNeeded("QE Google Calendar");
                 break;
             case "SAP Concur":
                 waitForCallbackRedirect("concursolutions");
@@ -594,6 +596,15 @@ public class CommonSteps {
                 fail("Unknown oauth option: " + type);
         }
         waitForCallbackRedirect(TestConfiguration.syndesisUrl());
+    }
+
+    private void loginToGoogleIfNeeded(String s) {
+        // if the browser has previously logged into google account syndesis will
+        // immediately move to next screen and will have "Successfully%20authorized%20Syndesis's%20access" in the URL
+        if (!isStringInUrl("Successfully%20authorized%20Syndesis's%20access", 5)) {
+            waitForCallbackRedirect("google");
+            fillAndValidateGoogleAccount(s);
+        }
     }
 
     private void fillAndValidateTwitter() {
@@ -628,8 +639,8 @@ public class CommonSteps {
         }
     }
 
-    private void fillAndValidateGmail() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Google Mail");
+    private void fillAndValidateGoogleAccount(String googleAccount) {
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(googleAccount);
 
         if (account.isPresent()) {
 
@@ -640,7 +651,7 @@ public class CommonSteps {
             $(By.id("passwordNext")).shouldBe(visible).click();
 
         } else {
-            fail("Credentials for QE Google Mail were not found.");
+            fail("Credentials for " + googleAccount + " were not found.");
         }
     }
 
@@ -665,11 +676,32 @@ public class CommonSteps {
     }
 
     private void waitForCallbackRedirect(String expectedPartOfUrl) {
+        waitForCallbackRedirect(expectedPartOfUrl, 60);
+    }
+
+    private void waitForCallbackRedirect(String expectedPartOfUrl, int timeoutSeconds) {
         try {
             waitFor(() -> WebDriverRunner.currentFrameUrl().contains(expectedPartOfUrl.toLowerCase()), 60 * 1000);
         } catch (InterruptedException | TimeoutException e) {
             fail("Error while redirecting to " + expectedPartOfUrl, e);
         }
+    }
+
+    private void waitForStringInUrl(String expectedPartOfUrl, int timeoutSeconds) throws TimeoutException, InterruptedException {
+        waitFor(() -> {
+            String frameUrl = WebDriverRunner.currentFrameUrl().toLowerCase();
+            return frameUrl.contains(expectedPartOfUrl.toLowerCase());
+        }, timeoutSeconds * 1000);
+    }
+
+    private boolean isStringInUrl(String toFind, int timeoutSeconds) {
+        boolean result = false;
+        try {
+            waitForStringInUrl(toFind, timeoutSeconds);
+            result = true;
+        } catch (InterruptedException | TimeoutException e) {
+        }
+        return result;
     }
 
     @When("^set 3scale discovery variable to \"([^\"]*)\"")
