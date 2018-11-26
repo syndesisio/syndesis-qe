@@ -1,22 +1,20 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
 @Slf4j
 public class IntegrationFlowView extends SyndesisPageObject {
@@ -113,7 +111,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
 
-        stepElement.shouldBe(visible).scrollIntoView(true).hover();
+        stepElement.shouldBe(visible).hover();
 
         getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
     }
@@ -164,6 +162,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
     /**
      * Always follow with shouldBe(visible) as it is needed also for the case when it returns nothing
+     *
      * @param stepPosition
      * @return
      */
