@@ -684,13 +684,18 @@ public class CommonSteps {
         OpenShiftUtils.getInstance().updateDeploymentconfig(dc);
 
         try {
-            OpenShiftWaitUtils.waitForPodIsReloaded("syndesis-server");
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("syndesis-server").get()), 60 * 1000 * 10L);
+            OpenShiftWaitUtils.waitForPodIsReloaded("server");
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodByPartialName("server").isPresent(), 300 * 1000L);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("server").get()), 60 * 1000 * 10L);
         } catch (InterruptedException | TimeoutException e) {
             fail("Server was not reloaded after deployment config change", e);
         }
         // even though server is in ready state, inside app is still starting so we have to wait a lot just to be sure
-        TestUtils.sleepForJenkinsDelayIfHigher(120);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("server").contains("Started Application in"), 1000 * 300L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Syndesis server did not start in 300s with new variable", e);
+        }
 
         WebDriverRunner.getWebDriver().navigate().refresh();
     }
