@@ -57,6 +57,10 @@ public class UpgradeSteps {
     @When("^get upgrade versions$")
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
+            // Restore syndesis version if it was changed by previous upgrade test
+            if (System.getProperty("syndesis.upgrade.backup.version") != null) {
+                System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.backup.version"));
+            }
             // Parse "1.5"
             double version = Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3));
             Request request = new Request.Builder()
@@ -100,6 +104,8 @@ public class UpgradeSteps {
                     Matcher matcher = pattern.matcher(tag);
                     if (matcher.matches()) {
                         log.info("Setting syndesis.version to " + tag);
+                        // Save the original syndesis version
+                        System.setProperty("syndesis.upgrade.backup.version", System.getProperty("syndesis.version"));
                         System.setProperty("syndesis.version", tag);
                         break outer;
                     }
@@ -110,6 +116,7 @@ public class UpgradeSteps {
         if (System.getProperty("syndesis.upgrade.old.version") != null) {
             // Allow to define daily tag using custom property, because you can't define daily version as "syndesis.version"
             // because there are no artifacts
+            System.getProperty("syndesis.upgrade.backup.version", System.getProperty("syndesis.version"));
             System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.old.version"));
         }
 
@@ -274,9 +281,10 @@ public class UpgradeSteps {
         }
 
         retries = 0;
-        log.info("Waiting for syndesis-upgrade pod to complete");
-        // 10 minutes
-        while (!"Completed".equals(pod.get().getStatus().getReason()) && retries < 120) {
+        log.info("Waiting for syndesis-upgrade pod to finish");
+        // 15 minutes
+        while (!"Succeeded".equals(pod.get().getStatus().getPhase()) && retries < 180) {
+            pod = OpenShiftUtils.getPodByPartialName("syndesis-upgrade");
             TestUtils.sleepIgnoreInterrupt(5000L);
             retries++;
         }
