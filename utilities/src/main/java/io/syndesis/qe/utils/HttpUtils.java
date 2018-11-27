@@ -23,11 +23,19 @@ import okhttp3.Response;
 
 @Slf4j
 public final class HttpUtils {
+    public enum Method {
+        GET, POST, PUT, DELETE
+    }
+
     private HttpUtils() {
     }
 
     public static Response doPostRequest(String url, String content) {
         return doPostRequest(url, content, "application/json", null);
+    }
+
+    public static Response doPostRequest(String url, String content, Headers headers) {
+        return doPostRequest(url, content, "application/json", headers);
     }
 
     public static Response doPostRequest(String url, String content, String contentType, Headers headers) {
@@ -91,6 +99,10 @@ public final class HttpUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Response doPutRequest(String url, String content, Headers headers) {
+        return doPutRequest(url, content, "application/json", headers);
     }
 
     public static Response doPutRequest(String url, String content, String contentType) {
