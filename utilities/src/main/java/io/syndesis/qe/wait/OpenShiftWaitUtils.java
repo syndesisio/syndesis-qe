@@ -1,12 +1,7 @@
 package io.syndesis.qe.wait;
 
-import cz.xtf.openshift.OpenShiftUtil;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.api.model.PodCondition;
-import io.fabric8.openshift.api.model.Build;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
@@ -17,8 +12,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import cz.xtf.openshift.OpenShiftUtil;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodCondition;
+import io.fabric8.openshift.api.model.Build;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OpenShiftWaitUtils {
@@ -249,8 +249,8 @@ public class OpenShiftWaitUtils {
 
         String podPartialNextName = podPartialName + "-" + nextNr;
         log.info("Waiting for {} pod is reloaded", podPartialNextName);
-        waitFor(() -> (areExactlyNPods(podPartialNextName, 1).getAsBoolean()), 60 * 1000 * 10L);
-        waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialName).get()), 60 * 1000 * 10L);
+        waitFor(() -> (areExactlyNPods(podPartialNextName, 2).getAsBoolean()), 60 * 1000 * 10L);
+        waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialNextName).get()), 60 * 1000 * 10L);
 
         //There was an issue with meta pod not listening straight after deploying - waiting a bit here
         // UI even gives 60s after integration gets into running state, lets go with 30 here
