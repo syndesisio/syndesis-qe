@@ -18,6 +18,14 @@ public abstract class TestSuiteParent {
 
     @BeforeClass
     public static void lockNamespace() throws InterruptedException {
+        if (TestConfiguration.enableTestSupport()) {
+            log.info("enabling test support");
+            OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED", "true");
+            log.info("waiting for syndesis");
+            Thread.sleep(10 * 1000);
+            CommonSteps.waitForSyndesis();
+        }
+
         if (!TestConfiguration.namespaceLock()) {
             return; //skip when syndesis.config.openshift.namespace.lock is false
         }

@@ -1,5 +1,5 @@
 # @sustainer: mastepan@redhat.com
-
+@stage-smoke
 @integrations-db-to-db-with-extension
 Feature: Integration - DB to DB with extension
 

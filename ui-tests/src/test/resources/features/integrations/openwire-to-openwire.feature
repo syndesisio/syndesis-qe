@@ -1,5 +1,5 @@
 # @sustainer: mcada@redhat.com
-
+@stage-smoke
 @integrations-openwire-to-openwire
 Feature: Integration - Openwire to Openwire
 

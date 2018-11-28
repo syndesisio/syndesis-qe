@@ -1,5 +1,4 @@
 # @sustainer: mcada@redhat.com
-
 @integration-import-export
 Feature: Integration - Import Export
 
@@ -11,6 +10,7 @@ Feature: Integration - Import Export
 #
 #  1. integration-import both methods, for investigation one of them use integration-import-export_backup.feature
 #
+  @stage-smoke
   @integration-import-export-classic-and-dnd
   Scenario: Import and export both flows
 

@@ -27,6 +27,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_UI_BROWSER = "syndesis.config.ui.browser";
     public static final String SYNDESIS_URL_SUFFIX = "syndesis.config.url.suffix";
     public static final String SYNDESIS_CALLBACK_URL_SUFFIX = "syndesis.config.callbackUrlSuffix";
+    public static final String SYNDESIS_ENABLE_TEST_SUPPORT = "syndesis.config.enableTestSupport";
 
     public static final String SYNDESIS_REST_API_PATH = "syndesis.config.rest.api.path";
     public static final String SYNDESIS_SERVER_ROUTE = "syndesis.config.server.route";
@@ -107,6 +108,10 @@ public class TestConfiguration {
 
     public static boolean useOperator() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_TEMPLATE_USE_OPERATOR));
+    }
+
+    public static boolean enableTestSupport() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_ENABLE_TEST_SUPPORT, "false"));
     }
 
     public static String syndesisOperatorCrdUrl() {

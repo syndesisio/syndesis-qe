@@ -135,7 +135,7 @@ public class CommonSteps {
 
         String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
-        if (currentUrl.contains("api.fuse-ignite.openshift.com")) {
+        if (currentUrl.contains(".openshift.com")) {
 
             //click only if there is Ignite cluster login page
             SelenideElement login = $(By.className("login-redhat"));
@@ -669,19 +669,7 @@ public class CommonSteps {
 
     @When("^set 3scale discovery variable to \"([^\"]*)\"")
     public void set3scaleEnvVar(String value) {
-        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-server");
-
-        List<EnvVar> vars = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
-
-        Optional<EnvVar> exposeVia3Scale = vars.stream().filter(a -> a.getName().equalsIgnoreCase("CONTROLLERS_EXPOSE_VIA3SCALE")).findFirst();
-        if (exposeVia3Scale.isPresent()) {
-            exposeVia3Scale.get().setValue(value);
-        } else {
-            fail("variable CONTROLLERS_EXPOSE_VIA3SCALE not found in deployment config of syndesis-server");
-        }
-
-        dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);
-        OpenShiftUtils.getInstance().updateDeploymentconfig(dc);
+        OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-server", "CONTROLLERS_EXPOSE_VIA3SCALE", value);
 
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded("server");
