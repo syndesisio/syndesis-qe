@@ -24,7 +24,7 @@ Feature: Customization - API Connector - ApicurIO GUI
 
     When click on the "Review/Edit" button
 
-  @apicurio-check-warnings-change
+  @apicurio-check-warnings-change @gh-3459
   Scenario: Check if warnings change is propagated into connector review page from ApicurIO GUI
     When remove warning via apicurio gui
     And click on button "Save" while in apicurio studio page
