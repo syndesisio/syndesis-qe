@@ -100,7 +100,7 @@ public class IntegrationSteps {
     }
 
 
-    @And("^export the integraion$")
+    @And("^export the integrat?ion$")
     public void exportIntegration() throws InterruptedException {
         File exportedIntegrationFile = detailPage.exportIntegration();
         assertThat(exportedIntegrationFile)
@@ -264,4 +264,15 @@ public class IntegrationSteps {
 
         assertThat(matchingStatesNumber).isGreaterThanOrEqualTo(2).withFailMessage("Spotted statuses' order:" + statusesMessage.toString());
     }
+
+    @Then("^verify there are ([0-9]+) flows in the integration$")
+    public void verifyThereAreNFlowsInTheIntegration(int numFlows) throws Throwable {
+        assertThat(detailPage.getFlowCount()).isEqualTo(numFlows);
+    }
+
+    @When("^edit integration$")
+    public void editIntegration() throws Throwable {
+        detailPage.editIntegration();
+    }
+
 }

@@ -155,6 +155,16 @@ public class DbUtils {
         log.debug("Cleared table: " + tableName.toUpperCase());
     }
 
+    /**
+     * Truncates a table, removing all the contents and resetting autoincrement field
+     *
+     * @param tableName
+     */
+    public void truncateTable(String tableName) {
+        executeSQLGetUpdateNumber("TRUNCATE TABLE " + tableName.toUpperCase() + " RESTART IDENTITY");
+        log.debug("Truncated table: " + tableName.toUpperCase());
+    }
+
     public void resetContactTable() {
         deleteRecordsInTable("contact");
         Assertions.assertThat(executeSQLGetUpdateNumber

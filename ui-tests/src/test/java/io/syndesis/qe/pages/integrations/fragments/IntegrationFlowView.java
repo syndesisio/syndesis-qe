@@ -40,6 +40,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By STEP_DETAILS = By.className("step-details");
         public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
 
+        public static final By FLOW_TITLE = By.cssSelector("h3.flow-view-step-title");
+
 
     }
 
@@ -182,4 +184,11 @@ public class IntegrationFlowView extends SyndesisPageObject {
         return connectionStep.$(Element.STEP_DETAILS).shouldBe(visible).getText();
     }
 
+    public String getFlowTitle() {
+        return getRootElement().$(Element.FLOW_TITLE).text();
+    }
+
+    public int getNumberOfSteps(){
+        return getRootElement().$$(Element.STEP).size();
+    }
 }
