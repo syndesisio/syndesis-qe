@@ -29,6 +29,14 @@ public class RestTestHooks {
         stepStorage.flushStepDefinitions();
         log.debug("Flushed steps from steps storage");
         SampleDbConnectionManager.closeConnections();
+    }
+
+    @After("@upgrade,@rollback,@upgrade-operator")
+    public void clearUpgrade() {
+        // Restore syndesis version if it was changed by previous upgrade test
+        if (System.getProperty("syndesis.upgrade.backup.version") != null) {
+            System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.backup.version"));
+        }
         System.clearProperty("syndesis.upgrade.version");
     }
 

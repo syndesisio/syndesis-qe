@@ -138,7 +138,7 @@ public class SyndesisTemplate {
         // When testing upgrade using operator, the operator deploys last released version tag (and it is upgrading to latest daily), so this can be removed
         // when the version in syndesis-qe will be 1.7-SNAPSHOT
         // Use this only when doing upgrade
-        if (Double.parseDouble(System.getProperty("syndesis.version").substring(0, 3)) <= 1.5 && System.getProperty("syndesis.upgrade.version") != null) {
+        if (System.getProperty("syndesis.upgrade.version") != null && Double.parseDouble(System.getProperty("syndesis.version").substring(0, 3)) <= 1.5) {
             deployOperatorPre73Way();
         } else {
             deployOperator();
