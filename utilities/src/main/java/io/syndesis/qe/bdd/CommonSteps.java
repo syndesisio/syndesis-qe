@@ -91,20 +91,16 @@ public class CommonSteps {
     private static Set<String> customResourceNames() {
         final Set<String> names = new HashSet<>();
         final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises";
-        try {
-            String responseBody = OpenShiftUtils.invokeApi(
-                    HttpUtils.Method.GET,
-                    url,
-                    null,
-                    Headers.of("Accept", "application/json")
-            ).body().string();
-            JSONArray items = new JSONObject(responseBody).getJSONArray("items");
+        String responseBody = OpenShiftUtils.invokeApi(
+                HttpUtils.Method.GET,
+                url,
+                null,
+                Headers.of("Accept", "application/json")
+        ).getBody();
+        JSONArray items = new JSONObject(responseBody).getJSONArray("items");
 
-            for (int i = 0; i < items.length(); i++) {
-                names.add(((JSONObject)items.get(i)).getJSONObject("metadata").getString("name"));
-            }
-        } catch (IOException e) {
-            fail("Unable to process response from " + url, e);
+        for (int i = 0; i < items.length(); i++) {
+            names.add(((JSONObject)items.get(i)).getJSONObject("metadata").getString("name"));
         }
         return names;
     }
