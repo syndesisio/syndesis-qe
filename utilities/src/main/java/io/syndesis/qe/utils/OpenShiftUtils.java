@@ -22,7 +22,6 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
-import okhttp3.Response;
 
 /**
  * OpenShift utils.
@@ -139,7 +138,7 @@ public final class OpenShiftUtils {
      * @param body body to send as JSON
      * @return response object
      */
-    public static Response invokeApi(HttpUtils.Method method, String url, String body) {
+    public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body) {
         return invokeApi(method, url, body, null);
     }
 
@@ -151,7 +150,7 @@ public final class OpenShiftUtils {
      * @param headers headers to send, can be null
      * @return response object
      */
-    public static Response invokeApi(HttpUtils.Method method, String url, String body, Headers headers) {
+    public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body, Headers headers) {
         url = TestConfiguration.openShiftUrl() + url;
         if (headers == null) {
             headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken());
@@ -162,7 +161,7 @@ public final class OpenShiftUtils {
         }
 
         log.debug(url);
-        Response response = null;
+        HTTPResponse response = null;
         switch (method) {
             case GET: {
                 response = HttpUtils.doGetRequest(url, headers);
@@ -185,7 +184,6 @@ public final class OpenShiftUtils {
             }
         }
 
-        log.debug("Response code: " + response.code());
         return response;
     }
 

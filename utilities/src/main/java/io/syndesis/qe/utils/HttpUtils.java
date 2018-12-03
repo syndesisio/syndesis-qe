@@ -30,20 +30,32 @@ public final class HttpUtils {
     private HttpUtils() {
     }
 
-    public static Response doPostRequest(String url, String content) {
+    public static HTTPResponse doPostRequest(String url, String content) {
         return doPostRequest(url, content, "application/json", null);
     }
 
-    public static Response doPostRequest(String url, String content, Headers headers) {
+    public static HTTPResponse doPostRequest(String url, String content, Headers headers) {
         return doPostRequest(url, content, "application/json", headers);
     }
 
-    public static Response doPostRequest(String url, String content, String contentType, Headers headers) {
+    public static HTTPResponse doPostRequest(String url, String content, String contentType, Headers headers) {
         RequestBody body = RequestBody.create(MediaType.parse(contentType), content);
         return doPostRequest(url, body, headers);
     }
 
-    public static Response doPostRequest(String url, RequestBody body, Headers headers) {
+    private static HTTPResponse doRequest(Request request) {
+        try {
+            Response r = getClient().newCall(request).execute();
+            return new HTTPResponse(r.body().string(), r.code());
+        } catch (IOException e) {
+            log.error("Request invocation failed!", e);
+            //print whole stacktrace
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static HTTPResponse doPostRequest(String url, RequestBody body, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .post(body);
@@ -51,21 +63,14 @@ public final class HttpUtils {
             requestBuilder.headers(headers);
         }
 
-        try {
-            return getClient().newCall(requestBuilder.build()).execute();
-        } catch (IOException e) {
-            log.error("Post invocation failed!", e);
-            //print whole stacktrace
-            e.printStackTrace();
-        }
-        return null;
+        return doRequest(requestBuilder.build());
     }
 
-    public static Response doGetRequest(String url) {
+    public static HTTPResponse doGetRequest(String url) {
         return doGetRequest(url, null);
     }
 
-    public static Response doGetRequest(String url, Headers headers) {
+    public static HTTPResponse doGetRequest(String url, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .get();
@@ -73,19 +78,14 @@ public final class HttpUtils {
             requestBuilder.headers(headers);
         }
 
-        try {
-            return getClient().newCall(requestBuilder.build()).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return doRequest(requestBuilder.build());
     }
 
-    public static Response doDeleteRequest(String url) {
+    public static HTTPResponse doDeleteRequest(String url) {
         return doDeleteRequest(url, null);
     }
 
-    public static Response doDeleteRequest(String url, Headers headers) {
+    public static HTTPResponse doDeleteRequest(String url, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
                 .delete();
@@ -93,23 +93,18 @@ public final class HttpUtils {
             requestBuilder.headers(headers);
         }
 
-        try {
-            return getClient().newCall(requestBuilder.build()).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return doRequest(requestBuilder.build());
     }
 
-    public static Response doPutRequest(String url, String content, Headers headers) {
+    public static HTTPResponse doPutRequest(String url, String content, Headers headers) {
         return doPutRequest(url, content, "application/json", headers);
     }
 
-    public static Response doPutRequest(String url, String content, String contentType) {
+    public static HTTPResponse doPutRequest(String url, String content, String contentType) {
         return doPutRequest(url, content, contentType, null);
     }
 
-    public static Response doPutRequest(String url, String content, String contentType, Headers headers) {
+    public static HTTPResponse doPutRequest(String url, String content, String contentType, Headers headers) {
         RequestBody body = RequestBody.create(MediaType.parse(contentType), content);
         Request.Builder requestBuilder = new Request.Builder()
                 .url(url)
@@ -118,12 +113,7 @@ public final class HttpUtils {
             requestBuilder.headers(headers);
         }
 
-        try {
-            return getClient().newCall(requestBuilder.build()).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return doRequest(requestBuilder.build());
     }
 
     private static OkHttpClient getClient() {
