@@ -20,10 +20,10 @@ import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.servicenow.model.Incident;
 import io.syndesis.qe.servicenow.model.IncidentRecordList;
 import io.syndesis.qe.servicenow.model.IncidentSingleResponse;
+import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
-import okhttp3.Response;
 
 /**
  * Simple request wrapper for Service-Now incidents API.
@@ -56,14 +56,14 @@ public class ServiceNow {
         String json = getIncidentJson(i);
         log.debug(String.format("Sending incident Json: %s", json));
 
-        Response r = HttpUtils.doPostRequest(
+        HTTPResponse r = HttpUtils.doPostRequest(
                 url,
                 json,
                 "application/json",
                 Headers.of("Authorization", "Basic " + Base64.getEncoder().encodeToString((userName + ":" + password).getBytes()))
         );
 
-        assertThat(r.code()).isEqualTo(201);
+        assertThat(r.getCode()).isEqualTo(201);
 
         return getIncidentFromResponse(r);
     }
@@ -82,43 +82,38 @@ public class ServiceNow {
             }
         }
 
-        Response r = HttpUtils.doGetRequest(
+        HTTPResponse r = HttpUtils.doGetRequest(
                 getUrl,
                 Headers.of("Authorization", "Basic " + Base64.getEncoder().encodeToString((userName + ":" + password).getBytes()))
         );
 
-        assertThat(r.code()).isEqualTo(200);
-        try {
-            String responseBody = r.body().string();
-            log.debug("Response body: " + responseBody);
-            return parseResponse(responseBody);
-        } catch (IOException e) {
-            fail("Unable to unmarshall incident response", e);
-        }
-        return null;
+        assertThat(r.getCode()).isEqualTo(200);
+
+        String responseBody = r.getBody();
+        return parseResponse(responseBody);
     }
 
     public static void deleteIncident(String sysId) {
-        Response r = HttpUtils.doDeleteRequest(
+        HTTPResponse r = HttpUtils.doDeleteRequest(
                 String.format("%s/%s", url, sysId),
                 Headers.of("Authorization", "Basic " + Base64.getEncoder().encodeToString((userName + ":" + password).getBytes()))
         );
 
-        assertThat(r.code()).isEqualTo(204);
+        assertThat(r.getCode()).isEqualTo(204);
     }
 
     public static Incident updateIncident(String sysId, Incident incident) {
         String json = getIncidentJson(incident);
         log.debug(String.format("Sending incident Json: %s", json));
 
-        Response r = HttpUtils.doPutRequest(
+        HTTPResponse r = HttpUtils.doPutRequest(
                 String.format("%s/%s", url, sysId),
                 json,
                 "application/json",
                 Headers.of("Authorization", "Basic " + Base64.getEncoder().encodeToString((userName + ":" + password).getBytes()))
         );
 
-        assertThat(r.code()).isEqualTo(200);
+        assertThat(r.getCode()).isEqualTo(200);
 
         return getIncidentFromResponse(r);
     }
@@ -147,17 +142,12 @@ public class ServiceNow {
         return null;
     }
 
-    private static Incident getIncidentFromResponse(Response r) {
-        try {
-            String responseBody = r.body().string();
-            log.debug("Response body: " + responseBody);
-            List<Incident> incidents = parseResponse(responseBody);
-            assertThat(incidents).hasSize(1);
-            return incidents.get(0);
-        } catch (IOException e) {
-            fail("Unable to unmarshall incident response", e);
-        }
-        return null;
+    private static Incident getIncidentFromResponse(HTTPResponse r) {
+        String responseBody = r.getBody();
+        log.debug("Response body: " + responseBody);
+        List<Incident> incidents = parseResponse(responseBody);
+        assertThat(incidents).hasSize(1);
+        return incidents.get(0);
     }
 
     public static String getIncidentJson(Incident i) {

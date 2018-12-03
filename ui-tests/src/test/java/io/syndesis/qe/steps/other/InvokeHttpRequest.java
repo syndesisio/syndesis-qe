@@ -1,13 +1,15 @@
 package io.syndesis.qe.steps.other;
 
-import cucumber.api.java.en.When;
-import io.syndesis.qe.utils.HttpUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import org.openqa.selenium.By;
+
+import cucumber.api.java.en.When;
+import io.syndesis.qe.utils.HttpUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class InvokeHttpRequest {
@@ -25,7 +27,6 @@ public class InvokeHttpRequest {
         String url = $(By.className("pfng-block-copy-preview-txt")).shouldBe(visible).getAttribute("value");
 
         log.info("WebHook URL: " + url);
-        assertThat(HttpUtils.doPostRequest(url, body).code())
-                .isEqualTo(204);
+        assertThat(HttpUtils.doPostRequest(url, body).getCode()).isEqualTo(204);
     }
 }

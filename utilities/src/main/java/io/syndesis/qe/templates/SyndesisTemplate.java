@@ -35,12 +35,12 @@ import io.fabric8.openshift.api.model.TagImportPolicy;
 import io.fabric8.openshift.api.model.Template;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Response;
 
 @Slf4j
 public class SyndesisTemplate {
@@ -138,7 +138,7 @@ public class SyndesisTemplate {
         // When testing upgrade using operator, the operator deploys last released version tag (and it is upgrading to latest daily), so this can be removed
         // when the version in syndesis-qe will be 1.7-SNAPSHOT
         // Use this only when doing upgrade
-        if (Double.parseDouble(System.getProperty("syndesis.version").substring(0, 3)) <= 1.5 && System.getProperty("syndesis.upgrade.version") != null) {
+        if (System.getProperty("syndesis.upgrade.version") != null && Double.parseDouble(System.getProperty("syndesis.version").substring(0, 3)) <= 1.5) {
             deployOperatorPre73Way();
         } else {
             deployOperator();
@@ -276,16 +276,15 @@ public class SyndesisTemplate {
                 metadata.put("resourceVersion",
                         OpenShiftUtils.client().imageStreams().withName(is.getMetadata().getName()).get().getMetadata().getResourceVersion());
 
-                Response r;
                 log.info("Importing image from imagestream " + is.getMetadata().getName());
-                r = OpenShiftUtils.invokeApi(
+                HTTPResponse r = OpenShiftUtils.invokeApi(
                         HttpUtils.Method.POST,
                         String.format("/apis/image.openshift.io/v1/namespaces/%s/imagestreamimports", TestConfiguration.openShiftNamespace()),
                         ImageStreamImport.getJson(
                                 new ImageStreamImport(is.getApiVersion(), metadata, is.getSpec().getTags().get(0).getFrom().getName(), is.getSpec().getTags().get(0).getName())
                         )
                 );
-                responseCode = r.code();
+                responseCode = r.getCode();
                 if (responseCode != 201 && retries == 2) {
                     fail("Unable to import image for image stream " + is.getMetadata().getName() + " after 3 retries");
                 }

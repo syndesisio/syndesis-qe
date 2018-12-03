@@ -57,10 +57,6 @@ public class UpgradeSteps {
     @When("^get upgrade versions$")
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
-            // Restore syndesis version if it was changed by previous upgrade test
-            if (System.getProperty("syndesis.upgrade.backup.version") != null) {
-                System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.backup.version"));
-            }
             // Parse "1.5"
             double version = Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3));
             Request request = new Request.Builder()
