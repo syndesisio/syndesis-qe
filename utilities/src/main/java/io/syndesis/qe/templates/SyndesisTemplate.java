@@ -146,9 +146,9 @@ public class SyndesisTemplate {
     }
 
     private static void deployCrd() {
+        log.info("Creating custom resource definition from " + TestConfiguration.syndesisOperatorCrdUrl());
         try (InputStream is = new URL(TestConfiguration.syndesisOperatorCrdUrl()).openStream()) {
             CustomResourceDefinition crd = OpenShiftUtils.client().customResourceDefinitions().load(is).get();
-            log.info("Creating CRD");
             OpenShiftUtils.client().customResourceDefinitions().create(crd);
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load CRD", ex);
@@ -165,7 +165,7 @@ public class SyndesisTemplate {
     }
 
     private static void deploySyndesisViaOperator() {
-        log.info("Deploying syndesis resource");
+        log.info("Deploying syndesis resource from " + TestConfiguration.syndesisOperatorTemplateUrl());
         try (InputStream is = new URL(TestConfiguration.syndesisOperatorTemplateUrl()).openStream()) {
             CustomResourceDefinition crd = OpenShiftUtils.client().customResourceDefinitions().load(is).get();
             Map<String, Object> integration = (Map)crd.getSpec().getAdditionalProperties().get("integration");
