@@ -62,6 +62,7 @@ public class CommonSteps {
 
     @Then("^wait for Syndesis to become ready")
     public static void waitForSyndesis() {
+        final int timeout = TestUtils.isJenkins() ? 20 : 12;
         EnumSet<Component> components = EnumSet.allOf(Component.class);
 
         ExecutorService executorService = Executors.newFixedThreadPool(components.size());
@@ -70,7 +71,7 @@ public class CommonSteps {
                     OpenShiftUtils.xtf().waiters()
                             .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
                             .interval(TimeUnit.SECONDS, 20)
-                            .timeout(TimeUnit.MINUTES, 12)
+                            .timeout(TimeUnit.MINUTES, timeout)
                             .assertEventually();
             executorService.submit(runnable);
         });

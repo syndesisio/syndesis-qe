@@ -96,7 +96,9 @@ public class SyndesisTemplate {
         templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
         templateParams.put("TEST_SUPPORT_ENABLED", "true");
         templateParams.put("MAX_INTEGRATIONS_PER_USER", "5");
-        templateParams.put("INTEGRATION_STATE_CHECK_INTERVAL", "120");
+        if (TestUtils.isJenkins()) {
+            templateParams.put("INTEGRATION_STATE_CHECK_INTERVAL", "150");
+        }
         // process & create
         KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
         for (HasMetadata hasMetadata : processedTemplate.getItems()) {
@@ -168,7 +170,9 @@ public class SyndesisTemplate {
             CustomResourceDefinition crd = OpenShiftUtils.client().customResourceDefinitions().load(is).get();
             Map<String, Object> integration = (Map)crd.getSpec().getAdditionalProperties().get("integration");
             integration.put("limit", 5);
-            integration.put("stateCheckInterval", 120);
+            if (TestUtils.isJenkins()) {
+                integration.put("stateCheckInterval", 150);
+            }
             crd.getSpec().getAdditionalProperties().put("TestSupport", true);
             crd.getSpec().getAdditionalProperties().put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
@@ -252,12 +256,13 @@ public class SyndesisTemplate {
             Optional<ConfigMap> cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
                     .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
             int retries = 0;
-            while (!cm.isPresent() && retries < 12) {
+            final int maxRetries = TestUtils.isJenkins() ? 60 : 12;
+            while (!cm.isPresent() && retries < maxRetries) {
                 TestUtils.sleepIgnoreInterrupt(10000L);
                 cm = OpenShiftUtils.client().configMaps().list().getItems().stream()
                         .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-                if (retries == 11) {
-                    fail("Unable to find syndesis-server-config configmap after 12 tries");
+                if (retries == (maxRetries - 1)) {
+                    fail("Unable to find syndesis-server-config configmap after {} tries", maxRetries);
                 }
                 retries++;
             }
