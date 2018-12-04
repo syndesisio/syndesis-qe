@@ -64,7 +64,7 @@ public class CommonValidationSteps {
         }
         assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
-        if (System.getenv("WORKSPACE") != null) {
+        if (TestUtils.isJenkins()) {
             log.info("Running on Jenkins, adding 2 min sleep");
             TestUtils.sleepIgnoreInterrupt(120000L);
         }
