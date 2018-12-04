@@ -231,4 +231,12 @@ public final class TestUtils {
             return false;
         }
     }
+
+    /**
+     * Check if the test is running on jenkins.
+     * @return true/false
+     */
+    public static boolean isJenkins() {
+        return System.getenv("WORKSPACE") != null;
+    }
 }
