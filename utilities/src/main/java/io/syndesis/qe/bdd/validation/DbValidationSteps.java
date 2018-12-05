@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 /**
  * DB related validation steps.
@@ -309,5 +310,19 @@ public class DbValidationSteps {
             Assertions.fail("Error: " + ex);
         }
         return leadTask;
+    }
+
+    @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+) after (\\d+) s$")
+    public void checkRowsNumberIsGreaterThan(String table, int treshold, int s) throws InterruptedException, SQLException {
+        Thread.sleep((long)(s*1000 + 1000));
+        String sql = "SELECT COUNT(*) FROM CONTACT";
+        log.info("SQL **{}**", sql);
+        ResultSet rs = this.dbUtils.executeSQLGetResultSet(sql);
+
+        if (rs.next()) {
+            assertThat(rs.getInt(1)).isGreaterThan(treshold);
+        } else {
+            fail("There is no result for command: " + sql);
+        }
     }
 }
