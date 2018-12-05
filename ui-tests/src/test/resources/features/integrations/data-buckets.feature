@@ -47,14 +47,14 @@ Feature: Integration - Databucket
     # check pop ups
     #Then check that text "Output: Twitter Mention" is "visible" in hover table over "start" step
     #Then check that text "Add a datamapper step" is "visible" in hover table over "finish" step
-    Then check that text "Add a data mapping step" is "visible" in step warning inside of step number "2"
-    And check that there is no warning inside of step number "0"
+    Then check that text "Add a data mapping step" is "visible" in step warning inside of step number "3"
+    And check that there is no warning inside of step number "1"
 
     And open integration flow details
-    And check that in connection info popover for step number "0" is following text
+    And check that in connection info popover for step number "1" is following text
       | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
-    And check that in connection info popover for step number "2" is following text
+    And check that in connection info popover for step number "3" is following text
       | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
 
 
@@ -72,15 +72,15 @@ Feature: Integration - Databucket
 
     # check pop ups
     And open integration flow details
-    And check that in connection info popover for step number "0" is following text
+    And check that in connection info popover for step number "1" is following text
       | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
-    And check that in connection info popover for step number "4" is following text
+    And check that in connection info popover for step number "5" is following text
       | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
 
-    And check that there is no warning inside of step number "4"
-    And check that there is no warning inside of step number "0"
-    And check that there is no warning inside of step number "2"
+    And check that there is no warning inside of step number "5"
+    And check that there is no warning inside of step number "1"
+    And check that there is no warning inside of step number "3"
 
 #
 #  2. check that data buckets are available
@@ -128,7 +128,7 @@ Feature: Integration - Databucket
 
     #And check that there is no warning inside of step number "2"
     And open integration flow details
-    And check that in connection info popover for step number "2" is following text
+    And check that in connection info popover for step number "3" is following text
       | Name | PostgresDB | Action | Invoke SQL | Data Type | SQL Result |
 
     Then add second step between STEP and FINISH connection
@@ -146,12 +146,12 @@ Feature: Integration - Databucket
     And scroll "top" "right"
     And click on the "Done" button
 
-    And check that there is no warning inside of step number "4"
+    And check that there is no warning inside of step number "5"
 
     ###################### step step NEW step ##################################
     ##### test that 2 following SQL select steps do not break integration ######
 
-    And add integration "connection" on position "1"
+    And add integration "connection" on position "2"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select * from contact  limit 1;" value
@@ -205,7 +205,7 @@ Feature: Integration - Databucket
 
 
     ##################### step NEW step ##################################
-    And add integration "connection" on position "0"
+    And add integration "connection" on position "1"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select first_name as myName from contact where company = :#COMPANY and last_name = :#MYSURNAME limit 1;" value
@@ -214,7 +214,7 @@ Feature: Integration - Databucket
 
     ##################### step NEW step step ##################################
 
-    And add integration "connection" on position "0"
+    And add integration "connection" on position "1"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select last_name as mySurname from contact where company = :#COMPANY limit 1;" value
@@ -222,7 +222,7 @@ Feature: Integration - Databucket
 
     ##################### step step step NEW step ##################################
 
-    And add integration "connection" on position "2"
+    And add integration "connection" on position "3"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
@@ -230,7 +230,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step NEW step ##################################
 
-    And add integration "connection" on position "3"
+    And add integration "connection" on position "4"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "insert into CONTACT values (:#COMPANY , :#MYNAME , :#MYSURNAME , :#LEAD, '1999-01-01')" value
@@ -238,9 +238,9 @@ Feature: Integration - Databucket
 
     ##################### check warnings ##################################
 
-    And check that there is no warning inside of step number "0"
+    And check that there is no warning inside of step number "1"
 
-    Then check that text "Add a data mapping step" is "visible" in step warning inside of steps: 2, 4, 6, 8, 10
+    Then check that text "Add a data mapping step" is "visible" in step warning inside of steps: 3, 5, 7, 9, 11
 
 
 
@@ -249,7 +249,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step step MAPPING step ##################################
 
-    And add integration "step" on position "4"
+    And add integration "step" on position "5"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -278,7 +278,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step MAPPING step step ##################################
 
-    And add integration "step" on position "3"
+    And add integration "step" on position "4"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -301,7 +301,7 @@ Feature: Integration - Databucket
 
 
     ##################### step step step MAPPING step step ##################################
-    And add integration "step" on position "2"
+    And add integration "step" on position "3"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -320,7 +320,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     ##################### step step MAPPING step step step ##################################
-    And add integration "step" on position "1"
+    And add integration "step" on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -339,7 +339,7 @@ Feature: Integration - Databucket
 
     ##################### step MAPPING step step step step ##################################
     And scroll "top" "left"
-    And add integration "step" on position "0"
+    And add integration "step" on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -354,7 +354,7 @@ Feature: Integration - Databucket
 
     ##################### check warnings ##################################
 
-    And check that there is no warning inside of steps in range from "0" to "10"
+    And check that there is no warning inside of steps in range from "1" to "11"
 
     ##################### start the integration ##################################
 

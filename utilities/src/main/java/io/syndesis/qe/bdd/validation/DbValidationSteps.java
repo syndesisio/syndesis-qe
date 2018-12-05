@@ -1,6 +1,7 @@
 package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -307,5 +308,19 @@ public class DbValidationSteps {
             Assertions.fail("Error: " + ex);
         }
         return leadTask;
+    }
+
+    @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+) after (\\d+) s$")
+    public void checkRowsNumberIsGreaterThan(String table, int threshold, int s) throws InterruptedException, SQLException {
+        Thread.sleep(s*1000 + 1000L);
+        String sql = "SELECT COUNT(*) FROM CONTACT";
+        log.info("SQL **{}**", sql);
+        ResultSet rs = this.dbUtils.executeSQLGetResultSet(sql);
+
+        if (rs.next()) {
+            assertThat(rs.getInt(1)).isGreaterThan(threshold);
+        } else {
+            fail("There is no result for command: " + sql);
+        }
     }
 }
