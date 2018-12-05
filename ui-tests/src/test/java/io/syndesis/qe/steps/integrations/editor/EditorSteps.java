@@ -176,4 +176,9 @@ public class EditorSteps {
         assertEquals("Wrong number of steps", n, flowViewComponent.getNumberOfSteps());
     }
 
+    @When("^edit integration step on position (\\d+)$")
+    public void editIntegrationStep(int oneBasedStepPosition) {
+        log.info("Editing integration step #" + oneBasedStepPosition);
+        flowViewComponent.getStepOnPosition(oneBasedStepPosition).shouldBe(visible).click();
+    }
 }
