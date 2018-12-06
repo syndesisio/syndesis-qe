@@ -15,6 +15,7 @@ import io.fabric8.kubernetes.client.utils.Serialization;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -54,7 +55,11 @@ public class KafkaTemplate {
             Map<String, Object> zookeeper = (Map)crd.getSpec().getAdditionalProperties().get("zookeeper");
             zookeeper.put("replicas", 1);
 
-            OpenShiftUtils.invokeApi("/apis/kafka.strimzi.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/kafkas", Serialization.jsonMapper().writeValueAsString(crd));
+            OpenShiftUtils.invokeApi(
+                    HttpUtils.Method.POST,
+                    "/apis/kafka.strimzi.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/kafkas",
+                    Serialization.jsonMapper().writeValueAsString(crd)
+            );
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to create kafka custom resource", ex);
         }

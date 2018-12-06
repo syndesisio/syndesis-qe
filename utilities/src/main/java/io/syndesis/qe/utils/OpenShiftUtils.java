@@ -3,20 +3,19 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.openshift.api.model.DeploymentConfig;
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import cz.xtf.openshift.OpenShiftBinaryClient;
 import cz.xtf.openshift.OpenShiftUtil;
 import io.fabric8.kubernetes.api.model.DoneablePod;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.dsl.PodResource;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -103,12 +102,11 @@ public final class OpenShiftUtils {
     }
 
     public static Optional<Pod> getPodByPartialName(String partialName) {
-        Optional<Pod> oPod = OpenShiftUtils.getInstance().getPods().stream()
+        return OpenShiftUtils.getInstance().getPods().stream()
                 .filter(p -> p.getMetadata().getName().contains(partialName))
                 .filter(p -> !p.getMetadata().getName().contains("deploy"))
                 .filter(p -> !p.getMetadata().getName().contains("build"))
                 .findFirst();
-        return oPod;
     }
 
     public static int extractPodSequenceNr(Pod pod) {
@@ -138,41 +136,59 @@ public final class OpenShiftUtils {
     }
 
     /**
-     * Creates the resource using binary oc client.
-     * @param resource path to resource file to use with -f
-     */
-    public static void create(String resource) {
-        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
-                "Unable to create resource " + resource,
-                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
-                "apply",
-                "--overwrite=false",
-                "-n", TestConfiguration.openShiftNamespace(),
-                "-f", resource
-        );
-    }
-
-    /**
      * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
+     * @param method HTTP method to use
      * @param url api path
      * @param body body to send as JSON
      * @return response object
      */
-    public static Response invokeApi(String url, String body) {
+    public static Response invokeApi(HttpUtils.Method method, String url, String body) {
+        return invokeApi(method, url, body, null);
+    }
+
+    /**
+     * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
+     * @param method HTTP method to use
+     * @param url api path
+     * @param body body to send as JSON
+     * @param headers headers to send, can be null
+     * @return response object
+     */
+    public static Response invokeApi(HttpUtils.Method method, String url, String body, Headers headers) {
         url = TestConfiguration.openShiftUrl() + url;
-        log.debug(url);
-        Response response = HttpUtils.doPostRequest(
-                url,
-                body,
-                "application/json",
-                Headers.of("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken())
-        );
-        log.debug("Response code: " + response.code());
-        try {
-            log.debug("Response: " + response.body().string());
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (headers == null) {
+            headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken());
+        } else {
+            if (headers.get("Authorization") == null) {
+                headers = headers.newBuilder().add("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken()).build();
+            }
         }
+
+        log.debug(url);
+        Response response = null;
+        switch (method) {
+            case GET: {
+                response = HttpUtils.doGetRequest(url, headers);
+                break;
+            }
+            case POST: {
+                response = HttpUtils.doPostRequest(url, body, headers);
+                break;
+            }
+            case PUT: {
+                response = HttpUtils.doPutRequest(url, body, headers);
+                break;
+            }
+            case DELETE: {
+                response = HttpUtils.doDeleteRequest(url, headers);
+                break;
+            }
+            default: {
+                fail("Unable to use specified HTTP Method!");
+            }
+        }
+
+        log.debug("Response code: " + response.code());
         return response;
     }
 
@@ -190,5 +206,21 @@ public final class OpenShiftUtils {
 
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);
         getInstance().updateDeploymentconfig(dc);
+    }
+
+
+    /**
+     * Creates the resource using binary oc client.
+     * @param resource path to resource file to use with -f
+     */
+    public static void create(String resource) {
+        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
+                "Unable to create resource " + resource,
+                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
+                "apply",
+                "--overwrite=false",
+                "-n", TestConfiguration.openShiftNamespace(),
+                "-f", resource
+        );
     }
 }
