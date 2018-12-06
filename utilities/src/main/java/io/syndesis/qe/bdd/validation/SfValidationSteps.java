@@ -174,10 +174,19 @@ public class SfValidationSteps {
         log.info("Salesforce contains contact with T integration test finished.");
     }
 
-    @Then("check SF does not contain contact for tw accound: \"([^\"]*)\"")
+    @Then("check SF does not contain contact for tw account: \"([^\"]*)\"")
     public void checkSfDoesNotContain(String twAccount) {
+        checkSfAccount(twAccount, false);
+    }
+
+    @Then("check SF contains contact for tw account: \"([^\"]*)\"")
+    public void checkSfDoesContain(String twAccount) {
+        checkSfAccount(twAccount, true);
+    }
+
+    private void checkSfAccount(String twAccount, boolean shouldExist){
         assertThat(getSalesforceContact(salesforce, accountsDirectory.getAccount(twAccount)
-                .get().getProperty("screenName")).isPresent()).isEqualTo(false);
+                .get().getProperty("screenName")).isPresent()).isEqualTo(shouldExist);
     }
 
     @When("^publish message with content \'([^\']*)\' to queue \"([^\"]*)\"$")
