@@ -17,6 +17,7 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -199,12 +200,18 @@ public abstract class SyndesisPageObject {
     }
 
     public SelenideElement getElementContainingText(By by, String text, SelenideElement differentRoot) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(by).size() > 0, 30 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Element was not found in 30s", e);
+        }
+
         ElementsCollection elements = differentRoot.shouldBe(visible).findAll(by).shouldBe(sizeGreaterThan(0));
-        log.info("I found " + elements.size() + " elements.");
+        log.debug("Found " + elements.size() + " elements with selector, filtering...");
 
         elements = elements.filter(exactText(text));
-        log.info("Elements after filter: " + elements.size());
-        return elements.shouldBe(sizeGreaterThan(0)).first();
+        assertThat(elements.size()).isGreaterThanOrEqualTo(1);
+        return elements.first();
     }
 
     public String getElementText(By locator) {
