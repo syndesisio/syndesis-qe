@@ -1,16 +1,19 @@
 package io.syndesis.qe.steps.apps.todo;
 
-import static com.codeborne.selenide.Selenide.sleep;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static org.assertj.core.api.Assertions.fail;
-
+import com.codeborne.selenide.Selenide;
 import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.pages.apps.todo.Todo;
 import io.syndesis.qe.steps.customizations.connectors.ApiClientConnectorsSteps;
-import org.assertj.core.api.Assertions;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,14 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.pages.apps.todo.Todo;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.Selenide.sleep;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class TodoSteps {
@@ -60,7 +61,7 @@ public class TodoSteps {
         todoPage.refresh();
 
         int endCount = todoPage.getListItemsCount();
-        Assertions.assertThat(startCount).isLessThan(endCount);
+        assertThat(startCount).isLessThan(endCount);
     }
 
     //Because app can have another route and url should set dynamically, url is added to the original DataTable
@@ -85,13 +86,19 @@ public class TodoSteps {
     @Then("^check Todo list has \"(\\w+)\" items")
     public void checkNumberOfItems(int numberOfItems) {
         log.info("Checking Todo app list contains " + numberOfItems + " items/");
-        int endCount = todoPage.getListItemsCount();
-        Assertions.assertThat(numberOfItems).isEqualTo(endCount);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> {
+                Selenide.refresh();
+                return todoPage.getListItemsCount() == numberOfItems;
+            }, 5 * 1000L, 30 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Todo app list did not contain expected number of items in 15 seconds!", e);
+        }
     }
 
 
     @When("^publish JMS message on Todo app page from resource \"([^\"]*)\"$")
-    public void publishMessageFromResourceToDestinationWithName(String resourceName) throws IOException {
+    public void publishMessageFromResourceToDestinationWithName(String resourceName) {
         log.info("Publish JMS message via Todo app");
         ClassLoader classLoader = this.getClass().getClassLoader();
         URL fileUrl = classLoader.getResource("jms_messages/" + resourceName);
@@ -100,11 +107,12 @@ public class TodoSteps {
         }
 
         File file = new File(fileUrl.getFile());
-        String jmsMessage = new String(Files.readAllBytes(file.toPath()));
-        todoPage.setJmsForm(jmsMessage);
-        todoPage.sentJmsMessage();
-        sleep(3 * 1000);
-        todoPage.refresh();
+        try {
+            todoPage.setJmsForm(new String(Files.readAllBytes(file.toPath())));
+        } catch (IOException e) {
+            fail("Error while reading file", e);
+        }
+        todoPage.sendJmsMessage();
     }
 
     /**
@@ -113,7 +121,7 @@ public class TodoSteps {
     @Then("^check that \"(\\w+)\". task on Todo app page contains text \"([^\"]*)\"$")
     public void checkNumberValuesExistInTable(int index, String text) {
         String message = todoPage.getMessageFromTodo(index - 1);
-        Assertions.assertThat(message).contains(text);
+        assertThat(message).contains(text);
     }
 
 
