@@ -7,11 +7,14 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.Given;
+import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.qe.bdd.AbstractStep;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
@@ -19,7 +22,7 @@ import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.utils.RestConstants;
 import io.syndesis.qe.utils.TestUtils;
 
-public class HTTPSteps {
+public class HTTPSteps extends AbstractStep {
     @Autowired
     private StepsStorage steps;
     @Autowired
@@ -27,18 +30,28 @@ public class HTTPSteps {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
 
-    private void createStep(String method, long period, String timeunit) {
+    private void createStep(String method, String path, long period, String timeunit, String datashape) {
         final Connector httpConnector = connectorsEndpoint.get("http4");
         final Connection httpConnection = connectionsEndpoint.get(RestConstants.HTTP_CONNECTION_ID);
         final String action = period == -1 ? "http4-invoke-url" : "http4-periodic-invoke-url";
-        final Action httpAction = TestUtils.findConnectorAction(httpConnector, action);
+        Action httpAction = TestUtils.findConnectorAction(httpConnector, action);
         final Map<String, String> properties = TestUtils.map(
-                "path", "/",
+                "path", path,
                 "httpMethod", method
         );
 
         if (period != -1) {
             properties.put("schedulerExpression", TimeUnit.MILLISECONDS.convert(period, TimeUnit.valueOf(timeunit)) + "");
+        }
+
+        if (datashape != null) {
+            final ConnectorDescriptor cd = getConnectorDescriptor(httpAction, properties, RestConstants.HTTP_CONNECTION_ID);
+            httpAction = withCustomDatashape(
+                    httpAction,
+                    cd,
+                    "out",
+                    DataShapeKinds.XML_INSTANCE,
+                    datashape);
         }
 
         final Step httpStep = new Step.Builder()
@@ -54,11 +67,27 @@ public class HTTPSteps {
 
     @Given("^create HTTP \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
     public void createHTTPStepWithPeriod(String method, long period, String timeunit) {
-        createStep(method, period, timeunit);
+        createStep(method, "/", period, timeunit, null);
     }
 
     @Given("^create HTTP \"([^\"]*)\" step$")
     public void createHTTPStep(String method) {
-        createStep(method, -1, null);
+        createStep(method, "/", -1, null, null);
+    }
+
+    @Given("^create HTTP step with datashape$")
+    public void createHTTPStepWithDatashape() {
+        createStep("GET",
+                "/api/getXml",
+                5,
+                "SECONDS",
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                "<xmlResponse>" +
+                "<dummyField1>x</dummyField1>" +
+                "<dummyField2>y</dummyField2>" +
+                "<method>get</method>" +
+                "<dummyField3>z</dummyField3>" +
+                "</xmlResponse>"
+        );
     }
 }

@@ -211,7 +211,6 @@ public class OpenShiftWaitUtils {
                 return true;
             }
 
-            log.info("Condition was not fulfilled, sleeping for " + interval);
             Thread.sleep(interval);
         }
 
