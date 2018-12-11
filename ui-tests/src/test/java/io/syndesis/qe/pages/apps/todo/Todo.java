@@ -1,14 +1,14 @@
 package io.syndesis.qe.pages.apps.todo;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
+
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class Todo {
 
@@ -31,11 +31,11 @@ public class Todo {
         textArea.sendKeys(text);
     }
 
-    public void sentJmsMessage() {
+    public void sendJmsMessage() {
         showJmsForm();
         SelenideElement button = $(By.name("amq")).shouldBe(Condition.visible);
         button.click();
-        Assertions.assertThat($(By.xpath("//*[@id=\"jmsToggle\"]/div/ul/li/div/span")).text()).contains("Message sent successfully");
+        assertThat($(By.xpath("//*[@id=\"jmsToggle\"]/div/ul/li/div/span")).text()).contains("Message sent successfully");
     }
 
     public String getMessageFromTodo(int index) {
