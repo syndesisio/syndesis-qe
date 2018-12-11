@@ -303,6 +303,12 @@ public class CommonSteps {
 
     @When("^navigate to the \"([^\"]*)\" page$")
     public void navigateTo(String title) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> $(By.className("nav-pf-vertical")).exists(), 30 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Navigation panel was not found in 30s", e);
+        }
+
         SelenideElement selenideElement = $(By.className("nav-pf-vertical")).shouldBe(visible);
         ElementsCollection allLinks = selenideElement.findAll(By.className("list-group-item-value"));
         allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
@@ -567,7 +573,7 @@ public class CommonSteps {
     }
 
     @When("go back in browser history")
-    public void clickBrowserBackButton(){
+    public void clickBrowserBackButton() {
         Selenide.back();
     }
 
