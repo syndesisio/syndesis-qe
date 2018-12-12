@@ -29,8 +29,8 @@ Feature: Integration - FTP to FTP
     And fill in values
       | File name expression               | ui-ftp-ftp.txt |
       | FTP directory                      | download       |
-      | Milliseconds before polling starts | 1000           |
-      | Milliseconds before the next poll  | 500            |
+      | Interval before polling starts     | 1000           |
+      | Time interval before the next poll | 500            |
       | Delete file after download         | Yes            |
 
     And click on the "Next" button
