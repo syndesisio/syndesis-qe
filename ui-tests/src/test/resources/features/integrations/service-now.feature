@@ -1,3 +1,5 @@
+# @sustainer: mmelko@redhat.com
+
 @servicenow
 Feature: Integration - ServiceNow-amq/log
 

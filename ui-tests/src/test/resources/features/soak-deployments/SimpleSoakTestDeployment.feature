@@ -1,3 +1,5 @@
+# @sustainer: mmelko@redhat.com
+
 @disabled
 @Soak
 Feature: Simple soak test

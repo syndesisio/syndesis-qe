@@ -1,3 +1,5 @@
+# @sustainer: asmigala@redhat.com
+
 @google-calendar
 Feature: Google Calendar Connector
 
