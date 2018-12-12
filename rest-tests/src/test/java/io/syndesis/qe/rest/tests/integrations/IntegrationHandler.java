@@ -49,23 +49,7 @@ public class IntegrationHandler {
     public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
 
         processMapperSteps();
-
-        // For updating from 7.1 to 7.2 there was the change in "flows" introduced
-        // In update there is an integration created in 7.1 version and then also in 7.2, so it must support both ways
-        // TODO(avano): Can be reverted when master is related to 7.3
-        Integration integration;
-        if (System.getProperty("syndesis.upgrade.version") != null && !System.getProperty("syndesis.version")
-                .equals(System.getProperty("syndesis.upgrade.version"))) {
-            // Syndesis was not upgraded yet, so use old version
-            integration = new Integration.Builder()
-                    .name(integrationName)
-                    .description("Awkward integration.")
-                    .steps(steps.getSteps())
-                    .build();
-        } else {
-            // Syndesis was already updated to 7.2, so we can use the flow
-            // Or we don't do upgrade
-            integration = new Integration.Builder()
+        Integration integration = new Integration.Builder()
                     .name(integrationName)
                     .description("Awkward integration.")
                     .addFlow(
@@ -76,7 +60,6 @@ public class IntegrationHandler {
                                     .build()
                     )
                     .build();
-        }
 
         log.info("Creating integration {}", integration.getName());
         String integrationId = integrationsEndpoint.create(integration).getId().get();
