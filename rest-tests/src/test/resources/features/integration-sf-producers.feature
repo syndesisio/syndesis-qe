@@ -1,7 +1,9 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @integration-sf-producers
-
+@salesforce
+@activemq
 Feature: Integration - SalesForce producers
   Background:
     Given clean SF, removes all leads with email: "jdoeprod@acme.com,joedoeprod@acme.com"
@@ -52,6 +54,7 @@ Feature: Integration - SalesForce producers
     Then verify that lead json object was received from queue "sf-producers-output"
 
   @integration-sf-producers-create-record
+  @datamapper
   Scenario: Create a new record
     When create SF "create-sobject" action step on field: "Lead"
       And start mapper definition with name: "integration-sf-producers-create-record"
@@ -72,6 +75,7 @@ Feature: Integration - SalesForce producers
     Then verify that leads email was updated to "joedoeprod@acme.com"
 
   @integration-sf-producers-upsert-record-insert
+  @datamapper
   Scenario: Upsert record - insert
     When create SF "upsert-sobject" action step with properties
       | sObjectName   | Lead  |

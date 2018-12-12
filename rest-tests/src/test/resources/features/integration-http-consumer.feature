@@ -1,7 +1,10 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @integration-http
 @integration-http-consumer
+@http
+@activemq
 Feature: Integration - HTTP consumer
   Background:
     Given clean application state
@@ -89,6 +92,7 @@ Feature: Integration - HTTP consumer
     Then verify that endpoint "HEAD" was executed
 
   @integration-http-datamapper
+  @datamapper
   Scenario: HTTP Response Datamapper
     Given create HTTP step with datashape
       And start mapper definition with name: "mapping 1"

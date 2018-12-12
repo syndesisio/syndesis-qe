@@ -1,5 +1,9 @@
 # @sustainer: tplevko@redhat.com
 
+@rest
+@salesforce
+@database
+@datamapper
 Feature: Integration - Salesforce to DB
 
   Background: Clean application state

@@ -1,7 +1,10 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @integration-http
 @integration-http-producer
+@http
+@activemq
 Feature: Integration - HTTP producer
   Background:
     Given clean application state

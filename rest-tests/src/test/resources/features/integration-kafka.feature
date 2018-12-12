@@ -1,5 +1,11 @@
-@integration-kafka
+# @sustainer: avano@redhat.com
 
+@rest
+@integration-kafka
+@kafka
+@salesforce
+@datamapper
+@activemq
 Feature: Integration - Kafka producer / consumer
   Background:
     Given clean SF, removes all leads with email: "jdoe@acme.com"

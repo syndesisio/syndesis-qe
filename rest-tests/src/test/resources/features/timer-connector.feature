@@ -1,4 +1,9 @@
+# @sustainer: mmelko@redhat.com
+
+@rest
 @timer-connector
+@timer
+@http
 Feature: Timer connector
 
   Background:

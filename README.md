@@ -89,6 +89,8 @@ directory of `*-tests` module, e.g. [UI scenarios](https://github.com/syndesisio
 
 Every scenario is wrapped with appropriate tags to target specific execution on demand.
 
+If you want to execute tests for specific component - both UI and REST, you can use components tags, for example `@salesforce`, otherwise you can specify multiple tags using cucumber notation like `'@datamapper and @rest'` 
+
 #### GitHub issue tags
 
 A scenario may optionally be tagged with one or more tags in the form `@gh-<issue-number>`. 
