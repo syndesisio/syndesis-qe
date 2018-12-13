@@ -1,3 +1,5 @@
+# @sustainer: mcada@redhat.com
+
 @settings-oauth
 Feature: Settings OAuth
 

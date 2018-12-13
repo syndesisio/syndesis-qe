@@ -317,12 +317,6 @@ public class UpgradeSteps {
                 softAssertions.assertThat(integrationsEndpoint.get(integrationId).getDescription().get()).isEqualTo("UPGRADE INTEGRATION DESCRIPTION");
             });
         }
-
-        // TODO(avano): Remove this for 6.3
-        // This is used to decide if the syndesis was already upgraded or not in IntegrationHandler
-        if (!rollback) {
-            System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.version"));
-        }
     }
 
     private String getSyndesisVersion() {
