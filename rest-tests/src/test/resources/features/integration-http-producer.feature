@@ -1,7 +1,10 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @integration-http
 @integration-http-producer
+@http
+@activemq
 Feature: Integration - HTTP producer
   Background:
     Given clean application state
@@ -20,7 +23,7 @@ Feature: Integration - HTTP producer
     When clear endpoint events
       And publish message with content "" to "queue" with name "http-producer-get-input"
     Then verify that endpoint "GET" was executed once
-      And verify that JMS message with content "get" was received from "queue" "http-producer-get-output"
+      And verify that JMS message with content 'get' was received from "queue" "http-producer-get-output"
 
   @integration-http-producer-post
   Scenario: Integration - HTTP producer POST
@@ -32,7 +35,7 @@ Feature: Integration - HTTP producer
     When clear endpoint events
       And publish message with content "postbody" to "queue" with name "http-producer-post-input"
     Then verify that endpoint "POST" was executed once
-      And verify that JMS message with content "postbody" was received from "queue" "http-producer-post-output"
+      And verify that JMS message with content 'postbody' was received from "queue" "http-producer-post-output"
 
   @integration-http-producer-put
   Scenario: Integration - HTTP producer PUT
@@ -44,7 +47,7 @@ Feature: Integration - HTTP producer
     When clear endpoint events
       And publish message with content "putbody" to "queue" with name "http-producer-put-input"
     Then verify that endpoint "PUT" was executed once
-      And verify that JMS message with content "putbody" was received from "queue" "http-producer-put-output"
+      And verify that JMS message with content 'putbody' was received from "queue" "http-producer-put-output"
 
   @integration-http-producer-delete
   Scenario: Integration - HTTP producer DELETE
@@ -57,7 +60,7 @@ Feature: Integration - HTTP producer
       # DELETE may have body, but it shouldn't be used
       And publish message with content "" to "queue" with name "http-producer-delete-input1"
     Then verify that endpoint "DELETE" was executed once
-      And verify that JMS message with content "delete" was received from "queue" "http-producer-delete-output1"
+      And verify that JMS message with content 'delete' was received from "queue" "http-producer-delete-output1"
 
   @integration-http-producer-patch
   Scenario: Integration - HTTP producer PATCH
@@ -69,7 +72,7 @@ Feature: Integration - HTTP producer
     When clear endpoint events
       And publish message with content "patchbody" to "queue" with name "http-producer-patch-input"
     Then verify that endpoint "PATCH" was executed once
-      And verify that JMS message with content "patchbody" was received from "queue" "http-producer-patch-output"
+      And verify that JMS message with content 'patchbody' was received from "queue" "http-producer-patch-output"
 
   @integration-http-producer-options
   Scenario: Integration - HTTP producer OPTIONS
@@ -81,7 +84,7 @@ Feature: Integration - HTTP producer
     When clear endpoint events
       And publish message with content "" to "queue" with name "http-producer-options-input"
     Then verify that endpoint "OPTIONS" was executed once
-      And verify that JMS message with content "options" was received from "queue" "http-producer-options-output"
+      And verify that JMS message with content 'options' was received from "queue" "http-producer-options-output"
 
   @integration-http-producer-trace
   Scenario: Integration - HTTP producer TRACE

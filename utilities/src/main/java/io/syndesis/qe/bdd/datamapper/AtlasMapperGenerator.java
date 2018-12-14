@@ -21,9 +21,8 @@ import java.util.stream.Collectors;
 
 import io.atlasmap.java.v2.JavaClass;
 import io.atlasmap.java.v2.JavaField;
-import io.atlasmap.json.v2.InspectionType;
+import io.atlasmap.json.v2.JsonComplexType;
 import io.atlasmap.json.v2.JsonDataSource;
-import io.atlasmap.json.v2.JsonInspectionRequest;
 import io.atlasmap.json.v2.JsonInspectionResponse;
 import io.atlasmap.v2.AtlasMapping;
 import io.atlasmap.v2.BaseMapping;
@@ -35,7 +34,10 @@ import io.atlasmap.v2.Mapping;
 import io.atlasmap.v2.MappingType;
 import io.atlasmap.v2.Mappings;
 import io.atlasmap.v2.Properties;
+import io.atlasmap.xml.v2.XmlComplexType;
 import io.atlasmap.xml.v2.XmlDataSource;
+import io.atlasmap.xml.v2.XmlInspectionResponse;
+import io.atlasmap.xml.v2.XmlNamespaces;
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
@@ -106,7 +108,6 @@ public class AtlasMapperGenerator {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
         List<Field> fields = null;
-        log.debug(dataShapeSpecification);
 
         if (dsKind.equals(DataShapeKinds.JAVA)) {
             try {
@@ -117,17 +118,21 @@ public class AtlasMapperGenerator {
                 log.error("error: {}" + e);
             }
         } else if (dsKind.equals(DataShapeKinds.JSON_SCHEMA) || dsKind.equals(DataShapeKinds.JSON_INSTANCE)) {
-            JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(generateJsonInspectionRequest(dataShapeSpecification, dsKind));
+            JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(dataShapeSpecification, dsKind);
             try {
-                String mapperString = mapper.writeValueAsString(inspectionResponse);
-                log.debug(mapperString);
+                log.debug("Inspection API response: " + mapper.writeValueAsString(inspectionResponse));
                 fields = inspectionResponse.getJsonDocument().getFields().getField();
             } catch (JsonProcessingException e) {
-                log.error("error: {}" + e);
+                log.error("Unable to write inspection API response as string: {}" + e);
             }
         } else if (dsKind.equals(DataShapeKinds.XML_SCHEMA) || dsKind.equals(DataShapeKinds.XML_INSTANCE)) {
-            //TODO(tplevko)
-            throw new UnsupportedOperationException("XML support is not implemented yet");
+            XmlInspectionResponse inspectionResponse = atlasmapEndpoint.inspectXml(dataShapeSpecification, dsKind);
+            try {
+                log.debug("Inspection API response: " + mapper.writeValueAsString(inspectionResponse));
+                fields = inspectionResponse.getXmlDocument().getFields().getField();
+            } catch (JsonProcessingException e) {
+                log.error("Unable to write inspection API response as string: {}" + e);
+            }
         }
         return fields;
     }
@@ -187,7 +192,11 @@ public class AtlasMapperGenerator {
             source.setUri("atlas:" + "java:" + step.getStep().getId().get() + "?className=" + dataShape.getType());
         } else if (dataShapeKind.toString().contains("xml")) {
             source = new XmlDataSource();
-            //TODO(tplevko): find out how should look the XML datasource definition
+            source.setUri("atlas:xml:" + step.getStep().getId().get());
+            XmlNamespaces xmlNamespaces = new XmlNamespaces();
+            // Init the array, so that we don't have the null value
+            xmlNamespaces.getXmlNamespace();
+            ((XmlDataSource)source).setXmlNamespaces(xmlNamespaces);
         }
         source.setId(step.getStep().getId().get());
         source.setDataSourceType(dataSourceType);
@@ -205,7 +214,6 @@ public class AtlasMapperGenerator {
      * @return
      */
     public Step getAtlasMappingStep(StepDefinition mapping, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
-
         processPrecedingSteps(precedingSteps);
         processFolowingStep(followingStep);
         List<DataMapperStepDefinition> mappings = mapping.getDataMapperDefinition().get().getDataMapperStepDefinition();
@@ -230,18 +238,16 @@ public class AtlasMapperGenerator {
             mapperString = mapper.writeValueAsString(atlasMapping);
             log.debug(mapperString);
         } catch (JsonProcessingException e) {
-            log.error("error: {}" + e);
+            log.error("Unable to write mapper json as string: {}" + e);
         }
 
-        final Step mapperStep = new Step.Builder()
+        return new Step.Builder()
                 .stepKind(StepKind.mapper)
                 .name(mapping.getStep().getName())
                 .configuredProperties(TestUtils.map("atlasmapping", mapperString))
                 .action(getMapperStepAction(followingStep.getStep().getAction().get().getInputDataShape().get()))
                 .id(UUID.randomUUID().toString())
                 .build();
-
-        return mapperStep;
     }
 
     /**
@@ -374,12 +380,8 @@ public class AtlasMapperGenerator {
         generatedMapping.setId(UUID.randomUUID().toString());
         generatedMapping.setMappingType(MappingType.MAP);
 
-        Field in = fromStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
-
-        Field out = followingStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
-
+        Field in = getField(fromStep.getInspectionResponseFields().get(), mappingDef.getInputFields().get(0));
+        Field out = getField(followingStep.getInspectionResponseFields().get(), mappingDef.getOutputFields().get(0));
         in.setDocId(fromStep.getStep().getId().get());
         out.setDocId(followingStep.getStep().getId().get());
 
@@ -389,22 +391,36 @@ public class AtlasMapperGenerator {
     }
 
     /**
-     * Creates JsonInspectionRequest object out of specified datashape specification.
-     *
-     * @param specification
-     * @return
+     * Gets the field with the path corresponding to the search string. It recursively goes through child fields if the field is a complex type.
+     * @param fields list of fields
+     * @param searchString path search string
+     * @return field
      */
-    private JsonInspectionRequest generateJsonInspectionRequest(String specification, DataShapeKinds dsKind) {
-        log.debug(specification);
+    private Field getField(List<Field> fields, String searchString) {
+        Field f = null;
+        for (Field field : fields) {
+            if (field instanceof JsonComplexType || field instanceof XmlComplexType) {
+                // Search child elements of the complex element, just create a new list because Json/XmlField is a child class of Field
+                final List<Field> fieldList;
+                if (field instanceof JsonComplexType) {
+                    fieldList = new ArrayList<>(((JsonComplexType)field).getJsonFields().getJsonField());
+                } else {
+                    fieldList = new ArrayList<>(((XmlComplexType)field).getXmlFields().getXmlField());
+                }
+                f = getField(fieldList, searchString);
+            } else {
+                if (field.getPath().equals(searchString)) {
+                    return field;
+                } else {
+                    continue;
+                }
+            }
 
-        JsonInspectionRequest jsonInspectReq = new JsonInspectionRequest();
-        jsonInspectReq.setJsonData(specification);
-        if (dsKind == DataShapeKinds.JSON_SCHEMA) {
-            jsonInspectReq.setType(InspectionType.SCHEMA);
-        } else {
-            jsonInspectReq.setType(InspectionType.INSTANCE);
+            if (f != null) {
+                break;
+            }
         }
-        return jsonInspectReq;
+        return f;
     }
 
     /**

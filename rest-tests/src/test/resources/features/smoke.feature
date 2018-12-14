@@ -1,6 +1,8 @@
 # @sustainer: tplevko@redhat.com
 
+@rest
 @smoke
+@database
 Feature: Representative rest test
 
   Background: Create sample integration

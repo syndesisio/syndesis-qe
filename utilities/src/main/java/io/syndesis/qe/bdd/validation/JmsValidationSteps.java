@@ -5,17 +5,17 @@ import static org.assertj.core.api.Assertions.fail;
 
 import org.assertj.core.api.Assertions;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cz.xtf.jms.JmsClient;
 import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.JmsClientManager;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
 
 public class JmsValidationSteps {
 
@@ -60,7 +60,7 @@ public class JmsValidationSteps {
         }
     }
 
-    @Then("^verify that JMS message with content \"([^\"]*)\" was received from \"([^\"]*)\" \"([^\"]*)\"$")
+    @Then("^verify that JMS message with content \'([^\']*)\' was received from \"([^\"]*)\" \"([^\"]*)\"$")
     public void verifyThatJMSMessageWithContentWasReceivedFrom(String content, String type, String destination) {
         final String message = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(type.toUpperCase()), destination);
         assertThat(message).isEqualTo(content);

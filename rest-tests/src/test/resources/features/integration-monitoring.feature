@@ -1,6 +1,9 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @integrations-db-to-db-monitoring
+@database
+@datamapper
 Feature: Integration - Monitoring
 
   Background: Clean application state
@@ -24,6 +27,5 @@ Feature: Integration - Monitoring
 
     Then validate that number of all todos with task "Josef3" is greater than "1"
 
-#    monitoring part:
     Then validate that log of integration "DB to DB logs rest test" has been created, period in ms: "5000"
     Then validate that number of all messages through integration "DB to DB logs rest test" is greater than "3", period in ms: "10000"

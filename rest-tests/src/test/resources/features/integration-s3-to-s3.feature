@@ -1,4 +1,6 @@
 # @sustainer: tplevko@redhat.com
+
+@rest
 @s3
 Feature: Integration - S3 to S3
 

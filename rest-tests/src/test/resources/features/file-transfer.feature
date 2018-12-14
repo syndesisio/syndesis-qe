@@ -1,5 +1,6 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @file-transfer
 Feature: File transfer
 
@@ -7,6 +8,8 @@ Feature: File transfer
     Given clean application state
 
   @integrations-ftp-dropbox
+  @ftp
+  @dropbox
   Scenario: FTP to Dropbox
     Given deploy FTP server
       And delete file "/download/test_dropbox.txt" from FTP
@@ -23,6 +26,8 @@ Feature: File transfer
       And delete file with path "/test.txt" from Dropbox
 
   @integrations-s3-ftp
+  @ftp
+  @s3
   Scenario: S3 to FTP
     Given deploy FTP server
       And delete file "/upload/test_aws.txt" from FTP
@@ -39,6 +44,8 @@ Feature: File transfer
     Then validate that file "test_aws.txt" has been transfered to "/upload" FTP directory
 
   @integrations-dropbox-s3
+  @dropbox
+  @s3
   Scenario: Dropbox to S3
     When create Dropbox connection
       And create sample buckets on S3 with name "syndesis-server-bucket-to"

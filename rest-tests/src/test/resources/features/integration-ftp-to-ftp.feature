@@ -1,6 +1,8 @@
 # @sustainer: avano@redhat.com
 
+@rest
 @integration-ftp-ftp
+@ftp
 Feature: Integration - FTP to FTP
 
   Background: Prepare

@@ -1,5 +1,9 @@
 # @sustainer: tplevko@redhat.com
 
+@rest
+@twitter
+@salesforce
+@datamapper
 Feature: Integration - Twitter to Salesforce
 
   @integrations-tw-sf
@@ -12,7 +16,7 @@ Feature: Integration - Twitter to Salesforce
     And create TW mention step with "twitter-mention-action" action
     And create basic TW to SF filter step
 
-	And start mapper definition with name: "mapping 1"
+    And start mapper definition with name: "mapping 1"
     Then SEPARATE using Step 1 and strategy "Space" and source "user/name" into targets
         | /FirstName | /LastName |
     Then MAP using Step 1 and field "user/screenName" to "/TwitterScreenName__c"
