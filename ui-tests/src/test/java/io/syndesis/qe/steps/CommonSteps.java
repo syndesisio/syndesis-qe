@@ -32,6 +32,7 @@ import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -740,7 +741,8 @@ public class CommonSteps {
             fail("Syndesis server did not start in 300s with new variable", e);
         }
 
-        WebDriverRunner.getWebDriver().navigate().refresh();
+        RestUtils.reset();
+        Selenide.refresh();
     }
 
     @Then("^check that 3scale annotations are present on integration \"([^\"]*)\"")

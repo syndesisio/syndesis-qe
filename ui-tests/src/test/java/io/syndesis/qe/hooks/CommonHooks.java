@@ -7,7 +7,6 @@ import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -49,9 +48,5 @@ public class CommonHooks {
     public void default3scaleAnnotation() {
         log.info("Setting 3scale discovery to false");
         cs.set3scaleEnvVar("false");
-
-        //TODO: temporary delay to ensure that all following tests will have server in ready state
-        TestUtils.sleepForJenkinsDelayIfHigher(5 * 60);
-        WebDriverRunner.getWebDriver().navigate().refresh();
     }
 }
