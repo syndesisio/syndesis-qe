@@ -25,31 +25,44 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Activity extends SyndesisPageObject {
-    @Autowired
-    private IntegrationsEndpoint integrationsEndpoint;
-    @Autowired
-    private ActivityIntegrationsEndpoint activityIntegrationsEndpoint;
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("pfng-list");
+        public static final By ROOT = By.cssSelector("syndesis-integration-activity");
 
-        public static final By ACTIVITY_WRAPPED = By.className("list-pf-item");
-        public static final By ACTIVITY_BASIC = By.className("list-pf-container");
-        public static final By ACTIVITY_EXPANDED = By.className("pfng-list-expansion");
-        public static final By ACTIVITY_EXPNADER = By.className("fa-angle-right");
+        public static final By ACTIVITY_WRAPPED = By.className("list-group-item");
+        public static final By ACTIVITY_EXPAND_BUTTON = By.className("fa-angle-right");
 
-        //TODO(sveres), these elements are not available yet.
-        public static final By ACTIVITY_STEPS = By.cssSelector("TODO(sveres)activity detail B");
-        public static final By ACTIVITY_STEP = By.cssSelector("TODO(sveres)activity detail C");
-        public static final By ACTIVITY_STEP_NAME = By.cssSelector("TODO(sveres)activity detail C.2");
-        public static final By ACTIVITY_LOG_VIEW = By.cssSelector("TODO(sveres)activity log D");
-        public static final By CALENDAR = By.cssSelector("TODO(sveres)activity calendar E");
+        public static final By DATE = By.className("list-group-item-heading");
+        public static final By TIME = By.className("list-group-item-text");
+        public static final By VERSION = By.className("list-view-pf-additional-info-item");
+        public static final By ERRORS = By.className("list-view-pf-actions");
+
+        public static final By ONE_ROW_TABLE = By.cssSelector(".syn-nowrap.integration-step");
+        public static final By ONE_CELL_IN_TABLE = By.xpath(".//td");
     }
+
+    public enum COLUMN {
+        STEP(0),
+        TIME(1),
+        DURATION(2),
+        STATUS(3),
+        OUTPUT(4);
+
+        private final int value;
+
+        COLUMN(final int newValue) {
+            value = newValue;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
 
     @Override
     public SelenideElement getRootElement() {
-        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-        return elementRoot;
+        return $(Element.ROOT).shouldBe(visible);
     }
 
     @Override
@@ -57,83 +70,54 @@ public class Activity extends SyndesisPageObject {
         return getRootElement().is(visible);
     }
 
-    public void clickOnActivity(int order) {
-        ElementsCollection activities = this.getAllIntegrationActivities().shouldBe(sizeGreaterThan(0));
-        this.clickOnActivityExpander(activities.get(order));
+    public ElementsCollection getAllActivities() {
+        return getRootElement().findAll(Element.ACTIVITY_WRAPPED);
     }
 
-    public void clickButtonOfActivityStep(String buttonName, String stepName) {
-        ElementsCollection activitySteps = $(Element.ROOT).find(Element.ACTIVITY_STEPS).shouldBe(visible).findAll(Element.ACTIVITY_STEP).shouldBe(sizeGreaterThan(0));
-        SelenideElement step = activitySteps.stream().filter(el -> checkStepName(el, stepName)).findFirst().get();
-        this.clickButtonInStep(step, buttonName);
+    public SelenideElement getActivity(int indexOfActivity) {
+        return this.getAllActivities().get(indexOfActivity);
     }
 
-    public void checkLogIsPresent() {
-        $(Element.ROOT).findAll(Element.ACTIVITY_LOG_VIEW).shouldBe(size(1));
+    public String getActivityDate(int indexOfActivity) {
+        return this.getActivity(indexOfActivity).find(Element.DATE).getText();
     }
 
-    public void checkLogIsValid(String integrationName, String activityStepName) {
-
-        String text = $(Element.ROOT).findAll(Element.ACTIVITY_LOG_VIEW).shouldBe(size(1)).get(0).getText();
-
-        String integrationId = this.getIdByIntegrationName(integrationName);
-        Assertions.assertThat(integrationId).isNotNull();
-        //1.
-        List<io.syndesis.server.endpoint.v1.handler.activity.Activity> activityIntegrationLogs = activityIntegrationsEndpoint.list(integrationId);
-        boolean result = this.checkActivityText(activityIntegrationLogs.stream().findFirst().get(), activityStepName, text);
-
-        Assertions.assertThat(result).isEqualTo(true);
-
+    public String getActivityVersion(int indexOfActivity) {
+        return this.getActivity(indexOfActivity).find(Element.VERSION).getText();
     }
 
-    public void setCalendar(String startDate, String endDate) {
-        SelenideElement calendar = $(Element.ROOT).find(Element.CALENDAR).shouldBe(visible);
-        //TODO(sveres): how to select specific date in calendar component?
+    public String getActivityTime(int indexOfActivity) {
+        return this.getActivity(indexOfActivity).find(Element.TIME).getText();
+    }
+
+    public String getActivityError(int indexOfActivity) {
+        return this.getActivity(indexOfActivity).find(Element.ERRORS).getText();
+    }
+
+    public void clickOnActivity(int indexOfActivity) {
+        this.getActivity(indexOfActivity).find(Element.ACTIVITY_EXPAND_BUTTON).click();
     }
 
 
-
-//AUXILIARIES:
-
-    private ElementsCollection getAllIntegrationActivities(){
-        return $(Element.ROOT).findAll(Element.ACTIVITY_WRAPPED);
-    }
-
-    private void clickOnActivityExpander(SelenideElement activity){
-        activity.find(Element.ACTIVITY_EXPANDED).shouldBe(visible).click();
-    }
-
-    private boolean checkStepName(SelenideElement activityStepElement, String stepName){
-        return activityStepElement.find(Element.ACTIVITY_STEP_NAME).is(visible);
-    }
-
-    private void clickButtonInStep(SelenideElement activityStepElement, String buttonTitle){
-        activityStepElement.find(By.cssSelector(String.format("button:contains('%s')", buttonTitle))).shouldBe(visible).click();
-    }
-
-    private String getIdByIntegrationName(String integrationName) {
-        List<Integration> integrations = integrationsEndpoint.list();
-        Integration integr = integrations.stream().filter(integration -> integrationName.equals(integration.getName())).findAny().orElse(null);
-        return integr.getId().get();
-    }
-
-    private boolean checkActivityText(io.syndesis.server.endpoint.v1.handler.activity.Activity activity, String activityStepName, String expectedText) {
-
-        String podName = activity.getPod();
-
-        Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(podName)).findFirst();
-
-        if (buildPod.isPresent()) {
-            String logText = OpenShiftUtils.getInstance().getPodLog(buildPod.get());
-            Assertions.assertThat(logText).isNotEmpty();
-            //2. TODO(sveres)  question: there is table of activity _steps (ACTIVITY_STEPS) how is this mapped to Activities list of integration?
-            // TODO(sveres) i.e. how could I utilize activityStepName?
-
-            //3. TODO(sveres) compare texts
-            return false;
-        } else {
-            Assertions.fail("No pod found for pod name: " + podName);
+    public ElementsCollection getActivityLogRows(int indexOfActivity) {
+        if (!isActivityDisplayed(indexOfActivity)) {
+            this.clickOnActivity(indexOfActivity);
         }
-        return false;
+        return this.getActivity(indexOfActivity).findAll(Element.ONE_ROW_TABLE);
     }
+
+    public ElementsCollection getRowInActivityLog(int indexOfActivity, int indexOfRow) {
+        return this.getActivity(indexOfActivity).findAll(Element.ONE_ROW_TABLE).get(indexOfRow)
+                .findAll(Element.ONE_CELL_IN_TABLE);
+    }
+
+    public String getColumnInRowInActivityLog(int indexOfActivity, int indexOfRow, Activity.COLUMN column) {
+        return this.getRowInActivityLog(indexOfActivity, indexOfRow).get(column.value).getText();
+    }
+
+
+    private boolean isActivityDisplayed(int indexOfActivity) {
+        return this.getActivity(indexOfActivity).find(Element.ONE_CELL_IN_TABLE).isDisplayed();
+    }
+
 }
