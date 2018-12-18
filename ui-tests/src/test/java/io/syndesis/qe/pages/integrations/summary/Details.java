@@ -61,7 +61,10 @@ public class Details extends SyndesisPageObject {
     }
 
     @Getter
-    private Activity integrationActivityListComponent = new Activity();
+    private Activity activityTab = new Activity();
+
+    @Getter
+    private Metrics metricsTab = new Metrics();
 
     public boolean validate() {
         return getRootElement().is(visible);
