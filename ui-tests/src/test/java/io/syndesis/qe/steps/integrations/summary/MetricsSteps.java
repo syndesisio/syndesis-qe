@@ -2,9 +2,12 @@ package io.syndesis.qe.steps.integrations.summary;
 
 import com.codeborne.selenide.Selenide;
 import cucumber.api.java.en.Then;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.pages.integrations.summary.Metrics;
 import io.syndesis.qe.utils.CalendarUtils;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +15,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.assertj.core.api.Assertions.within;
 
 public class MetricsSteps {
 
@@ -53,14 +63,14 @@ public class MetricsSteps {
 
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-        if (!processedCalendar.equals(beforeRequest)) { //if not same, test whether it was after
+        if (!processedCalendar.equals(beforeRequest)) { //if not same then it tests whether it was after
             Assertions.assertThat(processedCalendar.after(beforeRequest))
                     .as("Check that processed date and time \"%s\" is after %s",
                             outFormat.format(processedCalendar.getTime()),
                             outFormat.format(beforeRequest.getTime()))
                     .isTrue();
         }
-        if (!processedCalendar.equals(afterRequest)) { //if not same, test whether it was before
+        if (!processedCalendar.equals(afterRequest)) { //if not same then it tests whether it was before
             Assertions.assertThat(processedCalendar.before(afterRequest))
                     .as("Check that processed date and time \"%s\" is before %s",
                             outFormat.format(processedCalendar.getTime()),
@@ -87,10 +97,82 @@ public class MetricsSteps {
         Assertions.assertThat(metricsTab.getNumberOfTotalMessages()).isEqualTo(numberOfTotalMessages);
     }
 
-    @Then("^check that up time is ([^\"]*)$")
-    public void checkUpTime(String upTime) {
-        refresh();
-        Assertions.assertThat(metricsTab.getUpTime()).contains(upTime);
+    @Then("^check that uptime for ([^\"]*) pod is valid$")
+    public void checkUptime(String integration) throws ParseException, InterruptedException {
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(integration);
+        if (pod.isPresent()) {
+            refresh();
+            // To minimize inaccuracy they should be called together
+            String uptime = metricsTab.getUpTime();
+            String openshiftTime = pod.get().getStatus().getStartTime();
+
+            if (uptime.contains("n/a")) {
+                Thread.sleep(10000);
+                refresh();
+                uptime = metricsTab.getUpTime();
+                openshiftTime = pod.get().getStatus().getStartTime();
+            }
+
+            Pattern pattern = Pattern.compile("^(\\d{1,2}) minutes$");
+            Matcher matcher = pattern.matcher(uptime);
+            if (!matcher.find()) {
+                Assertions.fail("UI uptime " + uptime + " doesn't match pattern.");
+            }
+            Long uiMinute = Long.valueOf(matcher.group(1));
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date openShiftStartDate = format.parse(openshiftTime);
+            long diff = new Date().getTime() - openShiftStartDate.getTime();
+            long openShiftMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);
+
+            Assertions.assertThat(uiMinute)
+                    .as("Check that UI uptime '%s' is same as openshift uptime '%s'.",
+                            uiMinute, openShiftMinutes)
+                    .isCloseTo(openShiftMinutes, within(Long.valueOf(1))); //1-second inaccuracy can happen
+        } else {
+            Assertions.fail("Pod with name " + integration + " doesn't exist!");
+        }
+    }
+
+    /*e.g. Since Dec 19th 10:42*/
+    @Then("^check that startdate for ([^\"]*) pod is valid$")
+    public void checkDateFrom(String integration) throws ParseException {
+        String startTime = metricsTab.getStartTime();
+        // Since Dec 19th 10:42 -> group1 = Dec 19 group2= 10:42
+        Pattern pattern = Pattern.compile("^.* (\\w{3,4} \\d{1,2})\\w{2} (\\d{2}:\\d{2})$");
+        Matcher matcher = pattern.matcher(startTime);
+        if (!matcher.find()) {
+            Assertions.fail("Date " + startTime + " doesn't match pattern.");
+        }
+        // year have to be added, UI doesn't contain it
+        Date uiStartDate = new SimpleDateFormat("MMM dd hh:mm yyyy")
+                .parse(matcher.group(1) + " " + matcher.group(2) + " " + Calendar.getInstance().get(Calendar.YEAR));
+
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(integration);
+        if (pod.isPresent()) {
+            String openshiftTime = pod.get().getStatus().getStartTime();
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            format.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date openshiftStartDate = format.parse(openshiftTime);
+
+            Calendar uiDate = Calendar.getInstance();
+            uiDate.setTime(uiStartDate);
+            uiDate.clear(Calendar.SECOND);
+
+            Calendar openshiftDate = Calendar.getInstance();
+            openshiftDate.setTime(openshiftStartDate);
+            // because UI doesn't contains seconds and minutes are rounded e.g. 8:23:42 is in UI 8:24
+            DateUtils.round(openshiftDate, Calendar.MINUTE);
+            openshiftDate.clear(Calendar.SECOND);
+
+            Assertions.assertThat(uiDate)
+                    .as("Check that UI date of pod '%s' is same as date in the openshift '%s'.",
+                            startTime, openshiftTime)
+                    .isEqualTo(openshiftDate);
+        } else {
+            Assertions.fail("Pod with name " + integration + " doesn't exist!");
+        }
     }
 
 }

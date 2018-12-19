@@ -61,9 +61,15 @@ public class Metrics extends SyndesisPageObject {
     }
 
     public String getUpTime() {
-        SelenideElement upTime = $(Element.ROOT_UPTIME).shouldBe(visible)
+        SelenideElement uptime = $(Element.ROOT_UPTIME).shouldBe(visible)
                 .find(By.xpath(".//h4[@class='metrics__uptime-legend']"));
-        return upTime.getText();
+        return uptime.getText();
+    }
+
+    public String getStartTime() {
+        SelenideElement date = $(Element.ROOT_UPTIME).shouldBe(visible)
+                .find(By.xpath(".//h3[@class='metrics__uptime-header metrics__uptime-kickoff']"));
+        return date.getText();
     }
 
 }

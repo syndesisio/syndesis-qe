@@ -54,7 +54,7 @@ Feature: Metrics
     When clicks on the "2". "Add a step" link
     And select "Basic Filter" integration step
     Then check visibility of "Basic Filter" step configuration page
-#    And check that basic filter step path input options contains "company" option TODO issue: https://github.com/syndesisio/syndesis/issues/4162
+    #And check that basic filter step path input options contains "company" option TODO issue: https://github.com/syndesisio/syndesis/issues/4162
     When fill in the configuration page for "Basic Filter" step with "ANY of the following, company, contains, Red Hat" parameter
     And click on the "Done" button
 
@@ -113,7 +113,8 @@ Feature: Metrics
     And check that number of valid messages is 0
     And check that number of error messages is 0
     And check that number of total messages is 0
-#    Then check that up time is "2 hours 32 minutes" TODO
+    And check that uptime for webhook-to-db pod is valid
+    And check that startdate for webhook-to-db pod is valid
 
     When click on the "Details" tab
     And save time before request
@@ -126,6 +127,8 @@ Feature: Metrics
     And check that number of valid messages is 1
     And check that number of error messages is 0
     And check that number of total messages is 1
+    And check that uptime for webhook-to-db pod is valid
+    And check that startdate for webhook-to-db pod is valid
 
     When click on the "Details" tab
     And save time before request
@@ -138,6 +141,8 @@ Feature: Metrics
     And check that number of valid messages is 2
     And check that number of error messages is 0
     And check that number of total messages is 2
+    And check that uptime for webhook-to-db pod is valid
+    And check that startdate for webhook-to-db pod is valid
 
     When click on the "Details" tab
     And save time before request
@@ -150,6 +155,8 @@ Feature: Metrics
     And check that number of valid messages is 3
     And check that number of error messages is 0
     And check that number of total messages is 3
+    And check that uptime for webhook-to-db pod is valid
+    And check that startdate for webhook-to-db pod is valid
 
   @metrics-error
   Scenario: Check error
@@ -228,6 +235,8 @@ Feature: Metrics
     And check that number of valid messages is 0
     And check that number of error messages is 0
     And check that number of total messages is 0
+    And check that uptime for webhook-to-db pod is valid
+    And check that startdate for webhook-to-db pod is valid
 
     When click on the "Details" tab
     And save time before request
@@ -240,3 +249,5 @@ Feature: Metrics
     And check that number of valid messages is 1
     And check that number of error messages is 0
     And check that number of total messages is 1
+    And check that uptime for webhook-to-db pod is valid
+    And check that startdate for webhook-to-db pod is valid
