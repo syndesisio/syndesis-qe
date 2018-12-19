@@ -119,8 +119,12 @@ public final class TestUtils {
     }
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
-        final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
-        return OpenShiftUtils.portForward(podToForward, remotePort, localPort);
+        try{
+            final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
+            return OpenShiftUtils.portForward(podToForward, remotePort, localPort);
+        }catch (IllegalArgumentException ex){
+            throw new IllegalArgumentException(ex.getMessage() + ". Probably Syndesis is not in the namespace.");
+        }
     }
 
     public static LocalPortForward createLocalPortForward(Pod pod, int remotePort, int localPort) {
