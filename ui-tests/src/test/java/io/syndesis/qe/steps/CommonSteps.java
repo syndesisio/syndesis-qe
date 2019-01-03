@@ -35,6 +35,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import io.syndesis.qe.utils.CalendarUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -44,6 +45,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +90,9 @@ public class CommonSteps {
 
     @Autowired
     private GoogleAccounts googleAccounts;
+
+    @Autowired
+    private CalendarUtils calendarUtils;
 
     @And("^.*logs? out from Syndesis")
     public void logout() {
@@ -759,6 +766,27 @@ public class CommonSteps {
     @When("^select first api provider operation$")
     public void clickFirstOperation() {
         $$(By.className("list-pf-title")).first().shouldBe(visible).click();
+    }
+
+    /**
+     * Save current time to the singleton class
+     */
+    @Then("^save time before request$")
+    public void saveBeforeTime() {
+        calendarUtils.setBeforeRequest(Calendar.getInstance());
+        log.info("Time before request was saved: "
+                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getBeforeRequest().getTime()));
+        sleep(1000);
+    }
+
+    /**
+     * Save current time to the singleton class
+     */
+    @Then("^save time after request$")
+    public void saveAfterTime() {
+        calendarUtils.setAfterRequest(Calendar.getInstance());
+        log.info("Time after request was saved: "
+                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
     }
 
 }
