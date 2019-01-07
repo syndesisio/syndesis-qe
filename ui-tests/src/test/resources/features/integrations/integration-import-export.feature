@@ -15,7 +15,7 @@ Feature: Integration - Import Export
   Scenario: Import and export both flows
 
     Given created connections
-      | Salesforce | QE Salesforce | QE Salesforce | SyndesisQE salesforce test |
+      | Slack | QE Slack  | QE Slack  | SyndesisQE Slack test |
 
     # create integration
     When navigate to the "Home" page
@@ -26,34 +26,26 @@ Feature: Integration - Import Export
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     Then check "Done" button is "Disabled"
-    And fill in periodic query input with "select * from contact" value
-    And fill in period input with "1000" value
+    And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
+    And fill in period input with "60" value
     And select "Seconds" from sql dropdown
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
 
-    # select salesforce connection
-    When select the "QE Salesforce" connection
-    And select "Create or update record" integration action
-    And select "Contact" from "sObjectName" dropdown
-    And click on the "Next" button
-    And select "TwitterScreenName" from "sObjectIdName" dropdown
+    # select slack connection
+    When select the "QE Slack" connection
+    And select "Channel" integration action
+    And fill in values
+      | Channel | test |
+
     And click on the "Done" button
-    Then check visibility of the "Add a Step" button
 
     # add data mapper step
     When click on the "Add a Step" button
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-
-    And create data mapper mappings
-      | company    | TwitterScreenName__c |
-      | last_name  | LastName             |
-      | first_name | FirstName            |
-      | company    | Description          |
-
-    And scroll "top" "right"
+    And create mapping from "company" to "message"
     And click on the "Done" button
 
     # finish and save integration
@@ -62,19 +54,24 @@ Feature: Integration - Import Export
     And click on the "Publish" button
     # assert integration is present in list
     Then check visibility of "Integration_import_export_test" integration details
+    And navigate to the "Integrations" page
 
-    When navigate to the "Integrations" page
-    Then Integration "Integration_import_export_test" is present in integrations list
+    And Integration "Integration_import_export_test" is present in integrations list
+
+    When inserts into "CONTACT" table
+      | Lorem | Ipsum | Red Hat | e_db |
+
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
 
-    # validate salesforce contacts
-    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
-    # clean-up in salesforce
-    Then delete contact from SF with last name: "Jackson"
+    Then check that last slack message equals "Red Hat" on channel "test"
+
+    #Add a new contact
+    When inserts into "CONTACT" table
+      | Fedora | 28 | RH | f_db |
 
     # export the integration for import tests
-    When select the "Integration_import_export_test" integration
+    And select the "Integration_import_export_test" integration
     Then check visibility of "Integration_import_export_test" integration details
     And export the integraion
 
@@ -94,20 +91,28 @@ Feature: Integration - Import Export
     And check visibility of "Stopped" integration status on Integration Detail page
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for published state
-    And start integration "Integration_import_export_test"
+    When click on the "Edit" button
+    And click on the "Publish" button
+
+    And sleep for jenkins delay or "3" seconds
+    Then check visibility of "Integration_import_export_test" integration details
+
     And navigate to the "Integrations" page
+    And Integration "Integration_import_export_test" is present in integrations list
+
     Then wait until integration "Integration_import_export_test" gets into "Running" state
 
-    # validate salesforce contacts
-    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
-    # clean-up in salesforce
-    Then delete contact from SF with last name: "Jackson"
+    And check that last slack message equals "RH" on channel "test"
 
 #
 #  2. integration-import with drag'n'drop
 #
 
-    When delete the "Integration_import_export_test" integration
+    #Add a new contact
+    When inserts into "CONTACT" table
+      | RHEL | 7 | New RH | g_db |
+
+    And delete the "Integration_import_export_test" integration
     #wait for pod to be deleted
     And sleep for "15000" ms
     And navigate to the "Integrations" page
@@ -123,14 +128,16 @@ Feature: Integration - Import Export
     And check visibility of "Stopped" integration status on Integration Detail page
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for active state
-    And start integration "Integration_import_export_test"
+    When click on the "Edit" button
+    And click on the "Publish" button
+
+    And sleep for jenkins delay or "3" seconds
     And navigate to the "Integrations" page
+    And Integration "Integration_import_export_test" is present in integrations list
+
     Then wait until integration "Integration_import_export_test" gets into "Running" state
 
-    # validate salesforce contacts
-    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
-    # clean-up in salesforce
-    Then delete contact from SF with last name: "Jackson"
+    And check that last slack message equals "New RH" on channel "test"
 
 #
 #  2. integration-import from different syndesis instance
@@ -138,39 +145,43 @@ Feature: Integration - Import Export
   @integration-import-from-different-instance
   Scenario: Import from different syndesis instance
 
-    When navigate to the "Integrations" page
+    #Add a new contact
+    When inserts into "CONTACT" table
+      | RedHat | HatRed | RHEL | h_db |
+
+    And navigate to the "Integrations" page
     And click on the "Import" button
     # import from resources TODO
     Then import integration from relative file path "src/test/resources/integrations/Imported-integration-another-instance-export.zip"
 
-    # check that connections need credentials update
     When navigate to the "Connections" page
-    And check visibility of alert notification
-    # update connections credentials
-    And click on the "View" kebab menu button of "QE Salesforce"
-    And check visibility of "QE Salesforce" connection details
-    Then check visibility of alert notification
+    And click on the "Edit" kebab menu button of "QE Slack"
+    Then check visibility of "QE Slack" connection details
 
     When click on the "Edit" button
-    And fill in "QE Salesforce" connection details from connection edit page
+    And fill in "QE Slack" connection details from connection edit page
     And click on the "Validate" button
     Then check visibility of success notification
-    When click on the "Save" button
-    And navigate to the "Integrations" page
+    And click on the "Save" button
+
+    When navigate to the "Integrations" page
 
     #should be unpublished after import
-    When select the "Integration_import_export_test" integration
+    And select the "Integration_import_export_test" integration
     Then check visibility of "Stopped" integration status on Integration Detail page
 
-    When sleep for jenkins delay or "3" seconds
-    # start integration and wait for published state:
-    And start integration "Integration_import_export_test"
+    When click on the "Edit" button
+    And click on the "Publish" button
 
-    When sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or "3" seconds
+
+    Then check visibility of "Integration_import_export_test" integration details
     And navigate to the "Integrations" page
+
+    And Integration "Integration_import_export_test" is present in integrations list
+
+    # wait for integration to get in active state
+
     Then wait until integration "Integration_import_export_test" gets into "Running" state
 
-    # validate salesforce contacts
-    Then check that contact from SF with last name: "Jackson" has description "Red Hat"
-    # clean-up in salesforce
-    Then delete contact from SF with last name: "Jackson"
+    And check that last slack message equals "RHEL" on channel "test"
