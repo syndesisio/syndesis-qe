@@ -397,8 +397,8 @@ If you want to run the tests on the existing remote OpenShift instance, follow t
 
     syndesis.dballocator.url=http://dballocator.mw.lab.eng.bos.redhat.com:8080
     
-    #timeout in seconds, if not set default is 300
-    syndesis.config.timeout=300
+    #timeout in seconds, if not set default is 30
+    syndesis.config.timeout=15
     
     #delay in seconds, if not set default is 1
     jenkins.delay=7

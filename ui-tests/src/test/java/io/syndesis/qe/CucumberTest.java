@@ -18,6 +18,7 @@ public class CucumberTest extends TestSuiteParent {
     public static void setupCucumber() {
         //set up Selenide
         Configuration.timeout = TestConfiguration.getConfigTimeout() * 1000;
+        Configuration.collectionsTimeout = Configuration.timeout;
         //We will now use custom web driver
         //Configuration.browser = TestConfiguration.syndesisBrowser();
         Configuration.browser = "io.syndesis.qe.CustomWebDriverProvider";

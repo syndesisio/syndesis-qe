@@ -134,7 +134,7 @@ public class TestConfiguration {
 
     public static int getJenkinsDelay() { return Integer.parseInt(get().readValue(JENKINS_DELAY, "1")); }
 
-    public static int getConfigTimeout() {return Integer.parseInt(get().readValue(TESTSUITE_TIMEOUT, "300")); }
+    public static int getConfigTimeout() {return Integer.parseInt(get().readValue(TESTSUITE_TIMEOUT, "30")); }
 
     public static String getDbAllocatorUrl(){ return get().readValue(DB_ALLOCATOR_URL, "localhost:8080"); }
 
