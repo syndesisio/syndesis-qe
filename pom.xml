@@ -51,7 +51,7 @@
 		<xtf.utilities.version>0.9</xtf.utilities.version>
 		<ftp.client.version>3.3</ftp.client.version>
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
-		<activemq.version>5.15.3</activemq.version>
+		<activemq.version>5.15.8</activemq.version>
 		<jslack.version>1.0.26</jslack.version>
 		<mqttv3.version>1.2.0</mqttv3.version>
 		<qpid.version>0.32.0</qpid.version>
