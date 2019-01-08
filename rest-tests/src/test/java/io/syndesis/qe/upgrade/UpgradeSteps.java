@@ -128,7 +128,7 @@ public class UpgradeSteps {
         ProcessBuilder pb = new ProcessBuilder(Paths.get(UPGRADE_FOLDER, "upgrade.sh").toString(),
                 "--template ", UPGRADE_TEMPLATE,
                 "--backup", BACKUP_DIR,
-                "--oc-login", "oc login " + TestConfiguration.openShiftUrl() + " --token=" + OpenShiftUtils.client().getConfiguration().getOauthToken(),
+                "--oc-login", "oc login " + TestConfiguration.openShiftUrl() + " --token=" + OpenShiftUtils.client().getConfiguration().getOauthToken() + " -n " + TestConfiguration.openShiftNamespace(),
                 "--migration", Paths.get(UPGRADE_FOLDER, "migration").toString());
         pb.directory(new File(UPGRADE_FOLDER));
 
