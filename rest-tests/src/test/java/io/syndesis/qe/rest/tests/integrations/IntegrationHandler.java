@@ -13,11 +13,13 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.common.model.integration.Flow;
 import io.syndesis.common.model.integration.Integration;
+import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.bdd.datamapper.AtlasMapperGenerator;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.endpoints.Verifier;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -47,7 +49,7 @@ public class IntegrationHandler {
 
     @When("^create new integration with name: \"([^\"]*)\" and desiredState: \"([^\"]*)\"")
     public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
-
+        verifyConnections();
         processMapperSteps();
         Integration integration = new Integration.Builder()
                     .name(integrationName)
@@ -159,5 +161,20 @@ public class IntegrationHandler {
 
     private void reflectStepIdsInAtlasMapping(StepDefinition mapping, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Calls the verifier endpoint for all connections defined in the integration.
+     */
+    private void verifyConnections() {
+        for (Step step : steps.getSteps()) {
+            if (step.getStepKind() == StepKind.endpoint) {
+                String response = Verifier.verify(step.getConnection().get().getConnectorId(), step.getConnection().get().getConfiguredProperties());
+                log.debug(response);
+                if (response.contains("ERROR") || response.contains("UNSUPPORTED")) {
+                    throw new RuntimeException(String.format("Connection %s failed validation: %s", step.getConnection().get().getName(), response));
+                }
+            }
+        }
     }
 }
