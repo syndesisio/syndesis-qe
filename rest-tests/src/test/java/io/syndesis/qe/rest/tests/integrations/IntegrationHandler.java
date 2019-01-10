@@ -168,7 +168,7 @@ public class IntegrationHandler {
      */
     private void verifyConnections() {
         for (Step step : steps.getSteps()) {
-            if (step.getStepKind() == StepKind.endpoint) {
+            if (step.getStepKind() == StepKind.endpoint && step.getConnection().get().getConnector().get().getTags().contains("verifier")) {
                 String response = Verifier.verify(step.getConnection().get().getConnectorId(), step.getConnection().get().getConfiguredProperties());
                 log.debug(response);
                 if (response.contains("ERROR") || response.contains("UNSUPPORTED")) {
