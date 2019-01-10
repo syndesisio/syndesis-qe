@@ -1,5 +1,7 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
+@ftp
 @integrations-ftp-to-ftp
 Feature: Integration - FTP to FTP
 

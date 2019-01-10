@@ -1,17 +1,18 @@
 # @sustainer: mcada@redhat.com
 
+@ui
 @slack
+@datamapper
+@database
+@integrations-slack
 Feature: Slack Connector
 
   Background: Clean application state
     Given clean application state
-    Given reset content of "contact" table
-    Given log into the Syndesis
-
-
-    Given created connections
+    And reset content of "contact" table
+    And log into the Syndesis
+    And created connections
       | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
-
     And navigate to the "Home" page
 
 
@@ -35,7 +36,7 @@ Feature: Slack Connector
 
     When select the "Timer" connection
     And select "Simple Timer" integration action
-    And fill in values
+    And fill in values by element ID
       | period        | 200     |
       | select-period | Seconds |
     And click on the "Done" button

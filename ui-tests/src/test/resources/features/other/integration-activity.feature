@@ -1,5 +1,10 @@
 # @sustainer: mkralik@redhat.com
 
+@ui
+@activity
+@webhook
+@database
+@datamapper
 @integration-activity
 Feature: Activity
 
@@ -8,7 +13,7 @@ Feature: Activity
     And reset content of "contact" table
     And log into the Syndesis
 
-  @activity
+  @activity-test
   Scenario: Check activity
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
@@ -104,7 +109,7 @@ Feature: Activity
 
     And select the "Webhook to DB" integration
     And click on the "Activity" tab
-    Then check that in the activity log has 0 activities
+    Then check that in the activity log are 0 activities
 
     When click on the "Details" tab
     And save time before request
@@ -112,7 +117,7 @@ Feature: Activity
     And save time after request
     And sleep for "3000" ms
     And click on the "Activity" tab
-    Then check that in the activity log has 1 activities
+    Then check that in the activity log are 1 activities
     # Test activity
     And check that 1. activity version contains Version 1
     And check that 1. activity date and time is valid
@@ -134,7 +139,7 @@ Feature: Activity
     And save time after request
     And sleep for "3000" ms
     And click on the "Activity" tab
-    Then check that in the activity log has 2 activities
+    Then check that in the activity log are 2 activities
     # Test activity
     And check that 1. activity version contains Version 1
     And check that 1. activity date and time is valid
@@ -163,7 +168,7 @@ Feature: Activity
     And save time after request
     And sleep for "3000" ms
     And click on the "Activity" tab
-    Then check that in the activity log has 3 activities
+    Then check that in the activity log are 3 activities
     # Test activity
     And check that 1. activity version contains Version 1
     And check that 1. activity date and time is valid
@@ -208,7 +213,7 @@ Feature: Activity
     And sleep for "3000" ms
 
     And click on the "Activity" tab
-    Then check that in the activity log has 4 activities
+    Then check that in the activity log are 4 activities
     And check that 1. activity version contains Version 2
     And check that 1. activity date and time is valid
     And check that 1. activity has not any errors
@@ -257,7 +262,7 @@ Feature: Activity
 
     And select the "Webhook to DB with error" integration
     And click on the "Activity" tab
-    Then check that in the activity log has 0 activities
+    Then check that in the activity log are 0 activities
 
     When click on the "Details" tab
     And save time before request
@@ -267,7 +272,7 @@ Feature: Activity
     And click on the "Activity" tab
 
     # Test activity
-    Then check that in the activity log has 1 activities
+    Then check that in the activity log are 1 activities
     And check that 1. activity version contains Version 1
     And check that 1. activity date and time is valid
     And check that 1. activity has error
@@ -283,6 +288,7 @@ Feature: Activity
     And check that 2. step in the 1. activity has Error status
     And check that 2. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; SQL []; ERROR: invalid input syntax for type date: "Red Hat" in the output
 
+  @reproducer
   @gh-4192
   @error-data-mapper-before
   Scenario: Check whether shows error when data mapper is before
@@ -327,7 +333,7 @@ Feature: Activity
 
     And select the "Webhook to DB with error in final" integration
     And click on the "Activity" tab
-    Then check that in the activity log has 0 activities
+    Then check that in the activity log are 0 activities
 
     When click on the "Details" tab
     And save time before request
@@ -336,7 +342,7 @@ Feature: Activity
     And sleep for "3000" ms
     And click on the "Activity" tab
     # Test activity
-    Then check that in the activity log has 2 activities
+    Then check that in the activity log are 2 activities
     And check that 1. activity version contains Version 1
     And check that 1. activity date and time is valid
     And check that 1. activity has error

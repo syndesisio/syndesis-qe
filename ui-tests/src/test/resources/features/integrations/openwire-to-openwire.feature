@@ -1,5 +1,8 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@openwire
+@activemq
 @integrations-openwire-to-openwire
 Feature: Integration - Openwire to Openwire
 

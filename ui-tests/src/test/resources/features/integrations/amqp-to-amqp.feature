@@ -1,5 +1,7 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@amqp
 @integrations-amqp-to-amqp
 Feature: Integration - AMQP to AMQP
 

@@ -1,6 +1,10 @@
 # @sustainer: asmigala@redhat.com
 
+@ui
 @google-calendar
+@database
+@datamapper
+@integrations-google-calendar
 Feature: Google Calendar Connector
 
   Background: Clean application state

@@ -1,5 +1,10 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
+@doc-tutorial
+@twitter
+@salesforce
+@datamapper
 @integrations-twitter-to-salesforce
 Feature: Integration - Twitter to Salesforce
 

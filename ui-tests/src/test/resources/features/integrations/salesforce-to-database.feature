@@ -1,5 +1,9 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
+@salesforce
+@database
+@datamapper
 @integrations-salesforce-to-database
 Feature: Integration - Salesforce to DB
 

@@ -1,5 +1,8 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@activemq
+@mqtt
 @integrations-mqtt
 Feature: Integration - MQTT to MQTT
 

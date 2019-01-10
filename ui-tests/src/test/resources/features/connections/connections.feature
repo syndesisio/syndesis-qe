@@ -1,5 +1,7 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@twitter
 @smoke
 Feature: Connection - CRUD
 # Enter feature description here

@@ -1,5 +1,9 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@datamapper
+@salesforce
+@twitter
 @support-page
 Feature: Support page
 

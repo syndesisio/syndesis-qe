@@ -1,5 +1,9 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@salesforce
+@twitter
+@datamapper
 @oauth
 Feature: Connections - OAuth
 

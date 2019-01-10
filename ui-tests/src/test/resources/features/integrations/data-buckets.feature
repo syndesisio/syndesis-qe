@@ -1,6 +1,12 @@
 # @sustainer: mcada@redhat.com
 
-@data-buckets
+@ui
+@dropbox
+@twitter
+@gmail
+@database
+@datamapper
+@integrations-data-buckets
 Feature: Integration - Databucket
 
   Background: Clean application state

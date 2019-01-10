@@ -1,6 +1,10 @@
 # @sustainer: mcada@redhat.com
 
+@ui
 @gmail
+@database
+@datamapper
+@integrations-gmail
 Feature: Google mail Connector
 
   Background: Clean application state

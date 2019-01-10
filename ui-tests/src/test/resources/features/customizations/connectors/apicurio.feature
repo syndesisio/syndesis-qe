@@ -1,6 +1,8 @@
 # @sustainer: mcada@redhat.com
 
+@ui
 @apicurio
+@apicurio-customization
 Feature: Customization - API Connector - ApicurIO GUI
 
   Background:

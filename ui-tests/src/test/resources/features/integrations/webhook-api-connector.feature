@@ -1,6 +1,7 @@
-@webhook-api-connector-integration
 @webhook
 @api-connector
+@datamapper
+@integrations-webhook-api-connector
 Feature: Integration - Webhook to API connector
 
   Background:
@@ -20,6 +21,7 @@ Feature: Integration - Webhook to API connector
 
     And navigate to the "Home" page
 
+  @reproducer
   @webhook-api-connector-new-task
   @gh-3729
   @gh-4125
@@ -59,6 +61,7 @@ Feature: Integration - Webhook to API connector
 
     Then validate that number of all todos with task "New Author" is greater than "0"
 
+  @reproducer
   @webhook-api-connector-list-tasks
   @gh-3727
   Scenario: Test to reproduce #3727

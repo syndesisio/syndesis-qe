@@ -33,7 +33,7 @@ public class ActivitySteps {
         activityTab.clickOnActivity(index);
     }
 
-    @Then("^check that in the activity log has (\\w+) activities$")
+    @Then("^check that in the activity log are (\\w+) activities$")
     public void checkAllActivities(int numberOfActivities) {
         Assertions.assertThat(activityTab.getAllActivities()).hasSize(numberOfActivities);
     }
@@ -140,7 +140,7 @@ public class ActivitySteps {
         int numberOfRow = activityTab.getActivityLogRows(indexActivity - 1).size();
         for (int indexRow = 0; indexRow < numberOfRow; indexRow++) {
             String timeLabel = activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.TIME);
-            Assertions.assertThat(timeLabel).matches("^\\w{3,4} \\d{2}, \\d{4}, \\d{2}:\\d{2}:\\d{2}$");
+            Assertions.assertThat(timeLabel).matches("^\\w{3,4} \\d{1,2}, \\d{4}, \\d{2}:\\d{2}:\\d{2}$");
             Date dateOfStep = new SimpleDateFormat("MMM dd,yyyy, HH:mm:ss").parse(timeLabel);
             checkDateIsMiddle(dateOfStep);
         }
