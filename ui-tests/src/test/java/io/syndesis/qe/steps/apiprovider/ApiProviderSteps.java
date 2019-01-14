@@ -1,18 +1,20 @@
 package io.syndesis.qe.steps.apiprovider;
 
+import static org.junit.Assert.assertEquals;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.Selenide;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.codeborne.selenide.Selenide;
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.openshift.api.model.Route;
-import io.syndesis.qe.endpoints.AbstractEndpoint;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ApiProviderWizard;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.NameApiProviderIntegration;
@@ -20,15 +22,13 @@ import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ReviewApiProv
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.UploadApiProviderSpecification;
 import io.syndesis.qe.pages.integrations.fragments.OperationsList;
 import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.steps.apps.todo.TodoSteps;
 import io.syndesis.qe.steps.customizations.connectors.ApicurioSteps;
 import io.syndesis.qe.steps.integrations.editor.add.ChooseConnectionSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.TodoUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import static org.junit.Assert.assertEquals;
 
 @Slf4j
 public class ApiProviderSteps {
@@ -48,7 +48,7 @@ public class ApiProviderSteps {
     @When("^create api provider spec from ([\\w]+) (.+)$")
     public void createApiProviderSpec(String source, String path) {
         if ("url".equals(source)) {
-            new TodoSteps().createDefaultRouteForTodo(path, "/");
+            TodoUtils.createDefaultRouteForTodo(path, "/");
             path = "http://" + OpenShiftUtils.getInstance().getRoute(path).getSpec().getHost() + "/swagger.json";
         }
         new UploadApiProviderSpecification().upload(source, path);

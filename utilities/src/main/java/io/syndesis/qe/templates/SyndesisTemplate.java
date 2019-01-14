@@ -39,6 +39,7 @@ import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.TodoUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -151,6 +152,7 @@ public class SyndesisTemplate {
         patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.client().deploymentConfigs().withName("broker-amq").delete();
+        TodoUtils.createDefaultRouteForTodo("todo2", "/");
     }
 
     private static void deployCrd() {
