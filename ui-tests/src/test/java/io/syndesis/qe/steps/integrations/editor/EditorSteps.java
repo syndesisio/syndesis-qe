@@ -176,4 +176,13 @@ public class EditorSteps {
         assertEquals("Wrong number of steps", n, flowViewComponent.getNumberOfSteps());
     }
 
+    @Then("^check there is a step with \"([^\"]*)\" title")
+    public void checkStepTitle(String title){
+        Assertions.assertThat(flowViewComponent.getStepsTitlesArray()).contains(title);
+    }
+
+    @Then("^check that (\\w+). step has ([^\"]*) title")
+    public void checkParticularStepTitle(int positionOfStep, String title){
+        Assertions.assertThat(flowViewComponent.getStepsTitlesArray().get(positionOfStep-1)).contains(title);
+    }
 }

@@ -129,6 +129,17 @@
                             <md5>74efd8dff436eb83ee9c02ac88e5f98d</md5>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>download-quickstart-hello-world</id>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://github.com/syndesisio/syndesis-quickstarts/raw/master/hello-world/HelloWorld-export.zip</url>
+                            <outputFileName>HelloWorld-export.zip</outputFileName>
+                            <outputDirectory>${project.basedir}/src/test/resources/quickstarts/</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

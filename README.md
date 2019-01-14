@@ -504,6 +504,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 ```
 ------MAIN CATEGORIES------
 @doc-tutorial (documentation tutorials tests)
+@quickstart (tests for quickstarts: https://github.com/syndesisio/syndesis-quickstarts)
 @reproducer (tests which are related to the particular issue)
 @rest
 @ui
@@ -542,4 +543,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 @swagger
 @timer
 @todo-app
+------QUICKSTARTS------
+@quickstart-solution (tests for importing and testing the quickstart's solutions)
+@quickstart-video (tests for testing process which is described in the quckstart's videos)
 ```
