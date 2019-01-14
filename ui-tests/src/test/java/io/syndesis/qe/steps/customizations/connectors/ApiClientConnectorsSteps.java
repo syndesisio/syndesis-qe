@@ -1,30 +1,35 @@
 package io.syndesis.qe.steps.customizations.connectors;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.not;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$;
+
+import static java.util.Arrays.asList;
+
+import org.openqa.selenium.By;
+
 import com.codeborne.selenide.ElementsCollection;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import io.fabric8.openshift.api.model.Route;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.steps.apps.todo.TodoSteps;
 import io.syndesis.qe.steps.customizations.connectors.wizard.WizardSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TodoUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.not;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$$;
-import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 @Slf4j
 public class ApiClientConnectorsSteps {
@@ -194,8 +199,8 @@ public class ApiClientConnectorsSteps {
                         case "routeHost":
                             log.info("Setting up hostname of the used route property");
                             if (property.get(2).equalsIgnoreCase("todo")) {
-                                if(OpenShiftUtils.getInstance().getRoute("todo2")==null){
-                                    new TodoSteps().createDefaultRouteForTodo("todo2", "/api");
+                                if(OpenShiftUtils.getInstance().getRoute("todo2") == null){
+                                    TodoUtils.createDefaultRouteForTodo("todo2", "/api");
                                 }
                                 Route route2 = OpenShiftUtils.getInstance().getRoute("todo2");
                                 host = "http://" + route2.getSpec().getHost();

@@ -1,19 +1,12 @@
 package io.syndesis.qe.steps.apps.todo;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import static com.codeborne.selenide.Selenide.sleep;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+
 import com.codeborne.selenide.Selenide;
-import cucumber.api.DataTable;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.fabric8.openshift.api.model.Route;
-import io.fabric8.openshift.api.model.RouteBuilder;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.pages.apps.todo.Todo;
-import io.syndesis.qe.steps.customizations.connectors.ApiClientConnectorsSteps;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,10 +18,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Selenide.sleep;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import cucumber.api.DataTable;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.pages.apps.todo.Todo;
+import io.syndesis.qe.steps.customizations.connectors.ApiClientConnectorsSteps;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TodoUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TodoSteps {
@@ -69,7 +70,7 @@ public class TodoSteps {
     public void createNewTodoApiConnector(DataTable properties) throws Throwable {
         if (OpenShiftUtils.getInstance().getRoute("todo2") == null
                 || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")) {
-            new TodoSteps().createDefaultRouteForTodo("todo2", "/");
+            TodoUtils.createDefaultRouteForTodo("todo2", "/");
         }
         String host = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
         String url = host + "/swagger.json";
@@ -122,26 +123,5 @@ public class TodoSteps {
     public void checkNumberValuesExistInTable(int index, String text) {
         String message = todoPage.getMessageFromTodo(index - 1);
         assertThat(message).contains(text);
-    }
-
-
-    public void createDefaultRouteForTodo(String name, String path) {
-        final Route route = new RouteBuilder()
-                .withNewMetadata()
-                .withName(name)
-                .endMetadata()
-                .withNewSpec()
-                .withPath(path)
-                .withWildcardPolicy("None")
-                .withNewTls()
-                .withTermination("edge")
-                .withInsecureEdgeTerminationPolicy("Allow")
-                .endTls()
-                .withNewTo()
-                .withKind("Service").withName("todo")
-                .endTo()
-                .endSpec()
-                .build();
-        OpenShiftUtils.client().routes().createOrReplace(route);
     }
 }
