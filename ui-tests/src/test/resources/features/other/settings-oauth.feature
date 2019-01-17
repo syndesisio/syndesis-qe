@@ -1,5 +1,7 @@
 # @sustainer: mcada@redhat.com
 
+@ui
+@google-calendar
 @settings-oauth
 Feature: Settings OAuth
 
@@ -46,6 +48,7 @@ Feature: Settings OAuth
     And navigate to the "Settings" page
     Then check that given "Google Calendar" oauth settings are not filled in
 
+  @reproducer
   @settings-oauth-validate
   @gh-4021
   Scenario Outline: Fill <type> OAuth settings, create connection and validate

@@ -1,6 +1,10 @@
 # @sustainer: mastepan@redhat.com
 
-@api-connector-integration
+@ui
+@api-connector
+@database
+@datamapper
+@integrations-api-connector
 Feature: Integration - DB to API
 
   Background:

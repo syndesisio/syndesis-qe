@@ -1,5 +1,7 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
+@extension
 @extension-CRUD-test
 Feature: Customization - Extensions CRUD
 

@@ -1,6 +1,12 @@
 # @sustainer: mcada@redhat.com
 
-@integration-import-export
+@ui
+@salesforce
+@database
+@datamapper
+@import
+@export
+@integrations-import-export
 Feature: Integration - Import Export
 
   Background: Clean application state

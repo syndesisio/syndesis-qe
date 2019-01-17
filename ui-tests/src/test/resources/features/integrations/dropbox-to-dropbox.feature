@@ -1,6 +1,8 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
 @dropbox
+@integrations-dropbox
 Feature: Integration - Dropbox to Dropbox
 
   Background: Clean application state

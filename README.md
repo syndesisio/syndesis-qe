@@ -14,6 +14,7 @@ Updated: 20.11.2018
   * [Checkstyle](#checkstyle)
   * [Creating a Pull Request](#creating-a-pull-request)
 * [Advanced debugging](#advanced-debugging)
+* [List of scenarios](#list-of-scenarios)
 
 ### Structure
 
@@ -89,7 +90,9 @@ directory of `*-tests` module, e.g. [UI scenarios](https://github.com/syndesisio
 
 Every scenario is wrapped with appropriate tags to target specific execution on demand.
 
-If you want to execute tests for specific component - both UI and REST, you can use components tags, for example `@salesforce`, otherwise you can specify multiple tags using cucumber notation like `'@datamapper and @rest'` 
+If you want to execute tests for specific component - both UI and REST, you can use components tags, for example `@salesforce`, otherwise you can specify multiple tags using cucumber notation like `'@datamapper and @rest'` .
+The list of all scenarios(tags) is in the [List of scenarios](#list-of-scenarios) chapter.
+
 
 #### GitHub issue tags
 
@@ -438,7 +441,7 @@ and commit changes via this dialog.
 #### Creating a Pull Request
 When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).
 
-If you want to run a different subset of tests, you can use `//test: @mytag1,@mytag2` in your PR description to trigger specific tests annotated by given tags.
+If you want to run a different subset of tests, you can use **//test: \`@mytag1,@mytag2\`** in your PR description to trigger specific tests annotated by given tags.
 
 If you don't want to run the job for your PR at all (for example when you are changing small things in README file), you can use `//skip-ci` in your PR description.
 
@@ -491,3 +494,48 @@ When variables throws exception, it will not affect tests (main) executions.
 
 
 For more information see [Altering the program's execution flow](https://www.jetbrains.com/help/idea/altering-the-program-s-execution-flow.html#reload_classes)
+
+### List of scenarios (tags)
+
+```
+------MAIN CATEGORIES------
+@doc-tutorial (documentation tutorials tests)
+@reproducer (tests which are related to the particular issue)
+@rest
+@ui
+------TECHNOLOGIES------
+@activemq
+@amqp
+@api-provider
+@apicurio
+@concur
+@dropbox
+@ftp
+@gmail
+@google-calendar
+@http
+@kafka
+@mqtt
+@mysql
+@oracle12
+@s3
+@salesforce
+@servicenow
+@slack
+@twitter
+@webhook
+------FUNCTIONS------
+@3scale
+@activity
+@api-connector
+@database
+@datamapper
+@export
+@extension
+@import
+@log
+@metrics
+@swagger
+@timer
+@todo-app
+```

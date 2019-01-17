@@ -1,5 +1,10 @@
 # @sustainer: mmajerni@redhat.com
 
+@ui
+@doc-tutorial
+@twitter
+@database
+@datamapper
 @integrations-twitter-to-db
 Feature: Integration - Twitter to Database
 

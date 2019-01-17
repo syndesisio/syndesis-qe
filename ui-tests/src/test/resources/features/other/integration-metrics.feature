@@ -1,5 +1,10 @@
 # @sustainer: mkralik@redhat.com
 
+@ui
+@metrics
+@webhook
+@database
+@datamapper
 @integration-metrics
 Feature: Metrics
 
@@ -8,7 +13,7 @@ Feature: Metrics
     And reset content of "contact" table
     And log into the Syndesis
 
-  @metrics
+  @metrics-test
   Scenario: Check metrics
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.

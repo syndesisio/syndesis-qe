@@ -1,5 +1,6 @@
 # @sustainer: mcada@redhat.com
 
+@ui
 @3scale
 Feature: 3scale integration
 

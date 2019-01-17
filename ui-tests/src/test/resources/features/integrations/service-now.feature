@@ -1,6 +1,10 @@
 # @sustainer: mmelko@redhat.com
 
+@ui
 @servicenow
+@activemq
+@database
+@integrations-servicenow
 Feature: Integration - ServiceNow-amq/log
 
   Background: Clean application state

@@ -1,6 +1,11 @@
 # @sustainer: asmigala@redhat.com
 
+@ui
 @api-provider
+@todo-app
+@database
+@datamapper
+@integrations-api-provider
 Feature: API Provider Integration
 
   Background:
@@ -102,7 +107,9 @@ Feature: API Provider Integration
         {"id":1}
         """
 
-  @api-provider-get-non-existent @gh-3999
+  @reproducer
+  @api-provider-get-non-existent
+  @gh-3999
   Scenario: API Provider GET non-existent
     When create an API Provider integration "TODO Integration" from file swagger/connectors/todo.json
     And select operation Fetch task
@@ -136,7 +143,9 @@ Feature: API Provider Integration
         """
         """
 
-  @api-provider-get-collection @gh-3788
+  @reproducer
+  @api-provider-get-collection
+  @gh-3788
   Scenario: API Provider GET collection
     When create an API Provider integration "TODO Integration" from file swagger/connectors/todo.json
     And select operation List all tasks
@@ -167,7 +176,9 @@ Feature: API Provider Integration
         [{"id":1,"completed":0,"task":"task1"},{"id":2,"completed":0,"task":"task2"}]
         """
 
-  @api-provider-get-collection-empty @gh-3788
+  @reproducer
+  @api-provider-get-collection-empty
+  @gh-3788
   Scenario: API Provider GET emptycollection
     When create an API Provider integration "TODO Integration" from file swagger/connectors/todo.json
     And select operation List all tasks
@@ -328,8 +339,9 @@ Feature: API Provider Integration
     And validate that number of all todos with task "changedtask1" is "1", period in ms: "1000"
     And validate that number of all todos with task "task7" is "1", period in ms: "1000"
 
-
-  @api-provider-delete @gh-4040
+  @reproducer
+  @api-provider-delete
+  @gh-4040
   Scenario: API Provider DELETE
     When create an API Provider integration "TODO Integration" from file swagger/connectors/todo.json
     And select operation Delete task

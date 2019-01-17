@@ -11,7 +11,11 @@
 # to have oauth and ws credentials to point to the same developer instance.
 #
 
+@ui
 @concur
+@database
+@datamapper
+@integrations-concur
 Feature: Concur Connector
 
   Background: Clean application state

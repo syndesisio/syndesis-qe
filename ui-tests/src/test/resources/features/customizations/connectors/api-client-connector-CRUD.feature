@@ -1,6 +1,9 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
 @api-connector
+@swagger
+@api-connector-crud
 Feature: Customization - API Connector CRUD
 
   Background:

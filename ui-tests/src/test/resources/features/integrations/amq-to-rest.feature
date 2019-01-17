@@ -1,5 +1,12 @@
 # @sustainer: mkralik@redhat.com
 
+@ui
+@doc-tutorial
+@activemq
+@todo-app
+@extension
+@api-connector
+@datamapper
 @integrations-amq-to-rest
 Feature: Integration - AMQ to REST
 

@@ -1,5 +1,7 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
+@swagger
 @api-connector-invalid-swagger
 Feature: Customization - API Connector - Invalid swagger
 

@@ -1,6 +1,9 @@
 # @sustainer: mcada@redhat.com
 
+@ui
 @webhook
+@database
+@webhook-extension
 Feature: Webhook extension
 
   Background: Clean application state

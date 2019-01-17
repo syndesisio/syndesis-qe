@@ -1,6 +1,9 @@
 # @sustainer: mcada@redhat.com
 
-@log-connector
+@ui
+@log
+@database
+@integrations-log
 Feature: Log Connector
 
   Background: Clean application state
@@ -54,8 +57,10 @@ Feature: Log Connector
     Then validate that logs of integration "integration_with_log" contains string "Red Hat"
 
 #
-#  2. Check that log step works without any message or checkboxes ( reproducer for GH - #3786 )
+#  2. Check that log step works without any message or checkboxes
 #
+  @reproducer
+  @gh-3786
   @log-connector-no-message
   Scenario: Check log without message
 

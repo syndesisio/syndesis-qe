@@ -1,6 +1,8 @@
 # @sustainer: mastepan@redhat.com
 
-@integration-check-starting-status
+@ui
+@database
+@integrations-check-starting-status
 Feature: Integration - DB to DB
 
   Background: Clean application state

@@ -1,5 +1,8 @@
 # @sustainer: mastepan@redhat.com
 
+@ui
+@database
+@datamapper
 @integrations-db-to-db
 Feature: Integration - DB to DB
 
