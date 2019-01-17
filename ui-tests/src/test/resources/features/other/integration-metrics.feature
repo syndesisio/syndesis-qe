@@ -5,6 +5,7 @@
 @webhook
 @database
 @datamapper
+@gh-4303
 @integration-metrics
 Feature: Metrics
 

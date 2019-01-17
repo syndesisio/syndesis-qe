@@ -7,6 +7,7 @@ import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.pages.integrations.summary.Metrics;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.within;
 
+@Slf4j
 public class MetricsSteps {
 
     private Metrics metricsTab = new Details().getMetricsTab();
@@ -137,17 +139,23 @@ public class MetricsSteps {
 
     /*e.g. Since Dec 19th 10:42*/
     @Then("^check that startdate for ([^\"]*) pod is valid$")
-    public void checkDateFrom(String integration) throws ParseException {
+    public void checkDateFrom(String integration) throws ParseException, InterruptedException {
         String startTime = metricsTab.getStartTime();
-        // Since Dec 19th 10:42 -> group1 = Dec 19 group2= 10:42
-        Pattern pattern = Pattern.compile("^.* (\\w{3,4} \\d{1,2})\\w{2} (\\d{2}:\\d{2})$");
-        Matcher matcher = pattern.matcher(startTime);
-        if (!matcher.find()) {
-            Assertions.fail("Date " + startTime + " doesn't match pattern.");
+        Date uiStartDate = parseUiSinceDate(startTime);
+
+        // UI date and start date cannot be same, Issue: gh-4303
+        int timeout = 0;
+        while (isSameAsCurrentDate(uiStartDate)) {
+            timeout++;
+            log.info("UI time is same as actual, probably the issue: gh-4303. Waiting 30 seconds and refresh UI. " + timeout + ". attempt.");
+            Thread.sleep(30000);
+            refresh();
+            startTime = metricsTab.getStartTime();
+            uiStartDate = parseUiSinceDate(startTime);
+            if (timeout == 10) {
+                Assertions.fail("UI time is same as actual time which is impossible");
+            }
         }
-        // year have to be added, UI doesn't contain it
-        Date uiStartDate = new SimpleDateFormat("MMM dd hh:mm yyyy")
-                .parse(matcher.group(1) + " " + matcher.group(2) + " " + Calendar.getInstance().get(Calendar.YEAR));
 
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(integration);
         if (pod.isPresent()) {
@@ -163,16 +171,47 @@ public class MetricsSteps {
             Calendar openshiftDate = Calendar.getInstance();
             openshiftDate.setTime(openshiftStartDate);
             // because UI doesn't contains seconds and minutes are rounded e.g. 8:23:42 is in UI 8:24
-            DateUtils.round(openshiftDate, Calendar.MINUTE);
+            openshiftDate = DateUtils.round(openshiftDate, Calendar.MINUTE);
             openshiftDate.clear(Calendar.SECOND);
 
-            Assertions.assertThat(uiDate)
+            Assertions.assertThat(uiDate.getTime())
                     .as("Check that UI date of pod '%s' is same as date in the openshift '%s'.",
                             startTime, openshiftTime)
-                    .isEqualTo(openshiftDate);
+                    .isCloseTo(openshiftDate.getTime(), 60000L); // UI sometimes round time UP sometimes not
         } else {
             Assertions.fail("Pod with name " + integration + " doesn't exist!");
         }
+    }
+
+    /**
+     * Parse since date to the Date
+     * e.g. Since Dec 19th 10:42 -> group1 = Dec 19 group2= 10:42
+     */
+    private Date parseUiSinceDate(String dateLable) throws ParseException {
+        Pattern pattern = Pattern.compile("^.* (\\w{3,4} \\d{1,2})\\w{2} (\\d{2}:\\d{2})$");
+        Matcher matcher = pattern.matcher(dateLable);
+        if (!matcher.find()) {
+            Assertions.fail("Date " + dateLable + " doesn't match pattern.");
+        }
+        // year have to be added, UI doesn't contain it
+        return new SimpleDateFormat("MMM dd HH:mm yyyy")
+                .parse(matcher.group(1) + " " + matcher.group(2) + " " + Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * Test whether UI date is same as current date.
+     */
+    private boolean isSameAsCurrentDate(Date uiStartDate) {
+        Calendar uiDate = Calendar.getInstance();
+        uiDate.setTime(uiStartDate);
+        uiDate.clear(Calendar.SECOND);
+
+        Calendar currentDate = Calendar.getInstance();
+        currentDate.setTime(new Date());
+        currentDate.clear(Calendar.SECOND);
+        currentDate.clear(Calendar.MILLISECOND);
+
+        return uiDate.getTime().compareTo(currentDate.getTime()) == 0;
     }
 
 }
