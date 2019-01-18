@@ -97,6 +97,10 @@ A scenario may optionally be tagged with one or more tags in the form `@gh-<issu
 If such a scenario fails, the relevant GitHub issues are checked and a summary is written in the cucumber report.
 See javadoc of the OnFailHooks class for more info.
 
+##### Skipping tests with open issues
+In some cases you might want to skip tests which you know are going to fail, because they are tagged with open issues.
+You can do that by setting the property `syndesis.skip.open.issues` to `true` (defaults to `false`).
+
 ### Configuration
 NOTE: Successful execution of tests requires fully configured credentials.
 All the callback URLs, Oauth tokens, etc. for Salesforce and Twitter accounts.

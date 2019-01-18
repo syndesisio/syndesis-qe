@@ -50,6 +50,8 @@ public class TestConfiguration {
     public static final String PROD_REPOSITORY = "syndesis.config.prod.repository";
     public static final String UPSTREAM_REPOSITORY = "syndesis.config.upstream.repository";
 
+    public static final String SKIP_TESTS_WITH_OPEN_ISSUES = "syndesis.skip.open.issues";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -144,6 +146,10 @@ public class TestConfiguration {
 
     public static String upstreamRepository() {
         return get().readValue(UPSTREAM_REPOSITORY);
+    }
+
+    public static Boolean skipTestsWithOpenIssues() {
+        return Boolean.parseBoolean(get().readValue(SKIP_TESTS_WITH_OPEN_ISSUES));
     }
 
     private Properties defaultValues() {
