@@ -20,7 +20,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,9 +39,6 @@ public class SalesforceSteps extends AbstractStep {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
 
-    public SalesforceSteps() {
-    }
-
     @Given("^create SF \"([^\"]*)\" action step on field: \"([^\"]*)\"$")
     public void createSfStepWithAction(String action, String field) {
         List<List<String>> rawTable = Arrays.asList(
@@ -52,13 +49,13 @@ public class SalesforceSteps extends AbstractStep {
 
     @Given("^create SF \"([^\"]*)\" action step with properties$")
     public void createSfStepWithActionAndProperties(String action, DataTable props) {
-        final Connector salesforceConnector = connectorsEndpoint.get("salesforce");
-        final Connection salesforceConnection = connectionsEndpoint.get(RestConstants.SALESFORCE_CONNECTION_ID);
+        final Connector salesforceConnector = connectorsEndpoint.get(RestTestsUtils.Connector.SALESFORCE.getId());
+        final Connection salesforceConnection = connectionsEndpoint.get(RestTestsUtils.Connection.SALESFORCE.getId());
         final Action sfAction = TestUtils.findConnectorAction(salesforceConnector, action);
 
         Map<String, String> properties = props.asMap(String.class, String.class);
 
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(sfAction, properties, RestConstants.SALESFORCE_CONNECTION_ID);
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(sfAction, properties, RestTestsUtils.Connection.SALESFORCE.getId());
         final Step salesforceStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())

@@ -19,7 +19,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 public class KafkaSteps extends AbstractStep {
@@ -30,14 +30,13 @@ public class KafkaSteps extends AbstractStep {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
 
-    private Connector kafkaConnector;
     private Connection kafkaConnection;
     private Action kafkaAction;
     private Map<String, String> properties;
 
     private void init(String action, String topic) {
-        kafkaConnector = connectorsEndpoint.get("kafka");
-        kafkaConnection = connectionsEndpoint.get(RestConstants.KAFKA_CONNECTION_ID);
+        final Connector kafkaConnector = connectorsEndpoint.get(RestTestsUtils.Connector.KAFKA.getId());
+        kafkaConnection = connectionsEndpoint.get(RestTestsUtils.Connection.KAFKA.getId());
         kafkaAction = TestUtils.findConnectorAction(kafkaConnector, action);
         properties = TestUtils.map(
                 "topic", topic
@@ -47,7 +46,7 @@ public class KafkaSteps extends AbstractStep {
     @When("^create Kafka publish step with datashape and with topic \"([^\"]*)\"$")
     public void createKafkaPublishStepWithDatashape(String topic) {
         init("kafka-publish-action", topic);
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(kafkaAction, properties, RestConstants.KAFKA_CONNECTION_ID);
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(kafkaAction, properties, RestTestsUtils.Connection.KAFKA.getId());
 
         final Step kafkaStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)

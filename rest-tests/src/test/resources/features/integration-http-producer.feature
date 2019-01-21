@@ -9,8 +9,8 @@ Feature: Integration - HTTP producer
   Background:
     Given clean application state
       And deploy HTTP endpoints
-      And deploy AMQ broker and add accounts
-      And create AMQ connection
+      And deploy ActiveMQ broker
+      And create ActiveMQ connection
       And create HTTP connection
 
   @integration-http-producer-get

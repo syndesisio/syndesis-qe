@@ -10,9 +10,9 @@ Feature: Integration - Kafka producer / consumer
   Background:
     Given clean SF, removes all leads with email: "jdoe@acme.com"
       And deploy Kafka broker and add account
-      And deploy AMQ broker and add accounts
-      And create AMQ connection
-      And create SF connection
+      And deploy ActiveMQ broker
+      And create ActiveMQ connection
+      And create SalesForce connection
       And create Kafka connection
       And create SF "salesforce-on-create" action step on field: "Lead"
       And start mapper definition with name: "mapping 1"

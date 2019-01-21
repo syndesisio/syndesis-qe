@@ -23,16 +23,21 @@ public class HTTPEndpointsTemplate {
                 e.printStackTrace();
             }
         }
-        addAccount();
+        addAccounts();
     }
 
-    private static void addAccount() {
+    private static void addAccounts() {
         Account http = new Account();
-        Map<String, String> httpParams = new HashMap<>();
-        httpParams.put("baseUrlHttp", "http://http-svc:8080");
-        httpParams.put("baseUrlHttps", "https://https-svc:8443");
+        Map<String, String> params = new HashMap<>();
+        params.put("baseUrl", "http://http-svc:8080");
         http.setService("http");
-        http.setProperties(httpParams);
+        http.setProperties(params);
         AccountsDirectory.getInstance().getAccounts().put("http", http);
+        Account https = new Account();
+        params = new HashMap<>();
+        params.put("baseUrl", "https://https-svc:8443");
+        https.setService("https");
+        https.setProperties(params);
+        AccountsDirectory.getInstance().getAccounts().put("https", https);
     }
 }

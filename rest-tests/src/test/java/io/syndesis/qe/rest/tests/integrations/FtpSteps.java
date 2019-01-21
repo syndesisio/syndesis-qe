@@ -6,21 +6,22 @@ import java.util.Map;
 import java.util.UUID;
 
 import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
+import cucumber.api.java.en.When;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.qe.bdd.AbstractStep;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FtpSteps {
+public class FtpSteps extends AbstractStep {
 
     @Autowired
     private StepsStorage steps;
@@ -29,14 +30,10 @@ public class FtpSteps {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
 
-    public FtpSteps() {
-    }
-
-    @And("^create start FTP download action with values$")
+    @When("^create start FTP download action with values$")
     public void setFtpDownloadData(DataTable sourceMappingData) {
-
-        final Connection ftpConnection = connectionsEndpoint.get(RestConstants.FTP_CONNECTION_ID);
-        final Connector ftpConnector = connectorsEndpoint.get("ftp");
+        final Connector ftpConnector = connectorsEndpoint.get(RestTestsUtils.Connector.FTP.getId());
+        final Connection ftpConnection = connectionsEndpoint.get(RestTestsUtils.Connection.FTP.getId());
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
 
@@ -50,11 +47,10 @@ public class FtpSteps {
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
 
-    @And("^create finish FTP upload action with values$")
+    @When("^create finish FTP upload action with values$")
     public void setFtpUploadData(DataTable sourceMappingData) {
-
-        final Connection ftpConnection = connectionsEndpoint.get(RestConstants.FTP_CONNECTION_ID);
-        final Connector ftpConnector = connectorsEndpoint.get("ftp");
+        final Connector ftpConnector = connectorsEndpoint.get(RestTestsUtils.Connector.FTP.getId());
+        final Connection ftpConnection = connectionsEndpoint.get(RestTestsUtils.Connection.FTP.getId());
 
         Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
 

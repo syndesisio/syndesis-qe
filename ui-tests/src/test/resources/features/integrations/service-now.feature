@@ -8,7 +8,7 @@
 Feature: Integration - ServiceNow-amq/log
 
   Background: Clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given clean application state
     Given log into the Syndesis
     Given clean destination type "queue" with name "incidents"

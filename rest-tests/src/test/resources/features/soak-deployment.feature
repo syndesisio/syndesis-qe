@@ -7,9 +7,22 @@ Feature: soak deployment
     When import extensions from syndesis-extensions folder
       | syndesis-extension-delay |
 
-    Given create "amq" connection from "amq-stability" template
-    And create "number-creator" connection from "number-creator" template
-    And create "number-guesser" connection from "number-guesser" template
+    Given create connection
+      | connector | activemq      |
+      | account   | amq-stability |
+      | brokerUrl | $ACCOUNT$     |
+      | username  | $ACCOUNT$     |
+      | password  | $ACCOUNT$     |
+    And create connection
+      | connector | http           |
+      | account   | number-creator |
+      | name      | number-creator |
+      | baseUrl   | $ACCOUNT$      |
+    And create connection
+      | connector | http           |
+      | account   | number-guesser |
+      | name      | number-guesser |
+      | baseUrl   | $ACCOUNT$      |
 
   Scenario: first-number integration
     When add "amq" endpoint with connector id "activemq" and "subscribe" action and with properties:
@@ -108,5 +121,3 @@ Feature: soak deployment
       | true     |
     And create integration with name: "stats-guess"
     And wait for integration with name: "stats-guess" to become active
-
-

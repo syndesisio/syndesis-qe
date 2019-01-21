@@ -13,7 +13,7 @@ Feature: File transfer
   Scenario: FTP to Dropbox
     Given deploy FTP server
       And delete file "/download/test_dropbox.txt" from FTP
-    When create the FTP connection using "ftp" template
+    When create FTP connection
       And create Dropbox connection
       And create start FTP download action with values
         | fileName         | directoryName | initialDelay | delay | delete |
@@ -31,7 +31,7 @@ Feature: File transfer
   Scenario: S3 to FTP
     Given deploy FTP server
       And delete file "/upload/test_aws.txt" from FTP
-    When create the FTP connection using "ftp" template
+    When create FTP connection
       And create sample buckets on S3 with name "syndesis-server-bucket-from"
       And create S3 connection using "syndesis-server-bucket-from" bucket
       And create S3 polling START action step with bucket: "syndesis-server-bucket-from"

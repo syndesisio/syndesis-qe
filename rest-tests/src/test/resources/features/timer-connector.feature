@@ -25,7 +25,7 @@ Feature: Timer connector
 
   Scenario: Cron Timer
     When add "timer" endpoint with connector id "timer" and "timer-chron" action and with properties:
-      | action     | cron         |
+      | action     | cron          |
       | timer-cron | 0/1 * * * * ? |
     And create HTTP "GET" step
     And create integration with name: "cron-timer-to-http-1"

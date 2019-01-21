@@ -19,7 +19,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 public class AmqSteps extends AbstractStep {
@@ -39,8 +39,8 @@ public class AmqSteps extends AbstractStep {
     }
 
     private void init(String action, String destinationType, String destinationName) {
-        amqConnector = connectorsEndpoint.get("activemq");
-        amqConnection = connectionsEndpoint.get(RestConstants.AMQ_CONNECTION_ID);
+        amqConnector = connectorsEndpoint.get(RestTestsUtils.Connector.ACTIVEMQ.getId());
+        amqConnection = connectionsEndpoint.get(RestTestsUtils.Connection.ACTIVEMQ.getId());
         connectorAction = TestUtils.findConnectorAction(amqConnector, action);
         properties = TestUtils.map(
                 "destinationType", destinationType.toLowerCase().equals("queue") ? "queue" : "topic",
@@ -68,7 +68,7 @@ public class AmqSteps extends AbstractStep {
     public void createAmqStepWithDatashape(String action, String destinationType, String destinationName, String datashapeType, String datashape) {
         init(action, destinationType, destinationName);
 
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(connectorAction, properties, RestConstants.AMQ_CONNECTION_ID);
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(connectorAction, properties, RestTestsUtils.Connector.ACTIVEMQ.getId());
         final Step amqStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .id(UUID.randomUUID().toString())

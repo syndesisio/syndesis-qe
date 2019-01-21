@@ -63,7 +63,6 @@ public class IntegrationSteps extends AbstractStep {
                     .build();
 
             steps.getStepDefinitions().add(new StepDefinition(customStep));
-
         }
     }
 

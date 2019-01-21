@@ -1,6 +1,7 @@
 package io.syndesis.qe.rest.tests.integrations;
 
-import org.assertj.core.api.Assertions;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
@@ -18,7 +19,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,16 +30,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class DropboxSteps extends AbstractStep {
-
     @Autowired
     private StepsStorage steps;
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
-
-    public DropboxSteps() {
-    }
 
     @When("^create Dropbox download START action step with file path: \"([^\"]*)\"$")
     public void createDropboxDownloadAction(String filePath) {
@@ -50,11 +47,9 @@ public class DropboxSteps extends AbstractStep {
         this.createDropboxAction("upload", filePath);
     }
 
-//    AUXILIARIES:
-
     private void createDropboxAction(String mode, String filePath) {
-        final Connector dropboxConnector = connectorsEndpoint.get("dropbox");
-        final Connection dropboxConnection = connectionsEndpoint.get(RestConstants.DROPBOX_CONNECTION_ID);
+        final Connector dropboxConnector = connectorsEndpoint.get(RestTestsUtils.Connector.DROPBOX.getId());
+        final Connection dropboxConnection = connectionsEndpoint.get(RestTestsUtils.Connection.DROPBOX.getId());
 
         String connectorPrefix = "";
         Map<String, String> properties = null;
@@ -68,11 +63,11 @@ public class DropboxSteps extends AbstractStep {
                 properties = TestUtils.map("remotePath", filePath, "uploadMode", "add");
                 break;
             default:
-                Assertions.fail("Undefined Dropbox connector action!");
+                fail("Undefined Dropbox connector action!");
         }
 
         final Action dropboxDownloadAction = TestUtils.findConnectorAction(dropboxConnector, connectorPrefix);
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dropboxDownloadAction, properties, RestConstants.DROPBOX_CONNECTION_ID);
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dropboxDownloadAction, properties, RestTestsUtils.Connection.DROPBOX.getId());
 
         final Step dropboxStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)

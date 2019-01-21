@@ -11,7 +11,10 @@ Feature: Syndesis Upgrade
       And wait for Syndesis to become ready
       And verify syndesis "given" version
       And deploy HTTP endpoints
-      And create HTTP connection
+      And create connection
+        | connector | http      |
+        | account   | http      |
+        | baseUrl   | $ACCOUNT$ |
     When inserts into "contact" table
       | X | Y | Z | db |
       And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms

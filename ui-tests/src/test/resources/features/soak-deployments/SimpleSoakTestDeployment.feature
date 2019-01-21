@@ -5,7 +5,7 @@
 Feature: Simple soak test
 
   Scenario: Prepare
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
       | AMQ Message Broker   | AMQ            | AMQ   | AMQ connection    |

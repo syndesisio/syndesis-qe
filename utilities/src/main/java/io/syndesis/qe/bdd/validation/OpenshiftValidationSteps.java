@@ -50,13 +50,8 @@ public class OpenshiftValidationSteps {
         MysqlTemplate.deploy();
     }
 
-    @Given("^deploy AMQ broker and add accounts$")
+    @Given("^deploy ActiveMQ broker$")
     public void deployAMQBroker() {
-        AmqTemplate.deploy();
-    }
-
-    @Given("^deploy AMQ broker if it doesnt exist$")
-    public void deployAMQBrokerIfMissing() {
         AmqTemplate.deploy();
     }
 

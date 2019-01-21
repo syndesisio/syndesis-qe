@@ -8,7 +8,7 @@ Feature: Integration - Openwire to Openwire
 
   Background:
     Given clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
       | AMQ Message Broker | AMQ | AMQ | AMQ connection is awesome |
