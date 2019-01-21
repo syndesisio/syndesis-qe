@@ -68,11 +68,7 @@ Feature: Slack Connector
     When click on the "Save as Draft" button
     And set integration name "Integration_with_slack"
     And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "Integration_with_slack" integration details
-    And navigate to the "Integrations" page
-
-    And Integration "Integration_with_slack" is present in integrations list
+    Then Integration "Integration_with_slack" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Integration_with_slack" gets into "Running" state
 
@@ -94,11 +90,11 @@ Feature: Slack Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     Then fill in periodic query input with "SELECT company FROM CONTACT limit(1)" value
     Then fill in period input with "200" value
     Then select "Seconds" from sql dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
 
 
@@ -125,11 +121,7 @@ Feature: Slack Connector
     When click on the "Save as Draft" button
     And set integration name "Integration_with_slack"
     And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "Integration_with_slack" integration details
-    And navigate to the "Integrations" page
-
-    And Integration "Integration_with_slack" is present in integrations list
+    Then Integration "Integration_with_slack" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Integration_with_slack" gets into "Running" state
 
@@ -182,10 +174,6 @@ Feature: Slack Connector
     And set integration name "slack-to-db"
     And click on the "Publish" button
 
-    # assert integration is present in list
-    Then check visibility of "slack-to-db" integration details
-
-    When navigate to the "Integrations" page
     Then Integration "slack-to-db" is present in integrations list
     And wait until integration "slack-to-db" gets into "Running" state
 
@@ -241,10 +229,6 @@ Feature: Slack Connector
     And send message "message4" on channel "random"
     And click on the "Publish" button
 
-    # assert integration is present in list
-    Then check visibility of "slack-to-db-delay-and-maxmessage" integration details
-
-    When navigate to the "Integrations" page
     Then Integration "slack-to-db-delay-and-maxmessage" is present in integrations list
     And wait until integration "slack-to-db-delay-and-maxmessage" gets into "Running" state
     And sleep for "10000" ms
