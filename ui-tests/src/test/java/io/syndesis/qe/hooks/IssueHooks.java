@@ -2,6 +2,7 @@ package io.syndesis.qe.hooks;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.RestUtils;
@@ -21,6 +24,7 @@ import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.IssueService;
 import org.eclipse.egit.github.core.service.RepositoryService;
+import org.junit.Assume;
 
 /**
  * Idea of these hooks: we can maintain currently open issues which causes tests to fail
@@ -28,7 +32,34 @@ import org.eclipse.egit.github.core.service.RepositoryService;
  * fail investigation.
  */
 @Slf4j
-public class OnFailHooks {
+public class IssueHooks {
+
+    enum IssueState {
+        OPEN, DONE, CLOSED
+    }
+
+    /**
+     * This hook skips tests that have open github issues
+     * <p>
+     * Only runs when {@link TestConfiguration#SKIP_TESTS_WITH_OPEN_ISSUES} property is set to true
+     *
+     * @param scenario
+     */
+    @Before
+    public void skipTestsWithOpenIssues(Scenario scenario) {
+        if (TestConfiguration.skipTestsWithOpenIssues()) {
+            log.info(scenario.getName());
+
+            List<Issue> issues = getIssues(scenario);
+
+            for (Issue issue : issues) {
+                // assumeFalse will skip the test if the argument evaluates to true, i.e. when the issue is open
+                Assume.assumeFalse(IssueState.OPEN.equals(getIssueState(scenario, issue)));
+            }
+        }
+
+    }
+
 
     /**
      * This hook checks and reports status of linked github issues.
@@ -55,41 +86,30 @@ public class OnFailHooks {
             return;
         }
 
-        List<String> ghIssues = scenario.getSourceTagNames().stream().filter(t -> t.matches("^@gh-\\d+$")).collect(Collectors.toList());
+        List<Issue> issues = getIssues(scenario);
 
-        if (ghIssues.isEmpty()) {
+        if (issues.isEmpty()) {
             logError(scenario, "############ No GitHub issue annotations found ############");
             return;
         }
 
-        GitHubClient client = getGitHubClient(scenario);
-        if (client == null) {
-            return;
-        }
-        RepositoryService repositoryService = new RepositoryService(client);
-        IssueService issueService = new IssueService(client);
-
         try {
-            Repository repository = repositoryService.getRepository("syndesisio", "syndesis");
-
             List<Issue> openIssues = new ArrayList<>();
             List<Issue> doneIssues = new ArrayList<>();
             List<Issue> closedIssues = new ArrayList<>();
 
-            for (String tag : ghIssues) {
-                String issueNumber = tag.replaceFirst("^@gh-", "");
-                Issue issue = issueService.getIssue(repository, issueNumber);
+            for (Issue issue : issues) {
 
-                if ("open".equals(issue.getState())) {
-                    // need to get issue from zenhub to determine the pipeline status
-                    String zenHubPipeline = getZenHubPipeline(scenario, issueNumber);
-                    if ("Done".equals(zenHubPipeline)) {
+                switch (getIssueState(scenario, issue)) {
+                    case DONE:
                         doneIssues.add(issue);
-                    } else {
+                        break;
+                    case OPEN:
                         openIssues.add(issue);
-                    }
-                } else if ("closed".equals(issue.getState())) {
-                    closedIssues.add(issue);
+                        break;
+                    case CLOSED:
+                        closedIssues.add(issue);
+                        break;
                 }
             }
 
@@ -100,15 +120,63 @@ public class OnFailHooks {
             logIssues(scenario, closedIssues);
             logError(scenario, "######## OPEN issues ########");
             logIssues(scenario, openIssues);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Error while processing GitHub issues", e);
             scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
             e.printStackTrace();
         }
     }
 
+    public static IssueState getIssueState(Scenario scenario, Issue issue) {
+        if ("open".equals(issue.getState())) {
+            // need to get issue from zenhub to determine the pipeline status
+            String zenHubPipeline = getZenHubPipeline(scenario, String.valueOf(issue.getNumber()));
+            if ("Done".equals(zenHubPipeline)) {
+                return IssueState.DONE;
+            } else {
+                return IssueState.OPEN;
+            }
+        } else if ("closed".equals(issue.getState())) {
+            return IssueState.CLOSED;
+        }
+        throw new IllegalArgumentException("Unknown issue state " + issue.getState());
+    }
 
-    private void logIssues(Scenario scenario, List<Issue> issues) {
+    public static List<Issue> getIssues(Scenario scenario) {
+        List<String> ghIssues = scenario.getSourceTagNames().stream().filter(t -> t.matches("^@gh-\\d+$")).collect(Collectors.toList());
+
+        if (ghIssues.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        GitHubClient client = getGitHubClient(scenario);
+        if (client == null) {
+            return Collections.emptyList();
+        }
+
+        RepositoryService repositoryService = new RepositoryService(client);
+        IssueService issueService = new IssueService(client);
+
+        List<Issue> issues = new ArrayList<>();
+        try {
+            Repository repository = repositoryService.getRepository("syndesisio", "syndesis");
+
+            for (String tag : ghIssues) {
+                String issueNumber = tag.replaceFirst("^@gh-", "");
+                Issue issue = issueService.getIssue(repository, issueNumber);
+                issues.add(issue);
+            }
+
+        } catch (IOException e) {
+            log.error("Error while processing GitHub issues", e);
+            scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
+            e.printStackTrace();
+        }
+
+        return issues;
+    }
+
+    private static void logIssues(Scenario scenario, List<Issue> issues) {
         for (Issue issue : issues) {
             logError(scenario, "#### Title: " + issue.getTitle());
             logError(scenario, "#### Link: " + issue.getHtmlUrl());
@@ -116,7 +184,7 @@ public class OnFailHooks {
         }
     }
 
-    private GitHubClient getGitHubClient(Scenario scenario) {
+    private static GitHubClient getGitHubClient(Scenario scenario) {
         String oauthToken = "";
 
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount("GitHub");
@@ -136,7 +204,7 @@ public class OnFailHooks {
     }
 
 
-    private String getZenHubPipeline(Scenario scenario, String issueNumber) {
+    private static String getZenHubPipeline(Scenario scenario, String issueNumber) {
         // TODO: this whole thing should probably be refactored eventually
         String oauthToken = "";
 
@@ -167,7 +235,7 @@ public class OnFailHooks {
         }
     }
 
-    private void logError(Scenario scenario, String message) {
+    private static void logError(Scenario scenario, String message) {
         scenario.embed(message.getBytes(), "text/plain");
         log.error(message);
     }
