@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import static org.assertj.core.api.Assertions.fail;
 

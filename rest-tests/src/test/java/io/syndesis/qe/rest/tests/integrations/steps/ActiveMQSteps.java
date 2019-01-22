@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,7 +22,7 @@ import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 
-public class AmqSteps extends AbstractStep {
+public class ActiveMQSteps extends AbstractStep {
     @Autowired
     private StepsStorage steps;
     @Autowired
@@ -35,7 +35,7 @@ public class AmqSteps extends AbstractStep {
     private Action connectorAction;
     private Map<String, String> properties;
 
-    public AmqSteps() {
+    public ActiveMQSteps() {
     }
 
     private void init(String action, String destinationType, String destinationName) {

@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -20,7 +20,6 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -51,12 +50,14 @@ public class ConnectionSteps {
 
         final String connectorName = connectionPropertiesMap.get("connector").toUpperCase();
         final String connectorId = RestTestsUtils.Connector.valueOf(connectorName).getId();
+        final String connectionId = connectionPropertiesMap.get("connectionId");
         final String connectionName = connectionPropertiesMap.get("name");
 
         final Connector connector = connectorsEndpoint.get(connectorId);
         final Optional<Account> account = accountsDirectory.getAccount(connectionPropertiesMap.get("account"));
 
-        connectionPropertiesMap.remove("connectorId");
+        connectionPropertiesMap.remove("connector");
+        connectionPropertiesMap.remove("connectionId");
         connectionPropertiesMap.remove("account");
         connectionPropertiesMap.remove("name");
 
@@ -72,7 +73,7 @@ public class ConnectionSteps {
         final Connection connection = new Connection.Builder()
                 .connector(connector)
                 .connectorId(getConnectorId(connector))
-                .id(RestTestsUtils.Connection.valueOf(connectorName).getId())
+                .id(connectionId != null ? connectionId : RestTestsUtils.Connection.valueOf(connectorName).getId())
                 .name(connectionName != null ? connectionName : "Fuse QE " + connectorName)
                 .configuredProperties(connectionPropertiesMap)
                 .icon(connector.getIcon())
@@ -158,26 +159,18 @@ public class ConnectionSteps {
 
     @Given("^create S3 connection using \"([^\"]*)\" bucket")
     public void createS3Connection(String s3Bucket) {
-        final Connector s3Connector = connectorsEndpoint.get(RestTestsUtils.Connector.S3.getId());
-        final Account s3Account = accountsDirectory.getAccount("s3").get();
+        final List<List<String>> table = new ArrayList<>();
+        final Account account = accountsDirectory.getAccount("s3").get();
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
 
-        final Connection s3Connection = new Connection.Builder()
-                .connector(s3Connector)
-                .connectorId(getConnectorId(s3Connector))
-                .id(S3BucketNameBuilder.getBucketName(s3Bucket))
-                .name("Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
-                .configuredProperties(TestUtils.map(
-                        "accessKey", s3Account.getProperty("accessKey"),
-                        "bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket),
-                        "region", s3Account.getProperty("region"),
-                        "secretKey", s3Account.getProperty("secretKey")
-                ))
-                .tags(Collections.singletonList("aws-s3"))
-                .build();
-
-        log.info("Creating s3 connection {}", s3Connection.getName());
-        connectionsEndpoint.create(s3Connection);
+        table.add(Arrays.asList("connector", "s3"));
+        table.add(Arrays.asList("accessKey", account.getProperty("accessKey")));
+        table.add(Arrays.asList("bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket)));
+        table.add(Arrays.asList("region", account.getProperty("region")));
+        table.add(Arrays.asList("secretKey", account.getProperty("secretKey")));
+        table.add(Arrays.asList("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)));
+        table.add(Arrays.asList("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket)));
+        createConnection(DataTable.create(table));
     }
 }
 

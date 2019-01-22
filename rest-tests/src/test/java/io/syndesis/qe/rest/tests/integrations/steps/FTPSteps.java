@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +21,7 @@ import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FtpSteps extends AbstractStep {
+public class FTPSteps extends AbstractStep {
 
     @Autowired
     private StepsStorage steps;
