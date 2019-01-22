@@ -70,24 +70,13 @@ public class HTTPSteps extends AbstractStep {
         createStep(method, "/", period, timeunit, null);
     }
 
+    @Given("^create HTTP \"([^\"]*)\" step with path \"([^\"]*)\" and period \"([^\"]*)\" \"([^\"]*)\"$")
+    public void createHTTPStepWithPeriodAndPath(String method, String path, long period, String timeunit) {
+        createStep(method, path, period, timeunit, null);
+    }
+
     @Given("^create HTTP \"([^\"]*)\" step$")
     public void createHTTPStep(String method) {
         createStep(method, "/", -1, null, null);
-    }
-
-    @Given("^create HTTP step with datashape$")
-    public void createHTTPStepWithDatashape() {
-        createStep("GET",
-                "/api/getXml",
-                5,
-                "SECONDS",
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<xmlResponse>" +
-                "<dummyField1>x</dummyField1>" +
-                "<dummyField2>y</dummyField2>" +
-                "<method>get</method>" +
-                "<dummyField3>z</dummyField3>" +
-                "</xmlResponse>"
-        );
     }
 }

@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
-import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
@@ -48,7 +45,7 @@ public class ActiveMQSteps extends AbstractStep {
         );
     }
 
-    @Given("^create AMQ \"([^\"]*)\" action step with destination type \"([^\"]*)\" and destination name \"([^\"]*)\"$")
+    @Given("^create ActiveMQ \"([^\"]*)\" action step with destination type \"([^\"]*)\" and destination name \"([^\"]*)\"$")
     public void createAmqStep(String action, String destinationType, String destinationName) {
         init(action, destinationType, destinationName);
 
@@ -57,29 +54,6 @@ public class ActiveMQSteps extends AbstractStep {
                 .id(UUID.randomUUID().toString())
                 .connection(amqConnection)
                 .action(connectorAction)
-                .configuredProperties(properties)
-                .build();
-
-        steps.getStepDefinitions().add(new StepDefinition(amqStep));
-    }
-
-    @When("^create AMQ \"([^\"]*)\" action step with destination type \"([^\"]*)\" and destination name \"([^\"]*)\" with " +
-            "datashape type \"([^\"]*)\" and specification \'([^\']*)\'$")
-    public void createAmqStepWithDatashape(String action, String destinationType, String destinationName, String datashapeType, String datashape) {
-        init(action, destinationType, destinationName);
-
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(connectorAction, properties, RestTestsUtils.Connector.ACTIVEMQ.getId());
-        final Step amqStep = new Step.Builder()
-                .stepKind(StepKind.endpoint)
-                .id(UUID.randomUUID().toString())
-                .connection(amqConnection)
-                .action(
-                        withCustomDatashape(
-                                connectorAction,
-                                connectorDescriptor,
-                                "in",
-                                DataShapeKinds.valueOf(datashapeType),
-                                datashape))
                 .configuredProperties(properties)
                 .build();
 

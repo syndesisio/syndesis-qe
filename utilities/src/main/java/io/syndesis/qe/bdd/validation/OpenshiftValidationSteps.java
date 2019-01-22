@@ -31,12 +31,12 @@ public class OpenshiftValidationSteps {
     }
 
     @Given("^deploy FTP server$")
-    public void deployFTPServier() {
+    public void deployFTPServer() {
         FtpTemplate.deploy();
     }
 
     @Given("^clean FTP server$")
-    public void cleanFTPServier() {
+    public void cleanFTPServer() {
         FtpTemplate.cleanUp();
     }
 
