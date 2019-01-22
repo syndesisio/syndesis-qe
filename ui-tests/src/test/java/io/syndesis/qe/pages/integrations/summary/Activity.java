@@ -107,11 +107,17 @@ public class Activity extends SyndesisPageObject {
     }
 
     public ElementsCollection getRowInActivityLog(int indexOfActivity, int indexOfRow) {
+        if (!isActivityDisplayed(indexOfActivity)) {
+            this.clickOnActivity(indexOfActivity);
+        }
         return this.getActivity(indexOfActivity).findAll(Element.ONE_ROW_TABLE).get(indexOfRow)
                 .findAll(Element.ONE_CELL_IN_TABLE);
     }
 
     public String getColumnInRowInActivityLog(int indexOfActivity, int indexOfRow, Activity.COLUMN column) {
+        if (!isActivityDisplayed(indexOfActivity)) {
+            this.clickOnActivity(indexOfActivity);
+        }
         return this.getRowInActivityLog(indexOfActivity, indexOfRow).get(column.value).getText();
     }
 
