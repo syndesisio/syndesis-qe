@@ -98,13 +98,13 @@ Feature: Integration - Databucket
     And select "Periodic SQL Invocation" integration action
     #Then check visibility of page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     Then fill in periodic query input with "select * from contact" value
     Then fill in period input with "10" value
     Then select "Minutes" from sql dropdown
     #@wip time_unit_id to be specified after new update is available:
     #Then select "Miliseconds" from "time_unit_id" dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
@@ -121,7 +121,7 @@ Feature: Integration - Databucket
     # wip this query doesnt work ftb #698
     Then fill in invoke query input with "select company as firma from contact limit 1;" value
     # there is no done button:
-    And click on the "Done" button
+    And click on the "Next" button
 
 
     Then check visibility of the "Add a Step" button
@@ -155,16 +155,13 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select * from contact  limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish and save integration
     When click on the "Save as Draft" button
     And set integration name "Integration_with_buckets"
     And click on the "Publish" button
     # assert integration is present in list
-    Then check visibility of "Integration_with_buckets" integration details
-    And navigate to the "Integrations" page
-
     And Integration "Integration_with_buckets" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Integration_with_buckets" gets into "Running" state
@@ -189,12 +186,12 @@ Feature: Integration - Databucket
     # first database connection - get some information to be used by second datamapper
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     Then fill in periodic query input with "select company as firma from contact limit 1;" value
     Then fill in period input with "10" value
     Then select "Seconds" from sql dropdown
 
-    And click on the "Done" button
+    And click on the "Next" button
 
 
     ##################### finish step ##################################
@@ -203,7 +200,7 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select * from contact where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME and lead_source = :#LEAD" value
-    And click on the "Done" button
+    And click on the "Next" button
 
 
 
@@ -212,7 +209,7 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select first_name as myName from contact where company = :#COMPANY and last_name = :#MYSURNAME limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
 
     ##################### step NEW step step ##################################
@@ -221,7 +218,7 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select last_name as mySurname from contact where company = :#COMPANY limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     ##################### step step step NEW step ##################################
 
@@ -229,7 +226,7 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     ##################### step step step step NEW step ##################################
 
@@ -237,7 +234,7 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "insert into CONTACT values (:#COMPANY , :#MYNAME , :#MYSURNAME , :#LEAD, '1999-01-01')" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     ##################### check warnings ##################################
 
@@ -367,8 +364,6 @@ Feature: Integration - Databucket
     And click on the "Publish" button
 
     # assert integration is present in list
-    Then check visibility of "Integration_with_buckets" integration details
-    And navigate to the "Integrations" page
     And Integration "Integration_with_buckets" is present in integrations list
 
     # wait for integration to get in active state
