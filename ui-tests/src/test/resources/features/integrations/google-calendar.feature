@@ -75,9 +75,7 @@ Feature: Google Calendar Connector
     And click on the "Save as Draft" button
     And set integration name "google_calendar_copy_event"
     And click on the "Publish" button
-    Then check visibility of "google_calendar_copy_event" integration details
-    And navigate to the "Integrations" page
-    And Integration "google_calendar_copy_event" is present in integrations list
+    Then Integration "google_calendar_copy_event" is present in integrations list
     And wait until integration "google_calendar_copy_event" gets into "Running" state
     And verify that event "new_event" with description "about_the_event" exists in calendar "syndesis-test1" using account "QE Google Calendar"
 
@@ -115,9 +113,7 @@ Feature: Google Calendar Connector
     And click on the "Save as Draft" button
     And set integration name "google_calendar_get_a_specific_event"
     And click on the "Publish" button
-    Then check visibility of "google_calendar_get_a_specific_event" integration details
-    And navigate to the "Integrations" page
-    And Integration "google_calendar_get_a_specific_event" is present in integrations list
+    Then Integration "google_calendar_get_a_specific_event" is present in integrations list
     And wait until integration "google_calendar_get_a_specific_event" gets into "Running" state
     And validate that number of all todos with task "past_event1" is greater than "1"
 
@@ -162,9 +158,7 @@ Feature: Google Calendar Connector
     And click on the "Save as Draft" button
     And set integration name "google_calendar_update_event_coming_in"
     And click on the "Publish" button
-    Then check visibility of "google_calendar_update_event_coming_in" integration details
-    And navigate to the "Integrations" page
-    And Integration "google_calendar_update_event_coming_in" is present in integrations list
+    Then Integration "google_calendar_update_event_coming_in" is present in integrations list
     And wait until integration "google_calendar_update_event_coming_in" gets into "Running" state
     And verify that event "updated_summary" exists in calendar "syndesis-test1" using account "QE Google Calendar"
     And verify that event "updated_summary" with description "this_event_has_ended" exists in calendar "syndesis-test1" using account "QE Google Calendar"
@@ -222,9 +216,7 @@ Feature: Google Calendar Connector
     And set integration name "google_calendar_<name>_on_<events_to_create>_events"
     And click on the "Publish" button
 
-    Then check visibility of "google_calendar_<name>_on_<events_to_create>_events" integration details
-    And navigate to the "Integrations" page
-    And Integration "google_calendar_<name>_on_<events_to_create>_events" is present in integrations list
+    Then Integration "google_calendar_<name>_on_<events_to_create>_events" is present in integrations list
     And wait until integration "google_calendar_<name>_on_<events_to_create>_events" gets into "Running" state
     And check that query "SELECT * FROM TODO" has <expected_num_rows_fst> output
     And reset content of "TODO" table
@@ -297,9 +289,7 @@ Feature: Google Calendar Connector
     And set integration name "google_calendar_get_events_poll_runtime"
     And click on the "Publish" button
 
-    Then check visibility of "google_calendar_get_events_poll_runtime" integration details
-    And navigate to the "Integrations" page
-    And Integration "google_calendar_get_events_poll_runtime" is present in integrations list
+    Then Integration "google_calendar_get_events_poll_runtime" is present in integrations list
     And wait until integration "google_calendar_get_events_poll_runtime" gets into "Running" state
     And check that query "SELECT * FROM TODO" has 4 rows output
     And reset content of "TODO" table

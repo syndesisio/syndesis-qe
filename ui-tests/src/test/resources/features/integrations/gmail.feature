@@ -57,10 +57,6 @@ Feature: Google mail Connector
     And set integration name "Integration_gmail_send"
     And click on the "Publish" button
 
-    # assert integration is present in list
-    Then check visibility of "Integration_gmail_send" integration details
-    When navigate to the "Integrations" page
-
     Then Integration "Integration_gmail_send" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_gmail_send" gets into "Running" state
@@ -110,8 +106,6 @@ Feature: Google mail Connector
     And click on the "Publish" button
 
     # assert integration is present in list
-    Then check visibility of "Integration_gmail_receive" integration details
-    When navigate to the "Integrations" page
     Then Integration "Integration_gmail_receive" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_gmail_receive" gets into "Running" state

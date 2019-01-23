@@ -79,9 +79,6 @@ Feature: Integration - Salesforce to DB
 
     And set integration name "Salesforce to PostresDB E2E"
     And click on the "Publish" button
-      # assert integration is present in list
-    Then check visibility of "Salesforce to PostresDB E2E" integration details
-    And navigate to the "Integrations" page
       # wait for integration to get in active state
     Then wait until integration "Salesforce to PostresDB E2E" gets into "Running" state
 #    VALIDATION:

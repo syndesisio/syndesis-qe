@@ -51,14 +51,11 @@ Feature: Integration - Twitter to Database
     And set integration name "Twitter to DB integration"
     And click on the "Publish" button
 
-    # assert integration is present in list
-    Then check visibility of "Twitter to DB integration" integration details
-    And navigate to the "Integrations" page
-    And Integration "Twitter to DB integration" is present in integrations list
+    Then Integration "Twitter to DB integration" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Twitter to DB integration" gets into "Running" state
+    And wait until integration "Twitter to DB integration" gets into "Running" state
 
-    Then tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
+    And tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
     And sleep for "30000" ms
 
     Then checks that query "select * from contact where company like 'Red Hat%'" has some output

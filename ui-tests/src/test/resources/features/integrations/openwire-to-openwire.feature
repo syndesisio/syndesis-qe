@@ -44,8 +44,6 @@ Feature: Integration - Openwire to Openwire
     When click on the "Publish" button
     And set integration name "JMS publish-subscribe-request E2E"
     And click on the "Publish" button
-    Then check visibility of "JMS publish-subscribe-request E2E" integration details
-    Then navigate to the "Integrations" page
     Then wait until integration "JMS publish-subscribe-request E2E" gets into "Running" state
 
-    Then verify that JMS message using "openwire" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer
+    And verify that JMS message using "openwire" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer

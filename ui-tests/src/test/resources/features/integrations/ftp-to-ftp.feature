@@ -16,10 +16,6 @@ Feature: Integration - FTP to FTP
 #
   @ftp-download-ftp-upload
   Scenario: Create
-
-#     -- TBD. for the time being, no need for adding file to FTP server:
-#    Then puts "1MB.zip" file in the FTP 'from' "directoryName"
-
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
@@ -36,13 +32,8 @@ Feature: Integration - FTP to FTP
       | Delete file after download         | Yes            |
 
     And click on the "Next" button
-#    And fill in values
-#      | Select Type           | JSON Schema        |
-#      | Definition            | sample text        |
-#      | Data Type Name        | sample name        |
-#      | Data Type Description | sample description |
     And click on the "Done" button
-#
+
     Then check visibility of page "Choose a Finish Connection"
     When select the "FTP" connection
     And select "Upload" integration action
@@ -55,21 +46,13 @@ Feature: Integration - FTP to FTP
 
     And click on the "Next" button
 
-#    And fill in values
-#      | Select Type           | JSON Schema        |
-#      | Definition            | sample text        |
-#      | Data Type Name        | sample name        |
-#      | Data Type Description | sample description |
     And click on the "Done" button
 
     Then check visibility of page "Add to Integration"
     And click on the "Publish" button
     And set integration name "ftp-to-ftp E2E"
     And click on the "Publish" button
-    Then check visibility of "ftp-to-ftp E2E" integration details
-    Then navigate to the "Integrations" page
-    Then wait until integration "ftp-to-ftp E2E" gets into "Running" state
-    Then sleep for jenkins delay or "5" seconds
+    Then Integration "ftp-to-ftp E2E" is present in integrations list
+    And wait until integration "ftp-to-ftp E2E" gets into "Running" state
     When put "ui-ftp-ftp.txt" file with content "Hello" in the FTP directory: "download"
-#    to be done:
     Then validate that file "ui-ftp-ftp.txt" has been transfered from "/download" to "/upload" FTP directory
