@@ -35,7 +35,7 @@ public class SelectConnectionType extends AbstractConnectionWizardStep {
 
     public void selectConnectionType(String title) {
         switch(title) {
-            case "AMQ Message Broker":
+            case "Red Hat AMQ":
                 wizard.replaceStep(new ConfigureConnectionAmq(),1);
                 break;
             default:

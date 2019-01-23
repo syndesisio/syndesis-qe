@@ -5,6 +5,7 @@
 @kafka
 @salesforce
 @datamapper
+@amqbroker
 @activemq
 Feature: Integration - Kafka producer / consumer
   Background:

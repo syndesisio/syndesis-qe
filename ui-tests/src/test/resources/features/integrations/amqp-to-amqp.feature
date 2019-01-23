@@ -2,6 +2,7 @@
 
 @ui
 @amqp
+@amqbroker
 @integrations-amqp-to-amqp
 Feature: Integration - AMQP to AMQP
 

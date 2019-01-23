@@ -3,6 +3,7 @@
 @ui
 @doc-tutorial
 @activemq
+@amqbroker
 @todo-app
 @extension
 @api-connector
@@ -29,8 +30,8 @@ Feature: Integration - AMQ to REST
       | details  | routeHost     | todo                      |
       | details  | baseUrl       | /api                      |
     And created connections
-      | AMQ Message Broker | AMQ  | AMQ             | AMQ on OpenShift |
-      | Todo connector     | todo | TODO connection | no validation    |
+      | Red Hat AMQ    | AMQ  | AMQ             | AMQ on OpenShift |
+      | Todo connector | todo | TODO connection | no validation    |
 
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page

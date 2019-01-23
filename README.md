@@ -532,6 +532,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 ------FUNCTIONS------
 @3scale
 @activity
+@amqbroker
 @api-connector
 @database
 @datamapper
