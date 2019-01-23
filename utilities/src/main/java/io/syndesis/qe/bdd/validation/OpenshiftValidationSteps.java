@@ -11,6 +11,7 @@ import cucumber.api.java.en.Then;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
 import io.syndesis.qe.templates.HTTPEndpointsTemplate;
+import io.syndesis.qe.templates.IrcTemplate;
 import io.syndesis.qe.templates.KafkaTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -63,6 +64,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy HTTP endpoints")
     public void deployHTTPEndpoints() {
         HTTPEndpointsTemplate.deploy();
+    }
+
+    @Given("^deploy IRC server")
+    public void deployIRCServer() {
+        IrcTemplate.deploy();
     }
 
     @And("^wait until \"([^\"]*)\" pod is reloaded$")

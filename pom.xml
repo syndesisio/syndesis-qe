@@ -59,6 +59,7 @@
 		<google.apis.version>v1-rev96-1.25.0</google.apis.version>
 		<google.apis.calendar.version>v3-rev347-1.25.0</google.apis.calendar.version>
 		<github.core.version>2.1.5</github.core.version>
+		<irclib.version>1.10</irclib.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -392,6 +393,11 @@
 				<version>${github.core.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.schwering</groupId>
+				<artifactId>irclib</artifactId>
+				<version>${irclib.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

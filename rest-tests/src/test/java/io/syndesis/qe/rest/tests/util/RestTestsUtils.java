@@ -11,6 +11,7 @@ public class RestTestsUtils {
         FTP("ftp"),
         HTTP("http4"),
         HTTPS("https4"),
+        IRC("irc"),
         KAFKA("kafka"),
         SALESFORCE("salesforce"),
         S3("aws-s3"),
@@ -32,6 +33,7 @@ public class RestTestsUtils {
         FTP("fuseqe-ftp"),
         HTTP("fuseqe-http"),
         HTTPS("fuseqe-https"),
+        IRC("irc"),
         KAFKA("fuseqe-kafka"),
         SALESFORCE("fuseqe-salesforce"),
         TWITTER("fuseqe-twitter");

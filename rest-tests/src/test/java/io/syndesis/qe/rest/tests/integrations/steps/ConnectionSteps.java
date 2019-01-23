@@ -145,10 +145,10 @@ public class ConnectionSteps {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create Twitter connection")
-    public void createTwitterConnection() {
+    @Given("^create Twitter connection using \"([^\"]*)\" account")
+    public void createTwitterConnection(String twitterAccount) {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("twitter_talky").get();
+        final Account account = accountsDirectory.getAccount(twitterAccount).get();
         table.add(Arrays.asList("connector", "twitter"));
         table.add(Arrays.asList("accessToken", account.getProperty("accessToken")));
         table.add(Arrays.asList("accessTokenSecret", account.getProperty("accessTokenSecret")));
@@ -170,6 +170,16 @@ public class ConnectionSteps {
         table.add(Arrays.asList("secretKey", account.getProperty("secretKey")));
         table.add(Arrays.asList("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)));
         table.add(Arrays.asList("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket)));
+        createConnection(DataTable.create(table));
+    }
+
+    @Given("^create IRC connection")
+    public void createIRCConnection() {
+        final List<List<String>> table = new ArrayList<>();
+        final Account account = accountsDirectory.getAccount("irc").get();
+        table.add(Arrays.asList("connector", "irc"));
+        table.add(Arrays.asList("hostname", account.getProperty("hostname")));
+        table.add(Arrays.asList("port", account.getProperty("port")));
         createConnection(DataTable.create(table));
     }
 }
