@@ -4,6 +4,7 @@
 @integration-http
 @integration-http-consumer
 @http
+@amqbroker
 @activemq
 Feature: Integration - HTTP consumer
   Background:

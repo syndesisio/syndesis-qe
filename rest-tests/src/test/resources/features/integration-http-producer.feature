@@ -4,6 +4,7 @@
 @integration-http
 @integration-http-producer
 @http
+@amqbroker
 @activemq
 Feature: Integration - HTTP producer
   Background:

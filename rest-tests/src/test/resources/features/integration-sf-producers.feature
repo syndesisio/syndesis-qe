@@ -3,6 +3,7 @@
 @rest
 @integration-sf-producers
 @salesforce
+@amqbroker
 @activemq
 Feature: Integration - SalesForce producers
   Background:

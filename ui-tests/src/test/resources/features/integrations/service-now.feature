@@ -3,6 +3,7 @@
 @ui
 @servicenow
 @activemq
+@amqbroker
 @database
 @integrations-servicenow
 Feature: Integration - ServiceNow-amq/log
@@ -15,8 +16,8 @@ Feature: Integration - ServiceNow-amq/log
     Given delete incidents with "QACUSTOM4,QACREATED1" number
     Given clean "TODO" table
     Given created connections
-      | ServiceNow         | Servicenow | ServiceNow | Service-Now connection |
-      | AMQ Message Broker | AMQ        | AMQ        | AMQ connection         |
+      | ServiceNow  | Servicenow | ServiceNow | Service-Now connection |
+      | Red Hat AMQ | AMQ        | AMQ        | AMQ connection         |
 
 
   Scenario: Get incident from service now

@@ -3,6 +3,7 @@
 @ui
 @openwire
 @activemq
+@amqbroker
 @integrations-openwire-to-openwire
 Feature: Integration - Openwire to Openwire
 
@@ -11,7 +12,7 @@ Feature: Integration - Openwire to Openwire
     Given deploy AMQ broker and add accounts
     Given log into the Syndesis
     Given created connections
-      | AMQ Message Broker | AMQ | AMQ | AMQ connection is awesome |
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection is awesome |
 
   Scenario: Publish subscribe on queue
     When navigate to the "Home" page

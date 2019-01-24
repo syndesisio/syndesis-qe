@@ -8,7 +8,7 @@ Feature: Simple soak test
     Given deploy AMQ broker and add accounts
     Given log into the Syndesis
     Given created connections
-      | AMQ Message Broker   | AMQ            | AMQ   | AMQ connection    |
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection |
 
   Scenario Outline: Timer Publish to queue
     When navigate to the "Home" page
