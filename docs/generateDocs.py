@@ -19,7 +19,7 @@ ansig
 annotation | signature 
 ---
 """
-STYLE = "compact"
+STYLE = "file"
 
 OUTPUTDIR = "docs/"
 
@@ -27,9 +27,13 @@ steps = []
 
 all_steps = []
 
-Annotation = collections.namedtuple("Annotation", ["filename", "start", "end", "regex", "signature"])
+Annotation = collections.namedtuple("Annotation", ["filename", "start", "regex", "signature"])
 
 def setup_filter():
+    """
+    Either creates the default filter to recognize the step definitions
+    or parses it from the arguments provided
+    """
     global annotation_filter
     if len(sys.argv) == 3:
         f = sys.argv[2]
@@ -59,23 +63,21 @@ Example usage:
         """)
 
 def escape_regex(line):
+    """
+    Escapes the annotation line from the special characters used in markdown which could cause trouble
+    """
     for c in "|>!#":
         line = line.replace(c, "\\" + c)
     return line
 
-def process_line(line, line_num, file_name):
-    line = line.strip()
-    if not line.startswith("@"):
-        return
-
-    index = line.find("(")
-    if (index != -1):
-        if line[1:index].lower() in annotation_filter:
-            return Annotation(file_name, line_num, escape_regex(line))
-
 def process_lines(file_name, lines, i):
+    """
+    Tries to find annotation on line with index i,
+    if an annotation is found then finds the function signature
+    """
     annotation = lines[i].strip()
     index = annotation.find("(")
+    #annotation was found
     if (index != -1):
         if annotation[1:index].lower() in annotation_filter:
             #regex = @give(...)
@@ -90,22 +92,14 @@ def process_lines(file_name, lines, i):
                     signature = line
                     signature_incomplete = not signature.endswith("{")
                 elif signature:
+                    #Fixes incomplete signatures when they are longer than one line
                     signature = signature + line
                     signature_incomplete = not signature.endswith("{")
             signature = signature.replace("{", "")
             level = 1
             starting_line_num = i
             i += 1
-            while level > 0:
-                line = lines[i]
-                for c in line:
-                    if c == "{":
-                        level += 1
-                    elif c == "}":
-                        level -= 1
-                i += 1
-            ending_line_num = i
-            steps.append(Annotation(file_name, starting_line_num, ending_line_num, annotation, signature))
+            steps.append(Annotation(file_name, starting_line_num, annotation, signature))
             return i
     return i
 
@@ -114,6 +108,7 @@ def scan_file(file_name):
         return
     try:
         with open(file_name, "r") as f:
+            #Goes through all lines and tries to find annotations
             line_num = 0
             lines = f.readlines()
             while line_num < len(lines):
@@ -128,6 +123,7 @@ def create_index(paths):
     with open(OUTPUTDIR + "index.md", "w") as f:
         f.write("# Documentation of defined steps\n")
         for p in paths:
+            #Links all other files to index
             name = p.replace("-", " ").capitalize()
             p = p + ".md"
             if os.path.exists(OUTPUTDIR + p):
@@ -154,30 +150,35 @@ def write_table_header(f, steps):
 
 def write_step_to_file(f, s):
     if STYLE == "file":
-        f.write(r"|`{regex}`<br>`{signature}`|[{file_name}]({file_name}#L{start})|{start}-{end}|"
-            .format(regex=s.regex, signature=s.signature, file_name="../" + s.filename, start=s.start, end=s.end) + "\n")
+        f.write(r"|`{regex}`<br>`{signature}`|[{file_name}]({file_name}#L{start})|{start}|"
+            .format(regex=s.regex, signature=s.signature, file_name="../" + s.filename, start=s.start) + "\n")
     elif STYLE == "ansig":
         f.write(r"|[`{regex}`]({file_name}#L{start})|[`{signature}`]({file_name}#L{start})|"
-            .format(regex=s.regex, signature=s.signature, file_name="../" + s.filename, start=s.start, end=s.end) + "\n")
+            .format(regex=s.regex, signature=s.signature, file_name="../" + s.filename, start=s.start) + "\n")
     elif STYLE == "compact":
         f.write(r"|[`{annotation}`]({file_name}#L{start})<br>[`{signature}`]({file_name}#L{sigpos})|"
             .format(annotation=s.regex, signature=s.signature, file_name="../" + s.filename, start=s.start, sigpos=s.start+1) + "\n")
 
 def main(path):
     if path == ".":
+        #lists current directory
         path = ",".join(os.listdir("."))
     if "," in path:
         paths = path.split(",")
         for p in paths:
+            #tries to find something to document in given path
             global steps
             steps = []
+            #reseting of steps
             main(p)
+        #creates index for all steps
         create_index(paths)
         return
     for dirName, dirs, files in os.walk(path):
         for f in files:
             scan_file(dirName + "/" + f)   
 
+    #changes path not to screw up any paths nor file types
     sanitized_path = path.replace(".", "").replace("/", "")
     if len(steps) > 0:
         with open(OUTPUTDIR + sanitized_path + ".md", "w") as f:
@@ -186,6 +187,7 @@ def main(path):
             s = steps.pop()
             while s:
                 write_step_to_file(f, s)
+                #appends step to global list of all defined steps to later create index
                 all_steps.append(s)
                 if len(steps) > 0:
                     s = steps.pop()
