@@ -41,11 +41,22 @@ def setup_filter():
 
 def print_help():
     print("""
-        USAGE: generatestepdocs.py <directories to generate docs from> [filter] \n
-        \n
-        default filter is all annotations that cucumber uses (@when, @then, @given, @and, @but) \n""")
+USAGE: generateDocs.py DIRECTORIES [FILTER]
 
+Finds all cucumber steps in .java files in given directories annotated by given filter
+The final documentation is generated to docs/ directory
+Each \"module\" with at least one step defined is documented in its own file
+and every step is documented in index.md 
 
+Arguments:
+\tDIRECTORIES\t comma separated list of directories to find definitions in.
+\t\t (default value is the directory that the script is called from)
+\tFILTER\t comma separated list of annotations that define steps
+\t\t (default value is \"when,then,given,and,but\")
+
+Example usage: 
+    python3 generateDocs.py . "when,then"
+        """)
 
 def escape_regex(line):
     for c in "|>!#":
@@ -98,9 +109,6 @@ def process_lines(file_name, lines, i):
             return i
     return i
 
-
-
-
 def scan_file(file_name):
     if not file_name.endswith(".java"):
         return
@@ -117,13 +125,12 @@ def scan_file(file_name):
         print(e)
 
 def create_index(paths):
-    #TODO replace with README in right directory?
     with open(OUTPUTDIR + "index.md", "w") as f:
         f.write("# Documentation of defined steps\n")
         for p in paths:
             name = p.replace("-", " ").capitalize()
             p = p + ".md"
-            if os.path.exists(p):
+            if os.path.exists(OUTPUTDIR + p):
                 f.write("* [{}]({})\n".format(name, p))
         f.write("## All defined steps\n")
         write_table_header(f, all_steps)
@@ -145,7 +152,6 @@ def write_table_header(f, steps):
         f.write("| Definition & Signature |\n")
         f.write("| --- |\n")
 
-
 def write_step_to_file(f, s):
     if STYLE == "file":
         f.write(r"|`{regex}`<br>`{signature}`|[{file_name}]({file_name}#L{start})|{start}-{end}|"
@@ -156,8 +162,6 @@ def write_step_to_file(f, s):
     elif STYLE == "compact":
         f.write(r"|[`{annotation}`]({file_name}#L{start})<br>[`{signature}`]({file_name}#L{sigpos})|"
             .format(annotation=s.regex, signature=s.signature, file_name="../" + s.filename, start=s.start, sigpos=s.start+1) + "\n")
-
-    
 
 def main(path):
     if path == ".":
@@ -189,15 +193,9 @@ def main(path):
                     break
         print("generated file: " + sanitized_path + ".md")
 
-
 if __name__ == "__main__":
     setup_filter()
     if len(sys.argv) < 2:
-        main(".")
+        print_help()
     else:
         main(sys.argv[1])
-    #if len(sys.argv) < 2:
-    #   print_help()
-    #else:
-    #    setup_filter()
-    #    main(sys.argv[1])  

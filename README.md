@@ -27,6 +27,7 @@ Updated: 31.01.2019
 
 #### docs
 On-going initiative to provide comprehensive guide to current code structure.
+Contains list of all used steps in this project in [index.md](docs/index.md)
 
 #### rest-tests
 Java based tests that use Cucumber scenarios.
