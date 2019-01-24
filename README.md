@@ -1,5 +1,9 @@
 # Syndesis QE
+<<<<<<< HEAD
 Updated: 31.01.2019
+=======
+Updated: 20.11.2018
+>>>>>>> test
 
 ##### Table of Contents
 
