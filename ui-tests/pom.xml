@@ -140,6 +140,17 @@
                             <outputDirectory>${project.basedir}/src/test/resources/quickstarts/</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>download-quickstart-db-to-db</id>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <url>https://github.com/syndesisio/syndesis-quickstarts/raw/master/db-2-db/DB-2-DB-export.zip</url>
+                            <outputFileName>DB-2-DB-export.zip</outputFileName>
+                            <outputDirectory>${project.basedir}/src/test/resources/quickstarts/</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
