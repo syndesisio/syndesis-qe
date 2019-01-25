@@ -80,9 +80,6 @@ Feature: Concur Connector
     When click on the "Save as Draft" button
     And set integration name "Integration_with_concur"
     And click on the "Publish" button
-    Then check visibility of "Integration_with_concur" integration details
-
-    When navigate to the "Integrations" page
     Then Integration "Integration_with_concur" is present in integrations list
     And wait until integration "Integration_with_concur" gets into "Running" state
     And validate that logs of integration "Integration_with_concur" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
@@ -232,9 +229,6 @@ Feature: Concur Connector
     When click on the "Save as Draft" button
     And set integration name "Integration_with_concur"
     And click on the "Publish" button
-    Then check visibility of "Integration_with_concur" integration details
-
-    When navigate to the "Integrations" page
     Then Integration "Integration_with_concur" is present in integrations list
     And wait until integration "Integration_with_concur" gets into "Running" state
 

@@ -76,13 +76,6 @@ Feature: Support page
     When click on the "Save as Draft" button
     And set integration name "my-integration"
     And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "my-integration" integration details
-    #And click on the "Done" button
-    #And Integration "my-integration" is present in integrations list
-    # wait for integration to get in active state
-    And navigate to the "Integrations" page
-
     Then wait until integration "my-integration" gets into "Running" state
 
     #TODO: create integration - use rest steps so it is easier?

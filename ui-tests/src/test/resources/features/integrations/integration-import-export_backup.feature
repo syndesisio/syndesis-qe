@@ -55,10 +55,7 @@ Feature: Integration - Import Export
     When click on the "Save as Draft" button
     And set integration name "Integration_import_export_test"
     And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "Integration_import_export_test" integration details
-    And navigate to the "Integrations" page
-    And Integration "Integration_import_export_test" is present in integrations list
+    Then Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Integration_import_export_test" gets into "Running" state
 

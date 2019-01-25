@@ -31,11 +31,11 @@ Feature: Integration - Import Export
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
     And fill in period input with "60" value
     And select "Seconds" from sql dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
@@ -45,7 +45,7 @@ Feature: Integration - Import Export
     And fill in values
       | Channel | test |
 
-    And click on the "Done" button
+    And click on the "Next" button
 
     # add data mapper step
     When click on the "Add a Step" button
@@ -58,11 +58,7 @@ Feature: Integration - Import Export
     And click on the "Save as Draft" button
     And set integration name "Integration_import_export_test"
     And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "Integration_import_export_test" integration details
-    And navigate to the "Integrations" page
-
-    And Integration "Integration_import_export_test" is present in integrations list
+    Then Integration "Integration_import_export_test" is present in integrations list
 
     When inserts into "CONTACT" table
       | Lorem | Ipsum | Red Hat | e_db |
@@ -100,11 +96,7 @@ Feature: Integration - Import Export
     When click on the "Edit" button
     And click on the "Publish" button
 
-    And sleep for jenkins delay or "3" seconds
-    Then check visibility of "Integration_import_export_test" integration details
-
-    And navigate to the "Integrations" page
-    And Integration "Integration_import_export_test" is present in integrations list
+    Then Integration "Integration_import_export_test" is present in integrations list
 
     Then wait until integration "Integration_import_export_test" gets into "Running" state
 
@@ -178,11 +170,6 @@ Feature: Integration - Import Export
 
     When click on the "Edit" button
     And click on the "Publish" button
-
-    And sleep for jenkins delay or "3" seconds
-
-    Then check visibility of "Integration_import_export_test" integration details
-    And navigate to the "Integrations" page
 
     And Integration "Integration_import_export_test" is present in integrations list
 

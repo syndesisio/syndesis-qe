@@ -25,12 +25,12 @@ Feature: Log Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "select * from contact limit(1)" value
     And fill in period input with "1" value
     And select "Minutes" from sql dropdown
-    And click on the "Done" button
+    And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
     When select the "Log" connection
@@ -47,9 +47,6 @@ Feature: Log Connector
     When click on the "Save as Draft" button
     And set integration name "Integration_with_log"
     And click on the "Publish" button
-    Then check visibility of "Integration_with_log" integration details
-
-    When navigate to the "Integrations" page
     Then Integration "Integration_with_log" is present in integrations list
     And wait until integration "Integration_with_log" gets into "Running" state
 
@@ -70,12 +67,12 @@ Feature: Log Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "select * from contact limit(1)" value
     And fill in period input with "1" value
     And select "Minutes" from sql dropdown
-    And click on the "Done" button
+    And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
     Then select the "Log" connection
@@ -101,9 +98,6 @@ Feature: Log Connector
     When click on the "Save as Draft" button
     And set integration name "Integration_with_log2"
     And click on the "Publish" button
-    Then check visibility of "Integration_with_log2" integration details
-
-    When navigate to the "Integrations" page
     Then Integration "Integration_with_log2" is present in integrations list
 
     And wait until integration "Integration_with_log2" starting status gets into "Deploying ( 3 / 4 )" state
