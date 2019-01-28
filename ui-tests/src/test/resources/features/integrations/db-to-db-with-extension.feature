@@ -66,9 +66,7 @@ Feature: Integration - DB to DB with extension
     And click on the "Publish" button
 
     # assert integration is present in list
-    Then check visibility of "CRUD4-read-create-inbuilt E2E" integration details
-    And navigate to the "Integrations" page
-    And Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
+    Then Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
 

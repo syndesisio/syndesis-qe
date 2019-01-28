@@ -49,9 +49,6 @@ Feature: Webhook extension
     And click on the "Publish" button
     And set integration name "webhook-test"
     And click on the "Publish" button
-    Then check visibility of "webhook-test" integration details
-
-    When navigate to the "Integrations" page
     Then wait until integration "webhook-test" gets into "Running" state
 
     And select the "webhook-test" integration

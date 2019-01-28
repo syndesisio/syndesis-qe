@@ -33,11 +33,11 @@ Feature: Integration - DB to DB oracle12
       # select salesforce connection as 'from' point
     When select the "Oracle12" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     Then fill in periodic query input with "SELECT * FROM CONTACT" value
     Then fill in period input with "5" value
     Then select "Seconds" from sql dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
     # select postgresDB connection as 'to' point
     Then check visibility of page "Choose a Finish Connection"
@@ -45,7 +45,7 @@ Feature: Integration - DB to DB oracle12
     And select "Invoke SQL" integration action
 #    @wip - bug to be reported, wrong is: (:#TASK, 2). (:#TASK, :#MASK) is OK
     Then fill in invoke query input with "INSERT INTO TODO(task, completed) VALUES (:#TASK, 2)" value
-    And click on the "Done" button
+    And click on the "Next" button
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
@@ -59,9 +59,6 @@ Feature: Integration - DB to DB oracle12
     And click on the "Publish" button
     And set integration name "CRUD2-read-create E2E"
     And click on the "Publish" button
-    #@wip there is no more h1 label with integration name there, syndesis #430
-    Then check visibility of "CRUD2-read-create E2E" integration details
-    Then navigate to the "Integrations" page
     Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
 
     Then validate that all todos with task "Josef_oracle12" have value completed "2", period in ms: "5000" on "oracle12"
