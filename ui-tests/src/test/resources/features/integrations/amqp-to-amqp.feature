@@ -8,7 +8,7 @@ Feature: Integration - AMQP to AMQP
 
   Background: Clean application state and prepare what is needed
     Given clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
       | AMQP Message Broker | AMQP | AMQP | AMQP on OpenShift |

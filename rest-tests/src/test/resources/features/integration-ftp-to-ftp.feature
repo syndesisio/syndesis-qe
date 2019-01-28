@@ -12,7 +12,7 @@ Feature: Integration - FTP to FTP
       And delete file "/upload/test-ftp.txt" from FTP
 
   Scenario: Download upload
-    When create the FTP connection using "FTP" template
+    When create FTP connection
       And create start FTP download action with values
         | fileName      | directoryName | initialDelay | delay | delete |
         | test-ftp.txt  | download      | 1000         | 500   | true   |

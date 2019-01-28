@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,7 +17,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author tplevko@redhat.com
  */
 @Slf4j
-public class TwSteps extends AbstractStep {
+public class TwitterSteps extends AbstractStep {
 
     @Autowired
     private StepsStorage steps;
@@ -37,18 +37,13 @@ public class TwSteps extends AbstractStep {
     private ConnectionsEndpoint connectionsEndpoint;
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
-    public static final String SYNDESIS_TALKY_ACCOUNT = "twitter_talky";
-
-    public TwSteps() {
-    }
 
     @Given("^create TW mention step with \"([^\"]*)\" action")
     public void createTwitterStep(String twitterAction) {
-
-        final Connector twitterConnector = connectorsEndpoint.get("twitter");
-        final Connection twitterConnection = connectionsEndpoint.get(RestConstants.TWITTER_CONNECTION_ID);
+        final Connector twitterConnector = connectorsEndpoint.get(RestTestsUtils.Connector.TWITTER.getId());
+        final Connection twitterConnection = connectionsEndpoint.get(RestTestsUtils.Connection.TWITTER.getId());
         final Action twAction = TestUtils.findConnectorAction(twitterConnector, twitterAction);
-        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(twAction, new HashMap<>(), RestConstants.TWITTER_CONNECTION_ID);
+        final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(twAction, new HashMap<>(), RestTestsUtils.Connection.TWITTER.getId());
 
         final Step twitterStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)

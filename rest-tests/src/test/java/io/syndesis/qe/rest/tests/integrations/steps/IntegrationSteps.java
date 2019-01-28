@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,6 +14,7 @@ import java.util.UUID;
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
+import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
@@ -25,7 +26,6 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-
 import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -63,7 +63,6 @@ public class IntegrationSteps extends AbstractStep {
                     .build();
 
             steps.getStepDefinitions().add(new StepDefinition(customStep));
-
         }
     }
 
@@ -115,5 +114,24 @@ public class IntegrationSteps extends AbstractStep {
             Extension e = extensionsEndpoint.uploadExtension(files[0]);
             extensionsEndpoint.installExtension(e);
         }
+    }
+
+    @Given("^change datashape of previous step to \"([^\"]*)\" direction, \"([^\"]*)\" type with specification \'([^\']*)\'$")
+    public void changeDatashapeTo(String direction, String type, String specification) {
+        Step lastStep = steps.getLastStepDefinition().getStep();
+        Step withDatashape = new Step.Builder().createFrom(lastStep).action(
+                withCustomDatashape(
+                        lastStep.getAction().get(),
+                        getConnectorDescriptor(
+                                lastStep.getAction().get(), lastStep.getConfiguredProperties(), lastStep.getConnection().get().getId().get()
+                        ),
+                        direction,
+                        DataShapeKinds.valueOf(type),
+                        specification
+                )
+        ).build();
+
+        steps.getStepDefinitions().remove(steps.getStepDefinitions().size() - 1);
+        steps.getStepDefinitions().add(new StepDefinition(withDatashape));
     }
 }

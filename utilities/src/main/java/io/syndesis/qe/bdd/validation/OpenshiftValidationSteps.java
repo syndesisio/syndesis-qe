@@ -11,6 +11,7 @@ import cucumber.api.java.en.Then;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
 import io.syndesis.qe.templates.HTTPEndpointsTemplate;
+import io.syndesis.qe.templates.IrcTemplate;
 import io.syndesis.qe.templates.KafkaTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -31,12 +32,12 @@ public class OpenshiftValidationSteps {
     }
 
     @Given("^deploy FTP server$")
-    public void deployFTPServier() {
+    public void deployFTPServer() {
         FtpTemplate.deploy();
     }
 
     @Given("^clean FTP server$")
-    public void cleanFTPServier() {
+    public void cleanFTPServer() {
         FtpTemplate.cleanUp();
     }
 
@@ -50,13 +51,8 @@ public class OpenshiftValidationSteps {
         MysqlTemplate.deploy();
     }
 
-    @Given("^deploy AMQ broker and add accounts$")
+    @Given("^deploy ActiveMQ broker$")
     public void deployAMQBroker() {
-        AmqTemplate.deploy();
-    }
-
-    @Given("^deploy AMQ broker if it doesnt exist$")
-    public void deployAMQBrokerIfMissing() {
         AmqTemplate.deploy();
     }
 
@@ -68,6 +64,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy HTTP endpoints")
     public void deployHTTPEndpoints() {
         HTTPEndpointsTemplate.deploy();
+    }
+
+    @Given("^deploy IRC server")
+    public void deployIRCServer() {
+        IrcTemplate.deploy();
     }
 
     @And("^wait until \"([^\"]*)\" pod is reloaded$")

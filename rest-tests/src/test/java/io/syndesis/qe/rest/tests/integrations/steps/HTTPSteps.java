@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,7 +19,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.utils.RestConstants;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 public class HTTPSteps extends AbstractStep {
@@ -31,8 +31,8 @@ public class HTTPSteps extends AbstractStep {
     private ConnectorsEndpoint connectorsEndpoint;
 
     private void createStep(String method, String path, long period, String timeunit, String datashape) {
-        final Connector httpConnector = connectorsEndpoint.get("http4");
-        final Connection httpConnection = connectionsEndpoint.get(RestConstants.HTTP_CONNECTION_ID);
+        final Connector httpConnector = connectorsEndpoint.get(RestTestsUtils.Connector.HTTP.getId());
+        final Connection httpConnection = connectionsEndpoint.get(RestTestsUtils.Connection.HTTP.getId());
         final String action = period == -1 ? "http4-invoke-url" : "http4-periodic-invoke-url";
         Action httpAction = TestUtils.findConnectorAction(httpConnector, action);
         final Map<String, String> properties = TestUtils.map(
@@ -45,7 +45,7 @@ public class HTTPSteps extends AbstractStep {
         }
 
         if (datashape != null) {
-            final ConnectorDescriptor cd = getConnectorDescriptor(httpAction, properties, RestConstants.HTTP_CONNECTION_ID);
+            final ConnectorDescriptor cd = getConnectorDescriptor(httpAction, properties, RestTestsUtils.Connection.HTTP.getId());
             httpAction = withCustomDatashape(
                     httpAction,
                     cd,
@@ -70,24 +70,13 @@ public class HTTPSteps extends AbstractStep {
         createStep(method, "/", period, timeunit, null);
     }
 
+    @Given("^create HTTP \"([^\"]*)\" step with path \"([^\"]*)\" and period \"([^\"]*)\" \"([^\"]*)\"$")
+    public void createHTTPStepWithPeriodAndPath(String method, String path, long period, String timeunit) {
+        createStep(method, path, period, timeunit, null);
+    }
+
     @Given("^create HTTP \"([^\"]*)\" step$")
     public void createHTTPStep(String method) {
         createStep(method, "/", -1, null, null);
-    }
-
-    @Given("^create HTTP step with datashape$")
-    public void createHTTPStepWithDatashape() {
-        createStep("GET",
-                "/api/getXml",
-                5,
-                "SECONDS",
-                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                "<xmlResponse>" +
-                "<dummyField1>x</dummyField1>" +
-                "<dummyField2>y</dummyField2>" +
-                "<method>get</method>" +
-                "<dummyField3>z</dummyField3>" +
-                "</xmlResponse>"
-        );
     }
 }

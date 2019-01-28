@@ -9,7 +9,7 @@ Feature: Integration - Salesforce to DB
   Background: Clean application state
     Given clean SF, removes all leads with email: "jdoesfdb@acme.com"
     And remove all records from table "todo"
-    And create SF connection
+    And create SalesForce connection
 
   @integrations-sf-db @integrations-sf-db-create
   Scenario: On create

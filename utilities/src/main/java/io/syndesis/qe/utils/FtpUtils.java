@@ -45,6 +45,15 @@ public class FtpUtils {
         }
     }
 
+    public String getFileContent(String directory, String fileName) {
+        try {
+            return IOUtils.toString(ftpClient.retrieveFileStream(directory + "/" + fileName), "utf-8");
+        } catch (Exception ex) {
+            fail("Unable to read FTP file " + directory + "/" + fileName);
+        }
+        return null;
+    }
+
     /**
      * Sometimes the Connections ends with "FTPConnectionClosedException: Connection closed without indication".
      */

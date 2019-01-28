@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +19,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,8 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author tplevko@redhat.com
  */
 @Slf4j
-public class DbSteps extends AbstractStep {
-
+public class DatabaseSteps extends AbstractStep {
     @Autowired
     private StepsStorage steps;
     @Autowired
@@ -39,15 +39,10 @@ public class DbSteps extends AbstractStep {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
 
-    private static final String POSTGRES_DB_ID = "5";
-
-    public DbSteps() {
-    }
-
     @Then("^create start DB periodic sql invocation action step with query \"([^\"]*)\" and period \"([^\"]*)\" ms")
     public void createStartDbPeriodicSqlStep(String sqlQuery, Integer ms) {
-        final Connection dbConnection = connectionsEndpoint.get(POSTGRES_DB_ID);
-        final Connector dbConnector = connectorsEndpoint.get("sql");
+        final Connector dbConnector = connectorsEndpoint.get(RestTestsUtils.Connection.DB.getId());
+        final Connection dbConnection = connectionsEndpoint.get(RestTestsUtils.Connector.DB.getId());
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-start-connector");
         final Map<String, String> properties = TestUtils.map("query", sqlQuery, "schedulerExpression", ms);
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());
@@ -65,8 +60,8 @@ public class DbSteps extends AbstractStep {
 
     @Then("^create start DB periodic stored procedure invocation action step named \"([^\"]*)\" and period \"([^\"]*)\" ms")
     public void createStartDbPeriodicProcedureStep(String procedureName, Integer ms) {
-        final Connection dbConnection = connectionsEndpoint.get(POSTGRES_DB_ID);
-        final Connector dbConnector = connectorsEndpoint.get("sql");
+        final Connector dbConnector = connectorsEndpoint.get(RestTestsUtils.Connection.DB.getId());
+        final Connection dbConnection = connectionsEndpoint.get(RestTestsUtils.Connector.DB.getId());
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-stored-start-connector");
         final Map<String, String> properties = TestUtils.map("procedureName", procedureName, "schedulerExpression", ms,
                 "template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
@@ -85,8 +80,8 @@ public class DbSteps extends AbstractStep {
 
     @Then("^create finish DB invoke sql action step with query \"([^\"]*)\"")
     public void createFinishDbInvokeSqlStep(String sqlQuery) {
-        final Connection dbConnection = connectionsEndpoint.get(POSTGRES_DB_ID);
-        final Connector dbConnector = connectorsEndpoint.get("sql");
+        final Connector dbConnector = connectorsEndpoint.get(RestTestsUtils.Connection.DB.getId());
+        final Connection dbConnection = connectionsEndpoint.get(RestTestsUtils.Connector.DB.getId());
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-connector");
         final Map<String, String> properties = TestUtils.map("query", sqlQuery);
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());
@@ -103,8 +98,8 @@ public class DbSteps extends AbstractStep {
 
     @Given("^create DB step with query: \"([^\"]*)\" and interval: (\\d+) miliseconds")
     public void createDbStepWithInterval(String query, int interval) {
-        final Connection dbConnection = connectionsEndpoint.get(POSTGRES_DB_ID);
-        final Connector dbConnector = connectorsEndpoint.get("sql");
+        final Connector dbConnector = connectorsEndpoint.get(RestTestsUtils.Connection.DB.getId());
+        final Connection dbConnection = connectionsEndpoint.get(RestTestsUtils.Connector.DB.getId());
         final Map<String, String> properties = TestUtils.map("query", query, "schedulerExpression", interval);
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-connector");
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());
@@ -121,9 +116,8 @@ public class DbSteps extends AbstractStep {
 
     @And("^create finish DB invoke stored procedure \"([^\"]*)\" action step")
     public void createFinishDbInvokeProcedureStep(String procedureName) {
-
-        final Connection dbConnection = connectionsEndpoint.get(POSTGRES_DB_ID);
-        final Connector dbConnector = connectorsEndpoint.get("sql");
+        final Connector dbConnector = connectorsEndpoint.get(RestTestsUtils.Connection.DB.getId());
+        final Connection dbConnection = connectionsEndpoint.get(RestTestsUtils.Connector.DB.getId());
         final Action dbAction = TestUtils.findConnectorAction(dbConnector, "sql-stored-connector");
         final Map<String, String> properties = TestUtils.map("procedureName", procedureName);
         final ConnectorDescriptor connectorDescriptor = getConnectorDescriptor(dbAction, properties, dbConnection.getId().get());

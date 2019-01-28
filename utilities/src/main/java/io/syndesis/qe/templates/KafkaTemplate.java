@@ -79,7 +79,7 @@ public class KafkaTemplate {
     private static void addAccount() {
         Account kafka = new Account();
         Map<String, String> kafkaParameters = new HashMap<>();
-        kafkaParameters.put("brokerUrl", "my-cluster-kafka-brokers:9092");
+        kafkaParameters.put("brokers", "my-cluster-kafka-brokers:9092");
         kafka.setService("kafka");
         kafka.setProperties(kafkaParameters);
         AccountsDirectory.getInstance().getAccounts().put("kafka", kafka);

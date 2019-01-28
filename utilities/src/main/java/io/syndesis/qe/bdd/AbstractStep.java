@@ -24,9 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractStep {
-
     public ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
-
         ConnectionsActionsEndpoint conActEndpoint = new ConnectionsActionsEndpoint(connectionId);
         return conActEndpoint.postParamsAction(action.getId().get(), properties);
     }

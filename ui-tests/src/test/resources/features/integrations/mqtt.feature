@@ -8,7 +8,7 @@ Feature: Integration - MQTT to MQTT
 
   Background: Clean application state and prepare what is needed
     Given clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
       | MQTT Message Broker | QE MQTT | MQTT test connection | some description |

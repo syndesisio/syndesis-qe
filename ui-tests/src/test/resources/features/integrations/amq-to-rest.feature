@@ -17,7 +17,7 @@ Feature: Integration - AMQ to REST
     And wait for Todo to become ready
     And reset content of "todo" table
     And Set Todo app credentials
-    And deploy AMQ broker and add accounts
+    And deploy ActiveMQ broker
     And navigate to the "Customizations" page
     And click on the "Extensions" link
     And click on the "Import Extension" button

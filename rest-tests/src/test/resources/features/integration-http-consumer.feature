@@ -10,14 +10,14 @@ Feature: Integration - HTTP consumer
   Background:
     Given clean application state
       And deploy HTTP endpoints
-      And deploy AMQ broker and add accounts
-      And create AMQ connection
+      And deploy ActiveMQ broker
+      And create ActiveMQ connection
       And create HTTP connection
 
   @integration-http-consumer-get
   Scenario: Integration - HTTP consumer GET
     Given create HTTP "GET" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-get"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-get"
     When create integration with name: "HTTP-GET-AMQ"
     Then wait for integration with name: "HTTP-GET-AMQ" to become active
     When clear endpoint events
@@ -27,7 +27,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-post
   Scenario: Integration - HTTP consumer POST
     Given create HTTP "POST" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-post"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-post"
     When create integration with name: "HTTP-POST-AMQ"
     Then wait for integration with name: "HTTP-POST-AMQ" to become active
     When clear endpoint events
@@ -37,7 +37,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-put
   Scenario: Integration - HTTP consumer PUT
     Given create HTTP "PUT" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-put"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-put"
     When create integration with name: "HTTP-PUT-AMQ"
     Then wait for integration with name: "HTTP-PUT-AMQ" to become active
     When clear endpoint events
@@ -47,7 +47,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-delete
   Scenario: Integration - HTTP consumer DELETE
     Given create HTTP "DELETE" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-delete"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-delete"
     When create integration with name: "HTTP-DELETE-AMQ"
     Then wait for integration with name: "HTTP-DELETE-AMQ" to become active
     When clear endpoint events
@@ -57,7 +57,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-patch
   Scenario: Integration - HTTP consumer PATCH
     Given create HTTP "PATCH" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-patch"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-patch"
     When create integration with name: "HTTP-PATCH-AMQ"
     Then wait for integration with name: "HTTP-PATCH-AMQ" to become active
     When clear endpoint events
@@ -67,7 +67,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-options
   Scenario: Integration - HTTP consumer OPTIONS
     Given create HTTP "OPTIONS" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-options"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-options"
     When create integration with name: "HTTP-OPTIONS-AMQ"
     Then wait for integration with name: "HTTP-OPTIONS-AMQ" to become active
     When clear endpoint events
@@ -77,7 +77,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-trace
   Scenario: Integration - HTTP consumer TRACE
     Given create HTTP "TRACE" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-trace"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-trace"
     When create integration with name: "HTTP-TRACE-AMQ"
     Then wait for integration with name: "HTTP-TRACE-AMQ" to become active
     When clear endpoint events
@@ -86,7 +86,7 @@ Feature: Integration - HTTP consumer
   @integration-http-consumer-head
   Scenario: Integration - HTTP consumer
     Given create HTTP "HEAD" step with period "5" "SECONDS"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-head"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-head"
     When create integration with name: "HTTP-HEAD-AMQ"
     Then wait for integration with name: "HTTP-HEAD-AMQ" to become active
     When clear endpoint events
@@ -95,10 +95,12 @@ Feature: Integration - HTTP consumer
   @integration-http-datamapper
   @datamapper
   Scenario: HTTP Response Datamapper
-    Given create HTTP step with datashape
+    Given create HTTP "GET" step with path "/api/getXml" and period "5" "SECONDS"
+      And change datashape of previous step to "out" direction, "XML_INSTANCE" type with specification '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xmlResponse><dummyField1>x</dummyField1><dummyField2>y</dummyField2><method>get</method><dummyField3>z</dummyField3></xmlResponse>'
       And start mapper definition with name: "mapping 1"
       And MAP using Step 1 and field "/xmlResponse/method" to "/response/executedMethod"
-      And create AMQ "publish" action step with destination type "queue" and destination name "http-datamapper" with datashape type "XML_INSTANCE" and specification '<response><executedMethod>TEST</executedMethod></response>'
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-datamapper"
+      And change datashape of previous step to "in" direction, "XML_INSTANCE" type with specification '<response><executedMethod>TEST</executedMethod></response>'
     When create integration with name: "HTTP-GET-AMQ-Datamapper"
     Then wait for integration with name: "HTTP-GET-AMQ-Datamapper" to become active
     When clear endpoint events
