@@ -3,7 +3,6 @@ package io.syndesis.qe.pages.integrations.fragments;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;

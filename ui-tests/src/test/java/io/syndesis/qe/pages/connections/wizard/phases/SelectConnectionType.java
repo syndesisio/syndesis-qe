@@ -5,7 +5,6 @@ import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 import com.codeborne.selenide.SelenideElement;

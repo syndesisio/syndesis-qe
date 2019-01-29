@@ -7,8 +7,6 @@ import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
 import org.assertj.core.api.Assertions;
 
 import java.util.List;

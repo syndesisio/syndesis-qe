@@ -1,6 +1,5 @@
 package io.syndesis.qe.bdd.validation;
 
-import io.syndesis.qe.utils.LogCheckerUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,11 +1,9 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
 import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.fragments.common.list.RowList;
 import org.openqa.selenium.By;
-import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.have;
 import static com.codeborne.selenide.Condition.visible;
