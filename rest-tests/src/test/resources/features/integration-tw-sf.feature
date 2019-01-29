@@ -11,7 +11,7 @@ Feature: Integration - Twitter to Salesforce
     Given clean application state
     Given clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
-    And create Twitter connection using "twitter_talky" account
+    And create Twitter connection using "Twitter Listener" account
     And create SalesForce connection
     And create TW mention step with "twitter-mention-action" action
     And create basic TW to SF filter step
