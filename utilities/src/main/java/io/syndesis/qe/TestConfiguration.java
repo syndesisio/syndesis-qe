@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Properties;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,8 @@ public class TestConfiguration {
     public static final String UPSTREAM_REPOSITORY = "syndesis.config.upstream.repository";
 
     public static final String SKIP_TESTS_WITH_OPEN_ISSUES = "syndesis.skip.open.issues";
+
+    private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -252,6 +255,10 @@ public class TestConfiguration {
         properties.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", version));
         properties.setProperty(SYNDESIS_OPERATOR_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", version));
         properties.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", version));
+    }
+
+    public static Optional<String> browserBinary() {
+        return Optional.ofNullable(get().readValue(BROWSER_BINARY_PATH));
     }
 
 }
