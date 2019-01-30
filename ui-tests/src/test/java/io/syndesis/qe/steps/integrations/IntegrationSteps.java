@@ -7,9 +7,11 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
 import io.syndesis.qe.pages.integrations.Integrations;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
 import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -25,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -37,6 +41,7 @@ public class IntegrationSteps {
     private Details detailPage = new Details();
     private Integrations integrations = new Integrations();
     private DataMapper dataMapper = new DataMapper();
+    private ImportIntegration importIntegration = new ImportIntegration();
 
     @When("^select the \"([^\"]*)\" integration.*$")
     public void selectIntegration(String itegrationName) {
@@ -108,6 +113,11 @@ public class IntegrationSteps {
                 .isFile()
                 .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
         ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
+    }
+
+    @And("^import the integration from file ([^\"]*)$")
+    public void importIntegration(String filePath) {
+        importIntegration.importIntegration(new File(getClass().getClassLoader().getResource(filePath).getFile()));
     }
 
     @And("^start integration \"([^\"]*)\"$")

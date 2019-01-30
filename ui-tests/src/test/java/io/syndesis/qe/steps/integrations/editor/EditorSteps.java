@@ -182,7 +182,13 @@ public class EditorSteps {
     }
 
     @Then("^check that (\\w+). step has ([^\"]*) title")
-    public void checkParticularStepTitle(int positionOfStep, String title){
-        Assertions.assertThat(flowViewComponent.getStepsTitlesArray().get(positionOfStep-1)).contains(title);
+    public void checkParticularStepTitle(int positionOfStep, String title) {
+        Assertions.assertThat(flowViewComponent.getStepsTitlesArray().get(positionOfStep - 1)).contains(title);
+    }
+
+    @When("^edit integration step on position (\\d+)$")
+    public void editIntegrationStep(int oneBasedStepPosition) {
+        log.info("Editing integration step #" + oneBasedStepPosition);
+        flowViewComponent.getStepOnPosition(oneBasedStepPosition).shouldBe(visible).click();
     }
 }
