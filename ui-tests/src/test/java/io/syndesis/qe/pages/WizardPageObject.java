@@ -2,9 +2,6 @@ package io.syndesis.qe.pages;
 
 import static java.util.Arrays.asList;
 
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 
 import io.syndesis.qe.logic.common.wizard.WizardPhase;

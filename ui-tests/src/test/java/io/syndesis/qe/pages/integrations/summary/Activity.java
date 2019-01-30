@@ -1,26 +1,14 @@
 package io.syndesis.qe.pages.integrations.summary;
 
-import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
-import java.util.List;
-import java.util.Optional;
-
-import io.fabric8.kubernetes.api.model.Pod;
-import io.syndesis.common.model.integration.Integration;
-import io.syndesis.qe.endpoints.ActivityIntegrationsEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.utils.OpenShiftUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

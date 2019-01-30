@@ -4,7 +4,6 @@ import static org.assertj.core.api.Fail.fail;
 
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 
-import org.assertj.core.api.Fail;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;

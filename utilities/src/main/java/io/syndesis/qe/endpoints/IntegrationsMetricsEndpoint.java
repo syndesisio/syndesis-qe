@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.GeneralSecurityException;
 
-import io.syndesis.common.model.integration.Integration;
 import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 
 @Component
