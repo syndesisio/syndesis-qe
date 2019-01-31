@@ -4,14 +4,14 @@
 @timer-connector
 @timer
 @http
-Feature: Timer connector
+Feature: Integration - Timer
 
   Background:
     Given clean application state
     And deploy HTTP endpoints
     And create HTTP connection
 
-  Scenario: Simple Timer
+  Scenario: Simple Timer to GET
     When add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
       | timer-action | 1000   |
@@ -23,7 +23,7 @@ Feature: Timer connector
     Then verify that after "2.5" seconds there were "2" calls
 
 
-  Scenario: Cron Timer
+  Scenario: Cron Timer to GET
     When add "timer" endpoint with connector id "timer" and "timer-chron" action and with properties:
       | action     | cron          |
       | timer-cron | 0/1 * * * * ? |

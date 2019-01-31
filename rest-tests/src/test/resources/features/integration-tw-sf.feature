@@ -4,10 +4,10 @@
 @twitter
 @salesforce
 @datamapper
-Feature: Integration - Twitter to Salesforce
+Feature: Integration - Twitter
 
   @integrations-tw-sf
-  Scenario: Create
+  Scenario: Mention to Salesforce create object
     Given clean application state
     Given clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
