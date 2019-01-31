@@ -98,6 +98,8 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         options.setExperimentalOption("prefs", preferences);
         options.addArguments("--no-sandbox");
 
+        TestConfiguration.browserBinary().map(options::setBinary);
+
         /* this version of constructor is deprecated :( how can we add those DesiredCapabilities? it is not used for now
         DesiredCapabilities capabilities = DesiredCapabilities.chrome();
         capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
