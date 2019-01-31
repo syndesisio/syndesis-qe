@@ -1,5 +1,5 @@
 # Syndesis QE
-Updated: 20.11.2018
+Updated: 31.01.2019
 
 ##### Table of Contents
 
@@ -22,7 +22,6 @@ Updated: 20.11.2018
 ├── docs
 ├── rest-tests
 ├── ui-tests
-├── ui-tests-protractor
 └── utilities
 ```
 
@@ -31,37 +30,35 @@ On-going initiative to provide comprehensive guide to current code structure.
 
 #### rest-tests
 Java based tests that use Cucumber scenarios.
-Test actions are executed directly to `syndesis-rest` backend.
+Test actions are executed directly to `syndesis-server` backend.
 
 #### ui-tests
 Java based tests that use Selenide and Cucumber BDD scenarios.
 Test actions are mainly UI driven with additional 3rd party validation like Salesforce, Twitter etc.
 
-#### ui-tests-protractor (Deprecated)
-Typescript based tests that use Protractor and Cucumber BDD scenarios.
-
 ### Prepare minishift instance
 
 #### Prerequisites:
-Installed [Minishift](https://www.openshift.org/minishift/)
+- Installed [Minishift](https://www.openshift.org/minishift/)
 
-Cloned [Syndesis](https://github.com/syndesisio/syndesis)
+- Cloned [Syndesis](https://github.com/syndesisio/syndesis)
 
-Cloned this repo with [syndesis-extension](https://github.com/syndesisio/syndesis) submodule (*git clone --recurse-submodules*)
+- Cloned this repo with [syndesis-extension](https://github.com/syndesisio/syndesis) submodule (*git clone --recurse-submodules*)
 
-Correctly set test.properties and credentials.json (described later)
+- Correctly set test.properties and credentials.json (described later)
 
-Added FUSE repositories to maven due to dependencies
+- Added Fuse repositories to maven due to dependencies
 
 Before you import maven project to the IDE, you have to install 
 **Lombok** and 
 **Cucumber** plugins to your IDE. 
 
-For IntelliJ Idea you can use these plugins 
-[Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin) and
-[Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
+For IntelliJ Idea you can use these plugins:
+
+- [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin)
+- [Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
  
-For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 #### Create a minishift instance
 For minishift version 23+
@@ -109,10 +106,10 @@ NOTE: Successful execution of tests requires fully configured credentials.
 All the callback URLs, Oauth tokens, etc. for Salesforce and Twitter accounts.
 
 #### Example of test.properties to run on minishift
-File `test.properties` should be located in root of syndesis-qe folder.
+File `test.properties` should be located in the root of syndesis-qe folder.
 Working example can be found in jenkins nightly build run logs.
 
-For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 test.properties (update *syndesis.config.openshift.url* property according to your minishift ip)
 ```
@@ -122,7 +119,7 @@ syndesis.config.openshift.route.suffix=my-minishift.syndesis.io
 # namespace for the subject access review (if not specified, will use the same namespace as for the deployment)
 syndesis.config.openshift.sar_namespace=syndesis
 
-syndesis.dballocator.url=http://dballocator.mw.lab.eng.bos.redhat.com:8080
+syndesis.dballocator.url=<dballocator url> 
 
 #timeout in seconds, if not set default is 300
 syndesis.config.timeout=300
@@ -140,7 +137,7 @@ syndesis.config.ui.browser=firefox
 File `credentials.json` should be located in root of syndesis-qe folder.
 Working example on demand.
 
-For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 credentials.json
 ```json
@@ -279,7 +276,7 @@ All values are just examples / proposals. Need to be updated in accordance with
 ### Execution
 
 #### Before execution
-For the test execution at least `syndesis-rest` modules are required in current SNAPSHOT version.
+For the test execution at least `io.syndesis.common:common-model` and `io.syndesis.server:server-endpoint` modules are required in current version.
 
 ```
 cd <syndesis-project-dir>
@@ -499,7 +496,7 @@ When variables throws exception, it will not affect tests (main) executions.
 
 For more information see [Altering the program's execution flow](https://www.jetbrains.com/help/idea/altering-the-program-s-execution-flow.html#reload_classes)
 
-### List of scenarios (tags)
+### List of scenarios
 
 ```
 ------MAIN CATEGORIES------
