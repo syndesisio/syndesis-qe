@@ -3,14 +3,14 @@
 @rest
 @smoke
 @database
-Feature: Representative rest test
+Feature: Integration - Database
 
   Background: Create sample integration
     Given clean application state
     And remove all records from table "TODO"
     And remove all records from table "CONTACT"
 
-  Scenario: smoke
+  Scenario: Smoke - Periodic invocation to Insert
     Then inserts into "CONTACT" table
       | Josef_first  | Stieranka_first  | Syndesis-qe | db |
       | Josef_second | Stieranka_second | Syndesis-qe | db |
