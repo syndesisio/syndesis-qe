@@ -44,7 +44,7 @@ Feature: Google mail Connector
     And click on the "Done" button
 
     # add data mapper step
-    And click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
@@ -55,7 +55,7 @@ Feature: Google mail Connector
     # finish and save integration
     When click on the "Save as Draft" button
     And set integration name "Integration_gmail_send"
-    And click on the "Publish" button
+    And publish integration
 
     Then Integration "Integration_gmail_send" is present in integrations list
     # wait for integration to get in active state
@@ -91,7 +91,7 @@ Feature: Google mail Connector
     And click on the "Done" button
 
     # add data mapper step
-    And click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
@@ -103,7 +103,7 @@ Feature: Google mail Connector
     # finish and save integration
     And click on the "Save as Draft" button
     And set integration name "Integration_gmail_receive"
-    And click on the "Publish" button
+    And publish integration
 
     # assert integration is present in list
     Then Integration "Integration_gmail_receive" is present in integrations list

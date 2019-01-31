@@ -57,14 +57,14 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     Then check visibility of page "Add to Integration"
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     # update mappings
     When create data mapper mappings
       | text | text |
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "telegram_integration_receive_publish"
     And click on the "Save as Draft" button
     And click on the "Cancel" button
@@ -97,14 +97,14 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     Then check visibility of page "Add to Integration"
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
     When create data mapper mappings
       | company | text |
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "telegram_integration_database_publish"
     And click on the "Save as Draft" button
     And click on the "Cancel" button
@@ -140,13 +140,13 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     Then check visibility of page "Add to Integration"
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
       | text | COMPANY |
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "telegram_integration_receive_database"
     And click on the "Save as Draft" button
     And click on the "Cancel" button

@@ -48,7 +48,7 @@ Feature: Integration - Dropbox to Dropbox
     # publish integration
     Then click on the "Save as Draft" button
     And set integration name "dropbox-to-dropbox"
-    Then click on the "Publish" button
+    Then publish integration
 
     Then navigate to the "Integrations" page
     And wait until integration "dropbox-to-dropbox" gets into "Running" state

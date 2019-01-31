@@ -23,7 +23,7 @@ Feature: Integration - import-edit
     | SQL statement | select * from contact limit 1 |
 
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
 
     And navigate to the "Integrations" page
     And wait until integration "import-edit-integration" gets into "Running" state

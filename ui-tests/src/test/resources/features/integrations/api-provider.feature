@@ -79,7 +79,7 @@ Feature: API Provider Integration
 
     And click on the "Save and continue" button
     And select operation Receiving GET request on /syndesistestpath
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration" gets into "Running" state
     And verify that executing GET on route i-todo-integration endpoint "/syndesistestpath" returns status 200 and body
@@ -93,13 +93,13 @@ Feature: API Provider Integration
     And select operation Fetch task
     Then check flow title is "Fetch task"
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration" gets into "Running" state
     And verify that executing GET on route i-todo-integration endpoint "/api/1" returns status 200 and body
@@ -115,19 +115,19 @@ Feature: API Provider Integration
     And select operation Fetch task
     Then check flow title is "Fetch task"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "SELECT * FROM todo WHERE id = :#id" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | id |
     And click on the "Done" button
 
-    And add integration "step" on position "2"
+    And add integration step on position "2"
     And select "Data Mapper" integration step
     And open data bucket "3 - SQL Result"
     And create data mapper mappings
@@ -136,7 +136,7 @@ Feature: API Provider Integration
       | task      | body.task      |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration" gets into "Running" state
     And verify that executing GET on route i-todo-integration endpoint "/api/14" returns status 404 and body
@@ -151,13 +151,13 @@ Feature: API Provider Integration
     And select operation List all tasks
     Then check flow title is "List all tasks"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "SELECT * FROM todo" value
     And click on the "Done" button
 
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | id        | body.id        |
@@ -165,7 +165,7 @@ Feature: API Provider Integration
       | task      | body.task      |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And inserts into "todo" table
       | task1 |
@@ -184,13 +184,13 @@ Feature: API Provider Integration
     And select operation List all tasks
     Then check flow title is "List all tasks"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "SELECT * FROM todo" value
     And click on the "Done" button
 
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | id           | body.id        |
@@ -198,7 +198,7 @@ Feature: API Provider Integration
       | task         | body.task      |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration" gets into "Running" state
     And verify that executing GET on route i-todo-integration endpoint "/api/" returns status 200 and body
@@ -212,13 +212,13 @@ Feature: API Provider Integration
     And select operation Create new task
     Then check flow title is "Create new task"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "INSERT INTO todo (id, completed, task) VALUES (:#id, :#completed, :#task)" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | body.id        | id        |
@@ -226,7 +226,7 @@ Feature: API Provider Integration
       | body.task      | task      |
     And click on the "Done" button
 
-    And add integration "step" on position "2"
+    And add integration step on position "2"
     And select "Data Mapper" integration step
     And open data bucket "1 - Request"
     And create data mapper mappings
@@ -235,7 +235,7 @@ Feature: API Provider Integration
       | body.task      | body.task      |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration" gets into "Running" state
     And verify that executing POST on route i-todo-integration endpoint "/api/" with request '{"id":1,"completed":1,"task":"task1"}' returns status 201 and body
@@ -251,13 +251,13 @@ Feature: API Provider Integration
     And select operation Create new task
     Then check flow title is "Create new task"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "INSERT INTO todo (id, completed, task) VALUES (:#id, :#completed, :#task)" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | body.id        | id        |
@@ -265,7 +265,7 @@ Feature: API Provider Integration
       | body.task      | task      |
     And click on the "Done" button
 
-    And add integration "step" on position "2"
+    And add integration step on position "2"
     And select "Data Mapper" integration step
     And open data bucket "1 - Request"
     And create data mapper mappings
@@ -274,7 +274,7 @@ Feature: API Provider Integration
       | body.task      | body.task      |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And inserts into "todo" table
       | task1 |
@@ -291,13 +291,13 @@ Feature: API Provider Integration
     And select operation Update task
     Then check flow title is "Update task"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "INSERT INTO todo(id, completed, task) VALUES (:#id, :#completed, :#task) ON CONFLICT (id) DO UPDATE SET completed=:#completed, task=:#task" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id  | id        |
@@ -305,7 +305,7 @@ Feature: API Provider Integration
       | body.task      | task      |
     And click on the "Done" button
 
-    And add integration "step" on position "2"
+    And add integration step on position "2"
     And select "Data Mapper" integration step
     And open data bucket "1 - Request"
     And create data mapper mappings
@@ -314,7 +314,7 @@ Feature: API Provider Integration
       | body.task      | body.task      |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And inserts into "todo" table
       | task1 |
@@ -347,19 +347,19 @@ Feature: API Provider Integration
     And select operation Delete task
     And check flow title is "Delete task"
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "DELETE FROM todo where id = :#id" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | id |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And inserts into "todo" table
       | task1 |
@@ -379,12 +379,12 @@ Feature: API Provider Integration
     # just a simple integration
     And select operation Fetch task
     Then check flow title is "Fetch task"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration" gets into "Running" state
 
@@ -442,7 +442,7 @@ Feature: API Provider Integration
     And select operation Fetch task
     Then check flow title is "Fetch task"
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
@@ -490,13 +490,13 @@ Feature: API Provider Integration
     Then check flow title is "Get string"
 
 
-    When add integration "step" on position "0"
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "Simple API Provider Integration" gets into "Running" state
     And verify that executing GET on route i-simple-api-provider-integration endpoint "/api/1" returns status 200 and body

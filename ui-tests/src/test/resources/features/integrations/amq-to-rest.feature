@@ -55,13 +55,11 @@ Feature: Integration - AMQ to REST
 
     # add custom step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Damage Reporter" integration step
 
     # add data mapper
-    When click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    And clicks on the "2". "Add a step" link
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -69,9 +67,9 @@ Feature: Integration - AMQ to REST
       | task | body.task |
     And click on the "Done" button
 
-    Then click on the "Publish" button
+    Then publish integration
     And set integration name "AMQ to TODO integration"
-    Then click on the "Publish" button
+    Then publish integration
 
     When navigate to the "Integrations" page
     Then wait until integration "AMQ to TODO integration" gets into "Running" state

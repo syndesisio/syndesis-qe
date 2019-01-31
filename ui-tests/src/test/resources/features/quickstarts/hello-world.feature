@@ -26,7 +26,7 @@ Feature: Quickstart Hello World
     And check that 2. step has Log title
     And check that 3. step has Simple Logger title
 
-    When click on the "Publish" button
+    When publish integration
     And navigate to the "Integrations" page
     And wait until integration "Hello World" gets into "Running" state
 
@@ -60,7 +60,7 @@ Feature: Quickstart Hello World
       | Log everything | true  |
     And click on the "Done" button
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Log" integration step
     And fill in values
       | Message Context | false         |
@@ -68,9 +68,9 @@ Feature: Quickstart Hello World
       | Custom Text     | Hello World!! |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And set integration name "Hello World video"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "Hello World video" gets into "Running" state
 

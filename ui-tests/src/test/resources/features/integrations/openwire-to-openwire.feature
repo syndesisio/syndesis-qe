@@ -42,9 +42,9 @@ Feature: Integration - Openwire to Openwire
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "JMS publish-subscribe-request E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "JMS publish-subscribe-request E2E" gets into "Running" state
 
     And verify that JMS message using "openwire" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer

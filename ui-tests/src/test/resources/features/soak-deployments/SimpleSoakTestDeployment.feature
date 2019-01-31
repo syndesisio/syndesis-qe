@@ -35,9 +35,9 @@ Feature: Simple soak test
 
     # final steps
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "Timer2AMQ #<number>"
-    And click on the "Publish" button
+    And publish integration
 
     Then  sleep for "120000" ms
 
@@ -67,9 +67,9 @@ Feature: Simple soak test
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "AMQ2Log #<number>"
-    And click on the "Publish" button
+    And publish integration
 
     Then  sleep for "120000" ms
 

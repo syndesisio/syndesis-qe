@@ -9,10 +9,10 @@ import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 
-public class ChooseConnection  extends SyndesisPageObject {
+public class ChooseConnection extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-connection-select");
+        public static final By ROOT = By.tagName("syndesis-connections-list");
     }
 
     @Override

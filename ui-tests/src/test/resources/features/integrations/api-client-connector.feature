@@ -40,14 +40,14 @@ Feature: Integration - DB to API
     When select the "Todo connection" connection
     Then select "Create new task" integration action
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | last_name | body.task |
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "Todo integration"
-    Then click on the "Publish" button
+    Then publish integration
 
     When navigate to the "Integrations" page
     Then wait until integration "Todo integration" gets into "Running" state
@@ -77,12 +77,12 @@ Feature: Integration - DB to API
     Then click on the "Done" button
 
     #middle connector
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "Todo connection" connection
     Then select "Fetch task" integration action
 
     #start - here - middle -finish
-    When add integration "step" on position "0"
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
@@ -90,7 +90,7 @@ Feature: Integration - DB to API
     And click on the "Done" button
 
     #start - mapper - middle - here -finish
-    When add integration "step" on position "2"
+    When add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When open data bucket "3 - Response"
@@ -98,9 +98,9 @@ Feature: Integration - DB to API
       | body.task | COMPANY |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And set integration name "db_custom_api_db"
-    Then click on the "Publish" button
+    Then publish integration
 
     When navigate to the "Integrations" page
     Then wait until integration "db_custom_api_db" gets into "Running" state

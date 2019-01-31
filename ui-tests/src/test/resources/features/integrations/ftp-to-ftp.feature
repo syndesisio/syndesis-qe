@@ -49,9 +49,9 @@ Feature: Integration - FTP to FTP
     And click on the "Done" button
 
     Then check visibility of page "Add to Integration"
-    And click on the "Publish" button
+    And publish integration
     And set integration name "ftp-to-ftp E2E"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "ftp-to-ftp E2E" is present in integrations list
     And wait until integration "ftp-to-ftp E2E" gets into "Running" state
     When put "ui-ftp-ftp.txt" file with content "Hello" in the FTP directory: "download"

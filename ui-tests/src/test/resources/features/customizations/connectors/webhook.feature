@@ -41,14 +41,14 @@ Feature: Webhook extension
     And fill in invoke query input with "insert into CONTACT values ('Prokop' , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
     And click on the "Done" button
     # add data mapper step
-    And click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
     And create mapping from "author" to "COMPANY"
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "webhook-test"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "webhook-test" gets into "Running" state
 
     And select the "webhook-test" integration
