@@ -34,6 +34,12 @@ public class EditorSteps {
         public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
     }
 
+    private static final class Button {
+        public static final By Publish = By.xpath("//button[text()[contains(.,'Publish')]]");
+        public static final By SaveAsDraft = By.xpath("//button[text()[contains(.,'Save as Draft')]]");
+        public static final By Cancel = By.xpath("//button[text()[contains(.,'Save as Draft')]]");
+    }
+
     @Then("^check visibility of visual integration editor$")
     public void verifyNewIntegrationEditorOpened() {
         editor.getRootElement().shouldBe(visible);
@@ -58,13 +64,9 @@ public class EditorSteps {
         flowViewComponent.clickAddStepLink(1);
     }
 
-    @When("^.*adds? integration \"([^\"]*)\" on position \"([^\"]*)\"$")
-    public void addAnotherStep(String type, int stepPos) throws Throwable {
-        if (type.equalsIgnoreCase("connection")) {
-            flowViewComponent.clickAddConnectionLink(stepPos);
-        } else {
-            flowViewComponent.clickAddStepLink(stepPos);
-        }
+    @When("^.*adds? integration step on position \"([^\"]*)\"$")
+    public void addAnotherStep(int stepPos) {
+        flowViewComponent.clickAddStepLink(stepPos);
     }
 
     /**
@@ -158,7 +160,7 @@ public class EditorSteps {
 
     @When("^open integration flow details")
     public void openIntegrationFlowDetails() {
-        if(editor.getRootElement().$(Element.HIDDEN_DETAILED_VIEW).exists()) {
+        if (editor.getRootElement().$(Element.HIDDEN_DETAILED_VIEW).exists()) {
             log.info("Expander is closed, opening details");
             editor.getRootElement().$(Element.EXPANDER).shouldBe(visible).click();
         }
@@ -170,12 +172,12 @@ public class EditorSteps {
     }
 
     @Then("^check there are (\\d+) integration steps$")
-    public void checkNumberOfIntegrationSteps(int n){
+    public void checkNumberOfIntegrationSteps(int n) {
         assertEquals("Wrong number of steps", n, flowViewComponent.getNumberOfSteps());
     }
 
     @Then("^check there is a step with \"([^\"]*)\" title")
-    public void checkStepTitle(String title){
+    public void checkStepTitle(String title) {
         Assertions.assertThat(flowViewComponent.getStepsTitlesArray()).contains(title);
     }
 
@@ -188,5 +190,11 @@ public class EditorSteps {
     public void editIntegrationStep(int oneBasedStepPosition) {
         log.info("Editing integration step #" + oneBasedStepPosition);
         flowViewComponent.getStepOnPosition(oneBasedStepPosition).shouldBe(visible).click();
+    }
+
+    @When("^publish integration$")
+    public void publishIntegration() {
+        log.info("Publishing integration");
+        editor.getRootElement().$(Button.Publish).shouldBe(visible).click();
     }
 }

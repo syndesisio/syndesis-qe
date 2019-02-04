@@ -44,12 +44,12 @@ Feature: Google Calendar Connector
     And fill in create event form using calendar "syndesis-test1", summary "new_event" and description "about_the_event"
     And click on the "Done" button
 
-    And add integration "connection" on position "0"
+    And add integration step on position "0"
     And select the "My Google Calendar Connector" connection
     And select "Get a specific Event" integration action
     And fill in get specific event form using account "QE Google Calendar", calendar "syndesis-test2" and event "past_event1"
     And click on the "Done" button
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When define constant "new_event" of type "String" in data mapper
@@ -66,7 +66,7 @@ Feature: Google Calendar Connector
       | location        | location    |
     And scroll "top" "right"
     And click on the "Done" button
-    And add integration "step" on position "2"
+    And add integration step on position "2"
     And select "Log" integration step
     And fill in values
       | Message Body | true |
@@ -74,7 +74,7 @@ Feature: Google Calendar Connector
 
     And click on the "Save as Draft" button
     And set integration name "google_calendar_copy_event"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "google_calendar_copy_event" is present in integrations list
     And wait until integration "google_calendar_copy_event" gets into "Running" state
     And verify that event "new_event" with description "about_the_event" exists in calendar "syndesis-test1" using account "QE Google Calendar"
@@ -98,12 +98,12 @@ Feature: Google Calendar Connector
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into TODO(task, completed) values (:#task, 3)" value
     And click on the "Done" button
-    And add integration "connection" on position "0"
+    And add integration step on position "0"
     And select the "My Google Calendar Connector" connection
     And select "Get a specific Event" integration action
     And fill in get specific event form using account "QE Google Calendar", calendar "syndesis-test1" and event "past_event1"
     And click on the "Done" button
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
@@ -112,7 +112,7 @@ Feature: Google Calendar Connector
     And click on the "Done" button
     And click on the "Save as Draft" button
     And set integration name "google_calendar_get_a_specific_event"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "google_calendar_get_a_specific_event" is present in integrations list
     And wait until integration "google_calendar_get_a_specific_event" gets into "Running" state
     And validate that number of all todos with task "past_event1" is greater than "1"
@@ -138,12 +138,12 @@ Feature: Google Calendar Connector
     And select "Update Event" integration action
     And fill in update event form using calendar "syndesis-test1", old summary "past_event1", summary "updated_summary" and description "this_event_has_ended" for user "QE Google Calendar"
     And click on the "Done" button
-    And add integration "connection" on position "0"
+    And add integration step on position "0"
     And select the "My Google Calendar Connector" connection
     And select "Get a specific Event" integration action
     And fill in get specific event form using account "QE Google Calendar", calendar "syndesis-test1" and event "past_event1"
     And click on the "Done" button
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
@@ -157,7 +157,7 @@ Feature: Google Calendar Connector
     And click on the "Done" button
     And click on the "Save as Draft" button
     And set integration name "google_calendar_update_event_coming_in"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "google_calendar_update_event_coming_in" is present in integrations list
     And wait until integration "google_calendar_update_event_coming_in" gets into "Running" state
     And verify that event "updated_summary" exists in calendar "syndesis-test1" using account "QE Google Calendar"
@@ -197,13 +197,13 @@ Feature: Google Calendar Connector
     And fill in invoke query input with "insert into TODO(task, completed) values (:#task, 3)" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Log" integration step
     And fill in values
       | Message Body | true |
     And click on the "Done" button
 
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -214,7 +214,7 @@ Feature: Google Calendar Connector
 
     And click on the "Save as Draft" button
     And set integration name "google_calendar_<name>_on_<events_to_create>_events"
-    And click on the "Publish" button
+    And publish integration
 
     Then Integration "google_calendar_<name>_on_<events_to_create>_events" is present in integrations list
     And wait until integration "google_calendar_<name>_on_<events_to_create>_events" gets into "Running" state
@@ -270,13 +270,13 @@ Feature: Google Calendar Connector
     And fill in invoke query input with "insert into TODO(task, completed) values (:#task, 3)" value
     And click on the "Done" button
 
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Log" integration step
     And fill in values
       | Message Body | true |
     And click on the "Done" button
 
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -287,7 +287,7 @@ Feature: Google Calendar Connector
 
     And click on the "Save as Draft" button
     And set integration name "google_calendar_get_events_poll_runtime"
-    And click on the "Publish" button
+    And publish integration
 
     Then Integration "google_calendar_get_events_poll_runtime" is present in integrations list
     And wait until integration "google_calendar_get_events_poll_runtime" gets into "Running" state

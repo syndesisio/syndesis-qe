@@ -37,7 +37,7 @@ Feature: Integration - Twitter to Database
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     Then create data mapper mappings
@@ -49,7 +49,7 @@ Feature: Integration - Twitter to Database
     # finish and save integration
     When click on the "Save as Draft" button
     And set integration name "Twitter to DB integration"
-    And click on the "Publish" button
+    And publish integration
 
     Then Integration "Twitter to DB integration" is present in integrations list
     # wait for integration to get in active state

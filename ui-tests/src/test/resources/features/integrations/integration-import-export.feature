@@ -48,7 +48,7 @@ Feature: Integration - Import Export
     And click on the "Next" button
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create mapping from "company" to "message"
@@ -57,7 +57,7 @@ Feature: Integration - Import Export
     # finish and save integration
     And click on the "Save as Draft" button
     And set integration name "Integration_import_export_test"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "Integration_import_export_test" is present in integrations list
 
     When inserts into "CONTACT" table
@@ -94,7 +94,7 @@ Feature: Integration - Import Export
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for published state
     When click on the "Edit" button
-    And click on the "Publish" button
+    And publish integration
 
     Then Integration "Integration_import_export_test" is present in integrations list
 
@@ -127,7 +127,7 @@ Feature: Integration - Import Export
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for active state
     When click on the "Edit" button
-    And click on the "Publish" button
+    And publish integration
 
     And sleep for jenkins delay or "3" seconds
     And navigate to the "Integrations" page
@@ -169,7 +169,7 @@ Feature: Integration - Import Export
     Then check visibility of "Stopped" integration status on Integration Detail page
 
     When click on the "Edit" button
-    And click on the "Publish" button
+    And publish integration
 
     And Integration "Integration_import_export_test" is present in integrations list
 

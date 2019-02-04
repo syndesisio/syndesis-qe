@@ -49,16 +49,16 @@ Feature: Integration - DB to DB oracle12
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create mapping from "FIRST_NAME" to "TASK"
 
 #    And scroll "top" "right"
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "CRUD2-read-create E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
 
     Then validate that all todos with task "Josef_oracle12" have value completed "2", period in ms: "5000" on "oracle12"

@@ -40,7 +40,7 @@ Feature: Integration - Salesforce to DB
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -78,7 +78,7 @@ Feature: Integration - Salesforce to DB
     And click on the "Save as Draft" button
 
     And set integration name "Salesforce to PostresDB E2E"
-    And click on the "Publish" button
+    And publish integration
       # wait for integration to get in active state
     Then wait until integration "Salesforce to PostresDB E2E" gets into "Running" state
 #    VALIDATION:

@@ -46,15 +46,15 @@ Feature: Integration - DB to DB
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create mapping from "first_name" to "TASK"
 
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "CRUD1-read-update E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "CRUD1-read-update E2E" gets into "Running" state
 
     Then validate that all todos with task "Joe" have value completed "1", period in ms: "5000"
@@ -91,16 +91,16 @@ Feature: Integration - DB to DB
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create mapping from "first_name" to "TASK"
 
 #    And scroll "top" "right"
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "CRUD2-read-create E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
@@ -141,16 +141,16 @@ Feature: Integration - DB to DB
 
     # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 #    And sleep for "16000" ms
     And create mapping from "first_name" to "TASK"
 
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "CRUD3-read-delete E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "CRUD3-read-delete E2E" gets into "Running" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
@@ -192,7 +192,7 @@ Feature: Integration - DB to DB
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -203,9 +203,9 @@ Feature: Integration - DB to DB
 
 #    And scroll "top" "right"
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "CRUD4-read-create-inbuilt E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
 
@@ -264,16 +264,16 @@ Feature: Integration - DB to DB
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 #    And sleep for "5000" ms
     And create mapping from "first_name" to "TASK"
 
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "DB Connection 5 SQL query checker E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "DB Connection 5 SQL query checker E2E" gets into "Running" state
 
     Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"

@@ -60,7 +60,7 @@ Feature: Integration - Databucket
 
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -115,16 +115,13 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     # add another connection
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     # wip this query doesnt work ftb #698
     Then fill in invoke query input with "select company as firma from contact limit 1;" value
     # there is no done button:
     And click on the "Next" button
-
-
-    Then check visibility of the "Add a Step" button
 
     #And check that there is no warning inside of step number "2"
     And open integration flow details
@@ -151,7 +148,7 @@ Feature: Integration - Databucket
     ###################### step step NEW step ##################################
     ##### test that 2 following SQL select steps do not break integration ######
 
-    And add integration "connection" on position "2"
+    And add integration step on position "2"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select * from contact  limit 1;" value
@@ -160,7 +157,7 @@ Feature: Integration - Databucket
     # finish and save integration
     When click on the "Save as Draft" button
     And set integration name "Integration_with_buckets"
-    And click on the "Publish" button
+    And publish integration
     # assert integration is present in list
     And Integration "Integration_with_buckets" is present in integrations list
     # wait for integration to get in active state
@@ -205,7 +202,7 @@ Feature: Integration - Databucket
 
 
     ##################### step NEW step ##################################
-    And add integration "connection" on position "1"
+    And add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select first_name as myName from contact where company = :#COMPANY and last_name = :#MYSURNAME limit 1;" value
@@ -214,7 +211,7 @@ Feature: Integration - Databucket
 
     ##################### step NEW step step ##################################
 
-    And add integration "connection" on position "1"
+    And add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select last_name as mySurname from contact where company = :#COMPANY limit 1;" value
@@ -222,7 +219,7 @@ Feature: Integration - Databucket
 
     ##################### step step step NEW step ##################################
 
-    And add integration "connection" on position "3"
+    And add integration step on position "2"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
@@ -230,7 +227,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step NEW step ##################################
 
-    And add integration "connection" on position "4"
+    And add integration step on position "3"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "insert into CONTACT values (:#COMPANY , :#MYNAME , :#MYSURNAME , :#LEAD, '1999-01-01')" value
@@ -249,7 +246,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step step MAPPING step ##################################
 
-    And add integration "step" on position "5"
+    And add integration step on position "4"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -278,7 +275,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step MAPPING step step ##################################
 
-    And add integration "step" on position "4"
+    And add integration step on position "3"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -301,7 +298,7 @@ Feature: Integration - Databucket
 
 
     ##################### step step step MAPPING step step ##################################
-    And add integration "step" on position "3"
+    And add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -320,7 +317,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     ##################### step step MAPPING step step step ##################################
-    And add integration "step" on position "2"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -339,7 +336,7 @@ Feature: Integration - Databucket
 
     ##################### step MAPPING step step step step ##################################
     And scroll "top" "left"
-    And add integration "step" on position "1"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -361,7 +358,7 @@ Feature: Integration - Databucket
     # finish and save integration
     When click on the "Save as Draft" button
     And set integration name "Integration_with_buckets"
-    And click on the "Publish" button
+    And publish integration
 
     # assert integration is present in list
     And Integration "Integration_with_buckets" is present in integrations list

@@ -46,9 +46,9 @@ Feature: Integration - AMQP to AMQP
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "AMQP publish-subscribe-request E2E"
-    And click on the "Publish" button
+    And publish integration
     Then wait until integration "AMQP publish-subscribe-request E2E" gets into "Running" state
 
     Then verify that JMS message using "amqp" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer

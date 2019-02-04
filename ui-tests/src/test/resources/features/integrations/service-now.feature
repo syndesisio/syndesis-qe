@@ -46,9 +46,9 @@ Feature: Integration - ServiceNow-amq/log
     And click on the "Next" button
     And click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "service-now-2-amq"
-    And click on the "Publish" button
+    And publish integration
     And create incident with "QACUSTOM4" number
     And navigate to the "Integrations" page
     And wait until integration "service-now-2-amq" gets into "Running" state
@@ -73,9 +73,9 @@ Feature: Integration - ServiceNow-amq/log
     And select "Create Record" integration action
     And select "Add new Incident" from "table" dropdown
     And click on the "Next" button
-    When click on the "Publish" button
+    When publish integration
     And set integration name "amq-2-snow"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "amq-2-snow" gets into "Running" state
 

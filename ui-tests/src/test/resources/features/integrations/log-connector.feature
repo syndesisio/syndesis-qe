@@ -46,7 +46,7 @@ Feature: Log Connector
 
     When click on the "Save as Draft" button
     And set integration name "Integration_with_log"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "Integration_with_log" is present in integrations list
     And wait until integration "Integration_with_log" gets into "Running" state
 
@@ -87,7 +87,7 @@ Feature: Log Connector
     Then click on the "Done" button
 
     # add logger without anything
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Log" integration step
     And fill in values
       | Message Context | false |
@@ -97,7 +97,7 @@ Feature: Log Connector
 
     When click on the "Save as Draft" button
     And set integration name "Integration_with_log2"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "Integration_with_log2" is present in integrations list
 
     And wait until integration "Integration_with_log2" starting status gets into "Deploying ( 3 / 4 )" state

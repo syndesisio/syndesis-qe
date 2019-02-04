@@ -30,7 +30,7 @@ Feature: Quickstart db to db
     And check that 2. step has Data Mapper title
     And check that 3. step has Invoke SQL title
 
-    When click on the "Publish" button
+    When publish integration
     And navigate to the "Integrations" page
     And wait until integration "DB-2-DB" gets into "Running" state
     And sleep for "60000" ms
@@ -64,16 +64,16 @@ Feature: Quickstart db to db
     And fill in invoke query input with "INSERT INTO TODO (task, completed) VALUES(:#task, 0)" value
     And click on the "Done" button
 
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
       | first_name; last_name; company | task |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And set integration name "DB-2-DB video"
-    And click on the "Publish" button
+    And publish integration
 
     And navigate to the "Integrations" page
     And wait until integration "DB-2-DB video" gets into "Running" state

@@ -45,10 +45,9 @@ Feature: Connections - OAuth
     And click on the "Next" button
     And select "TwitterScreenName" from "sObjectIdName" dropdown
     And click on the "Done" button
-    Then check visibility of the "Add a Step" button
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -62,7 +61,7 @@ Feature: Connections - OAuth
     # finish and save integration
     When click on the "Save as Draft" button
     And set integration name "Twitter to Salesforce oauth"
-    And click on the "Publish" button
+    And publish integration
     Then Integration "Twitter to Salesforce oauth" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Twitter to Salesforce oauth" gets into "Running" state

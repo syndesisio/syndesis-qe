@@ -43,14 +43,14 @@ Feature: Integration - Webhook to API connector
 
     When select the "Todo connection" connection
     And select "Create new task" integration action
-    And click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | author | body.task |
     And click on the "Done" button
-    And click on the "Publish" button
+    And publish integration
     And set integration name "webhook-custom-api-connector-new-task"
-    And click on the "Publish" button
+    And publish integration
 
     And navigate to the "Integrations" page
     And wait until integration "webhook-custom-api-connector-new-task" gets into "Running" state
@@ -82,7 +82,7 @@ Feature: Integration - Webhook to API connector
 
     And click on the "Save as Draft" button
     And set integration name "webhook-gh-3727"
-    And click on the "Publish" button
+    And publish integration
 
     When navigate to the "Integrations" page
     And wait until integration "webhook-gh-3727" gets into "Running" state
