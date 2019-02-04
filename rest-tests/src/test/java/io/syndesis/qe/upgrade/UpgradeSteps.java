@@ -235,6 +235,13 @@ public class UpgradeSteps {
     private void copyStatefulScripts() {
         // Move the config change script to resource folder
         try {
+            final String minorVersion = System.getProperty("syndesis.upgrade.version").substring(0, 3);
+            // GH-4413
+            // Copy all scripts from for exaple "1.6" folder when doing upgrade to "1.6.X"
+            if (Paths.get(UPGRADE_FOLDER, "migration", "resource", minorVersion).toFile().exists()) {
+                FileUtils.copyDirectory(Paths.get(UPGRADE_FOLDER, "migration", "resource", minorVersion).toFile(),
+                        Paths.get(UPGRADE_FOLDER, "migration", "resource", System.getProperty("syndesis.upgrade.version")).toFile());
+            }
             FileUtils.copyFile(new File("src/test/resources/upgrade/99-change-ui-config.sh"),
                 Paths.get(UPGRADE_FOLDER, "migration", "resource",
                     System.getProperty("syndesis.upgrade.version"), "99-change-ui-config.sh").toFile());
