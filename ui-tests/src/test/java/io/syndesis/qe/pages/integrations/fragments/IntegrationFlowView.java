@@ -4,6 +4,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -99,8 +100,10 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public void clickAddStepLink(int pos) {
+        TestUtils.sleepIgnoreInterrupt(2000);
         if (isExpanded()) {
             $(Button.Collapse).click();
+            TestUtils.sleepIgnoreInterrupt(2000);
         }
 
         List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)

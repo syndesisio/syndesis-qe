@@ -110,15 +110,15 @@ Feature: Activity
     Then check that in the activity log are 1 activities
     # Test activity
     And check that 1. activity version contains Version 1
-    And check that 1. activity date and time is valid
+    And check that 1. activity date and time is valid with 5 second accuracy
     And check that 1. activity has not any errors
     # Test steps in activity
     And check that 1. activity has 2 steps in the log
     And check that all steps in the 1. activity has Success status
     And check that all steps in the 1. activity has valid duration
-    And check that all steps in the 1. activity has valid time
+    And check that all steps in the 1. activity has valid time with 5 second accuracy
     And check that 1. step in the 1. activity is Log step
-    And check that 1. step in the 1. activity contains Body: [{"first_name":"John","company":"incorrect company"}] before basic filter in the output
+    And check that 1. step in the 1. activity contains Body: [[{"first_name":"John","company":"incorrect company"}]] before basic filter in the output
     And check that 2. step in the 1. activity is Basic Filter step
     And check that 2. step in the 1. activity contains No output in the output
 
@@ -132,7 +132,7 @@ Feature: Activity
     Then check that in the activity log are 2 activities
     # Test activity
     And check that 1. activity version contains Version 1
-    And check that 1. activity date and time is valid
+    And check that 1. activity date and time is valid with 5 second accuracy
     And check that 1. activity has not any errors
 
     # Test steps in activity
@@ -141,11 +141,11 @@ Feature: Activity
     And check that 1. activity has 4 steps in the log
     And check that all steps in the 1. activity has Success status
     And check that all steps in the 1. activity has valid duration
-    And check that all steps in the 1. activity has valid time
+    And check that all steps in the 1. activity has valid time with 5 second accuracy
     And check that 1. step in the 1. activity is Log step
-    And check that 1. step in the 1. activity contains Body: [{"first_name":"John","company":"Red Hat still incorrect"}] before basic filter in the output
+    And check that 1. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat still incorrect"}]] before basic filter in the output
     And check that 2. step in the 1. activity is Log step
-    And check that 2. step in the 1. activity contains Body: [{"first_name":"John","company":"Red Hat still incorrect"}] before advanced filter in the output
+    And check that 2. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat still incorrect"}]] before advanced filter in the output
     And check that 3. step in the 1. activity is Advanced Filter step
     And check that 3. step in the 1. activity contains No output in the output
     #TODO this step is not defined, it shouldn't be here -> gh-4181
@@ -161,7 +161,7 @@ Feature: Activity
     Then check that in the activity log are 3 activities
     # Test activity
     And check that 1. activity version contains Version 1
-    And check that 1. activity date and time is valid
+    And check that 1. activity date and time is valid with 5 second accuracy
     And check that 1. activity has not any errors
 
     # Test steps in activity
@@ -170,13 +170,13 @@ Feature: Activity
     And check that 1. activity has 7 steps in the log
     And check that all steps in the 1. activity has Success status
     And check that all steps in the 1. activity has valid duration
-    And check that all steps in the 1. activity has valid time
+    And check that all steps in the 1. activity has valid time with 5 second accuracy
     And check that 1. step in the 1. activity is Log step
-    And check that 1. step in the 1. activity contains Body: [{"first_name":"John","company":"Red Hat"}] before basic filter in the output
+    And check that 1. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat"}]] before basic filter in the output
     And check that 2. step in the 1. activity is Log step
-    And check that 2. step in the 1. activity contains Body: [{"first_name":"John","company":"Red Hat"}] before advanced filter in the output
+    And check that 2. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat"}]] before advanced filter in the output
     And check that 3. step in the 1. activity is Log step
-    And check that 3. step in the 1. activity contains Body: [{"first_name":"John","company":"Red Hat"}] before mapper filter in the output
+    And check that 3. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat"}]] before mapper filter in the output
     And check that 4. step in the 1. activity is Data Mapper step
     And check that 4. step in the 1. activity contains No output in the output
     And check that 5. step in the 1. activity is Invoke SQL step
@@ -205,7 +205,7 @@ Feature: Activity
     And click on the "Activity" tab
     Then check that in the activity log are 4 activities
     And check that 1. activity version contains Version 2
-    And check that 1. activity date and time is valid
+    And check that 1. activity date and time is valid with 5 second accuracy
     And check that 1. activity has not any errors
 
   @activity-error
@@ -264,15 +264,15 @@ Feature: Activity
     # Test activity
     Then check that in the activity log are 1 activities
     And check that 1. activity version contains Version 1
-    And check that 1. activity date and time is valid
+    And check that 1. activity date and time is valid with 5 second accuracy
     And check that 1. activity has error
     # Test steps in activity
     And check that 1. activity has 2 steps in the log
     And check that all steps in the 1. activity has valid duration
-    And check that all steps in the 1. activity has valid time
+    And check that all steps in the 1. activity has valid time with 5 second accuracy
     And check that 1. step in the 1. activity is Log step
     And check that 1. step in the 1. activity has Success status
-    And check that 1. step in the 1. activity contains Body: [{"first_name":"John","company":"Red Hat"}] before error insertion in the output
+    And check that 1. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat"}]] before error insertion in the output
 
     And check that 2. step in the 1. activity is Invoke SQL step
     And check that 2. step in the 1. activity has Error status
@@ -334,12 +334,12 @@ Feature: Activity
     # Test activity
     Then check that in the activity log are 2 activities
     And check that 1. activity version contains Version 1
-    And check that 1. activity date and time is valid
+    And check that 1. activity date and time is valid with 5 second accuracy
     And check that 1. activity has error
     # Test steps in activity
     And check that 1. activity has 1 steps in the log
     And check that all steps in the 1. activity has valid duration
-    And check that all steps in the 1. activity has valid time
+    And check that all steps in the 1. activity has valid time with 5 second accuracy
     And check that 1. step in the 1. activity is Data Mapper step
     And check that 1. step in the 1. activity has Success status
     And check that 1. step in the 1. activity contains No output in the output
