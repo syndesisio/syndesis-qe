@@ -442,7 +442,7 @@ and commit changes via this dialog.
 #### Creating a Pull Request
 When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).
 
-If you want to run a different subset of tests, you can use **//test: \`@mytag1,@mytag2\`** in your PR description to trigger specific tests annotated by given tags.
+If you want to run a different subset of tests, you can use **//test: \`@mytag1 or @mytag2\`** in your PR description to trigger specific tests annotated by given tags.
 
 If you don't want to run the job for your PR at all (for example when you are changing small things in README file), you can use `//skip-ci` in your PR description.
 
