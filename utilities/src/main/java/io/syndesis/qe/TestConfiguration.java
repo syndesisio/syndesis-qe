@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
 
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -183,7 +184,7 @@ public class TestConfiguration {
         } else {
             syndesisVersion = "master";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
-            if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !System.getProperty("syndesis.version").contains("redhat")) {
+            if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !TestUtils.isProdBuild()) {
                 syndesisVersion = System.getProperty("syndesis.version");
             }
         }
