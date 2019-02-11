@@ -189,10 +189,12 @@ public class SyndesisTemplate {
     }
 
     /**
-     * Used when deploying older versions of syndesis (currently used only in upgrade using operator tests)
+     * Used when deploying older versions of syndesis (currently used only in upgrade using operator tests).
+     *
+     * Can be removed when master is related to 7.4
      */
     private static void deployOperatorPre73Way() {
-        log.info("Deploying operator using pre-6.3 way");
+        log.info("Deploying operator using pre-7.3 way");
         OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
                 "Unable to create operator resource " + TestConfiguration.syndesisOperatorUrl(),
                 istream -> log.info(IOUtils.toString(istream, "UTF-8")),
@@ -249,7 +251,7 @@ public class SyndesisTemplate {
     }
 
     private static void importProdImage(String imageStreamPartialName) {
-        if (System.getProperty("syndesis.version").contains("redhat")) {
+        if (TestUtils.isProdBuild()) {
             int responseCode = -1;
             int retries = 0;
             while (responseCode != 201 && retries < 3) {
@@ -284,7 +286,7 @@ public class SyndesisTemplate {
     }
 
     private static void importProdImages() {
-        if (System.getProperty("syndesis.version").contains("redhat")) {
+        if (TestUtils.isProdBuild()) {
             ImageStreamList isl =
                     OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                             .list();
@@ -301,7 +303,7 @@ public class SyndesisTemplate {
 
     private static void fixMavenRepos() {
         String replacementRepo = null;
-        if (System.getProperty("syndesis.version").contains("redhat")) {
+        if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
                 replacementRepo = TestConfiguration.prodRepository();
             } else {

@@ -243,4 +243,12 @@ public final class TestUtils {
     public static boolean isJenkins() {
         return System.getenv("WORKSPACE") != null;
     }
+
+    /**
+     * Checks if we are testing productized bits.
+     * @return true/false
+     */
+    public static boolean isProdBuild() {
+        return System.getProperty("syndesis.version").contains("redhat");
+    }
 }
