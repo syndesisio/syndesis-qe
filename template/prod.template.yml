@@ -123,8 +123,8 @@ metadata:
     syndesis.io/type: operator
     syndesis.io/component: syndesis-operator
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: syndesis-operator
   labels:
@@ -179,6 +179,7 @@ rules:
   - build.openshift.io
   resources:
   - buildconfigs
+  verbs:
   verbs: [ get, list, create, update, delete, deletecollection, watch]
 - apiGroups:
   - authorization.openshift.io
@@ -192,29 +193,8 @@ rules:
   - routes/custom-host
   verbs: [ get, list, create, update, delete, deletecollection, watch]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  name: syndesis-operator:$NAMESPACE$
-  labels:
-    app: syndesis
-    syndesis.io/app: syndesis
-    syndesis.io/type: operator
-    syndesis.io/component: syndesis-operator
-rules:
-- apiGroups:
-  - syndesis.io
-  resources:
-  - syndesises/finalizers
-  verbs: [ update ]
-- apiGroups:
-  - oauth.openshift.io
-  resources:
-  - oauthclients
-  verbs: [ get, list, create, update, delete ]
----
-apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: syndesis-operator:install
   labels:
@@ -230,8 +210,8 @@ roleRef:
   name: syndesis-operator
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: authorization.openshift.io/v1
 kind: RoleBinding
+apiVersion: authorization.openshift.io/v1
 metadata:
   name: syndesis-operator:view
   labels:
@@ -245,8 +225,8 @@ subjects:
 roleRef:
   name: view
 ---
-apiVersion: authorization.openshift.io/v1
 kind: RoleBinding
+apiVersion: authorization.openshift.io/v1
 metadata:
   name: syndesis-operator:edit
   labels:
@@ -259,24 +239,6 @@ subjects:
   name: syndesis-operator
 roleRef:
   name: edit
----
-apiVersion: authorization.openshift.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: syndesis-operator:oauth:$NAMESPACE$
-  labels:
-    app: syndesis
-    syndesis.io/app: syndesis
-    syndesis.io/type: operator
-    syndesis.io/component: syndesis-operator
-subjects:
-- kind: ServiceAccount
-  name: syndesis-operator
-  namespace: ${NAMESPACE}
-roleRef:
-  kind: ClusterRole
-  name: syndesis-operator:$NAMESPACE$
-  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: image.openshift.io/v1
 kind: ImageStream
@@ -297,7 +259,6 @@ spec:
       name: $OPERATOR$
     importPolicy:
       scheduled: true
-    # Keep 'latest' here (including single quotes), its used as a pattern anchor in the release script
     name: "$TAG$"
 ---
 apiVersion: v1
@@ -341,7 +302,6 @@ spec:
       - syndesis-operator
       from:
         kind: ImageStreamTag
-        # Keep tag 'latest' here, its used as an anchor in the release script
         name: fuse-online-operator:$TAG$
     type: ImageChange
   - type: ConfigChange
