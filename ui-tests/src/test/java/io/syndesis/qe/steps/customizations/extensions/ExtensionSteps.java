@@ -1,16 +1,10 @@
 package io.syndesis.qe.steps.customizations.extensions;
 
-import cucumber.api.DataTable;
-import cucumber.api.PendingException;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.customizations.CustomizationsPage;
-import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
-import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
-import io.syndesis.qe.steps.CommonSteps;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -18,9 +12,17 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.api.PendingException;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.customizations.CustomizationsPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.steps.CommonSteps;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ExtensionSteps {
@@ -42,7 +44,7 @@ public class ExtensionSteps {
     public void importExtension(DataTable extensionsData) throws Throwable {
         CommonSteps commonSteps = new CommonSteps();
 
-        List<List<String>> dataTable = extensionsData.raw();
+        List<List<String>> dataTable = extensionsData.cells();
 
         for (List<String> dataRow : dataTable) {
 
@@ -66,7 +68,7 @@ public class ExtensionSteps {
     public void importExtensionFromKnownFolder(DataTable extensionsData) throws Throwable {
         CommonSteps commonSteps = new CommonSteps();
 
-        List<List<String>> dataTable = extensionsData.raw();
+        List<List<String>> dataTable = extensionsData.cells();
 
         for (List<String> dataRow : dataTable) {
 

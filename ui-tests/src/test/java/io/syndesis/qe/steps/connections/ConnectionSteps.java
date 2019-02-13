@@ -1,11 +1,30 @@
 package io.syndesis.qe.steps.connections;
 
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
+import org.openqa.selenium.By;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.steps.CommonSteps;
@@ -14,21 +33,6 @@ import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @Slf4j
 public class ConnectionSteps {
@@ -115,7 +119,7 @@ public class ConnectionSteps {
         ConfigureConnectionSteps configureConnectionSteps = new ConfigureConnectionSteps();
         NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
 
-        List<List<String>> dataTable = connectionsData.raw();
+        List<List<String>> dataTable = connectionsData.cells();
 
         for (List<String> dataRow : dataTable) {
             String connectionType = dataRow.get(0);

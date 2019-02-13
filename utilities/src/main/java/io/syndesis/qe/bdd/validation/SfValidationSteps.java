@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -67,7 +66,7 @@ public class SfValidationSteps {
     }
 
     @Given("^clean SF, removes all leads with email: \"([^\"]*)\"")
-    public void cleanupSfDb(@Delimiter(",") List<String> emails) {
+    public void cleanupSfDb(List<String> emails) {
         TestSupport.getInstance().resetDB();
         for (String email : emails) {
             deleteAllSalesforceLeadsWithEmail(salesforce, email);
@@ -170,12 +169,12 @@ public class SfValidationSteps {
         log.info("Salesforce contains contact with T integration test finished.");
     }
 
-    @Then("check SF does not contain contact for tw account: \"([^\"]*)\"")
+    @Then("^check SF does not contain contact for tw account: \"([^\"]*)\"$")
     public void checkSfDoesNotContain(String twAccount) {
         checkSfAccount(twAccount, false);
     }
 
-    @Then("check SF contains contact for tw account: \"([^\"]*)\"")
+    @Then("^check SF contains contact for tw account: \"([^\"]*)\"$")
     public void checkSfDoesContain(String twAccount) {
         checkSfAccount(twAccount, true);
     }

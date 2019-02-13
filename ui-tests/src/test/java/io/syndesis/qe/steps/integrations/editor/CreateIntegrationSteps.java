@@ -1,7 +1,7 @@
 package io.syndesis.qe.steps.integrations.editor;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.integrations.editor.CreateIntegration;
 import io.syndesis.qe.utils.TestUtils;

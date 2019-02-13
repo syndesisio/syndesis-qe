@@ -11,9 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.connection.Connection;
@@ -49,7 +49,8 @@ public class IntegrationSteps extends AbstractStep {
         final Action ac = TestUtils.findConnectorAction(connector, action);
         final Map<String, String> stepProperties = new HashMap<>();
 
-        for (Map<String, String> source : properties.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = properties.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (Map.Entry<String,String> field : source.entrySet()) {
                 stepProperties.put(field.getKey(), field.getValue());
             }
@@ -69,7 +70,8 @@ public class IntegrationSteps extends AbstractStep {
     @When("^add \"([^\"]*)\" extension step with \"([^\"]*)\" action with properties:$")
     public void addExtensionIdWith(String name, String actionId, DataTable properties) {
         final Map<String, String> stepProperties = new HashMap<>();
-        for (Map<String, String> source : properties.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = properties.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (Map.Entry<String,String> field : source.entrySet()) {
                 stepProperties.put(field.getKey(), field.getValue());
             }

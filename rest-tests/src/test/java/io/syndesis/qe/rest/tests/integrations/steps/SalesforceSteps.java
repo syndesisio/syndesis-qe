@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.connection.Connection;

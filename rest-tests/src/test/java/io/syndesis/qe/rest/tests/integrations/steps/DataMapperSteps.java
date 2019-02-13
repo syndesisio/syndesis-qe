@@ -7,18 +7,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.atlasmap.v2.MappingType;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.bdd.entities.DataMapperDefinition;
 import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.SeparatorType;
 import io.syndesis.qe.bdd.entities.StepDefinition;
-
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -69,7 +68,7 @@ public class DataMapperSteps {
         steps.getStepDefinitions().add(new StepDefinition(mapperStep, new DataMapperDefinition()));
     }
 
-    @Then("MAP using Step (\\d+) and field \"([^\"]*)\" to \"([^\"]*)\"")
+    @Then("^MAP using Step (\\d+) and field \"([^\"]*)\" to \"([^\"]*)\"$")
     public void mapDataMapperStep(int fromStep, String fromField, String toField) {
 
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
@@ -81,7 +80,7 @@ public class DataMapperSteps {
         steps.getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 
-    @Then("COMBINE using Step (\\d+) and strategy \"([^\"]*)\" into \"([^\"]*)\" and sources$")
+    @Then("^COMBINE using Step (\\d+) and strategy \"([^\"]*)\" into \"([^\"]*)\" and sources$")
     public void combineDataMapperStep(int fromStep, String strategy, String targetField, DataTable sourceMappingData) {
 
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
@@ -93,7 +92,7 @@ public class DataMapperSteps {
         steps.getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 
-    @Then("SEPARATE using Step (\\d+) and strategy \"([^\"]*)\" and source \"([^\"]*)\" into targets$")
+    @Then("^SEPARATE using Step (\\d+) and strategy \"([^\"]*)\" and source \"([^\"]*)\" into targets$")
     public void separateDataMapperStep(int fromStep, String strategy, String sourceField, DataTable targetMappingData) {
 
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
