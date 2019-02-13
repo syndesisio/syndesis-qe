@@ -40,7 +40,7 @@ Feature: Concur Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT * FROM CONTACT where first_name = 'Akali'" value
     And fill in period input with "60" value
@@ -77,7 +77,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_concur"
     And publish integration
     Then Integration "Integration_with_concur" is present in integrations list
@@ -97,7 +97,7 @@ Feature: Concur Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT * FROM CONTACT where first_name = 'Akali'" value
     And fill in period input with "60" value
@@ -134,7 +134,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_concur"
     And publish integration
     Then check visibility of "Integration_with_concur" integration details
@@ -156,7 +156,7 @@ Feature: Concur Connector
     # DB - nothing
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT * FROM CONTACT where first_name = 'Xerath'" value
     And fill in period input with "5" value
@@ -226,7 +226,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_concur"
     And publish integration
     Then Integration "Integration_with_concur" is present in integrations list
