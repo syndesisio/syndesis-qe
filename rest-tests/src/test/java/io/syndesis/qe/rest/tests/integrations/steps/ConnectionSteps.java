@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.qe.accounts.Account;
@@ -46,7 +46,11 @@ public class ConnectionSteps {
 
     @Given("^create connection")
     public void createConnection(DataTable connectionProperties) {
-        Map<String, String> connectionPropertiesMap = new HashMap<>(connectionProperties.asMap(String.class, String.class));
+        List<List<String>> cells = connectionProperties.cells();
+        Map<String, String> connectionPropertiesMap = new HashMap<>();
+        for (List<String> cell : cells) {
+            connectionPropertiesMap.put(cell.get(0), cell.get(1));
+        }
 
         final String connectorName = connectionPropertiesMap.get("connector").toUpperCase();
         final String connectorId = RestTestsUtils.Connector.valueOf(connectorName).getId();

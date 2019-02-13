@@ -20,8 +20,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
+import io.cucumber.datatable.DataTable;
 import io.fabric8.openshift.api.model.Route;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
@@ -47,7 +47,7 @@ public class ApiClientConnectorsSteps {
         apiClientConnectorsPage.clickConnectorByTitle(connectorName);
     }
 
-    @Then("check visibility of the new connector \"([^\"]*)\"$")
+    @Then("^check visibility of the new connector \"([^\"]*)\"$")
     public void checkNewConnectorIsPresent(String connectorName) throws Throwable {
         assertTrue("Connector [" + connectorName + "] is not listed.", apiClientConnectorsPage.isConnectorPresent(connectorName));
     }
@@ -108,7 +108,7 @@ public class ApiClientConnectorsSteps {
         wizardSteps.uploadSwaggerFile(DataTable.create(sourceDataTable));
     }
 
-    @Then("create new API connector$")
+    @Then("^create new API connector$")
     public void createNewApiConnector(DataTable properties) throws Throwable {
 
         log.info("Connector wizard started");
@@ -144,7 +144,7 @@ public class ApiClientConnectorsSteps {
         //| details | baseUrl | <baseUrl> |
         String baseUrl = null;
 
-        for (List<String> property : properties.raw()) {
+        for (List<String> property : properties.cells()) {
             switch (property.get(0)) {
                 case "source":
                     switch (property.get(1)) {
