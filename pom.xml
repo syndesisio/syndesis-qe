@@ -35,7 +35,7 @@
 		<logback.classic.version>1.2.3</logback.classic.version>
 		<force.rest.api.version>0.0.37</force.rest.api.version>
 		<openshift.version>5.6.0.Final</openshift.version>
-		<selenide.version>4.10.01</selenide.version>
+		<selenide.version>5.1.0</selenide.version>
 		<guava.version>22.0</guava.version>
 		<cucumber.version>2.3.1</cucumber.version>
 		<openshift.client.version>2.4.1</openshift.client.version>
