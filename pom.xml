@@ -20,7 +20,7 @@
 		<checkstyle.version>3.0.0</checkstyle.version>
 
 		<apache.http.commons.version>4.5.3</apache.http.commons.version>
-		<lombok.version>1.16.18</lombok.version>
+		<lombok.version>1.18.6</lombok.version>
 		<org.slfj.version>1.7.6</org.slfj.version>
 		<hibernate.version>4.1.0.Final</hibernate.version>
 		<junit.version>4.12</junit.version>
