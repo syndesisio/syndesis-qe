@@ -41,6 +41,7 @@ Feature: Syndesis Upgrade
     Then verify that after "2.5" seconds there were "2" calls
 
   @rollback
+  @gh-4410
   Scenario: Syndesis Upgrade rollback
     When perform test modifications
       And add rollback cause to upgrade script
