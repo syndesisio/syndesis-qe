@@ -20,6 +20,7 @@ Feature: Syndesis Upgrade Using Operator
 
   Scenario: Syndesis Upgrade Using Operator
     When perform syndesis upgrade to newer version using operator
+      And create db-metrics config map
     Then wait until upgrade pod is finished
       And wait for Syndesis to become ready
       And verify syndesis "upgraded" version

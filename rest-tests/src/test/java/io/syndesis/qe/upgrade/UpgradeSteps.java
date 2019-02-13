@@ -382,4 +382,27 @@ public class UpgradeSteps {
             e.printStackTrace();
         }
     }
+
+    @When("^create db-metrics config map$")
+    public void createDbMetricsConfigMap() {
+        // This can be removed when master is related to 7.4
+        // Or when https://github.com/syndesisio/syndesis/issues/4413 is resolved
+        // Create minimal configmap with which the db-metrics pod starts
+        ConfigMap cm = OpenShiftUtils.client().configMaps().withName("syndesis-db-metrics-config").get();
+        if (cm == null) {
+            OpenShiftUtils.client().configMaps()
+                    .createNew()
+                        .withNewMetadata()
+                            .withName("syndesis-db-metrics-config")
+                            .withLabels(
+                                    TestUtils.map(
+                                            "app", "syndesis",
+                                            "syndesis.io/app", "syndesis",
+                                            "syndesis.io/type", "infrastructure",
+                                            "syndesis.io/component", "syndesis-db-metrics")
+                            )
+                        .endMetadata()
+                    .done();
+        }
+    }
 }
