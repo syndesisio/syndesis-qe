@@ -72,7 +72,7 @@ Feature: Support page
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "my-integration"
     And publish integration
     Then wait until integration "my-integration" gets into "Running" state

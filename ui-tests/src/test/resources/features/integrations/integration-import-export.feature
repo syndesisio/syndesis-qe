@@ -55,7 +55,7 @@ Feature: Integration - Import Export
     And click on the "Done" button
 
     # finish and save integration
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And set integration name "Integration_import_export_test"
     And publish integration
     Then Integration "Integration_import_export_test" is present in integrations list

@@ -53,7 +53,7 @@ Feature: Google mail Connector
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_gmail_send"
     And publish integration
 
@@ -101,7 +101,7 @@ Feature: Google mail Connector
 
 
     # finish and save integration
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And set integration name "Integration_gmail_receive"
     And publish integration
 

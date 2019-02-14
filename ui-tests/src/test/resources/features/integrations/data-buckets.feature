@@ -155,7 +155,7 @@ Feature: Integration - Databucket
     And click on the "Next" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_buckets"
     And publish integration
     # assert integration is present in list
@@ -356,7 +356,7 @@ Feature: Integration - Databucket
     ##################### start the integration ##################################
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_buckets"
     And publish integration
 

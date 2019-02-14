@@ -59,7 +59,7 @@ Feature: Connections - OAuth
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Twitter to Salesforce oauth"
     And publish integration
     Then Integration "Twitter to Salesforce oauth" is present in integrations list
