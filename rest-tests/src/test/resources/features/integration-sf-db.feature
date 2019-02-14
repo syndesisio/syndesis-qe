@@ -30,7 +30,7 @@ Feature: Integration - Salesforce
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com" and company: "ACME"
     And create SF "salesforce-on-delete" action step on field: "Lead"
     And start mapper definition with name: "mapping 1"
-    Then MAP using Step 1 and field "id" to "/todo"
+    Then MAP using Step 1 and field "/id" to "/todo"
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active

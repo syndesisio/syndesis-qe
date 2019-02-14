@@ -59,7 +59,7 @@ Feature: Integration - Salesforce
   Scenario: AMQ to "Create a new record" to AMQ
     When create SF "create-sobject" action step on field: "Lead"
       And start mapper definition with name: "integration-sf-producers-create-record"
-      And MAP using Step 2 and field "id" to "/id"
+      And MAP using Step 2 and field "/id" to "/id"
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
       And change datashape of previous step to "in" direction, "JSON_INSTANCE" type with specification '{"id":"abc"}'
       And create integration with name: "AMQ-SF-AMQ new record"
@@ -83,7 +83,7 @@ Feature: Integration - Salesforce
       | sObjectName   | Lead  |
       | sObjectIdName | Email |
       And start mapper definition with name: "integration-sf-producers-upsert-record-insert"
-      And MAP using Step 2 and field "id" to "/id"
+      And MAP using Step 2 and field "/id" to "/id"
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
       And change datashape of previous step to "in" direction, "JSON_INSTANCE" type with specification '{"id":"abc"}'
       And create integration with name: "AMQ-SF-AMQ upsert insert record"

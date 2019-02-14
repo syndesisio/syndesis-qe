@@ -40,6 +40,8 @@ public class SfValidationSteps {
     private final AccountsDirectory accountsDirectory;
     private String leadId;
 
+    private static final long DEFAULT_WAIT_TIMEOUT = 30000L;
+
     public SfValidationSteps() {
         accountsDirectory = AccountsDirectory.getInstance();
         final Account salesforceAccount = accountsDirectory.getAccount("QE Salesforce").get();
@@ -91,7 +93,6 @@ public class SfValidationSteps {
 
     @Then("^delete lead from SF with email: \"([^\"]*)\"")
     public void deleteSalesforceLead(String email) {
-
         final Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, email);
         if (lead.isPresent()) {
             leadId = String.valueOf(lead.get().getId());
@@ -102,7 +103,6 @@ public class SfValidationSteps {
 
     @Then("^delete contact from SF with email: \"([^\"]*)\"")
     public void deleteSalesforceContact(String email) {
-
         final Optional<Contact> lead = getSalesforceContactByEmail(salesforce, email);
         if (lead.isPresent()) {
             salesforce.deleteSObject("contact", String.valueOf(lead.get().getId()));
@@ -112,24 +112,21 @@ public class SfValidationSteps {
 
     @Then("^.*deletes? contact from SF with last name: \"([^\"]*)\"")
     public void deleteSalesforceContactWithName(String name) {
-
         final Optional<Contact> lead = getSalesforceContactByLastName(salesforce, name);
         if (lead.isPresent()) {
             salesforce.deleteSObject("contact", String.valueOf(lead.get().getId()));
             log.info("Deleting salesforce lead: {}", lead.get());
         } else {
             log.info("Contact with name {} was not found, nothing was deleted");
-
         }
     }
 
     @Then("^.*checks? that contact from SF with last name: \"([^\"]*)\" has description \"([^\"]*)\"$")
     public void checkSalesforceContactHasDescription(String name, String description) {
-
         try {
-            OpenShiftWaitUtils.waitFor(() -> getSalesforceContactByLastName(salesforce, name).isPresent(), 30 * 1000);
+            OpenShiftWaitUtils.waitFor(() -> getSalesforceContactByLastName(salesforce, name).isPresent(), DEFAULT_WAIT_TIMEOUT);
         } catch (TimeoutException | InterruptedException e) {
-            fail("Salesforce contact with last name " + name + " was not found. ", e);
+            fail("Salesforce contact with last name " + name + " was not found in " + DEFAULT_WAIT_TIMEOUT/1000 + "seconds. ", e);
         }
 
         final Optional<Contact> contact = getSalesforceContactByLastName(salesforce, name);
@@ -142,7 +139,6 @@ public class SfValidationSteps {
 
     @Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)\"")
     public void updateLead(String origEmail, String newFirstName, String newLastName, String newEmailAddress, String companyName) {
-
         leadId = getSalesforceLeadByEmail(salesforce, origEmail).get().getId();
 
         final Lead lead = new Lead();
@@ -202,6 +198,12 @@ public class SfValidationSteps {
 
     @Then("^verify that lead with email \"([^\"]*)\" was created")
     public void verifyLeadCreated(String email) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> getSalesforceLeadByEmail(salesforce, email).isPresent(), DEFAULT_WAIT_TIMEOUT);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Salesforce lead with email " + email + " was not found in " + DEFAULT_WAIT_TIMEOUT/1000 + " seconds.");
+        }
+
         Optional<Lead> lead = getSalesforceLeadByEmail(salesforce, email);
         assertThat(lead.get()).isInstanceOf(Lead.class);
         assertThat(lead.get().getFirstName()).isEqualTo("Joe");
@@ -215,28 +217,36 @@ public class SfValidationSteps {
 
     @Then("^verify that lead was deleted$")
     public void verifyLeadRemoval() {
-        // Add a delay for the integration processing
-        TestUtils.sleepIgnoreInterrupt(5000L);
         try {
-            getLeadWithId(leadId);
-            fail("Getting deleted lead should result in exception");
-        } catch (ApiException ex) {
-            assertThat(ex.getMessage()).contains("The requested resource does not exist");
+            OpenShiftWaitUtils.waitFor(() -> {
+                try {
+                    getLeadWithId(leadId);
+                    return false;
+                } catch (ApiException ex) {
+                    return ex.getMessage().contains("The requested resource does not exist");
+                }
+            }, DEFAULT_WAIT_TIMEOUT);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Salesforce lead with id " + leadId + " was not deleted in " + DEFAULT_WAIT_TIMEOUT/1000 + " seconds.");
         }
     }
 
     @Then("^verify that leads email was updated to \"([^\"]*)\"$")
     public void verifyLeadUpdated(String email) {
-        // Add a delay for the integration processing
-        TestUtils.sleepIgnoreInterrupt(5000L);
-        assertThat(getLeadWithId(leadId).getEmail()).isEqualTo(email);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> email.equals(getLeadWithId(leadId).getEmail()), DEFAULT_WAIT_TIMEOUT);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Salesforce email of lead with id " + leadId + " was not changed in " + DEFAULT_WAIT_TIMEOUT/1000 + " seconds.");
+        }
     }
 
     @Then("^verify that lead name was updated$")
     public void verifyLeadNameUpdate() {
-        // Add a delay for the integration processing
-        TestUtils.sleepIgnoreInterrupt(5000L);
-        assertThat(getLeadWithId(leadId).getFirstName()).isEqualTo("Joe");
+        try {
+            OpenShiftWaitUtils.waitFor(() -> "Joe".equals(getLeadWithId(leadId).getFirstName()), DEFAULT_WAIT_TIMEOUT);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Salesforce email of lead with id " + leadId + " was not changed in " + DEFAULT_WAIT_TIMEOUT/1000 + " seconds.");
+        }
     }
 
     private Lead getLeadWithId(String leadId) {
