@@ -75,7 +75,7 @@ Feature: Integration - Salesforce to DB
     And scroll "top" "right"
     And click on the "Done" button
       # finish and save integration
-    And click on the "Save as Draft" button
+    And click on the "Save" button
 
     And set integration name "Salesforce to PostresDB E2E"
     And publish integration

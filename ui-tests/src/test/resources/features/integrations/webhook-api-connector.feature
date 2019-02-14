@@ -80,7 +80,7 @@ Feature: Integration - Webhook to API connector
     When select the "Todo connection" connection
     And select "List all tasks" integration action
 
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And set integration name "webhook-gh-3727"
     And publish integration
 

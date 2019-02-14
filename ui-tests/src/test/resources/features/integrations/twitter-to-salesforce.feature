@@ -64,7 +64,7 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Done" button
 
     # finish and save integration
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And set integration name "Twitter to Salesforce E2E"
     And publish integration
     Then Integration "Twitter to Salesforce E2E" is present in integrations list

@@ -66,7 +66,7 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     And publish integration
     And set integration name "telegram_integration_receive_publish"
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And click on the "Cancel" button
 
 #
@@ -106,7 +106,7 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     And publish integration
     And set integration name "telegram_integration_database_publish"
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And click on the "Cancel" button
 
 #
@@ -148,6 +148,6 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     And publish integration
     And set integration name "telegram_integration_receive_database"
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And click on the "Cancel" button
 

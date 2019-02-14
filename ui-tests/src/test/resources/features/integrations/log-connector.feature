@@ -44,7 +44,7 @@ Feature: Log Connector
 
     Then click on the "Done" button
 
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_log"
     And publish integration
     Then Integration "Integration_with_log" is present in integrations list
@@ -95,7 +95,7 @@ Feature: Log Connector
       | Custom Text     |       |
     And click on the "Done" button
 
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_log2"
     And publish integration
     Then Integration "Integration_with_log2" is present in integrations list

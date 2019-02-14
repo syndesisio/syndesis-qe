@@ -47,7 +47,7 @@ Feature: Integration - Twitter to Database
 #    And scroll "top" "right"
     And click on the "Done" button
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Twitter to DB integration"
     And publish integration
 
