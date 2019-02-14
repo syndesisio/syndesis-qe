@@ -46,8 +46,10 @@ public class DataMapperSteps {
      */
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
+        mapper.openDataMapperCollectionElement();
+
         for (List<String> row : table.cells(0)) {
-            mapper.createMapping(row.get(0), row.get(1));
+            mapper.doCreateMapping(row.get(0), row.get(1));
         }
     }
 
