@@ -6,7 +6,11 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.enabled;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -68,6 +72,15 @@ public class EditorSteps {
     @When("^.*adds? integration step on position \"([^\"]*)\"$")
     public void addAnotherStep(int stepPos) {
         flowViewComponent.clickAddStepLink(stepPos);
+    }
+
+    @Then("^verify delete button on step ([0-9]+) (is|is not) visible$")
+    public void verifyDeleteButtonOnStartFinishStepNotVisible(int position, String visibility) throws Throwable {
+        SelenideElement trashIcon = flowViewComponent.getStepOnPosition(position).$(By.className("fa-trash"));
+        assertEquals("Delete icon should" + visibility.replace("is", "") + " be visible",
+                "is".equals(visibility),
+                trashIcon.exists()
+        );
     }
 
     /**
@@ -189,7 +202,13 @@ public class EditorSteps {
     @When("^edit integration step on position (\\d+)$")
     public void editIntegrationStep(int oneBasedStepPosition) {
         log.info("Editing integration step #" + oneBasedStepPosition);
-        flowViewComponent.getStepOnPosition(oneBasedStepPosition).shouldBe(visible).click();
+        flowViewComponent.getStepOnPosition(oneBasedStepPosition).$(".step-content").shouldBe(visible).click();
+    }
+
+    @When("^delete step on position (\\d+)$")
+    public void deleteStepOnPosition(int oneBasedStepPosition) throws Throwable {
+        log.info("Deleting integration step #" + oneBasedStepPosition);
+        flowViewComponent.deleteStepOnPostion(oneBasedStepPosition);
     }
 
     @When("^publish integration$")
