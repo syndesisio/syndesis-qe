@@ -1,9 +1,11 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -12,6 +14,7 @@ import java.util.List;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
@@ -38,7 +41,13 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By STEP_DETAILS = By.className("step-details");
         public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
 
-        public static final By FLOW_TITLE = By.cssSelector("h3.flow-view-step-title");
+        public static final By FLOW_TITLE = By.cssSelector(".step.start .step-name");
+
+        public static final By TRASH = By.className("fa-trash");
+
+        public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-danger");
+
+
     }
 
     private static final class Button {
@@ -167,6 +176,12 @@ public class IntegrationFlowView extends SyndesisPageObject {
         return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position)).get(position - 1).shouldBe(visible);
     }
 
+    public void deleteStepOnPostion(int stepPosition){
+        SelenideElement step = getStepOnPosition(stepPosition);
+        step.$(Element.TRASH).shouldBe(visible).click();
+        Selenide.$(Element.DELETE_BUTTON).shouldBe(enabled, visible).click();
+    }
+
     public String getPopoverText() {
         String text = $(Element.POPOVER_CLASS).shouldBe(visible).getText();
         log.info("Text found: " + text);
@@ -178,7 +193,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public String getFlowTitle() {
-        return getRootElement().$(Element.FLOW_TITLE).text();
+        return getRootElement().$(Element.FLOW_TITLE).attr("title");
     }
 
     public int getNumberOfSteps() {

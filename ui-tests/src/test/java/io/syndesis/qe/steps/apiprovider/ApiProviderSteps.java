@@ -1,7 +1,30 @@
 package io.syndesis.qe.steps.apiprovider;
 
-import static org.junit.Assert.assertEquals;
+import java.util.List;
+import java.util.regex.Pattern;
 
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.text;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
+import apicurito.tests.utils.slenide.CommonUtils;
+import apicurito.tests.utils.slenide.OperationUtils;
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.SelenideElement;
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
+import io.syndesis.qe.pages.integrations.editor.ApiProviderOperationEditorPage;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
+import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
+import io.syndesis.qe.pages.integrations.summary.Details;
+import lombok.val;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.SoftAssertions;
+import org.hamcrest.Matchers;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Selenide;
@@ -36,13 +59,19 @@ public class ApiProviderSteps {
     private ApiProviderWizard wizard = new ApiProviderWizard();
 
     private ReviewApiProviderActions reviewApiProviderActions = new ReviewApiProviderActions();
-    private final OperationsList operationsList = new OperationsList(By.className("operations-list"));
 
-    @When("^select operation (.+)$")
+    @When("^select operation flow (.+)$")
     public void selectOperation(String operationName) {
-        OperationsList operationsList = new OperationsList(By.className("operations-list"));
+        OperationsList operationsList = new OperationsList(By.cssSelector("syndesis-integration-api-provider-operations-list pfng-list"));
         operationsList.validate();
         operationsList.invokeActionOnItem(operationName, ListAction.CLICK);
+    }
+
+    @Then("check ([\\w ]+) operation not present in operation list")
+    public void checkOperationNotPresent(String operationName) {
+        OperationsList operationsList = new OperationsList(By.cssSelector("syndesis-integration-api-provider-operations-list pfng-list"));
+        List<String> operations = operationsList.getOperations();
+        assertThat(operations, not(hasItem(operationName)));
     }
 
     @When("^create api provider spec from ([\\w]+) (.+)$")
@@ -83,7 +112,7 @@ public class ApiProviderSteps {
     }
 
     @Then("^verify there are (\\d+) errors$")
-    public void verifyThereAreErrors(int num)  {
+    public void verifyThereAreErrors(int num) {
         int actual = reviewApiProviderActions.getNumberOfErrors();
         assertEquals("Wrong number of errors", num, actual);
     }
@@ -94,18 +123,21 @@ public class ApiProviderSteps {
         assertEquals("Wrong number of warnings", num, actual);
     }
 
-    @Then("^check operation \"([^\"]*)\" implementing \"([^\"]*)\" with status \"([^\"]*)\"$")
-    public void checkOperationImplementingWithStatus(String operationName, String operationPath, String operationStatus) {
+    @Then("^check operation \"([^\"]*)\" implementing \"([^\"]*)\" to \"([^\"]*)\" with status \"([^\"]*)\"$")
+    public void checkOperationImplementingWithStatus(String operationName, String operationVerb, String operationPath, String operationStatus) {
+        OperationsList operationsList = new OperationsList(By.cssSelector("syndesis-integration-api-provider-operations-list pfng-list"));
         operationsList.validate();
-        String description = operationsList.getDescription(operationName);
-        String status = operationsList.getStatus(operationName);
 
-        assertEquals("Wrong operation path for operation " + operationName, operationPath, description);
-        assertEquals("Wrong operation status for operation " + operationName, operationStatus, status);
+        String verb = operationsList.getVerb(operationName);
+        String path = operationsList.getUrl(operationName);
+
+        assertEquals("Wrong verb path for operation " + operationName, operationVerb, verb);
+        assertEquals("Wrong operation path for operation " + operationName, operationPath, path);
     }
 
     /**
      * Convenience method to prevent repeating the same steps over and over again
+     *
      * @param name
      * @param source
      * @param path
@@ -125,16 +157,13 @@ public class ApiProviderSteps {
     public void createAnAPIProviderOperationInApicurio() {
         // TODO: temporary solution until apicurio support is added to the test suite
         new ApicurioSteps().addOperation();
-        Selenide.$(By.cssSelector("#operations-section-body div.type")).click();
         Selenide.$(By.xpath("//a[text()='Add a response']")).click();
         TestUtils.sleepForJenkinsDelayIfHigher(2);
         Selenide.$(By.cssSelector("#addResponseModal button.btn-primary")).click();
         TestUtils.sleepForJenkinsDelayIfHigher(2);
-        Selenide.$(By.cssSelector("schema-type")).click();
-        Selenide.$(By.cssSelector("#api-response-type")).click();
+        Selenide.$(By.cssSelector("#api-property-type")).click();
         Selenide.$(By.xpath("//a[text()='String']")).click();
-        Selenide.$(By.cssSelector("response-row div.description")).click();
-        Selenide.$(By.cssSelector("div.response-description")).click();
+        Selenide.$(By.cssSelector(".response-description .md-description")).click();
         // wtf, this should not be necessary, but it is
         Selenide.$(By.cssSelector("ace-editor textarea")).sendKeys("desc");
         TestUtils.sleepForJenkinsDelayIfHigher(2);
@@ -158,11 +187,18 @@ public class ApiProviderSteps {
         checkResponse(response, status, body);
     }
 
-    private void checkResponse(Response response, int status, String body) {
-        assertEquals("Wrong status", status, response.getStatus());
-        String responseBody = response.readEntity(String.class);
-        assertEquals("Wrong body", body, responseBody);
+    @When("^publish API Provider integration$")
+    public void publishIntegration() {
+        log.info("Publishing integration");
+        new ApiProviderToolbar().publish();
+    }
 
+    private void checkResponse(Response response, int status, String body) {
+        SoftAssertions sa = new SoftAssertions();
+        sa.assertThat(response.getStatus()).isEqualTo(status).describedAs("Wrong status");
+        String responseBody = response.readEntity(String.class);
+        sa.assertThat(responseBody).isEqualTo(body).describedAs("Wrong body");
+        sa.assertAll();
     }
 
     private String getUrl(String routeName, String endpoint) {
@@ -181,5 +217,27 @@ public class ApiProviderSteps {
                 .header("X-Forwarded-Access-Token", "kral")
                 .header("SYNDESIS-XSRF-TOKEN", "awesome");
         return invocation;
+    }
+
+    @When("^go to API Provider operation list$")
+    public void openAPIProviderOperationSwitcher() throws Throwable {
+        new ApiProviderToolbar().goToOperationList();
+    }
+
+    @When("^edit API Provider OpenAPI specification$")
+    public void editAPIProviderOpenAPISpecification() throws Throwable {
+        new ApiProviderToolbar().editOpenApi();
+    }
+
+    @When("^go to the ([\\w ]+) operation$")
+    public void goToOperation(String operation) throws Throwable {
+        new ApiProviderToolbar().goToOperation(operation);
+        TestUtils.sleepForJenkinsDelayIfHigher(1);
+    }
+
+    @Then("^verify the displayed URL matches regex (.*)$")
+    public void verifyTheDisplayedURLMatchesHttpITodoIntegrationApi$(String regex) throws Throwable {
+        String apiUrl = new Details().getApiUrl();
+        Assertions.assertThat(apiUrl).matches(regex);
     }
 }
