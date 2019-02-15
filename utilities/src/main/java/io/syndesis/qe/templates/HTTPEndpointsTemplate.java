@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,6 +23,12 @@ public class HTTPEndpointsTemplate {
                 OpenShiftUtils.client().load(new URL(TEMPLATE_URL).openStream()).createOrReplace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            try {
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "httpendpoints"));
+            } catch (InterruptedException | TimeoutException e) {
+                log.error("Wait for http endpoints failed ", e);
             }
         }
         addAccounts();
