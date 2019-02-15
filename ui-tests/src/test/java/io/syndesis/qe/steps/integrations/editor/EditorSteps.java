@@ -10,6 +10,8 @@ import static com.codeborne.selenide.Condition.visible;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.SelenideElement;
+
 import java.util.List;
 
 import cucumber.api.java.en.Then;
@@ -69,11 +71,20 @@ public class EditorSteps {
         flowViewComponent.clickAddStepLink(stepPos);
     }
 
+    @Then("^verify delete button on step ([0-9]+) (is|is not) visible$")
+    public void verifyDeleteButtonOnStartFinishStepNotVisible(int position, String visibility) {
+        SelenideElement trashIcon = flowViewComponent.getStepOnPosition(position).$(By.className("fa-trash"));
+        assertEquals("Delete icon should" + visibility.replace("is", "") + " be visible",
+                "is".equals(visibility),
+                trashIcon.exists()
+        );
+    }
+
     /**
      * unused
      */
     @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in hover table over \"([^\"]*)\" step$")
-    public void checkTextInHoverTable(String text, String isVisible, String stepPosition) throws InterruptedException {
+    public void checkTextInHoverTable(String text, String isVisible, String stepPosition) {
         if (isVisible.equalsIgnoreCase("visible")) {
             Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
                     .isNotEmpty()
@@ -92,7 +103,6 @@ public class EditorSteps {
      * @param text
      * @param isVisible
      * @param stepPosition
-     * @throws InterruptedException
      */
     @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"$")
     public void checkTextInStepWarning(String text, String isVisible, int stepPosition) {
@@ -166,7 +176,7 @@ public class EditorSteps {
     }
 
     @Then("^check flow title is \"([^\"]*)\"$")
-    public void checkFlowTitleIs(String title) throws Throwable {
+    public void checkFlowTitleIs(String title) {
         assertEquals("Wrong flow title", title, flowViewComponent.getFlowTitle());
     }
 
@@ -190,6 +200,12 @@ public class EditorSteps {
         log.info("Editing integration step #" + oneBasedStepPosition);
         flowViewComponent.getStepOnPosition(oneBasedStepPosition)
                 .$(By.className("step-container")).shouldBe(visible).click();
+    }
+
+    @When("^delete step on position (\\d+)$")
+    public void deleteStepOnPosition(int oneBasedStepPosition) {
+        log.info("Deleting integration step #" + oneBasedStepPosition);
+        flowViewComponent.deleteStepOnPostion(oneBasedStepPosition);
     }
 
     @When("^publish integration$")
