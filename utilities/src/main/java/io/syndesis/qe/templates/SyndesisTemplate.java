@@ -222,7 +222,7 @@ public class SyndesisTemplate {
             if (TestUtils.isJenkins()) {
                 integration.put("stateCheckInterval", 150);
             }
-            crd.getSpec().getAdditionalProperties().put("TestSupport", true);
+            crd.getSpec().getAdditionalProperties().put("testSupport", true);
             crd.getSpec().getAdditionalProperties().put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
             OpenShiftUtils.invokeApi(
