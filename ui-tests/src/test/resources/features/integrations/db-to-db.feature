@@ -45,12 +45,12 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
 
-#      # add split step
-#    Then check visibility of page "Add to Integration"
-#    When add integration step on position "0"
-#    And select "Split" integration step
+    # add split step
+    Then check visibility of page "Add to Integration"
+    When add integration step on position "0"
+    And select "Split" integration step
 
-      # add data mapper step
+    # add data mapper step
     Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Data Mapper" integration step
