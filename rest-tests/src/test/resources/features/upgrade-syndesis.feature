@@ -15,13 +15,15 @@ Feature: Syndesis Upgrade
         | connector | http      |
         | account   | http      |
         | baseUrl   | $ACCOUNT$ |
-   When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When inserts into "contact" table
+      | X | Y | Z | db |
+      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
       And start mapper definition with name: "mapping 1"
       And MAP using Step 1 and field "/first_name" to "/task"
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
     Then create integration with name: "upgrade"
       And wait for integration with name: "upgrade" to become active
-      And verify integration with task "Joe"
+      And verify integration with task "X"
 
   @upgrade
   Scenario: Syndesis Upgrade
@@ -30,7 +32,7 @@ Feature: Syndesis Upgrade
       And perform syndesis upgrade to newer version
     Then verify syndesis "upgraded" version
       And verify successful test modifications
-      And verify integration with task "Joe"
+      And verify integration with task "X"
     When refresh server port-forward
       And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
@@ -48,7 +50,7 @@ Feature: Syndesis Upgrade
       And perform syndesis upgrade to newer version
     Then verify syndesis "given" version
       And verify test modifications rollback
-      And verify integration with task "Joe"
+      And verify integration with task "X"
     When refresh server port-forward
       And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
