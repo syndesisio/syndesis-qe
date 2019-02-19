@@ -29,8 +29,6 @@ Feature: Connection - CRUD
     Then scroll "top" "right"
     And click on the "Next" button
 
-    And check "Create" button is "Disabled"
-
     And fill Name Connection form
       | Connection Name | my sample tw conn         |
       | Description     | this connection is awsome |
