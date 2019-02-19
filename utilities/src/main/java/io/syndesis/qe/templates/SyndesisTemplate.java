@@ -237,9 +237,15 @@ public class SyndesisTemplate {
 
     private static void patchImageStreams() {
         ImageStreamList isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
+        final int maxRetries = 120;
+        int retries = 0;
         while (isl.getItems().size() < 6) {
             TestUtils.sleepIgnoreInterrupt(5000L);
             isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
+            retries++;
+            if (retries == maxRetries) {
+                fail("Unable to find image streams after " + maxRetries + " tries.");
+            }
         }
         log.info("Patching imagestreams");
         isl.getItems().forEach(is -> {
@@ -291,7 +297,7 @@ public class SyndesisTemplate {
                     OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                             .list();
 
-            while (isl.getItems().size() < 6) {
+            while (isl.getItems().size() < 8) {
                 TestUtils.sleepIgnoreInterrupt(5000L);
                 isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                         .list();
