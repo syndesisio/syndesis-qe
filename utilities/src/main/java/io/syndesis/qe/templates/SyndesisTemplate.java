@@ -227,7 +227,7 @@ public class SyndesisTemplate {
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
             OpenShiftUtils.invokeApi(
                     HttpUtils.Method.POST,
-                    "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises",
+                    "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural(),
                     Serialization.jsonMapper().writeValueAsString(crd)
             );
         } catch (IOException ex) {
