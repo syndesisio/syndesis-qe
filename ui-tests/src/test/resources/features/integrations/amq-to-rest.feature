@@ -3,6 +3,7 @@
 @ui
 @doc-tutorial
 @activemq
+@amqbroker
 @todo-app
 @extension
 @api-connector
@@ -16,7 +17,7 @@ Feature: Integration - AMQ to REST
     And wait for Todo to become ready
     And reset content of "todo" table
     And Set Todo app credentials
-    And deploy AMQ broker and add accounts
+    And deploy ActiveMQ broker
     And navigate to the "Customizations" page
     And click on the "Extensions" link
     And click on the "Import Extension" button
@@ -29,8 +30,8 @@ Feature: Integration - AMQ to REST
       | details  | routeHost     | todo                      |
       | details  | baseUrl       | /api                      |
     And created connections
-      | AMQ Message Broker | AMQ  | AMQ             | AMQ on OpenShift |
-      | Todo connector     | todo | TODO connection | no validation    |
+      | Red Hat AMQ    | AMQ  | AMQ             | AMQ on OpenShift |
+      | Todo connector | todo | TODO connection | no validation    |
 
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page
@@ -54,13 +55,11 @@ Feature: Integration - AMQ to REST
 
     # add custom step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Damage Reporter" integration step
 
     # add data mapper
-    When click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    And clicks on the "2". "Add a step" link
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -68,9 +67,9 @@ Feature: Integration - AMQ to REST
       | task | body.task |
     And click on the "Done" button
 
-    Then click on the "Publish" button
+    Then publish integration
     And set integration name "AMQ to TODO integration"
-    Then click on the "Publish" button
+    Then publish integration
 
     When navigate to the "Integrations" page
     Then wait until integration "AMQ to TODO integration" gets into "Running" state

@@ -1,18 +1,10 @@
 package io.syndesis.qe.bdd.validation;
 
-import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.utils.DbUtils;
-import io.syndesis.qe.utils.RestConstants;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
 import org.apache.commons.lang.RandomStringUtils;
+
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,7 +14,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.api.DataTable;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.utils.DbUtils;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * DB related validation steps.
@@ -33,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Slf4j
 public class DbValidationSteps {
-
     private DbUtils dbUtils;
 
     @Autowired
@@ -54,7 +56,7 @@ public class DbValidationSteps {
         Thread.sleep(5000);
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
+        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable("todo"),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
@@ -69,7 +71,7 @@ public class DbValidationSteps {
     public void validateLead() {
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
+        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable("todo"),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
@@ -85,7 +87,7 @@ public class DbValidationSteps {
         //wait for period cycle:
         Thread.sleep(ms + 1000);
         // We wait for at least 1 record to appear in DB (procedure goes on every 5 seconds).
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable(RestConstants.TODO_APP_NAME),
+        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable("todo"),
                 TimeUnit.MINUTES,
                 2,
                 TimeUnit.SECONDS,
@@ -204,12 +206,12 @@ public class DbValidationSteps {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(0);
     }
 
-    @And("^.*invokes? database query \"([^\"]*)\"")
+    @When("^.*invokes? database query \"([^\"]*)\"")
     public void invokeQuery(String query) {
         assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
     }
 
-    @And("^insert into contact database randomized concur contact with name \"([^\"]*)\" and list ID \"([^\"]*)\"")
+    @When("^insert into contact database randomized concur contact with name \"([^\"]*)\" and list ID \"([^\"]*)\"")
     public void createContactRowForConcur(String name, String listId) {
         String surname = RandomStringUtils.randomAlphabetic(12);
         String lead = RandomStringUtils.randomAlphabetic(12);
@@ -275,13 +277,10 @@ public class DbValidationSteps {
         dbAllocatorClient.free();
     }
 
-
-//AUXILIARIES:
-
     /**
      * Used for verification of successful creation of a new task in the todo app.
      *
-     * @return
+     * @return lead task
      */
     private String getLeadTaskFromDb(String task) {
         String leadTask = null;
@@ -309,5 +308,19 @@ public class DbValidationSteps {
             Assertions.fail("Error: " + ex);
         }
         return leadTask;
+    }
+
+    @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+) after (\\d+) s$")
+    public void checkRowsNumberIsGreaterThan(String table, int threshold, int s) throws InterruptedException, SQLException {
+        Thread.sleep(s*1000 + 1000L);
+        String sql = "SELECT COUNT(*) FROM CONTACT";
+        log.info("SQL **{}**", sql);
+        ResultSet rs = this.dbUtils.executeSQLGetResultSet(sql);
+
+        if (rs.next()) {
+            assertThat(rs.getInt(1)).isGreaterThan(threshold);
+        } else {
+            fail("There is no result for command: " + sql);
+        }
     }
 }

@@ -4,7 +4,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.utils.RestConstants;
 import lombok.extern.slf4j.Slf4j;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -22,14 +21,12 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 @Slf4j
 public class TwValidationSteps {
-
     private final Twitter twitter;
     private final AccountsDirectory accountsDirectory;
 
     public TwValidationSteps() {
-
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account twitterTalky = accountsDirectory.getAccount(RestConstants.SYNDESIS_TALKY_ACCOUNT).get();
+        final Account twitterTalky = accountsDirectory.getAccount("twitter_talky").get();
         //twitter
         final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()
                 .setOAuthConsumerKey(twitterTalky.getProperty("consumerKey"))
@@ -48,7 +45,7 @@ public class TwValidationSteps {
     @Then("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
     public void sendTweet(String toAcc, String tweet) throws TwitterException {
         final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
-        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(RestConstants.SYNDESIS_TALKY_ACCOUNT)
+        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount("twitter_talky")
                 .get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
         twitter.updateStatus(message);
         log.info("Tweet submitted.");

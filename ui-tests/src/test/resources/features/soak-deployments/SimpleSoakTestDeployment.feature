@@ -5,10 +5,10 @@
 Feature: Simple soak test
 
   Scenario: Prepare
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
-      | AMQ Message Broker   | AMQ            | AMQ   | AMQ connection    |
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection |
 
   Scenario Outline: Timer Publish to queue
     When navigate to the "Home" page
@@ -35,12 +35,10 @@ Feature: Simple soak test
 
     # final steps
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "Timer2AMQ #<number>"
-    And click on the "Publish" button
+    And publish integration
 
-    And  check visibility of "Timer2AMQ #<number>" integration details
-    And  navigate to the "Integrations" page
     Then  sleep for "120000" ms
 
     Examples:
@@ -69,12 +67,10 @@ Feature: Simple soak test
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "AMQ2Log #<number>"
-    And click on the "Publish" button
+    And publish integration
 
-    And  check visibility of "AMQ2Log #<number>" integration details
-    And  navigate to the "Integrations" page
     Then  sleep for "120000" ms
 
     Examples:

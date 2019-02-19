@@ -3,7 +3,6 @@ package io.syndesis.qe.pages.integrations.fragments;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -19,19 +18,13 @@ import static com.codeborne.selenide.Selenide.$$;
 @Slf4j
 public class IntegrationFlowView extends SyndesisPageObject {
 
-    private static final class Link {
-        public static final By ADD_STEP = By.linkText("Add a step");
-        public static final By ADD_CONNECTION = By.linkText("Add a connection");
-
-    }
-
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-integration-flow-view");
 
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
         public static final By STEP_ROOT = By.cssSelector("div.flow-view-step");
         public static final By STEP = By.cssSelector("div.parent-step");
-        public static final By ACTIVE_STEP = By.cssSelector("div[class='parent-step active']");
+        public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector("div.icon.active");
         public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = By.className("step-insert");
@@ -43,6 +36,11 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By FLOW_TITLE = By.cssSelector("h3.flow-view-step-title");
 
 
+    }
+
+    private static final class Button {
+        public static final By Expand = By.cssSelector("button.btn.btn-default.toggle-collapsed.collapsed");
+        public static final By Collapse = By.cssSelector("button.btn.btn-default.toggle-collapsed:not(.collapsed)");
     }
 
     private StepFactory stepComponentFactory = new StepFactory();
@@ -72,28 +70,23 @@ public class IntegrationFlowView extends SyndesisPageObject {
         return selenideElement.find(Element.ACTIVE_STEP_ICON).shouldBe(visible).exists();
     }
 
-    public List<String> getStepsArray() {
+    public List<String> getStepsTitlesArray() {
+        if (isCollapsed()) {
+            $(Button.Expand).click();
+        }
+
         ElementsCollection steps = this.getRootElement().findAll(Element.STEP);
 
         List<String> stepsArray = new ArrayList<String>();
 
-        for (int i = 1; i < (steps.size() - 1); i++) {
-            steps.get(i).click();
-
-            SelenideElement title = this.getRootElement().find(Element.ACTIVE_STEP);
-
-            String type = title.getText();
-            AbstractStep stepComponent = stepComponentFactory.getStep(type, "");
-
-            //wait for root element to be loaded
-            stepComponent.getRootElement();
-            stepComponent.initialize();
-
-            stepsArray.add(stepComponent.getParameter());
+        for (int i = 0; i < steps.size(); i++) {
+            SelenideElement step = steps.get(i);
+            SelenideElement title = step.find(Element.STEP_TITLE);
+            stepsArray.add(title.getAttribute("title"));
         }
-
-        this.getFirstVisibleButton("Done").shouldBe(visible).click();
-
+        if (isExpanded()) {
+            $(Button.Collapse).click();
+        }
         return stepsArray;
     }
 
@@ -106,24 +99,14 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public void clickAddStepLink(int pos) {
+        if (isExpanded()) {
+            $(Button.Collapse).click();
+        }
 
         List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
-
-        stepElement.shouldBe(visible).hover();
-
-        getRootElement().$(Link.ADD_STEP).shouldBe(visible).click();
-    }
-
-    public void clickAddConnectionLink(int pos) {
-        List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
-                .shouldHave(sizeGreaterThanOrEqual(pos));
-        SelenideElement stepElement = allStepInserts.get(pos);
-
-        stepElement.scrollIntoView(true).hover();
-
-        getRootElement().$(Link.ADD_CONNECTION).shouldBe(visible).click();
+        stepElement.shouldBe(visible).click();
     }
 
     /**
@@ -171,7 +154,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public SelenideElement getStepOnPosition(int position) {
-        return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position)).get(position).shouldBe(visible);
+        return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position)).get(position - 1).shouldBe(visible);
     }
 
     public String getPopoverText() {
@@ -188,7 +171,15 @@ public class IntegrationFlowView extends SyndesisPageObject {
         return getRootElement().$(Element.FLOW_TITLE).text();
     }
 
-    public int getNumberOfSteps(){
+    public int getNumberOfSteps() {
         return getRootElement().$$(Element.STEP).size();
+    }
+
+    public boolean isCollapsed() {
+        return $(Button.Expand).exists();
+    }
+
+    public boolean isExpanded() {
+        return $(Button.Collapse).exists();
     }
 }

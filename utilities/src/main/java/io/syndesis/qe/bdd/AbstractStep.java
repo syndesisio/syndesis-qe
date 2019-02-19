@@ -12,6 +12,7 @@ import java.util.Map;
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.ActionDescriptor;
 import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.util.Json;
 import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
@@ -24,15 +25,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractStep {
-
     public ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
-
         ConnectionsActionsEndpoint conActEndpoint = new ConnectionsActionsEndpoint(connectionId);
         return conActEndpoint.postParamsAction(action.getId().get(), properties);
     }
 
     //Small hack -> the Action doesn't provide setters for input/output data shape
-    public Action generateStepAction(Action action, ConnectorDescriptor connectorDescriptor) {
+    public Action generateStepAction(Action action, ActionDescriptor connectorDescriptor) {
         ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
         Action ts = null;
         try {

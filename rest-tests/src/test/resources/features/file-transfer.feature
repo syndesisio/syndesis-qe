@@ -2,7 +2,7 @@
 
 @rest
 @file-transfer
-Feature: File transfer
+Feature: Integration - File transfer
 
   Background: Prepare
     Given clean application state
@@ -13,7 +13,7 @@ Feature: File transfer
   Scenario: FTP to Dropbox
     Given deploy FTP server
       And delete file "/download/test_dropbox.txt" from FTP
-    When create the FTP connection using "ftp" template
+    When create FTP connection
       And create Dropbox connection
       And create start FTP download action with values
         | fileName         | directoryName | initialDelay | delay | delete |
@@ -31,7 +31,7 @@ Feature: File transfer
   Scenario: S3 to FTP
     Given deploy FTP server
       And delete file "/upload/test_aws.txt" from FTP
-    When create the FTP connection using "ftp" template
+    When create FTP connection
       And create sample buckets on S3 with name "syndesis-server-bucket-from"
       And create S3 connection using "syndesis-server-bucket-from" bucket
       And create S3 polling START action step with bucket: "syndesis-server-bucket-from"
@@ -57,3 +57,21 @@ Feature: File transfer
     Then wait for integration with name: "Dropbox to S3 rest test" to become active
       And validate bucket with name "syndesis-server-bucket-to" contains file with name "test_dbx.txt" and text "Hello from Dropbox!"
       And delete file with path "/s3/test_dbx.txt" from Dropbox
+
+  @integration-ftp-ftp
+  @ftp
+  Scenario: FTP to FTP
+    Given deploy FTP server
+    And delete file "/download/test-ftp.txt" from FTP
+    And delete file "/upload/test-ftp.txt" from FTP
+    When create FTP connection
+    And create start FTP download action with values
+      | fileName      | directoryName | initialDelay | delay | delete |
+      | test-ftp.txt  | download      | 1000         | 500   | true   |
+    And create finish FTP upload action with values
+      | fileName      | directoryName | fileExist | tempPrefix    | tempFileName        |
+      | test-ftp.txt  | upload        | Override  | copyingprefix | copying_test_out    |
+    When create integration with name: "FTP to FTP rest test"
+    Then wait for integration with name: "FTP to FTP rest test" to become active
+    When put "test-ftp.txt" file with content "Hello FTP" in the FTP directory: "/download"
+    And validate that file "test-ftp.txt" has been transfered from "/download" to "/upload" FTP directory

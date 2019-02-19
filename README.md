@@ -1,5 +1,5 @@
 # Syndesis QE
-Updated: 20.11.2018
+Updated: 31.01.2019
 
 ##### Table of Contents
 
@@ -22,7 +22,6 @@ Updated: 20.11.2018
 ├── docs
 ├── rest-tests
 ├── ui-tests
-├── ui-tests-protractor
 └── utilities
 ```
 
@@ -32,37 +31,35 @@ Contains list of all used steps in this project in [index.md](docs/index.md)
 
 #### rest-tests
 Java based tests that use Cucumber scenarios.
-Test actions are executed directly to `syndesis-rest` backend.
+Test actions are executed directly to `syndesis-server` backend.
 
 #### ui-tests
 Java based tests that use Selenide and Cucumber BDD scenarios.
 Test actions are mainly UI driven with additional 3rd party validation like Salesforce, Twitter etc.
 
-#### ui-tests-protractor (Deprecated)
-Typescript based tests that use Protractor and Cucumber BDD scenarios.
-
 ### Prepare minishift instance
 
 #### Prerequisites:
-Installed [Minishift](https://www.openshift.org/minishift/)
+- Installed [Minishift](https://www.openshift.org/minishift/)
 
-Cloned [Syndesis](https://github.com/syndesisio/syndesis)
+- Cloned [Syndesis](https://github.com/syndesisio/syndesis)
 
-Cloned this repo with [syndesis-extension](https://github.com/syndesisio/syndesis) submodule (*git clone --recurse-submodules*)
+- Cloned this repo with [syndesis-extension](https://github.com/syndesisio/syndesis) submodule (*git clone --recurse-submodules*)
 
-Correctly set test.properties and credentials.json (described later)
+- Correctly set test.properties and credentials.json (described later)
 
-Added FUSE repositories to maven due to dependencies
+- Added Fuse repositories to maven due to dependencies
 
 Before you import maven project to the IDE, you have to install 
 **Lombok** and 
 **Cucumber** plugins to your IDE. 
 
-For IntelliJ Idea you can use these plugins 
-[Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin) and
-[Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
+For IntelliJ Idea you can use these plugins:
+
+- [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin)
+- [Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
  
-For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 #### Create a minishift instance
 For minishift version 23+
@@ -101,15 +98,19 @@ A scenario may optionally be tagged with one or more tags in the form `@gh-<issu
 If such a scenario fails, the relevant GitHub issues are checked and a summary is written in the cucumber report.
 See javadoc of the OnFailHooks class for more info.
 
+##### Skipping tests with open issues
+In some cases you might want to skip tests which you know are going to fail, because they are tagged with open issues.
+You can do that by setting the property `syndesis.skip.open.issues` to `true` (defaults to `false`).
+
 ### Configuration
 NOTE: Successful execution of tests requires fully configured credentials.
 All the callback URLs, Oauth tokens, etc. for Salesforce and Twitter accounts.
 
 #### Example of test.properties to run on minishift
-File `test.properties` should be located in root of syndesis-qe folder.
+File `test.properties` should be located in the root of syndesis-qe folder.
 Working example can be found in jenkins nightly build run logs.
 
-For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 test.properties (update *syndesis.config.openshift.url* property according to your minishift ip)
 ```
@@ -119,7 +120,7 @@ syndesis.config.openshift.route.suffix=my-minishift.syndesis.io
 # namespace for the subject access review (if not specified, will use the same namespace as for the deployment)
 syndesis.config.openshift.sar_namespace=syndesis
 
-syndesis.dballocator.url=http://dballocator.mw.lab.eng.bos.redhat.com:8080
+syndesis.dballocator.url=<dballocator url> 
 
 #timeout in seconds, if not set default is 300
 syndesis.config.timeout=300
@@ -137,7 +138,7 @@ syndesis.config.ui.browser=firefox
 File `credentials.json` should be located in root of syndesis-qe folder.
 Working example on demand.
 
-For more information ask mcada@redhat.com or avano@redhat.com or tplevko@redhat.com
+For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 credentials.json
 ```json
@@ -276,7 +277,7 @@ All values are just examples / proposals. Need to be updated in accordance with
 ### Execution
 
 #### Before execution
-For the test execution at least `syndesis-rest` modules are required in current SNAPSHOT version.
+For the test execution at least `io.syndesis.common:common-model` and `io.syndesis.server:server-endpoint` modules are required in current version.
 
 ```
 cd <syndesis-project-dir>
@@ -442,7 +443,7 @@ and commit changes via this dialog.
 #### Creating a Pull Request
 When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).
 
-If you want to run a different subset of tests, you can use **//test: \`@mytag1,@mytag2\`** in your PR description to trigger specific tests annotated by given tags.
+If you want to run a different subset of tests, you can use **//test: \`@mytag1 or @mytag2\`** in your PR description to trigger specific tests annotated by given tags.
 
 If you don't want to run the job for your PR at all (for example when you are changing small things in README file), you can use `//skip-ci` in your PR description.
 
@@ -496,11 +497,12 @@ When variables throws exception, it will not affect tests (main) executions.
 
 For more information see [Altering the program's execution flow](https://www.jetbrains.com/help/idea/altering-the-program-s-execution-flow.html#reload_classes)
 
-### List of scenarios (tags)
+### List of scenarios
 
 ```
 ------MAIN CATEGORIES------
 @doc-tutorial (documentation tutorials tests)
+@quickstart (tests for quickstarts: https://github.com/syndesisio/syndesis-quickstarts)
 @reproducer (tests which are related to the particular issue)
 @rest
 @ui
@@ -528,6 +530,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 ------FUNCTIONS------
 @3scale
 @activity
+@amqbroker
 @api-connector
 @database
 @datamapper
@@ -539,12 +542,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 @swagger
 @timer
 @todo-app
+------QUICKSTARTS------
+@quickstart-solution (tests for importing and testing the quickstart's solutions)
+@quickstart-video (tests for testing process which is described in the quckstart's videos)
 ```
-test
-test
-test
-test
-test
-test
-test
-test

@@ -40,7 +40,7 @@ Feature: Activity
     And click on the "Done" button
 
     #add log
-    And click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Log" integration step
     And fill in values
       | Message Context | false               |
@@ -49,9 +49,7 @@ Feature: Activity
     And click on the "Done" button
 
     #add basic filter step
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When clicks on the "2". "Add a step" link
+    And add integration step on position "1"
     And select "Basic Filter" integration step
     Then check visibility of "Basic Filter" step configuration page
     # And check that basic filter step path input options contains "company" option TODO gh-issue: https://github.com/syndesisio/syndesis/issues/4162
@@ -59,9 +57,7 @@ Feature: Activity
     And click on the "Done" button
 
     # add log
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When clicks on the "3". "Add a step" link
+    And add integration step on position "2"
     And select "Log" integration step
     And fill in values
       | Message Context | false                  |
@@ -70,18 +66,14 @@ Feature: Activity
     And click on the "Done" button
 
     # add advanced filter step
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When clicks on the "4". "Add a step" link
+    And add integration step on position "3"
     And select "Advanced Filter" integration step
     Then check visibility of "Advanced Filter" step configuration page
     When fill in the configuration page for "Advanced Filter" step with "${body.company} not contains 'incorrect'" parameter
     And click on the "Done" button
 
     # add log
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When clicks on the "5". "Add a step" link
+    And add integration step on position "4"
     And select "Log" integration step
     And fill in values
       | Message Context | false                |
@@ -90,9 +82,7 @@ Feature: Activity
     And click on the "Done" button
 
     # add data mapper
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When clicks on the "6". "Add a step" link
+    And add integration step on position "5"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
@@ -100,9 +90,9 @@ Feature: Activity
       | company    | company    |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And set integration name "Webhook to DB"
-    And click on the "Publish" button
+    And publish integration
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to DB" gets into "Running" state
@@ -199,7 +189,7 @@ Feature: Activity
 
     # check that version is changed after republish
     When edit integration
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "Webhook to DB" gets into "Running" state
 
@@ -245,7 +235,7 @@ Feature: Activity
     And click on the "Done" button
 
     #add log
-    And click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Log" integration step
     And fill in values
       | Message Context | false                  |
@@ -253,9 +243,9 @@ Feature: Activity
       | Custom Text     | before error insertion |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And set integration name "Webhook to DB with error"
-    And click on the "Publish" button
+    And publish integration
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to DB with error" gets into "Running" state
@@ -317,16 +307,16 @@ Feature: Activity
     And click on the "Done" button
 
     # add data mapper
-    When click on the "Add a Step" button
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
       | company | date |
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
     And set integration name "Webhook to DB with error in final"
-    And click on the "Publish" button
+    And publish integration
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to DB with error in final" gets into "Running" state

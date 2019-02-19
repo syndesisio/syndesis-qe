@@ -33,10 +33,7 @@ Feature: 3scale integration
     And sleep for jenkins delay or "10" seconds
     # TODO: should be refactored after api provider tests are done by asmigala
     And select first api provider operation
-    And click on the "Publish" button
-    Then check visibility of "threeScaleIntegration" integration details
-
-    When navigate to the "Integrations" page
+    And publish integration
     Then Integration "threeScaleIntegration" is present in integrations list
     And wait until integration "threeScaleIntegration" gets into "Running" state
 

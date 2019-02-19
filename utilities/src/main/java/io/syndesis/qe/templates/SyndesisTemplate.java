@@ -3,7 +3,6 @@ package io.syndesis.qe.templates;
 import static org.assertj.core.api.Fail.fail;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -175,24 +173,9 @@ public class SyndesisTemplate {
         OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
                 "Unable to process operator resource " + TestConfiguration.syndesisOperatorUrl(),
                 istream -> json[0] = IOUtils.toString(istream, "UTF-8"),
-                "process",
-                "-p", "NAMESPACE=" + TestConfiguration.openShiftNamespace(),
-                "-n", TestConfiguration.openShiftNamespace(),
-                "-f", TestConfiguration.syndesisOperatorUrl()
-        );
-
-        try {
-            FileUtils.writeStringToFile(new File("/tmp/operator"), json[0], "UTF-8");
-        } catch (IOException e) {
-            fail("Unable to create temporary file for operator", e);
-        }
-
-        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
-                "Unable to create operator resource " + TestConfiguration.syndesisOperatorUrl(),
-                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
                 "create",
                 "-n", TestConfiguration.openShiftNamespace(),
-                "-f", "/tmp/operator"
+                "-f", TestConfiguration.syndesisOperatorUrl()
         );
 
         importProdImage("operator");
@@ -206,10 +189,12 @@ public class SyndesisTemplate {
     }
 
     /**
-     * Used when deploying older versions of syndesis (currently used only in upgrade using operator tests)
+     * Used when deploying older versions of syndesis (currently used only in upgrade using operator tests).
+     *
+     * Can be removed when master is related to 7.4
      */
     private static void deployOperatorPre73Way() {
-        log.info("Deploying operator using pre-6.3 way");
+        log.info("Deploying operator using pre-7.3 way");
         OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
                 "Unable to create operator resource " + TestConfiguration.syndesisOperatorUrl(),
                 istream -> log.info(IOUtils.toString(istream, "UTF-8")),
@@ -237,12 +222,12 @@ public class SyndesisTemplate {
             if (TestUtils.isJenkins()) {
                 integration.put("stateCheckInterval", 150);
             }
-            crd.getSpec().getAdditionalProperties().put("TestSupport", true);
+            crd.getSpec().getAdditionalProperties().put("testSupport", true);
             crd.getSpec().getAdditionalProperties().put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
             OpenShiftUtils.invokeApi(
                     HttpUtils.Method.POST,
-                    "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises",
+                    "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural(),
                     Serialization.jsonMapper().writeValueAsString(crd)
             );
         } catch (IOException ex) {
@@ -252,9 +237,15 @@ public class SyndesisTemplate {
 
     private static void patchImageStreams() {
         ImageStreamList isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
+        final int maxRetries = 120;
+        int retries = 0;
         while (isl.getItems().size() < 6) {
             TestUtils.sleepIgnoreInterrupt(5000L);
             isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
+            retries++;
+            if (retries == maxRetries) {
+                fail("Unable to find image streams after " + maxRetries + " tries.");
+            }
         }
         log.info("Patching imagestreams");
         isl.getItems().forEach(is -> {
@@ -266,7 +257,7 @@ public class SyndesisTemplate {
     }
 
     private static void importProdImage(String imageStreamPartialName) {
-        if (System.getProperty("syndesis.version").contains("redhat")) {
+        if (TestUtils.isProdBuild()) {
             int responseCode = -1;
             int retries = 0;
             while (responseCode != 201 && retries < 3) {
@@ -301,12 +292,12 @@ public class SyndesisTemplate {
     }
 
     private static void importProdImages() {
-        if (System.getProperty("syndesis.version").contains("redhat")) {
+        if (TestUtils.isProdBuild()) {
             ImageStreamList isl =
                     OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                             .list();
 
-            while (isl.getItems().size() < 6) {
+            while (isl.getItems().size() < 8) {
                 TestUtils.sleepIgnoreInterrupt(5000L);
                 isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                         .list();
@@ -318,7 +309,7 @@ public class SyndesisTemplate {
 
     private static void fixMavenRepos() {
         String replacementRepo = null;
-        if (System.getProperty("syndesis.version").contains("redhat")) {
+        if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
                 replacementRepo = TestConfiguration.prodRepository();
             } else {

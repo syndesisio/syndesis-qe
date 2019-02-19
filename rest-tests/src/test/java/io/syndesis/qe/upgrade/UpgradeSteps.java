@@ -235,6 +235,13 @@ public class UpgradeSteps {
     private void copyStatefulScripts() {
         // Move the config change script to resource folder
         try {
+            final String minorVersion = System.getProperty("syndesis.upgrade.version").substring(0, 3);
+            // GH-4413
+            // Copy all scripts from for exaple "1.6" folder when doing upgrade to "1.6.X"
+            if (Paths.get(UPGRADE_FOLDER, "migration", "resource", minorVersion).toFile().exists()) {
+                FileUtils.copyDirectory(Paths.get(UPGRADE_FOLDER, "migration", "resource", minorVersion).toFile(),
+                        Paths.get(UPGRADE_FOLDER, "migration", "resource", System.getProperty("syndesis.upgrade.version")).toFile());
+            }
             FileUtils.copyFile(new File("src/test/resources/upgrade/99-change-ui-config.sh"),
                 Paths.get(UPGRADE_FOLDER, "migration", "resource",
                     System.getProperty("syndesis.upgrade.version"), "99-change-ui-config.sh").toFile());
@@ -373,6 +380,29 @@ public class UpgradeSteps {
         } catch (Exception e) {
             log.error("Error while running script: ", e);
             e.printStackTrace();
+        }
+    }
+
+    @When("^create db-metrics config map$")
+    public void createDbMetricsConfigMap() {
+        // This can be removed when master is related to 7.4
+        // Or when https://github.com/syndesisio/syndesis/issues/4413 is resolved
+        // Create minimal configmap with which the db-metrics pod starts
+        ConfigMap cm = OpenShiftUtils.client().configMaps().withName("syndesis-db-metrics-config").get();
+        if (cm == null) {
+            OpenShiftUtils.client().configMaps()
+                    .createNew()
+                        .withNewMetadata()
+                            .withName("syndesis-db-metrics-config")
+                            .withLabels(
+                                    TestUtils.map(
+                                            "app", "syndesis",
+                                            "syndesis.io/app", "syndesis",
+                                            "syndesis.io/type", "infrastructure",
+                                            "syndesis.io/component", "syndesis-db-metrics")
+                            )
+                        .endMetadata()
+                    .done();
         }
     }
 }

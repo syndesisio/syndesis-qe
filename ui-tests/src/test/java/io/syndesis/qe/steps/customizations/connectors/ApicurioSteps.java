@@ -33,10 +33,10 @@ public class ApicurioSteps {
         public static By WARNING_ICON = By.className("validation-icon");
         public static By PROBLEMS_CONTAINER = By.className("editor-problem-drawer");
         public static By OPERATIONS_CONTAINER = By.className("editor-outline");
-        public static By PATH_SECTION = By.id("path-section-body");
+        public static By PATH_SECTION = By.className("path-section");
 
         public static By VALIDATION_PROBLEM = By.className("drawer-pf-notification");
-        public static By INFO_SECTION = By.id("info-section-body");
+        public static By INFO_SECTION = By.cssSelector("operation-info-section");
         public static By ADD_OPERATION = By.cssSelector("button.icon-button");
         public static By OPERATION_KEBAB = By.id("dropdownKebab");
         public static By OPERATION = By.className("api-path");
@@ -137,6 +137,7 @@ public class ApicurioSteps {
                     .$$(Elements.VALIDATION_PROBLEM).get(0).shouldBe(visible).$(By.tagName("a")).shouldBe(visible).click();
         }
 
+        $(Elements.WARNING_ICON).shouldBe(visible).click();
         $(Elements.INFO_SECTION).shouldBe(visible).$(TextFormElements.SUMMARY).shouldBe(visible).click();
 
         SelenideElement input = $(Elements.INFO_SECTION).$(TextFormElements.INPUT_TEXT).shouldBe(visible);
@@ -151,7 +152,7 @@ public class ApicurioSteps {
         }
 
         $(Elements.INFO_SECTION).$(TextFormElements.SAVE).shouldBe(visible).click();
-
+        $(Elements.WARNING_ICON).shouldBe(visible).getText();
         assertThat($(Elements.WARNING_ICON).shouldBe(visible).getText()).containsIgnoringCase("57");
     }
 
@@ -170,18 +171,18 @@ public class ApicurioSteps {
         }
 
         $(Elements.MODAL_FOOTER).shouldBe(visible).$(Elements.MODAL_SUBMIT_ADD).shouldBe(visible).click();
-        clickOnButtonInApicurio("Create Operation");
+        clickOnButtonInApicurio("Add Operation");
     }
 
     @When("^remove an operation via apicurio gui$")
     public void removeOperation() {
         $(Elements.PATH_SECTION).shouldBe(visible).$(Elements.OPERATION).shouldBe(visible).click();
         $(Elements.OPERATION_KEBAB).shouldBe(visible).click();
-        SelenideElement kebabMenu = $$(Elements.OPERATION_KEBAB_MENU).shouldHaveSize(2).get(1);
+        SelenideElement kebabMenu = $$(Elements.OPERATION_KEBAB_MENU).shouldHaveSize(5).get(1);
         try {
             kebabMenu.$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible).click();
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
-            $$(Elements.OPERATION_KEBAB_MENU).shouldHaveSize(2).get(1)
+            $$(Elements.OPERATION_KEBAB_MENU).shouldHaveSize(5).get(1)
                     .$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible)
                     .click();
         }

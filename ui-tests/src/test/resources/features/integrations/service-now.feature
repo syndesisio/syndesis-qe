@@ -3,20 +3,21 @@
 @ui
 @servicenow
 @activemq
+@amqbroker
 @database
 @integrations-servicenow
 Feature: Integration - ServiceNow-amq/log
 
   Background: Clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given clean application state
     Given log into the Syndesis
     Given clean destination type "queue" with name "incidents"
     Given delete incidents with "QACUSTOM4,QACREATED1" number
     Given clean "TODO" table
     Given created connections
-      | ServiceNow         | Servicenow | ServiceNow | Service-Now connection |
-      | AMQ Message Broker | AMQ        | AMQ        | AMQ connection         |
+      | ServiceNow  | Servicenow | ServiceNow | Service-Now connection |
+      | Red Hat AMQ | AMQ        | AMQ        | AMQ connection         |
 
 
   Scenario: Get incident from service now
@@ -45,9 +46,9 @@ Feature: Integration - ServiceNow-amq/log
     And click on the "Next" button
     And click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "service-now-2-amq"
-    And click on the "Publish" button
+    And publish integration
     And create incident with "QACUSTOM4" number
     And navigate to the "Integrations" page
     And wait until integration "service-now-2-amq" gets into "Running" state
@@ -72,9 +73,9 @@ Feature: Integration - ServiceNow-amq/log
     And select "Create Record" integration action
     And select "Add new Incident" from "table" dropdown
     And click on the "Next" button
-    When click on the "Publish" button
+    When publish integration
     And set integration name "amq-2-snow"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "amq-2-snow" gets into "Running" state
 

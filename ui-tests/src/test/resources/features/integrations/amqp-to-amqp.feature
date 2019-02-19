@@ -2,12 +2,13 @@
 
 @ui
 @amqp
+@amqbroker
 @integrations-amqp-to-amqp
 Feature: Integration - AMQP to AMQP
 
   Background: Clean application state and prepare what is needed
     Given clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
       | AMQP Message Broker | AMQP | AMQP | AMQP on OpenShift |
@@ -45,11 +46,9 @@ Feature: Integration - AMQP to AMQP
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "AMQP publish-subscribe-request E2E"
-    And click on the "Publish" button
-    Then check visibility of "AMQP publish-subscribe-request E2E" integration details
-    Then navigate to the "Integrations" page
+    And publish integration
     Then wait until integration "AMQP publish-subscribe-request E2E" gets into "Running" state
 
     Then verify that JMS message using "amqp" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer

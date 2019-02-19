@@ -90,7 +90,7 @@ public class CommonSteps {
      */
     private static Set<String> customResourceNames() {
         final Set<String> names = new HashSet<>();
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises";
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural();
         String responseBody = OpenShiftUtils.invokeApi(
                 HttpUtils.Method.GET,
                 url,
@@ -111,7 +111,7 @@ public class CommonSteps {
      */
     private static void undeployCustomResource(String name) {
         log.info("Undeploying Syndesis custom resource \"" + name + "\"");
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises/" + name;
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural() + "/" + name;
         OpenShiftUtils.invokeApi(HttpUtils.Method.DELETE, url, null, null);
     }
 

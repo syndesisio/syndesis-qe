@@ -5,7 +5,6 @@ import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 import com.codeborne.selenide.SelenideElement;
@@ -35,7 +34,7 @@ public class SelectConnectionType extends AbstractConnectionWizardStep {
 
     public void selectConnectionType(String title) {
         switch(title) {
-            case "AMQ Message Broker":
+            case "Red Hat AMQ":
                 wizard.replaceStep(new ConfigureConnectionAmq(),1);
                 break;
             default:

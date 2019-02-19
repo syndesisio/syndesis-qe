@@ -57,10 +57,9 @@ Feature: Support page
     And click on the "Next" button
     And select "TwitterScreenName" from "sObjectIdName" dropdown
     And click on the "Done" button
-    Then check visibility of the "Add a Step" button
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -73,16 +72,9 @@ Feature: Support page
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "my-integration"
-    And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "my-integration" integration details
-    #And click on the "Done" button
-    #And Integration "my-integration" is present in integrations list
-    # wait for integration to get in active state
-    And navigate to the "Integrations" page
-
+    And publish integration
     Then wait until integration "my-integration" gets into "Running" state
 
     #TODO: create integration - use rest steps so it is easier?

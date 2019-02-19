@@ -42,7 +42,7 @@ Feature: Integration - DB to DB with extension
     And click on the "Done" button
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -54,21 +54,17 @@ Feature: Integration - DB to DB with extension
     And click on the "Done" button
 
     # add tech extension step
-    When click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    And click on the "Add a step" link
+    When add integration step on position "0"
     Then select "Log Body" integration step
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "CRUD4-read-create-inbuilt E2E"
-    And click on the "Publish" button
+    And publish integration
 
     # assert integration is present in list
-    Then check visibility of "CRUD4-read-create-inbuilt E2E" integration details
-    And navigate to the "Integrations" page
-    And Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
+    Then Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
 

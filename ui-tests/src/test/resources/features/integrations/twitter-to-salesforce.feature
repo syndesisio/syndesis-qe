@@ -34,10 +34,9 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Next" button
     And select "TwitterScreenName" from "sObjectIdName" dropdown
     And click on the "Done" button
-    Then check visibility of the "Add a Step" button
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -50,9 +49,7 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Done" button
 
     # add basic filter step
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When click on the "Add a step" link
+    And add integration step on position "1"
     And select "Basic Filter" integration step
     Then check visibility of "Basic Filter" step configuration page
     And check that basic filter step path input options contains "text" option
@@ -60,22 +57,17 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Done" button
 
      # add advanced filter step
-    And click on the "Add a Step" button
-    Then check visibility of the "Add a step" link
-    When click on the "Add a step" link
+    And add integration step on position "2"
     And select "Advanced Filter" integration step
     Then check visibility of "Advanced Filter" step configuration page
     When fill in the configuration page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
     And click on the "Done" button
 
     # finish and save integration
-    And click on the "Save as Draft" button
+    And click on the "Save" button
     And set integration name "Twitter to Salesforce E2E"
-    And click on the "Publish" button
-    # assert integration is present in list
-    Then check visibility of "Twitter to Salesforce E2E" integration details
-    When navigate to the "Integrations" page
-    And Integration "Twitter to Salesforce E2E" is present in integrations list
+    And publish integration
+    Then Integration "Twitter to Salesforce E2E" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Twitter to Salesforce E2E" gets into "Running" state
     #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min

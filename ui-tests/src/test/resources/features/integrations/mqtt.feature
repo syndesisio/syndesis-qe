@@ -1,14 +1,14 @@
 # @sustainer: mcada@redhat.com
 
 @ui
-@activemq
 @mqtt
+@amqbroker
 @integrations-mqtt
 Feature: Integration - MQTT to MQTT
 
   Background: Clean application state and prepare what is needed
     Given clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
       | MQTT Message Broker | QE MQTT | MQTT test connection | some description |
@@ -43,11 +43,9 @@ Feature: Integration - MQTT to MQTT
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "MQTT publish-subscribe-request E2E"
-    And click on the "Publish" button
-    Then check visibility of "MQTT publish-subscribe-request E2E" integration details
-    Then navigate to the "Integrations" page
+    And publish integration
     Then wait until integration "MQTT publish-subscribe-request E2E" gets into "Running" state
 
     Then verify that when message is sent to "news" topic it is redirected to "olds" topic via integration

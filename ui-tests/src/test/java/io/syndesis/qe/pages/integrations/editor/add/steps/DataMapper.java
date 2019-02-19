@@ -17,6 +17,7 @@ import java.util.List;
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
 /**
  * Created by sveres on 11/14/17.
@@ -50,6 +51,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final By CONSTANT_VALUE_FIELD = By.id("name");
         public static final By CONSTANT_TYPE_SELECT = By.cssSelector("select");
         public static final By PRIMARY_BUTTON = By.cssSelector("button.btn-primary");
+        public static final By MAPPER_COLLECTION_ICON = By.className("parentField");
     }
 
     @Override
@@ -111,6 +113,15 @@ public class DataMapper extends SyndesisPageObject {
      * @param target
      */
     public void createMapping(String source, String target) {
+        openDataMapperCollectionElement();
+        doCreateMapping(source, target);
+    }
+
+    public void openDataMapperCollectionElement() {
+        $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> e.shouldBe(visible).click());
+    }
+
+    public void doCreateMapping(String source, String target) {
 
         ElementsCollection dmColumns = this.dataMapperColumns();
         SelenideElement src = dmColumns.get(0);

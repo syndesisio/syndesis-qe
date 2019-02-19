@@ -37,7 +37,7 @@ Feature: Integration - Twitter to Database
 
       # add data mapper step
     Then check visibility of page "Add to Integration"
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     Then create data mapper mappings
@@ -47,18 +47,15 @@ Feature: Integration - Twitter to Database
 #    And scroll "top" "right"
     And click on the "Done" button
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Twitter to DB integration"
-    And click on the "Publish" button
+    And publish integration
 
-    # assert integration is present in list
-    Then check visibility of "Twitter to DB integration" integration details
-    And navigate to the "Integrations" page
-    And Integration "Twitter to DB integration" is present in integrations list
+    Then Integration "Twitter to DB integration" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Twitter to DB integration" gets into "Running" state
+    And wait until integration "Twitter to DB integration" gets into "Running" state
 
-    Then tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
+    And tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
     And sleep for "30000" ms
 
     Then checks that query "select * from contact where company like 'Red Hat%'" has some output

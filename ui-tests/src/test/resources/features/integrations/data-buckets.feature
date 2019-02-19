@@ -47,20 +47,20 @@ Feature: Integration - Databucket
     # check pop ups
     #Then check that text "Output: Twitter Mention" is "visible" in hover table over "start" step
     #Then check that text "Add a datamapper step" is "visible" in hover table over "finish" step
-    Then check that text "Add a data mapping step" is "visible" in step warning inside of step number "2"
-    And check that there is no warning inside of step number "0"
+    Then check that text "Add a data mapping step" is "visible" in step warning inside of step number "3"
+    And check that there is no warning inside of step number "1"
 
     And open integration flow details
-    And check that in connection info popover for step number "0" is following text
+    And check that in connection info popover for step number "1" is following text
       | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
-    And check that in connection info popover for step number "2" is following text
+    And check that in connection info popover for step number "3" is following text
       | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
 
 
 
     # add data mapper step
-    When click on the "Add a Step" button
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -72,15 +72,15 @@ Feature: Integration - Databucket
 
     # check pop ups
     And open integration flow details
-    And check that in connection info popover for step number "0" is following text
+    And check that in connection info popover for step number "1" is following text
       | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
 
-    And check that in connection info popover for step number "4" is following text
+    And check that in connection info popover for step number "5" is following text
       | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
 
-    And check that there is no warning inside of step number "4"
-    And check that there is no warning inside of step number "0"
-    And check that there is no warning inside of step number "2"
+    And check that there is no warning inside of step number "5"
+    And check that there is no warning inside of step number "1"
+    And check that there is no warning inside of step number "3"
 
 #
 #  2. check that data buckets are available
@@ -98,13 +98,13 @@ Feature: Integration - Databucket
     And select "Periodic SQL Invocation" integration action
     #Then check visibility of page "Periodic SQL Invocation"
     #@wip this (disabled) functionality is not yet available
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     Then fill in periodic query input with "select * from contact" value
     Then fill in period input with "10" value
     Then select "Minutes" from sql dropdown
     #@wip time_unit_id to be specified after new update is available:
     #Then select "Miliseconds" from "time_unit_id" dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
@@ -115,20 +115,17 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     # add another connection
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     # wip this query doesnt work ftb #698
     Then fill in invoke query input with "select company as firma from contact limit 1;" value
     # there is no done button:
-    And click on the "Done" button
-
-
-    Then check visibility of the "Add a Step" button
+    And click on the "Next" button
 
     #And check that there is no warning inside of step number "2"
     And open integration flow details
-    And check that in connection info popover for step number "2" is following text
+    And check that in connection info popover for step number "3" is following text
       | Name | PostgresDB | Action | Invoke SQL | Data Type | SQL Result |
 
     Then add second step between STEP and FINISH connection
@@ -146,25 +143,22 @@ Feature: Integration - Databucket
     And scroll "top" "right"
     And click on the "Done" button
 
-    And check that there is no warning inside of step number "4"
+    And check that there is no warning inside of step number "5"
 
     ###################### step step NEW step ##################################
     ##### test that 2 following SQL select steps do not break integration ######
 
-    And add integration "connection" on position "1"
+    And add integration step on position "2"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select * from contact  limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_buckets"
-    And click on the "Publish" button
+    And publish integration
     # assert integration is present in list
-    Then check visibility of "Integration_with_buckets" integration details
-    And navigate to the "Integrations" page
-
     And Integration "Integration_with_buckets" is present in integrations list
     # wait for integration to get in active state
     Then wait until integration "Integration_with_buckets" gets into "Running" state
@@ -189,12 +183,12 @@ Feature: Integration - Databucket
     # first database connection - get some information to be used by second datamapper
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
     Then fill in periodic query input with "select company as firma from contact limit 1;" value
     Then fill in period input with "10" value
     Then select "Seconds" from sql dropdown
 
-    And click on the "Done" button
+    And click on the "Next" button
 
 
     ##################### finish step ##################################
@@ -203,47 +197,47 @@ Feature: Integration - Databucket
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select * from contact where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME and lead_source = :#LEAD" value
-    And click on the "Done" button
+    And click on the "Next" button
 
 
 
     ##################### step NEW step ##################################
-    And add integration "connection" on position "0"
+    And add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select first_name as myName from contact where company = :#COMPANY and last_name = :#MYSURNAME limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
 
     ##################### step NEW step step ##################################
 
-    And add integration "connection" on position "0"
+    And add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select last_name as mySurname from contact where company = :#COMPANY limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     ##################### step step step NEW step ##################################
 
-    And add integration "connection" on position "2"
+    And add integration step on position "2"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     ##################### step step step step NEW step ##################################
 
-    And add integration "connection" on position "3"
+    And add integration step on position "3"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "insert into CONTACT values (:#COMPANY , :#MYNAME , :#MYSURNAME , :#LEAD, '1999-01-01')" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     ##################### check warnings ##################################
 
-    And check that there is no warning inside of step number "0"
+    And check that there is no warning inside of step number "1"
 
-    Then check that text "Add a data mapping step" is "visible" in step warning inside of steps: 2, 4, 6, 8, 10
+    Then check that text "Add a data mapping step" is "visible" in step warning inside of steps: 3, 5, 7, 9, 11
 
 
 
@@ -252,7 +246,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step step MAPPING step ##################################
 
-    And add integration "step" on position "4"
+    And add integration step on position "4"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -281,7 +275,7 @@ Feature: Integration - Databucket
 
     ##################### step step step step MAPPING step step ##################################
 
-    And add integration "step" on position "3"
+    And add integration step on position "3"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -304,7 +298,7 @@ Feature: Integration - Databucket
 
 
     ##################### step step step MAPPING step step ##################################
-    And add integration "step" on position "2"
+    And add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -323,7 +317,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
 
     ##################### step step MAPPING step step step ##################################
-    And add integration "step" on position "1"
+    And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -342,7 +336,7 @@ Feature: Integration - Databucket
 
     ##################### step MAPPING step step step step ##################################
     And scroll "top" "left"
-    And add integration "step" on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
@@ -357,18 +351,16 @@ Feature: Integration - Databucket
 
     ##################### check warnings ##################################
 
-    And check that there is no warning inside of steps in range from "0" to "10"
+    And check that there is no warning inside of steps in range from "1" to "11"
 
     ##################### start the integration ##################################
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_buckets"
-    And click on the "Publish" button
+    And publish integration
 
     # assert integration is present in list
-    Then check visibility of "Integration_with_buckets" integration details
-    And navigate to the "Integrations" page
     And Integration "Integration_with_buckets" is present in integrations list
 
     # wait for integration to get in active state

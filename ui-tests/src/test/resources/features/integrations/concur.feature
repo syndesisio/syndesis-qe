@@ -40,7 +40,7 @@ Feature: Concur Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT * FROM CONTACT where first_name = 'Akali'" value
     And fill in period input with "60" value
@@ -58,18 +58,18 @@ Feature: Concur Connector
       | Log everything | true  |
     Then click on the "Done" button
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "Test-Concur-connection" connection
     Then select "Gets all lists" integration action
 
-    When add integration "step" on position "0"
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
       | company | parameters.limit |
     And click on the "Done" button
 
-    When add integration "step" on position "2"
+    When add integration step on position "2"
     And select "Log" integration step
     And fill in values
       | Message Context | true |
@@ -77,12 +77,9 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_concur"
-    And click on the "Publish" button
-    Then check visibility of "Integration_with_concur" integration details
-
-    When navigate to the "Integrations" page
+    And publish integration
     Then Integration "Integration_with_concur" is present in integrations list
     And wait until integration "Integration_with_concur" gets into "Running" state
     And validate that logs of integration "Integration_with_concur" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
@@ -100,7 +97,7 @@ Feature: Concur Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT * FROM CONTACT where first_name = 'Akali'" value
     And fill in period input with "60" value
@@ -118,18 +115,18 @@ Feature: Concur Connector
       | Log everything | true  |
     Then click on the "Done" button
 
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "Test-Concur-connection" connection
     Then select "Gets all listitems " integration action
 
-    When add integration "step" on position "0"
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
       | company | parameters.limit |
     And click on the "Done" button
 
-    When add integration "step" on position "2"
+    When add integration step on position "2"
     And select "Log" integration step
     And fill in values
       | Message Context | true |
@@ -137,9 +134,9 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_concur"
-    And click on the "Publish" button
+    And publish integration
     Then check visibility of "Integration_with_concur" integration details
 
     When navigate to the "Integrations" page
@@ -159,7 +156,7 @@ Feature: Concur Connector
     # DB - nothing
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    Then check "Done" button is "Disabled"
+    Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT * FROM CONTACT where first_name = 'Xerath'" value
     And fill in period input with "5" value
@@ -172,11 +169,11 @@ Feature: Concur Connector
     Then select "Delete listitem by ID" integration action
 
     # DB - concur - concur
-    When click on the "Add a Connection" button
+    When add integration step on position "0"
     And select the "Test-Concur-connection" connection
     Then select "Create a new listitem" integration action
     #DB - mapper - concur - concur
-    When add integration "step" on position "0"
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
@@ -185,11 +182,11 @@ Feature: Concur Connector
       | lead_source | body.Level1Code |
     And click on the "Done" button
     # DB - mapper - concur - concur - concur
-    When add integration "connection" on position "2"
+    When add integration step on position "2"
     And select the "Test-Concur-connection" connection
     Then select "Get a single listitem by ID" integration action
     # DB - mapper - concur - mapper - concur - concur
-    When add integration "step" on position "2"
+    When add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And open data bucket "3 - Response"
@@ -199,14 +196,14 @@ Feature: Concur Connector
     And click on the "Done" button
 
     # DB - mapper - concur - mapper - concur - DB - concur
-    When add integration "connection" on position "4"
+    When .*adds integration step on position "4"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "insert into CONTACT values ('Zilean' , 'Time', :#DESCRIPTION , 'some lead', '1999-01-01');" value
     And click on the "Done" button
 
     # DB - mapper - concur - mapper - concur - mapper - DB - concur
-    When add integration "step" on position "4"
+    When add integration step on position "4"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When open data bucket "5 - Response"
@@ -216,7 +213,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # DB - mapper - concur - mapper - concur - mapper - DB - concur
-    When add integration "step" on position "6"
+    When add integration step on position "6"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When open data bucket "3 - Response"
@@ -229,12 +226,9 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save as Draft" button
+    When click on the "Save" button
     And set integration name "Integration_with_concur"
-    And click on the "Publish" button
-    Then check visibility of "Integration_with_concur" integration details
-
-    When navigate to the "Integrations" page
+    And publish integration
     Then Integration "Integration_with_concur" is present in integrations list
     And wait until integration "Integration_with_concur" gets into "Running" state
 

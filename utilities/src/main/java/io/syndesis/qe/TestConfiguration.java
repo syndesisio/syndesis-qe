@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import java.util.Properties;
 
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -42,6 +44,8 @@ public class TestConfiguration {
     public static final String SYNDESIS_OPERATOR_URL = "syndesis.config.operator.url";
     public static final String SYNDESIS_OPERATOR_TEMPLATE_URL = "syndesis.config.operator.template.url";
 
+    public static final String SYNDESIS_CUSTOM_RESOURCE_PLURAL = "syndesis.config.custom.resource.plural";
+
     public static final String JENKINS_DELAY = "jenkins.delay";
     public static final String TESTSUITE_TIMEOUT = "syndesis.config.timeout";
 
@@ -49,6 +53,10 @@ public class TestConfiguration {
 
     public static final String PROD_REPOSITORY = "syndesis.config.prod.repository";
     public static final String UPSTREAM_REPOSITORY = "syndesis.config.upstream.repository";
+
+    public static final String SKIP_TESTS_WITH_OPEN_ISSUES = "syndesis.skip.open.issues";
+
+    private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -132,6 +140,10 @@ public class TestConfiguration {
 
     public static boolean useServerRoute() { return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE)); }
 
+    public static String customResourcePlural() {
+        return get().readValue(SYNDESIS_CUSTOM_RESOURCE_PLURAL);
+    }
+
     public static int getJenkinsDelay() { return Integer.parseInt(get().readValue(JENKINS_DELAY, "1")); }
 
     public static int getConfigTimeout() {return Integer.parseInt(get().readValue(TESTSUITE_TIMEOUT, "30")); }
@@ -144,6 +156,10 @@ public class TestConfiguration {
 
     public static String upstreamRepository() {
         return get().readValue(UPSTREAM_REPOSITORY);
+    }
+
+    public static Boolean skipTestsWithOpenIssues() {
+        return Boolean.parseBoolean(get().readValue(SKIP_TESTS_WITH_OPEN_ISSUES));
     }
 
     private Properties defaultValues() {
@@ -174,7 +190,7 @@ public class TestConfiguration {
         } else {
             syndesisVersion = "master";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
-            if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !System.getProperty("syndesis.version").contains("redhat")) {
+            if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !TestUtils.isProdBuild()) {
                 syndesisVersion = System.getProperty("syndesis.version");
             }
         }
@@ -190,6 +206,8 @@ public class TestConfiguration {
         props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", syndesisVersion));
 
         props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
+
+        props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndeses");
 
         // Copy syndesis properties to their xtf counterparts - used by binary oc client
         System.setProperty("xtf.config.master.url", properties.getProperty(OPENSHIFT_URL));
@@ -246,6 +264,10 @@ public class TestConfiguration {
         properties.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", version));
         properties.setProperty(SYNDESIS_OPERATOR_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", version));
         properties.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", version));
+    }
+
+    public static Optional<String> browserBinary() {
+        return Optional.ofNullable(get().readValue(BROWSER_BINARY_PATH));
     }
 
 }

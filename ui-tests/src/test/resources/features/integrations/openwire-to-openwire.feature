@@ -3,15 +3,16 @@
 @ui
 @openwire
 @activemq
+@amqbroker
 @integrations-openwire-to-openwire
 Feature: Integration - Openwire to Openwire
 
   Background:
     Given clean application state
-    Given deploy AMQ broker and add accounts
+    Given deploy ActiveMQ broker
     Given log into the Syndesis
     Given created connections
-      | AMQ Message Broker | AMQ | AMQ | AMQ connection is awesome |
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection is awesome |
 
   Scenario: Publish subscribe on queue
     When navigate to the "Home" page
@@ -41,11 +42,9 @@ Feature: Integration - Openwire to Openwire
     And click on the "Done" button
 
     # final steps
-    When click on the "Publish" button
+    When publish integration
     And set integration name "JMS publish-subscribe-request E2E"
-    And click on the "Publish" button
-    Then check visibility of "JMS publish-subscribe-request E2E" integration details
-    Then navigate to the "Integrations" page
+    And publish integration
     Then wait until integration "JMS publish-subscribe-request E2E" gets into "Running" state
 
-    Then verify that JMS message using "openwire" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer
+    And verify that JMS message using "openwire" protocol, published on "queue" named "cheese" has arrived to "queue" named "apple" consumer

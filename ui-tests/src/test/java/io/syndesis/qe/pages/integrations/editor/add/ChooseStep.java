@@ -30,6 +30,11 @@ public class ChooseStep extends SyndesisPageObject {
 
     public void chooseStep(String stepName) {
         log.info("searching for step {}", stepName);
-        this.getRootElement().find(By.cssSelector(String.format("div.step[title='%s']", stepName))).shouldBe(visible).click();
+        this.getRootElement().find(By.cssSelector(String.format("h2[title='%s']", stepName))).shouldBe(visible).click();
+    }
+
+    public void chooseStepByDescription(String description) {
+        log.info("searching for step by description {}", description);
+        this.getRootElement().find(By.cssSelector(String.format("p[title='%s']", description))).shouldBe(visible).click();
     }
 }

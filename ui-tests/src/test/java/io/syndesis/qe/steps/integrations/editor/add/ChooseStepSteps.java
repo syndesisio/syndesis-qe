@@ -22,7 +22,10 @@ public class ChooseStepSteps {
         } catch (TimeoutException | InterruptedException e) {
             fail("Choose step page was not loaded in 30s!", e);
         }
-        chooseStep.chooseStep(stepName);
+        if (stepName.equals("Log")) { //workaround, middle step for Log is log integration
+            chooseStep.chooseStepByDescription("Send a message to the integration\\'s log.");
+        } else {
+            chooseStep.chooseStep(stepName);
+        }
     }
-
 }

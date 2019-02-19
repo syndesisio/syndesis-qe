@@ -4,23 +4,23 @@
 @twitter
 @salesforce
 @datamapper
-Feature: Integration - Twitter to Salesforce
+Feature: Integration - Twitter
 
   @integrations-tw-sf
-  Scenario: Create
+  Scenario: Mention to Salesforce create object
     Given clean application state
     Given clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
-    And create the TW connection using "Twitter Listener" template
-    And create SF connection
+    And create Twitter connection using "Twitter Listener" account
+    And create SalesForce connection
     And create TW mention step with "twitter-mention-action" action
     And create basic TW to SF filter step
 
     And start mapper definition with name: "mapping 1"
-    Then SEPARATE using Step 1 and strategy "Space" and source "user/name" into targets
+    Then SEPARATE using Step 1 and strategy "Space" and source "//user/name" into targets
         | /FirstName | /LastName |
-    Then MAP using Step 1 and field "user/screenName" to "/TwitterScreenName__c"
-    Then MAP using Step 1 and field "text" to "/Description"
+    Then MAP using Step 1 and field "//user/screenName" to "/TwitterScreenName__c"
+    Then MAP using Step 1 and field "//text" to "/Description"
 
     And create SF "salesforce-create-sobject" action step on field: "Contact"
     When create integration with name: "Twitter to salesforce contact rest test"
