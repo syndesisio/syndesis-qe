@@ -16,9 +16,9 @@ Feature: Integration - Monitoring
       | Josef3 | Stieranka | Istrochem | db |
 
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
-
+    And add a split step
     And start mapper definition with name: "mapping 1"
-    And MAP using Step 1 and field "/first_name" to "/task"
+    And MAP using Step 2 and field "/first_name" to "/task"
 
     And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
 

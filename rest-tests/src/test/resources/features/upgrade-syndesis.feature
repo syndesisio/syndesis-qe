@@ -11,15 +11,13 @@ Feature: Syndesis Upgrade
       And wait for Syndesis to become ready
       And verify syndesis "given" version
       And deploy HTTP endpoints
-      And create connection
-        | connector | http      |
-        | account   | http      |
-        | baseUrl   | $ACCOUNT$ |
+      And create HTTP connection
     When inserts into "contact" table
       | X | Y | Z | db |
       And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+      And add a split step
       And start mapper definition with name: "mapping 1"
-      And MAP using Step 1 and field "/first_name" to "/task"
+      And MAP using Step 2 and field "/first_name" to "/task"
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
     Then create integration with name: "upgrade"
       And wait for integration with name: "upgrade" to become active
