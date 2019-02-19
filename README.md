@@ -546,3 +546,17 @@ For more information see [Altering the program's execution flow](https://www.jet
 @quickstart-solution (tests for importing and testing the quickstart's solutions)
 @quickstart-video (tests for testing process which is described in the quckstart's videos)
 ```
+<<<<<<< HEAD
+=======
+test
+test
+test
+test
+test
+test
+test
+test
+test
+test
+test
+>>>>>>> b7664401004fc20fd9c0ee8684eb18962c904328
