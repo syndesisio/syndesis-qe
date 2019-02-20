@@ -4,6 +4,7 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseStep;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 
 import java.util.concurrent.TimeoutException;
 
@@ -22,10 +23,16 @@ public class ChooseStepSteps {
         } catch (TimeoutException | InterruptedException e) {
             fail("Choose step page was not loaded in 30s!", e);
         }
-        if (stepName.equals("Log")) { //workaround, middle step for Log is log integration
-            chooseStep.chooseStepByDescription("Send a message to the integration\\'s log.");
-        } else {
-            chooseStep.chooseStep(stepName);
+        switch (stepName) {
+            case "Log": //workaround, two logs exist as step. Before change, in the test  was used integration log step for middle step logging.
+                chooseStep.chooseStepByDescription("Send a message to the integration\\'s log.");
+                break;
+            case "Data Mapper":
+                chooseStep.chooseStep(stepName);
+                chooseStep.waitForStepAppears(By.className("dataMapperBody"), 2000);
+                break;
+            default:
+                chooseStep.chooseStep(stepName);
         }
     }
 }

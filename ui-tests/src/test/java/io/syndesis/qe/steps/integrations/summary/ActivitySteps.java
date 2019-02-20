@@ -44,8 +44,8 @@ public class ActivitySteps {
      *
      * @param index from 1 , first activity = 1
      */
-    @Then("^check that (\\w+). activity date and time is valid$")
-    public void checkDateAndTime(int index) throws ParseException {
+    @Then("^check that (\\w+). activity date and time is valid with (\\w+) second accuracy$")
+    public void checkDateAndTime(int index, int accuracy) throws ParseException {
         refresh();
         String timeLabel = activityTab.getActivityTime(index - 1);
         String dateLabel = activityTab.getActivityDate(index - 1);
@@ -54,7 +54,7 @@ public class ActivitySteps {
         Assertions.assertThat(dateLabel)
                 .matches("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$");
         Date activityDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(dateLabel + " " + timeLabel);
-        checkDateIsMiddle(activityDate);
+        checkDateIsMiddle(activityDate, accuracy);
     }
 
     /**
@@ -135,23 +135,26 @@ public class ActivitySteps {
      *
      * @param indexActivity from 1 , first activity = 1
      */
-    @Then("^check that all steps in the (\\w+). activity has valid time$")
-    public void checkAllTimeOfStep(int indexActivity) throws ParseException {
+    @Then("^check that all steps in the (\\w+). activity has valid time with (\\w+) second accuracy$")
+    public void checkAllTimeOfStep(int indexActivity, int accuracy) throws ParseException {
         int numberOfRow = activityTab.getActivityLogRows(indexActivity - 1).size();
         for (int indexRow = 0; indexRow < numberOfRow; indexRow++) {
             String timeLabel = activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.TIME);
             Assertions.assertThat(timeLabel).matches("^\\w{3,4} \\d{1,2}, \\d{4}, \\d{2}:\\d{2}:\\d{2}$");
             Date dateOfStep = new SimpleDateFormat("MMM dd,yyyy, HH:mm:ss").parse(timeLabel);
-            checkDateIsMiddle(dateOfStep);
+            checkDateIsMiddle(dateOfStep, accuracy);
         }
     }
 
     /**
      * Check whether Date is middle before and after request date
      *
-     * @param middle - middle date
+     * @param middle   - middle date
+     * @param accuracy - accuracy for after request in seconds, the integration process is asynchronous with test and
+     *                 it can take some time.
+     *                 e.g. after request can be saved before webhook message goes through all integration.
      */
-    private void checkDateIsMiddle(Date middle) {
+    private void checkDateIsMiddle(Date middle, int accuracy) {
         Calendar middleCalendar = Calendar.getInstance();
         middleCalendar.setTime(middle);
 
@@ -160,6 +163,7 @@ public class ActivitySteps {
         beforeRequest.clear(Calendar.MILLISECOND);
         Calendar afterRequest = calendarUtils.getAfterRequest();
         afterRequest.clear(Calendar.MILLISECOND);
+        afterRequest.add(Calendar.SECOND, accuracy);
 
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

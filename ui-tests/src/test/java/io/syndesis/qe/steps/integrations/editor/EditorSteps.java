@@ -55,17 +55,17 @@ public class EditorSteps {
     }
 
     @When("^add first step between START and STEP connection$")
-    public void sheAddsFirstStep() throws Throwable {
+    public void sheAddsFirstStep(){
         flowViewComponent.clickAddStepLink(0);
     }
 
     @When("^add second step between STEP and FINISH connection$")
-    public void sheAddsSecond() throws Throwable {
+    public void sheAddsSecond(){
         flowViewComponent.clickAddStepLink(1);
     }
 
     @When("^.*adds? integration step on position \"([^\"]*)\"$")
-    public void addAnotherStep(int stepPos) {
+    public void addAnotherStep(int stepPos){
         flowViewComponent.clickAddStepLink(stepPos);
     }
 
