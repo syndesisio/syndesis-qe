@@ -11,7 +11,7 @@ Feature: Integration - Monitoring
     And remove all records from table "todo"
     And remove all records from table "contact"
 
-  Scenario: Metrics & activity log
+  Scenario: Metrics and activity log
     Then inserts into "contact" table
       | Josef3 | Stieranka | Istrochem | db |
 

@@ -16,7 +16,7 @@ Feature: Integration - DB to DB
 #  1. select - update
 #
   @db-connection-crud-1-read-update
-  Scenario: Read & update operations
+  Scenario: Read and update operations
 
     Then inserts into "todo" table
       | Joe |
@@ -64,7 +64,7 @@ Feature: Integration - DB to DB
 #  2. select - insert
 #
   @db-connection-crud-2-read-create
-  Scenario: Read & create operations
+  Scenario: Read and create operations
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
@@ -109,7 +109,7 @@ Feature: Integration - DB to DB
 #  3. select - delete
 #
   @db-connection-crud-3-read-delete
-  Scenario: Read & delete operations
+  Scenario: Read and delete operations
     Then inserts into "todo" table
       | Joe |
     Then inserts into "todo" table
@@ -160,7 +160,7 @@ Feature: Integration - DB to DB
 #  4. select - create (via buildin procedure)
 #
   @db-connection-crud-4-read-update-inbuilt
-  Scenario: Read & create operations on stored procedure
+  Scenario: Read and create operations on stored procedure
       # INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
 
 
