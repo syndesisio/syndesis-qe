@@ -98,7 +98,7 @@ Feature: Integration - Import Export
 #  2. integration-import with drag'n'drop
 #
   @integration-import-export-with-drag-and-drop
-  Scenario: Import drag&drop
+  Scenario: Import drag and drop
 
     And drag exported integration "Integration_import_export_test" file to drag and drop area
 
