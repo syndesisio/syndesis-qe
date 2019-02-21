@@ -29,13 +29,13 @@ import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import io.syndesis.qe.utils.CalendarUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -45,10 +45,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -324,17 +323,25 @@ public class CommonSteps {
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
     public void navigateToHelp(String title) {
-        SelenideElement helpDropdownMenu = $(By.className("help")).shouldBe(visible);
+        SelenideElement helpDropdownMenu = $(By.id("helpDropdownButton")).shouldBe(visible);
 
-        if (!helpDropdownMenu.getAttribute("class").contains("open")) {
+        //open the help menu
+        if (helpDropdownMenu.parent().$$(By.className("pf-c-dropdown__menu")).size() < 1) {
             helpDropdownMenu.click();
         }
 
-        SelenideElement dropdownElementsTable = $(By.className("dropdown-menu")).shouldBe(visible);
+        SelenideElement dropdownElementsTable = $(By.className("pf-c-dropdown__menu")).shouldBe(visible);
         ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"))
                 .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
 
         dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
+
+        //TODO: following if statement can be removed after
+        //TODO: this issue gets fixed: https://github.com/syndesisio/syndesis/issues/4655
+        //close the help menu
+        if (helpDropdownMenu.parent().$$(By.className("pf-c-dropdown__menu")).size() >= 1) {
+            helpDropdownMenu.click();
+        }
     }
 
     @Then("^check visibility of Syndesis home page$")
