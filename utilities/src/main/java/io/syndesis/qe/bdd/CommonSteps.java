@@ -82,9 +82,6 @@ public class CommonSteps {
             }
             CommonSteps.waitForUndeployment();
         }
-        OpenShiftUtils.client().customResourceDefinitions().list().getItems()
-                .stream().filter(crd -> crd.getMetadata().getName().contains("syndesis.io"))
-                .forEach(crd -> OpenShiftUtils.client().customResourceDefinitions().delete(crd));
     }
 
     /**
