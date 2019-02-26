@@ -218,6 +218,10 @@
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-calendar</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-sheets</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.schwering</groupId>

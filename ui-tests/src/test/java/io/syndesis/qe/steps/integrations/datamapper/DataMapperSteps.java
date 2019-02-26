@@ -165,4 +165,9 @@ public class DataMapperSteps {
     public void defineConstantOfTypeInDataMapper(String value, String type) {
         mapper.addConstant(value, type);
     }
+
+    @When("^define property \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
+    public void definePropertyWithValueOfTypeInDataMapper(String name, String value, String type) {
+        mapper.addProperty(name,value,type);
+    }
 }

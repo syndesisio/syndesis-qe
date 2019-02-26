@@ -617,6 +617,10 @@ public class CommonSteps {
                 waitForCallbackRedirect("concursolutions");
                 fillAndValidateConcur();
                 break;
+            case "Google Sheets":
+                loginToGoogleIfNeeded("QE Google Sheets");
+                break;
+
             default:
                 fail("Unknown oauth option: " + type);
         }
