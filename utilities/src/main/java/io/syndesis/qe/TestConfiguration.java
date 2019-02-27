@@ -207,7 +207,7 @@ public class TestConfiguration {
 
         props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
 
-        props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndeses");
+        props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
 
         // Copy syndesis properties to their xtf counterparts - used by binary oc client
         System.setProperty("xtf.config.master.url", properties.getProperty(OPENSHIFT_URL));
