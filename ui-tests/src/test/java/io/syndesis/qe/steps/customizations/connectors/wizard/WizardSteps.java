@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.pages.customizations.connectors.wizard.ApiClientConnectorWizard;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewEditConnectorDetails;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
@@ -48,7 +48,7 @@ public class WizardSteps {
     @Then("^upload swagger file$")
     public void uploadSwaggerFile(DataTable fileParams) {
         uploadSwaggerSpecificationWizardPhase.validate();
-        List<List<String>> dataRows = fileParams.cells(0);
+        List<List<String>> dataRows = fileParams.cells();
         List<String> sourceTypes = new ArrayList<String>();
         List<String> urls = new ArrayList<String>();
 
@@ -60,14 +60,14 @@ public class WizardSteps {
         uploadSwaggerSpecificationWizardPhase.upload(sourceTypes.get(0), urls.get(0));
     }
 
-    @Then("set up api connector security$")
+    @Then("^set up api connector security$")
     public void setUpSecurity(DataTable properties) throws Throwable {
         specifySecurityWizardPhase.validate();
 
         boolean authTypeSet = false;
         Map<String,String> authTypeProperties = new HashMap<>();
 
-        for (List<String> property : properties.raw()) {
+        for (List<String> property : properties.cells()) {
             if(property.get(0).equals("authType")) {
 
                 switch (property.get(1)) {
@@ -95,9 +95,9 @@ public class WizardSteps {
         specifySecurityWizardPhase.setUpSecurityProperties(authTypeProperties);
     }
 
-    @Then("(\\w+) sets up the connector details$")
+    @Then("^(\\w+) sets up the connector details$")
     public void setUpConnectorDetails(DataTable properties) {
-        for (List<String> property : properties.raw()) {
+        for (List<String> property : properties.cells()) {
             switch (property.get(0)) {
                 case "name":
                     setUpConnectorName(property.get(1));

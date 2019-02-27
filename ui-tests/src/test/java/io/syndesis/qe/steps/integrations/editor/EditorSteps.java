@@ -8,19 +8,18 @@ import static org.hamcrest.Matchers.is;
 import static com.codeborne.selenide.Condition.visible;
 
 import org.assertj.core.api.Assertions;
+import org.openqa.selenium.By;
 
 import java.util.List;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.pages.integrations.editor.Editor;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseConnection;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 
 @Slf4j
 public class EditorSteps {
@@ -127,8 +126,7 @@ public class EditorSteps {
     }
 
     @And("^.*checks? that in connection info popover for step number \"([^\"]*)\" is following text$")
-    public void checkTextInConnectionInfo(int stepPosition, DataTable connectionsData) throws InterruptedException {
-
+    public void checkTextInConnectionInfo(int stepPosition, DataTable connectionsData) {
         List<String> data = connectionsData.asList(String.class);
         String foundText = flowViewComponent.getConnectionPropertiesText(flowViewComponent.getStepOnPosition(stepPosition));
 

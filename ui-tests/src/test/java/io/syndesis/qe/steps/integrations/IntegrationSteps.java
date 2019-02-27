@@ -1,13 +1,25 @@
 package io.syndesis.qe.steps.integrations;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import static com.codeborne.selenide.Condition.visible;
+
+import org.assertj.core.api.Condition;
 
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
 import io.syndesis.qe.pages.integrations.Integrations;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
@@ -18,19 +30,6 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Condition;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Created by sveres on 11/15/17.
@@ -153,7 +152,7 @@ public class IntegrationSteps {
 
     @And("^.*perform action with data bucket")
     public void performActionWithBucket(DataTable table) {
-        List<List<String>> rows = table.cells(0);
+        List<List<String>> rows = table.cells();
         String action;
 
         for (List<String> row : rows) {

@@ -19,19 +19,19 @@ public class DropBoxValidationSteps {
     @Autowired
     private DropBoxUtils dropBoxUtils;
 
-    @When("upload file with path \"([^\"]*)\" and content \"([^\"]*)\" on Dropbox$")
+    @When("^upload file with path \"([^\"]*)\" and content \"([^\"]*)\" on Dropbox$")
     public void uploadFile(String filePath, String content) throws IOException, DbxException {
         dropBoxUtils.uploadFile(filePath, content);
     }
 
 
-    @When("check that file with path \"([^\"]*)\" exists on Dropbox$")
+    @When("^check that file with path \"([^\"]*)\" exists on Dropbox$")
     public void checkThatFileExists(String filePath) {
         assertThat(TestUtils.waitForEvent(r -> r, () -> dropBoxUtils.checkIfFileExists(filePath),
                 TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isTrue();
     }
 
-    @When("delete file with path \"([^\"]*)\" from Dropbox$")
+    @When("^delete file with path \"([^\"]*)\" from Dropbox$")
     public void deleteFile(String filePath) throws DbxException {
         dropBoxUtils.deleteFile(filePath);
         assertThat(dropBoxUtils.checkIfFileExists(filePath)).isFalse();
