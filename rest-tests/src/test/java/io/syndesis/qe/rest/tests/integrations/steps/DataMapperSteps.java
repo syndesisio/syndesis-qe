@@ -2,14 +2,10 @@ package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import io.atlasmap.v2.MappingType;
 import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.integration.Step;
@@ -19,7 +15,6 @@ import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.SeparatorType;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,40 +27,17 @@ import lombok.extern.slf4j.Slf4j;
  * @author tplevko@redhat.com
  */
 @Slf4j
-public class DataMapperSteps {
-
-    @Autowired
-    private StepsStorage steps;
-
-    /**
-     * Step used for import of mapping json files. The step definition must contain a json file name, located in folder:
-     * "resources/mappings"
-     *
-     * @param templateName
-     * @throws IOException
-     */
-    @Given("^create mapper step using template: \"([^\"]*)\"")
-    public void createMapperStep(String templateName) throws IOException {
-        final String mapping = new String(Files.readAllBytes(Paths.get("./target/test-classes/mappings/" + templateName + ".json")));
-        final Step mapperStep = new Step.Builder()
-                .stepKind(StepKind.mapper)
-                .configuredProperties(TestUtils.map("atlasmapping", mapping))
-                .build();
-        steps.getStepDefinitions().add(new StepDefinition(mapperStep));
-    }
-
+public class DataMapperSteps extends AbstractStep {
     /**
      * Just creates mapper step definition, the mapper will be generated on the integration creation.
      *
      * @param mapperName
      */
-    @And("start mapper definition with name: \"([^\"]*)\"")
+    @When("start mapper definition with name: \"([^\"]*)\"")
     public void startMapperDefinition(String mapperName) {
-        final Step mapperStep = new Step.Builder()
-                .stepKind(StepKind.mapper)
-                .name(mapperName)
-                .build();
-        steps.getStepDefinitions().add(new StepDefinition(mapperStep, new DataMapperDefinition()));
+        super.addProperty(StepProperty.STEP_NAME, mapperName);
+        super.addProperty(StepProperty.KIND, StepKind.mapper);
+        super.createStep();
     }
 
     @Then("^MAP using Step (\\d+) and field \"([^\"]*)\" to \"([^\"]*)\"$")
