@@ -1,20 +1,14 @@
 package io.syndesis.qe.rest.tests.integrations.steps;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Arrays;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.atlasmap.v2.MappingType;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.bdd.entities.DataMapperDefinition;
 import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.SeparatorType;
-import io.syndesis.qe.bdd.entities.StepDefinition;
-import io.syndesis.qe.bdd.storage.StepsStorage;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,39 +34,37 @@ public class DataMapperSteps extends AbstractStep {
         super.createStep();
     }
 
+    // todo rework?
     @Then("^MAP using Step (\\d+) and field \"([^\"]*)\" to \"([^\"]*)\"$")
     public void mapDataMapperStep(int fromStep, String fromField, String toField) {
-
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
         newDmStep.setInputFields(Arrays.asList(fromField));
         newDmStep.setOutputFields(Arrays.asList(toField));
         newDmStep.setMappingType(MappingType.MAP);
         newDmStep.setStrategy(null);
-        steps.getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
+        super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 
     @Then("^COMBINE using Step (\\d+) and strategy \"([^\"]*)\" into \"([^\"]*)\" and sources$")
     public void combineDataMapperStep(int fromStep, String strategy, String targetField, DataTable sourceMappingData) {
-
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
         newDmStep.setInputFields(sourceMappingData.asList(String.class));
         newDmStep.setOutputFields(Arrays.asList(targetField));
         newDmStep.setMappingType(MappingType.COMBINE);
         newDmStep.setStrategy(SeparatorType.valueOf(strategy));
-        steps.getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
+        super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 
     @Then("^SEPARATE using Step (\\d+) and strategy \"([^\"]*)\" and source \"([^\"]*)\" into targets$")
     public void separateDataMapperStep(int fromStep, String strategy, String sourceField, DataTable targetMappingData) {
-
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
         newDmStep.setInputFields(Arrays.asList(sourceField));
         newDmStep.setOutputFields(targetMappingData.asList(String.class));
         newDmStep.setMappingType(MappingType.SEPARATE);
         newDmStep.setStrategy(SeparatorType.valueOf(strategy));
-        steps.getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
+        super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 }

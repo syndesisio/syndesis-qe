@@ -15,10 +15,10 @@ Feature: Integration - File transfer
       And delete file "/download/test_dropbox.txt" from FTP
     When create FTP connection
       And create Dropbox connection
-      And create start FTP download action with values
+      And create FTP "download" action with values
         | fileName         | directoryName | initialDelay | delay | delete |
         | test_dropbox.txt | download      | 1000         | 500   | true   |
-      And create Dropbox upload FINISH action step with file path: "/test.txt"
+      And create Dropbox "upload" action step with file path: "/test.txt"
       And create integration with name: "FTP to Dropbox rest test"
     Then wait for integration with name: "FTP to Dropbox rest test" to become active
     When put "test_dropbox.txt" file with content "Hello from FTP!" in the FTP directory: "download"
@@ -35,7 +35,7 @@ Feature: Integration - File transfer
       And create sample buckets on S3 with name "syndesis-server-bucket-from"
       And create S3 connection using "syndesis-server-bucket-from" bucket
       And create S3 polling START action step with bucket: "syndesis-server-bucket-from"
-      And create finish FTP upload action with values
+      And create FTP "upload" action with values
         | fileName     | directoryName   | fileExist | tempPrefix    | tempFileName     |
         | test_aws.txt | upload          | Override  | copyingprefix | copying_test_out |
       And create integration with name: "S3 to FTP rest test"
@@ -50,7 +50,7 @@ Feature: Integration - File transfer
     When create Dropbox connection
       And create sample buckets on S3 with name "syndesis-server-bucket-to"
       And create S3 connection using "syndesis-server-bucket-to" bucket
-      And create Dropbox download START action step with file path: "/s3"
+      And create Dropbox "download" action step with file path: "/s3"
       And create S3 copy FINISH action step with bucket: "syndesis-server-bucket-to" and filename: "test_dbx.txt"
       And create integration with name: "Dropbox to S3 rest test"
       And upload file with path "/s3/test_dbx.txt" and content "Hello from Dropbox!" on Dropbox
@@ -65,10 +65,10 @@ Feature: Integration - File transfer
     And delete file "/download/test-ftp.txt" from FTP
     And delete file "/upload/test-ftp.txt" from FTP
     When create FTP connection
-    And create start FTP download action with values
+    And create FTP "download" action with values
       | fileName      | directoryName | initialDelay | delay | delete |
       | test-ftp.txt  | download      | 1000         | 500   | true   |
-    And create finish FTP upload action with values
+    And create FTP "upload" action with values
       | fileName      | directoryName | fileExist | tempPrefix    | tempFileName        |
       | test-ftp.txt  | upload        | Override  | copyingprefix | copying_test_out    |
     When create integration with name: "FTP to FTP rest test"

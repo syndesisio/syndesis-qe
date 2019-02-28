@@ -16,10 +16,11 @@ Feature: Integration - IRC
     Given deploy ActiveMQ broker
       And create ActiveMQ connection
       And create ActiveMQ "subscribe" action step with destination type "queue" and destination name "irc-input"
+    # todo rephrase
       And change datashape of previous step to "out" direction, "JSON_INSTANCE" type with specification '{"header":"text", "messageContent":"text"}'
       And start mapper definition with name: "mapping 1"
       And MAP using Step 1 and field "/messageContent" to "/response/body"
-      And create IRC publish step with nickname "syndesis-publish" and channels "#spam1,#spam2"
+      And create IRC "sendmsg" step with nickname "syndesis-publish" and channels "#spam1,#spam2"
       And change datashape of previous step to "in" direction, "XML_INSTANCE" type with specification '<?xml version="1.0" encoding="UTF-8"?><response><body>message</body></response>'
     When create integration with name: "AMQ-IRC"
     Then wait for integration with name: "AMQ-IRC" to become active
@@ -32,8 +33,8 @@ Feature: Integration - IRC
   Scenario: Private message to FTP
     Given deploy FTP server
       And create FTP connection
-      And create IRC subscribe step with nickname "listener" and channels "#listen"
-      And create finish FTP upload action with values
+      And create IRC "privmsg" step with nickname "listener" and channels "#listen"
+      And create FTP "upload" action with values
         | fileName     | directoryName   | fileExist | tempPrefix    | tempFileName     |
         | message.txt  | upload          | Override  | copyingprefix | copying_test_out |
     When create integration with name: "IRC-FTP"
