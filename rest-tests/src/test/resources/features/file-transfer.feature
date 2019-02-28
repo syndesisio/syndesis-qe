@@ -51,7 +51,7 @@ Feature: Integration - File transfer
       And create sample buckets on S3 with name "syndesis-server-bucket-to"
       And create S3 connection using "syndesis-server-bucket-to" bucket
       And create Dropbox "download" action step with file path: "/s3"
-      And create S3 copy FINISH action step with bucket: "syndesis-server-bucket-to" and filename: "test_dbx.txt"
+      And create S3 "copy" FINISH action step with bucket: "syndesis-server-bucket-to" and filename: "test_dbx.txt"
       And create integration with name: "Dropbox to S3 rest test"
       And upload file with path "/s3/test_dbx.txt" and content "Hello from Dropbox!" on Dropbox
     Then wait for integration with name: "Dropbox to S3 rest test" to become active

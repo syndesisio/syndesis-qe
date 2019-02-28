@@ -22,8 +22,9 @@ Feature: Integration - Twitter
     Then MAP using Step 1 and field "//user/screenName" to "/TwitterScreenName__c"
     Then MAP using Step 1 and field "//text" to "/Description"
 
-    And create SF "salesforce-create-sobject" action step on field: "Contact"
-    When create integration with name: "Twitter to salesforce contact rest test"
+    When create SF "create-sobject" action step with properties
+        | sObjectName | Contact |
+    And create integration with name: "Twitter to salesforce contact rest test"
     Then wait for integration with name: "Twitter to salesforce contact rest test" to become active
     Then check SF does not contain contact for tw account: "twitter_talky"
     Then tweet a message from twitter_talky to "Twitter Listener" with text "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
