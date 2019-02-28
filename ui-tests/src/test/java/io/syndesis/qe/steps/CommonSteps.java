@@ -7,6 +7,7 @@ import static org.assertj.core.data.MapEntry.entry;
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.matchText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -88,6 +89,12 @@ public class CommonSteps {
         SAP_CONCUR
     }
 
+    private static class Element {
+        public static final By LOGOUT_MENU = By.id("userMenuDropdownButton");
+        public static final By LOGOUT_MENU_ACTION_TAG = By.tagName("a");
+        public static final By LOGIN_BUTTON = By.className("btn");
+    }
+
     @Autowired
     private SelectConnectionTypeSteps selectConnectionTypeSteps = new SelectConnectionTypeSteps();
 
@@ -97,10 +104,12 @@ public class CommonSteps {
     @Autowired
     private CalendarUtils calendarUtils;
 
-    @And("^.*logs? out from Syndesis")
+    @When("^log out from Syndesis")
     public void logout() {
-        $(By.id("userDropdown")).shouldBe(visible).click();
-        $(By.id("userDropdownMenu")).shouldBe(visible).click();
+        $(Element.LOGOUT_MENU).shouldBe(visible).click();
+        $(Element.LOGOUT_MENU).shouldBe(visible).parent()
+                .$$(Element.LOGOUT_MENU_ACTION_TAG).filter(matchText("(\\s*)" + "Logout" + "(\\s*)"))
+                .shouldHaveSize(1).first().click();
 
         try {
             OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("/logout"), 20 * 1000);
@@ -109,12 +118,7 @@ public class CommonSteps {
         }
 
         TestUtils.sleepForJenkinsDelayIfHigher(3);
-        $(By.className("btn")).shouldBe(visible).click();
-
-        //There is an issue with firefox and logout - you have to refresh the page to make it work
-        //https://github.com/syndesisio/syndesis/issues/3016
-        TestUtils.sleepForJenkinsDelayIfHigher(3);
-        WebDriverRunner.getWebDriver().navigate().refresh();
+        $(Element.LOGIN_BUTTON).shouldBe(visible).click();
 
         try {
             OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("login"), 20 * 1000);
@@ -243,7 +247,6 @@ public class CommonSteps {
             nameConnectionSteps.setConnectionDescription(connectionDescription);
 
             clickOnButton("Create");
-
         }
     }
 
@@ -364,7 +367,7 @@ public class CommonSteps {
             // this is hack to replace Done with Next if not present
             try {
                 syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
-                        .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
+                        .filter(matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
             } catch (Throwable t) {
                 buttonTitle = "Next";
             }
@@ -643,7 +646,6 @@ public class CommonSteps {
             $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.get().getProperty("login"));
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
             $(By.id("allow")).shouldBe(visible).click();
-
         } else {
             fail("Credentials for Twitter were not found.");
         }
@@ -678,7 +680,6 @@ public class CommonSteps {
 
             $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(account.get().getProperty("password"));
             $(By.id("passwordNext")).shouldBe(visible).click();
-
         } else {
             fail("Credentials for " + googleAccount + " were not found.");
         }
@@ -803,6 +804,5 @@ public class CommonSteps {
         log.info("Time after request was saved: "
                 + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
     }
-
 }
 
