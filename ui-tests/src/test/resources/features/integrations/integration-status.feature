@@ -10,9 +10,7 @@ Feature: Integration - DB to DB
     Given log into the Syndesis
 
   @integration-check-starting-status-on-detail-page
-  Scenario: Check starting integration status
-
-
+  Scenario: Check starting integration status on detail page
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
@@ -36,9 +34,7 @@ Feature: Integration - DB to DB
     Then check starting integration status on Integration Detail page
 
   @integration-check-starting-status-on-integration-list
-  Scenario: Check starting integration status
-
-
+  Scenario: Check starting integration status on integration list
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
@@ -64,9 +60,7 @@ Feature: Integration - DB to DB
     Then check starting integration ASD status on Integrations page
 
   @integration-check-starting-status-on-home-page
-  Scenario: Check starting integration status
-
-
+  Scenario: Check starting integration status on home page
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor

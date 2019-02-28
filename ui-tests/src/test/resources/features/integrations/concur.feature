@@ -31,7 +31,7 @@ Feature: Concur Connector
     And navigate to the "Home" page
 
   @concur-list-get
-  Scenario: Check message
+  Scenario: Check message of concur get list action
 
     # create integration
     When click on the "Create Integration" button to create a new integration.
@@ -88,7 +88,7 @@ Feature: Concur Connector
 
 
   @concur-listitems-get
-  Scenario: Check message
+  Scenario: Check message of concur get listitems action
 
     # create integration
     When click on the "Create Integration" button to create a new integration.
@@ -147,7 +147,7 @@ Feature: Concur Connector
     Then reset content of "contact" table
 
   @concur-listitem-create-delete
-  Scenario: Check message
+  Scenario: Check if create and delete listitems actions work together
 
     # create integration
     When click on the "Create Integration" button to create a new integration.
