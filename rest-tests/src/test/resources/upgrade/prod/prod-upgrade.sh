@@ -1,6 +1,5 @@
 #!/bin/bash
 BASE_DIR=$(dirname "$(readlink -f "$0")")
-
 # It is required to be logged in in the cluster in correct namespace.
 
 # This script will:
@@ -21,7 +20,19 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #INSTALL_TAG        - git tag from fuse-online-install
 #INSTALL_DIR        - path to fuse-online-install repository
 
+[[ "$(git rev-parse --abbrev-ref HEAD)" =~ ^master$ ]] && echo "You shouldn't run this script from master branch!" && exit 1
+
+[[ ! "$(git rev-parse --abbrev-ref HEAD)" =~ ^1\.[0-9]\.x$ ]] && echo "You should run this script from 1.X.x branch!" && exit 1
+
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+CURRENT_VERSION="$(echo "${CURRENT_BRANCH}" | cut -c1-3)"
+NEXT_BRANCH="$(echo "$CURRENT_VERSION" + 0.1 | bc).x"
+
+git rev-parse --verify "${NEXT_BRANCH}" > /dev/null 2>&1 || (echo "Branch ${NEXT_BRANCH} not found!" && exit 1)
+
 source "${BASE_DIR}"/vars
+
+[[ "${CURRENT_VERSION}" != "$(echo "${INSTALL_TAG}" | cut -c1-3)" ]] && echo "Current branch ${CURRENT_BRANCH} does not match install tag ${INSTALL_TAG}" && exit 1
 
 cd "${INSTALL_DIR}" && git checkout "${INSTALL_TAG}" 
 bash ./install_ocp.sh --setup
@@ -67,5 +78,7 @@ done
 echo "Waiting for upgrade pod to complete..."
 
 until oc get pods -n syndesis | grep syndesis-upgrade | grep "Completed"; do echo "syndesis-upgrade not completed yet"; sleep 10; done
+
+git checkout "${NEXT_BRANCH}"
 
 cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-after"
