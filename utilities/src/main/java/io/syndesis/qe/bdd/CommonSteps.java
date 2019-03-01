@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import cucumber.api.java.en.Given;
@@ -47,7 +48,12 @@ public class CommonSteps {
         OpenShiftUtils.client().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.client().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.client().serviceAccounts().withName("syndesis-oauth-client").delete();
-        OpenShiftUtils.getInstance().cleanAndAssert();
+        try {
+            OpenShiftUtils.getInstance().cleanAndWait();
+        } catch (TimeoutException e) {
+            log.warn("Project was not clean after 20s, retrying once again");
+            OpenShiftUtils.getInstance().cleanAndAssert();
+        }
         OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
     }
 
