@@ -9,16 +9,19 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 # - creates new image streams with new image versions
 # - executes scenario @prod-upgrade-after
 
-# Variables used:
-#REGISTRY    - path to docker registry
-#SERVER      - server image in registry
-#META        - meta image in registry
-#UI          - ui image in registry
-#S2I         - s2i image in registry
-#OPERATOR    - operator image in registry
-#TAG         - tag which is expected by the operator
-#INSTALL_TAG - git tag from fuse-online-install
-#INSTALL_DIR - path to fuse-online-install repository
+# Variables used (define them in "vars" file):
+#REGISTRY           - path to docker registry
+#REGISTRY_NAMESPACE - namespace in the docker registry
+#SERVER             - server image in registry
+#META               - meta image in registry
+#UI                 - ui image in registry
+#S2I                - s2i image in registry
+#OPERATOR           - operator image in registry
+#TAG                - tag which is expected by the operator
+#INSTALL_TAG        - git tag from fuse-online-install
+#INSTALL_DIR        - path to fuse-online-install repository
+
+source "${BASE_DIR}"/vars
 
 cd "${INSTALL_DIR}" && git checkout "${INSTALL_TAG}" 
 bash ./install_ocp.sh --setup
@@ -37,7 +40,7 @@ IMAGES="SERVER META UI S2I OPERATOR"
 cp -f "${BASE_DIR}"/resources.yml /tmp/resources.yml
 for image in ${IMAGES}; do
 	echo "Using $image image ${!image}"
-	sed -i "s#\\\$$image\\\$#${!image}#g" /tmp/resources.yml
+	sed -i "s#\\\$$image\\\$#${REGISTRY}/${REGISTRY_NAMESPACE}/${!image}#g" /tmp/resources.yml
 done
 
 echo "Changing tag to ${TAG}"
