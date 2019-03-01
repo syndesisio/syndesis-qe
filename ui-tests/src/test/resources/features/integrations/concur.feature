@@ -137,7 +137,6 @@ Feature: Concur Connector
     When click on the "Save" button
     And set integration name "Integration_with_concur"
     And publish integration
-    Then check visibility of "Integration_with_concur" integration details
 
     When navigate to the "Integrations" page
     Then Integration "Integration_with_concur" is present in integrations list
