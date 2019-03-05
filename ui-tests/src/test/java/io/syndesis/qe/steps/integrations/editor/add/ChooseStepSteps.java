@@ -29,7 +29,7 @@ public class ChooseStepSteps {
                 break;
             case "Data Mapper":
                 chooseStep.chooseStep(stepName);
-                chooseStep.waitForStepAppears(By.className("dataMapperBody"), 2000);
+                chooseStep.waitForStepAppears(By.className("dataMapperBody"), 10000);
                 break;
             default:
                 chooseStep.chooseStep(stepName);
