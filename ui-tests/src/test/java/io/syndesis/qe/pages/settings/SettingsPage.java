@@ -81,6 +81,10 @@ public class SettingsPage extends SyndesisPageObject {
         }
     }
 
+    public void fillOauthSettings(String service,String credentials){
+        fillGivenOAuthSetting(getSettingsItem(service),credentials);
+    }
+
     public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {
         listItem.shouldBe(visible).click();
         fillOAuthItem(listItem, credentialsName);

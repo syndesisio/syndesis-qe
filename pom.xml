@@ -53,6 +53,7 @@
 		<google.oauth.version>1.23.0</google.oauth.version>
 		<google.apis.version>v1-rev96-1.25.0</google.apis.version>
 		<google.apis.calendar.version>v3-rev347-1.25.0</google.apis.calendar.version>
+		<google.apis.sheets.version>v4-rev553-1.25.0</google.apis.sheets.version>
 		<github.core.version>2.1.5</github.core.version>
 		<irclib.version>1.10</irclib.version>
 	</properties>
@@ -375,6 +376,11 @@
 				<groupId>com.google.apis</groupId>
 				<artifactId>google-api-services-calendar</artifactId>
 				<version>${google.apis.calendar.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.apis</groupId>
+				<artifactId>google-api-services-sheets</artifactId>
+				<version>${google.apis.sheets.version}</version>
 			</dependency>
 
 			<dependency>
