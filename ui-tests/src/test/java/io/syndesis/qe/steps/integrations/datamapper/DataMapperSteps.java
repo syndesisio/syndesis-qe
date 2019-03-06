@@ -52,7 +52,7 @@ public class DataMapperSteps {
         mapper.openDataMapperCollectionElement();
 
         for (List<String> row : table.cells()) {
-            mapper.createMapping(row.get(0), row.get(1));
+            mapper.doCreateMapping(row.get(0), row.get(1));
         }
     }
 
