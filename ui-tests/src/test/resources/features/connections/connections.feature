@@ -16,7 +16,7 @@ Feature: Connection - CRUD
     And validate credentials
 
   @connection-create-delete-test
-  Scenario: Create & delete
+  Scenario: Create and delete
     And navigate to the "Connections" page
     And click on the "Create Connection" button
     And select "Twitter" connection type
@@ -28,8 +28,6 @@ Feature: Connection - CRUD
 
     Then scroll "top" "right"
     And click on the "Next" button
-
-    And check "Create" button is "Disabled"
 
     And fill Name Connection form
       | Connection Name | my sample tw conn         |
@@ -82,7 +80,7 @@ Feature: Connection - CRUD
 
 
   @connection-edit-view-test
-  Scenario: Kebab menu edit & view
+  Scenario: Kebab menu edit and view
     When navigate to the "Connections" page
     And click on the "Create Connection" button
     And select "Twitter" connection type

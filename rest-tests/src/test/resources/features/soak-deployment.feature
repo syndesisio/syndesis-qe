@@ -1,3 +1,5 @@
+# @sustainer: mmelko@redhat.com
+
 @soak-deployment
 @ignore
 Feature: soak deployment

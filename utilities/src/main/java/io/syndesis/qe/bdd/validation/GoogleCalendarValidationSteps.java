@@ -1,13 +1,16 @@
 package io.syndesis.qe.bdd.validation;
 
-import com.google.api.services.calendar.model.Calendar;
-import com.google.api.services.calendar.model.Event;
-import cucumber.api.java.en.Then;
-import io.syndesis.qe.utils.GoogleCalendarUtils;
 import org.junit.Assert;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.api.services.calendar.model.Calendar;
+import com.google.api.services.calendar.model.Event;
+
 import java.io.IOException;
+
+import cucumber.api.java.en.Then;
+import io.syndesis.qe.utils.GoogleCalendarUtils;
 
 public class GoogleCalendarValidationSteps {
     @Autowired
@@ -19,7 +22,7 @@ public class GoogleCalendarValidationSteps {
         verifyEvent(eventSummary, null, calendarName, googleAccount);
     }
 
-    @Then("verify that event \"([^\"]*)\" with description \"([^\"]*)\" exists in calendar \"([^\"]*)\" using account \"([^\"]*)\"")
+    @Then("^verify that event \"([^\"]*)\" with description \"([^\"]*)\" exists in calendar \"([^\"]*)\" using account \"([^\"]*)\"$")
     public void verifyThatEventWithDescriptionExistsInCalendarUsingAccount(String eventSummary, String eventDescription, String calendarName, String googleAccount) throws IOException {
         verifyEvent(eventSummary, eventDescription, calendarName, googleAccount);
     }

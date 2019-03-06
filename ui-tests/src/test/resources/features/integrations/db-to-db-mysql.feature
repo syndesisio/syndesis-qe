@@ -24,7 +24,7 @@ Feature: Integration - DB to DB mysql
 #  2. select - insert
 #
   @db-connection-crud-2-read-create-mysql
-  Scenario: Read & create operations
+  Scenario: Read and create operations
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor

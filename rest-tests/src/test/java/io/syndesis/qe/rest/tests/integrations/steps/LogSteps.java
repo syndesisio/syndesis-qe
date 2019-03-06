@@ -15,7 +15,7 @@ public class LogSteps {
     @Autowired
     private StepsStorage steps;
 
-    @Given("add log step")
+    @Given("^add log step$")
     public void addLogStep() {
         final Step basicFilter = new Step.Builder()
                 .stepKind(StepKind.log)

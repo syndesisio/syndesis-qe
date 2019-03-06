@@ -1,16 +1,47 @@
 package io.syndesis.qe.steps;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.data.MapEntry.entry;
+
+import static com.codeborne.selenide.Condition.attribute;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
+
+import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
-import cucumber.api.DataTable;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeoutException;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.syndesis.qe.CustomWebDriverProvider;
@@ -29,42 +60,14 @@ import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import io.syndesis.qe.utils.CalendarUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeoutException;
-
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.data.MapEntry.entry;
 
 @Slf4j
 public class CommonSteps {
@@ -179,7 +182,7 @@ public class CommonSteps {
         ConfigureConnectionSteps configureConnectionSteps = new ConfigureConnectionSteps();
         NameConnectionSteps nameConnectionSteps = new NameConnectionSteps();
 
-        List<List<String>> dataTable = connectionsData.raw();
+        List<List<String>> dataTable = connectionsData.cells();
 
         for (List<String> dataRow : dataTable) {
             String connectionType = validateConnectorName(dataRow.get(0));
@@ -324,17 +327,25 @@ public class CommonSteps {
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
     public void navigateToHelp(String title) {
-        SelenideElement helpDropdownMenu = $(By.className("help")).shouldBe(visible);
+        SelenideElement helpDropdownMenu = $(By.id("helpDropdownButton")).shouldBe(visible);
 
-        if (!helpDropdownMenu.getAttribute("class").contains("open")) {
+        //open the help menu
+        if (helpDropdownMenu.parent().$$(By.className("pf-c-dropdown__menu")).size() < 1) {
             helpDropdownMenu.click();
         }
 
-        SelenideElement dropdownElementsTable = $(By.className("dropdown-menu")).shouldBe(visible);
+        SelenideElement dropdownElementsTable = $(By.className("pf-c-dropdown__menu")).shouldBe(visible);
         ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"))
                 .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
 
         dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
+
+        //TODO: following if statement can be removed after
+        //TODO: this issue gets fixed: https://github.com/syndesisio/syndesis/issues/4655
+        //close the help menu
+        if (helpDropdownMenu.parent().$$(By.className("pf-c-dropdown__menu")).size() >= 1) {
+            helpDropdownMenu.click();
+        }
     }
 
     @Then("^check visibility of Syndesis home page$")
@@ -539,7 +550,7 @@ public class CommonSteps {
     @When("^.*create connections using oauth$")
     public void createConnectionsUsingOAuth(DataTable connectionsData) {
 
-        List<List<String>> dataTable = connectionsData.raw();
+        List<List<String>> dataTable = connectionsData.cells();
 
         for (List<String> dataRow : dataTable) {
             createConnectionUsingOAuth(dataRow.get(0), dataRow.get(1));
@@ -580,7 +591,7 @@ public class CommonSteps {
         clickOnButton("Create");
     }
 
-    @When("go back in browser history")
+    @When("^go back in browser history$")
     public void clickBrowserBackButton() {
         Selenide.back();
     }

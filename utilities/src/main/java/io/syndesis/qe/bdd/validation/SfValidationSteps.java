@@ -8,12 +8,10 @@ import com.force.api.ApiException;
 import com.force.api.ForceApi;
 import com.force.api.QueryResult;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.Delimiter;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -66,11 +64,11 @@ public class SfValidationSteps {
         fail("Unable to connect to SalesForce");
     }
 
-    @Given("^clean SF, removes all leads with email: \"([^\"]*)\"")
-    public void cleanupSfDb(@Delimiter(",") List<String> emails) {
+    @Given("^clean SF, removes all leads with email: \"([^\"]*)\"$")
+    public void cleanupSfDb(String emails) {
         TestSupport.getInstance().resetDB();
-        for (String email : emails) {
-            deleteAllSalesforceLeadsWithEmail(salesforce, email);
+        for (String email : emails.split(",")) {
+            deleteAllSalesforceLeadsWithEmail(salesforce, email.trim());
         }
     }
 
@@ -170,12 +168,12 @@ public class SfValidationSteps {
         log.info("Salesforce contains contact with T integration test finished.");
     }
 
-    @Then("check SF does not contain contact for tw account: \"([^\"]*)\"")
+    @Then("^check SF does not contain contact for tw account: \"([^\"]*)\"$")
     public void checkSfDoesNotContain(String twAccount) {
         checkSfAccount(twAccount, false);
     }
 
-    @Then("check SF contains contact for tw account: \"([^\"]*)\"")
+    @Then("^check SF contains contact for tw account: \"([^\"]*)\"$")
     public void checkSfDoesContain(String twAccount) {
         checkSfAccount(twAccount, true);
     }

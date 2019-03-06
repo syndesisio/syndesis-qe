@@ -21,11 +21,10 @@ Feature: Slack Connector
 #
   @deprecated
   @slack-check-message-body
-  Scenario: Check message
+  Scenario: Check message with logger
 
-    Given import extensions from syndesis-extensions folder
+    When import extensions from syndesis-extensions folder
       | syndesis-extension-body  |
-
     And navigate to the "Home" page
 
     # create integration
@@ -33,34 +32,25 @@ Feature: Slack Connector
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-
     When select the "Timer" connection
     And select "Simple Timer" integration action
     And fill in values by element ID
       | period        | 200     |
       | select-period | Seconds |
     And click on the "Done" button
-
-
     Then check that position of connection to fill is "Finish"
 
     When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
-
-
     And click on the "Done" button
-
-    When add integration step on position "0"
+    Then add integration step on position "0"
 
     # add data mapper step
-    And select "Set Body" integration step
+    When select "Set Body" integration step
     And fill in values
       | Body | test message |
-
-
-
     And scroll "top" "right"
     And click on the "Done" button
 
@@ -69,52 +59,41 @@ Feature: Slack Connector
     And set integration name "Integration_with_slack"
     And publish integration
     Then Integration "Integration_with_slack" is present in integrations list
-    # wait for integration to get in active state
-    Then wait until integration "Integration_with_slack" gets into "Running" state
-
-
-    Then check that last slack message equals "test message" on channel "test"
+    And wait until integration "Integration_with_slack" gets into "Running" state
+    And check that last slack message equals "test message" on channel "test"
 
 
 #
 #  2. Check that slack message exists, use data mapper
 #
   @slack-check-message-data-mapper
-  Scenario: Check message
+  Scenario: Check that slack received a message from an integration
 
     # create integration
-    And click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
-
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
-    Then fill in periodic query input with "SELECT company FROM CONTACT limit(1)" value
-    Then fill in period input with "200" value
-    Then select "Seconds" from sql dropdown
+    And fill in periodic query input with "SELECT company FROM CONTACT limit(1)" value
+    And fill in period input with "200" value
+    And select "Seconds" from sql dropdown
     And click on the "Next" button
-
-
-
     Then check that position of connection to fill is "Finish"
 
     When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values
       | Channel | test |
-
-
     And click on the "Done" button
-
 
     # add data mapper step
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create mapping from "company" to "message"
-
     And click on the "Done" button
 
     # finish and save integration
@@ -122,19 +101,16 @@ Feature: Slack Connector
     And set integration name "Integration_with_slack"
     And publish integration
     Then Integration "Integration_with_slack" is present in integrations list
-    # wait for integration to get in active state
-    Then wait until integration "Integration_with_slack" gets into "Running" state
-
-
-    Then check that last slack message equals "Red Hat" on channel "test"
+    And wait until integration "Integration_with_slack" gets into "Running" state
+    And check that last slack message equals "Red Hat" on channel "test"
 
 #
-#  3. Check that slack message is save to DB. The data mapper and basic filter are used.
+#  3. Check that slack message is saved to DB. The data mapper and basic filter are used.
 #
   @slack-to-db
-  Scenario: Check message in DB
+  Scenario: Check that slack message is saved into DB
     # create integration
-    And click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -180,13 +156,13 @@ Feature: Slack Connector
     And sleep for "10000" ms
 
     Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
-    Then checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
+    And checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
 
 #
 #  4. Check Maximum Messages to Retrieve and Delay function in SLACK consumer ( GH issue: #3761 )
 #
   @slack-to-db-delay-and-maxmessage
-  Scenario: Check message in DB
+  Scenario: Check Maximum Messages to Retrieve and Delay function in SLACK consumer
     # create integration
     Given click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor

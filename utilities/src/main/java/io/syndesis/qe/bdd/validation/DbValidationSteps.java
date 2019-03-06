@@ -14,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.DbUtils;
@@ -104,8 +104,7 @@ public class DbValidationSteps {
 
     @Then("^inserts into \"([^\"]*)\" table$")
     public void insertsIntoTable(String tableName, DataTable data) {
-
-        List<List<String>> dataTable = data.raw();
+        List<List<String>> dataTable = data.cells();
 
         String sql = null;
 

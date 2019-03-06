@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.connection.Connection;
@@ -21,6 +21,7 @@ import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
+import io.syndesis.qe.utils.DatatableUtils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +45,7 @@ public class SalesforceSteps extends AbstractStep {
         List<List<String>> rawTable = Arrays.asList(
                 Arrays.asList("sObjectName", field)
         );
-        createSfStepWithActionAndProperties(action, DataTable.create(rawTable));
+        createSfStepWithActionAndProperties(action, DatatableUtils.create(rawTable));
     }
 
     @Given("^create SF \"([^\"]*)\" action step with properties$")

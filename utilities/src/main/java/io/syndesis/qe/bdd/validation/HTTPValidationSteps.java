@@ -63,9 +63,9 @@ public class HTTPValidationSteps {
     }
 
     @Then("^verify that after \"([^\"]*)\" seconds there were \"([^\"]*)\" calls$")
-    public void verifyThatAfterSecondsWasCalls(int seconds, int calls) {
+    public void verifyThatAfterSecondsWasCalls(double seconds, int calls) {
         clear();
-        TestUtils.sleepIgnoreInterrupt(seconds * 1000L);
+        TestUtils.sleepIgnoreInterrupt((long)seconds * 1000);
         HTTPResponse r = HttpUtils.doGetRequest("http://localhost:28080/events");
         Map<Long, String> events = new Gson().fromJson(r.getBody(), Map.class);
         assertThat(events).size().isGreaterThanOrEqualTo(calls);

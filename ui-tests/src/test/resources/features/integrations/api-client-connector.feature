@@ -28,7 +28,7 @@ Feature: Integration - DB to API
     And navigate to the "Home" page
 
   @DB-custom-api-connector-integration
-  Scenario: Create
+  Scenario: Create an integration with custom API connector as finish step
     When click on the "Create Integration" button to create a new integration.
     And select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
@@ -57,7 +57,7 @@ Feature: Integration - DB to API
 
 
   @DB-custom-api-connector-DB
-  Scenario: Create
+  Scenario: Create an integration with custom API connector as middle step
     Given invoke database query "insert into CONTACT values ('evelyn' , 'Queen', '1' , 'some lead', '1999-01-01')"
     And invoke database query "insert into TODO values (1, 'malphite' , 0)"
 

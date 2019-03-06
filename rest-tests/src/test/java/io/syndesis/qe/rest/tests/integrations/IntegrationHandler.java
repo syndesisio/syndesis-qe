@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.BadRequestException;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,9 +53,17 @@ public class IntegrationHandler {
     public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
         verifyConnections();
         processMapperSteps();
+        Set<String> tags = new HashSet<>();
+        for (Step step : steps.getSteps()) {
+            if (step.getConnection().isPresent()) {
+                tags.addAll(step.getConnection().get().getTags());
+            }
+        }
+
         Integration integration = new Integration.Builder()
                     .name(integrationName)
                     .description("Awkward integration.")
+                    .tags(tags)
                     .addFlow(
                             new Flow.Builder()
                                     .id(UUID.randomUUID().toString())

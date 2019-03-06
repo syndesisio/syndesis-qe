@@ -2,11 +2,12 @@ package io.syndesis.qe.rest.tests.integrations.steps;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.Step;
@@ -35,14 +36,14 @@ public class FTPSteps extends AbstractStep {
         final Connector ftpConnector = connectorsEndpoint.get(RestTestsUtils.Connector.FTP.getId());
         final Connection ftpConnection = connectionsEndpoint.get(RestTestsUtils.Connection.FTP.getId());
 
-        Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
+        List<Map<String, String>> dataMap = sourceMappingData.asMaps(String.class, String.class);
 
         final Step ftpStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .connection(ftpConnection)
                 .id(UUID.randomUUID().toString())
                 .action(TestUtils.findConnectorAction(ftpConnector, "io.syndesis:ftp-download-connector"))
-                .configuredProperties(dataMap)
+                .configuredProperties(dataMap.get(0))
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
@@ -52,14 +53,14 @@ public class FTPSteps extends AbstractStep {
         final Connector ftpConnector = connectorsEndpoint.get(RestTestsUtils.Connector.FTP.getId());
         final Connection ftpConnection = connectionsEndpoint.get(RestTestsUtils.Connection.FTP.getId());
 
-        Map<String, String> dataMap = sourceMappingData.asMaps(String.class, String.class).get(0);
+        List<Map<String, String>> dataMap = sourceMappingData.asMaps(String.class, String.class);
 
         final Step ftpStep = new Step.Builder()
                 .stepKind(StepKind.endpoint)
                 .connection(ftpConnection)
                 .id(UUID.randomUUID().toString())
                 .action(TestUtils.findConnectorAction(ftpConnector, "io.syndesis:ftp-upload-connector"))
-                .configuredProperties(dataMap)
+                .configuredProperties(dataMap.get(0))
                 .build();
         steps.getStepDefinitions().add(new StepDefinition(ftpStep));
     }
