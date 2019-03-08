@@ -158,11 +158,13 @@ public class CommonSteps {
 
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
+            if (!executorService.awaitTermination(timeout, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
+                TestUtils.printPods();
                 fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
             }
         } catch (InterruptedException e) {
+            TestUtils.printPods();
             fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
         }
     }
