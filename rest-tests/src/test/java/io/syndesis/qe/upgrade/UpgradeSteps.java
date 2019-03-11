@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +31,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.ImageStream;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -148,16 +152,18 @@ public class UpgradeSteps {
 
     @When("^perform syndesis upgrade to newer version using operator$")
     public void upgradeUsingOperator() {
-        OpenShiftUtils.client().imageStreams().withName("syndesis-operator").edit()
-                .editSpec()
-                    .editFirstTag()
-                        .withName(System.getProperty("syndesis.version"))
-                        .editFrom()
-                            .withName("docker.io/syndesis/syndesis-operator:" + System.getProperty("syndesis.upgrade.version"))
-                        .endFrom()
-                    .endTag()
-                .endSpec()
-                .done();
+        try (InputStream is = new URL(TestConfiguration.syndesisOperatorUrl().replace(System.getProperty("syndesis.version"), System.getProperty("syndesis.upgrade.version"))).openStream()) {
+            List<HasMetadata> resources = OpenShiftUtils.client().load(is).get();
+            for (HasMetadata resource : resources) {
+                if (resource instanceof DeploymentConfig) {
+                    OpenShiftUtils.client().deploymentConfigs().createOrReplace((DeploymentConfig) resource);
+                } else if (resource instanceof ImageStream) {
+                    OpenShiftUtils.client().imageStreams().createOrReplace((ImageStream) resource);
+                }
+            }
+        } catch (Exception e) {
+            fail("Unable to deploy " + System.getProperty("syndesis.upgrade.version") + " operator: ", e);
+        }
     }
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
