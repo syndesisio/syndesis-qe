@@ -223,6 +223,12 @@
 			<groupId>org.schwering</groupId>
 			<artifactId>irclib</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.eclipse.mylyn.github/org.eclipse.egit.github.core -->
+		<dependency>
+			<groupId>org.eclipse.mylyn.github</groupId>
+			<artifactId>org.eclipse.egit.github.core</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
