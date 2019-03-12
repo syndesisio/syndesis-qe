@@ -176,11 +176,7 @@ public class DbValidationSteps {
             dbUtils = new DbUtils("postgresql");
         }
         int oldTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        try {
-            Thread.sleep(30000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        TestUtils.sleepIgnoreInterrupt(40000L);
         int newTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
         assertThat(newTaskCount).isGreaterThan(oldTaskCount + 5);
     }

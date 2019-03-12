@@ -32,6 +32,11 @@ Feature: Syndesis Upgrade
     Then verify syndesis "upgraded" version
       And verify successful test modifications
       And verify integration with task "X"
+    When rebuild integration with name "UPGRADE INTEGRATION NAME"
+      # Integration name was updated, so this bc is not valid anymore
+      And delete buildconfig with name "i-upgrade"
+    Then wait for integration with name: "UPGRADE INTEGRATION NAME" to become active
+      And verify integration with task "X"
     When refresh server port-forward
       And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
@@ -40,6 +45,7 @@ Feature: Syndesis Upgrade
       And create integration with name: "timer-to-http"
       And wait for integration with name: "timer-to-http" to become active
     Then verify that after "2.5" seconds there were "2" calls
+      And verify correct s2i tag for builds
 
   @rollback
   @gh-4410
@@ -50,6 +56,8 @@ Feature: Syndesis Upgrade
     Then verify syndesis "given" version
       And verify test modifications rollback
       And verify integration with task "X"
+    When rebuild integration with name "upgrade"
+    Then wait for integration with name: "upgrade" to become active
     When refresh server port-forward
       And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
@@ -58,3 +66,4 @@ Feature: Syndesis Upgrade
       And create integration with name: "timer-to-http"
       And wait for integration with name: "timer-to-http" to become active
     Then verify that after "2.5" seconds there were "2" calls
+      And verify correct s2i tag for builds
