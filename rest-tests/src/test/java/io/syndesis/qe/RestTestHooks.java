@@ -39,6 +39,7 @@ public class RestTestHooks {
             System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.backup.version"));
         }
         System.clearProperty("syndesis.upgrade.version");
+        System.clearProperty("syndesis.upgrade.rollback");
     }
 
     @After
