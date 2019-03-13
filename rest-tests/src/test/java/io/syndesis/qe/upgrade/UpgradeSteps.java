@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class UpgradeSteps {
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
             // Parse "1.5"
-            double version = Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3));
+            BigDecimal version = new BigDecimal(Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3))).setScale(1, BigDecimal.ROUND_HALF_UP);
             Request request = new Request.Builder()
                     .url(DOCKER_HUB_SYNDESIS_TAGS_URL)
                     .build();
@@ -97,9 +98,9 @@ public class UpgradeSteps {
 
             // Get penultimate version - not daily
             outer:
-            while (version >= 1.0) {
-                version -= 0.1;
-                pattern = Pattern.compile("^" + (version + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$");
+            while (version.doubleValue() >= 1.0) {
+                version = version.subtract(new BigDecimal(0.1));
+                pattern = Pattern.compile("^" + (version.doubleValue() + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$");
                 for (String tag : tags) {
                     Matcher matcher = pattern.matcher(tag);
                     if (matcher.matches()) {
@@ -403,5 +404,10 @@ public class UpgradeSteps {
     @When("^delete buildconfig with name \"([^\"]*)\"$")
     public void deleteBc(String bc) {
         OpenShiftUtils.client().buildConfigs().withName(bc).delete();
+    }
+
+    @Given("^delete syndesis operator$")
+    public void deleteOperator() {
+        OpenShiftUtils.client().deploymentConfigs().withName("syndesis-operator").delete();
     }
 }
