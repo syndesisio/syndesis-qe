@@ -268,6 +268,7 @@ public class UpgradeSteps {
 
     @When("^add rollback cause to upgrade script")
     public void addRollbackCause() {
+        System.setProperty("syndesis.upgrade.rollback", "");
         // Ideally this should be done in upgrade_60_restart_all but there is no rollback for that at the moment
         try {
             File scriptFile = Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toFile();
@@ -389,26 +390,18 @@ public class UpgradeSteps {
         }
     }
 
-    @When("^create db-metrics config map$")
-    public void createDbMetricsConfigMap() {
-        // This can be removed when master is related to 7.4
-        // Or when https://github.com/syndesisio/syndesis/issues/4413 is resolved
-        // Create minimal configmap with which the db-metrics pod starts
-        ConfigMap cm = OpenShiftUtils.client().configMaps().withName("syndesis-db-metrics-config").get();
-        if (cm == null) {
-            OpenShiftUtils.client().configMaps()
-                    .createNew()
-                        .withNewMetadata()
-                            .withName("syndesis-db-metrics-config")
-                            .withLabels(
-                                    TestUtils.map(
-                                            "app", "syndesis",
-                                            "syndesis.io/app", "syndesis",
-                                            "syndesis.io/type", "infrastructure",
-                                            "syndesis.io/component", "syndesis-db-metrics")
-                            )
-                        .endMetadata()
-                    .done();
-        }
+    @Then("^verify correct s2i tag for builds$")
+    public void verifyImageStreams() {
+        final String expected = System.getProperty("syndesis.upgrade.rollback") != null
+                ? System.getProperty("syndesis.version")
+                : System.getProperty("syndesis.upgrade.version");
+        OpenShiftUtils.client().buildConfigs().list().getItems().stream()
+                .filter(bc -> bc.getMetadata().getName().startsWith("i-"))
+                .forEach(bc -> assertThat(bc.getSpec().getStrategy().getSourceStrategy().getFrom().getName()).contains(expected));
+    }
+
+    @When("^delete buildconfig with name \"([^\"]*)\"$")
+    public void deleteBc(String bc) {
+        OpenShiftUtils.client().buildConfigs().withName(bc).delete();
     }
 }
