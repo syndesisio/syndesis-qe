@@ -82,11 +82,15 @@ public class CommonSteps {
      * Undeploys deployed syndesis resources.
      */
     public static void undeploySyndesis() {
-        if (OpenShiftUtils.getPodByPartialName("syndesis-operator").isPresent()) {
-            for (String s : customResourceNames()) {
-                undeployCustomResource(s);
-            }
+        undeployCustomResources();
+        if (TestUtils.isDcDeployed("syndesis-operator")) {
             CommonSteps.waitForUndeployment();
+        }
+    }
+
+    public static void undeployCustomResources() {
+        for (String s : customResourceNames()) {
+            undeployCustomResource(s);
         }
     }
 
