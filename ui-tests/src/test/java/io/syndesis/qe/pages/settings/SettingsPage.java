@@ -71,6 +71,9 @@ public class SettingsPage extends SyndesisPageObject {
                 case "Google Calendar":
                     credentialsName = "QE Google Calendar";
                     break;
+                case "Google Sheets":
+                    credentialsName = "QE Google Sheets";
+                    break;
                 default:
                     log.error("Unknown oauth list item found: '" + text + "' !!!");
                     //close listitem
