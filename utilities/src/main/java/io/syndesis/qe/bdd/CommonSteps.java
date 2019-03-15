@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -107,11 +108,16 @@ public class CommonSteps {
                 null,
                 Headers.of("Accept", "application/json")
         ).getBody();
-        JSONArray items = new JSONObject(responseBody).getJSONArray("items");
-
-        for (int i = 0; i < items.length(); i++) {
-            names.add(((JSONObject)items.get(i)).getJSONObject("metadata").getString("name"));
+        JSONArray items = new JSONArray();
+        try {
+            items = new JSONObject(responseBody).getJSONArray("items");
+        } catch (JSONException ex) {
+            // probably the CRD isn't present in the cluster
         }
+        for (int i = 0; i < items.length(); i++) {
+            names.add(((JSONObject) items.get(i)).getJSONObject("metadata").getString("name"));
+        }
+
         return names;
     }
 
