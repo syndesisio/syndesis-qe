@@ -1,16 +1,19 @@
 package io.syndesis.qe.hooks;
 
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.codeborne.selenide.WebDriverRunner;
+
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
 public class CommonHooks {
@@ -30,6 +33,13 @@ public class CommonHooks {
     public void closeDBConnection() {
         log.debug("Closing DB connection if it exists");
         SampleDbConnectionManager.closeConnections();
+    }
+
+    @After
+    public void printPodsWhenFailed(Scenario scenario) {
+        if (scenario.isFailed()) {
+            TestUtils.printPods();
+        }
     }
 
     @After("@integrations-mqtt,@integrations-amqp-to-amqp,@integrations-openwire-to-openwire")

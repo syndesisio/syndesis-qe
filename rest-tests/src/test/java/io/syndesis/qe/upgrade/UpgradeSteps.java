@@ -14,7 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +32,10 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.ImageStream;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -58,7 +63,7 @@ public class UpgradeSteps {
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
             // Parse "1.5"
-            double version = Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3));
+            BigDecimal version = new BigDecimal(Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3))).setScale(1, BigDecimal.ROUND_HALF_UP);
             Request request = new Request.Builder()
                     .url(DOCKER_HUB_SYNDESIS_TAGS_URL)
                     .build();
@@ -93,9 +98,9 @@ public class UpgradeSteps {
 
             // Get penultimate version - not daily
             outer:
-            while (version >= 1.0) {
-                version -= 0.1;
-                pattern = Pattern.compile("^" + (version + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$");
+            while (version.doubleValue() >= 1.0) {
+                version = version.subtract(new BigDecimal(0.1));
+                pattern = Pattern.compile("^" + (version.doubleValue() + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$");
                 for (String tag : tags) {
                     Matcher matcher = pattern.matcher(tag);
                     if (matcher.matches()) {
@@ -148,16 +153,18 @@ public class UpgradeSteps {
 
     @When("^perform syndesis upgrade to newer version using operator$")
     public void upgradeUsingOperator() {
-        OpenShiftUtils.client().imageStreams().withName("syndesis-operator").edit()
-                .editSpec()
-                    .editFirstTag()
-                        .withName(System.getProperty("syndesis.version"))
-                        .editFrom()
-                            .withName("docker.io/syndesis/syndesis-operator:" + System.getProperty("syndesis.upgrade.version"))
-                        .endFrom()
-                    .endTag()
-                .endSpec()
-                .done();
+        try (InputStream is = new URL(TestConfiguration.syndesisOperatorUrl().replace(System.getProperty("syndesis.version"), System.getProperty("syndesis.upgrade.version"))).openStream()) {
+            List<HasMetadata> resources = OpenShiftUtils.client().load(is).get();
+            for (HasMetadata resource : resources) {
+                if (resource instanceof DeploymentConfig) {
+                    OpenShiftUtils.client().deploymentConfigs().createOrReplace((DeploymentConfig) resource);
+                } else if (resource instanceof ImageStream) {
+                    OpenShiftUtils.client().imageStreams().createOrReplace((ImageStream) resource);
+                }
+            }
+        } catch (Exception e) {
+            fail("Unable to deploy " + System.getProperty("syndesis.upgrade.version") + " operator: ", e);
+        }
     }
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
@@ -262,6 +269,7 @@ public class UpgradeSteps {
 
     @When("^add rollback cause to upgrade script")
     public void addRollbackCause() {
+        System.setProperty("syndesis.upgrade.rollback", "");
         // Ideally this should be done in upgrade_60_restart_all but there is no rollback for that at the moment
         try {
             File scriptFile = Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toFile();
@@ -383,26 +391,23 @@ public class UpgradeSteps {
         }
     }
 
-    @When("^create db-metrics config map$")
-    public void createDbMetricsConfigMap() {
-        // This can be removed when master is related to 7.4
-        // Or when https://github.com/syndesisio/syndesis/issues/4413 is resolved
-        // Create minimal configmap with which the db-metrics pod starts
-        ConfigMap cm = OpenShiftUtils.client().configMaps().withName("syndesis-db-metrics-config").get();
-        if (cm == null) {
-            OpenShiftUtils.client().configMaps()
-                    .createNew()
-                        .withNewMetadata()
-                            .withName("syndesis-db-metrics-config")
-                            .withLabels(
-                                    TestUtils.map(
-                                            "app", "syndesis",
-                                            "syndesis.io/app", "syndesis",
-                                            "syndesis.io/type", "infrastructure",
-                                            "syndesis.io/component", "syndesis-db-metrics")
-                            )
-                        .endMetadata()
-                    .done();
-        }
+    @Then("^verify correct s2i tag for builds$")
+    public void verifyImageStreams() {
+        final String expected = System.getProperty("syndesis.upgrade.rollback") != null
+                ? System.getProperty("syndesis.version")
+                : System.getProperty("syndesis.upgrade.version");
+        OpenShiftUtils.client().buildConfigs().list().getItems().stream()
+                .filter(bc -> bc.getMetadata().getName().startsWith("i-"))
+                .forEach(bc -> assertThat(bc.getSpec().getStrategy().getSourceStrategy().getFrom().getName()).contains(expected));
+    }
+
+    @When("^delete buildconfig with name \"([^\"]*)\"$")
+    public void deleteBc(String bc) {
+        OpenShiftUtils.client().buildConfigs().withName(bc).delete();
+    }
+
+    @Given("^delete syndesis operator$")
+    public void deleteOperator() {
+        OpenShiftUtils.client().deploymentConfigs().withName("syndesis-operator").delete();
     }
 }

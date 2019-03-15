@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -82,11 +83,15 @@ public class CommonSteps {
      * Undeploys deployed syndesis resources.
      */
     public static void undeploySyndesis() {
-        if (OpenShiftUtils.getPodByPartialName("syndesis-operator").isPresent()) {
-            for (String s : customResourceNames()) {
-                undeployCustomResource(s);
-            }
+        undeployCustomResources();
+        if (TestUtils.isDcDeployed("syndesis-operator")) {
             CommonSteps.waitForUndeployment();
+        }
+    }
+
+    public static void undeployCustomResources() {
+        for (String s : customResourceNames()) {
+            undeployCustomResource(s);
         }
     }
 
@@ -103,11 +108,16 @@ public class CommonSteps {
                 null,
                 Headers.of("Accept", "application/json")
         ).getBody();
-        JSONArray items = new JSONObject(responseBody).getJSONArray("items");
-
-        for (int i = 0; i < items.length(); i++) {
-            names.add(((JSONObject)items.get(i)).getJSONObject("metadata").getString("name"));
+        JSONArray items = new JSONArray();
+        try {
+            items = new JSONObject(responseBody).getJSONArray("items");
+        } catch (JSONException ex) {
+            // probably the CRD isn't present in the cluster
         }
+        for (int i = 0; i < items.length(); i++) {
+            names.add(((JSONObject) items.get(i)).getJSONObject("metadata").getString("name"));
+        }
+
         return names;
     }
 
@@ -158,11 +168,13 @@ public class CommonSteps {
 
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
+            if (!executorService.awaitTermination(timeout, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
+                TestUtils.printPods();
                 fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
             }
         } catch (InterruptedException e) {
+            TestUtils.printPods();
             fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
         }
     }

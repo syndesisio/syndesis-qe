@@ -25,16 +25,23 @@ public class GoogleAccounts {
         return context.getBean(testAccount, GoogleAccount.class);
     }
 
-    @Bean(name="QE Google Mail")
+    @Bean(name = "QE Google Mail")
     public GoogleAccount qeGoogleAccount() throws IOException {
         GoogleAccount googleAccount = new GoogleAccount("QE Google Mail");
         googleAccount.renewAccessToken();
         return googleAccount;
     }
 
-    @Bean(name="QE Google Calendar")
+    @Bean(name = "QE Google Calendar")
     public GoogleAccount qeGoogleCalendarAccount() throws IOException {
         GoogleAccount googleAccount = new GoogleAccount("QE Google Calendar");
+        googleAccount.renewAccessToken();
+        return googleAccount;
+    }
+
+    @Bean(name = "QE Google Sheets")
+    public GoogleAccount qeGoogleSheetsAccount() throws IOException {
+        GoogleAccount googleAccount = new GoogleAccount("QE Google Sheets");
         googleAccount.renewAccessToken();
         return googleAccount;
     }

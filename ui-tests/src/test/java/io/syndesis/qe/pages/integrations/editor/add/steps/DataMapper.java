@@ -46,9 +46,12 @@ public class DataMapper extends SyndesisPageObject {
         public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
         public static final By BUCKET_IS_IN_OPEN_STATE = By.className("panel-collapse");
         public static final By CONSTANTS_BUCKET = By.id("Constants");
+        public static final By PROPERTIES_BUCKET = By.id("Properties");
         public static final By MODAL_WINDOW = By.id("modalWindow");
         public static final By CONSTANT_FIELD_EDIT_ELEMENT = By.tagName("constant-field-edit");
-        public static final By CONSTANT_VALUE_FIELD = By.id("name");
+        public static final By PROPERTY_FIELD_EDIT_ELEMENT = By.tagName("property-field-edit");
+        public static final By CONSTANT_NAME_FIELD = By.id("name");
+        public static final By PROPERTY_VALUE_FIELD = By.id("value");
         public static final By CONSTANT_TYPE_SELECT = By.cssSelector("select");
         public static final By PRIMARY_BUTTON = By.cssSelector("button.btn-primary");
         public static final By MAPPER_COLLECTION_ICON = By.className("parentField");
@@ -157,14 +160,19 @@ public class DataMapper extends SyndesisPageObject {
     public void selectMapping(String mappingName, SelenideElement containerElement) {
         //split and trim in one step:
         List<String> path = Arrays.asList(mappingName.trim().split("\\."));
+        final String parent = path.get(0);
 
         path.forEach(s -> {
             SelenideElement detailElement = containerElement.find(By.id(s)).shouldBe(visible);
             if (detailElement.find(Element.CHILDREN).exists()) {
                 // if there're childrenFields display element is expanded already, click otherwise
             } else {
-
-                SelenideElement el = detailElement.$(Element.LABEL).shouldBe(visible);
+                SelenideElement el;
+                if (!s.equals(parent)) {
+                    el = containerElement.find(By.id(parent)).find(By.id(s)).$(Element.LABEL).shouldBe(visible);
+                } else {
+                    el = detailElement.$(Element.LABEL).shouldBe(visible);
+                }
                 el.scrollIntoView(true);
                 TestUtils.sleepIgnoreInterrupt(500);
 
@@ -282,7 +290,20 @@ public class DataMapper extends SyndesisPageObject {
         plusIcon.shouldBe(visible).click();
         SelenideElement dialog = getRootElement().$(Element.MODAL_WINDOW).shouldBe(visible);
         SelenideElement constantFieldEdit = dialog.$(Element.CONSTANT_FIELD_EDIT_ELEMENT).shouldBe(visible);
-        constantFieldEdit.$(Element.CONSTANT_VALUE_FIELD).shouldBe(visible).sendKeys(value);
+        constantFieldEdit.$(Element.CONSTANT_NAME_FIELD).shouldBe(visible).sendKeys(value);
+        SelenideElement select = constantFieldEdit.$(Element.CONSTANT_TYPE_SELECT).shouldBe(visible);
+        select.selectOption(type);
+        dialog.$(Element.PRIMARY_BUTTON).shouldBe(visible).click();
+    }
+
+    public void addProperty(String name, String value, String type) {
+        SelenideElement constantsDiv = getRootElement().$(Element.PROPERTIES_BUCKET).shouldBe(visible);
+        SelenideElement plusIcon = constantsDiv.$(By.cssSelector("i.link")).shouldBe(visible);
+        plusIcon.shouldBe(visible).click();
+        SelenideElement dialog = getRootElement().$(Element.MODAL_WINDOW).shouldBe(visible);
+        SelenideElement constantFieldEdit = dialog.$(Element.PROPERTY_FIELD_EDIT_ELEMENT).shouldBe(visible);
+        constantFieldEdit.$(Element.CONSTANT_NAME_FIELD).shouldBe(visible).sendKeys(name);
+        constantFieldEdit.$(Element.PROPERTY_VALUE_FIELD).shouldBe(visible).sendKeys(value);
         SelenideElement select = constantFieldEdit.$(Element.CONSTANT_TYPE_SELECT).shouldBe(visible);
         select.selectOption(type);
         dialog.$(Element.PRIMARY_BUTTON).shouldBe(visible).click();

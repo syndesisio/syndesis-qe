@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import cz.xtf.openshift.OpenShiftBinaryClient;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
@@ -250,5 +253,17 @@ public final class TestUtils {
      */
     public static boolean isProdBuild() {
         return System.getProperty("syndesis.version").contains("redhat");
+    }
+
+    /**
+     * Prints pods using oc binary client.
+     */
+    public static void printPods() {
+        // Use oc client directly, as it has nice output
+        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
+                "Unable to list pods",
+                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
+                "get", "pods", "-n", TestConfiguration.openShiftNamespace()
+        );
     }
 }

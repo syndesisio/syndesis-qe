@@ -52,7 +52,7 @@ public class DataMapperSteps {
         mapper.openDataMapperCollectionElement();
 
         for (List<String> row : table.cells()) {
-            mapper.createMapping(row.get(0), row.get(1));
+            mapper.doCreateMapping(row.get(0), row.get(1));
         }
     }
 
@@ -164,5 +164,10 @@ public class DataMapperSteps {
     @When("^define constant \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
     public void defineConstantOfTypeInDataMapper(String value, String type) {
         mapper.addConstant(value, type);
+    }
+
+    @When("^define property \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
+    public void definePropertyWithValueOfTypeInDataMapper(String name, String value, String type) {
+        mapper.addProperty(name,value,type);
     }
 }

@@ -4,7 +4,6 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
@@ -18,6 +17,11 @@ import static com.codeborne.selenide.Selenide.$$;
 
 @Slf4j
 public class IntegrationFlowView extends SyndesisPageObject {
+
+    private static final class Link {
+        public static final By ADD_STEP = By.linkText("Add a step");
+        public static final By ADD_CONNECTION = By.linkText("Add a connection");
+    }
 
     private static final class Element {
         public static final By ROOT = By.cssSelector("syndesis-integration-flow-view");
@@ -35,8 +39,6 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
 
         public static final By FLOW_TITLE = By.cssSelector("h3.flow-view-step-title");
-
-
     }
 
     private static final class Button {
@@ -100,16 +102,21 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public void clickAddStepLink(int pos) {
-        TestUtils.sleepIgnoreInterrupt(2000);
-        if (isExpanded()) {
-            $(Button.Collapse).click();
-            TestUtils.sleepIgnoreInterrupt(2000);
-        }
 
         List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
-        stepElement.shouldBe(visible).click();
+        stepElement.$(By.className("fa-plus-square")).shouldBe(visible).click();
+    }
+
+    public void clickAddConnectionLink(int pos) {
+        List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
+                .shouldHave(sizeGreaterThanOrEqual(pos));
+        SelenideElement stepElement = allStepInserts.get(pos);
+
+        stepElement.scrollIntoView(true).hover();
+
+        getRootElement().$(Link.ADD_CONNECTION).shouldBe(visible).click();
     }
 
     /**
