@@ -4,6 +4,7 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseStep;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 
 import java.util.concurrent.TimeoutException;
 
