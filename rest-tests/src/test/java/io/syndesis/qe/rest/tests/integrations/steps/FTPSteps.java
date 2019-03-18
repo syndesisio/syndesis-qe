@@ -1,8 +1,5 @@
 package io.syndesis.qe.rest.tests.integrations.steps;
 
-import java.util.List;
-import java.util.Map;
-
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
@@ -15,8 +12,7 @@ public class FTPSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.FTP.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.FTP.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:ftp-" + action);
-        List<Map<String, String>> dataMap = sourceMappingData.asMaps(String.class, String.class);
-        super.addProperty(StepProperty.PROPERTIES, dataMap.get(0));
+        super.addProperty(StepProperty.PROPERTIES, sourceMappingData.asMaps(String.class, String.class).get(0));
         super.createStep();
     }
 }

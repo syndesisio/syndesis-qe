@@ -6,9 +6,9 @@ import io.syndesis.qe.utils.TestUtils;
 
 public class KafkaSteps extends AbstractStep {
     @When("^create Kafka \"([^\"]*)\" step with topic \"([^\"]*)\"$")
-    public void createKafkaPublishStepWithDatashape(String action, String topic) {
-        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DROPBOX.getId());
-        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DROPBOX.getId());
+    public void createKafkaStep(String action, String topic) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.KAFKA.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.KAFKA.getId());
         super.addProperty(StepProperty.ACTION, "kafka-" + action);
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map("topic", topic));
         super.createStep();

@@ -89,9 +89,13 @@ public abstract class AbstractStep {
         if (action != null) {
             stepBuilder.action(action);
         }
-        steps.getStepDefinitions().add(new StepDefinition(stepBuilder.build()));
         if (properties.get(StepProperty.PROPERTIES) != null) {
             stepBuilder.configuredProperties((Map) properties.get(StepProperty.PROPERTIES));
+        }
+        if (properties.get(StepProperty.KIND) == StepKind.mapper) {
+            steps.getStepDefinitions().add(new StepDefinition(stepBuilder.build(), new DataMapperDefinition()));
+        } else {
+            steps.getStepDefinitions().add(new StepDefinition(stepBuilder.build()));
         }
         properties.clear();
     }

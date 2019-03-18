@@ -47,10 +47,10 @@ public class IntegrationSteps extends AbstractStep {
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
 
-    @When("^add \"([^\"]*)\" endpoint with connector id \"([^\"]*)\" and \"([^\"]*)\" action and with properties:$")
-    public void createEndpointStepWithAndWith(String id, String connectorId, String action, DataTable properties) {
+    @When("^add \"([^\"]*)\" \"([^\"]*)\" step action using \"([^\"]*)\" connection and properties$")
+    public void createStep(String connectorId, String action, String connectionId, DataTable properties) {
         final Connector connector = connectorsEndpoint.get(connectorId);
-        final Connection connection = connectionsEndpoint.get(id);
+        final Connection connection = connectionsEndpoint.get(connectionId);
         final Action ac = TestUtils.findConnectorAction(connector, action);
         final Map<String, String> stepProperties = new HashMap<>();
 

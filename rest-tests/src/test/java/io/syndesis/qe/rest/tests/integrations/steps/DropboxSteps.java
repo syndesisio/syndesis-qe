@@ -19,7 +19,7 @@ public class DropboxSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DROPBOX.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DROPBOX.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:dropbox-" + mode);
-        Map<String, String> properties = TestUtils.map("remotePath", filePath);
+        final Map<String, String> properties = TestUtils.map("remotePath", filePath);
         if ("upload".equals(mode.toLowerCase())) {
             properties.put("uploadMode", "add");
         }
