@@ -43,7 +43,7 @@ public class ApicurioSteps {
         public static By ADD_OPERATION = By.cssSelector("button.icon-button");
         public static By OPERATION_KEBAB = By.id("dropdownKebab");
         public static By OPERATION = By.className("api-path");
-        public static By OPERATION_KEBAB_MENU = By.className("dropdown-menu");
+        public static By OPERATION_KEBAB_MENU = By.className("detail-actions");
         public static By OPERATION_KEBAB_MENU_DELETE = By.xpath("//span[contains(text(), \"Delete Path\")]");
 
         public static By RESPONSE_SECTION = By.className("responses-section");
@@ -219,11 +219,11 @@ public class ApicurioSteps {
     public void removeOperation() {
         $(Elements.PATH_SECTION).shouldBe(visible).$(Elements.OPERATION).shouldBe(visible).click();
         $(Elements.OPERATION_KEBAB).shouldBe(visible).click();
-        SelenideElement kebabMenu = $$(Elements.OPERATION_KEBAB_MENU).shouldHaveSize(5).get(1);
+        SelenideElement kebabMenu = $(Elements.OPERATION_KEBAB_MENU);
         try {
             kebabMenu.$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible).click();
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
-            $$(Elements.OPERATION_KEBAB_MENU).shouldHaveSize(5).get(1)
+            $(Elements.OPERATION_KEBAB_MENU)
                     .$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible)
                     .click();
         }
