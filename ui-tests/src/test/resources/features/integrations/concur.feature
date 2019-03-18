@@ -12,6 +12,8 @@
 #
 
 @ui
+# Until the issue with @concur support is resolved, concur testing will be disabled.
+@disabled
 @concur
 @database
 @datamapper
