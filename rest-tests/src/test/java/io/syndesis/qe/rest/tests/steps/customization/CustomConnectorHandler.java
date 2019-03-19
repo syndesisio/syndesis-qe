@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.customizations;
+package io.syndesis.qe.rest.tests.steps.customization;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

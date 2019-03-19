@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations.steps;
+package io.syndesis.qe.rest.tests.steps.flow;
 
 import java.util.Arrays;
 
@@ -9,7 +9,6 @@ import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.SeparatorType;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * There are two ways how to specify data mapping. 1 is using preconfigured atlas mapping json file, with placeholders
@@ -22,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 public class DataMapperSteps extends AbstractStep {
     /**
-     * Just creates mapper step definition, the mapper will be generated on the integration creation.
+     * Just creates mapper step definition, the mapper will be generated on the flow creation.
      *
      * @param mapperName
      */

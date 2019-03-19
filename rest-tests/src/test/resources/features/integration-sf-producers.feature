@@ -64,7 +64,7 @@ Feature: Integration - Salesforce
       And start mapper definition with name: "integration-sf-producers-create-record"
       And MAP using Step 2 and field "/id" to "/id"
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
-      And change datashape of previous step to "in" direction, "JSON_INSTANCE" type with specification '{"id":"abc"}'
+      And change "in" datashape of previous step to "JSON_INSTANCE" type with specification '{"id":"abc"}'
       And create integration with name: "AMQ-SF-AMQ new record"
     Then wait for integration with name: "AMQ-SF-AMQ new record" to become active
     When publish message with content '{"FirstName":"Joe", "LastName":"Doe","Email":"joedoeprod@acme.com","Company":"XYZ"}' to queue "sf-producers-input"
@@ -89,7 +89,7 @@ Feature: Integration - Salesforce
       And start mapper definition with name: "integration-sf-producers-upsert-record-insert"
       And MAP using Step 2 and field "/id" to "/id"
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sf-producers-output"
-      And change datashape of previous step to "in" direction, "JSON_INSTANCE" type with specification '{"id":"abc"}'
+      And change "in" datashape of previous step to "JSON_INSTANCE" type with specification '{"id":"abc"}'
       And create integration with name: "AMQ-SF-AMQ upsert insert record"
     Then wait for integration with name: "AMQ-SF-AMQ upsert insert record" to become active
     # This user does not exist, will be created

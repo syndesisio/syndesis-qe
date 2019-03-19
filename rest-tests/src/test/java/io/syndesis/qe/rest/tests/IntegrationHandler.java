@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations;
+package io.syndesis.qe.rest.tests;
 
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;

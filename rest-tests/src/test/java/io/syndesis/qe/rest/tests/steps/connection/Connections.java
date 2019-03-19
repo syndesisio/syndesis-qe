@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations.steps;
+package io.syndesis.qe.rest.tests.steps.connection;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,14 +28,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author tplevko@redhat.com
  */
 @Slf4j
-public class ConnectionSteps {
+public class Connections {
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
     private final AccountsDirectory accountsDirectory;
 
-    public ConnectionSteps() {
+    public Connections() {
         accountsDirectory = AccountsDirectory.getInstance();
     }
 

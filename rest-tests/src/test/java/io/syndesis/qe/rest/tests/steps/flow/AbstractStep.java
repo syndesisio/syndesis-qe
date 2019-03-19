@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.integrations.steps;
+package io.syndesis.qe.rest.tests.steps.flow;
 
 import static org.assertj.core.api.Fail.fail;
 
@@ -131,7 +131,7 @@ public abstract class AbstractStep {
         return action.get();
     }
 
-    private ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
+    ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
         ConnectionsActionsEndpoint conActEndpoint = new ConnectionsActionsEndpoint(connectionId);
         return conActEndpoint.postParamsAction(action.getId().get(), properties);
     }
