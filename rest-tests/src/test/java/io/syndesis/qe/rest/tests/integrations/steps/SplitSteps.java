@@ -8,11 +8,9 @@ import io.syndesis.common.model.action.StepDescriptor;
 import io.syndesis.common.model.connection.DynamicActionMetadata;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.endpoints.StepDescriptorEndpoint;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class SplitSteps extends AbstractStep {
-   @Autowired
+    @Autowired
     private StepDescriptorEndpoint stepDescriptorEndpoint;
 
     @When("^add a split step$")
@@ -25,7 +23,7 @@ public class SplitSteps extends AbstractStep {
         );
 
         super.addProperty(StepProperty.KIND, StepKind.split);
-        super.addProperty(StepProperty.ACTION, generateStepAction(super.getSteps().getLastStepDefinition().getStep().getAction().get(), sd));
+        super.addProperty(StepProperty.ACTION, super.generateStepAction(super.getSteps().getLastStepDefinition().getStep().getAction().get(), sd));
         super.addProperty(StepProperty.STEP_NAME, "Split");
         super.createStep();
     }

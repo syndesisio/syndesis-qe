@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author tplevko@redhat.com
  */
-@Slf4j
 public class SalesforceSteps extends AbstractStep {
     @When("^create SF \"([^\"]*)\" action step with properties$")
     public void createSfStepWithActionAndProperties(String action, DataTable props) {

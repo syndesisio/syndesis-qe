@@ -8,14 +8,12 @@ import cucumber.api.java.en.When;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Jan 2, 2018 Red Hat
  *
  * @author tplevko@redhat.com
  */
-@Slf4j
 public class S3Steps extends AbstractStep {
     @When("^create S3 polling START action step with bucket: \"([^\"]*)\"$")
     public void createS3PollingStep(String bucketName) {

@@ -8,7 +8,6 @@ import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 public class HTTPSteps extends AbstractStep {
-
     private void createStep(String method, String path, long period, String timeunit) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.HTTP.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.HTTP.getId());

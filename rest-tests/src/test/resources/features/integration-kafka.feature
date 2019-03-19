@@ -20,7 +20,7 @@ Feature: Integration - Kafka
       And start mapper definition with name: "mapping 1"
       And MAP using Step 1 and field "/Id" to "/Id"
       And create Kafka "publish" step with topic "sf-leads"
-      And change datashape of previous step to "in" direction, "JSON_SCHEMA" type with specification '{"$schema":"http://json-schema.org/draft-04/schema#","type":"object","properties":{"Id":{"type":"string"}},"required":["Id"]}'
+      And change "in" datashape of previous step to "JSON_SCHEMA" type with specification '{"$schema":"http://json-schema.org/draft-04/schema#","type":"object","properties":{"Id":{"type":"string"}},"required":["Id"]}'
     When create integration with name: "SF-Kafka"
     Then wait for integration with name: "SF-Kafka" to become active
     Given create Kafka "subscribe" step with topic "sf-leads"

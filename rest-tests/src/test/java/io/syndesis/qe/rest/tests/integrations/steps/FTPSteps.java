@@ -3,9 +3,7 @@ package io.syndesis.qe.rest.tests.integrations.steps;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class FTPSteps extends AbstractStep {
     @When("^create FTP \"([^\"]*)\" action with values$")
     public void createFtpStep(String action, DataTable sourceMappingData) {

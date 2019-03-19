@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author tplevko@redhat.com
  */
-@Slf4j
 public class TwitterSteps extends AbstractStep {
    @Given("^create TW mention step with \"([^\"]*)\" action")
     public void createTwitterStep(String twitterAction) {

@@ -1,5 +1,7 @@
 package io.syndesis.qe.rest.tests.integrations.steps;
 
+import static org.assertj.core.api.Fail.fail;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +23,11 @@ import io.syndesis.common.model.action.ConnectorAction;
 import io.syndesis.common.model.action.ConnectorDescriptor;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.Connector;
+import io.syndesis.common.model.extension.Extension;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.common.util.Json;
+import io.syndesis.qe.bdd.entities.DataMapperDefinition;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
@@ -46,7 +50,8 @@ public abstract class AbstractStep {
         CONNECTOR_ID,
         CONNECTION_ID,
         ACTION,
-        PROPERTIES
+        PROPERTIES,
+        EXTENSION
     }
 
     @Autowired
@@ -72,8 +77,10 @@ public abstract class AbstractStep {
         if (properties.get(StepProperty.ACTION) != null && !(properties.get(StepProperty.ACTION) instanceof String)) {
             action = (Action) properties.get(StepProperty.ACTION);
         } else {
+            // It may not have an action
             action = properties.get(StepProperty.ACTION) == null ? null : findConnectorAction(connector, (String) properties.get(StepProperty.ACTION));
             if (action != null) {
+                // Get the action with datashapes configured
                 action = generateStepAction(action, getConnectorDescriptor(action, (Map) properties.get(StepProperty.PROPERTIES),
                         (String) properties.get(StepProperty.CONNECTION_ID)));
             }
@@ -92,6 +99,9 @@ public abstract class AbstractStep {
         if (properties.get(StepProperty.PROPERTIES) != null) {
             stepBuilder.configuredProperties((Map) properties.get(StepProperty.PROPERTIES));
         }
+        if (properties.get(StepProperty.EXTENSION) != null) {
+            stepBuilder.extension((Extension) properties.get(StepProperty.EXTENSION));
+        }
         if (properties.get(StepProperty.KIND) == StepKind.mapper) {
             steps.getStepDefinitions().add(new StepDefinition(stepBuilder.build(), new DataMapperDefinition()));
         } else {
@@ -100,8 +110,12 @@ public abstract class AbstractStep {
         properties.clear();
     }
 
-    public Action findConnectorAction(Connector connector, String connectorPrefix) {
+    private Action findConnectorAction(Connector connector, String connectorPrefix) {
         Optional<ConnectorAction> action;
+        if (connector == null) {
+            fail("Incorrect parameter combination, connector was null, but action was provided");
+        }
+
         action = connector.getActions()
                 .stream()
                 .filter(a -> a.getId().get().contains(connectorPrefix))
@@ -117,13 +131,13 @@ public abstract class AbstractStep {
         return action.get();
     }
 
-    public ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
+    private ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
         ConnectionsActionsEndpoint conActEndpoint = new ConnectionsActionsEndpoint(connectionId);
         return conActEndpoint.postParamsAction(action.getId().get(), properties);
     }
 
     //Small hack -> the Action doesn't provide setters for input/output data shape
-    public Action generateStepAction(Action action, ActionDescriptor connectorDescriptor) {
+    Action generateStepAction(Action action, ActionDescriptor connectorDescriptor) {
         ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
         Action ts = null;
         try {
@@ -152,7 +166,7 @@ public abstract class AbstractStep {
      * @param datashape Datashape specification
      * @return action object with datashapes
      */
-    public Action withCustomDatashape(Action action, ConnectorDescriptor connectorDescriptor, String direction, DataShapeKinds kind, String datashape) {
+    Action withCustomDatashape(Action action, ConnectorDescriptor connectorDescriptor, String direction, DataShapeKinds kind, String datashape) {
         // This will set datashapes and property definitions from the connectorDescriptor
         Action a = generateStepAction(action, connectorDescriptor);
         ObjectMapper mapper = new ObjectMapper().registerModules(new Jdk8Module());
@@ -173,4 +187,6 @@ public abstract class AbstractStep {
         }
         return a;
     }
+
+
 }

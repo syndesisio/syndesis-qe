@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author tplevko@redhat.com
  */
-@Slf4j
 public class DataMapperSteps extends AbstractStep {
     /**
      * Just creates mapper step definition, the mapper will be generated on the integration creation.
