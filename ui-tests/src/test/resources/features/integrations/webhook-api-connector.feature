@@ -1,5 +1,6 @@
 # @sustainer: mcada@redhat.com
 
+@ui
 @webhook
 @api-connector
 @datamapper
