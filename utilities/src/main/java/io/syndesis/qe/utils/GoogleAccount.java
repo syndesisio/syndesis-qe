@@ -6,6 +6,8 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.sheets.v4.Sheets;
+
 import io.syndesis.qe.accounts.Account;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +27,7 @@ public class GoogleAccount {
     private Credential credential;
     private Calendar calendarClient;
     private Gmail gmailClient;
+    private Sheets sheetsClient;
 
     public GoogleAccount(String accountName) {
         account = AccountUtils.get(accountName);
@@ -94,4 +97,12 @@ public class GoogleAccount {
         return gmailClient;
     }
 
+    public Sheets sheets() {
+        if (sheetsClient == null) {
+            sheetsClient = new Sheets.Builder(credential.getTransport(), credential.getJsonFactory(), credential)
+                    .setApplicationName(account.getProperty("applicationName"))
+                    .build();
+        }
+        return sheetsClient;
+    }
 }

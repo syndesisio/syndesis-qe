@@ -53,7 +53,8 @@ Feature: Metrics
     And add integration step on position "1"
     And select "Basic Filter" integration step
     Then check visibility of "Basic Filter" step configuration page
-    #And check that basic filter step path input options contains "company" option TODO issue: https://github.com/syndesisio/syndesis/issues/4162
+    And check that basic filter step path input options contains "first_name" option
+    And check that basic filter step path input options contains "company" option
     When fill in the configuration page for "Basic Filter" step with "ANY of the following, company, contains, Red Hat" parameter
     And click on the "Done" button
 

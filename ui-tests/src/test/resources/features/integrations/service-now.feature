@@ -30,9 +30,9 @@ Feature: Integration - ServiceNow-amq/log
 
     When select the "ServiceNow" connection
     And select "Retrieve Record" integration action
-    And .*fill in values
-      | Limit of elements per page              | 1                |
-      | The query used to filter the result set | number=QACUSTOM4 |
+    And fill in values
+      | Limit of elements per page     | 1                |
+      | Query to filter the result set | number=QACUSTOM4 |
     And select "Incident" from "table" dropdown
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
@@ -70,14 +70,15 @@ Feature: Integration - ServiceNow-amq/log
     Then check that position of connection to fill is "Finish"
 
     When select the "ServiceNow" connection
-    And select "Create Record" integration action
+    And select "Add Record" integration action
     And select "Add new Incident" from "table" dropdown
     And click on the "Next" button
+    Then sleep for jenkins delay or "15" seconds
+
     When publish integration
     And set integration name "amq-2-snow"
     And publish integration
     And navigate to the "Integrations" page
-    Then wait until integration "amq-2-snow" gets into "Running" state
-
+    And wait until integration "amq-2-snow" gets into "Running" state
     Then send "QACREATED1" incident to "incidents-create" queue and verify it was created in SN
 

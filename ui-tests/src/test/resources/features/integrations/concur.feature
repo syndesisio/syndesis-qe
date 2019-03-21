@@ -12,6 +12,8 @@
 #
 
 @ui
+# Until the issue with @concur support is resolved, concur testing will be disabled.
+@disabled
 @concur
 @database
 @datamapper
@@ -31,7 +33,7 @@ Feature: Concur Connector
     And navigate to the "Home" page
 
   @concur-list-get
-  Scenario: Check message
+  Scenario: Check message of concur get list action
 
     # create integration
     When click on the "Create Integration" button to create a new integration.
@@ -88,7 +90,7 @@ Feature: Concur Connector
 
 
   @concur-listitems-get
-  Scenario: Check message
+  Scenario: Check message of concur get listitems action
 
     # create integration
     When click on the "Create Integration" button to create a new integration.
@@ -137,7 +139,6 @@ Feature: Concur Connector
     When click on the "Save" button
     And set integration name "Integration_with_concur"
     And publish integration
-    Then check visibility of "Integration_with_concur" integration details
 
     When navigate to the "Integrations" page
     Then Integration "Integration_with_concur" is present in integrations list
@@ -147,7 +148,7 @@ Feature: Concur Connector
     Then reset content of "contact" table
 
   @concur-listitem-create-delete
-  Scenario: Check message
+  Scenario: Check if create and delete listitems actions work together
 
     # create integration
     When click on the "Create Integration" button to create a new integration.

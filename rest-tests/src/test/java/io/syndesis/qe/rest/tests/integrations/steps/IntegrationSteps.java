@@ -1,6 +1,7 @@
 package io.syndesis.qe.rest.tests.integrations.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,9 +12,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.connection.Connection;
@@ -27,6 +28,8 @@ import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.endpoints.ExtensionsEndpoint;
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 public class IntegrationSteps extends AbstractStep {
@@ -42,6 +45,9 @@ public class IntegrationSteps extends AbstractStep {
     @Autowired
     private ExtensionsEndpoint extensionsEndpoint;
 
+    @Autowired
+    private IntegrationsEndpoint integrationsEndpoint;
+
     @When("^add \"([^\"]*)\" endpoint with connector id \"([^\"]*)\" and \"([^\"]*)\" action and with properties:$")
     public void createEndpointStepWithAndWith(String id, String connectorId, String action, DataTable properties) {
         final Connector connector = connectorsEndpoint.get(connectorId);
@@ -49,7 +55,8 @@ public class IntegrationSteps extends AbstractStep {
         final Action ac = TestUtils.findConnectorAction(connector, action);
         final Map<String, String> stepProperties = new HashMap<>();
 
-        for (Map<String, String> source : properties.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = properties.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (Map.Entry<String,String> field : source.entrySet()) {
                 stepProperties.put(field.getKey(), field.getValue());
             }
@@ -69,7 +76,8 @@ public class IntegrationSteps extends AbstractStep {
     @When("^add \"([^\"]*)\" extension step with \"([^\"]*)\" action with properties:$")
     public void addExtensionIdWith(String name, String actionId, DataTable properties) {
         final Map<String, String> stepProperties = new HashMap<>();
-        for (Map<String, String> source : properties.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = properties.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (Map.Entry<String,String> field : source.entrySet()) {
                 stepProperties.put(field.getKey(), field.getValue());
             }
@@ -133,5 +141,25 @@ public class IntegrationSteps extends AbstractStep {
 
         steps.getStepDefinitions().remove(steps.getStepDefinitions().size() - 1);
         steps.getStepDefinitions().add(new StepDefinition(withDatashape));
+    }
+
+    @When("^rebuild integration with name \"([^\"]*)\"$")
+    public void rebuildIntegration(String name) {
+        Optional<String> integrationId = integrationsEndpoint.getIntegrationId(name);
+        if (!integrationId.isPresent()) {
+            fail("Unable to find ID for integration " + name);
+        }
+
+        integrationsEndpoint.activateIntegration(integrationId.get());
+        final int maxRetries = 10;
+        int retries = 0;
+        boolean buildPodPresent = false;
+        while (!buildPodPresent && retries < maxRetries) {
+            buildPodPresent = OpenShiftUtils.client().pods().list().getItems().stream().anyMatch(
+                    p -> p.getMetadata().getName().contains(name.toLowerCase().replaceAll(" ", "-"))
+                            && p.getMetadata().getName().endsWith("-build"));
+            TestUtils.sleepIgnoreInterrupt(10000L);
+            retries++;
+        }
     }
 }

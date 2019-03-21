@@ -1,20 +1,22 @@
 package io.syndesis.qe.bdd.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Calendar;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.EventAttendee;
 import com.google.api.services.calendar.model.EventDateTime;
-import cucumber.api.DataTable;
-import cucumber.api.java.en.When;
-import io.syndesis.qe.utils.GoogleCalendarUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import io.syndesis.qe.utils.GoogleCalendarUtils;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleCalendarSteps {
@@ -105,7 +107,8 @@ public class GoogleCalendarSteps {
         if (e == null) {
             throw new IllegalStateException(String.format("Looking for non-existent event %s in calendar %s", eventSummary, calendarName));
         }
-        for (List<String> list : properties.asLists(String.class)) {
+
+        for (List<String> list : properties.cells()) {
             String key = list.get(0);
             String value = list.get(1);
             e.set(key, value);

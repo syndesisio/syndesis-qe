@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
 
 import cucumber.api.java.en.Given;
@@ -47,7 +49,12 @@ public class CommonSteps {
         OpenShiftUtils.client().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.client().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.client().serviceAccounts().withName("syndesis-oauth-client").delete();
-        OpenShiftUtils.getInstance().cleanAndAssert();
+        try {
+            OpenShiftUtils.getInstance().cleanAndWait();
+        } catch (TimeoutException e) {
+            log.warn("Project was not clean after 20s, retrying once again");
+            OpenShiftUtils.getInstance().cleanAndAssert();
+        }
         OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
     }
 
@@ -76,11 +83,15 @@ public class CommonSteps {
      * Undeploys deployed syndesis resources.
      */
     public static void undeploySyndesis() {
-        if (OpenShiftUtils.getPodByPartialName("syndesis-operator").isPresent()) {
-            for (String s : customResourceNames()) {
-                undeployCustomResource(s);
-            }
+        undeployCustomResources();
+        if (TestUtils.isDcDeployed("syndesis-operator")) {
             CommonSteps.waitForUndeployment();
+        }
+    }
+
+    public static void undeployCustomResources() {
+        for (String s : customResourceNames()) {
+            undeployCustomResource(s);
         }
     }
 
@@ -90,18 +101,23 @@ public class CommonSteps {
      */
     private static Set<String> customResourceNames() {
         final Set<String> names = new HashSet<>();
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises";
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural();
         String responseBody = OpenShiftUtils.invokeApi(
                 HttpUtils.Method.GET,
                 url,
                 null,
                 Headers.of("Accept", "application/json")
         ).getBody();
-        JSONArray items = new JSONObject(responseBody).getJSONArray("items");
-
-        for (int i = 0; i < items.length(); i++) {
-            names.add(((JSONObject)items.get(i)).getJSONObject("metadata").getString("name"));
+        JSONArray items = new JSONArray();
+        try {
+            items = new JSONObject(responseBody).getJSONArray("items");
+        } catch (JSONException ex) {
+            // probably the CRD isn't present in the cluster
         }
+        for (int i = 0; i < items.length(); i++) {
+            names.add(((JSONObject) items.get(i)).getJSONObject("metadata").getString("name"));
+        }
+
         return names;
     }
 
@@ -111,7 +127,7 @@ public class CommonSteps {
      */
     private static void undeployCustomResource(String name) {
         log.info("Undeploying Syndesis custom resource \"" + name + "\"");
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/syndesises/" + name;
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural() + "/" + name;
         OpenShiftUtils.invokeApi(HttpUtils.Method.DELETE, url, null, null);
     }
 
@@ -152,11 +168,13 @@ public class CommonSteps {
 
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
+            if (!executorService.awaitTermination(timeout, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
+                TestUtils.printPods();
                 fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
             }
         } catch (InterruptedException e) {
+            TestUtils.printPods();
             fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
         }
     }

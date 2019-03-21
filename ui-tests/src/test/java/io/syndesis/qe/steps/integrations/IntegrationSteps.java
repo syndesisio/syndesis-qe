@@ -1,24 +1,14 @@
 package io.syndesis.qe.steps.integrations;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import static com.codeborne.selenide.Condition.visible;
+
+import org.assertj.core.api.Condition;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
-import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
-import io.syndesis.qe.pages.integrations.Integrations;
-import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
-import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
-import io.syndesis.qe.pages.integrations.summary.Details;
-import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Condition;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,11 +16,22 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
+import io.syndesis.qe.pages.integrations.Integrations;
+import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
+import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by sveres on 11/15/17.
@@ -42,6 +43,9 @@ public class IntegrationSteps {
     private Integrations integrations = new Integrations();
     private DataMapper dataMapper = new DataMapper();
     private ImportIntegration importIntegration = new ImportIntegration();
+
+    @Autowired
+    private CommonSteps commonSteps;
 
     @When("^select the \"([^\"]*)\" integration.*$")
     public void selectIntegration(String itegrationName) {
@@ -55,6 +59,7 @@ public class IntegrationSteps {
 
     @Then("^Integration \"([^\"]*)\" is present in integrations list$")
     public void expectIntegrationPresent(String name) {
+        commonSteps.navigateTo("Integrations");
         log.info("Verifying integration {} is present", name);
         TestUtils.sleepForJenkinsDelayIfHigher(4);
         assertThat(integrations.isIntegrationPresent(name)).isTrue();
@@ -73,6 +78,7 @@ public class IntegrationSteps {
      */
     @Then("^wait until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
     public void waitForIntegrationState(String integrationName, String integrationStatus) {
+        commonSteps.navigateTo("Integrations");
         SelenideElement integration = integrations.getIntegration(integrationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         assertThat(TestUtils.waitForEvent(
@@ -89,6 +95,7 @@ public class IntegrationSteps {
      */
     @Then("^wait until integration \"([^\"]*)\" starting status gets into \"([^\"]*)\" state$")
     public void waitForIntegrationStartingState(String integrationName, String integrationStatus) {
+        commonSteps.navigateTo("Integrations");
         SelenideElement integration = integrations.getIntegration(integrationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         assertThat(TestUtils.waitForEvent(
@@ -103,7 +110,6 @@ public class IntegrationSteps {
     public void clickOnAllKebabMenus() {
         integrations.checkAllIntegrationsKebabButtons();
     }
-
 
     @And("^export the integrat?ion$")
     public void exportIntegration() throws InterruptedException {
@@ -133,7 +139,6 @@ public class IntegrationSteps {
                 OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
     }
 
-
     @And("^.*check that data bucket \"([^\"]*)\" is available$")
     public void checkPreviousDataBuckets(String bucket) {
         //there is condition for element to be visible
@@ -153,7 +158,7 @@ public class IntegrationSteps {
 
     @And("^.*perform action with data bucket")
     public void performActionWithBucket(DataTable table) {
-        List<List<String>> rows = table.cells(0);
+        List<List<String>> rows = table.cells();
         String action;
 
         for (List<String> row : rows) {
@@ -168,7 +173,6 @@ public class IntegrationSteps {
             }
         }
     }
-
 
     @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"([^\"]*)\"$")
     public void checkThatLogsContain(final String integrationName, final String text) {
@@ -284,5 +288,4 @@ public class IntegrationSteps {
     public void editIntegration() throws Throwable {
         detailPage.editIntegration();
     }
-
 }

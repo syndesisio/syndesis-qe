@@ -71,6 +71,9 @@ public class SettingsPage extends SyndesisPageObject {
                 case "Google Calendar":
                     credentialsName = "QE Google Calendar";
                     break;
+                case "Google Sheets":
+                    credentialsName = "QE Google Sheets";
+                    break;
                 default:
                     log.error("Unknown oauth list item found: '" + text + "' !!!");
                     //close listitem
@@ -79,6 +82,10 @@ public class SettingsPage extends SyndesisPageObject {
             }
             fillGivenOAuthSetting(listItem, credentialsName);
         }
+    }
+
+    public void fillOauthSettings(String service,String credentials){
+        fillGivenOAuthSetting(getSettingsItem(service),credentials);
     }
 
     public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {

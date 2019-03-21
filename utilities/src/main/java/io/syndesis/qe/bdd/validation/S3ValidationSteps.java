@@ -2,7 +2,10 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
+import org.assertj.core.api.SoftAssertions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+
 import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.Given;
@@ -11,9 +14,6 @@ import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.S3Utils;
 import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.SoftAssertions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 /**
  * This validation steps can be used to create/delete and content validation of S3 steps. There is a specific issue with
@@ -59,12 +59,12 @@ public class S3ValidationSteps {
     }
 
     @Then("^check that buckets do exist: \"([^\"]*)\"")
-    public void checkBucketsDoExist(List<String> bucketNames) {
+    public void checkBucketsDoExist(String bucketNames) {
         checkBucketsPresence(bucketNames, true);
     }
 
     @Then("^check that buckets do not exist: \"([^\"]*)\"")
-    public void checkBucketsDontExist(List<String> bucketNames) {
+    public void checkBucketsDontExist(String bucketNames) {
         checkBucketsPresence(bucketNames, false);
     }
 
@@ -73,10 +73,10 @@ public class S3ValidationSteps {
      * @param bucketNames name of the buckets to check
      * @param shouldExist expected state to be checked against, true - should exist, false - shouldn't exist
      */
-    private void checkBucketsPresence(List<String> bucketNames, boolean shouldExist){
+    private void checkBucketsPresence(String bucketNames, boolean shouldExist){
         SoftAssertions softly = new SoftAssertions();
-        for(String bucket: bucketNames){
-            String bucketName = S3BucketNameBuilder.getBucketName(bucket);
+        for(String bucket: bucketNames.split(",")){
+            String bucketName = S3BucketNameBuilder.getBucketName(bucket.trim());
             log.debug("Checking presence of bucket {}.", bucketName);
             softly
                 .assertThat(s3Utils.doesBucketExist(bucketName))

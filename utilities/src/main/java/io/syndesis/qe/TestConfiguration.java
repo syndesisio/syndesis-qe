@@ -44,6 +44,8 @@ public class TestConfiguration {
     public static final String SYNDESIS_OPERATOR_URL = "syndesis.config.operator.url";
     public static final String SYNDESIS_OPERATOR_TEMPLATE_URL = "syndesis.config.operator.template.url";
 
+    public static final String SYNDESIS_CUSTOM_RESOURCE_PLURAL = "syndesis.config.custom.resource.plural";
+
     public static final String JENKINS_DELAY = "jenkins.delay";
     public static final String TESTSUITE_TIMEOUT = "syndesis.config.timeout";
 
@@ -138,6 +140,10 @@ public class TestConfiguration {
 
     public static boolean useServerRoute() { return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE)); }
 
+    public static String customResourcePlural() {
+        return get().readValue(SYNDESIS_CUSTOM_RESOURCE_PLURAL);
+    }
+
     public static int getJenkinsDelay() { return Integer.parseInt(get().readValue(JENKINS_DELAY, "1")); }
 
     public static int getConfigTimeout() {return Integer.parseInt(get().readValue(TESTSUITE_TIMEOUT, "30")); }
@@ -200,6 +206,8 @@ public class TestConfiguration {
         props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", syndesisVersion));
 
         props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
+
+        props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
 
         // Copy syndesis properties to their xtf counterparts - used by binary oc client
         System.setProperty("xtf.config.master.url", properties.getProperty(OPENSHIFT_URL));

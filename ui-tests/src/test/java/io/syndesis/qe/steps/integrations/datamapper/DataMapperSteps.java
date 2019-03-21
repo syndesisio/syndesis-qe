@@ -1,20 +1,23 @@
 package io.syndesis.qe.steps.integrations.datamapper;
 
+import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.Matchers.greaterThan;
+
+import static com.codeborne.selenide.Condition.visible;
+
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Condition.visible;
-import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertThat;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by sveres on 11/15/17.
@@ -48,7 +51,7 @@ public class DataMapperSteps {
     public void createMapping(DataTable table) {
         mapper.openDataMapperCollectionElement();
 
-        for (List<String> row : table.cells(0)) {
+        for (List<String> row : table.cells()) {
             mapper.doCreateMapping(row.get(0), row.get(1));
         }
     }
@@ -161,5 +164,10 @@ public class DataMapperSteps {
     @When("^define constant \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
     public void defineConstantOfTypeInDataMapper(String value, String type) {
         mapper.addConstant(value, type);
+    }
+
+    @When("^define property \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
+    public void definePropertyWithValueOfTypeInDataMapper(String name, String value, String type) {
+        mapper.addProperty(name,value,type);
     }
 }

@@ -23,6 +23,7 @@ import io.syndesis.common.util.Json;
 import io.syndesis.common.model.ListResult;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.RestUtils;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public abstract class AbstractEndpoint<T> {
-
+    @Setter
     protected String endpointName;
     protected String apiPath = TestConfiguration.syndesisRestApiPath();
     private Class<T> type;

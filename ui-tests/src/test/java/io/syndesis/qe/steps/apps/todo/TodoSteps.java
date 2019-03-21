@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.apps.todo.Todo;
@@ -66,7 +66,7 @@ public class TodoSteps {
     }
 
     //Because app can have another route and url should set dynamically, url is added to the original DataTable
-    @Then("create new TODO API connector via URL$")
+    @Then("^create new TODO API connector via URL$")
     public void createNewTodoApiConnector(DataTable properties) throws Throwable {
         if (OpenShiftUtils.getInstance().getRoute("todo2") == null
                 || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")) {
@@ -74,14 +74,13 @@ public class TodoSteps {
         }
         String host = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
         String url = host + "/swagger.json";
-        List<List<String>> originalTableModifiableCopy = new ArrayList<>(properties.raw());
+        List<List<String>> originalTableModifiableCopy = new ArrayList<>(properties.cells());
         List<String> newRow = new ArrayList<>();
         newRow.add("source");
         newRow.add("url");
         newRow.add(url);
         originalTableModifiableCopy.add(newRow);
-        DataTable updatedDataTable = properties.toTable(originalTableModifiableCopy);
-        new ApiClientConnectorsSteps().createNewApiConnector(updatedDataTable);
+        new ApiClientConnectorsSteps().createNewApiConnector(DataTable.create(originalTableModifiableCopy));
     }
 
     @Then("^check Todo list has \"(\\w+)\" items")

@@ -1,10 +1,21 @@
 package io.syndesis.qe.steps.integrations.editor.add.steps;
 
+import static org.junit.Assert.assertThat;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+
+import static com.codeborne.selenide.Condition.visible;
+
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import cucumber.api.DataTable;
+
+import java.util.List;
+import java.util.Map;
+
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
+import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.client.utils.Utils;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.PeriodicSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.ftp.FtpDataType;
@@ -18,14 +29,6 @@ import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-import java.util.Map;
-
-import static com.codeborne.selenide.Condition.visible;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class ConfigureStepSteps {
@@ -90,7 +93,8 @@ public class ConfigureStepSteps {
 
     @And("^sets jms subscribe inputs source data$")
     public void setJmsSubscribeData(DataTable sourceMappingData) {
-        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = sourceMappingData.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = jmsSubscribe.checkAndGetFieldTypeById(field);
                 assertThat(element, notNullValue());
@@ -101,7 +105,8 @@ public class ConfigureStepSteps {
 
     @And("^sets jms request inputs source data$")
     public void setJmsRequestData(DataTable sourceMappingData) {
-        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = sourceMappingData.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 //shouldn't be here jmsRequest class used??
                 SelenideElement element = jmsSubscribe.checkAndGetFieldTypeById(field);
@@ -113,7 +118,8 @@ public class ConfigureStepSteps {
 
     @And("^sets jms publish inputs source data$")
     public void setJmsPublishData(DataTable sourceMappingData) {
-        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = sourceMappingData.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = jmsPublish.checkAndGetFieldTypeById(field);
                 assertThat(element, notNullValue());
@@ -124,7 +130,8 @@ public class ConfigureStepSteps {
 
     @And("^fill in ftp download form with values$")
     public void setFtpDownloadData(DataTable sourceMappingData) {
-        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = sourceMappingData.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = ftpDownload.checkAndGetFieldTypeByName(field);
                 assertThat(element, notNullValue());
@@ -135,7 +142,8 @@ public class ConfigureStepSteps {
 
     @And("^fill in specify output data type form with values$")
     public void setOutputDataTypeData(DataTable sourceMappingData) {
-        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = sourceMappingData.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = ftpDataType.checkAndGetFieldTypeByName(field);
                 assertThat(element, notNullValue());
@@ -146,7 +154,8 @@ public class ConfigureStepSteps {
 
     @And("^fill in ftp upload form with values$")
     public void setFtpUploadData(DataTable sourceMappingData) {
-        for (Map<String, String> source : sourceMappingData.asMaps(String.class, String.class)) {
+        List<Map<String, String>> maps = sourceMappingData.asMaps(String.class, String.class);
+        for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = ftpUpload.checkAndGetFieldTypeByName(field);
                 assertThat(element, notNullValue());

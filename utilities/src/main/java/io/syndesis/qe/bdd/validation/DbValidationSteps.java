@@ -14,11 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.DataTable;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.DbUtils;
@@ -104,8 +104,7 @@ public class DbValidationSteps {
 
     @Then("^inserts into \"([^\"]*)\" table$")
     public void insertsIntoTable(String tableName, DataTable data) {
-
-        List<List<String>> dataTable = data.raw();
+        List<List<String>> dataTable = data.cells();
 
         String sql = null;
 
@@ -114,11 +113,12 @@ public class DbValidationSteps {
         for (List<String> list : dataTable) {
             switch (tableName.toUpperCase()) {
                 case "TODO":
-//                INSERT INTO TODOx(task) VALUES('Joe');
                     sql = "INSERT INTO TODO(task) VALUES('%s'";
                     break;
+                case "TODO WITH ID":
+                    sql = "INSERT INTO TODO(id, task) VALUES('%s'";
+                    break;
                 case "CONTACT":
-//                INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
                     sql = "INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('%s'";
                     break;
             }
@@ -177,11 +177,7 @@ public class DbValidationSteps {
             dbUtils = new DbUtils("postgresql");
         }
         int oldTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        try {
-            Thread.sleep(30000L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        TestUtils.sleepIgnoreInterrupt(40000L);
         int newTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
         assertThat(newTaskCount).isGreaterThan(oldTaskCount + 5);
     }
@@ -197,7 +193,7 @@ public class DbValidationSteps {
     }
 
     @And("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
-    public void checkValuesExistInTable(String query, Integer count ) {
+    public void checkValuesExistInTable(String query, Integer count) {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(count);
     }
 
@@ -312,7 +308,7 @@ public class DbValidationSteps {
 
     @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+) after (\\d+) s$")
     public void checkRowsNumberIsGreaterThan(String table, int threshold, int s) throws InterruptedException, SQLException {
-        Thread.sleep(s*1000 + 1000L);
+        Thread.sleep(s * 1000 + 1000L);
         String sql = "SELECT COUNT(*) FROM CONTACT";
         log.info("SQL **{}**", sql);
         ResultSet rs = this.dbUtils.executeSQLGetResultSet(sql);
