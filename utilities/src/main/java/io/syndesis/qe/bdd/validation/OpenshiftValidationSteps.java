@@ -16,6 +16,7 @@ import io.syndesis.qe.templates.KafkaTemplate;
 import io.syndesis.qe.templates.KuduRestAPITemplate;
 import io.syndesis.qe.templates.KuduTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
+import io.syndesis.qe.templates.PublicOauthProxyTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +92,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy IRC server")
     public void deployIRCServer() {
         IrcTemplate.deploy();
+    }
+
+    @Given("^deploy public oauth proxy$")
+    public void deployApiOauthProxy() {
+        PublicOauthProxyTemplate.deploy();
     }
 
     @And("^wait until \"([^\"]*)\" pod is reloaded$")
