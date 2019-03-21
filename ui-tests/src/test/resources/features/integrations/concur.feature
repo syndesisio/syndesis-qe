@@ -51,13 +51,9 @@ Feature: Concur Connector
     Then check that position of connection to fill is "Finish"
 
     When select the "Log" connection
-    And select "Simple Logger" integration action
     And fill in values
-      | log level      | ERROR |
-      | Log Body       | true  |
-      | Log message Id | true  |
-      | Log Headers    | true  |
-      | Log everything | true  |
+      | Message Context | true |
+      | Message Body    | true |
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -108,13 +104,9 @@ Feature: Concur Connector
     Then check that position of connection to fill is "Finish"
 
     When select the "Log" connection
-    And select "Simple Logger" integration action
     And fill in values
-      | log level      | ERROR |
-      | Log Body       | true  |
-      | Log message Id | true  |
-      | Log Headers    | true  |
-      | Log everything | true  |
+      | Message Context | true |
+      | Message Body    | true |
     Then click on the "Done" button
 
     When add integration step on position "0"
