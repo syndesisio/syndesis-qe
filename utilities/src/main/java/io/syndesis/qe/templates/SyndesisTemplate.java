@@ -135,14 +135,7 @@ public class SyndesisTemplate {
 
         OpenShiftUtils.getInstance().cleanAndAssert();
         deployCrd();
-        // When testing upgrade using operator, the operator deploys last released version tag (and it is upgrading to latest daily), so this can be removed
-        // when the version in syndesis-qe will be 1.7-SNAPSHOT
-        // Use this only when doing upgrade
-        if (System.getProperty("syndesis.upgrade.version") != null && Double.parseDouble(System.getProperty("syndesis.version").substring(0, 3)) <= 1.5) {
-            deployOperatorPre73Way();
-        } else {
-            deployOperator();
-        }
+        deployOperator();
         importProdImages();
         deploySyndesisViaOperator();
         fixMavenRepos();
@@ -170,31 +163,6 @@ public class SyndesisTemplate {
         log.info("Deploying operator from " + TestConfiguration.syndesisOperatorUrl());
         final String output = OpenShiftBinaryClient.getInstance().executeCommandWithReturn(
                 "Unable to process operator resource " + TestConfiguration.syndesisOperatorUrl(),
-                "create",
-                "-n", TestConfiguration.openShiftNamespace(),
-                "-f", TestConfiguration.syndesisOperatorUrl()
-        );
-        log.debug(output);
-
-        importProdImage("operator");
-
-        log.info("Waiting for syndesis-operator to be ready");
-        OpenShiftUtils.xtf().waiters()
-                .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-operator")
-                .interval(TimeUnit.SECONDS, 20)
-                .timeout(TimeUnit.MINUTES, 10)
-                .assertEventually();
-    }
-
-    /**
-     * Used when deploying older versions of syndesis (currently used only in upgrade using operator tests).
-     *
-     * Can be removed when master is related to 7.4
-     */
-    private static void deployOperatorPre73Way() {
-        log.info("Deploying operator using pre-7.3 way");
-        final String output = OpenShiftBinaryClient.getInstance().executeCommandWithReturn(
-                "Unable to create operator resource " + TestConfiguration.syndesisOperatorUrl(),
                 "create",
                 "-n", TestConfiguration.openShiftNamespace(),
                 "-f", TestConfiguration.syndesisOperatorUrl()
