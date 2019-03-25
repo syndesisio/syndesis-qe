@@ -53,25 +53,27 @@ public class EditorSteps {
         assertThat(flowViewComponent.getIntegrationName(), is(integrationName));
     }
 
+    @Deprecated
     @When("^add first step between START and STEP connection$")
-    public void sheAddsFirstStep(){
+    public void sheAddsFirstStep() {
         flowViewComponent.clickAddStepLink(0);
     }
 
+    @Deprecated
     @When("^add second step between STEP and FINISH connection$")
-    public void sheAddsSecond(){
+    public void sheAddsSecond() {
         flowViewComponent.clickAddStepLink(1);
     }
 
     @When("^.*adds? integration step on position \"([^\"]*)\"$")
-    public void addAnotherStep(int stepPos){
+    public void addAnotherStep(int stepPos) {
         flowViewComponent.clickAddStepLink(stepPos);
     }
 
     /**
      * unused
      */
-    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in hover table over \"([^\"]*)\" step$")
+    @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in hover table over \"([^\"]*)\" step$")
     public void checkTextInHoverTable(String text, String isVisible, String stepPosition) throws InterruptedException {
         if (isVisible.equalsIgnoreCase("visible")) {
             Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
@@ -93,8 +95,8 @@ public class EditorSteps {
      * @param stepPosition
      * @throws InterruptedException
      */
-    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"$")
-    public void checkTextInStepWarning(String text, String isVisible, int stepPosition) throws InterruptedException {
+    @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"$")
+    public void checkTextInStepWarning(String text, String isVisible, int stepPosition) {
         if (isVisible.equalsIgnoreCase("visible")) {
             doCheckTextInStepsWarningTable(text, stepPosition, true);
         } else {
@@ -102,9 +104,9 @@ public class EditorSteps {
         }
     }
 
-    @And("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of steps: (.*)")
-    public void checkTextInStepsWarning(String text, String isVisible, List<String> list) throws InterruptedException {
-        for (String index : list) {
+    @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of steps$")
+    public void checkTextInStepsWarning(String text, String isVisible, DataTable table) {
+        for (String index : table.asList()) {
             if (isVisible.equalsIgnoreCase("visible")) {
                 doCheckTextInStepsWarningTable(text, Integer.valueOf(index), true);
             } else {
@@ -125,7 +127,7 @@ public class EditorSteps {
         }
     }
 
-    @And("^.*checks? that in connection info popover for step number \"([^\"]*)\" is following text$")
+    @Then("^.*checks? that in connection info popover for step number \"([^\"]*)\" is following text$")
     public void checkTextInConnectionInfo(int stepPosition, DataTable connectionsData) {
         List<String> data = connectionsData.asList(String.class);
         String foundText = flowViewComponent.getConnectionPropertiesText(flowViewComponent.getStepOnPosition(stepPosition));
@@ -144,12 +146,12 @@ public class EditorSteps {
      *
      * @param position index of element with class .step
      */
-    @And(".*checks? that there is no warning inside of step number \"([^\"]*)\"$")
+    @Then(".*checks? that there is no warning inside of step number \"([^\"]*)\"$")
     public void checkIfWarningIsVisible(int position) {
         Assertions.assertThat(flowViewComponent.getStepWarningElement(position).isDisplayed()).isFalse();
     }
 
-    @And(".*checks? that there is no warning inside of steps in range from \"([^\"]*)\" to \"([^\"]*)\"$")
+    @Then(".*checks? that there is no warning inside of steps in range from \"([^\"]*)\" to \"([^\"]*)\"$")
     public void checkIfWarningIsVisibleInRange(int start, int finish) {
         for (int i = start; i <= finish; i++) {
             Assertions.assertThat(flowViewComponent.getStepWarningElement(i).isDisplayed()).isFalse();
