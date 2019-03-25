@@ -116,7 +116,6 @@ public class DataMapper extends SyndesisPageObject {
      * @param target
      */
     public void createMapping(String source, String target) {
-        openDataMapperCollectionElement();
         doCreateMapping(source, target);
     }
 
