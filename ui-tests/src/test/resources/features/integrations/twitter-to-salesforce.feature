@@ -49,7 +49,7 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Done" button
 
     # add basic filter step
-    And add integration step on position "1"
+    And add integration step on position "0"
     And select "Basic Filter" integration step
     Then check visibility of "Basic Filter" step configuration page
     And check that basic filter step path input options contains "text" option
@@ -57,7 +57,7 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Done" button
 
      # add advanced filter step
-    And add integration step on position "2"
+    And add integration step on position "1"
     And select "Advanced Filter" integration step
     Then check visibility of "Advanced Filter" step configuration page
     When fill in the configuration page for "Advanced Filter" step with "${body.text} contains '#e2e'" parameter
@@ -72,17 +72,17 @@ Feature: Integration - Twitter to Salesforce
     Then wait until integration "Twitter to Salesforce E2E" gets into "Running" state
     #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
 
-    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat #syndesis4ever"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "test #syndesis4ever"
     And sleep for "30000" ms
     Then check SF does not contain contact for tw account: "twitter_talky"
 
-    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat #e2e"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e"
     And sleep for "30000" ms
     Then check SF does not contain contact for tw account: "twitter_talky"
 
-    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat #e2e #syndesis4ever"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e #syndesis4ever"
     And sleep for "30000" ms
     Then check SF contains contact for tw account: "twitter_talky"
-    And check that contact from SF with last name: "Talky" has description "Red Hat #e2e #syndesis4ever @syndesis_listen"
+    And check that contact from SF with last name: "Talky" has description "test #e2e #syndesis4ever @syndesis_listen"
     # clean-up in salesforce
     When delete contact from SF with last name: "Talky"
