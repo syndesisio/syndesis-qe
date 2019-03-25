@@ -131,6 +131,14 @@ public final class OpenShiftUtils {
         return null;
     }
 
+    public static boolean arePodLogsEmpty(String podPartialName) {
+        // pod has to be in running state because pod in ContainerCreating state causes exception
+        OpenShiftWaitUtils.waitUntilPodIsRunning(podPartialName);
+
+        Optional<Pod> integrationPod = getPodByPartialName(podPartialName);
+        return integrationPod.map(pod -> OpenShiftUtils.getInstance().getPodLog(pod).isEmpty()).orElse(true);
+    }
+
     /**
      * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
      * @param method HTTP method to use
