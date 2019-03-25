@@ -49,11 +49,14 @@ public class DataMapperSteps {
      */
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
-        mapper.openDataMapperCollectionElement();
-
         for (List<String> row : table.cells()) {
             mapper.doCreateMapping(row.get(0), row.get(1));
         }
+    }
+
+    @When("^open data mapper collection mappings$")
+    public void openCollectionMappings() {
+        mapper.openDataMapperCollectionElement();
     }
 
     @Then("^check visibility of data mapper ui$")
