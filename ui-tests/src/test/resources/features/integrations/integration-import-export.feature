@@ -45,10 +45,16 @@ Feature: Integration - Import Export
     And fill in values
       | Channel | test |
 
-    And click on the "Next" button
+    And click on the "Done" button
+
+    # add split step
+    Then check visibility of page "Add to Integration"
+    When add integration step on position "0"
+    And select "Split" integration step
+
 
     # add data mapper step
-    When add integration step on position "0"
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create mapping from "company" to "message"
