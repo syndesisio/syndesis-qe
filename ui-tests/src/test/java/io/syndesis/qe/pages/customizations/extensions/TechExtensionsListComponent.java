@@ -10,6 +10,7 @@ import org.openqa.selenium.By;
 import java.util.concurrent.TimeoutException;
 
 import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
@@ -63,10 +64,23 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         }
     }
 
-    public void chooseActionOnExtension(String name, String action) {
+    public SelenideElement getActionOnExtensionButton(String name, String action) {
         SelenideElement extension = this.getExtensionItem(name);
-        SelenideElement actionButton = extension.findAll(By.tagName("button")).filter(exactText(action)).first();
+        assertThat(extension).isNotNull();
+        SelenideElement actionButton = extension.findAll(By.tagName("button")).filter(exactText(action)).first().shouldBe(visible);
         assertThat(actionButton).isNotNull();
-        actionButton.shouldBe(visible).click();
+        return actionButton;
+    }
+
+    public void chooseActionOnExtension(String name, String action) {
+        getActionOnExtensionButton(name, action).shouldBe(visible).click();
+    }
+
+    public void checkActionOnExtensionButtonEnabled(String name, String action) {
+        getActionOnExtensionButton(name, action).shouldBe(enabled).click();
+    }
+
+    public void checkActionOnExtensionButtonDisabled(String name, String action) {
+        getActionOnExtensionButton(name, action).shouldNotBe(enabled).click();
     }
 }
