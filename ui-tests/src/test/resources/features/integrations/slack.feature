@@ -24,10 +24,8 @@ Feature: Slack Connector
   Scenario: Check message with logger
 
     When import extensions from syndesis-extensions folder
-      | syndesis-extension-body  |
+      | syndesis-extension-body |
     And navigate to the "Home" page
-
-    # create integration
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
@@ -47,14 +45,12 @@ Feature: Slack Connector
     And click on the "Done" button
     Then add integration step on position "0"
 
-    # add data mapper step
     When select "Set Body" integration step
     And fill in values
       | Body | test message |
     And scroll "top" "right"
     And click on the "Done" button
 
-    # finish and save integration
     When click on the "Save" button
     And set integration name "Integration_with_slack"
     And publish integration
@@ -69,7 +65,6 @@ Feature: Slack Connector
   @slack-check-message-data-mapper
   Scenario: Check that slack received a message from an integration
 
-    # create integration
     When click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
@@ -77,7 +72,8 @@ Feature: Slack Connector
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
-    And fill in periodic query input with "SELECT company FROM CONTACT limit(1)" value
+
+    When fill in periodic query input with "SELECT company FROM CONTACT limit(1)" value
     And fill in period input with "200" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button
@@ -88,20 +84,19 @@ Feature: Slack Connector
     And fill in values
       | Channel | test |
     And click on the "Done" button
-
-    # add data mapper step
-    When add integration step on position "0"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
+
+    When open data mapper collection mappings
     And create mapping from "company" to "message"
     And click on the "Done" button
-
-    # finish and save integration
-    When click on the "Save" button
+    And click on the "Save" button
     And set integration name "Integration_with_slack"
     And publish integration
     Then Integration "Integration_with_slack" is present in integrations list
     And wait until integration "Integration_with_slack" gets into "Running" state
+    And sleep for jenkins delay or "15" seconds
     And check that last slack message equals "Red Hat" on channel "test"
 
 #
@@ -109,52 +104,46 @@ Feature: Slack Connector
 #
   @slack-to-db
   Scenario: Check that slack message is saved into DB
-    # create integration
+
     When click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-    # select slack connection as start integration
     When select the "QE Slack" connection
     And select "Read Messages" integration action
-    Then select "test" from "channel" dropdown
-    And click on the "Done" button.
-
-    # select postgresDB connection as finish integration
+    And select "test" from "channel" dropdown
+    And click on the "Done" button
     Then check visibility of page "Choose a Finish Connection"
+
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into CONTACT values (:#AUTOR , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
     And click on the "Done" button
-
-    # add data mapper step
     Then check visibility of page "Add to Integration"
+
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And create mapping from "username" to "AUTOR"
-    And create mapping from "text" to "COMPANY"
-    And click on the "Done" button
 
-    # add basic filter step
-    When add integration step on position "1"
+    When create data mapper mappings
+      | username | AUTOR   |
+      | text     | COMPANY |
+    And click on the "Done" button
+    And add integration step on position "0"
     And select "Basic Filter" integration step
-    And check visibility of "Basic Filter" step configuration page
-    Then fill in the configuration page for "Basic Filter" step with "ANY of the following, text, contains, Red Hat testSlack" parameter
-    And click on the "Done" button
+    Then check visibility of "Basic Filter" step configuration page
 
-    # finish and save integration
-    When click on the "Save" button
+    When fill in the configuration page for "Basic Filter" step with "ANY of the following, text, contains, Red Hat testSlack" parameter
+    And click on the "Done" button
+    And click on the "Save" button
     And set integration name "slack-to-db"
     And publish integration
-
     Then Integration "slack-to-db" is present in integrations list
     And wait until integration "slack-to-db" gets into "Running" state
 
     When send message "Red Hat testSlack" on channel "test"
     And send message "Red Hat test incorrect Slack" on channel "test"
     And sleep for "10000" ms
-
     Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
     And checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
 
@@ -190,8 +179,9 @@ Feature: Slack Connector
     When add integration step on position "0"
     Then select "Data Mapper" integration step
     And check visibility of data mapper ui
-    Then create mapping from "username" to "AUTOR"
-    And create mapping from "text" to "COMPANY"
+    And create data mapper mappings
+      | username | AUTOR   |
+      | text     | COMPANY |
     And click on the "Done" button
 
     # finish and save integration
@@ -205,7 +195,7 @@ Feature: Slack Connector
 
     Then Integration "slack-to-db-delay-and-maxmessage" is present in integrations list
     And wait until integration "slack-to-db-delay-and-maxmessage" gets into "Running" state
-    And sleep for "10000" ms
+    And sleep for jenkins delay or "15" seconds
 
     # test Maximum Messages to Retrieve after start
     Then checks that query "select * from contact where company = 'message1'" has no output
