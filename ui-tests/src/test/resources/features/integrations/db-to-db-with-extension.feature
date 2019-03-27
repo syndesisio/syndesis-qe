@@ -46,6 +46,7 @@ Feature: Integration - DB to DB with extension
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
+    When open data mapper collection mappings
     Then create data mapper mappings
       | company     | company             |
       | last_name   | first_and_last_name |

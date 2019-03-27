@@ -52,6 +52,7 @@ Feature: Integration - DB to DB mysql
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
+    And open data mapper collection mappings
     And create mapping from "first_name" to "TASK"
 
 #    And scroll "top" "right"
