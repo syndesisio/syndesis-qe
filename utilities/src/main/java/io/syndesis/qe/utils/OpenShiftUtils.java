@@ -3,8 +3,6 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import org.apache.commons.io.IOUtils;
-
 import java.util.Optional;
 
 import cz.xtf.openshift.OpenShiftBinaryClient;
@@ -200,13 +198,13 @@ public final class OpenShiftUtils {
      * @param resource path to resource file to use with -f
      */
     public static void create(String resource) {
-        OpenShiftBinaryClient.getInstance().executeCommandAndConsumeOutput(
+        final String output = OpenShiftBinaryClient.getInstance().executeCommandWithReturn(
                 "Unable to create resource " + resource,
-                istream -> log.info(IOUtils.toString(istream, "UTF-8")),
                 "apply",
                 "--overwrite=false",
                 "-n", TestConfiguration.openShiftNamespace(),
                 "-f", resource
         );
+        log.info(output);
     }
 }
