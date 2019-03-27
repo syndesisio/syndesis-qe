@@ -113,6 +113,26 @@ spec:
       insecure: true
     name: "$TAG$"
 ---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: postgres_exporter
+  annotations:
+    openshift.io/image.insecureRepository: "true"
+  labels:
+    app: syndesis
+    syndesis.io/app: syndesis
+    syndesis.io/type: infrastructure
+    syndesis.io/component: syndesis-db-metrics
+spec:
+  tags:
+  - from:
+      kind: DockerImage
+      name: $POSTGRES_EXPORTER$
+    importPolicy:
+      scheduled: true
+    name: "$POSTGRES_EXPORTER_TAG$"
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -136,9 +156,9 @@ rules:
 - apiGroups:
   - syndesis.io
   resources:
-  - syndesises
-  - syndesises/finalizers
-  verbs: [ get, list, create, update, delete, deletecollection, watch ]
+  - "*"
+  - "*/finalizers"
+  verbs: [ get, list, create, update, delete, deletecollection, watch]
 - apiGroups:
   - ""
   resources:
@@ -158,6 +178,7 @@ rules:
 - apiGroups:
   - rbac.authorization.k8s.io
   resources:
+  - roles
   - rolebindings
   verbs: [ get, list, create, update, delete, deletecollection, watch]
 - apiGroups:
@@ -179,7 +200,6 @@ rules:
   - build.openshift.io
   resources:
   - buildconfigs
-  verbs:
   verbs: [ get, list, create, update, delete, deletecollection, watch]
 - apiGroups:
   - authorization.openshift.io
@@ -191,6 +211,24 @@ rules:
   resources:
   - routes
   - routes/custom-host
+  verbs: [ get, list, create, update, delete, deletecollection, watch]
+- apiGroups:
+  - camel.apache.org
+  resources:
+  - "*"
+  verbs: [ get, list, create, update, delete, deletecollection, watch]
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - alertmanagers
+  - prometheuses
+  - servicemonitors
+  - prometheusrules
+  verbs: [ get, list, create, update, delete, deletecollection, watch]
+- apiGroups:
+  - integreatly.org
+  resources:
+  - grafanadashboards
   verbs: [ get, list, create, update, delete, deletecollection, watch]
 ---
 kind: RoleBinding
@@ -243,6 +281,8 @@ roleRef:
 apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
+  annotations:
+    openshift.io/image.insecureRepository: "true"
   labels:
     app: syndesis
     syndesis.io/app: syndesis
