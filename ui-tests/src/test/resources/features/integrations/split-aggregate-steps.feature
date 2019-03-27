@@ -73,6 +73,7 @@ Feature: Integration - DB to DB with split/aggregate
     Then check visibility of page "Add to Integration"
     When add integration step on position "4"
     And select "Aggregate" integration step
+    And sleep for jenkins delay or "2" seconds
     Then check visibility of page "Add to Integration"
 
     When publish integration
