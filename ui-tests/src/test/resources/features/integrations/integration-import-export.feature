@@ -45,7 +45,7 @@ Feature: Integration - Import Export
     And fill in values
       | Channel | test |
 
-    And click on the "Next" button
+    And click on the "Done" button
 
     # add data mapper step
     When add integration step on position "0"
