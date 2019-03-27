@@ -1,19 +1,21 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class IntegrationFlowView extends SyndesisPageObject {
@@ -164,7 +166,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public SelenideElement getStepOnPosition(int position) {
-        return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position)).get(position - 1).shouldBe(visible);
+        return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position))
+                .get(position - 1).shouldBe(visible);
     }
 
     public String getPopoverText() {
