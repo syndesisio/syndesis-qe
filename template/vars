@@ -10,3 +10,5 @@ export PROMETHEUS=registry.access.redhat.com/openshift3/prometheus:v3.9.25
 export OAUTH_PROXY_TAG=v1.1.0
 export PROMETHEUS_TAG=v2.1.0
 export TAG=
+export POSTGRES_EXPORTER=
+export POSTGRES_EXPORTER_TAG=v0.4.7
