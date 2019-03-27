@@ -157,6 +157,16 @@ public class ExtensionSteps {
         customizationsPage.getTechExtensionsListComponent().chooseActionOnExtension(extensionName, action);
     }
 
+    @Then("^check action button  \"([^\"]*)\" enabled on \"([^\"]*)\" technical extension$")
+    public void checkActionEnabledOnTechExtensionItem(String action, String extensionName) throws Throwable {
+        customizationsPage.getTechExtensionsListComponent().checkActionOnExtensionButtonEnabled(extensionName, action);
+    }
+
+    @Then("^check action button  \"([^\"]*)\" disabled on \"([^\"]*)\" technical extension$")
+    public void checkActionDisabledOnTechExtensionItem(String action, String extensionName) throws Throwable {
+        customizationsPage.getTechExtensionsListComponent().checkActionOnExtensionButtonDisabled(extensionName, action);
+    }
+
     @Then("^she can review uploaded technical extension$")
     public void techExtensionNewStepReview() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
