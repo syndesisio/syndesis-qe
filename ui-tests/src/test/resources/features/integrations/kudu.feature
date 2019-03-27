@@ -65,6 +65,8 @@ Feature: Kudu connector
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
+
+    When open data mapper collection mappings
     And create data mapper mappings
       | id   | key   |
       | task | value |

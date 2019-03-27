@@ -52,9 +52,10 @@ Feature: Integration - DB to DB
 
     # add data mapper step
     Then check visibility of page "Add to Integration"
-    When add integration step on position "0"
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
+    And open data mapper collection mappings
     And create mapping from "first_name" to "TASK"
 
     And click on the "Done" button
@@ -288,7 +289,7 @@ Feature: Integration - DB to DB
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-#    And sleep for "5000" ms
+    And open data mapper collection mappings
     And create mapping from "first_name" to "TASK"
 
     And click on the "Done" button
