@@ -12,7 +12,6 @@ import org.openqa.selenium.By;
 
 import java.util.List;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
@@ -189,7 +188,8 @@ public class EditorSteps {
     @When("^edit integration step on position (\\d+)$")
     public void editIntegrationStep(int oneBasedStepPosition) {
         log.info("Editing integration step #" + oneBasedStepPosition);
-        flowViewComponent.getStepOnPosition(oneBasedStepPosition).shouldBe(visible).click();
+        flowViewComponent.getStepOnPosition(oneBasedStepPosition)
+                .$(By.className("step-container")).shouldBe(visible).click();
     }
 
     @When("^publish integration$")
