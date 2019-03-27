@@ -43,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SyndesisTemplate {
+    private static final int IMAGE_STREAM_COUNT = (TestConfiguration.useOperator() ? 8 : 7);
     public static Template getTemplate() {
         try (InputStream is = new URL(TestConfiguration.syndesisTemplateUrl()).openStream()) {
             return OpenShiftUtils.client().templates().load(is).get();
@@ -239,7 +240,7 @@ public class SyndesisTemplate {
         ImageStreamList isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
         final int maxRetries = 120;
         int retries = 0;
-        while (isl.getItems().size() < 6) {
+        while (isl.getItems().size() < IMAGE_STREAM_COUNT) {
             TestUtils.sleepIgnoreInterrupt(5000L);
             isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
             retries++;
@@ -293,14 +294,20 @@ public class SyndesisTemplate {
 
     private static void importProdImages() {
         if (TestUtils.isProdBuild()) {
+            final int maxRetries = 120;
+            int retries = 0;
             ImageStreamList isl =
                     OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                             .list();
 
-            while (isl.getItems().size() < 8) {
+            while (isl.getItems().size() < IMAGE_STREAM_COUNT) {
                 TestUtils.sleepIgnoreInterrupt(5000L);
                 isl = OpenShiftUtils.client().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
                         .list();
+                retries++;
+                if (retries == maxRetries) {
+                    fail("Unable to find image streams after " + maxRetries + " tries.");
+                }
             }
 
             isl.getItems().forEach(is -> importProdImage(is.getMetadata().getName()));
