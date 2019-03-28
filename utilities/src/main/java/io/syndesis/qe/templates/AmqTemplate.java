@@ -21,6 +21,8 @@ public class AmqTemplate {
 
     public static void deploy() {
         if (!TestUtils.isDcDeployed("broker-amq")) {
+            // For some reason the productized operator creates broker-amq-tcp service, so delete it if it is present
+            OpenShiftUtils.client().services().withName("broker-amq-tcp").delete();
             Template template;
             try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
                 template = OpenShiftUtils.client().templates().load(is).get();
