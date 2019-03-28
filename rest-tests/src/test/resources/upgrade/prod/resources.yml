@@ -158,6 +158,12 @@ items:
                 valueFrom:
                   fieldRef:
                     fieldPath: metadata.namespace
+              - name: POD_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              - name: OPERATOR_NAME
+                value: "syndesis-operator"
     triggers:
     - imageChangeParams:
         automatic: true
@@ -168,4 +174,90 @@ items:
           name: fuse-online-operator:$TAG$
       type: ImageChange
     - type: ConfigChange
-
+- kind: Role
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: syndesis-operator
+    labels:
+      app: syndesis
+      syndesis.io/app: syndesis
+      syndesis.io/type: operator
+      syndesis.io/component: syndesis-operator
+  rules:
+  - apiGroups:
+    - syndesis.io
+    resources:
+    - "*"
+    - "*/finalizers"
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - ""
+    resources:
+    - pods
+    - services
+    - endpoints
+    - persistentvolumeclaims
+    - configmaps
+    - secrets
+    - serviceaccounts
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - ""
+    resources:
+    - events
+    verbs: [ get, list ]
+  - apiGroups:
+    - rbac.authorization.k8s.io
+    resources:
+    - roles
+    - rolebindings
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - template.openshift.io
+    resources:
+    - processedtemplates
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - image.openshift.io
+    resources:
+    - imagestreams
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - apps.openshift.io
+    resources:
+    - deploymentconfigs
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - build.openshift.io
+    resources:
+    - buildconfigs
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - authorization.openshift.io
+    resources:
+    - rolebindings
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - route.openshift.io
+    resources:
+    - routes
+    - routes/custom-host
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - camel.apache.org
+    resources:
+    - "*"
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - monitoring.coreos.com
+    resources:
+    - alertmanagers
+    - prometheuses
+    - servicemonitors
+    - prometheusrules
+    verbs: [ get, list, create, update, delete, deletecollection, watch]
+  - apiGroups:
+    - integreatly.org
+    resources:
+    - grafanadashboards
+    verbs: [ get, list, create, update, delete, deletecollection, watch]

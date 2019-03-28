@@ -19,6 +19,7 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #TAG                - tag which is expected by the operator
 #INSTALL_TAG        - git tag from fuse-online-install
 #INSTALL_DIR        - path to fuse-online-install repository
+#INFRA_ONLY         - flag for upgrading the infra only and skipping maven tasks
 
 [[ "$(git rev-parse --abbrev-ref HEAD)" =~ ^master$ ]] && echo "You shouldn't run this script from master branch!" && exit 1
 
@@ -41,12 +42,13 @@ bash ./install_ocp.sh
 
 echo "Waiting for syndesis deployment..."
 
-for pod in "operator" "db" "meta" "server" "ui"; do
-	until oc get pods -n syndesis | grep "${pod}" | grep -v deploy | grep -q "1/1"; do echo "syndesis-${pod} not ready yet"; sleep 10; done
+for pod in "operator" "meta" "server" "ui"; do
+    until oc get pods | grep "${pod}" | grep -v deploy | grep -q "1/1"; do echo "syndesis-${pod} not ready yet"; sleep 10; done
 done
 
-cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-before"
-
+if [ -z "${INFRA_ONLY}" ]; then
+	cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-before"
+fi
 IMAGES="SERVER META UI S2I OPERATOR"
 
 cp -f "${BASE_DIR}"/resources.yml /tmp/resources.yml
@@ -78,8 +80,9 @@ done
 
 echo "Waiting for upgrade pod to complete..."
 
-until oc get pods -n syndesis | grep syndesis-upgrade | grep "Completed"; do echo "syndesis-upgrade not completed yet"; sleep 10; done
+until oc get pods | grep syndesis-upgrade | grep "Completed"; do echo "syndesis-upgrade not completed yet"; sleep 10; done
 
-git checkout "${NEXT_BRANCH}"
-
-cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-after"
+if [ -z "${INFRA_ONLY}" ]; then
+	git checkout "${NEXT_BRANCH}"
+	cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-after"
+fi
