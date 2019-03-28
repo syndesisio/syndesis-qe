@@ -8,3 +8,4 @@ export OPERATOR=fuse-online-operator:
 export TAG=
 export INSTALL_TAG=
 export INSTALL_DIR=
+export INFRA_ONLY=
