@@ -50,7 +50,11 @@ public class DataMapperSteps {
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
         for (List<String> row : table.cells()) {
-            mapper.doCreateMapping(row.get(0), row.get(1));
+            if (row.size() > 2) {
+                mapper.doCreateMappingWithSeparator(row.get(0), row.get(1), row.get(2));
+            } else {
+                mapper.doCreateMapping(row.get(0), row.get(1));
+            }
         }
     }
 
