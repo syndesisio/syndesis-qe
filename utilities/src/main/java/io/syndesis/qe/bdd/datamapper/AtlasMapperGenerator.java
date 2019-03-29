@@ -382,11 +382,11 @@ public class AtlasMapperGenerator {
 
         Field in = getField(fromStep.getInspectionResponseFields().get(), mappingDef.getInputFields().get(0));
         if (in == null) {
-            fail("Unable to find field with path " + mappingDef.getInputFields().get(0));
+            fail("Unable to find \"in\" field with path " + mappingDef.getInputFields().get(0));
         }
         Field out = getField(followingStep.getInspectionResponseFields().get(), mappingDef.getOutputFields().get(0));
         if (out == null) {
-            fail("Unable to find field with path " + mappingDef.getOutputFields().get(0));
+            fail("Unable to find \"out\" field with path " + mappingDef.getOutputFields().get(0));
         }
         in.setDocId(fromStep.getStep().getId().get());
         out.setDocId(followingStep.getStep().getId().get());
