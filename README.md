@@ -1,5 +1,5 @@
 # Syndesis QE
-Updated: 31.01.2019
+Updated: 29.03.2019
 
 ##### Table of Contents
 
@@ -27,6 +27,7 @@ Updated: 31.01.2019
 
 #### docs
 On-going initiative to provide comprehensive guide to current code structure.
+Contains a script `generateDocs.py` which produces list of all defined steps in this project and a link to their definition.
 
 #### rest-tests
 Java based tests that use Cucumber scenarios.
