@@ -10,6 +10,7 @@ Feature: Google Sheets Connector
     Given clean application state
     And deploy ActiveMQ broker
     And clean "contact" table
+    And clean "todo" table
     And log into the Syndesis
     And navigate to the "Settings" page
     And check that settings item "Google Sheets" has button "Register"
@@ -19,6 +20,7 @@ Feature: Google Sheets Connector
     And created connections
       | Red Hat AMQ | AMQ | AMQ | AMQ connection |
     And navigate to the "Home" page
+
 
   Scenario: create spreadsheet
     When click on the "Create Integration" button to create a new integration.
@@ -63,6 +65,7 @@ Feature: Google Sheets Connector
     And sleep for "3000" ms
     Then verify that spreadsheet was created
 
+
   Scenario: Append messages from DB
     When clear test spreadsheet
     And inserts into "contact" table
@@ -90,6 +93,7 @@ Feature: Google Sheets Connector
     And check visibility of data mapper ui
     And open data bucket "Properties"
     And define spreadsheetID as property in data mapper
+    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId |
       | first_name    | A             |
@@ -97,7 +101,6 @@ Feature: Google Sheets Connector
       | company       | C             |
       | lead_source   | D             |
       | create_date   | E             |
-
     Then click on the "Done" button
 
     When click on the "Publish" button
@@ -111,11 +114,11 @@ Feature: Google Sheets Connector
       | Matej | Bar    | Red Hat | db |
       | Fuse  | Online | Red Hat | db |
 
+
   Scenario: Update messages from DB - Rows
     When inserts into "contact" table
       | New    | Updated | Red Hat | db |
       | Second | Update  | IBM     | db |
-
     Then click on the "Create Integration" button to create a new integration
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
@@ -136,6 +139,7 @@ Feature: Google Sheets Connector
     And check visibility of data mapper ui
     And open data bucket "Properties"
     And define spreadsheetID as property in data mapper
+    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId |
       | first_name    | A             |
@@ -150,9 +154,12 @@ Feature: Google Sheets Connector
     And click on the "Publish" button
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets-update" gets into "Running" state
+    And sleep for "3000" ms
     Then verify that test sheet contains values on range "A2:D2"
       | New | Updated | Red Hat | db |
 
+
+  @gh-5110
   Scenario: Update messages from DB - Columns
     When inserts into "contact" table
       | Matej | Foo    | Red Hat | db |
@@ -181,6 +188,7 @@ Feature: Google Sheets Connector
     And check visibility of data mapper ui
     And open data bucket "Properties"
     And define spreadsheetID as property in data mapper
+    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId |
       | first_name    | #1            |
@@ -195,7 +203,7 @@ Feature: Google Sheets Connector
     And click on the "Publish" button
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets-update-column" gets into "Running" state
-
+    And sleep for "3000" ms
     Then verify that test sheet contains values on range "E1:E5"
       | Fuse    |
       | Online  |
@@ -231,6 +239,7 @@ Feature: Google Sheets Connector
     And define property "sourceGroupColumn" with value "C" of type "String" in data mapper
     And define property "sourceValuesColumn" with value "D" of type "String" in data mapper
     And open data bucket "Properties"
+    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId             |
       | sheetId            | sheetId                   |
@@ -255,6 +264,7 @@ Feature: Google Sheets Connector
 
     And open data bucket "Properties"
     And open data bucket "1 - Spreadsheet"
+    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId            |
       | sheetId            | sheetId                  |
@@ -310,6 +320,7 @@ Feature: Google Sheets Connector
     And sleep for "3000" ms
     Then verify that spreadsheet title match "updated-title"
 
+
   Scenario: get properties of sheet
     When click on the "Create Integration" button to create a new integration.
     And select the "Google Sheets" connection
@@ -335,7 +346,7 @@ Feature: Google Sheets Connector
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
     And create data mapper mappings
-      | sheets.title     | sheets.sheet    |
+      | sheets.title | sheets.sheet |
 
     Then click on the "Done" button
 
@@ -345,6 +356,7 @@ Feature: Google Sheets Connector
     And navigate to the "Integrations" page
     And wait until integration "properties" gets into "Running" state
     Then verify that message from "sheety" queue contains "Sheet1,sheet2,pivot-columns,pivot rows"
+
 
   Scenario: add chart
     When click on the "Create Integration" button to create a new integration.
@@ -365,6 +377,7 @@ Feature: Google Sheets Connector
     And define property "dataRange" with value "B1:B20" of type "String" in data mapper
     And define property "domainRange" with value "A1:A20" of type "String" in data mapper
     And open data bucket "Properties"
+    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId        |
       | sheetId       | sourceSheetId        |
@@ -377,7 +390,8 @@ Feature: Google Sheets Connector
     And click on the "Publish" button
     And navigate to the "Integrations" page
     And wait until integration "charts" gets into "Running" state
-  Then verify that chart was created
+    Then verify that chart was created
+
 
   Scenario: Copy big spreadsheet
     When clear test spreadsheet
@@ -387,6 +401,7 @@ Feature: Google Sheets Connector
     And fill in values
       | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
       | Range         | A1:R25000                                    |
+
     Then click on the "Done" button
 
     When select the "Google Sheets" connection
@@ -399,6 +414,7 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
+    And open data mapper collection mappings
     And create data mapper mappings
       | A | A |
       | B | B |
@@ -417,3 +433,80 @@ Feature: Google Sheets Connector
     And wait until integration "copy" gets into "Running" state
     Then verify that data test sheet contains values on range "A25000:H25000"
       | 241178 | FL | PALM BEACH COUNTY | 0 | 1810826.38 | 0 | 0 | 1810826.38 |
+
+
+  Scenario:Copy Big SS to DB and back using split/aggregate
+    When clear test spreadsheet
+    And click on the "Create Integration" button to create a new integration.
+    And select the "Google Sheets" connection
+    And select "Get sheet values" integration action
+    And fill in values
+      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+      | Range         | A1:R5000                                     |
+      | Delay         | 30000                                        |
+      | Max results   | 4999                                         |
+    And fill in values by element ID
+      | delay | 30000 |
+    Then click on the "Done" button
+
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert INTO todo (task) VALUES(:#task)" value
+    Then click on the "Done" button
+
+    When add integration step on position "0"
+    Then select the "Split" connection
+
+    When add integration step on position "1"
+    And select the "Data Mapper" connection
+    And check visibility of data mapper ui
+    And create data mapper mappings
+      | A;B;C;D;E;F;G | task | Underscore [_] |
+    Then click on the "Done" button
+    When click on the "Publish" button
+    And set integration name "to-db"
+    And click on the "Publish" button
+    And navigate to the "Integrations" page
+    And wait until integration "to-db" gets into "Running" state
+    Then navigate to the "Home" page
+
+    When click on the "Create Integration" button to create a new integration
+    And select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in values
+      | SQL statement | SELECT * FROM todo |
+      | Period        | 10000              |
+    Then click on the "Done" button
+
+    When select the "Google Sheets" connection
+    And select "Append values to a sheet" integration action
+    And fill in values
+      | Range | A1:H1 |
+    And fill spreadsheet ID
+    Then click on the "Next" button
+
+    When add integration step on position "0"
+    And select the "Split" connection
+
+    When add integration step on position "1"
+    And select the "Aggregate" connection
+
+    When add integration step on position "1"
+    And select the "Data Mapper" connection
+    And check visibility of data mapper ui
+    And open data bucket "Properties"
+    And create data mapper mappings
+      | task | A;B;C;D;E;F;G | Underscore [_] |
+    Then click on the "Done" button
+
+    When click on the "Publish" button
+    And set integration name "from-db-to-sheets"
+    And click on the "Publish" button
+    And navigate to the "Integrations" page
+    And wait until integration "from-db-to-sheets" gets into "Running" state
+    #it takes some time to copy that big amount of messages
+    And sleep for jenkins delay or "150" seconds
+    And verify that test sheet contains values on range "A1000:E1000"
+      | 308578 | FL | ST  JOHNS COUNTY | 1377 | 1377 |
+    And verify that test sheet contains values on range "A4999:E4999"
+      | 202669 | FL | LEON COUNTY | 0 | 9270000 |

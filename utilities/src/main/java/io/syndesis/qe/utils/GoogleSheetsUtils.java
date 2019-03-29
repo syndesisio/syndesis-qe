@@ -33,13 +33,12 @@ public class GoogleSheetsUtils {
     @Setter
     private String testDataSpreadSheet = "1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw";
 
-    @PostConstruct
-    private void initSheets() {
+    private Sheets getSheets() {
         if (sheets == null) {
             sheets = accounts.getGoogleAccountForTestAccount("QE Google Sheets").sheets();
         }
+        return sheets;
     }
-
     public List<String> getSpreadSheetValues() {
         return getSpreadSheetValues(testSheetId, "A1:E3");
     }
@@ -51,7 +50,7 @@ public class GoogleSheetsUtils {
     public void clearSpreadSheetValues(String id, String range) {
         ClearValuesRequest clear = new ClearValuesRequest();
         try {
-            sheets.spreadsheets().values().clear(id, range, clear).execute();
+            getSheets().spreadsheets().values().clear(id, range, clear).execute();
         } catch (IOException e) {
             Assertions.fail("clear spreadsheet values shouldn't throw any exception: " + e.getMessage());
         }
@@ -60,7 +59,7 @@ public class GoogleSheetsUtils {
     public List<String> getSpreadSheetValues(String id, String range) {
         List<String> result = new ArrayList<>();
         try {
-            ValueRange response = sheets.spreadsheets().values()
+            ValueRange response = getSheets().spreadsheets().values()
                     .get(id, range)
                     .execute();
             List<List<Object>> values = response.getValues();
@@ -82,7 +81,7 @@ public class GoogleSheetsUtils {
     public List<Sheet> getSheets(String id) {
         Spreadsheet spreadsheet = null;
         try {
-            spreadsheet = sheets.spreadsheets().get(id).execute();
+            spreadsheet = getSheets().spreadsheets().get(id).execute();
         } catch (IOException e) {
             Assertions.fail("get sheets values shouldn't throw any exception: " + e.getMessage());
         }
@@ -98,7 +97,7 @@ public class GoogleSheetsUtils {
         req.getRequests().add(new Request().setDeleteSheet(clear));
 
         try {
-            sheets.spreadsheets().batchUpdate(spreadsheetId, req).execute();
+            getSheets().spreadsheets().batchUpdate(spreadsheetId, req).execute();
         } catch (IOException e) {
             Assertions.fail("clear sheet shouldn't throw any exception: " + e.getMessage());
         }
@@ -107,7 +106,7 @@ public class GoogleSheetsUtils {
     public Spreadsheet getSpreadSheet(String id) {
         Spreadsheet spreadsheet = null;
         try {
-            spreadsheet = sheets.spreadsheets().get(id).execute();
+            spreadsheet = getSheets().spreadsheets().get(id).execute();
         } catch (IOException e) {
             Assertions.fail("get spreadsheet shouldn't throw any exception: " + e.getMessage());
         }
