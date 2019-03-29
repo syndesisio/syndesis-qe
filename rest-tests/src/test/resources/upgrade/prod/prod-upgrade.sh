@@ -16,6 +16,7 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #UI                 - ui image in registry
 #S2I                - s2i image in registry
 #OPERATOR           - operator image in registry
+#POSTGRES_EXPORTER  - postgres exporter image in registry
 #TAG                - tag which is expected by the operator
 #INSTALL_TAG        - git tag from fuse-online-install
 #INSTALL_DIR        - path to fuse-online-install repository
@@ -50,7 +51,7 @@ done
 if [ -z "${INFRA_ONLY}" ]; then
 	cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-before"
 fi
-IMAGES="SERVER META UI S2I OPERATOR"
+IMAGES="SERVER META UI S2I OPERATOR POSTGRES_EXPORTER"
 
 cp -f "${BASE_DIR}"/resources.yml /tmp/resources.yml
 for image in ${IMAGES}; do
@@ -78,6 +79,7 @@ for image in "fuse-ignite-ui" "fuse-ignite-meta" "fuse-ignite-s2i" "fuse-ignite-
     oc patch is "${image}" -p '{"metadata":{"annotations": {"openshift.io/image.insecureRepository": "true"}}}'
     oc import-image "${image}":"${TAG}"
 done
+oc import-image postgres_exporter:v0.4.7
 
 echo "Waiting for upgrade pod to complete..."
 
