@@ -7,6 +7,7 @@ import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.pages.integrations.summary.Metrics;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
 import org.assertj.core.api.Assertions;
@@ -49,6 +50,10 @@ public class MetricsSteps {
     public void checkLastProcessed() throws ParseException {
         refresh();
         String dateLabel = metricsTab.getLastProcessed();
+        if (metricsTab.getNumberOfTotalMessages() == 0) {
+            Assertions.assertThat(dateLabel).matches("^n/a$");
+            return;
+        }
         Assertions.assertThat(dateLabel).matches("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}, \\d{2}:\\d{2}$");
 
         Date dateWhenProcessed = new SimpleDateFormat("MM/dd/yyyy, HH:mm").parse(dateLabel);
@@ -109,7 +114,7 @@ public class MetricsSteps {
             String openshiftTime = pod.get().getStatus().getStartTime();
 
             if (uptime.contains("n/a")) {
-                Thread.sleep(10000);
+                TestUtils.sleepIgnoreInterrupt(61000); // gh-5100
                 refresh();
                 uptime = metricsTab.getUpTime();
                 openshiftTime = pod.get().getStatus().getStartTime();
