@@ -9,7 +9,7 @@ Feature: SQL Connector
   Background: Clean application state
     Given clean application state
     And log into the Syndesis
-    And reset content of "todo" table
+    And truncate "todo" table
     And navigate to the "Home" page
 
   #
@@ -68,3 +68,143 @@ Feature: SQL Connector
     Then validate that logs of integration "DB_2_Log" contains string "ABCsampleTODO"
     And validate that logs of integration "DB_2_Log" contains string "XYZsampleTODO"
     And validate that logs of integration "DB_2_Log" contains string "KLMsampleTODO"
+
+  @reproducer
+  @gh-5016
+  @sql-connector-predicates
+  Scenario Outline: Check SQL connector with predicate <predicate>
+
+    And inserts into "todo" table
+      | task1 |
+      | task2 |
+      | task3 |
+      | task4 |
+      | task5 |
+
+    When click on the "Create Integration" button to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # postgres start connection that provides a value
+    When select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in invoke query input with "SELECT <value> AS id" value
+    And click on the "Next" button
+
+    # end connection
+    And select the "Log" connection
+    And fill in values
+      | Message Context | true |
+      | Message Body    | true |
+    And click on the "Done" button
+
+    # select postgresDB as middle point
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "SELECT id FROM todo WHERE <predicate>" value
+    And click on the "Next" button
+
+    # add data mapper
+    And add integration step on position "0"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | id | id |
+    And click on the "Done" button
+
+    When add integration step on position "2"
+    And select "Log" integration step
+    And fill in values
+      | Message Context | true |
+      | Message Body    | true |
+    Then click on the "Done" button
+
+    And click on the "Publish" button
+    And set integration name "predicates"
+    And publish integration
+    Then Integration "predicates" is present in integrations list
+    And wait until integration "predicates" gets into "Running" state
+
+    Then validate that logs of integration "predicates" contains bodies of items "<result>"
+
+    # TODO: we might want to add more predicates, also function calls on either side etc
+    Examples:
+      | predicate             | value | result  |
+      | id < :#id             | 3     | 1,2     |
+      | id > :#id             | 3     | 4,5     |
+      | id <= :#id            | 3     | 1,2,3   |
+      | id >= :#id            | 3     | 3,4,5   |
+      | id != :#id            | 3     | 1,2,4,5 |
+      | id <= :#id AND id > 1 | 3     | 2,3     |
+      | id BETWEEN :#id AND 4 | 2     | 2,3,4   |
+      | id <= :#id OR id = 5  | 3     | 1,2,3,5 |
+
+
+  # this is here because #5017 was deemed fixed and the failing cases are now tracked as an RFE
+  # we should merge this with the tests for #5017 once #5840 is implemented
+  @reproducer
+  @gh-5084
+  @sql-connector-predicates-rfe
+  Scenario Outline: Check SQL connector with predicate <predicate>
+
+    And inserts into "todo" table
+      | task1 |
+      | task2 |
+      | task3 |
+      | task4 |
+      | task5 |
+
+    When click on the "Create Integration" button to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # postgres start connection that provides a value
+    When select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in invoke query input with "SELECT <value> AS id" value
+    And click on the "Next" button
+
+    # end connection
+    And select the "Log" connection
+    And fill in values
+      | Message Context | true |
+      | Message Body    | true |
+    And click on the "Done" button
+
+    # select postgresDB as middle point
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "SELECT id FROM todo WHERE <predicate>" value
+    And click on the "Next" button
+
+    # add data mapper
+    And add integration step on position "0"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | id | id |
+    And click on the "Done" button
+
+    When add integration step on position "2"
+    And select "Log" integration step
+    And fill in values
+      | Message Context | true |
+      | Message Body    | true |
+    Then click on the "Done" button
+
+    And click on the "Publish" button
+    And set integration name "predicates"
+    And publish integration
+    Then Integration "predicates" is present in integrations list
+    And wait until integration "predicates" gets into "Running" state
+
+    Then validate that logs of integration "predicates" contains bodies of items "<result>"
+
+    Examples:
+      | predicate             | value | result  |
+      | :#id > id             | 3     | 1,2     |
+      | (id+1) < :#id         | 4     | 1,2     |
+      | id in (1, :#id)       | 4     | 1,4     |
+      | id = floor(:#id)      | 4     | 4       |
