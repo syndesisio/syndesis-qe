@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import cucumber.api.PendingException;
 import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,9 +13,11 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
@@ -287,5 +290,16 @@ public class IntegrationSteps {
     @When("^edit integration$")
     public void editIntegration() throws Throwable {
         detailPage.editIntegration();
+    }
+
+    @Then("^validate that logs of integration \"([^\"]*)\" contains bodies of items \"([^\"]*)\"$")
+    public void validateThatLogsOfIntegrationContainsBodiesOfItems(String integrationName, String items) throws Throwable {
+        String searchedString = "[" + String.join(", ",
+                Arrays.stream(items.split(","))
+                        .map(
+                                s -> String.format("{\"id\":%s}", s))
+                        .collect(Collectors.toList())) + "]";
+        log.info("Searching log for string '{}'", searchedString);
+        checkThatLogsContain(integrationName, searchedString);
     }
 }
