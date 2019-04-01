@@ -13,7 +13,8 @@ Feature: Integration - Salesforce
 
   @integration-sf-db @integration-sf-db-create
   Scenario: On create to DB
-    And create SF "salesforce-on-create" action step on field: "Lead"
+    When create SF "salesforce-on-create" action step with properties
+      | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
     Then MAP using Step 1 and field "/Company" to "/company"
     Then MAP using Step 1 and field "/Email" to "/email"
@@ -28,7 +29,8 @@ Feature: Integration - Salesforce
   @integration-sf-db @integration-sf-db-delete
   Scenario: On delete to DB
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com" and company: "ACME"
-    And create SF "salesforce-on-delete" action step on field: "Lead"
+    When create SF "salesforce-on-delete" action step with properties
+      | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
     Then MAP using Step 1 and field "/id" to "/todo"
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
@@ -40,7 +42,8 @@ Feature: Integration - Salesforce
   @integration-sf-db @integration-sf-db-update
   Scenario: On update to DB
     Then create SF lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com" and company: "ACME"
-    And create SF "salesforce-on-update" action step on field: "Lead"
+    When create SF "salesforce-on-update" action step with properties
+      | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
     Then COMBINE using Step 1 and strategy "Space" into "/todo" and sources
       | /FirstName | /LastName | /Email |

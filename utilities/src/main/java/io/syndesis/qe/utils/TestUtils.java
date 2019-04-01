@@ -13,9 +13,6 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.ConnectorAction;
-import io.syndesis.common.model.connection.Connector;
 import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
@@ -30,36 +27,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class TestUtils {
-
-    private TestUtils() {
-    }
-
-    /**
-     * Finds an Action of a given connector.
-     * <p>
-     * TODO(tplevko): Rework this, when all connectors will be unified to follow the new writing style.
-     *
-     * @param connector       connector
-     * @param connectorPrefix connector prefix
-     * @return Action with given prefix or null if no such action can be found.
-     */
-    public static Action findConnectorAction(Connector connector, String connectorPrefix) {
-        Optional<ConnectorAction> action;
-        action = connector.getActions()
-                .stream()
-                .filter(a -> a.getId().get().contains(connectorPrefix))
-                .findFirst();
-
-        if (!action.isPresent()) {
-            action = connector.getActions()
-                    .stream()
-                    .filter(a -> a.getDescriptor().getCamelConnectorPrefix().contains(connectorPrefix))
-                    .findFirst();
-        }
-
-        return action.get();
-    }
-
     /**
      * Waits until a predicate is true or timeout exceeds.
      *

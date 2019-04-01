@@ -96,11 +96,11 @@ Feature: Integration - HTTP
   @datamapper
   Scenario: HTTP Response Datamapper
     Given create HTTP "GET" step with path "/api/getXml" and period "5" "SECONDS"
-      And change datashape of previous step to "out" direction, "XML_INSTANCE" type with specification '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xmlResponse><dummyField1>x</dummyField1><dummyField2>y</dummyField2><method>get</method><dummyField3>z</dummyField3></xmlResponse>'
+      And change "out" datashape of previous step to "XML_INSTANCE" type with specification '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xmlResponse><dummyField1>x</dummyField1><dummyField2>y</dummyField2><method>get</method><dummyField3>z</dummyField3></xmlResponse>'
       And start mapper definition with name: "mapping 1"
       And MAP using Step 1 and field "/xmlResponse/method" to "/response/executedMethod"
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "http-datamapper"
-      And change datashape of previous step to "in" direction, "XML_INSTANCE" type with specification '<response><executedMethod>TEST</executedMethod></response>'
+      And change "in" datashape of previous step to "XML_INSTANCE" type with specification '<response><executedMethod>TEST</executedMethod></response>'
     When create integration with name: "HTTP-GET-AMQ-Datamapper"
     Then wait for integration with name: "HTTP-GET-AMQ-Datamapper" to become active
     When clear endpoint events
