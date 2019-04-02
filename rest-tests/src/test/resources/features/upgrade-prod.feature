@@ -23,6 +23,9 @@ Feature: Syndesis Upgrade - Productized Version
   # After the upgrade is done, create a new integration and verify that it is working + verify that the old one is still working as well
   @prod-upgrade-after
   Scenario: Syndesis Prod Upgrade - After upgrading
+    When rebuild integration with name "upgrade"
+    Then wait for integration with name: "upgrade" to become active
+      And verify integration with task "X"
     Given add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
       | timer-action | 1000   |
