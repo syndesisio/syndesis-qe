@@ -16,9 +16,11 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #UI                 - ui image in registry
 #S2I                - s2i image in registry
 #OPERATOR           - operator image in registry
+#POSTGRES_EXPORTER  - postgres exporter image in registry
 #TAG                - tag which is expected by the operator
 #INSTALL_TAG        - git tag from fuse-online-install
 #INSTALL_DIR        - path to fuse-online-install repository
+#INFRA_ONLY         - flag for upgrading the infra only and skipping maven tasks
 
 [[ "$(git rev-parse --abbrev-ref HEAD)" =~ ^master$ ]] && echo "You shouldn't run this script from master branch!" && exit 1
 
@@ -30,7 +32,9 @@ NEXT_BRANCH="$(echo "$CURRENT_VERSION" + 0.1 | bc).x"
 
 git rev-parse --verify "${NEXT_BRANCH}" > /dev/null 2>&1 || (echo "Branch ${NEXT_BRANCH} not found!" && exit 1)
 
-source "${BASE_DIR}"/vars
+if [ -z "${OPERATOR}" ]; then
+	source "${BASE_DIR}"/vars
+fi
 
 [[ "${CURRENT_VERSION}" != "$(echo "${INSTALL_TAG}" | cut -c1-3)" ]] && echo "Current branch ${CURRENT_BRANCH} does not match install tag ${INSTALL_TAG}" && exit 1
 
@@ -40,13 +44,14 @@ bash ./install_ocp.sh
 
 echo "Waiting for syndesis deployment..."
 
-for pod in "operator" "db" "meta" "server" "ui"; do
-    until oc get pods -n syndesis | grep "${pod}" | grep -v deploy | grep -q "1/1"; do echo "syndesis-${pod} not ready yet"; sleep 10; done
+for pod in "operator" "meta" "server" "ui"; do
+    until oc get pods | grep "${pod}" | grep -v deploy | grep -q "1/1"; do echo "syndesis-${pod} not ready yet"; sleep 10; done
 done
 
-cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-before"
-
-IMAGES="SERVER META UI S2I OPERATOR"
+if [ -z "${INFRA_ONLY}" ]; then
+	cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-before"
+fi
+IMAGES="SERVER META UI S2I OPERATOR POSTGRES_EXPORTER"
 
 cp -f "${BASE_DIR}"/resources.yml /tmp/resources.yml
 for image in ${IMAGES}; do
@@ -74,11 +79,13 @@ for image in "fuse-ignite-ui" "fuse-ignite-meta" "fuse-ignite-s2i" "fuse-ignite-
     oc patch is "${image}" -p '{"metadata":{"annotations": {"openshift.io/image.insecureRepository": "true"}}}'
     oc import-image "${image}":"${TAG}"
 done
+oc import-image postgres_exporter:v0.4.7
 
 echo "Waiting for upgrade pod to complete..."
 
-until oc get pods -n syndesis | grep syndesis-upgrade | grep "Completed"; do echo "syndesis-upgrade not completed yet"; sleep 10; done
+until oc get pods | grep syndesis-upgrade | grep "Completed"; do echo "syndesis-upgrade not completed yet"; sleep 10; done
 
-git checkout "${NEXT_BRANCH}"
-
-cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-after"
+if [ -z "${INFRA_ONLY}" ]; then
+	git checkout "${NEXT_BRANCH}"
+	cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-after"
+fi
