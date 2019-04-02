@@ -53,8 +53,8 @@ public class ApiClientConnectorsSteps {
     }
 
     @Then("^check visibility of a connectors list of size (\\d+)$")
-    public void checkConnectorsListSize(String listSize) {
-        assertTrue("The connectors list should be of size <" + listSize + ">.", apiClientConnectorsPage.isConnectorsListLongAs(Integer.parseInt(listSize)));
+    public void checkConnectorsListSize(int listSize) {
+        assertTrue("The connectors list should be of size <" + listSize + ">.", apiClientConnectorsPage.isConnectorsListLongAs(listSize));
     }
 
     @Then("^checks? the error box (is|is not) present$")
