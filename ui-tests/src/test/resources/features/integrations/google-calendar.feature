@@ -181,7 +181,7 @@ Feature: Google Calendar Connector
 
     When select the "My Google Calendar Connector" connection
     And select "Get Events" integration action
-    And fill in values
+    And fill in aliased calendar values
       | Delay                                                    | 30                        |
       | Calendar name                                            | syndesis-test1            |
       | Max results                                              | <max_results>             |
@@ -254,7 +254,7 @@ Feature: Google Calendar Connector
 
     When select the "My Google Calendar Connector" connection
     And select "Get Events" integration action
-    And fill in values
+    And fill in aliased calendar values
       | Delay                                                    | 30             |
       | Calendar name                                            | syndesis-test1 |
       | Max results                                              | 10             |

@@ -1,5 +1,7 @@
 package io.syndesis.qe.bdd.utils;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.api.client.util.DateTime;
@@ -29,14 +31,14 @@ public class GoogleCalendarSteps {
         List<Map<String, String>> valueRows = calendarsData.asMaps(String.class, String.class);
         for (Map<String, String> row : valueRows) {
             String testAccount = row.get("google_account");
-            String calendar_summary = row.get("calendar_summary");
-            Calendar c = gcu.getPreviouslyCreatedCalendar(testAccount, calendar_summary);
+            String calendarSummary = gcu.getAliasedCalendarName(row.get("calendar_summary"));
+            Calendar c = gcu.getPreviouslyCreatedCalendar(testAccount, calendarSummary);
             // remove a previously created calendar with matching summary (aka title)
             if (c != null) {
                 gcu.deleteCalendar(testAccount, c.getId());
             }
             c = new Calendar();
-            c.setSummary(calendar_summary);
+            c.setSummary(calendarSummary);
             c.setDescription(row.get("calendar_description"));
             c = gcu.insertCalendar(testAccount, c);
         }
@@ -67,7 +69,7 @@ public class GoogleCalendarSteps {
                 }
                 e.setAttendees(attendees);
             }
-            gcu.insertEvent(account, gcu.getPreviouslyCreatedCalendar(account, calendarName).getId(), e);
+            gcu.insertEvent(account, gcu.getPreviouslyCreatedCalendar(account, gcu.getAliasedCalendarName(calendarName)).getId(), e);
         }
     }
 
@@ -102,10 +104,11 @@ public class GoogleCalendarSteps {
 
     @When("^update event \"([^\"]*)\" in calendar \"([^\"]*)\" for user \"([^\"]*)\" with values$")
     public void updateEventInCalendarForUserWithValues(String eventSummary, String calendarName, String account, DataTable properties) throws Throwable {
-        String calendarId = gcu.getPreviouslyCreatedCalendar(account, calendarName).getId();
+        String aliasedCalendarName = gcu.getAliasedCalendarName(calendarName);
+        String calendarId = gcu.getPreviouslyCreatedCalendar(account, aliasedCalendarName).getId();
         Event e = gcu.getEventBySummary(account, calendarId, eventSummary);
         if (e == null) {
-            throw new IllegalStateException(String.format("Looking for non-existent event %s in calendar %s", eventSummary, calendarName));
+            throw new IllegalStateException(String.format("Looking for non-existent event %s in calendar %s", eventSummary, aliasedCalendarName));
         }
 
         for (List<String> list : properties.cells()) {
@@ -115,4 +118,5 @@ public class GoogleCalendarSteps {
         }
         gcu.updateEvent(account, calendarId, e);
     }
+
 }

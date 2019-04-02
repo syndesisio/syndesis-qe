@@ -5,10 +5,13 @@ import com.google.api.services.calendar.model.CalendarList;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import java.util.Optional;
  * Class that provides Calendar API functionality. All methods needs specification of a testing account.
  */
 @Component
+@Slf4j
 public class GoogleCalendarUtils {
     @Autowired
     private GoogleAccounts accounts;
@@ -29,13 +33,29 @@ public class GoogleCalendarUtils {
      */
     private Map<String, List<Calendar>> calendars = new HashMap<>();
 
+    private final String aliasSuffix = RandomStringUtils.randomAlphanumeric(8);
+
+
+    public GoogleCalendarUtils() {
+        log.info("Using alias suffix '{}' for Google Calendar", aliasSuffix);
+    }
+
     private com.google.api.services.calendar.Calendar getClient(String ga) {
         return accounts.getGoogleAccountForTestAccount(ga).calendar();
     }
 
+    public String getAliasSuffix() {
+        return aliasSuffix;
+    }
+
+    public String getAliasedCalendarName(String originalName) {
+        return originalName + "-" + aliasSuffix;
+    }
+
     /**
      * Method for internal tracking of created calendars.
-     * @param user Account specification
+     *
+     * @param user    Account specification
      * @param created the Calendar instance to track
      */
     private void trackCreatedCalendar(String user, Calendar created) {
@@ -47,6 +67,7 @@ public class GoogleCalendarUtils {
 
     /**
      * Remove particular calendar from the internal tracker.
+     *
      * @param ga Account specification
      * @param id Id of the calendar to remove from tracker
      */
@@ -57,7 +78,8 @@ public class GoogleCalendarUtils {
 
     /**
      * Get a previously created calendar instance.
-     * @param accountName Account specification with that the calendar was created
+     *
+     * @param accountName  Account specification with that the calendar was created
      * @param calendarName Calendar name (aka summary) to retreive
      * @return Calendar instance created before
      */
@@ -73,6 +95,7 @@ public class GoogleCalendarUtils {
     /**
      * Method that assures cleanup after running the suite.
      * Removes all calendars created during runtime.
+     *
      * @throws IOException
      */
     @PreDestroy
@@ -88,6 +111,7 @@ public class GoogleCalendarUtils {
 
     /**
      * Clear calendar contents
+     *
      * @param ga Google Account specification
      * @param id Id of the calendar to clear
      * @throws IOException
@@ -98,6 +122,7 @@ public class GoogleCalendarUtils {
 
     /**
      * Delete calendar.
+     *
      * @param ga Google Account specification
      * @param id Id of the calendar to delete
      * @throws IOException
@@ -109,6 +134,7 @@ public class GoogleCalendarUtils {
 
     /**
      * Get a calendar by its id.
+     *
      * @param ga Google Account specification
      * @param id Id of the calendar to get
      * @return Calendar instance with matching id
@@ -121,7 +147,8 @@ public class GoogleCalendarUtils {
     /**
      * Method to insert (create) a calendar with given google account.
      * Use the instance returned, not the one provided as argument.
-     * @param ga Google Account specification
+     *
+     * @param ga          Google Account specification
      * @param newCalendar a calendar instance to be created
      * @return calendar instance with the created instance (id assigned, updated fields filled, etc) or null
      * @throws IOException
@@ -135,7 +162,8 @@ public class GoogleCalendarUtils {
     /**
      * Update the calendar. Calendar needs to have id assigned.
      * Use the instance returned, not the one provided as argument.
-     * @param ga Google Account specification
+     *
+     * @param ga      Google Account specification
      * @param updated the Calendar instance to update
      * @return updated Calendar instance
      * @throws IOException
@@ -146,9 +174,10 @@ public class GoogleCalendarUtils {
 
     /**
      * Delete Event from calendar.
-     * @param ga Google Account specification
+     *
+     * @param ga         Google Account specification
      * @param calendarId Id of the calendar
-     * @param eventId Id of the event
+     * @param eventId    Id of the event
      * @throws IOException
      */
     public void deleteEvent(String ga, String calendarId, String eventId) throws IOException {
@@ -157,9 +186,10 @@ public class GoogleCalendarUtils {
 
     /**
      * Get event by id.
-     * @param ga Google Account specification
+     *
+     * @param ga         Google Account specification
      * @param calendarId Id of the calendar
-     * @param eventId Id of the event
+     * @param eventId    Id of the event
      * @return Event instance with given Id or null.
      * @throws IOException
      */
@@ -169,9 +199,10 @@ public class GoogleCalendarUtils {
 
     /**
      * Import event placed in different calendar.
-     * @param ga Google Account specification
+     *
+     * @param ga         Google Account specification
      * @param calendarId target calendar Id
-     * @param toImport event originating in different calendar
+     * @param toImport   event originating in different calendar
      * @return Event instance - the new clone of the event
      * @throws IOException
      */
@@ -182,9 +213,10 @@ public class GoogleCalendarUtils {
     /**
      * Insert (create) an event.
      * Use the instance returned, not the one in the argument.
-     * @param ga Google Account specification
+     *
+     * @param ga         Google Account specification
      * @param calendarId Id of target calendar.
-     * @param toInsert Event instance to be created.
+     * @param toInsert   Event instance to be created.
      * @return newly created Event instance
      * @throws IOException
      */
@@ -195,9 +227,10 @@ public class GoogleCalendarUtils {
     /**
      * Update an existing event.
      * Use the instance returned, not the one in the argument.
-     * @param ga Google Account specification
+     *
+     * @param ga         Google Account specification
      * @param calendarId Id of the calendar
-     * @param toUpdate Event instance to be updated
+     * @param toUpdate   Event instance to be updated
      * @return updated Event instance
      * @throws IOException
      */
@@ -207,7 +240,8 @@ public class GoogleCalendarUtils {
 
     /**
      * Get calendar by its name (aka summary). The first calendar with matching name is being returned.
-     * @param ga Google Account specification
+     *
+     * @param ga           Google Account specification
      * @param calendarName name of the calendar
      * @return Calendar instance with matching name (aka summary)
      * @throws IOException
@@ -231,8 +265,9 @@ public class GoogleCalendarUtils {
 
     /**
      * Get Event by its title (aka summary).
-     * @param ga Google Account specification
-     * @param calendarId Id of the source calendar
+     *
+     * @param ga           Google Account specification
+     * @param calendarId   Id of the source calendar
      * @param eventSummary Summary of the event to find
      * @return first Event instance matching the given summary.
      * @throws IOException
