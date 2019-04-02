@@ -117,15 +117,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
     Then check that there is no warning inside of step number "5"
 
-    ###################### step step NEW step ##################################
-    ##### test that 2 following SQL select steps do not break integration ######
-
-    When add integration step on position "2"
-    And select the "PostgresDB" connection
-    And select "Invoke SQL" integration action
-    And fill in invoke query input with "select * from contact  limit(1);" value
-    And click on the "Next" button
-    And click on the "Save" button
+    When click on the "Save" button
     And set integration name "Integration_with_buckets"
     And publish integration
     Then Integration "Integration_with_buckets" is present in integrations list
