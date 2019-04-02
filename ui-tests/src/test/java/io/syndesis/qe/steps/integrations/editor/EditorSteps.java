@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -18,6 +19,7 @@ import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.pages.integrations.editor.Editor;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseConnection;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -159,9 +161,12 @@ public class EditorSteps {
 
     @When("^open integration flow details")
     public void openIntegrationFlowDetails() {
-        if (editor.getRootElement().$(Element.HIDDEN_DETAILED_VIEW).exists()) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> editor.getRootElement().$(Element.HIDDEN_DETAILED_VIEW).exists(), 15 * 1000);
             log.info("Expander is closed, opening details");
             editor.getRootElement().$(Element.EXPANDER).shouldBe(visible).click();
+        } catch (InterruptedException | TimeoutException e) {
+            log.warn("Expander to open was not found!");
         }
     }
 
