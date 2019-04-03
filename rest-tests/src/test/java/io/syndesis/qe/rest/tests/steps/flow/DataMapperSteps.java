@@ -1,8 +1,17 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
-import java.util.Arrays;
+import static org.assertj.core.api.Fail.fail;
 
-import cucumber.api.java.en.Then;
+import org.apache.commons.lang3.StringUtils;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import cucumber.api.java.en.When;
 import io.atlasmap.v2.MappingType;
 import io.cucumber.datatable.DataTable;
@@ -32,8 +41,7 @@ public class DataMapperSteps extends AbstractStep {
         super.createStep();
     }
 
-    // todo rework?
-    @Then("^MAP using Step (\\d+) and field \"([^\"]*)\" to \"([^\"]*)\"$")
+    @When("^MAP using Step (\\d+) and field \"([^\"]*)\" to \"([^\"]*)\"$")
     public void mapDataMapperStep(int fromStep, String fromField, String toField) {
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
@@ -44,7 +52,7 @@ public class DataMapperSteps extends AbstractStep {
         super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 
-    @Then("^COMBINE using Step (\\d+) and strategy \"([^\"]*)\" into \"([^\"]*)\" and sources$")
+    @When("^COMBINE using Step (\\d+) and strategy \"([^\"]*)\" into \"([^\"]*)\" and sources$")
     public void combineDataMapperStep(int fromStep, String strategy, String targetField, DataTable sourceMappingData) {
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
@@ -55,7 +63,7 @@ public class DataMapperSteps extends AbstractStep {
         super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
     }
 
-    @Then("^SEPARATE using Step (\\d+) and strategy \"([^\"]*)\" and source \"([^\"]*)\" into targets$")
+    @When("^SEPARATE using Step (\\d+) and strategy \"([^\"]*)\" and source \"([^\"]*)\" into targets$")
     public void separateDataMapperStep(int fromStep, String strategy, String sourceField, DataTable targetMappingData) {
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
@@ -64,5 +72,28 @@ public class DataMapperSteps extends AbstractStep {
         newDmStep.setMappingType(MappingType.SEPARATE);
         newDmStep.setStrategy(SeparatorType.valueOf(strategy));
         super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);
+    }
+
+    @When("^add \"([^\"]*)\" transformation on \"([^\"]*)\" field with id \"([^\"]*)\" with properties")
+    public void addTransformation(String transformation, String target, String id, DataTable properties) {
+        try {
+            Class<?> c = Class.forName("io.atlasmap.v2." + StringUtils.capitalize(transformation));
+            Constructor<?> cons = c.getConstructor();
+            Object t = cons.newInstance();
+            Map<String, String> stringProperties = properties.asMap(String.class, String.class);
+            for (Map.Entry<String, String> entry : stringProperties.entrySet()) {
+                Field f = c.getDeclaredField(entry.getKey());
+                f.setAccessible(true);
+                f.set(t, entry.getValue());
+            }
+
+            Map<String, Map<String, List<Object>>> transformations = super.getSteps().getLastStepDefinition().getDataMapperDefinition()
+                    .get().getLastDatamapperStepDefinition().getTransformations();
+            transformations.computeIfAbsent(target, v -> new HashMap<>());
+            transformations.get(target).computeIfAbsent(id, v -> new ArrayList<>());
+            transformations.get(target).get(id).add(t);
+        } catch (Exception e) {
+            fail("Unable to create atlasmap class for " + transformation, e);
+        }
     }
 }

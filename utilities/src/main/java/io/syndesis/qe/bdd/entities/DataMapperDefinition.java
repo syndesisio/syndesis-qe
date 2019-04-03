@@ -22,4 +22,12 @@ public class DataMapperDefinition {
     public DataMapperDefinition() {
         dataMapperStepDefinition = new ArrayList<>();
     }
+
+    /**
+     * Gets the last element.
+     * @return last element
+     */
+    public DataMapperStepDefinition getLastDatamapperStepDefinition() {
+        return dataMapperStepDefinition.get(dataMapperStepDefinition.size() - 1);
+    }
 }

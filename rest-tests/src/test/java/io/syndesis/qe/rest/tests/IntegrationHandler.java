@@ -33,16 +33,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class IntegrationHandler {
-
     @Autowired
     private StepsStorage steps;
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
     @Autowired
-    private AtlasMapperGenerator atlasGenerator;
-
-    public IntegrationHandler() {
-    }
+    private AtlasMapperGenerator amg;
 
     @When("^create integration with name: \"([^\"]*)\"")
     public void createActiveIntegrationFromGivenSteps(String integrationName) {
@@ -158,7 +154,8 @@ public class IntegrationHandler {
                     reflectStepIdsInAtlasMapping(mapper, precedingSteps, followingStep);
                 } else {
                     //TODO(tplevko): fix for more than one preceding step.
-                    mapper.setStep(atlasGenerator.getAtlasMappingStep(mapper, precedingSteps, followingStep));
+                    amg.setSteps(mapper, precedingSteps, followingStep);
+                    mapper.setStep(amg.getAtlasMappingStep());
                 }
             }
         }
