@@ -21,7 +21,7 @@ Feature: Integration - Import Export
   Scenario: Import and export both flows
 
     Given created connections
-      | Slack | QE Slack  | QE Slack  | SyndesisQE Slack test |
+      | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
 
     # create integration
     When navigate to the "Home" page
@@ -51,7 +51,9 @@ Feature: Integration - Import Export
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And create mapping from "company" to "message"
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | company | message |
     And click on the "Done" button
 
     # finish and save integration
@@ -153,6 +155,7 @@ Feature: Integration - Import Export
     Then import integration from relative file path "src/test/resources/integrations/Imported-integration-another-instance-export.zip"
 
     When navigate to the "Connections" page
+    And sleep for jenkins delay or "5" seconds
     And click on the "Edit" kebab menu button of "QE Slack"
     Then check visibility of "QE Slack" connection details
 
