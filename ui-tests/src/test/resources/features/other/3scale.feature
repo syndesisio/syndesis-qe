@@ -17,7 +17,6 @@ Feature: 3scale integration
     And check that position of connection to fill is "Start"
 
     When select the "API Provider" connection
-    And sleep for jenkins delay or "5" seconds
     And upload swagger file src/test/resources/swagger/connectors/petstore.json
     And click on the "Next" button
     # wait for redirect so it does not click twice on the same page
