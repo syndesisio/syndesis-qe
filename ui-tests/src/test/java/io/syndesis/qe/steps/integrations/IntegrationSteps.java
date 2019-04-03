@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.fail;
 import static com.codeborne.selenide.Condition.visible;
 
 import cucumber.api.PendingException;
+
 import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -231,6 +232,27 @@ public class IntegrationSteps {
                         fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
                 }
                 break;
+            } else {
+
+                boolean published = false;
+                switch (checkedPage) {
+                    case "Integrations":
+                        if (integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim().equals("Running")) {
+                            published = true;
+                        }
+                        break;
+                    case "Integration detail":
+                    if (detailPage.getPublishedVersion().getText().trim().equals("Published version 1")) {
+                            published = true;
+                        }
+                    break;
+                    default:
+                        break;
+                }
+
+                if(published) {
+                    break;
+                }
             }
 
             String status = "";

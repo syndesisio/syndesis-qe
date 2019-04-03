@@ -3,7 +3,7 @@
 @ui
 @database
 @integrations-check-starting-status
-Feature: Integration - DB to DB
+Feature: Integration status
 
   Background: Clean application state
     Given clean application state
