@@ -382,6 +382,19 @@ public class CommonSteps {
         modalDialogPage.getButton(buttonTitle).shouldBe(visible).click();
     }
 
+    @When("cancel modal dialog window$")
+    public void cancelModalDialogWindow() {
+        if (modalDialogPage.validate()) {
+            modalDialogPage.getButton("Cancel").shouldBe(visible).click();
+        }
+
+        try {
+            OpenShiftWaitUtils.waitFor(() -> !modalDialogPage.validate(), 15 * 1000L);
+        } catch (InterruptedException | TimeoutException e) {
+            fail("Modal dialog is still visible after clicking on cancel");
+        }
+    }
+
     @When(".*clicks? on the \"([^\"]*)\" link.*$")
     public void clickOnLink(String linkTitle) {
         new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();

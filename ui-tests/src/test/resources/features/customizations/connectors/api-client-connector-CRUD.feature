@@ -95,8 +95,7 @@ Feature: Customization - API Connector CRUD
       | details  | connectorName  | Swagger Petstore                      |
     And click on the "Delete" button
     Then check visibility of page "Modal Dialog"
-    When click on the modal dialog "Cancel" button
-    And sleep for jenkins delay or "2" seconds
+    When cancel modal dialog window
     And check visibility of a connectors list of size 1
     Then check visibility of page "API Client Connectors"
 
