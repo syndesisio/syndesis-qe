@@ -75,11 +75,11 @@ public class AtlasMapperGenerator {
      * @param precedingSteps
      */
     private void processPrecedingSteps(List<StepDefinition> precedingSteps) {
-        for (StepDefinition s : precedingSteps) {
+        precedingSteps.stream().filter(s -> s.getStep().getAction().isPresent()).forEach(s -> {
             String stepSpecification = s.getStep().getAction().get().getOutputDataShape().get().getSpecification();
             DataShapeKinds dsKind = s.getStep().getAction().get().getOutputDataShape().get().getKind();
             s.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
-        }
+        });
     }
 
     /**
@@ -88,7 +88,7 @@ public class AtlasMapperGenerator {
      *
      * @param followingStep
      */
-    private void processFolowingStep(StepDefinition followingStep) {
+    private void processFollowingStep(StepDefinition followingStep) {
         String stepSpecification = followingStep.getStep().getAction().get().getInputDataShape().get().getSpecification();
         DataShapeKinds dsKind = followingStep.getStep().getAction().get().getInputDataShape().get().getKind();
         followingStep.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
@@ -145,13 +145,13 @@ public class AtlasMapperGenerator {
      */
     private List<DataSource> processSources(List<StepDefinition> precedingSteps) {
         List<DataSource> sources = new ArrayList<>();
-        for (StepDefinition s : precedingSteps) {
+        precedingSteps.stream().filter(s -> s.getStep().getAction().isPresent()).forEach(s -> {
             DataShape outDataShape = s.getStep().getAction().get().getOutputDataShape().get();
             // Steps with "ANY" are ignored for sources and only those that have proper datashape are used
             if (outDataShape.getKind() != DataShapeKinds.ANY) {
                 sources.add(createDataSource(outDataShape, s, DataSourceType.SOURCE));
             }
-        }
+        });
         return sources;
     }
 
@@ -215,7 +215,7 @@ public class AtlasMapperGenerator {
      */
     public Step getAtlasMappingStep(StepDefinition mapping, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
         processPrecedingSteps(precedingSteps);
-        processFolowingStep(followingStep);
+        processFollowingStep(followingStep);
         List<DataMapperStepDefinition> mappings = mapping.getDataMapperDefinition().get().getDataMapperStepDefinition();
 
         AtlasMapping atlasMapping = new AtlasMapping();
