@@ -19,6 +19,7 @@ import com.codeborne.selenide.ElementsCollection;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Then;
 import io.cucumber.datatable.DataTable;
@@ -29,6 +30,7 @@ import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.customizations.connectors.wizard.WizardSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TodoUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -82,6 +84,11 @@ public class ApiClientConnectorsSteps {
         log.debug("File path: " + filePath);
         ElementsCollection col;
         try {
+            try {
+                OpenShiftWaitUtils.waitFor(() -> $$(By.tagName("input")).filter(attribute("type", "file")).size() == 1, 20 * 1000L);
+            } catch (TimeoutException | InterruptedException e) {
+                fail("Can not upload swagger - input button was not found");
+            }
             col = $$(By.tagName("input")).filter(attribute("type", "file"));
             assertThat(col).size().isEqualTo(1);
             col.get(0).uploadFile(new File(filePath));
@@ -174,7 +181,6 @@ public class ApiClientConnectorsSteps {
                             securityDataTable.add(row);
                             break;
                         default:
-
                     }
                     break;
 
@@ -199,7 +205,7 @@ public class ApiClientConnectorsSteps {
                         case "routeHost":
                             log.info("Setting up hostname of the used route property");
                             if (property.get(2).equalsIgnoreCase("todo")) {
-                                if(OpenShiftUtils.getInstance().getRoute("todo2") == null){
+                                if (OpenShiftUtils.getInstance().getRoute("todo2") == null) {
                                     TodoUtils.createDefaultRouteForTodo("todo2", "/api");
                                 }
                                 Route route2 = OpenShiftUtils.getInstance().getRoute("todo2");
