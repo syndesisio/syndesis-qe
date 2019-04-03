@@ -1,6 +1,7 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +15,7 @@ import io.syndesis.common.model.action.StepDescriptor;
 import io.syndesis.common.model.connection.DynamicActionMetadata;
 import io.syndesis.common.model.extension.Extension;
 import io.syndesis.common.model.filter.FilterPredicate;
+import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.endpoints.StepDescriptorEndpoint;
@@ -84,6 +86,36 @@ public class IntermediateSteps extends AbstractStep {
         super.addProperty(StepProperty.KIND, StepKind.split);
         super.addProperty(StepProperty.ACTION, super.generateStepAction(super.getSteps().getLastStepDefinition().getStep().getAction().get(), sd));
         super.addProperty(StepProperty.STEP_NAME, "Split");
+        super.createStep();
+    }
+
+    @When("^add an aggregate step$")
+    public void addAggregateStep() {
+        Step previousStepWithDatashapes = null;
+        for (int i = super.getSteps().getSteps().size() - 1; i >= 0; i--) {
+            Step s = super.getSteps().getSteps().get(i);
+            if (s.getAction().isPresent() && s.getAction().get().getInputDataShape().isPresent()
+                    && s.getAction().get().getOutputDataShape().isPresent()) {
+                previousStepWithDatashapes = super.getSteps().getSteps().get(i);
+                break;
+            }
+        }
+
+        if (previousStepWithDatashapes == null) {
+            fail("Unable to find previous step with both datashapes set");
+        }
+
+        StepDescriptor sd = stepDescriptorEndpoint.postParamsAction(
+                "aggregate",
+                new DynamicActionMetadata.Builder()
+                        .inputShape(previousStepWithDatashapes.getAction().get().getInputDataShape().get())
+                        .outputShape(previousStepWithDatashapes.getAction().get().getOutputDataShape().get())
+                        .build()
+        );
+
+        super.addProperty(StepProperty.KIND, StepKind.aggregate);
+        super.addProperty(StepProperty.ACTION, super.generateStepAction(previousStepWithDatashapes.getAction().get(), sd));
+        super.addProperty(StepProperty.STEP_NAME, "Aggregate");
         super.createStep();
     }
 }
