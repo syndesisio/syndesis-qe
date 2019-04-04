@@ -10,7 +10,7 @@ import com.codeborne.selenide.SelenideElement;
 public class ModalDialogPage extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.className("modal-dialog");
+        public static final By ROOT = By.className("modal-content");
 
         public static final By HEADER = By.className("modal-header");
         public static final By TITLE = By.className("modal-title");

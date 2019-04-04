@@ -384,15 +384,28 @@ public class CommonSteps {
 
     @When("cancel modal dialog window$")
     public void cancelModalDialogWindow() {
-        if (modalDialogPage.validate()) {
-            modalDialogPage.getButton("Cancel").shouldBe(visible).click();
-        }
 
-        try {
-            OpenShiftWaitUtils.waitFor(() -> !modalDialogPage.validate(), 15 * 1000L);
-        } catch (InterruptedException | TimeoutException e) {
+        boolean modalDialogClosed = false;
+
+        //wait 20 seconds max
+        for(int i=0;i<20;i++) {
+            if (modalDialogPage.validate()) {
+                modalDialogPage.getButton("Cancel").shouldBe(visible).click();
+            }
+
+            try {
+                OpenShiftWaitUtils.waitFor(() -> !modalDialogPage.validate(), 1000L);
+                modalDialogClosed = true;
+                break;
+            } catch (InterruptedException | TimeoutException e) {
+                // intentionally left blank
+            }
+        }
+        //fail if modalDialog still open
+        if(!modalDialogClosed) {
             fail("Modal dialog is still visible after clicking on cancel");
         }
+
     }
 
     @When(".*clicks? on the \"([^\"]*)\" link.*$")
