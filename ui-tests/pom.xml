@@ -50,6 +50,15 @@
             <artifactId>selenide</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>apicurio</groupId>
+            <artifactId>apicurito-tests</artifactId>
+            <classifier>tests</classifier>
+            <version>0.0.2-SNAPSHOT</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
@@ -99,6 +108,7 @@
                 <configuration>
                     <systemProperties>
                         <syndesis.version>${syndesis.version}</syndesis.version>
+                        <apicurito.config.app.root>.openapi-editor</apicurito.config.app.root>
                     </systemProperties>
                 </configuration>
             </plugin>
