@@ -33,16 +33,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class IntegrationHandler {
-
     @Autowired
     private StepsStorage steps;
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
     @Autowired
-    private AtlasMapperGenerator atlasGenerator;
-
-    public IntegrationHandler() {
-    }
+    private AtlasMapperGenerator amg;
 
     @When("^create integration with name: \"([^\"]*)\"")
     public void createActiveIntegrationFromGivenSteps(String integrationName) {
@@ -143,27 +139,23 @@ public class IntegrationHandler {
      * This should be updated for more than two steps, when it will work correctly in near future.
      */
     private void processMapperSteps() {
-
         List<StepDefinition> mappers = steps.getStepDefinitions().stream().filter(
                 s -> s.getStep().getStepKind().equals(StepKind.mapper)).collect(Collectors.toList());
-
         if (mappers.isEmpty()) {
             log.debug("There are no mappers in this integration, proceeding...");
         } else {
-
             //mapping can be done on steps that preceed mapper step and the single step, which follows the mapper step.
             log.info("Found mapper step, creating new atlas mapping.");
-            for (int i = 0; i < mappers.size(); i++) {
-                // Get only those that have some action defined
-                List<StepDefinition> precedingSteps = steps.getStepDefinitions().subList(0, steps.getStepDefinitions().indexOf(mappers.get(i)))
-                        .stream().filter(s -> s.getStep().getAction().isPresent()).collect(Collectors.toList());
-                StepDefinition followingStep = steps.getStepDefinitions().get(steps.getStepDefinitions().indexOf(mappers.get(i)) + 1);
-                if (mappers.get(i).getStep().getConfiguredProperties().containsKey("atlasmapping")) {
+            for (StepDefinition mapper : mappers) {
+                List<StepDefinition> precedingSteps = steps.getStepDefinitions().subList(0, steps.getStepDefinitions().indexOf(mapper));
+                StepDefinition followingStep = steps.getStepDefinitions().get(steps.getStepDefinitions().indexOf(mapper) + 1);
+                if (mapper.getStep().getConfiguredProperties().containsKey("atlasmapping")) {
                     //TODO(tplevko): think of some way to substitute placeholders for the step ID's
-                    reflectStepIdsInAtlasMapping(mappers.get(i), precedingSteps, followingStep);
+                    reflectStepIdsInAtlasMapping(mapper, precedingSteps, followingStep);
                 } else {
                     //TODO(tplevko): fix for more than one preceding step.
-                    mappers.get(i).setStep(atlasGenerator.getAtlasMappingStep(mappers.get(i), precedingSteps, followingStep));
+                    amg.setSteps(mapper, precedingSteps, followingStep);
+                    mapper.setStep(amg.getAtlasMappingStep());
                 }
             }
         }
