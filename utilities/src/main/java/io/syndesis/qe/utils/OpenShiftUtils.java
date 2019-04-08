@@ -3,6 +3,9 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+
+
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import java.util.Optional;
@@ -13,6 +16,8 @@ import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.dsl.PodResource;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -208,5 +213,21 @@ public final class OpenShiftUtils {
                 "-n", TestConfiguration.openShiftNamespace(),
                 "-f", resource
         );
+    }
+
+    public static void updateEnvVarInDeploymentConfig(String dcName, String key, String value) {
+        DeploymentConfig dc = getInstance().getDeploymentConfig(dcName);
+
+        List<EnvVar> vars = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
+
+        Optional<EnvVar> var = vars.stream().filter(a -> a.getName().equalsIgnoreCase(key)).findFirst();
+        if (var.isPresent()) {
+            var.get().setValue(value);
+        } else {
+            fail("variable " + key + " not found in deployment config of syndesis-server");
+        }
+
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);
+        getInstance().updateDeploymentconfig(dc);
     }
 }
