@@ -5,6 +5,7 @@
 @database
 @datamapper
 @integrations-api-connector
+@stage-smoke
 Feature: Integration - DB to API
 
   Background:

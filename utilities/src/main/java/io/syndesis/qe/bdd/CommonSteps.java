@@ -75,7 +75,7 @@ public class CommonSteps {
     }
 
     @Then("^wait for Syndesis to become ready")
-    public void waitForSyndesis() {
+    public static void waitForSyndesis() {
         waitFor(true);
     }
 
@@ -97,6 +97,7 @@ public class CommonSteps {
 
     /**
      * Gets the Set of deployed syndesis custom resources.
+     *
      * @return set containing names of deployed syndesis custom resources.
      */
     private static Set<String> customResourceNames() {
@@ -123,6 +124,7 @@ public class CommonSteps {
 
     /**
      * Undeploys syndesis custom resource using openshift API.
+     *
      * @param name custom resource name
      */
     private static void undeployCustomResource(String name) {
@@ -140,6 +142,7 @@ public class CommonSteps {
 
     /**
      * Waits for syndesis deployment / undeployment.
+     *
      * @param deploy true if waiting for deploy, false otherwise
      */
     private static void waitFor(boolean deploy) {
@@ -237,12 +240,12 @@ public class CommonSteps {
         log.info("Waiting for Todo to get ready");
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         Runnable runnable = () ->
-                    OpenShiftUtils.xtf().waiters()
-                            .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
-                            .interval(TimeUnit.SECONDS, 20)
-                            .timeout(TimeUnit.MINUTES, 12)
-                            .assertEventually();
-            executorService.submit(runnable);
+                OpenShiftUtils.xtf().waiters()
+                        .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
+                        .interval(TimeUnit.SECONDS, 20)
+                        .timeout(TimeUnit.MINUTES, 12)
+                        .assertEventually();
+        executorService.submit(runnable);
 
         executorService.shutdown();
         try {

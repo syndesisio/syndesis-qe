@@ -4,6 +4,7 @@
 @openwire
 @activemq
 @amqbroker
+@stage-smoke
 @integrations-openwire-to-openwire
 Feature: Integration - Openwire to Openwire
 
