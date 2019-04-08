@@ -805,7 +805,7 @@ public class CommonSteps {
         calendarUtils.setBeforeRequest(Calendar.getInstance());
         log.info("Time before request was saved: "
                 + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getBeforeRequest().getTime()));
-        sleep(1000);
+        TestUtils.sleepIgnoreInterrupt(3000); // due to border values
     }
 
     /**
@@ -813,6 +813,7 @@ public class CommonSteps {
      */
     @Then("^save time after request$")
     public void saveAfterTime() {
+        TestUtils.sleepIgnoreInterrupt(3000); // due to border values
         calendarUtils.setAfterRequest(Calendar.getInstance());
         log.info("Time after request was saved: "
                 + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
