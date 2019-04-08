@@ -3,6 +3,10 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+
+import java.util.List;
 import java.util.Optional;
 
 import cz.xtf.openshift.OpenShiftBinaryClient;
@@ -206,5 +210,21 @@ public final class OpenShiftUtils {
                 "-f", resource
         );
         log.info(output);
+    }
+
+    public static void updateEnvVarInDeploymentConfig(String dcName, String key, String value) {
+        DeploymentConfig dc = getInstance().getDeploymentConfig(dcName);
+
+        List<EnvVar> vars = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
+
+        Optional<EnvVar> var = vars.stream().filter(a -> a.getName().equalsIgnoreCase(key)).findFirst();
+        if (var.isPresent()) {
+            var.get().setValue(value);
+        } else {
+            fail("variable " + key + " not found in deployment config of syndesis-server");
+        }
+
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);
+        getInstance().updateDeploymentconfig(dc);
     }
 }

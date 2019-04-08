@@ -1,5 +1,5 @@
 # @sustainer: mastepan@redhat.com
-
+@stage-smoke
 @ui
 @extension
 @database
