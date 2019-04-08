@@ -14,6 +14,7 @@ import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwagger
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionDetailPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.pages.integrations.editor.AddToIntegration;
 import io.syndesis.qe.pages.integrations.editor.ApiProviderOperationEditorPage;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseFinishConnection;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseStartConnection;
@@ -35,7 +36,8 @@ public enum SyndesisPage {
     SELECT_START_CONNECTION(new ChooseStartConnection()),
     SELECT_FINISH_CONNECTION(new ChooseFinishConnection()),
     CHOOSE_A_FINISH_CONNECTION(new ChooseFinishConnection()),
-    ADD_TO_INTEGRATION(new ApiProviderOperationEditorPage()),
+    ADD_TO_INTEGRATION(new AddToIntegration()),
+    API_PROVIDER_OPERATION_EDITOR(new ApiProviderOperationEditorPage()),
 
     CUSTOMIZATIONS(new CustomizationsPage()),
     API_CLIENT_CONNECTORS(new ApiClientConnectors()),
