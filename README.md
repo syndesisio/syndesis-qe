@@ -432,13 +432,20 @@ choose checkstyle.xml file from this repository.
 reformat your code, you can use shortcut **CTRL+ALT+L** or you can install and configure **[Save Actions](https://plugins.jetbrains.com/plugin/7642-save-actions)**
 
 You can also use *Reformat Code* checkbox in *Commit Changes*
-dialog before you commit changes.  
+dialog before you commit changes.
 
 **Commit changes** dialog provides a useful view of your changes before commit. There, you can see the diff between 
 original and changed file. So you can make sure that you commit only changes which you want. Also, you can set commit message 
 and commit changes via this dialog. 
 
 ![Commit changes](docs/readme_images/idea_commit_changes.png)
+
+#### Git hooks
+You can find the git hooks in the _hooks_ directory in the root of the project. You can enable them using following command in the root directory of this repository:
+
+```
+for f in hooks/*; do ln -srf $f .git/hooks/
+```
 
 #### Creating a Pull Request
 When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).
