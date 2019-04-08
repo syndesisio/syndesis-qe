@@ -3,6 +3,7 @@ package io.syndesis.qe.pages.integrations.editor.add.connection.actions.database
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.TestUtils;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -22,6 +23,7 @@ public class InvokeSql extends Sql {
     @Override
     public void fillSqlInput(String query) {
         log.debug("filling sql query: {}", query);
+        TestUtils.sleepIgnoreInterrupt(2000); // when sql is as a middle step, the query input element is not shown quickly
         SelenideElement element = $(Element.INPUT_QUERY);
         this.fillInput(element, query);
     }
