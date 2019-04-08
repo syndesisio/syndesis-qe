@@ -21,7 +21,7 @@
 
 		<apache.http.commons.version>4.5.3</apache.http.commons.version>
 		<lombok.version>1.18.6</lombok.version>
-		<hibernate.version>4.1.0.Final</hibernate.version>
+		<hibernate.version>6.0.16.Final</hibernate.version>
 		<junit.version>4.12</junit.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<org.json.version>20160810</org.json.version>
@@ -56,6 +56,7 @@
 		<google.apis.sheets.version>v4-rev553-1.25.0</google.apis.sheets.version>
 		<github.core.version>2.1.5</github.core.version>
 		<irclib.version>1.10</irclib.version>
+		<el.version>3.0.0</el.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -179,7 +180,7 @@
 
 			<!-- test dependencies -->
 			<dependency>
-				<groupId>org.hibernate</groupId>
+				<groupId>org.hibernate.validator</groupId>
 				<artifactId>hibernate-validator-annotation-processor</artifactId>
 				<version>${hibernate.version}</version>
 			</dependency>
@@ -394,6 +395,13 @@
 				<artifactId>irclib</artifactId>
 				<version>${irclib.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>${el.version}</version>
+			</dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
