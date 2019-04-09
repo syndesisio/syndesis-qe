@@ -14,7 +14,6 @@ Feature: Integration - ServiceNow-amq/log
     Given log into the Syndesis
     Given clean destination type "queue" with name "incidents"
     Given delete incidents with "QACUSTOM4,QACREATED1" number
-    Given clean "TODO" table
     Given created connections
       | ServiceNow  | Servicenow | ServiceNow | Service-Now connection |
       | Red Hat AMQ | AMQ        | AMQ        | AMQ connection         |
@@ -44,7 +43,9 @@ Feature: Integration - ServiceNow-amq/log
       | Destination Name | incidents |
       | Destination Type | Queue     |
     And click on the "Next" button
+    And sleep for jenkins delay or "10" seconds
     And click on the "Done" button
+    And sleep for jenkins delay or "30" seconds
 
     When publish integration
     And set integration name "service-now-2-amq"
@@ -54,6 +55,7 @@ Feature: Integration - ServiceNow-amq/log
     And wait until integration "service-now-2-amq" gets into "Running" state
     Then verify that received incident from "incidents" queue contains "QACUSTOM4"
 
+    
   Scenario: Create incident from syndesis integration
     When navigate to the "Home" page
     And click on the "Create Integration" button to create a new integration.
@@ -73,8 +75,7 @@ Feature: Integration - ServiceNow-amq/log
     And select "Add Record" integration action
     And select "Add new Incident" from "table" dropdown
     And click on the "Next" button
-    Then sleep for jenkins delay or "15" seconds
-
+    And sleep for jenkins delay or "35" seconds
     When publish integration
     And set integration name "amq-2-snow"
     And publish integration

@@ -55,6 +55,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final By CONSTANT_TYPE_SELECT = By.cssSelector("select");
         public static final By PRIMARY_BUTTON = By.cssSelector("button.btn-primary");
         public static final By MAPPER_COLLECTION_ICON = By.className("parentField");
+        public static final By ADD_MAPPING_ICON = By.className("fa-plus");
     }
 
     @Override
@@ -124,7 +125,11 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public void doCreateMapping(String source, String target) {
+        createNewMapping(source, target);
+        $(Element.ADD_MAPPING_ICON).shouldBe(visible).click();
+    }
 
+    private void createNewMapping(String source, String target) {
         ElementsCollection dmColumns = this.dataMapperColumns();
         SelenideElement src = dmColumns.get(0);
         SelenideElement dest = dmColumns.get(1);
@@ -147,9 +152,12 @@ public class DataMapper extends SyndesisPageObject {
             this.selectMapping(source, src);
             this.selectMapping(target, dest);
         }
+    }
 
-        $(By.className("fa-plus")).shouldBe(visible).click();
-
+    public void doCreateMappingWithSeparator(String source, String target, String separator) {
+        createNewMapping(source, target);
+        $(By.id("select-separator")).shouldBe(visible).selectOptionContainingText(separator);
+        $(Element.ADD_MAPPING_ICON).shouldBe(visible).click();
     }
 
     /**
