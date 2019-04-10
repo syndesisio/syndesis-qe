@@ -5,6 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.customizations.CustomizationsPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.steps.CommonSteps;
+
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -17,11 +23,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.customizations.CustomizationsPage;
-import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
-import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
-import io.syndesis.qe.steps.CommonSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -57,7 +58,6 @@ public class ExtensionSteps {
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
             commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
 
-
             uploadExtensionFromFile(dataRow.get(0), dataRow.get(1));
 
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
@@ -81,13 +81,11 @@ public class ExtensionSteps {
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
             commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
 
-
             uploadExtensionFromFile(dataRow.get(0));
 
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
         }
     }
-
 
     @When("^.*uploads? extension \"([^\"]*)\"$")
     public void uploadFile(String extensionName) throws Throwable {
@@ -108,7 +106,6 @@ public class ExtensionSteps {
         Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
         $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
     }
-
 
     /**
      * Method will download extension .jar file from ../syndesis-extensions/extensionFolderName/target/*.jar
@@ -143,6 +140,11 @@ public class ExtensionSteps {
     public void expectExtensionPresent(String name) throws Throwable {
         log.info("Verifying if extension {} is present", name);
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name)).isTrue();
+    }
+
+    @Then("^check that there (?:is|are) (\\d+) extensions? present in list$")
+    public void checkExtensionsCount(int count) {
+        assertThat(customizationsPage.getTechExtensionsListComponent().getItemCount()).isEqualTo(count);
     }
 
     @Then("^check that technical extension \"([^\"]*)\" is not visible$")

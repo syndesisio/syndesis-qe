@@ -1,20 +1,24 @@
 package io.syndesis.qe.pages.customizations.extensions;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.concurrent.TimeoutException;
-
-import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import java.util.concurrent.TimeoutException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TechExtensionsListComponent extends SyndesisPageObject {
@@ -42,16 +46,16 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
 
         try {
             OpenShiftWaitUtils.waitFor(() ->
-                    $$(Element.ITEM).stream()
-                    .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name)).count() > 0, 15*1000);
+                $$(Element.ITEM).stream()
+                    .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name)).count() > 0, 15 * 1000);
         } catch (InterruptedException | TimeoutException e) {
             return null;
         }
 
         ElementsCollection items = $$(Element.ITEM);
         return items.stream()
-                .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name))
-                .findFirst().get();
+            .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name))
+            .findFirst().get();
     }
 
     public boolean isExtensionPresent(String name) {
@@ -62,6 +66,10 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         } else {
             return false;
         }
+    }
+
+    public int getItemCount() {
+        return $$(Element.ITEM).size();
     }
 
     public SelenideElement getActionOnExtensionButton(String name, String action) {
