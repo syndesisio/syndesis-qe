@@ -656,6 +656,12 @@ public class CommonSteps {
     private void fillAndValidateTwitter() {
         Optional<Account> account = AccountsDirectory.getInstance().getAccount("Twitter Listener");
 
+        if (!$(By.id("username_or_email")).exists()) {
+            log.info("Already logged into Twitter, clicking on validate");
+            $(By.id("allow")).click();
+            return;
+        }
+
         if (account.isPresent()) {
             $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.get().getProperty("login"));
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
@@ -668,7 +674,20 @@ public class CommonSteps {
     private void fillAndValidateSalesforce() {
         Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Salesforce");
 
+        if (isStringInUrl("connections/create/review", 5)) {
+            log.info("Salesforce is already connected");
+            return;
+        }
+
         if (account.isPresent()) {
+
+            //Clicking on validate takes you to step 3.
+            //So instead if there's an alert saying you are already connected we skip clicking the validate button
+            if ($(By.cssSelector("alert")).exists()) {
+                log.info("Found alert, probably about account already being authorized");
+                log.info("{}", $(By.className("alert")).getText());
+                return;
+            }
 
             $(By.id("username")).shouldBe(visible).sendKeys(account.get().getProperty("userName"));
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
