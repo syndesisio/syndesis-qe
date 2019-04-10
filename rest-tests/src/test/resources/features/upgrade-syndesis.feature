@@ -29,7 +29,6 @@ Feature: Syndesis Upgrade
   @upgrade
   Scenario: Syndesis Upgrade
     When perform test modifications
-      And modify s2i tag in syndesis-server-config
       And perform syndesis upgrade to newer version
     Then verify syndesis "upgraded" version
       And verify successful test modifications
