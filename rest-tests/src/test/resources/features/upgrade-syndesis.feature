@@ -51,6 +51,7 @@ Feature: Syndesis Upgrade
 
   @rollback
   @gh-4410
+  @gh-5166
   Scenario: Syndesis Upgrade rollback
     When perform test modifications
       And add rollback cause to upgrade script
