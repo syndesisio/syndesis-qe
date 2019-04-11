@@ -45,7 +45,7 @@ Feature: Customization - API Connector - ApicurIO GUI
 
   @gh-4910
   @apicurio-check-operations-change-add-with-error
-  Scenario: Check if operations change is propagated into connector review page from ApicurIO GUI
+  Scenario: Check if operations change with an error is propagated into connector review page from ApicurIO GUI
     When add an operation with error via apicurio gui
     And click on button "Save" while in apicurio studio page
     And check visibility of page "Review Actions"

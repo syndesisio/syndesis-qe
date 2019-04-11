@@ -36,9 +36,7 @@ Feature: Kudu connector
       | Apache Kudu | kudu | KuduConnector | description |
     And navigate to the "Home" page
 
-#
-#  1. Insert data into kudu table
-#
+
   @integrations-kudu-insert
   Scenario: Insert data into kudu table
     When inserts into "todo with id" table
@@ -80,9 +78,7 @@ Feature: Kudu connector
     Then check that Kudu server table contains inserted data
     And delete table from Kudu server
 
-#
-#  2. Scan kudu table
-#
+
   @integrations-kudu-scan
   Scenario: Scan kudu table
     When insert a row into Kudu server table
@@ -113,9 +109,6 @@ Feature: Kudu connector
     And delete table from Kudu server
 
 
-#
-#  2. Scan kudu table
-#
   @mqtt
   @integrations-kudu-mqtt
   Scenario: Kudu integration with mqtt
