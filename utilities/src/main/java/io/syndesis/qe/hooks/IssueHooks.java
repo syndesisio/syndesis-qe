@@ -9,11 +9,14 @@ import org.eclipse.egit.github.core.service.IssueService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +29,8 @@ import cucumber.api.java.Before;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.issue.IssueState;
+import io.syndesis.qe.issue.SimpleIssue;
 import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,10 +41,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class IssueHooks {
-
-    enum IssueState {
-        OPEN, DONE, CLOSED
-    }
 
     /**
      * This hook skips tests that have open github issues
@@ -60,9 +61,7 @@ public class IssueHooks {
                 Assume.assumeFalse(IssueState.OPEN.equals(getIssueState(scenario, issue)));
             }
         }
-
     }
-
 
     /**
      * This hook checks and reports status of linked github issues.
@@ -123,11 +122,25 @@ public class IssueHooks {
             logIssues(scenario, closedIssues);
             logError(scenario, "######## OPEN issues ########");
             logIssues(scenario, openIssues);
+            embedIssues(scenario, issues);
         } catch (Exception e) {
             log.error("Error while processing GitHub issues", e);
             scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
             e.printStackTrace();
         }
+    }
+
+    private void embedIssues(Scenario scenario, List<Issue> issues) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode array = mapper.createArrayNode();
+
+        for (Issue issue : issues) {
+            array.addPOJO(new SimpleIssue(issue.getNumber(), issue.getUrl(), getIssueState(scenario, issue)));
+        }
+
+        StringWriter sw = new StringWriter();
+        mapper.writeValue(sw, array);
+        scenario.embed(sw.toString().getBytes(), "application/x.issues+json");
     }
 
     public static IssueState getIssueState(Scenario scenario, Issue issue) {
@@ -169,7 +182,6 @@ public class IssueHooks {
                 Issue issue = issueService.getIssue(repository, issueNumber);
                 issues.add(issue);
             }
-
         } catch (IOException e) {
             log.error("Error while processing GitHub issues", e);
             scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
@@ -205,7 +217,6 @@ public class IssueHooks {
         client.setOAuth2Token(oauthToken);
         return client;
     }
-
 
     private static String getZenHubPipeline(Scenario scenario, String issueNumber) {
         // TODO: this whole thing should probably be refactored eventually

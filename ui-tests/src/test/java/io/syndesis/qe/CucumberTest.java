@@ -1,8 +1,10 @@
 package io.syndesis.qe;
 
 import com.codeborne.selenide.Configuration;
+
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
+
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
@@ -11,7 +13,13 @@ import org.junit.runner.RunWith;
         features = "classpath:features",
         extraGlue = {"apicurito.tests.steps"},
         tags = {"not @wip", "not @manual", "not @deprecated", "not @disabled", "not @apicuritoTests"},
-        plugin = {"pretty", "html:target/cucumber/cucumber-html", "junit:target/cucumber/cucumber-junit.xml", "json:target/cucumber/cucumber-report.json"}
+        plugin = {
+                "pretty",
+                "html:target/cucumber/cucumber-html",
+                "junit:target/cucumber/cucumber-junit.xml",
+                "json:target/cucumber/cucumber-report.json",
+                "io.syndesis.qe.cucumber.MailFormatter:target/cucumber/cucumber-mail/"
+        }
 )
 public class CucumberTest extends TestSuiteParent {
 
@@ -23,7 +31,6 @@ public class CucumberTest extends TestSuiteParent {
         //We will now use custom web driver
         //Configuration.browser = TestConfiguration.syndesisBrowser();
         Configuration.browser = "io.syndesis.qe.CustomWebDriverProvider";
-        Configuration.browserSize= "1920x1080";
+        Configuration.browserSize = "1920x1080";
     }
-
 }
