@@ -8,6 +8,7 @@ import io.syndesis.qe.pages.integrations.editor.add.connection.ChooseAction;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.InvokeSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.PeriodicSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -52,6 +53,7 @@ public class ConnectionActionSteps {
     @Then("^fill in invoke query input with \"([^\"]*)\" value$")
     public void fillInvokeSQLquery(String query) {
         invokeSql.fillSqlInput(query);
+        //verifying of the querry sometimes fails but there is no success notifier, it just jumps to the next page
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
     }
-
 }
