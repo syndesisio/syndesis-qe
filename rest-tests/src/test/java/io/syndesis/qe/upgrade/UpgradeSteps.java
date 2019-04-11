@@ -22,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -181,17 +180,6 @@ public class UpgradeSteps {
         getSyndesisCli();
     }
 
-    @When("^modify s2i tag in syndesis-server-config$")
-    public void modifyS2iTag() {
-        // Workaround until https://github.com/syndesisio/syndesis/issues/3464 is figured out
-        Map<String, String> data = OpenShiftUtils.client().configMaps().withName("syndesis-server-config").get().getData();
-        String yaml = data.get("application.yml");
-        yaml = yaml.replaceAll("syndesis-s2i:" + System.getProperty("syndesis.version"),
-                "syndesis-s2i:" + System.getProperty("syndesis.upgrade.version"));
-        data.put("application.yml", yaml);
-        OpenShiftUtils.client().configMaps().withName("syndesis-server-config").edit().withData(data).done();
-    }
-
     private void modifyTemplate() {
         // Change the install template to use newer version
         String template;
@@ -242,16 +230,8 @@ public class UpgradeSteps {
     private void copyStatefulScripts() {
         // Move the config change script to resource folder
         try {
-            final String minorVersion = System.getProperty("syndesis.upgrade.version").substring(0, 3);
-            // GH-4413
-            // Copy all scripts from for exaple "1.6" folder when doing upgrade to "1.6.X"
-            if (Paths.get(UPGRADE_FOLDER, "migration", "resource", minorVersion).toFile().exists()) {
-                FileUtils.copyDirectory(Paths.get(UPGRADE_FOLDER, "migration", "resource", minorVersion).toFile(),
-                        Paths.get(UPGRADE_FOLDER, "migration", "resource", System.getProperty("syndesis.upgrade.version")).toFile());
-            }
             FileUtils.copyFile(new File("src/test/resources/upgrade/99-change-ui-config.sh"),
-                Paths.get(UPGRADE_FOLDER, "migration", "resource",
-                    System.getProperty("syndesis.upgrade.version"), "99-change-ui-config.sh").toFile());
+                Paths.get(UPGRADE_FOLDER, "migration", "resource", "99-change-ui-config.sh").toFile());
         } catch (IOException e) {
             fail("Unable to copy scripts", e);
         }
