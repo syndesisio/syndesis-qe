@@ -43,7 +43,7 @@ public class Connections {
         return connector.getId().orElseThrow(() -> new IllegalArgumentException("Connector ID is null"));
     }
 
-    @Given("^create connection")
+    @Given("^create connection$")
     public void createConnection(DataTable connectionProperties) {
         List<List<String>> cells = connectionProperties.cells();
         Map<String, String> connectionPropertiesMap = new HashMap<>();
@@ -86,7 +86,7 @@ public class Connections {
         connectionsEndpoint.create(connection);
     }
 
-    @Given("^create ActiveMQ connection")
+    @Given("^create ActiveMQ connection$")
     public void createActiveMQConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("AMQ").get();
@@ -97,7 +97,19 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create FTP connection")
+    @Given("^create Box connection$")
+    public void createBoxConnection() {
+        final List<List<String>> table = new ArrayList<>();
+        final Account account = accountsDirectory.getAccount("Box").get();
+        table.add(Arrays.asList("connector", "box"));
+        table.add(Arrays.asList("userName", account.getProperty("userName")));
+        table.add(Arrays.asList("userPassword", account.getProperty("userPassword")));
+        table.add(Arrays.asList("clientId", account.getProperty("clientId")));
+        table.add(Arrays.asList("clientSecret", account.getProperty("clientSecret")));
+        createConnection(DataTable.create(table));
+    }
+
+    @Given("^create FTP connection$")
     public void createFTPConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("ftp").get();
@@ -107,7 +119,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create Dropbox connection")
+    @Given("^create Dropbox connection$")
     public void createDropboxConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("QE Dropbox").get();
@@ -117,7 +129,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create HTTP connection")
+    @Given("^create HTTP connection$")
     public void createHTTPConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("http").get();
@@ -126,7 +138,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create Kafka connection")
+    @Given("^create Kafka connection$")
     public void createKafkaConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("kafka").get();
@@ -135,7 +147,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create SalesForce connection")
+    @Given("^create SalesForce connection$")
     public void createSalesForceConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("QE Salesforce").get();
@@ -148,7 +160,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create Twitter connection using \"([^\"]*)\" account")
+    @Given("^create Twitter connection using \"([^\"]*)\" account$")
     public void createTwitterConnection(String twitterAccount) {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount(twitterAccount).get();
@@ -160,7 +172,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create S3 connection using \"([^\"]*)\" bucket")
+    @Given("^create S3 connection using \"([^\"]*)\" bucket$")
     public void createS3Connection(String s3Bucket) {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("s3").get();
@@ -176,7 +188,7 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create IRC connection")
+    @Given("^create IRC connection$")
     public void createIRCConnection() {
         final List<List<String>> table = new ArrayList<>();
         final Account account = accountsDirectory.getAccount("irc").get();
