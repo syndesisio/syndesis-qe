@@ -86,6 +86,7 @@ Feature: Google Sheets Connector
     And fill in values
       | Range | A1:E1 |
     And fill spreadsheet ID
+    And click on the "Next" button
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -132,6 +133,7 @@ Feature: Google Sheets Connector
     And fill in values
       | Range           | A2:E3 |
       | Major dimension | Rows  |
+    And click on the "Next" button
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -179,6 +181,7 @@ Feature: Google Sheets Connector
     And fill in values
       | Range           | E1:E5   |
       | Major dimension | Columns |
+    And click on the "Next" button
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -401,7 +404,7 @@ Feature: Google Sheets Connector
     And fill in values
       | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
       | Range         | A1:R25000                                    |
-
+    And click on the "Next" button
     Then click on the "Done" button
 
     When select the "Google Sheets" connection
@@ -409,6 +412,7 @@ Feature: Google Sheets Connector
     And fill spreadsheet ID
     And  fill in values
       | Range | A1:H25000 |
+    And click on the "Next" button
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -447,6 +451,7 @@ Feature: Google Sheets Connector
       | Max results   | 4999                                         |
     And fill in values by element ID
       | delay | 30000 |
+    And click on the "Next" button
     Then click on the "Done" button
 
     When select the "PostgresDB" connection
@@ -483,6 +488,7 @@ Feature: Google Sheets Connector
     And fill in values
       | Range | A1:H1 |
     And fill spreadsheet ID
+    And click on the "Next" button
     Then click on the "Next" button
 
     When add integration step on position "0"
