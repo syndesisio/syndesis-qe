@@ -251,14 +251,8 @@ public class UpgradeSteps {
     public void addRollbackCause() {
         System.setProperty("syndesis.upgrade.rollback", "");
         // Ideally this should be done in upgrade_60_restart_all but there is no rollback for that at the moment
-        try {
-            File scriptFile = Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toFile();
-            String script = FileUtils.readFileToString(scriptFile, "UTF-8");
-
-            FileUtils.write(scriptFile, StringUtils.replaceAll(script, "update_version \\$tag", "update_version \\$tag; exit 1"), "UTF-8");
-        } catch (IOException e) {
-            log.error("Unable to manipulate file for rollback", e);
-        }
+        TestUtils.replaceInFile(Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toAbsolutePath().toString(),
+                "update_version \\$tag", "update_version \\$tag; exit 1");
     }
 
     @Then("^wait until upgrade pod is finished$")
@@ -341,14 +335,9 @@ public class UpgradeSteps {
     }
 
     private void createFileFromTemplate(String folder, String templateFileName, String whatToReplace, String whatToUse) {
-        try {
-            File dest = Paths.get(folder, templateFileName.replaceAll("-template", "")).toFile();
-            dest.delete();
-            String content = FileUtils.readFileToString(Paths.get(folder, templateFileName).toFile(), "UTF-8");
-            FileUtils.write(dest, content.replaceAll(whatToReplace, whatToUse), "UTF-8", false);
-        } catch (IOException e) {
-            fail("Unable to modify scripts", e);
-        }
+        File dest = Paths.get(folder, templateFileName.replaceAll("-template", "")).toFile();
+        dest.delete();
+        TestUtils.replaceInFile(Paths.get(folder, templateFileName).toAbsolutePath().toString(), whatToReplace, whatToUse);
     }
 
     @Given("^clean upgrade modifications$")
