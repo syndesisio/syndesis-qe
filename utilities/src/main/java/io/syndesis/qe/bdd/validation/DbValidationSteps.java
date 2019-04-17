@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
@@ -25,6 +26,7 @@ import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -166,8 +168,11 @@ public class DbValidationSteps {
 
     @Then("^validate that number of all todos with task \"([^\"]*)\" is greater than \"(\\w+)\"$")
     public void checkNumberOfTodosMoreThan(String task, Integer val) {
-        int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        assertThat(number).isGreaterThan(val);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) > val, 30 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Not enough entries in the todo table in 30s", e);
+        }
     }
 
     @Then("^verify integration with task \"([^\"]*)\"")
