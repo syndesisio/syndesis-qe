@@ -115,7 +115,7 @@ Feature: Google Calendar Connector
     And publish integration
     Then Integration "google_calendar_get_a_specific_event" is present in integrations list
     And wait until integration "google_calendar_get_a_specific_event" gets into "Running" state
-    And validate that number of all todos with task "past_event1" is greater than "1"
+    And validate that number of all todos with task "past_event1" is greater than "0"
 
   # Tests Update Event action for an action coming through the flow.
   # Partial update not yet possible due to #3814 and #3887. Mitigating by
