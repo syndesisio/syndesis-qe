@@ -95,7 +95,7 @@ Feature: Integration - Import Export
     And check visibility of "Stopped" integration status on Integration Detail page
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for published state
-    When click on the "Edit" button
+    When click on the "Edit Integration" button
     And publish integration
 
     Then Integration "Integration_import_export_test" is present in integrations list
@@ -128,7 +128,7 @@ Feature: Integration - Import Export
     And check visibility of "Stopped" integration status on Integration Detail page
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for active state
-    When click on the "Edit" button
+    When click on the "Edit Integration" button
     And publish integration
 
     And sleep for jenkins delay or "3" seconds
@@ -171,7 +171,7 @@ Feature: Integration - Import Export
     And select the "Integration_import_export_test" integration
     Then check visibility of "Stopped" integration status on Integration Detail page
 
-    When click on the "Edit" button
+    When click on the "Edit Integration" button
     And publish integration
 
     And Integration "Integration_import_export_test" is present in integrations list
