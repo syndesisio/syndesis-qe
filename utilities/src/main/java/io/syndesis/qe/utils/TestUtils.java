@@ -1,5 +1,10 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.fail;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -230,5 +235,21 @@ public final class TestUtils {
                 "get", "pods", "-n", TestConfiguration.openShiftNamespace()
         );
         log.info(output);
+    }
+
+    /**
+     * Replaces the text in file and writes it back to file.
+     * @param absolutePath absolute path to file
+     * @param regex regex
+     * @param replacement replacement
+     */
+    public static void replaceInFile(String absolutePath, String regex, String replacement) {
+        File f = new File(absolutePath);
+        try {
+            String content = FileUtils.readFileToString(f, "UTF-8");
+            FileUtils.write(f, content.replaceAll(regex, replacement), "UTF-8", false);
+        } catch (IOException e) {
+            fail("Unable to replace content in " + absolutePath, e);
+        }
     }
 }
