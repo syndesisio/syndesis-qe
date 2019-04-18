@@ -13,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -84,13 +83,13 @@ public class DbValidationSteps {
         assertThat(getLeadTaskFromDb(lastName).contains(company)).isTrue();
     }
 
-    @Then("^inserts into \"([^\"]*)\" table on \"([^\"]*)\"$")
+    @When("^inserts into \"([^\"]*)\" table on \"([^\"]*)\"$")
     public void insertsIntoTable(String tableName, String dbType, DataTable data) {
         dbUtils.setConnection(dbType);
         this.insertsIntoTable(tableName, data);
     }
 
-    @Then("^inserts into \"([^\"]*)\" table$")
+    @When("^inserts into \"([^\"]*)\" table$")
     public void insertsIntoTable(String tableName, DataTable data) {
         List<List<String>> dataTable = data.cells();
 
@@ -136,10 +135,8 @@ public class DbValidationSteps {
     public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) {
         TestUtils.sleepIgnoreInterrupt(ms);
 
-        ResultSet rs;
         String sql = String.format("SELECT completed FROM TODO WHERE task like '%s'", task);
-        log.info("SQL **{}**", sql);
-        rs = dbUtils.executeSQLGetResultSet(sql);
+        ResultSet rs = dbUtils.executeSQLGetResultSet(sql);
         try {
             while (rs.next()) {
                 assertThat(rs.getInt("completed")).isEqualTo(val);
@@ -163,7 +160,7 @@ public class DbValidationSteps {
                 "Not enough entries in the todo table in 30s");
     }
 
-    @Then("^verify integration with task \"([^\"]*)\"$")
+    @Then("^verify upgrade integration with task \"([^\"]*)\"$")
     public void verifyIntegrationWithTask(String task) {
         if (!dbUtils.isConnectionValid()) {
             SampleDbConnectionManager.closeConnections();
@@ -175,21 +172,21 @@ public class DbValidationSteps {
         assertThat(newTaskCount).isGreaterThan(oldTaskCount + 5);
     }
 
-    @And("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")
+    @Then("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")
     public void checkNumberValuesExistInTable(String query, int number) {
         TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) == number,
                 5, 60,
                 "Query has no output.");
     }
 
-    @And("^.*checks? that query \"([^\"]*)\" has some output$")
+    @Then("^.*checks? that query \"([^\"]*)\" has some output$")
     public void checkValuesExistInTable(String query) {
         TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) > 0,
                 5, 60,
                 "Query has no output.");
     }
 
-    @And("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
+    @Then("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
     public void checkValuesExistInTable(String query, Integer count) {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(count);
     }
@@ -204,18 +201,15 @@ public class DbValidationSteps {
         assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
     }
 
-    @When("^insert into contact database randomized concur contact with name \"([^\"]*)\" and list ID \"([^\"]*)\"")
+    @When("^insert into contact database randomized concur contact with name \"([^\"]*)\" and list ID \"([^\"]*)\"$")
     public void createContactRowForConcur(String name, String listId) {
         String surname = RandomStringUtils.randomAlphabetic(12);
         String lead = RandomStringUtils.randomAlphabetic(12);
 
-        String query = "insert into CONTACT values ('" + name + "' , '" + surname + "', '" + listId + "' , '" + lead + "', '1999-01-01')";
-        log.info("Invoking query:");
-        log.info(query);
-        invokeQuery(query);
+        invokeQuery("insert into CONTACT values ('" + name + "' , '" + surname + "', '" + listId + "' , '" + lead + "', '1999-01-01')");
     }
 
-    @Given("^.*reset content of \"([^\"]*)\" table")
+    @Given("^.*reset content of \"([^\"]*)\" table$")
     public void resetTableContent(String tableName) {
         if (tableName.equalsIgnoreCase("contact")) {
             dbUtils.resetContactTable();
@@ -225,7 +219,7 @@ public class DbValidationSteps {
         }
     }
 
-    @Given("^.*truncate \"([^\"]*)\" table")
+    @Given("^.*truncate \"([^\"]*)\" table$")
     public void truncateTable(String tableName) {
         // no special handling for contact table, use resetTableContent if that's what you need
         dbUtils.truncateTable(tableName);
@@ -253,7 +247,7 @@ public class DbValidationSteps {
 
     @Given("^create standard table schema on \"([^\"]*)\" driver$")
     public void createStandardDBSchemaOn(String dbType) {
-        new DbUtils(dbType).createSEmptyTableSchema();
+        new DbUtils(dbType).createEmptyTableSchema();
     }
 
     @Given("^allocate new \"([^\"]*)\" database for \"([^\"]*)\" connection$")
@@ -292,7 +286,7 @@ public class DbValidationSteps {
 
     private String getLeadTaskFromDb() {
         String leadTask = null;
-        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO");) {
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO")) {
             if (rs.next()) {
                 leadTask = rs.getString("task");
                 log.debug("task = " + leadTask);
