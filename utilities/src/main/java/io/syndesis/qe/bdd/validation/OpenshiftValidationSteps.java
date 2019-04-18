@@ -19,6 +19,7 @@ import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.PublicOauthProxyTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import io.syndesis.qe.templates.WildFlyTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -97,6 +98,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy public oauth proxy$")
     public void deployApiOauthProxy() {
         PublicOauthProxyTemplate.deploy();
+    }
+
+    @Given("^deploy OData server$")
+    public void deployODataServer() {
+        WildFlyTemplate.deploy("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git", "odata");
     }
 
     @And("^wait until \"([^\"]*)\" pod is reloaded$")
