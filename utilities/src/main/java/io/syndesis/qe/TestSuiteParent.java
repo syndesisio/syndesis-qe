@@ -1,5 +1,6 @@
 package io.syndesis.qe;
 
+import io.syndesis.qe.templates.WildFlyTemplate;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -70,6 +71,10 @@ public abstract class TestSuiteParent {
 
         if (TestUtils.isDcDeployed("broker-amq")) {
             AmqTemplate.cleanUp();
+        }
+
+        if (TestUtils.isDcDeployed("odata")) {
+            WildFlyTemplate.cleanUp("odata");
         }
 
         if (lockSecret != null) {

@@ -18,6 +18,7 @@ import io.syndesis.qe.templates.KuduTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+import io.syndesis.qe.templates.WildFlyTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -91,6 +92,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy IRC server")
     public void deployIRCServer() {
         IrcTemplate.deploy();
+    }
+
+    @Given("^deploy OData server$")
+    public void deployODataServer() {
+        WildFlyTemplate.deploy("https://github.com/jsafarik/olingo-sample-service.git", "odata");
     }
 
     @And("^wait until \"([^\"]*)\" pod is reloaded$")
