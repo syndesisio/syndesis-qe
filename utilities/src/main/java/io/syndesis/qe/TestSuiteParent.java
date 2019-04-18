@@ -1,16 +1,18 @@
 package io.syndesis.qe;
 
+import io.syndesis.qe.bdd.CommonSteps;
+import io.syndesis.qe.templates.KuduRestAPITemplate;
+import io.syndesis.qe.templates.KuduTemplate;
+import io.syndesis.qe.templates.WildFlyTemplate;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import java.util.concurrent.TimeUnit;
 
 import io.fabric8.kubernetes.api.model.Secret;
-import io.syndesis.qe.bdd.CommonSteps;
-import io.syndesis.qe.templates.KuduRestAPITemplate;
-import io.syndesis.qe.templates.KuduTemplate;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,9 +39,9 @@ public abstract class TestSuiteParent {
         }
         log.info("Waiting to obtain namespace lock");
         boolean isReady = TestUtils.waitForEvent(s -> !s.isPresent(),
-                () -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> "test-lock".equals(s.getMetadata().getName())).findFirst(),
-                TimeUnit.MINUTES, 60,
-                TimeUnit.SECONDS, 15);
+            () -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> "test-lock".equals(s.getMetadata().getName())).findFirst(),
+            TimeUnit.MINUTES, 60,
+            TimeUnit.SECONDS, 15);
 
         if (isReady) {
             log.info("No lock present, namespace is ready");
@@ -51,11 +53,11 @@ public abstract class TestSuiteParent {
         cleanNamespace();
         log.info("Creating namespace lock via secret `test-lock`");
         lockSecret = OpenShiftUtils.client().secrets()
-                .createOrReplaceWithNew()
-                .withNewMetadata()
-                .withName("test-lock")
-                .endMetadata()
-                .done();
+            .createOrReplaceWithNew()
+            .withNewMetadata()
+            .withName("test-lock")
+            .endMetadata()
+            .done();
     }
 
     @AfterClass
@@ -64,6 +66,10 @@ public abstract class TestSuiteParent {
             log.info("Cleaning Kudu instances");
             KuduRestAPITemplate.cleanUp();
             KuduTemplate.cleanUp();
+        }
+
+        if (TestUtils.isDcDeployed("odata")) {
+            WildFlyTemplate.cleanUp("odata");
         }
 
         if (lockSecret != null) {
