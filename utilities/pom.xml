@@ -238,6 +238,16 @@
 			<artifactId>javax.el</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.box</groupId>
+			<artifactId>box-java-sdk</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

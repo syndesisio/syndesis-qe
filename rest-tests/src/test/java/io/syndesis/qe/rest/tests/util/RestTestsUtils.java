@@ -6,6 +6,7 @@ import lombok.Setter;
 public class RestTestsUtils {
     public enum Connector {
         ACTIVEMQ("activemq"),
+        BOX("box"),
         DB("sql"),
         DROPBOX("dropbox"),
         FTP("ftp"),
@@ -28,6 +29,7 @@ public class RestTestsUtils {
 
     public enum Connection {
         ACTIVEMQ("fuseqe-activemq"),
+        BOX("fuseqe-box"),
         DB("5"),
         DROPBOX("fuseqe-dropbox"),
         FTP("fuseqe-ftp"),

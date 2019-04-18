@@ -57,6 +57,8 @@
 		<github.core.version>2.1.5</github.core.version>
 		<irclib.version>1.10</irclib.version>
 		<el.version>3.0.0</el.version>
+		<box.version>2.30.1</box.version>
+		<jsoup.version>1.11.3</jsoup.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -402,6 +404,17 @@
 				<version>${el.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.box</groupId>
+				<artifactId>box-java-sdk</artifactId>
+				<version>${box.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>${jsoup.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

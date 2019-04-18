@@ -4,11 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
+import io.syndesis.qe.utils.BoxUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -16,7 +15,7 @@ import io.syndesis.qe.utils.TestUtils;
  * Class holding the steps for creating the flow steps related to connections.
  */
 public class ConnectionSteps extends AbstractStep {
-    @When("add \"([^\"]*)\" endpoint with connector id \"([^\"]*)\" and \"([^\"]*)\" action and with properties:")
+    @When("add \"([^\"]*)\" endpoint with connector id \"([^\"]*)\" and \"([^\"]*)\" action and with properties:$")
     public void createConnectorStep(String id, String connectorId, String action, DataTable properties) {
         super.addProperty(StepProperty.CONNECTOR_ID, connectorId);
         super.addProperty(StepProperty.CONNECTION_ID, id);
@@ -25,7 +24,7 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Given("^create ActiveMQ \"([^\"]*)\" action step with destination type \"([^\"]*)\" and destination name \"([^\"]*)\"$")
+    @When("^create ActiveMQ \"([^\"]*)\" action step with destination type \"([^\"]*)\" and destination name \"([^\"]*)\"$")
     public void createAmqStep(String action, String destinationType, String destinationName) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.ACTIVEMQ.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.ACTIVEMQ.getId());
@@ -37,7 +36,18 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Then("^create start DB periodic sql invocation action step with query \"([^\"]*)\" and period \"([^\"]*)\" ms")
+    @When("^create Box download action step$")
+    public void createBoxDownload() {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.BOX.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.BOX.getId());
+        super.addProperty(StepProperty.ACTION, "io.syndesis:box-download");
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
+                "fileId", BoxUtils.getFileId()
+        ));
+        super.createStep();
+    }
+
+    @When("^create start DB periodic sql invocation action step with query \"([^\"]*)\" and period \"([^\"]*)\" ms$")
     public void createStartDbPeriodicSqlStep(String sqlQuery, Integer ms) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DB.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
@@ -46,7 +56,7 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Then("^create start DB periodic stored procedure invocation action step named \"([^\"]*)\" and period \"([^\"]*)\" ms")
+    @When("^create start DB periodic stored procedure invocation action step named \"([^\"]*)\" and period \"([^\"]*)\" ms$")
     public void createStartDbPeriodicProcedureStep(String procedureName, Integer ms) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DB.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
@@ -59,7 +69,7 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Then("^create finish DB invoke sql action step with query \"([^\"]*)\"")
+    @When("^create finish DB invoke sql action step with query \"([^\"]*)\"$")
     public void createFinishDbInvokeSqlStep(String sqlQuery) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DB.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
@@ -68,7 +78,7 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^create finish DB invoke stored procedure \"([^\"]*)\" action step")
+    @When("^create finish DB invoke stored procedure \"([^\"]*)\" action step$")
     public void createFinishDbInvokeProcedureStep(String procedureName) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DB.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
@@ -118,17 +128,17 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Given("^create HTTP \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
+    @When("^create HTTP \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
     public void createHTTPStepWithPeriod(String method, long period, String timeunit) {
         createHttpStep(method, "/", period, timeunit);
     }
 
-    @Given("^create HTTP \"([^\"]*)\" step with path \"([^\"]*)\" and period \"([^\"]*)\" \"([^\"]*)\"$")
+    @When("^create HTTP \"([^\"]*)\" step with path \"([^\"]*)\" and period \"([^\"]*)\" \"([^\"]*)\"$")
     public void createHTTPStepWithPeriodAndPath(String method, String path, long period, String timeunit) {
         createHttpStep(method, path, period, timeunit);
     }
 
-    @Given("^create HTTP \"([^\"]*)\" step$")
+    @When("^create HTTP \"([^\"]*)\" step$")
     public void createBasicHTTPStep(String method) {
         createHttpStep(method, "/", -1, null);
     }
@@ -159,7 +169,7 @@ public class ConnectionSteps extends AbstractStep {
         createS3PollingStep(bucketName, null);
     }
 
-    @Given("^create S3 polling START action step with bucket: \"([^\"]*)\" and prefix \"([^\"]*)\"$")
+    @When("^create S3 polling START action step with bucket: \"([^\"]*)\" and prefix \"([^\"]*)\"$")
     public void createS3PollingStep(String bucketName, String prefix) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.S3.getId());
         super.addProperty(StepProperty.CONNECTION_ID, S3BucketNameBuilder.getBucketName(bucketName));
@@ -174,12 +184,12 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Given("^create S3 \"([^\"]*)\" FINISH action step with bucket: \"([^\"]*)\"$")
+    @When("^create S3 \"([^\"]*)\" FINISH action step with bucket: \"([^\"]*)\"$")
     public void createS3CopyStep(String action, String bucketName) {
         createS3CopyStepFile(action, bucketName, null);
     }
 
-    @Given("^create S3 \"([^\"]*)\" FINISH action step with bucket: \"([^\"]*)\" and filename: \"([^\"]*)\"$")
+    @When("^create S3 \"([^\"]*)\" FINISH action step with bucket: \"([^\"]*)\" and filename: \"([^\"]*)\"$")
     public void createS3CopyStepFile(String action, String bucketName, String fileName) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.S3.getId());
         super.addProperty(StepProperty.CONNECTION_ID, S3BucketNameBuilder.getBucketName(bucketName));
@@ -201,7 +211,7 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @Given("^create TW mention step with \"([^\"]*)\" action")
+    @When("^create TW mention step with \"([^\"]*)\" action$")
     public void createTwitterStep(String twitterAction) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.TWITTER.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.TWITTER.getId());
