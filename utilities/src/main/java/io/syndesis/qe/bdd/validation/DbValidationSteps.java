@@ -314,7 +314,7 @@ public class DbValidationSteps {
     @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+) after (\\d+) s$")
     public void checkRowsNumberIsGreaterThan(String table, int threshold, int s) throws InterruptedException, SQLException {
         Thread.sleep(s * 1000 + 1000L);
-        String sql = "SELECT COUNT(*) FROM CONTACT";
+        String sql = "SELECT COUNT(*) FROM " + table;
         log.info("SQL **{}**", sql);
         ResultSet rs = this.dbUtils.executeSQLGetResultSet(sql);
 
