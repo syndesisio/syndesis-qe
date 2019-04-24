@@ -292,7 +292,7 @@ Feature: API Provider Integration
         {"id":1,"completed":1,"task":"task1"}
         """
     And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "1", period in ms: "1000"
+    And validate that number of all todos with task "task1" is "1"
 
   @api-provider-post-existing
   Scenario: API Provider POST existing
@@ -336,7 +336,7 @@ Feature: API Provider Integration
         """
         """
     And validate that all todos with task "task1" have value completed "0", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "1", period in ms: "1000"
+    And validate that number of all todos with task "task1" is "1"
 
   @gh-5017
   @reproducer
@@ -412,9 +412,9 @@ Feature: API Provider Integration
         """
         {"body":[{"id":2,"completed":1,"task":"task2"}]},{"body":[{"id":3,"completed":1,"task":"task3"}]}
         """
-    And validate that number of all todos with task "task1" is "1", period in ms: "1000"
-    And validate that number of all todos with task "task2" is "1", period in ms: "1000"
-    And validate that number of all todos with task "task3" is "1", period in ms: "1000"
+    And validate that number of all todos with task "task1" is "1"
+    And validate that number of all todos with task "task2" is "1"
+    And validate that number of all todos with task "task3" is "1"
 
   @api-provider-put
   Scenario: API Provider PUT
@@ -461,18 +461,18 @@ Feature: API Provider Integration
         {"id":1,"completed":1,"task":"changedtask1"}
         """
     And validate that all todos with task "changedtask1" have value completed "1", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "0", period in ms: "1000"
-    And validate that number of all todos with task "task2" is "1", period in ms: "1000"
-    And validate that number of all todos with task "changedtask1" is "1", period in ms: "1000"
+    And validate that number of all todos with task "task1" is "0"
+    And validate that number of all todos with task "task2" is "1"
+    And validate that number of all todos with task "changedtask1" is "1"
     # insert new
     And verify that executing PUT on API Provider route i-todo-integration-put endpoint "/api/7" with request '{"completed":1,"task":"task7"}' returns status 200 and body
         """
         {"id":7,"completed":1,"task":"task7"}
         """
-    And validate that number of all todos with task "task1" is "0", period in ms: "1000"
-    And validate that number of all todos with task "task2" is "1", period in ms: "1000"
-    And validate that number of all todos with task "changedtask1" is "1", period in ms: "1000"
-    And validate that number of all todos with task "task7" is "1", period in ms: "1000"
+    And validate that number of all todos with task "task1" is "0"
+    And validate that number of all todos with task "task2" is "1"
+    And validate that number of all todos with task "changedtask1" is "1"
+    And validate that number of all todos with task "task7" is "1"
 
   @reproducer
   @api-provider-delete
@@ -506,8 +506,8 @@ Feature: API Provider Integration
     And verify that executing DELETE on API Provider route i-todo-integration-delete endpoint "/api/1" returns status 204 and body
       """
       """
-    And validate that number of all todos with task "task1" is "0", period in ms: "1000"
-    And validate that number of all todos with task "task2" is "1", period in ms: "1000"
+    And validate that number of all todos with task "task1" is "0"
+    And validate that number of all todos with task "task2" is "1"
 
   @api-provider-export-roundtrip
   Scenario: API Provider export roundtrip
