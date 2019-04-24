@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.fail;
 
 import org.apache.commons.lang.RandomStringUtils;
 
-import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.ResultSet;
@@ -13,20 +12,17 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -47,55 +43,45 @@ public class DbValidationSteps {
         dbUtils = new DbUtils("postgresql");
     }
 
-    @Given("^remove all records from table \"([^\"]*)\"")
+    @Given("^remove all records from table \"([^\"]*)\"$")
     public void cleanupDb(String tableName) {
         TestSupport.getInstance().resetDB();
         dbUtils.deleteRecordsInTable(tableName);
     }
 
-    @Then("^validate DB created new lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\"")
-    public void validateSfDbIntegration(String firstName, String lastName, String emailAddress) throws InterruptedException {
-        Thread.sleep(5000);
+    @Then("^validate DB created new lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\"$")
+    public void validateSfDbIntegration(String firstName, String lastName, String emailAddress) {
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable("todo"),
-                TimeUnit.MINUTES,
-                2,
-                TimeUnit.SECONDS,
-                5);
-        assertThat(contactCreated).as("Lead record has appeard in db 1").isEqualTo(true);
-        log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
+                5, 120,
+                "Lead record was not found in the table.");
+
+        log.debug("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         // Now we verify, the created lead contains the correct personal information.
         assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
     }
 
-    @Then("^validate SF on delete to DB created new task.*$")
+    @Then("^validate SF on delete to DB created new task$")
     public void validateLead() {
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount == 1, () -> dbUtils.getNumberOfRecordsInTable("todo"),
-                TimeUnit.MINUTES,
-                2,
-                TimeUnit.SECONDS,
-                5);
-        assertThat(contactCreated).as("Lead record has appeard in db 2").isEqualTo(true);
-        log.info("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
-        // Now we verify, the created lead contains the correct personal information.
-        assertThat(getLeadTaskFromDb().toLowerCase()).isNotEmpty();
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
+                5, 120,
+                "Lead record was not found in the table.");
+
+        log.debug("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+        // Now we verify, the created lead contains the correct information.
+        assertThat(getLeadTaskFromDb()).isNotEmpty();
     }
 
-    @Then("^validate add_lead procedure with last_name: \"([^\"]*)\", company: \"([^\"]*)\", period in ms: \"(\\w+)\"")
-    public void validateAddLeadProcedure(String lastName, String company, Integer ms) throws InterruptedException {
-        //wait for period cycle:
-        Thread.sleep(ms + 1000);
-        // We wait for at least 1 record to appear in DB (procedure goes on every 5 seconds).
-        final boolean contactCreated = TestUtils.waitForEvent(leadCount -> leadCount >= 1, () -> dbUtils.getNumberOfRecordsInTable("todo"),
-                TimeUnit.MINUTES,
-                2,
-                TimeUnit.SECONDS,
-                5);
-        assertThat(contactCreated).as("Lead record has appeared in DB, TODO table").isEqualTo(true);
-        assertThat(getLeadTaskFromDb(lastName).contains(company));
+    @Then("^validate add_lead procedure with last_name: \"([^\"]*)\", company: \"([^\"]*)\"$")
+    public void validateAddLeadProcedure(String lastName, String company) {
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
+                5, 120,
+                "Lead record was not found in the table.");
+
+        assertThat(getLeadTaskFromDb(lastName).contains(company)).isTrue();
     }
 
     @Then("^inserts into \"([^\"]*)\" table on \"([^\"]*)\"$")
@@ -141,41 +127,43 @@ public class DbValidationSteps {
     }
 
     @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\" on \"(\\w+)\"$")
-    public void checksThatAllTodosHaveCompletedValDb(String task, Integer val, Integer ms, String dbType) throws InterruptedException, SQLException {
+    public void checksThatAllTodosHaveCompletedValDb(String task, Integer val, Integer ms, String dbType) {
         dbUtils.setConnection(dbType);
         this.checksThatAllTodosHaveCompletedVal(task, val, ms);
     }
 
     @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\"$")
-    public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) throws InterruptedException, SQLException {
-        Thread.sleep(ms + 1000);
+    public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) {
+        TestUtils.sleepIgnoreInterrupt(ms);
 
         ResultSet rs;
         String sql = String.format("SELECT completed FROM TODO WHERE task like '%s'", task);
         log.info("SQL **{}**", sql);
         rs = dbUtils.executeSQLGetResultSet(sql);
-        while (rs.next()) {
-            assertThat(rs.getInt("completed")).isEqualTo(val);
+        try {
+            while (rs.next()) {
+                assertThat(rs.getInt("completed")).isEqualTo(val);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
-    @Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\", period in ms: \"(\\w+)\"$")
-    public void checksNumberOfTodos(String task, Integer val, Integer ms) throws InterruptedException {
-        Thread.sleep(TestConfiguration.getJenkinsDelay() * 1000 + ms);
-        int number = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        assertThat(number).isEqualTo(val);
+    @Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\"$")
+    public void checksNumberOfTodos(String task, int val) {
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) == val,
+                5, 30,
+                "Number of todo tasks does not match!");
     }
 
     @Then("^validate that number of all todos with task \"([^\"]*)\" is greater than \"(\\w+)\"$")
     public void checkNumberOfTodosMoreThan(String task, Integer val) {
-        try {
-            OpenShiftWaitUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) > val, 30 * 1000L);
-        } catch (TimeoutException | InterruptedException e) {
-            fail("Not enough entries in the todo table in 30s", e);
-        }
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) > val,
+                5, 30,
+                "Not enough entries in the todo table in 30s");
     }
 
-    @Then("^verify integration with task \"([^\"]*)\"")
+    @Then("^verify integration with task \"([^\"]*)\"$")
     public void verifyIntegrationWithTask(String task) {
         if (!dbUtils.isConnectionValid()) {
             SampleDbConnectionManager.closeConnections();
@@ -188,13 +176,17 @@ public class DbValidationSteps {
     }
 
     @And("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")
-    public void checkNumberValuesExistInTable(String query, Integer number) {
-        assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(number);
+    public void checkNumberValuesExistInTable(String query, int number) {
+        TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) == number,
+                5, 60,
+                "Query has no output.");
     }
 
     @And("^.*checks? that query \"([^\"]*)\" has some output$")
     public void checkValuesExistInTable(String query) {
-        assertThat(dbUtils.getCountOfInvokedQuery(query)).isGreaterThanOrEqualTo(1);
+        TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) > 0,
+                5, 60,
+                "Query has no output.");
     }
 
     @And("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
@@ -207,7 +199,7 @@ public class DbValidationSteps {
         assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(0);
     }
 
-    @When("^.*invokes? database query \"([^\"]*)\"")
+    @When("^invoke database query \"([^\"]*)\"$")
     public void invokeQuery(String query) {
         assertThat(dbUtils.executeSQLGetUpdateNumber(query)).isGreaterThanOrEqualTo(0);
     }
@@ -293,7 +285,7 @@ public class DbValidationSteps {
                 log.debug("task = " + leadTask);
             }
         } catch (SQLException ex) {
-            Assertions.fail("Error: " + ex);
+            fail("Error: " + ex);
         }
         return leadTask;
     }
@@ -306,22 +298,15 @@ public class DbValidationSteps {
                 log.debug("task = " + leadTask);
             }
         } catch (SQLException ex) {
-            Assertions.fail("Error: " + ex);
+            fail("Error: " + ex);
         }
         return leadTask;
     }
 
-    @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+) after (\\d+) s$")
-    public void checkRowsNumberIsGreaterThan(String table, int threshold, int s) throws InterruptedException, SQLException {
-        Thread.sleep(s * 1000 + 1000L);
-        String sql = "SELECT COUNT(*) FROM " + table;
-        log.info("SQL **{}**", sql);
-        ResultSet rs = this.dbUtils.executeSQLGetResultSet(sql);
-
-        if (rs.next()) {
-            assertThat(rs.getInt(1)).isGreaterThan(threshold);
-        } else {
-            fail("There is no result for command: " + sql);
-        }
+    @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+)$")
+    public void checkRowsNumberIsGreaterThan(String table, int threshold) {
+        TestUtils.waitFor(() -> this.dbUtils.getNumberOfRecordsInTable(table) > threshold,
+                5, 30,
+                "Not enough entries in the database");
     }
 }

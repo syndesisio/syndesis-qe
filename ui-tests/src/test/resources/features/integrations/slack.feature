@@ -143,7 +143,6 @@ Feature: Slack Connector
 
     When send message "Red Hat testSlack" on channel "test"
     And send message "Red Hat test incorrect Slack" on channel "test"
-    And sleep for "10000" ms
     Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
     And checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
 

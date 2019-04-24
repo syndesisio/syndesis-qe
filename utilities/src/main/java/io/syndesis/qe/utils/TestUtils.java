@@ -1,6 +1,6 @@
 package io.syndesis.qe.utils;
 
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Fail.fail;
 
 import org.apache.commons.io.FileUtils;
 
@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -25,6 +27,7 @@ import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import io.syndesis.qe.utils.dballoc.DBAllocation;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,16 +35,17 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class TestUtils {
+
     /**
      * Waits until a predicate is true or timeout exceeds.
      *
      * @param predicate predicate
-     * @param supplier  supplier of values to test by predicate
-     * @param unit      TimeUnit for timeout
-     * @param timeout   how long to wait for event
+     * @param supplier supplier of values to test by predicate
+     * @param unit TimeUnit for timeout
+     * @param timeout how long to wait for event
      * @param sleepUnit TimeUnit of sleep interval between tests
      * @param sleepTime how long to wait between individual tests (in miliseconds)
-     * @param <T>       Type of tested value by a predicate
+     * @param <T> Type of tested value by a predicate
      * @return True if predicate become true within a timeout, otherwise returns false.
      */
     public static <T> boolean waitForEvent(Predicate<T> predicate, Supplier<T> supplier, TimeUnit unit, long timeout, TimeUnit sleepUnit, long sleepTime) {
@@ -68,10 +72,10 @@ public final class TestUtils {
     /**
      * Waits until integration reaches a specified state or timeout exceeds.
      *
-     * @param e       Integration endpoint to obtain current state
-     * @param i       integration
-     * @param state   desired integration state
-     * @param unit    Time unit
+     * @param e Integration endpoint to obtain current state
+     * @param i integration
+     * @param state desired integration state
+     * @param unit Time unit
      * @param timeout timeout
      * @return True if integration is activated within a timeout. False otherwise.
      */
@@ -92,10 +96,10 @@ public final class TestUtils {
     }
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
-        try{
+        try {
             final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
             return OpenShiftUtils.portForward(podToForward, remotePort, localPort);
-        }catch (IllegalArgumentException ex){
+        } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException(ex.getMessage() + ". Probably Syndesis is not in the namespace.");
         }
     }
@@ -147,6 +151,14 @@ public final class TestUtils {
         }
     }
 
+    public static void waitFor(BooleanSupplier condition, int checkIntervalInSeconds, int timeoutInSeconds, String errorMessage) {
+        try {
+            OpenShiftWaitUtils.waitFor(condition, checkIntervalInSeconds * 1000L, timeoutInSeconds * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail(errorMessage, e);
+        }
+    }
+
     public static void sleepForJenkinsDelayIfHigher(int delayInSeconds) {
         log.debug("sleeping for " + delayInSeconds + " seconds");
         sleepIgnoreInterrupt(Math.max(TestConfiguration.getJenkinsDelay(), delayInSeconds) * 1000);
@@ -163,7 +175,7 @@ public final class TestUtils {
      * io.syndesis.qe.accounts.Account properties.
      *
      * @param connectionName name of the connection
-     * @param sourceMap      source map
+     * @param sourceMap source map
      */
     private static void transhipExternalProperties(String connectionName, Map<String, String> sourceMap) {
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
@@ -198,6 +210,7 @@ public final class TestUtils {
 
     /**
      * Checks if the user is cluster admin.
+     *
      * @return true/false
      */
     public static boolean isUserAdmin() {
@@ -211,6 +224,7 @@ public final class TestUtils {
 
     /**
      * Check if the test is running on jenkins.
+     *
      * @return true/false
      */
     public static boolean isJenkins() {
@@ -219,6 +233,7 @@ public final class TestUtils {
 
     /**
      * Checks if we are testing productized bits.
+     *
      * @return true/false
      */
     public static boolean isProdBuild() {
@@ -239,6 +254,7 @@ public final class TestUtils {
 
     /**
      * Replaces the text in file and writes it back to file.
+     *
      * @param absolutePath absolute path to file
      * @param regex regex
      * @param replacement replacement

@@ -7,7 +7,7 @@ Feature: Integration - import-edit
     Given clean application state
     And reset content of "CONTACT" table
     And log into the Syndesis
-    
+
   Scenario: Import, edit, publish, check integration
     When navigate to the "Integrations" page
     And click on the "Import" button
@@ -17,9 +17,9 @@ Feature: Integration - import-edit
     And click on the "Edit Integration" button
     And edit integration step on position 1
     And fills in values
-    | SQL statement | select * from contact limit 1 |
-    And click on the "Done" button
+      | SQL statement | select * from contact limit 1 |
+    And click on the "Next" button
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "import-edit-integration" gets into "Running" state
-    And check rows number of table "CONTACT" is greater than 1 after 30 s
+    And check rows number of table "CONTACT" is greater than 1

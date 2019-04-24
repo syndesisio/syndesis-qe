@@ -69,7 +69,7 @@ Feature: Integration - DB to DB with extension
     # wait for integration to get in active state
     Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
 
-    Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
+    Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 
     When navigate to the "Customizations" page
     And click on the "Extensions" link
