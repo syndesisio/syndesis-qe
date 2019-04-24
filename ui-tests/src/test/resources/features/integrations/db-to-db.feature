@@ -170,8 +170,8 @@ Feature: Integration - DB to DB
     And publish integration
     Then wait until integration "CRUD3-read-delete E2E" gets into "Running" state
 
-    Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
-    Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
+    Then validate that number of all todos with task "Joe" is "0"
+    Then validate that number of all todos with task "Jimmy" is "1"
 
 #
 #  4. select - create (via buildin procedure)
@@ -229,7 +229,7 @@ Feature: Integration - DB to DB
     And set integration name "CRUD4-read-create-inbuilt E2E"
     And publish integration
     Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
-    Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem", period in ms: "10000"
+    Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 
 
 
@@ -298,5 +298,5 @@ Feature: Integration - DB to DB
     And publish integration
     Then wait until integration "DB Connection 5 SQL query checker E2E" gets into "Running" state
 
-    Then validate that number of all todos with task "Joe" is "0", period in ms: "5000"
-    Then validate that number of all todos with task "Jimmy" is "1", period in ms: "1"
+    Then validate that number of all todos with task "Joe" is "0"
+    Then validate that number of all todos with task "Jimmy" is "1"
