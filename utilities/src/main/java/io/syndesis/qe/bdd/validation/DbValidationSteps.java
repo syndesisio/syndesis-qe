@@ -145,7 +145,7 @@ public class DbValidationSteps {
                 assertThat(rs.getInt("completed")).isEqualTo(val);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            fail("Error while processing the result set", e);
         }
     }
 
