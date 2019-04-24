@@ -35,7 +35,7 @@ Feature: Integration - Salesforce
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
     Then delete lead from SF with email: "jdoesfdb@acme.com"
-    Then validate SF on delete to DB created new task with lead ID as task name
+    Then validate SF on delete to DB created new task
 
   @integration-sf-db @integration-sf-db-update
   Scenario: On update to DB

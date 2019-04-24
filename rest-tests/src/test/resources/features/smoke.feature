@@ -28,4 +28,4 @@ Feature: Integration - Database
     And sleep for jenkins delay or "15" seconds
 
     Then validate that number of all todos with task "Josef_first" is greater than "0"
-    Then validate that number of all todos with task "Josef_second" is "0", period in ms: "1"
+    Then validate that number of all todos with task "Josef_second" is "0"
