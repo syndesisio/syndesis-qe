@@ -1,6 +1,7 @@
 package io.syndesis.qe;
 
 import static org.junit.Assume.assumeFalse;
+import static org.junit.Assume.assumeTrue;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +33,12 @@ public class RestTestHooks {
     public void skipProdUpgrade() {
         // Prod upgrade is tested differently, so skip these tests with prod version
         assumeFalse(System.getProperty("syndesis.version").contains("redhat"));
+    }
+
+    @Before("@prod")
+    public void skipProdForNightly() {
+        // Skip prod tests when not running with productized build
+        assumeTrue(System.getProperty("syndesis.version").contains("redhat"));
     }
 
     @After
