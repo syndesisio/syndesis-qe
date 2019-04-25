@@ -29,7 +29,7 @@ public class KafkaTemplate {
         }
 
         // Replace namespace in the resources
-        TestUtils.replaceInFile(KAFKA_RESOURCES, "\\$NAMESPACE\\$", TestConfiguration.openShiftNamespace());
+        TestUtils.replaceInFile(Paths.get(KAFKA_RESOURCES).toFile(), "\\$NAMESPACE\\$", TestConfiguration.openShiftNamespace());
 
         for (String resource : Arrays.asList(KAFKA_RESOURCES, KAFKA_CR)) {
             log.info("Creating " + resource);
