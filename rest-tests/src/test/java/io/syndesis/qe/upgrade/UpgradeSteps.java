@@ -251,7 +251,7 @@ public class UpgradeSteps {
     public void addRollbackCause() {
         System.setProperty("syndesis.upgrade.rollback", "");
         // Ideally this should be done in upgrade_60_restart_all but there is no rollback for that at the moment
-        TestUtils.replaceInFile(Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toAbsolutePath().toString(),
+        TestUtils.replaceInFile(Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toFile(),
                 "update_version \\$tag", "update_version \\$tag; exit 1");
     }
 
@@ -335,9 +335,13 @@ public class UpgradeSteps {
     }
 
     private void createFileFromTemplate(String folder, String templateFileName, String whatToReplace, String whatToUse) {
-        File dest = Paths.get(folder, templateFileName.replaceAll("-template", "")).toFile();
-        dest.delete();
-        TestUtils.replaceInFile(Paths.get(folder, templateFileName).toAbsolutePath().toString(), whatToReplace, whatToUse);
+        File newFile = Paths.get(folder, templateFileName.replaceAll("-template", "")).toFile();
+        try {
+            FileUtils.copyFile(Paths.get(folder, templateFileName).toFile(), newFile);
+        } catch (IOException e) {
+            fail("Unable to copy template file", e);
+        }
+        TestUtils.replaceInFile(newFile, whatToReplace, whatToUse);
     }
 
     @Given("^clean upgrade modifications$")

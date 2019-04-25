@@ -255,17 +255,16 @@ public final class TestUtils {
     /**
      * Replaces the text in file and writes it back to file.
      *
-     * @param absolutePath absolute path to file
+     * @param f file to use
      * @param regex regex
      * @param replacement replacement
      */
-    public static void replaceInFile(String absolutePath, String regex, String replacement) {
-        File f = new File(absolutePath);
+    public static void replaceInFile(File f, String regex, String replacement) {
         try {
             String content = FileUtils.readFileToString(f, "UTF-8");
             FileUtils.write(f, content.replaceAll(regex, replacement), "UTF-8", false);
         } catch (IOException e) {
-            fail("Unable to replace content in " + absolutePath, e);
+            fail("Unable to replace content in " + f.getAbsolutePath(), e);
         }
     }
 }
