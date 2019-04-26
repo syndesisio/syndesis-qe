@@ -13,7 +13,7 @@ public class TelegramUtils {
 
     public static HTTPResponse sendMessage(String chatId, String text) {
         String apiToken = "";
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("Telegram");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.TELEGRAM);
 
         if (optional.isPresent()) {
             apiToken = optional.get().getProperties().get("authorizationToken");
@@ -26,7 +26,7 @@ public class TelegramUtils {
     }
 
     public static HTTPResponse getUpdates() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("Telegram");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.TELEGRAM);
         String apiToken = "";
 
         if (optional.isPresent()) {

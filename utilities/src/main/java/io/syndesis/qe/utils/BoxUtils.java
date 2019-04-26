@@ -50,7 +50,8 @@ public class BoxUtils {
     @PostConstruct
     public void initClient() {
         log.info("Getting box access token");
-        boxAccount = AccountsDirectory.getInstance().getAccount("Box").orElseThrow(() -> new RuntimeException("Unable to find box account"));
+        boxAccount = AccountsDirectory.getInstance().getAccount(Account.Name.BOX)
+                .orElseThrow(() -> new IllegalArgumentException("Unable to find box account"));
         String accessToken;
         try {
             accessToken = getAccessToken();

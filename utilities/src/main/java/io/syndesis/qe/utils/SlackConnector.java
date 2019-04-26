@@ -1,5 +1,9 @@
 package io.syndesis.qe.utils;
 
+import org.assertj.core.api.Assertions;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsHistoryRequest;
@@ -10,16 +14,14 @@ import com.github.seratch.jslack.api.methods.response.channels.ChannelsListRespo
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Message;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.Optional;
+
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -35,7 +37,7 @@ public class SlackConnector {
      * is API Token for slack workspace custom integration called "Bots".
      */
     public SlackConnector() {
-        Optional<Account> accountInfo = AccountsDirectory.getInstance().getAccount("QE Slack");
+        Optional<Account> accountInfo = AccountsDirectory.getInstance().getAccount(Account.Name.SLACK);
 
         if (accountInfo.isPresent()) {
             SlackConnector.token = accountInfo.get().getProperties().get("token");
@@ -59,7 +61,7 @@ public class SlackConnector {
      * @throws SlackApiException
      * @throws InterruptedException
      */
-    public ChatPostMessageResponse sendMessage(String message, String channelName) throws IOException, SlackApiException, InterruptedException {
+    public ChatPostMessageResponse sendMessage(String message, String channelName) throws IOException, SlackApiException {
 
         // find all channels in the workspace
         ChannelsListResponse channelsResponse = slack.methods().channelsList(ChannelsListRequest.builder().token(token).build());

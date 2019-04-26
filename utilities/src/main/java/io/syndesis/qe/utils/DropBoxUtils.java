@@ -28,7 +28,7 @@ public class DropBoxUtils {
     private DbxClientV2 getClient() throws DbxException {
         if (this.client == null) {
             System.setProperty("https.protocols", "TLSv1.2");
-            Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE Dropbox");
+            Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.DROPBOX);
 
             if (optional.isPresent()) {
                 DbxRequestConfig config = new DbxRequestConfig(optional.get().getProperty("clientIdentifier"));

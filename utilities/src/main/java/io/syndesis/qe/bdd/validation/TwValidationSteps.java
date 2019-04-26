@@ -26,7 +26,7 @@ public class TwValidationSteps {
 
     public TwValidationSteps() {
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account twitterTalky = accountsDirectory.getAccount("twitter_talky").get();
+        final Account twitterTalky = accountsDirectory.getAccount(Account.Name.TWITTER_TALKY).get();
         //twitter
         final TwitterFactory factory = new TwitterFactory(new ConfigurationBuilder()
                 .setOAuthConsumerKey(twitterTalky.getProperty("consumerKey"))
@@ -45,7 +45,7 @@ public class TwValidationSteps {
     @Then("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
     public void sendTweet(String toAcc, String tweet) throws TwitterException {
         final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
-        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount("twitter_talky")
+        log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(Account.Name.TWITTER_TALKY)
                 .get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
         twitter.updateStatus(message);
         log.info("Tweet submitted.");

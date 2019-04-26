@@ -661,7 +661,7 @@ public class CommonSteps {
     }
 
     private void fillAndValidateTwitter() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount("Twitter Listener");
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.TWITTER_LISTENER);
 
         if (!$(By.id("username_or_email")).exists()) {
             log.info("Already logged into Twitter, clicking on validate");
@@ -679,7 +679,7 @@ public class CommonSteps {
     }
 
     private void fillAndValidateSalesforce() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Salesforce");
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.SALESFORCE);
 
         if (isStringInUrl("connections/create/review", 5)) {
             log.info("Salesforce is already connected");
@@ -726,7 +726,7 @@ public class CommonSteps {
     }
 
     private void fillAndValidateConcur() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount("QE Concur");
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.CONCUR);
 
         if (account.isPresent()) {
 
