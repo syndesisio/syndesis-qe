@@ -1,0 +1,194 @@
+package io.syndesis.qe.endpoints.publicendpoint;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import io.syndesis.common.model.integration.ContinuousDeliveryEnvironment;
+import io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.fail;
+
+@Component
+@Lazy
+public class IntegrationsPublicEndpoint extends PublicEndpoint {
+
+    public IntegrationsPublicEndpoint() {
+        super("/integrations");
+    }
+
+    /**
+     * Import zip file with the integrations
+     * endpoint -> POST ​/public​/integrations
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#importResources(SecurityContext, PublicApiHandler.ImportFormDataInput)}
+     *
+     * @param tag           - tag for imported integrations
+     * @param pathToZipFile - path to zip file (e.g. /tmp/export.zip)
+     */
+    public void importIntegration(String tag, String pathToZipFile) {
+        MultipartFormDataOutput mdo = new MultipartFormDataOutput();
+        try {
+            mdo.addFormData("data", new FileInputStream(new File(pathToZipFile)),
+                    MediaType.APPLICATION_OCTET_STREAM_TYPE);
+            mdo.addFormData("environment", tag, MediaType.TEXT_PLAIN_TYPE);
+        } catch (FileNotFoundException e) {
+            fail("IO Exception during loading ZIP file.", e);
+        }
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(rootEndPoint));
+        Response response = invocation.post(Entity.entity(mdo, MediaType.MULTIPART_FORM_DATA_TYPE));
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            fail("Status of the response is " + response.getStatus());
+        }
+    }
+
+    /**
+     * Export all integrations which are tagged with particular tag.
+     * endpoint -> GET ​/public​/integrations​/{env}​/export.zip
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#exportResources(String, boolean)}
+     *
+     * @param tag        - tag for exporting
+     * @param pathToSave - path to save zip file (e.g. /tmp/export.zip)
+     * @param all        - when all is set to true, all integrations are exported and tagged with the tag.
+     */
+    public void exportIntegration(String tag, String pathToSave, boolean all) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/export.zip?all=%s", tag, all)));
+        Response res = invocation.get();
+        InputStream is = res.readEntity(InputStream.class);
+        exportZip(is, pathToSave);
+    }
+
+    /**
+     * Deploy particular integration, redeploy in case the integration is already published
+     * endpoint -> POST /public​/integrations​/{id}​/deployments
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#publishIntegration(SecurityContext, String)}
+     */
+    public void deployIntegration(String integrationName) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/deployments", integrationName)));
+        Response response = invocation.post(null);
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            fail("Status of the response is " + response.getStatus());
+        }
+    }
+
+    /**
+     * Stop published integration
+     * endpoint -> PUT /public​/integrations​/{id}​/deployments​/stop
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#stopIntegration(SecurityContext, String)}
+     */
+    public void stopIntegration(String integrationName) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/deployments/stop", integrationName)));
+        Response response = invocation.put(null);
+        if (response.getStatus() != HttpURLConnection.HTTP_NO_CONTENT) {
+            fail("Status of the response is " + response.getStatus());
+        }
+    }
+
+    /**
+     * Get state of the particular integration
+     * endpoint -> GET /public​/integrations​/{id}​/state
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#getIntegrationState(SecurityContext, String)}
+     */
+    public JsonNode getStateOfIntegration(String integrationName) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/state", integrationName)));
+        Response response = invocation.get();
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            fail("Status of the response is " + response.getStatus());
+        }
+        return response.readEntity(JsonNode.class); // cannot use original class
+    }
+
+    /**
+     * Get all tags in the particular integration
+     * endpoint -> GET /public​/integrations​/{id}​/tags
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#getReleaseTags(String)}
+     */
+    public Map<String, ContinuousDeliveryEnvironment> getAllTagsInIntegration(String integrationName) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/tags", integrationName)));
+        Response response = invocation.get();
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            fail("Status of the response is " + response.getStatus());
+        }
+        return response.readEntity(new GenericType<HashMap<String, ContinuousDeliveryEnvironment>>() {
+        });
+    }
+
+    /**
+     * Add tags to the particular integration
+     * NOTE that uncheck existing tags on the integration
+     * endpoint -> PUT ​/public​/integrations​/{id}​/tags
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#putTagsForRelease(String, List)}
+     */
+    public Map<String, ContinuousDeliveryEnvironment> updateTagsInIntegration(String integrationName, String... tags) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/tags", integrationName)));
+        Response response = invocation.put(Entity.entity(tags, MediaType.APPLICATION_JSON));
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            fail("Status of the response is " + response.getStatus());
+        }
+        return response.readEntity(new GenericType<HashMap<String, ContinuousDeliveryEnvironment>>() {
+        });
+    }
+
+    /**
+     * Add tags to the particular integration
+     * NOTE that doesn't uncheck existing tags on the integration
+     * endpoint -> PATCH ​/public​/integrations​/{id}​/tags
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#patchTagsForRelease(String, List)}
+     */
+    public Map<String, ContinuousDeliveryEnvironment> addTagsToIntegration(String integrationName, String... tags) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/tags", integrationName)));
+        Response response = invocation.method("PATCH", Entity.entity(tags, MediaType.APPLICATION_JSON));
+        if (response.getStatus() != HttpURLConnection.HTTP_OK) {
+            fail("Status of the response is " + response.getStatus());
+        }
+        return response.readEntity(new GenericType<HashMap<String, ContinuousDeliveryEnvironment>>() {
+        });
+    }
+
+    /**
+     * Delete tag on particular integration
+     * endpoint -> DELETE ​/public​/integrations​/{id}​/tags​/{env}
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#deleteReleaseTag(String, String)}
+     */
+    public void deleteTagInIntegration(String integrationName, String label) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/tags/%s", integrationName, label)));
+        Response response = invocation.delete();
+        if (response.getStatus() != HttpURLConnection.HTTP_NO_CONTENT) {
+            fail("Status of the response is " + response.getStatus());
+        }
+    }
+
+    /**
+     * Function export InputStream as Zip file
+     */
+    private void exportZip(InputStream is, String pathToSave) {
+        try {
+            byte[] buffer = new byte[is.available()];
+            is.read(buffer);
+            File targetFile = new File(pathToSave);
+            OutputStream outStream = new FileOutputStream(targetFile);
+            outStream.write(buffer);
+            outStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("IO Exception during exporting ZIP file.", e);
+        }
+    }
+}
