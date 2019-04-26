@@ -42,7 +42,7 @@ public class SfValidationSteps {
 
     public SfValidationSteps() {
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account salesforceAccount = accountsDirectory.getAccount("QE Salesforce").get();
+        final Account salesforceAccount = accountsDirectory.getAccount(Account.Name.SALESFORCE).get();
         int retries = 0;
         int timeoutInMinutes;
         while (retries < 4) {

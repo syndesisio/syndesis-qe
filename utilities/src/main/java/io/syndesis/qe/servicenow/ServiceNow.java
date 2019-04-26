@@ -42,7 +42,7 @@ public class ServiceNow {
     }
 
     private ServiceNow() {
-        Optional<Account> serviceNow = AccountsDirectory.getInstance().getAccount("Servicenow");
+        Optional<Account> serviceNow = AccountsDirectory.getInstance().getAccount(Account.Name.SERVICENOW);
         assertThat(serviceNow).isPresent();
         String instanceName = serviceNow.get().getProperty("instanceName");
         userName = serviceNow.get().getProperty("userName");

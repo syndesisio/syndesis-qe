@@ -2,6 +2,9 @@ package io.syndesis.qe.utils;
 
 import org.apache.commons.io.IOUtils;
 
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
@@ -15,24 +18,22 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
+import javax.annotation.PreDestroy;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PreDestroy;
 
 /**
  * Aws S3 utils.
@@ -55,7 +56,7 @@ public class S3Utils {
 
     public S3Utils() {
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account s3Account = accountsDirectory.getAccount("s3").get();
+        final Account s3Account = accountsDirectory.getAccount(Account.Name.AWS).get();
         final AWSCredentials credentials = new BasicAWSCredentials(
                 s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
         );

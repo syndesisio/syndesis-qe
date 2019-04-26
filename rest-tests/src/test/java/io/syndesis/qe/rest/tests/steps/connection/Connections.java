@@ -89,7 +89,7 @@ public class Connections {
     @Given("^create ActiveMQ connection$")
     public void createActiveMQConnection() {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("AMQ").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.ACTIVEMQ).get();
         table.add(Arrays.asList("connector", "activemq"));
         table.add(Arrays.asList("brokerUrl", account.getProperty("brokerUrl")));
         table.add(Arrays.asList("username", account.getProperty("username")));
@@ -100,7 +100,7 @@ public class Connections {
     @Given("^create Box connection$")
     public void createBoxConnection() {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("Box").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.BOX).get();
         table.add(Arrays.asList("connector", "box"));
         table.add(Arrays.asList("userName", account.getProperty("userName")));
         table.add(Arrays.asList("userPassword", account.getProperty("userPassword")));
@@ -109,39 +109,49 @@ public class Connections {
         createConnection(DataTable.create(table));
     }
 
-    @Given("^create FTP connection$")
-    public void createFTPConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("ftp").get();
-        table.add(Arrays.asList("connector", "ftp"));
-        table.add(Arrays.asList("host", account.getProperty("host")));
-        table.add(Arrays.asList("port", account.getProperty("port")));
-        createConnection(DataTable.create(table));
-    }
-
     @Given("^create Dropbox connection$")
     public void createDropboxConnection() {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("QE Dropbox").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.DROPBOX).get();
         table.add(Arrays.asList("connector", "dropbox"));
         table.add(Arrays.asList("accessToken", account.getProperty("accessToken")));
         table.add(Arrays.asList("clientIdentifier", account.getProperty("clientIdentifier")));
         createConnection(DataTable.create(table));
     }
 
+    @Given("^create FTP connection$")
+    public void createFTPConnection() {
+        final List<List<String>> table = new ArrayList<>();
+        final Account account = accountsDirectory.getAccount(Account.Name.FTP).get();
+        table.add(Arrays.asList("connector", "ftp"));
+        table.add(Arrays.asList("host", account.getProperty("host")));
+        table.add(Arrays.asList("port", account.getProperty("port")));
+        createConnection(DataTable.create(table));
+    }
+
     @Given("^create HTTP connection$")
     public void createHTTPConnection() {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("http").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.HTTP).get();
         table.add(Arrays.asList("connector", "http"));
         table.add(Arrays.asList("baseUrl", account.getProperty("baseUrl")));
+        createConnection(DataTable.create(table));
+    }
+
+    @Given("^create IRC connection$")
+    public void createIRCConnection() {
+        final List<List<String>> table = new ArrayList<>();
+        final Account account = accountsDirectory.getAccount(Account.Name.IRC).get();
+        table.add(Arrays.asList("connector", "irc"));
+        table.add(Arrays.asList("hostname", account.getProperty("hostname")));
+        table.add(Arrays.asList("port", account.getProperty("port")));
         createConnection(DataTable.create(table));
     }
 
     @Given("^create Kafka connection$")
     public void createKafkaConnection() {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("kafka").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.KAFKA).get();
         table.add(Arrays.asList("connector", "kafka"));
         table.add(Arrays.asList("brokers", account.getProperty("brokers")));
         createConnection(DataTable.create(table));
@@ -150,7 +160,7 @@ public class Connections {
     @Given("^create SalesForce connection$")
     public void createSalesForceConnection() {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("QE Salesforce").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.SALESFORCE).get();
         table.add(Arrays.asList("connector", "salesforce"));
         table.add(Arrays.asList("clientId", account.getProperty("clientId")));
         table.add(Arrays.asList("clientSecret", account.getProperty("clientSecret")));
@@ -175,7 +185,7 @@ public class Connections {
     @Given("^create S3 connection using \"([^\"]*)\" bucket$")
     public void createS3Connection(String s3Bucket) {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("s3").get();
+        final Account account = accountsDirectory.getAccount(Account.Name.AWS).get();
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
 
         table.add(Arrays.asList("connector", "s3"));
@@ -185,16 +195,6 @@ public class Connections {
         table.add(Arrays.asList("secretKey", account.getProperty("secretKey")));
         table.add(Arrays.asList("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)));
         table.add(Arrays.asList("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket)));
-        createConnection(DataTable.create(table));
-    }
-
-    @Given("^create IRC connection$")
-    public void createIRCConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("irc").get();
-        table.add(Arrays.asList("connector", "irc"));
-        table.add(Arrays.asList("hostname", account.getProperty("hostname")));
-        table.add(Arrays.asList("port", account.getProperty("port")));
         createConnection(DataTable.create(table));
     }
 }

@@ -202,7 +202,7 @@ public class IssueHooks {
     private static GitHubClient getGitHubClient(Scenario scenario) {
         String oauthToken = "";
 
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("GitHub");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.GITHUB);
         if (optional.isPresent()) {
             if (!optional.get().getProperties().containsKey("PersonalAccessToken")) {
                 logError(scenario, "Account with name \"GitHub\" and property \"PersonalAccessToken\" is required in credentials.json file.");
@@ -222,7 +222,7 @@ public class IssueHooks {
         // TODO: this whole thing should probably be refactored eventually
         String oauthToken = "";
 
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("ZenHub");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.ZENHUB);
         if (optional.isPresent()) {
             if (!optional.get().getProperties().containsKey("APIToken")) {
                 logError(scenario, "Account with name \"ZenHub\" and property \"APIToken\" is required in credentials.json file.");

@@ -1,8 +1,5 @@
 package io.syndesis.qe.utils.mqtt;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -11,6 +8,10 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.util.Optional;
+
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
@@ -23,7 +24,7 @@ public class MqttUtils {
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(false);
 
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE MQTT");
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.MQTT);
         if (optional.isPresent()) {
             log.info("Setting username and password for QE MQTT client");
             connOpts.setUserName(optional.get().getProperties().get("userName"));
@@ -44,7 +45,7 @@ public class MqttUtils {
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(false);
 
-            Optional<Account> optional = AccountsDirectory.getInstance().getAccount("QE MQTT");
+            Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.MQTT);
             if (optional.isPresent()) {
                 log.info("Setting username and password for QE MQTT client");
                 connOpts.setUserName(optional.get().getProperties().get("userName"));
