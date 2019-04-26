@@ -22,11 +22,11 @@ Feature: Syndesis Upgrade Using Operator
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
     Then create integration with name: "upgrade"
       And wait for integration with name: "upgrade" to become active
-      And verify integration with task "X"
+      And verify upgrade integration with task "X"
 
   Scenario: Syndesis Upgrade Using Operator
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade pod is finished
       And wait for Syndesis to become ready
       And verify syndesis "upgraded" version
-      And verify integration with task "X"
+      And verify upgrade integration with task "X"
