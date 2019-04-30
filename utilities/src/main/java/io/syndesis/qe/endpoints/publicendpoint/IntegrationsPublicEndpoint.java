@@ -136,7 +136,7 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      * endpoint -> PUT ​/public​/integrations​/{id}​/tags
      * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#putTagsForRelease(String, List)}
      */
-    public Map<String, ContinuousDeliveryEnvironment> updateTagsInIntegration(String integrationName, String... tags) {
+    public Map<String, ContinuousDeliveryEnvironment> updateTagsInIntegration(String integrationName, List<String> tags) {
         Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/tags", integrationName)));
         Response response = invocation.put(Entity.entity(tags, MediaType.APPLICATION_JSON));
         if (response.getStatus() != HttpURLConnection.HTTP_OK) {
@@ -152,7 +152,7 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      * endpoint -> PATCH ​/public​/integrations​/{id}​/tags
      * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#patchTagsForRelease(String, List)}
      */
-    public Map<String, ContinuousDeliveryEnvironment> addTagsToIntegration(String integrationName, String... tags) {
+    public Map<String, ContinuousDeliveryEnvironment> addTagsToIntegration(String integrationName, List<String> tags) {
         Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/tags", integrationName)));
         Response response = invocation.method("PATCH", Entity.entity(tags, MediaType.APPLICATION_JSON));
         if (response.getStatus() != HttpURLConnection.HTTP_OK) {
