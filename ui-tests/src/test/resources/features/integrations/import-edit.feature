@@ -13,11 +13,11 @@ Feature: Integration - import-edit
     And click on the "Import" button
     And import the integration from file integrations/import-edit-integration-export.zip
     And navigate to the "Integrations" page
-    And select the "import-edit-integration" integration.*
+    And select the "import-edit-integration" integration
     And click on the "Edit Integration" button
     And edit integration step on position 1
     And fills in values
-      | SQL statement | select * from contact limit 1 |
+      | SQL statement | select * from contact limit(1) |
     And click on the "Next" button
     And publish integration
     And navigate to the "Integrations" page
