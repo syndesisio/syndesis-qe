@@ -63,7 +63,7 @@ public class AccountsDirectory {
     }
 
     public Optional<Account> getAccount(Account.Name accountName) {
-        return getAccount(accountName.toString());
+        return getAccount(accountName.getId());
     }
 
     public void setAccount(String name, Account account) {
