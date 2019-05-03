@@ -45,6 +45,8 @@ public class TestConfiguration {
     public static final String SYNDESIS_OPERATOR_URL = "syndesis.config.operator.url";
     public static final String SYNDESIS_OPERATOR_TEMPLATE_URL = "syndesis.config.operator.template.url";
 
+    public static final String SYNDESIS_PUBLIC_OAUTH_PROXY_URL = "syndesis.config.template.public.oath.proxy.url";
+
     public static final String SYNDESIS_CUSTOM_RESOURCE_PLURAL = "syndesis.config.custom.resource.plural";
 
     public static final String JENKINS_DELAY = "jenkins.delay";
@@ -114,6 +116,10 @@ public class TestConfiguration {
     public static String syndesisTemplateUrl() { return get().readValue(SYNDESIS_TEMPLATE_URL); }
 
     public static String syndesisTemplateSA() { return get().readValue(SYNDESIS_TEMPLATE_SA); }
+
+    public static String syndesisPublicOauthProxyTemplateUrl() {
+        return get().readValue(SYNDESIS_PUBLIC_OAUTH_PROXY_URL);
+    }
 
     public static boolean useOperator() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_TEMPLATE_USE_OPERATOR));
@@ -205,6 +211,9 @@ public class TestConfiguration {
         }
         if (props.getProperty(SYNDESIS_OPERATOR_URL) == null) {
             props.setProperty(SYNDESIS_OPERATOR_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", syndesisVersion));
+        }
+        if (props.getProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL) == null) {
+            props.setProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/syndesis-public-oauth-proxy.yml", syndesisVersion));
         }
 
         props.setProperty(SYNDESIS_OPERATOR_CRD_URL, String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", syndesisVersion));

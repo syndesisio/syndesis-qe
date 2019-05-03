@@ -35,6 +35,7 @@ import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.PublicApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 
@@ -256,5 +257,10 @@ public class CommonSteps {
         } catch (InterruptedException e) {
             fail("Waiting for Todo app was interrupted with exception: " + e.getMessage());
         }
+    }
+
+    @When("^set up ServiceAccount for Public API$")
+    public void setUpServiceAccountForPublicAPI() {
+        PublicApiUtils.createServiceAccount();
     }
 }
