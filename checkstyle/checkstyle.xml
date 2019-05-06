@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN" "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<module name="Checker">
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java, xml"/>
+    <module name="TreeWalker">
+        <!-- Checks that there are no import statements that use the * notation -->
+        <!-- See http://checkstyle.sourceforge.net/config_imports.html#AvoidStarImport -->
+        <module name="AvoidStarImport"/>
+        <!-- Checks that constant names conform to a format specified, using default value "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$" -->
+        <!-- See http://checkstyle.sourceforge.net/config_naming.html#ConstantName -->
+        <module name="ConstantName"/>
+        <!-- Checks for empty catch blocks, allowing catch blocks with comments inside -->
+        <!-- See http://checkstyle.sourceforge.net/config_blocks.html#EmptyCatchBlock -->
+        <module name="EmptyCatchBlock"/>
+        <!-- Checks for empty statements (;) -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#EmptyStatement -->
+        <module name="EmptyStatement"/>
+        <!-- Checks that any combination of String literals is on the left side of an equals() comparison -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#EqualsAvoidNull -->
+        <module name="EqualsAvoidNull"/>
+        <!-- Checks that classes that either override equals() or hashCode() also overrides the other -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#EqualsHashCode -->
+        <module name="EqualsHashCode"/>
+        <!-- Checks that the whitespace around the Generic tokens "<" and ">" are correct to the typical convention -->
+        <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#GenericWhitespace -->
+        <module name="GenericWhitespace"/>
+        <!-- Checks that a local variable or a parameter does not shadow a field that is defined in the same class -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#HiddenField -->
+        <module name="HiddenField"/>
+        <!-- Checks the ordering/grouping of imports -->
+        <!-- See http://checkstyle.sourceforge.net/config_imports.html#ImportOrder -->
+        <module name="ImportOrder">
+            <property name="option" value="top"/>
+            <property name="separated" value="true"/>
+            <property name="groups" value="io.syndesis,org.junit,org,com,javax,java,"/>
+        </module>
+        <!-- Checks correct indentation of Java code -->
+        <!-- See http://checkstyle.sourceforge.net/config_misc.html#Indentation -->
+        <module name="Indentation"/>
+        <!-- Checks for the placement of left curly braces ('{') for code blocks -->
+        <!-- See http://checkstyle.sourceforge.net/config_blocks.html#LeftCurly -->
+        <module name="LeftCurly"/>
+        <!-- Checks that the order of modifiers conforms to the suggestions in the java specification -->
+        <!-- See http://checkstyle.sourceforge.net/config_modifier.html#ModifierOrder -->
+        <module name="ModifierOrder"/>
+        <!-- Checks for braces around code blocks -->
+        <!-- See http://checkstyle.sourceforge.net/config_blocks.html#NeedBraces -->
+        <module name="NeedBraces"/>
+        <!-- Checks that there is no whitespace after a token -->
+        <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceAfter -->
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="ARRAY_INIT"/>
+            <property name="allowLineBreaks" value="true"/>
+        </module>
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
+            <property name="allowLineBreaks" value="false"/>
+        </module>
+        <!-- Checks that there is no whitespace before a token -->
+        <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#NoWhitespaceBefore -->
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="DOT"/>
+            <property name="allowLineBreaks" value="true"/>
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="SEMI, POST_DEC, POST_INC"/>
+            <property name="allowLineBreaks" value="false"/>
+        </module>
+        <!-- Checks for redundant import statements -->
+        <!-- See http://checkstyle.sourceforge.net/config_imports.html#RedundantImport -->
+        <module name="RedundantImport"/>
+        <!-- Checks the placement of right curly braces -->
+        <!-- See http://checkstyle.sourceforge.net/config_blocks.html#RightCurly -->
+        <module name="RightCurly"/>
+        <!-- Checks for over-complicated boolean expressions -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#SimplifyBooleanExpression -->
+        <module name="SimplifyBooleanExpression"/>
+        <!-- Checks for over-complicated boolean return statements -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#SimplifyBooleanReturn -->
+        <module name="SimplifyBooleanReturn"/>
+        <!-- Checks that string literals are not used with == or != -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#StringLiteralEquality -->
+        <module name="StringLiteralEquality"/>
+        <!-- Checks if unnecessary parentheses are used in a statement or expression -->
+        <!-- See http://checkstyle.sourceforge.net/config_coding.html#UnnecessaryParentheses -->
+        <module name="UnnecessaryParentheses"/>
+        <!-- Checks for unused import statements -->
+        <!-- See http://checkstyle.sourceforge.net/config_imports.html#UnusedImports -->
+        <module name="UnusedImports"/>
+        <!-- Checks that long constants are defined with an upper ell -->
+        <!-- See http://checkstyle.sourceforge.net/config_misc.html#UpperEll -->
+        <module name="UpperEll"/>
+        <!-- Checks that a token is followed by whitespace -->
+        <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAfter -->
+        <module name="WhitespaceAfter"/>
+        <!-- Checks that a token is surrounded by whitespace -->
+        <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#WhitespaceAround -->
+        <module name="WhitespaceAround"/>
+    </module>
+    <!-- Checks that there are no tab characters in the source code -->
+    <!-- See http://checkstyle.sourceforge.net/config_whitespace.html#FileTabCharacter -->
+    <module name="FileTabCharacter">
+        <property name="eachLine" value="true"/>
+        <property name="fileExtensions" value=".java"/>
+    </module>
+    <!-- Checks whether files end with a line separator -->
+    <!-- See http://checkstyle.sourceforge.net/config_misc.html#NewlineAtEndOfFile -->
+    <module name="NewlineAtEndOfFile"/>
+    <!-- Check for detecting single lines that match a supplied regular expression -->
+    <!-- See http://checkstyle.sourceforge.net/config_regexp.html#RegexpSingleline -->
+    <module name="RegexpSingleline">
+        <property name="format" value="\s+$"/>
+        <property name="message" value="Line has trailing spaces."/>
+    </module>
+    <module name="RegexpSingleline">
+        <property name="format" value="\s*@And"/>
+        <property name="message" value="@And should not be used."/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+</module>
