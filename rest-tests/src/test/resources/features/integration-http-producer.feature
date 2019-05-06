@@ -121,4 +121,4 @@ Feature: Integration - HTTP
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
       And create integration with name: "HTTP-SQL-SPLIT"
     Then wait for integration with name: "HTTP-SQL-SPLIT" to become active
-      And check rows number of table "TODO" is greater than 9 after 30 s
+      And check rows number of table "TODO" is greater than 9
