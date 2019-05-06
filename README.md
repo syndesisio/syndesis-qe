@@ -444,7 +444,7 @@ and commit changes via this dialog.
 You can find the git hooks in the _hooks_ directory in the root of the project. You can enable them using following command in the root directory of this repository:
 
 ```
-for f in hooks/*; do ln -srf $f .git/hooks/
+for f in hooks/*; do ln -srf $f .git/hooks/; done
 ```
 
 #### Creating a Pull Request
