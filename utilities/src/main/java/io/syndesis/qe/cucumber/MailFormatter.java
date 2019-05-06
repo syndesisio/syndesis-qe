@@ -152,6 +152,11 @@ public class MailFormatter implements EventListener {
                         .append("<font color=\"green\">")
                         .append(result)
                         .append("</font>");
+            } else if (result.equals(Result.Type.SKIPPED)) {
+                sb
+                        .append("<font color=\"yellow\">")
+                        .append(result)
+                        .append("</font>");
             } else {
                 sb
                         .append("<font color=\"red\"><b>")
