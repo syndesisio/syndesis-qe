@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChooseConnectionSteps {
 
-    private ConnectionsList connectionsList = new ConnectionsList(By.xpath("//syndesis-connections-list"));
+    private ConnectionsList connectionsList = new ConnectionsList(By.cssSelector(".container-cards-pf.container-fluid"));
     private IntegrationFlowView integrationFlowView = new IntegrationFlowView();
 
     /**

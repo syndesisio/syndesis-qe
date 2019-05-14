@@ -28,13 +28,13 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-flow-view");
+        public static final By ROOT = By.cssSelector(".integration-vertical-flow__body");
 
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
         public static final By STEP_ROOT = By.cssSelector("div.flow-view-step");
         public static final By STEP = By.cssSelector("div.parent-step");
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
-        public static final By ACTIVE_STEP_ICON = By.cssSelector("div.icon.active");
+        public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
         public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = By.className("step-insert");
 
@@ -78,8 +78,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
      * @param position (start|finish)
      */
     public boolean verifyActivePosition(String position) {
-        SelenideElement selenideElement = getRootElement().find(By.cssSelector("div.step." + position.toLowerCase()));
-        return selenideElement.find(Element.ACTIVE_STEP_ICON).shouldBe(visible).exists();
+        SelenideElement selenideElement = $(Element.ACTIVE_STEP_ICON).$(By.className("integration-flow-step-details__title"));
+        return selenideElement.shouldBe(visible).getText().contains(position);
     }
 
     public List<String> getStepsTitlesArray() {

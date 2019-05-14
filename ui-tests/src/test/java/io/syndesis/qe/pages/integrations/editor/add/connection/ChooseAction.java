@@ -18,8 +18,9 @@ public class ChooseAction extends SyndesisPageObject {
 
     private static final class Element {
 
-        public static final By ROOT = By.tagName("syndesis-list-actions");
-        public static final By TITLE = By.className("list-pf-title");
+        public static final By ROOT = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+        public static final By TITLE = By.className("list-group-item-heading");
+        public static final By ACTION = By.cssSelector(".list-group-item.list-view-pf-stacked");
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ChooseAction extends SyndesisPageObject {
             fail("Action element was not found in 30s.", e);
         }
 
-        $(Element.ROOT).$$(Element.TITLE).filterBy(Condition.text(name))
-                .shouldHaveSize(1).first().shouldBe(visible).click();
+        $(Element.ROOT).$$(Element.ACTION).filterBy(Condition.text(name))
+                .shouldHaveSize(1).first().shouldBe(visible).$(By.tagName("a")).click();
     }
 }

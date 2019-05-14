@@ -50,7 +50,7 @@ public class ConfigureConnectionSteps {
 
     private void callCorrectFormFill(Map<String, String> properties, boolean isEditPage) {
         if (isEditPage) {
-            new Form($(By.cssSelector("syndesis-connection-detail-configuration")).shouldBe(visible)).fillById(properties);
+            new Form($(By.cssSelector("integration-editor-layout__content")).shouldBe(visible)).fillById(properties);
         } else {
             configureConnectionPage.fillForm(properties);
         }
