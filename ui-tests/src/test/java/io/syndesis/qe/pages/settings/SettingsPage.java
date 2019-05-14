@@ -25,11 +25,11 @@ import static com.codeborne.selenide.Selenide.$;
 public class SettingsPage extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-settings-root");
-        public static final By OAUTH_APPS = By.cssSelector("syndesis-oauth-apps");
-        public static final By SETTINGS_LIST = By.cssSelector("pfng-list");
-        public static final By SETTINGS_ITEM = By.cssSelector("div.list-pf-item");
-        public static final By SETTINGS_TITLE = By.cssSelector("div.list-pf-title");
+        public static final By ROOT = By.className("pf-c-page__main");
+        public static final By OAUTH_APPS = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+        public static final By SETTINGS_LIST = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+        public static final By SETTINGS_ITEM = By.className("list-group-item");
+        public static final By SETTINGS_TITLE = By.className("list-group-item-heading");
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public SelenideElement getOauthAppsRootElement() {
-        return $(Element.OAUTH_APPS).shouldBe(visible);
+        return $(Element.ROOT).shouldBe(visible);
     }
 
     public void fillAllOAuthSettings() {
@@ -51,7 +51,7 @@ public class SettingsPage extends SyndesisPageObject {
         for (int i = 0; i < getSettingsItems().size(); i++) {
             SelenideElement listItem = getSettingsItems().get(i);
             listItem.shouldBe(visible).click();
-            String text = listItem.$(By.className("list-pf-title")).getText();
+            String text = listItem.$(Element.SETTINGS_TITLE).getText();
             String credentialsName = null;
             switch (text) {
                 case "Salesforce":
@@ -95,7 +95,7 @@ public class SettingsPage extends SyndesisPageObject {
         //alert-success should show
         $(By.className("alert-success")).shouldBe(visible);
         //close list item details
-        getRootElement().$(By.cssSelector("div[class*='list-pf-item active']")).$(By.className("list-pf-title")).click();
+        getRootElement().$(By.cssSelector("div[class*='list-view-pf-expand active']")).click();
     }
 
     public void fillOAuthItem(SelenideElement item, String credentialsName) {

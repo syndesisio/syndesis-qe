@@ -1,5 +1,5 @@
 # @sustainer: mcada@redhat.com
-
+@react
 @ui
 @google-calendar
 @settings-oauth
@@ -21,17 +21,17 @@ Feature: Settings OAuth
     And navigate to the "Home" page
     And navigate to the "Settings" page
     Then check that given "Google Calendar" oauth settings are filled in
-
+#
   @settings-oauth-remove
   Scenario: Fill OAuth settings, remove and check immediately
     When fill "Google Calendar" oauth settings "QE Google Calendar"
     And navigate to the "Home" page
     And navigate to the "Settings" page
     Then check that given "Google Calendar" oauth settings are filled in
-    And check button "Remove" of item "Google Calendar"
+#    And check button "Remove" of item "Google Calendar"
     When click button "Remove" of item "Google Calendar"
     And confirm settings removal
-    Then check visibility of "Delete Successful Settings successfully deleted." in alert-success notification
+  #  Then check visibility of "Delete Successful Settings successfully deleted." in alert-success notification
     And check that given "Google Calendar" oauth settings are not filled in
 
   @settings-oauth-remove
@@ -40,10 +40,10 @@ Feature: Settings OAuth
     And navigate to the "Home" page
     And navigate to the "Settings" page
     Then check that given "Google Calendar" oauth settings are filled in
-    And check button "Remove" of item "Google Calendar"
+ #   And check button "Remove" of item "Google Calendar"
     When click button "Remove" of item "Google Calendar"
     And confirm settings removal
-    Then check visibility of "Delete Successful Settings successfully deleted." in alert-success notification
+    #Then check visibility of "Delete Successful Settings successfully deleted." in alert-success notification
     When navigate to the "Home" page
     And navigate to the "Settings" page
     Then check that given "Google Calendar" oauth settings are not filled in

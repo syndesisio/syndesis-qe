@@ -15,12 +15,12 @@ import lombok.Getter;
 public class CustomizationsPage extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-customizations");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
     }
 
     private static final class Link {
-        public static final By TECH_EXTENSIONS = By.linkText("Technical Extensions");
-        public static final By API_CLIENT_CONNECTORS = By.linkText("Technical Extensions");
+        public static final By TECH_EXTENSIONS = By.linkText("Extensions");
+        public static final By API_CLIENT_CONNECTORS = By.linkText("API Client Connectors");
     }
 
     private TechExtensionsListComponent techExtensionsListComponent = new TechExtensionsListComponent();

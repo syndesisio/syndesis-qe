@@ -1,8 +1,9 @@
 # @sustainer: mastepan@redhat.com
 
 @ui
-@extension
+@extension-test
 @extension-CRUD-test
+@react
 Feature: Customization - Extensions CRUD
 
   Background: Clean application state
@@ -18,10 +19,11 @@ Feature: Customization - Extensions CRUD
     When click on the "Extensions" link
     Then check visibility of page "Extensions"
 
-    When click on the "Import Extension" button
+    When click on the "Import Extension" link
     Then check visibility of page "Import Extension"
 
     When upload extension with name "syndesis-extension-log-body" from syndesis-extensions dir
+    #When upload extension "syndesis-extension-log-body" from syndesis-extensions dir using drag and drop
     Then check visibility of details about imported extension
 
     When click on the "Import Extension" button
@@ -48,15 +50,16 @@ Feature: Customization - Extensions CRUD
 
     When upload extension "syndesis-extension-log-body"
     Then check visibility of details about imported extension
-
-    When click on the "Update" button
+    #TODO check if this was renamed to Update
+   # When click on the "Update" link-
+    When click on the "Import Extension" button
     Then check visibility of page "Extensions"
 
     When navigate to the "Customizations" page
     And click on the "Extensions" link
     Then check visibility of page "Extensions"
     And extension "Log Message Body" is present in list
-
+#
   @extension-CRUD-delete
   Scenario: Delete
 
