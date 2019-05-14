@@ -19,7 +19,7 @@
 		<surefire.version>2.22.0</surefire.version>
 		<checkstyle.version>3.0.0</checkstyle.version>
 
-		<apache.http.commons.version>4.5.3</apache.http.commons.version>
+		<apache.http.commons.version>4.5.8</apache.http.commons.version>
 		<lombok.version>1.18.6</lombok.version>
 		<hibernate.version>6.0.16.Final</hibernate.version>
 		<junit.version>4.12</junit.version>
@@ -59,6 +59,7 @@
 		<el.version>3.0.0</el.version>
 		<box.version>2.30.1</box.version>
 		<jsoup.version>1.11.3</jsoup.version>
+		<aws.sqs.version>2.5.29</aws.sqs.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -89,9 +90,7 @@
 	</modules>
 
 	<dependencyManagement>
-
 		<dependencies>
-
 			<dependency>
 				<groupId>io.syndesis.qe</groupId>
 				<artifactId>utilities</artifactId>
@@ -414,6 +413,12 @@
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
 				<version>${jsoup.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>sqs</artifactId>
+				<version>${aws.sqs.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,15 +1,19 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
+import io.syndesis.qe.utils.BoxUtils;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
+import io.syndesis.qe.utils.SQSUtils;
+import io.syndesis.qe.utils.TestUtils;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.rest.tests.util.RestTestsUtils;
-import io.syndesis.qe.utils.BoxUtils;
-import io.syndesis.qe.utils.S3BucketNameBuilder;
-import io.syndesis.qe.utils.TestUtils;
 
 /**
  * Class holding the steps for creating the flow steps related to connections.
@@ -122,7 +126,7 @@ public class ConnectionSteps extends AbstractStep {
         );
 
         if (period != -1) {
-            properties.put("schedulerExpression", TimeUnit.MILLISECONDS.convert(period, TimeUnit.valueOf(timeunit)) + "");
+            properties.put("schedulerExpression", TimeUnit.MILLISECONDS.convert(period, TimeUnit.valueOf(timeunit.toUpperCase())) + "");
         }
         super.addProperty(StepProperty.PROPERTIES, properties);
         super.createStep();
@@ -164,6 +168,32 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("^create SF \"([^\"]*)\" action step with properties$")
+    public void createSfStepWithActionAndProperties(String action, DataTable props) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SALESFORCE.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SALESFORCE.getId());
+        super.addProperty(StepProperty.ACTION, action);
+        super.addProperty(StepProperty.PROPERTIES, props.asMap(String.class, String.class));
+        super.createStep();
+    }
+
+    @When("^create SQS \"([^\"]*)\" action step with properties$")
+    public void createSQSStepWithProperties(String action, DataTable props) {
+        // Send-Batch needs a special handling related to datamapping, see AtlasMapperGenerator#generateMapMapping
+        if (action.contains("batch")) {
+            System.setProperty("sqs.batch", "true");
+        }
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SQS.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SQS.getId());
+        super.addProperty(StepProperty.ACTION, action);
+        Map<String, String> properties = new HashMap<>(props.asMap(String.class, String.class));
+        if (properties.get("queueNameOrArn").startsWith("arn")) {
+            properties.put("queueNameOrArn", SQSUtils.getQueueArn(StringUtils.substringAfter(properties.get("queueNameOrArn"), "arn:")));
+        }
+        super.addProperty(StepProperty.PROPERTIES, properties);
+        super.createStep();
+    }
+
     @When("^create S3 polling START action step with bucket: \"([^\"]*)\"$")
     public void createS3PollingStep(String bucketName) {
         createS3PollingStep(bucketName, null);
@@ -199,15 +229,6 @@ public class ConnectionSteps extends AbstractStep {
             properties.put("fileName", fileName);
         }
         super.addProperty(StepProperty.PROPERTIES, properties);
-        super.createStep();
-    }
-
-    @When("^create SF \"([^\"]*)\" action step with properties$")
-    public void createSfStepWithActionAndProperties(String action, DataTable props) {
-        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SALESFORCE.getId());
-        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SALESFORCE.getId());
-        super.addProperty(StepProperty.ACTION, action);
-        super.addProperty(StepProperty.PROPERTIES, props.asMap(String.class, String.class));
         super.createStep();
     }
 

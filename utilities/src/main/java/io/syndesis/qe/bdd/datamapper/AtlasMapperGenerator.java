@@ -2,6 +2,20 @@ package io.syndesis.qe.bdd.datamapper;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.common.model.DataShape;
+import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.StepAction;
+import io.syndesis.common.model.action.StepDescriptor;
+import io.syndesis.common.model.integration.Step;
+import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.common.util.Json;
+import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
+import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.endpoints.AtlasmapEndpoint;
+import io.syndesis.qe.utils.TestUtils;
+
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,18 +54,6 @@ import io.atlasmap.xml.v2.XmlComplexType;
 import io.atlasmap.xml.v2.XmlDataSource;
 import io.atlasmap.xml.v2.XmlInspectionResponse;
 import io.atlasmap.xml.v2.XmlNamespaces;
-import io.syndesis.common.model.DataShape;
-import io.syndesis.common.model.DataShapeKinds;
-import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.StepAction;
-import io.syndesis.common.model.action.StepDescriptor;
-import io.syndesis.common.model.integration.Step;
-import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.common.util.Json;
-import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
-import io.syndesis.qe.bdd.entities.StepDefinition;
-import io.syndesis.qe.endpoints.AtlasmapEndpoint;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -103,7 +105,7 @@ public class AtlasMapperGenerator {
      * steps. This is different for the "Json", "Java" and also "Xml" data shape type. Java DS type is already the
      * specification of field types, Json needs to be send to be sent first to Json inspection endpoint, to generate the
      * fields.
-
+     *
      * @return list of fields from given datashape
      */
     private List<Field> processDataShapeIntoFields(String dataShapeSpecification, DataShapeKinds dsKind) {
@@ -194,7 +196,7 @@ public class AtlasMapperGenerator {
             XmlNamespaces xmlNamespaces = new XmlNamespaces();
             // Init the array, so that we don't have the null value
             xmlNamespaces.getXmlNamespace();
-            ((XmlDataSource)source).setXmlNamespaces(xmlNamespaces);
+            ((XmlDataSource) source).setXmlNamespaces(xmlNamespaces);
         } else {
             fail("Unknown datashape kind " + dataShapeKind.toString());
         }
@@ -208,7 +210,7 @@ public class AtlasMapperGenerator {
      * This method is used to generate the "AtlasMapping" - the atlasMapping contains list of specifications of
      * dataSources and a list of specifications of dataMappings. Both these a must have for a complete and working
      * AtlasMapping.
-
+     *
      * @return step with the mapping defined
      */
     public Step getAtlasMappingStep() {
@@ -239,17 +241,17 @@ public class AtlasMapperGenerator {
         }
 
         return new Step.Builder()
-                .stepKind(StepKind.mapper)
-                .name(mapping.getStep().getName())
-                .configuredProperties(TestUtils.map("atlasmapping", mapperString))
-                .action(getMapperStepAction(followingStep.getStep().getAction().get().getInputDataShape().get()))
-                .id(UUID.randomUUID().toString())
-                .build();
+            .stepKind(StepKind.mapper)
+            .name(mapping.getStep().getName())
+            .configuredProperties(TestUtils.map("atlasmapping", mapperString))
+            .action(getMapperStepAction(followingStep.getStep().getAction().get().getInputDataShape().get()))
+            .id(UUID.randomUUID().toString())
+            .build();
     }
 
     /**
      * Generates a list of mappings - using the user-specified "DataMapperStepDefinition" mapping step definitions.
-
+     *
      * @return list of basemapping
      */
     private List<BaseMapping> generateBaseMappings() {
@@ -263,7 +265,7 @@ public class AtlasMapperGenerator {
 
     /**
      * Determines the MappingType and determines which kind of mapping step it should generate (MAP, COMBINE, SEPARATE).
-
+     *
      * @return mapping object
      */
     private Mapping generateMapping(DataMapperStepDefinition mappingDef) {
@@ -285,7 +287,6 @@ public class AtlasMapperGenerator {
      * single output field.
      *
      * @param mappingDef - definition of mapping step obtained in step definition
-     *
      * @return mapping object
      */
     private Mapping generateCombineMapping(DataMapperStepDefinition mappingDef) {
@@ -294,13 +295,13 @@ public class AtlasMapperGenerator {
         for (int i = 0; i < mappingDef.getInputFields().size(); i++) {
             String def = mappingDef.getInputFields().get(i);
             Field inField = precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get()
-                    .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
+                .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
             inField.setIndex(i);
             in.add(inField);
         }
 
         Field out = followingStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
+            .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
 
         return createMappingObject(mappingDef, MappingType.COMBINE, mappingDef.getStrategy().name(), in, Collections.singletonList(out));
     }
@@ -310,7 +311,6 @@ public class AtlasMapperGenerator {
      * space, ...) - creates multiple output fields
      *
      * @param mappingDef - definition of mapping step obtained in step definition
-     *
      * @return mapping object
      */
     private Mapping generateSeparateMapping(DataMapperStepDefinition mappingDef) {
@@ -319,12 +319,12 @@ public class AtlasMapperGenerator {
         for (int i = 0; i < mappingDef.getOutputFields().size(); i++) {
             String def = mappingDef.getOutputFields().get(i);
             Field outField = followingStep.getInspectionResponseFields().get()
-                    .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
+                .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
             outField.setIndex(i);
             out.add(outField);
         }
         Field in = precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
+            .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
 
         return createMappingObject(mappingDef, MappingType.SEPARATE, mappingDef.getStrategy().name(), Collections.singletonList(in), out);
     }
@@ -333,7 +333,6 @@ public class AtlasMapperGenerator {
      * This method generates "map" type mapping - takes single input field and creates single output field
      *
      * @param mappingDef - definition of mapping step obtained in step definition
-     *
      * @return mapping object
      */
     private Mapping generateMapMapping(DataMapperStepDefinition mappingDef) {
@@ -344,6 +343,12 @@ public class AtlasMapperGenerator {
         Field out = getField(followingStep.getInspectionResponseFields().get(), mappingDef.getOutputFields().get(0));
         if (out == null) {
             fail("Unable to find \"out\" field with path " + mappingDef.getOutputFields().get(0));
+        }
+        if (System.getProperty("sqs.batch") != null) {
+            // sqs batch needs to be mapped to "/message", however the inspect endpoints returns "/<>/message", because internally it is a list of
+            // messages
+            // so hack it and change to single element
+            out.setPath(StringUtils.substringAfter(out.getPath(), "/<>"));
         }
 
         return createMappingObject(mappingDef, MappingType.MAP, null, Collections.singletonList(in), Collections.singletonList(out));
@@ -379,6 +384,7 @@ public class AtlasMapperGenerator {
 
     /**
      * Adds transformations to the source/target fields.
+     *
      * @param mappingDef mapping definition
      * @param in source fields
      * @param out target fields
@@ -403,6 +409,7 @@ public class AtlasMapperGenerator {
 
     /**
      * Gets the field with the path corresponding to the search string. It recursively goes through child fields if the field is a complex type.
+     *
      * @param fields list of fields
      * @param searchString path search string
      * @return field
@@ -414,9 +421,9 @@ public class AtlasMapperGenerator {
                 // Search child elements of the complex element, just create a new list because Json/XmlField is a child class of Field
                 final List<Field> fieldList;
                 if (field instanceof JsonComplexType) {
-                    fieldList = new ArrayList<>(((JsonComplexType)field).getJsonFields().getJsonField());
+                    fieldList = new ArrayList<>(((JsonComplexType) field).getJsonFields().getJsonField());
                 } else {
-                    fieldList = new ArrayList<>(((XmlComplexType)field).getXmlFields().getXmlField());
+                    fieldList = new ArrayList<>(((XmlComplexType) field).getXmlFields().getXmlField());
                 }
                 f = getField(fieldList, searchString);
             } else {
@@ -474,7 +481,6 @@ public class AtlasMapperGenerator {
             json.getJSONObject("descriptor").put("outputDataShape", outputDataType);
             ts = Json.reader().forType(Action.class).readValue(json.toString());
             log.debug(mapper.writeValueAsString(ts));
-
         } catch (IOException ex) {
             log.error("Error: " + ex);
         }

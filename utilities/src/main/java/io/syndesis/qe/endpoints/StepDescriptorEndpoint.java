@@ -1,5 +1,11 @@
 package io.syndesis.qe.endpoints;
 
+import io.syndesis.common.model.DataShape;
+import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.StepDescriptor;
+import io.syndesis.common.model.connection.DynamicActionMetadata;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,10 +15,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
-import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.StepDescriptor;
-import io.syndesis.common.model.connection.DynamicActionMetadata;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,10 +25,11 @@ public class StepDescriptorEndpoint extends AbstractEndpoint<StepDescriptor> {
         super(Action.class, null);
     }
 
-    public StepDescriptor postParamsAction(String stepKind, DynamicActionMetadata metadata) {
+    public StepDescriptor getStepDescriptor(String stepKind, DataShape in, DataShape out) {
         super.setEndpointName("/steps/" + stepKind + "/descriptor");
         log.debug("POST, destination : {}", getEndpointUrl());
         final Invocation.Builder invocation = createInvocation(null);
+        DynamicActionMetadata metadata = new DynamicActionMetadata.Builder().inputShape(in).outputShape(out).build();
         JsonNode response;
         try {
             response = invocation.post(Entity.entity(metadata, MediaType.APPLICATION_JSON), JsonNode.class);

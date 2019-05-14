@@ -3,6 +3,9 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.utils.JMSUtils;
+import io.syndesis.qe.utils.JmsClientManager;
+
 import org.assertj.core.api.Assertions;
 
 import java.io.File;
@@ -14,8 +17,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cz.xtf.jms.JmsClient;
-import io.syndesis.qe.utils.JMSUtils;
-import io.syndesis.qe.utils.JmsClientManager;
 
 public class JmsValidationSteps {
 
@@ -24,9 +25,10 @@ public class JmsValidationSteps {
     public JmsValidationSteps() {
     }
 
-    @Then("^verify that JMS message using \"([^\"]*)\" protocol, published on \"([^\"]*)\" named \"([^\"]*)\" has arrived to \"([^\"]*)\" named \"([^\"]*)\" consumer$")
+    @Then("^verify that JMS message using \"([^\"]*)\" protocol, published on \"([^\"]*)\" named \"([^\"]*)\" has arrived to \"([^\"]*)\" named \"" +
+        "([^\"]*)\" consumer$")
     public void verifyJMSconnection(String protocol, String typeFrom, String destinationFrom, String typeTo, String destinationTo) {
-        try(JmsClientManager manager = new JmsClientManager(protocol)) {
+        try (JmsClientManager manager = new JmsClientManager(protocol)) {
             JmsClient jmsClient = manager.getClient();
             addDestination(jmsClient, destinationFrom, typeFrom);
             jmsClient.sendMessage(messageText);
@@ -41,7 +43,7 @@ public class JmsValidationSteps {
             e.printStackTrace();
         }
 
-        try(JmsClientManager manager = new JmsClientManager(protocol)) {
+        try (JmsClientManager manager = new JmsClientManager(protocol)) {
             JmsClient jmsClient = manager.getClient();
             addDestination(jmsClient, destinationTo, typeTo);
             String textMessage = JmsClient.getTextMessage(jmsClient.receiveMessage());
@@ -78,6 +80,7 @@ public class JmsValidationSteps {
 
     /**
      * Load JMS message from resource and send it to the topic/queue with name
+     *
      * @param resourceName - name of resource file with the message
      * @param type - queue or topic
      * @param name - name of topic/queue
@@ -86,14 +89,32 @@ public class JmsValidationSteps {
     public void publishMessageFromResourceToDestinationWithName(String resourceName, String type, String name) throws IOException {
 
         ClassLoader classLoader = this.getClass().getClassLoader();
-        URL fileUrl = classLoader.getResource("jms_messages/"+resourceName);
-        if(fileUrl==null){
+        URL fileUrl = classLoader.getResource("jms_messages/" + resourceName);
+        if (fileUrl == null) {
             fail("File with name " + resourceName + " doesn't exist in the resources");
         }
-
 
         File file = new File(fileUrl.getFile());
         String jmsMessage = new String(Files.readAllBytes(file.toPath()));
         JMSUtils.sendMessage(JMSUtils.Destination.valueOf(type.toUpperCase()), name, jmsMessage);
+    }
+
+    @Then("^verify that the JMS queue \"([^\"]*)\" is empty$")
+    public void verifyEmptyQueue(String queue) {
+        // This waits up to 60 seconds to get something for the queue
+        assertThat(JMSUtils.getMessage(JMSUtils.Destination.QUEUE, queue)).isNull();
+    }
+
+    @Then("^verify that (\\d+) messages? (?:were|was) received from JMS queue \"([^\"]*)\"$")
+    public void verifyEmptyQueue(int count, String queue) {
+        for (int i = 0; i < count; i++) {
+            assertThat(JMSUtils.getMessage(JMSUtils.Destination.QUEUE, queue)).isNotNull();
+        }
+        verifyEmptyQueue(queue);
+    }
+
+    @Then("^verify that JMS queue \"([^\"]*)\" received a message in (\\d+) seconds$")
+    public void verifyEmptyQueue(String queue, int secondsTimeout) {
+        assertThat(JMSUtils.getMessage(JMSUtils.Destination.QUEUE, queue, secondsTimeout * 1000L)).isNotNull();
     }
 }
