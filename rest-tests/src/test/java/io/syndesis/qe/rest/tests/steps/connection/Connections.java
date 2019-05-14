@@ -34,6 +34,7 @@ public class Connections {
     @Autowired
     private ConnectorsEndpoint connectorsEndpoint;
     private final AccountsDirectory accountsDirectory;
+    private Account account;
 
     public Connections() {
         accountsDirectory = AccountsDirectory.getInstance();
@@ -88,114 +89,147 @@ public class Connections {
 
     @Given("^create ActiveMQ connection$")
     public void createActiveMQConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.ACTIVEMQ).get();
-        table.add(Arrays.asList("connector", "activemq"));
-        table.add(Arrays.asList("brokerUrl", account.getProperty("brokerUrl")));
-        table.add(Arrays.asList("username", account.getProperty("username")));
-        table.add(Arrays.asList("password", account.getProperty("password")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.ACTIVEMQ).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "activemq"),
+                        accountProperty("brokerUrl"),
+                        accountProperty("username"),
+                        accountProperty("password")
+                )
+        );
     }
 
     @Given("^create Box connection$")
     public void createBoxConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.BOX).get();
-        table.add(Arrays.asList("connector", "box"));
-        table.add(Arrays.asList("userName", account.getProperty("userName")));
-        table.add(Arrays.asList("userPassword", account.getProperty("userPassword")));
-        table.add(Arrays.asList("clientId", account.getProperty("clientId")));
-        table.add(Arrays.asList("clientSecret", account.getProperty("clientSecret")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.BOX).get();
+        createConnection(
+                fromData(
+                    keyValue("connector", "box"),
+                    accountProperty("userName"),
+                    accountProperty("userPassword"),
+                    accountProperty("clientId"),
+                    accountProperty("clientSecret")
+                )
+        );
     }
 
     @Given("^create Dropbox connection$")
     public void createDropboxConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.DROPBOX).get();
-        table.add(Arrays.asList("connector", "dropbox"));
-        table.add(Arrays.asList("accessToken", account.getProperty("accessToken")));
-        table.add(Arrays.asList("clientIdentifier", account.getProperty("clientIdentifier")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.DROPBOX).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "dropbox"),
+                        accountProperty("accessToken"),
+                        accountProperty("clientIdentifier")
+                )
+        );
     }
 
     @Given("^create FTP connection$")
     public void createFTPConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.FTP).get();
-        table.add(Arrays.asList("connector", "ftp"));
-        table.add(Arrays.asList("host", account.getProperty("host")));
-        table.add(Arrays.asList("port", account.getProperty("port")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.FTP).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "ftp"),
+                        accountProperty("host"),
+                        accountProperty("port")
+                )
+        );
     }
 
     @Given("^create HTTP connection$")
     public void createHTTPConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.HTTP).get();
-        table.add(Arrays.asList("connector", "http"));
-        table.add(Arrays.asList("baseUrl", account.getProperty("baseUrl")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.HTTP).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "http"),
+                        accountProperty("baseUrl")
+                )
+        );
     }
 
     @Given("^create IRC connection$")
     public void createIRCConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.IRC).get();
-        table.add(Arrays.asList("connector", "irc"));
-        table.add(Arrays.asList("hostname", account.getProperty("hostname")));
-        table.add(Arrays.asList("port", account.getProperty("port")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.IRC).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "irc"),
+                        accountProperty("hostname"),
+                        accountProperty("port")
+                )
+        );
     }
 
     @Given("^create Kafka connection$")
     public void createKafkaConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.KAFKA).get();
-        table.add(Arrays.asList("connector", "kafka"));
-        table.add(Arrays.asList("brokers", account.getProperty("brokers")));
-        createConnection(DataTable.create(table));
+        account = accountsDirectory.getAccount(Account.Name.KAFKA).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "kafka"),
+                        accountProperty("brokers")
+                )
+        );
     }
 
     @Given("^create SalesForce connection$")
     public void createSalesForceConnection() {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.SALESFORCE).get();
-        table.add(Arrays.asList("connector", "salesforce"));
-        table.add(Arrays.asList("clientId", account.getProperty("clientId")));
-        table.add(Arrays.asList("clientSecret", account.getProperty("clientSecret")));
-        table.add(Arrays.asList("loginUrl", account.getProperty("loginUrl")));
-        table.add(Arrays.asList("userName", account.getProperty("userName")));
-        table.add(Arrays.asList("password", account.getProperty("password")));
-        createConnection(DataTable.create(table));
-    }
+        account = accountsDirectory.getAccount(Account.Name.SALESFORCE).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "salesforce"),
+                        accountProperty("clientId"),
+                        accountProperty("clientSecret"),
+                        accountProperty("loginUrl"),
+                        accountProperty("userName"),
+                        accountProperty("password")
+                )
 
-    @Given("^create Twitter connection using \"([^\"]*)\" account$")
-    public void createTwitterConnection(String twitterAccount) {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(twitterAccount).get();
-        table.add(Arrays.asList("connector", "twitter"));
-        table.add(Arrays.asList("accessToken", account.getProperty("accessToken")));
-        table.add(Arrays.asList("accessTokenSecret", account.getProperty("accessTokenSecret")));
-        table.add(Arrays.asList("consumerKey", account.getProperty("consumerKey")));
-        table.add(Arrays.asList("consumerSecret", account.getProperty("consumerSecret")));
-        createConnection(DataTable.create(table));
+        );
     }
 
     @Given("^create S3 connection using \"([^\"]*)\" bucket$")
     public void createS3Connection(String s3Bucket) {
-        final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        account = accountsDirectory.getAccount(Account.Name.AWS).get();
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
+        createConnection(
+                fromData(
+                        keyValue("connector", "s3"),
+                        accountProperty("accessKey"),
+                        keyValue("bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket)),
+                        accountProperty("region"),
+                        accountProperty("secretKey"),
+                        keyValue("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)),
+                        keyValue("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
+                )
+        );
+    }
 
-        table.add(Arrays.asList("connector", "s3"));
-        table.add(Arrays.asList("accessKey", account.getProperty("accessKey")));
-        table.add(Arrays.asList("bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket)));
-        table.add(Arrays.asList("region", account.getProperty("region")));
-        table.add(Arrays.asList("secretKey", account.getProperty("secretKey")));
-        table.add(Arrays.asList("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)));
-        table.add(Arrays.asList("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket)));
-        createConnection(DataTable.create(table));
+    @Given("^create Twitter connection using \"([^\"]*)\" account$")
+    public void createTwitterConnection(String twitterAccount) {
+        account = accountsDirectory.getAccount(twitterAccount).get();
+        createConnection(
+                fromData(
+                        keyValue("connector", "twitter"),
+                        accountProperty("accessToken"),
+                        accountProperty("accessTokenSecret"),
+                        accountProperty("consumerKey"),
+                        accountProperty("consumerSecret")
+                )
+        );
+    }
+
+    @SafeVarargs
+    private final DataTable fromData(List<String>... elements) {
+        return DataTable.create(new ArrayList<>(Arrays.asList(elements)));
+    }
+
+    private List<String> keyValue(String key, String value) {
+        return Arrays.asList(key, value);
+    }
+
+    private List<String> accountProperty(String prop) {
+        return Arrays.asList(prop, account.getProperty(prop));
     }
 }
 
