@@ -25,11 +25,11 @@ public class SelectConnectionType extends AbstractConnectionWizardStep {
     private ConnectionWizard wizard;
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-connections-review");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section.pf-m-no-padding");
     }
 
-    public static final By ROOT = By.cssSelector("syndesis-connections-review");
-    private CardList connectionTypes = new CardList(By.cssSelector("syndesis-connections-list"));
+    public static final By ROOT = By.cssSelector(".pf-c-page__main-section.pf-m-no-padding");
+    private CardList connectionTypes = new CardList(By.cssSelector(".container-cards-pf.container-fluid"));
 
 
     public void selectConnectionType(String title) {

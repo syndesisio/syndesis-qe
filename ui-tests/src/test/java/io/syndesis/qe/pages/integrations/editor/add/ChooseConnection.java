@@ -12,7 +12,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 public class ChooseConnection extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.tagName("syndesis-connections-list");
+        public static final By ROOT = By.cssSelector(".container-cards-pf.container-fluid");
     }
 
     @Override

@@ -220,7 +220,7 @@ public class CommonSteps {
                 }
             }
 
-            clickOnButton("Create Connection");
+            clickOnLink("Create Connection");
 
             log.info("Sleeping so jenkins has more time to load all connectors");
             TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
@@ -233,8 +233,8 @@ public class CommonSteps {
                     connectionDescription.equalsIgnoreCase("no validation"))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated.");
-                scrollTo("top", "right");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+           //     scrollTo("top", "right");
                 clickOnButton("Next");
             } else if (connectionDescription.equalsIgnoreCase("no validation")) {
                 scrollTo("top", "right");
@@ -244,7 +244,7 @@ public class CommonSteps {
             nameConnectionSteps.setConnectionName(connectionName);
             nameConnectionSteps.setConnectionDescription(connectionDescription);
 
-            clickOnButton("Create");
+            clickOnButton("Done");
 
             if (syndesisRootPage.getCurrentUrl().contains("connections/create/review")) {
                 clickOnButton("Create");
@@ -283,9 +283,9 @@ public class CommonSteps {
                     case SALESFORCE:
                         //disable salesforce validation as it is not stable and smoke tests should be stable
                         return;
-                    case TWITTER:
-                        service = "Twitter";
-                        break;
+//                    case TWITTER:
+//                        service = "Twitter";
+//                        break;
                     case S3:
                         return; //TODO: skip for now
                     case SLACK:
@@ -325,13 +325,13 @@ public class CommonSteps {
     @When("^navigate to the \"([^\"]*)\" page$")
     public void navigateTo(String title) {
         try {
-            OpenShiftWaitUtils.waitFor(() -> $(By.className("nav-pf-vertical")).exists(), 30 * 1000L);
+            OpenShiftWaitUtils.waitFor(() -> $(By.className("pf-c-nav")).exists(), 30 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
             fail("Navigation panel was not found in 30s", e);
         }
 
-        SelenideElement selenideElement = $(By.className("nav-pf-vertical")).shouldBe(visible);
-        ElementsCollection allLinks = selenideElement.findAll(By.className("list-group-item-value"));
+        SelenideElement selenideElement = $(By.className("pf-c-nav")).shouldBe(visible);
+        ElementsCollection allLinks = selenideElement.findAll(By.className("pf-c-nav__item"));
         allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
     }
 

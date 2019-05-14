@@ -14,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 public class NameConnection extends AbstractConnectionWizardStep {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-connections-review");
+        public static final By ROOT = By.cssSelector(".integration-editor-layout__content");
     }
 
     private static final class Input {
-        public static final By DESCRIPTION = By.cssSelector("textarea[data-id=\"descriptionInput\"]");
-        public static final By NAME = By.cssSelector("input[data-id=\"nameInput\"]");
+        public static final By DESCRIPTION = By.cssSelector("textarea[data-testid=\"description\"]");
+        public static final By NAME = By.cssSelector("input[data-testid=\"name\"]");
     }
 
     private static final class Label {
