@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,13 +41,13 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      * endpoint -> POST ​/public​/integrations
      * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#importResources(SecurityContext, PublicApiHandler.ImportFormDataInput)}
      *
-     * @param tag           - tag for imported integrations
-     * @param pathToZipFile - path to zip file (e.g. /tmp/export.zip)
+     * @param tag  - tag for imported integrations
+     * @param name - name of the exported zip in target folder
      */
-    public void importIntegration(String tag, String pathToZipFile) {
+    public void importIntegration(String tag, String name) {
         MultipartFormDataOutput mdo = new MultipartFormDataOutput();
         try {
-            mdo.addFormData("data", new FileInputStream(new File(pathToZipFile)),
+            mdo.addFormData("data", new FileInputStream(Paths.get("./target/" + name).toAbsolutePath().normalize().toFile()),
                     MediaType.APPLICATION_OCTET_STREAM_TYPE);
             mdo.addFormData("environment", tag, MediaType.TEXT_PLAIN_TYPE);
         } catch (FileNotFoundException e) {
@@ -64,15 +65,15 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      * endpoint -> GET ​/public​/integrations​/{env}​/export.zip
      * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#exportResources(String, boolean)}
      *
-     * @param tag        - tag for exporting
-     * @param pathToSave - path to save zip file (e.g. /tmp/export.zip)
-     * @param all        - when all is set to true, all integrations are exported and tagged with the tag.
+     * @param tag  - tag for exporting
+     * @param name - name of the exported zip in target folder
+     * @param all  - when all is set to true, all integrations are exported and tagged with the tag.
      */
-    public void exportIntegration(String tag, String pathToSave, boolean all) {
+    public void exportIntegration(String tag, String name, boolean all) {
         Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/export.zip?all=%s", tag, all)));
         Response res = invocation.get();
         InputStream is = res.readEntity(InputStream.class);
-        exportZip(is, pathToSave);
+        exportZip(is, name);
     }
 
     /**
@@ -178,11 +179,11 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
     /**
      * Function export InputStream as Zip file
      */
-    private void exportZip(InputStream is, String pathToSave) {
+    private void exportZip(InputStream is, String name) {
         try {
             byte[] buffer = new byte[is.available()];
             is.read(buffer);
-            File targetFile = new File(pathToSave);
+            File targetFile = Paths.get("./target/" + name).toAbsolutePath().normalize().toFile();
             OutputStream outStream = new FileOutputStream(targetFile);
             outStream.write(buffer);
             outStream.close();

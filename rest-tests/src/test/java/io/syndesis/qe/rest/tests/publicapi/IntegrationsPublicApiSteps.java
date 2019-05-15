@@ -125,22 +125,22 @@ public class IntegrationsPublicApiSteps {
         assertThat(internalIntegrationsEndpoint.getIntegrationByName(integrationName).getVersion()).isEqualTo(version);
     }
 
-    @When("^export integrations with tag (\\w+) to the \"([^\"]*)\"$")
-    public void exportIntegrations(String tag, String path) {
-        integrationsEndpoint.exportIntegration(tag, path, false);
+    @When("^export integrations with tag (\\w+) as \"([^\"]*)\"$")
+    public void exportIntegrations(String tag, String name) {
+        integrationsEndpoint.exportIntegration(tag, name, false);
     }
 
     /**
      * Export all integration and mark it with the tag
      */
-    @When("^export integrations with tag (\\w+) and others to the \"([^\"]*)\"$")
-    public void exportAllIntegrations(String tag, String path) {
-        integrationsEndpoint.exportIntegration(tag, path, true);
+    @When("^export integrations with tag (\\w+) and others as \"([^\"]*)\"$")
+    public void exportAllIntegrations(String tag, String name) {
+        integrationsEndpoint.exportIntegration(tag, name, true);
     }
 
-    @When("^import integrations with tag (\\w+) from the path \"([^\"]*)\"$")
-    public void importIntegrations(String tag, String path) {
-        integrationsEndpoint.importIntegration(tag, path);
+    @When("^import integrations with tag (\\w+) with name \"([^\"]*)\"$")
+    public void importIntegrations(String tag, String name) {
+        integrationsEndpoint.importIntegration(tag, name);
     }
 
     @When("^delete integration with name (\\w+)$")
