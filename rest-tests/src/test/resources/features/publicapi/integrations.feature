@@ -147,7 +147,7 @@ Feature: Public API - integrations point
       | tag3 | tag12 |
     And add tags to integration integrationWithoutTags
       | anotherTag1 | anotherTag2 |
-    And export integrations with tag tag12 to the "/tmp/export12.zip"
+    And export integrations with tag tag12 as "export12.zip"
     And delete integration with name integration1
     And delete integration with name integration2
 
@@ -159,7 +159,7 @@ Feature: Public API - integrations point
     And check that Syndesis contains exactly tags
       | anotherTag1 | anotherTag2 |
 
-    When import integrations with tag importedTag from the path "/tmp/export12.zip"
+    When import integrations with tag importedTag with name "export12.zip"
     Then check that Syndesis contains exactly tags
       | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 | importedTag |
     And check that integration integration1 contains exactly tags
@@ -172,14 +172,14 @@ Feature: Public API - integrations point
   # GET ​/public​/integrations​/{env}​/export.zip?all=true
   # POST ​/public​/integrations
   @export-import-all-integrations
-  Scenario: Export and import integrations according to tag
+  Scenario: Export and import all integrations from Syndesis according to tag
     When add tags to integration integration1
       | tag1 | tag12 |
     And add tags to integration integration2
       | tag3 | tag12 |
     And add tags to integration integrationWithoutTags
       | anotherTag1 | anotherTag2 |
-    And export integrations with tag tag12 and others to the "/tmp/exportAll.zip"
+    And export integrations with tag tag12 and others as "exportAll.zip"
     # After export all integrations, the all integrations are marked with the particular tag "tag12"
     Then check that integration integrationWithoutTags contains exactly tags
       | anotherTag1 | anotherTag2 | tag12 |
@@ -187,7 +187,7 @@ Feature: Public API - integrations point
     When clean application state
     Then check that Syndesis doesn't contain any tag
 
-    When import integrations with tag importedTag from the path "/tmp/exportAll.zip"
+    When import integrations with tag importedTag with name "exportAll.zip"
     Then check that Syndesis contains exactly tags
       | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 | importedTag |
     And check that integration integration1 contains exactly tags
