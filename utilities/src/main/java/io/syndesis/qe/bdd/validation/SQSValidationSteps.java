@@ -31,7 +31,14 @@ public class SQSValidationSteps {
 
     @Given("^purge SQS queues$")
     public void purge() {
-        sqs.purge("syndesis-in", "syndesis-out", "syndesis-in.fifo", "syndesis-out.fifo", "syndesis-out-content-based.fifo");
+        sqs.purge(
+            "syndesis-in",
+            "syndesis-out",
+            "syndesis-in.fifo",
+            "syndesis-out.fifo",
+            "syndesis-out-content-based.fifo",
+            "syndesis-sns-out"
+        );
     }
 
     @When("^send SQS messages? to \"([^\"]*)\" with content$")

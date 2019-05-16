@@ -38,7 +38,7 @@ public class SQSUtils {
         log.info("Initializing SQS client");
 
         final Account sqs = AccountsDirectory.getInstance().getAccount(Account.Name.AWS)
-            .orElseThrow(() -> new IllegalArgumentException("Unable to find SQS account"));
+            .orElseThrow(() -> new IllegalArgumentException("Unable to find AWS account"));
         final String region = sqs.getProperty("region").toLowerCase().replaceAll("_", "-");
         final String accountId = sqs.getProperty("accountId");
 
@@ -51,6 +51,7 @@ public class SQSUtils {
 
     /**
      * Gets the URL of the given queue.
+     *
      * @param queue queue name
      * @return queue url
      */
@@ -60,6 +61,7 @@ public class SQSUtils {
 
     /**
      * Gets the ARN of the given queue.
+     *
      * @param queue queue name
      * @return queue ARN
      */
@@ -102,14 +104,24 @@ public class SQSUtils {
     }
 
     /**
-     * Returns all messages.
+     * Returns all messages. You can get maximum of 10 messages per poll and even then the count of messages returned
+     * seems somewhat random, so repeat until all messages are received
      *
      * @return messages list
      */
     public List<Message> getMessages(String queueName) {
-        return client.receiveMessage(b -> b.queueUrl(getQueueUrl(queueName))
+        final int queueSize = getQueueSize(queueName);
+        List<Message> allMessages = new ArrayList<>(client.receiveMessage(b -> b.queueUrl(getQueueUrl(queueName))
             .maxNumberOfMessages(10).attributeNames(QueueAttributeName.ALL)
-            .build()).messages();
+            .build()).messages());
+
+        while (queueSize != allMessages.size()) {
+            allMessages.addAll(client.receiveMessage(b -> b.queueUrl(getQueueUrl(queueName))
+                .maxNumberOfMessages(10).attributeNames(QueueAttributeName.ALL)
+                .build()).messages());
+        }
+
+        return allMessages;
     }
 
     /**
