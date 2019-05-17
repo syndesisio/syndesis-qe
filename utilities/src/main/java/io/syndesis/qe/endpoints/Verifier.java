@@ -2,6 +2,7 @@ package io.syndesis.qe.endpoints;
 
 import org.json.JSONObject;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -42,7 +43,13 @@ public final class Verifier {
                 .header("X-Forwarded-User", "pista")
                 .header("X-Forwarded-Access-Token", "kral")
                 .header("SYNDESIS-XSRF-TOKEN", "awesome");
-        String r = invocation.post(Entity.json(new JSONObject(properties).toString())).readEntity(String.class);
+        String r;
+        try {
+            r = invocation.post(Entity.json(new JSONObject(properties).toString())).readEntity(String.class);
+        } catch (ProcessingException ex) {
+            log.info("Unable to invoke request, try again");
+            r = invocation.post(Entity.json(new JSONObject(properties).toString())).readEntity(String.class);
+        }
         if (r.isEmpty()) {
             throw new RuntimeException("Unable to verify parameters for " + connection + " (empty response)!");
         }

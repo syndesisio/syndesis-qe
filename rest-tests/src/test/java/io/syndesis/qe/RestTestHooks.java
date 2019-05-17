@@ -7,7 +7,7 @@ import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
-
+import io.syndesis.qe.endpoints.TestSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -81,5 +81,11 @@ public class RestTestHooks {
                         OpenShiftUtils.getInstance().getPodLog(integrationPod)).getBytes(), "text/plain");
             }
         }
+    }
+
+    @After("@publicapi-connections")
+    public void resetPostgresDB() {
+        log.info("Back default values of PostgresDB");
+        TestSupport.getInstance().resetDB();
     }
 }
