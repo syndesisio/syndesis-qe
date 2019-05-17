@@ -1,11 +1,13 @@
 package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -84,6 +86,17 @@ public class CommonValidationSteps {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
         assertThat(new ArrayList<>(OpenShiftUtils.getInstance().getBuilds())).filteredOn(build -> build.getMetadata().getLabels().get("buildconfig").contentEquals(sanitizedName)).isEmpty();
         log.info("There is no builds with name {} running", sanitizedName);
+    }
+
+    @Then("^verify that integration with name (\\w+) exist$")
+    public void integrationExist(String integrationName) {
+        assertThat(integrationsEndpoint.getIntegrationId(integrationName)).isPresent();
+    }
+
+    @Then("^verify that integration with name (\\w+) doesn't exist$")
+    public void integrationNotExist(String integrationName) {
+        assertThatExceptionOfType(NoSuchElementException.class)
+                .isThrownBy(() -> integrationsEndpoint.getIntegrationId(integrationName));
     }
 
     @Then("^verify integration \"([^\"]*)\" has current state \"([^\"]*)\"")

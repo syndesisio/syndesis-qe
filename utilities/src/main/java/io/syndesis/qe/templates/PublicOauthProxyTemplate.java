@@ -31,7 +31,7 @@ public class PublicOauthProxyTemplate {
                     "Unable to process syndesis public oauthproxy template " + TestConfiguration.syndesisPublicOauthProxyTemplateUrl(),
                     "new-app",
                     "--template", "syndesis-public-oauthproxy",
-                    "-p", "PUBLIC_API_ROUTE_HOSTNAME=public-" + TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix(),
+                    "-p", "PUBLIC_API_ROUTE_HOSTNAME=" + PUBLIC_API_PROXY_ROUTE,
                     "-p", "OPENSHIFT_PROJECT=" + TestConfiguration.openShiftNamespace(),
                     "-p", "OPENSHIFT_OAUTH_CLIENT_SECRET=" + getOathToken(),
                     "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()

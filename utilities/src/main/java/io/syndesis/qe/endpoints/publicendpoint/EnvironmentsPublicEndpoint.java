@@ -1,7 +1,5 @@
 package io.syndesis.qe.endpoints.publicendpoint;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import io.syndesis.common.util.Json;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 

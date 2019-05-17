@@ -69,6 +69,10 @@ public class IntegrationsEndpoint extends AbstractEndpoint<Integration> {
         return integrationsList.stream().filter(i -> i.getName().contentEquals(integrationName)).findFirst().get().getId();
     }
 
+    public Integration getIntegrationByName(String integrationName) {
+        return get(getIntegrationId(integrationName).get());
+    }
+
     @Data
     private class TargetStateRequest {
 

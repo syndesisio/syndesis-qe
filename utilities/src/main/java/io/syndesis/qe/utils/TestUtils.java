@@ -100,6 +100,10 @@ public final class TestUtils {
         return waitForState(e, i, IntegrationDeploymentState.Published, unit, timeout);
     }
 
+    public static boolean waitForUnpublishing(IntegrationOverviewEndpoint e, IntegrationOverview i, TimeUnit unit, long timeout) {
+        return waitForState(e, i, IntegrationDeploymentState.Unpublished, unit, timeout);
+    }
+
     /**
      * Waits until integration reaches a specified state or timeout exceeds.
      *
