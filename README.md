@@ -134,6 +134,30 @@ syndesis.config.ui.password=developer
 syndesis.config.ui.browser=firefox
 ```
 
+#### Use correct webdriver version for selected browser
+By default the testsuite will download latest drivers which may not work with older browsers.
+
+To use older webdriver, find supported version for your browser and set following maven property:
+
+##### Chrome
+Find supported driver version for chrome browser here: http://chromedriver.chromium.org/downloads
+
+Use following maven parameter when starting the tests: `-Dchrome.driver.version=<selected_version>`
+
+For Chrome version 75, the parameter would be `75.0.3770.8`
+
+For Chrome version 74, the parameter would be `74.0.3729.6`
+
+For Chrome version 73, the parameter would be `73.0.3683.68`
+
+
+##### Firefox
+Find supported driver version for your firefox browser here: https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html
+
+Use following maven parameter when starting the tests: `-Dfirefox.driver.version=<selected_version>`
+
+For firefox 57 the parameter would be `0.24.0`
+
 #### Example of credentials.json
 File `credentials.json` should be located in root of syndesis-qe folder.
 Working example on demand.
