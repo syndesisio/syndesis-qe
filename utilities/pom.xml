@@ -248,6 +248,10 @@
 			<artifactId>jsoup</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>sqs</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -3,16 +3,9 @@ package io.syndesis.qe.rest.tests.steps.flow;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Optional;
-
-import cucumber.api.java.en.When;
-import io.cucumber.datatable.DataTable;
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.StepDescriptor;
-import io.syndesis.common.model.connection.DynamicActionMetadata;
 import io.syndesis.common.model.extension.Extension;
 import io.syndesis.common.model.filter.FilterPredicate;
 import io.syndesis.common.model.integration.Step;
@@ -21,6 +14,13 @@ import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.endpoints.StepDescriptorEndpoint;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.TestUtils;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 
 public class IntermediateSteps extends AbstractStep {
     @Autowired
@@ -59,7 +59,7 @@ public class IntermediateSteps extends AbstractStep {
 
         super.addProperty(StepProperty.KIND, StepKind.extension);
         super.addProperty(StepProperty.ACTION, action.get());
-        super.addProperty(StepProperty.PROPERTIES, properties.asMaps(String.class, String.class).get(0));
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
         super.addProperty(StepProperty.STEP_NAME, name);
         super.addProperty(StepProperty.EXTENSION, e.get());
         super.createStep();
@@ -78,10 +78,7 @@ public class IntermediateSteps extends AbstractStep {
     public void addSplitStep() {
         final DataShape in = super.getSteps().getLastStepDefinition().getStep().getAction().get().getInputDataShape().get();
         final DataShape out = super.getSteps().getLastStepDefinition().getStep().getAction().get().getOutputDataShape().get();
-        StepDescriptor sd = stepDescriptorEndpoint.postParamsAction(
-                "split",
-                new DynamicActionMetadata.Builder().inputShape(in).outputShape(out).build()
-        );
+        StepDescriptor sd = stepDescriptorEndpoint.getStepDescriptor("split", in, out);
 
         super.addProperty(StepProperty.KIND, StepKind.split);
         super.addProperty(StepProperty.ACTION, super.generateStepAction(super.getSteps().getLastStepDefinition().getStep().getAction().get(), sd));
@@ -105,12 +102,9 @@ public class IntermediateSteps extends AbstractStep {
             fail("Unable to find previous step with both datashapes set");
         }
 
-        StepDescriptor sd = stepDescriptorEndpoint.postParamsAction(
-                "aggregate",
-                new DynamicActionMetadata.Builder()
-                        .inputShape(previousStepWithDatashapes.getAction().get().getInputDataShape().get())
-                        .outputShape(previousStepWithDatashapes.getAction().get().getOutputDataShape().get())
-                        .build()
+        StepDescriptor sd = stepDescriptorEndpoint.getStepDescriptor("aggregate",
+            previousStepWithDatashapes.getAction().get().getInputDataShape().get(),
+            previousStepWithDatashapes.getAction().get().getOutputDataShape().get()
         );
 
         super.addProperty(StepProperty.KIND, StepKind.aggregate);

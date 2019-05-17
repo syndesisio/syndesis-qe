@@ -3,6 +3,11 @@ package io.syndesis.qe;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
+import io.syndesis.qe.bdd.storage.StepsStorage;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -12,10 +17,6 @@ import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.syndesis.qe.bdd.storage.StepsStorage;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,6 +42,11 @@ public class RestTestHooks {
         assumeTrue(System.getProperty("syndesis.version").contains("redhat"));
     }
 
+    @After("@sqs")
+    public void clearSqsProperty() {
+        System.clearProperty("sqs.batch");
+    }
+
     @After
     public void afterTest() {
         stepStorage.flushStepDefinitions();
@@ -59,16 +65,16 @@ public class RestTestHooks {
     }
 
     @After
-    public void getLogs(Scenario scenario){
+    public void getLogs(Scenario scenario) {
         if (scenario.isFailed()) {
             TestUtils.printPods();
             log.warn("Scenario {} failed, saving server logs and integration logs to scenario", scenario.getName());
             scenario.embed(OpenShiftUtils.getInstance().getPodLog(OpenShiftUtils.getPodByPartialName("syndesis-server").get()).getBytes(), "text/plain");
             // There can be multiple integration pods for one test
             List<Pod> integrationPods = OpenShiftUtils.client().pods().list().getItems().stream().filter(
-                    p -> p.getMetadata().getName().startsWith("i-")
-                    && !p.getMetadata().getName().contains("deploy")
-                    && !p.getMetadata().getName().contains("build")
+                p -> p.getMetadata().getName().startsWith("i-")
+                && !p.getMetadata().getName().contains("deploy")
+                && !p.getMetadata().getName().contains("build")
             ).collect(Collectors.toList());
             for (Pod integrationPod : integrationPods) {
                 scenario.embed(String.format("%s\n\n%s", integrationPod.getMetadata().getName(),

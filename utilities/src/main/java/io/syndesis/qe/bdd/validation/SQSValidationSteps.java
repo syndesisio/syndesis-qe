@@ -1,0 +1,109 @@
+package io.syndesis.qe.bdd.validation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.syndesis.qe.utils.JMSUtils;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.SQSUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.MessageSystemAttributeName;
+
+@Slf4j
+public class SQSValidationSteps {
+    @Autowired
+    private SQSUtils sqs;
+
+    @Given("^purge SQS queues$")
+    public void purge() {
+        sqs.purge("syndesis-in", "syndesis-out", "syndesis-in.fifo", "syndesis-out.fifo", "syndesis-out-content-based.fifo");
+    }
+
+    @When("^send SQS messages? to \"([^\"]*)\" with content$")
+    public void sendMessages(String queue, DataTable table) {
+        sqs.sendMessages(queue, table.column(0));
+    }
+
+    @When("^send (\\d+) ordered messages to \"([^\"]*)\"$")
+    public void sendOrderedMessages(int count, String queue) {
+        List<String> messages = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            messages.add(i + "");
+        }
+        sqs.sendMessages(queue, messages);
+    }
+
+    @When("^wait for the next SQS poll interval$")
+    public void waitForPollInterval() {
+        // Wait until the calibration message was processed
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("i-").contains("\"status\":\"done\""), 1000L, 120000L);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
+    @Then("^verify that the SQS queue \"([^\"]*)\" has (\\d+) messages? after (\\d+) seconds?$")
+    public void verifyQueueSize(String queueName, int size, int timeout) {
+        TestUtils.sleepIgnoreInterrupt(timeout * 1000L);
+        assertThat(sqs.getQueueSize(queueName)).isEqualTo(size);
+    }
+
+    @Then("^verify that the message from SQS queue \"([^\"]*)\" has content \'([^\']*)\'$")
+    public void verifyMessageContent(String queue, String content) {
+        assertThat(sqs.getMessages(queue).get(0).body()).isEqualTo(content);
+    }
+
+    @Then("^verify that (\\d+) messages were received from AMQ \"([^\"]*)\" \"([^\"]*)\" and are in order$")
+    public void verifyFifoReceivedMessages(int count, String destinationType, String name) {
+        List<String> messages = new ArrayList<>();
+        String m = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(destinationType.toUpperCase()), name);
+        messages.add(m);
+        while (true) {
+            m = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(destinationType.toUpperCase()), name);
+            if (m != null) {
+                messages.add(m);
+            } else {
+                break;
+            }
+        }
+
+        assertThat(messages).hasSize(count);
+
+        int lastMsgBody = 0;
+        for (String message : messages) {
+            assertThat(new JSONObject(message).getInt("body")).isEqualTo(lastMsgBody++);
+        }
+    }
+
+    @Then("^verify that all messages in SQS queue \"([^\"]*)\" have groupId \"([^\"]*)\"$")
+    public void verifySameGroupId(String queueName, String groupId) {
+        for (Message message : sqs.getMessages(queueName)) {
+            assertThat(message.attributes().get(MessageSystemAttributeName.MESSAGE_GROUP_ID)).isEqualTo(groupId);
+        }
+    }
+
+    @Then("^verify that all messages in SQS queue \"([^\"]*)\" have different groupId$")
+    public void verifyDifferentGroupId(String queueName) {
+        Set<String> seenIds = new HashSet<>();
+        for (Message message : sqs.getMessages(queueName)) {
+            assertThat(seenIds).doesNotContain(message.attributes().get(MessageSystemAttributeName.MESSAGE_GROUP_ID));
+            seenIds.add(message.attributes().get(MessageSystemAttributeName.MESSAGE_GROUP_ID));
+        }
+    }
+}

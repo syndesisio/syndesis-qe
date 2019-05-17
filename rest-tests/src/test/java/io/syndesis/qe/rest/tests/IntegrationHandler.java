@@ -1,5 +1,15 @@
 package io.syndesis.qe.rest.tests;
 
+import io.syndesis.common.model.integration.Flow;
+import io.syndesis.common.model.integration.Integration;
+import io.syndesis.common.model.integration.Step;
+import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.qe.bdd.datamapper.AtlasMapperGenerator;
+import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.bdd.storage.StepsStorage;
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.endpoints.Verifier;
+
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,15 +23,6 @@ import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.common.model.integration.Flow;
-import io.syndesis.common.model.integration.Integration;
-import io.syndesis.common.model.integration.Step;
-import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.bdd.datamapper.AtlasMapperGenerator;
-import io.syndesis.qe.bdd.entities.StepDefinition;
-import io.syndesis.qe.bdd.storage.StepsStorage;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.endpoints.Verifier;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,6 +49,7 @@ public class IntegrationHandler {
     @When("^create new integration with name: \"([^\"]*)\" and desiredState: \"([^\"]*)\"")
     public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
         verifyConnections();
+        processAggregateSteps();
         processMapperSteps();
         Set<String> tags = new HashSet<>();
         for (Step step : steps.getSteps()) {
@@ -140,7 +142,7 @@ public class IntegrationHandler {
      */
     private void processMapperSteps() {
         List<StepDefinition> mappers = steps.getStepDefinitions().stream().filter(
-                s -> s.getStep().getStepKind().equals(StepKind.mapper)).collect(Collectors.toList());
+            s -> s.getStep().getStepKind().equals(StepKind.mapper)).collect(Collectors.toList());
         if (mappers.isEmpty()) {
             log.debug("There are no mappers in this integration, proceeding...");
         } else {
@@ -156,6 +158,28 @@ public class IntegrationHandler {
                     //TODO(tplevko): fix for more than one preceding step.
                     amg.setSteps(mapper, precedingSteps, followingStep);
                     mapper.setStep(amg.getAtlasMappingStep());
+                }
+            }
+        }
+    }
+
+    /**
+     * When there is a datamapper before the aggregate, it is needed to adopt the datashape of the step following the aggregate step.
+     */
+    private void processAggregateSteps() {
+        for (int i = 0; i < steps.getStepDefinitions().size(); i++) {
+            if (StepKind.aggregate == steps.getStepDefinitions().get(i).getStep().getStepKind()) {
+                if (StepKind.mapper == steps.getStepDefinitions().get(i - 1).getStep().getStepKind()) {
+                    StepDefinition stepDef = steps.getStepDefinitions().subList(i + 1, steps.getStepDefinitions().size())
+                        .stream().filter(sd -> sd.getStep().getAction().isPresent()).findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Unable to find next step with an action defined"));
+
+                    steps.getStepDefinitions().get(i).setStep(
+                        steps.getStepDefinitions().get(i).getStep().updateInputDataShape(stepDef.getStep().getAction().get().getInputDataShape())
+                    );
+                    steps.getStepDefinitions().get(i).setStep(
+                        steps.getStepDefinitions().get(i).getStep().updateOutputDataShape(stepDef.getStep().getAction().get().getOutputDataShape())
+                    );
                 }
             }
         }

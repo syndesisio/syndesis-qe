@@ -532,6 +532,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 @salesforce
 @servicenow
 @slack
+@sqs
 @twitter
 @webhook
 ------FUNCTIONS------

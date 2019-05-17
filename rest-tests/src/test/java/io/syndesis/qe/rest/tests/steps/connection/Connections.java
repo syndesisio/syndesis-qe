@@ -1,5 +1,14 @@
 package io.syndesis.qe.rest.tests.steps.connection;
 
+import io.syndesis.common.model.connection.Connection;
+import io.syndesis.common.model.connection.Connector;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -12,14 +21,6 @@ import java.util.Optional;
 
 import cucumber.api.java.en.Given;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.common.model.connection.Connection;
-import io.syndesis.common.model.connection.Connector;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.endpoints.ConnectorsEndpoint;
-import io.syndesis.qe.rest.tests.util.RestTestsUtils;
-import io.syndesis.qe.utils.S3BucketNameBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -75,14 +76,14 @@ public class Connections {
         }
 
         final Connection connection = new Connection.Builder()
-                .connector(connector)
-                .connectorId(getConnectorId(connector))
-                .id(connectionId != null ? connectionId : RestTestsUtils.Connection.valueOf(connectorName).getId())
-                .name(connectionName != null ? connectionName : "Fuse QE " + connectorName)
-                .configuredProperties(connectionPropertiesMap)
-                .icon(connector.getIcon())
-                .tags(Collections.singletonList(connectorId))
-                .build();
+            .connector(connector)
+            .connectorId(getConnectorId(connector))
+            .id(connectionId != null ? connectionId : RestTestsUtils.Connection.valueOf(connectorName).getId())
+            .name(connectionName != null ? connectionName : "Fuse QE " + connectorName)
+            .configuredProperties(connectionPropertiesMap)
+            .icon(connector.getIcon())
+            .tags(Collections.singletonList(connectorId))
+            .build();
         log.info("Creating {} connection with properties {}", connectorId, connectionPropertiesMap);
         connectionsEndpoint.create(connection);
     }
@@ -91,12 +92,12 @@ public class Connections {
     public void createActiveMQConnection() {
         account = accountsDirectory.getAccount(Account.Name.ACTIVEMQ).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "activemq"),
-                        accountProperty("brokerUrl"),
-                        accountProperty("username"),
-                        accountProperty("password")
-                )
+            fromData(
+                keyValue("connector", "activemq"),
+                accountProperty("brokerUrl"),
+                accountProperty("username"),
+                accountProperty("password")
+            )
         );
     }
 
@@ -104,13 +105,13 @@ public class Connections {
     public void createBoxConnection() {
         account = accountsDirectory.getAccount(Account.Name.BOX).get();
         createConnection(
-                fromData(
-                    keyValue("connector", "box"),
-                    accountProperty("userName"),
-                    accountProperty("userPassword"),
-                    accountProperty("clientId"),
-                    accountProperty("clientSecret")
-                )
+            fromData(
+                keyValue("connector", "box"),
+                accountProperty("userName"),
+                accountProperty("userPassword"),
+                accountProperty("clientId"),
+                accountProperty("clientSecret")
+            )
         );
     }
 
@@ -118,11 +119,11 @@ public class Connections {
     public void createDropboxConnection() {
         account = accountsDirectory.getAccount(Account.Name.DROPBOX).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "dropbox"),
-                        accountProperty("accessToken"),
-                        accountProperty("clientIdentifier")
-                )
+            fromData(
+                keyValue("connector", "dropbox"),
+                accountProperty("accessToken"),
+                accountProperty("clientIdentifier")
+            )
         );
     }
 
@@ -130,11 +131,11 @@ public class Connections {
     public void createFTPConnection() {
         account = accountsDirectory.getAccount(Account.Name.FTP).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "ftp"),
-                        accountProperty("host"),
-                        accountProperty("port")
-                )
+            fromData(
+                keyValue("connector", "ftp"),
+                accountProperty("host"),
+                accountProperty("port")
+            )
         );
     }
 
@@ -142,10 +143,10 @@ public class Connections {
     public void createHTTPConnection() {
         account = accountsDirectory.getAccount(Account.Name.HTTP).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "http"),
-                        accountProperty("baseUrl")
-                )
+            fromData(
+                keyValue("connector", "http"),
+                accountProperty("baseUrl")
+            )
         );
     }
 
@@ -153,11 +154,11 @@ public class Connections {
     public void createIRCConnection() {
         account = accountsDirectory.getAccount(Account.Name.IRC).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "irc"),
-                        accountProperty("hostname"),
-                        accountProperty("port")
-                )
+            fromData(
+                keyValue("connector", "irc"),
+                accountProperty("hostname"),
+                accountProperty("port")
+            )
         );
     }
 
@@ -165,10 +166,10 @@ public class Connections {
     public void createKafkaConnection() {
         account = accountsDirectory.getAccount(Account.Name.KAFKA).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "kafka"),
-                        accountProperty("brokers")
-                )
+            fromData(
+                keyValue("connector", "kafka"),
+                accountProperty("brokers")
+            )
         );
     }
 
@@ -176,15 +177,28 @@ public class Connections {
     public void createSalesForceConnection() {
         account = accountsDirectory.getAccount(Account.Name.SALESFORCE).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "salesforce"),
-                        accountProperty("clientId"),
-                        accountProperty("clientSecret"),
-                        accountProperty("loginUrl"),
-                        accountProperty("userName"),
-                        accountProperty("password")
-                )
+            fromData(
+                keyValue("connector", "salesforce"),
+                accountProperty("clientId"),
+                accountProperty("clientSecret"),
+                accountProperty("loginUrl"),
+                accountProperty("userName"),
+                accountProperty("password")
+            )
 
+        );
+    }
+
+    @Given("^create SQS connection$")
+    public void createSQSConnection() {
+        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "sqs"),
+                accountProperty("accessKey"),
+                accountProperty("secretKey"),
+                accountProperty("region")
+            )
         );
     }
 
@@ -193,15 +207,15 @@ public class Connections {
         account = accountsDirectory.getAccount(Account.Name.AWS).get();
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
         createConnection(
-                fromData(
-                        keyValue("connector", "s3"),
-                        accountProperty("accessKey"),
-                        keyValue("bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket)),
-                        accountProperty("region"),
-                        accountProperty("secretKey"),
-                        keyValue("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)),
-                        keyValue("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
-                )
+            fromData(
+                keyValue("connector", "s3"),
+                accountProperty("accessKey"),
+                keyValue("bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket)),
+                accountProperty("region"),
+                accountProperty("secretKey"),
+                keyValue("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)),
+                keyValue("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
+            )
         );
     }
 
@@ -209,13 +223,13 @@ public class Connections {
     public void createTwitterConnection(String twitterAccount) {
         account = accountsDirectory.getAccount(twitterAccount).get();
         createConnection(
-                fromData(
-                        keyValue("connector", "twitter"),
-                        accountProperty("accessToken"),
-                        accountProperty("accessTokenSecret"),
-                        accountProperty("consumerKey"),
-                        accountProperty("consumerSecret")
-                )
+            fromData(
+                keyValue("connector", "twitter"),
+                accountProperty("accessToken"),
+                accountProperty("accessTokenSecret"),
+                accountProperty("consumerKey"),
+                accountProperty("consumerSecret")
+            )
         );
     }
 
