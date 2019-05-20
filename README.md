@@ -448,9 +448,19 @@ Remember to delete project after testing.
 
 #### Checkstyle
 Before you start contributing, please set up checkstyle in your IDE.
-For IntelliJ Idea, you have to install **[CheckStyle-IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea)* plugin.
+For IntelliJ Idea, you have to install *[CheckStyle-IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea)* plugin.
 After that, open Settings > Editor > CodeStyle and click on cogwheel, select Import Scheme > CheckStyle configuration and
-choose checkstyle.xml file from this repository.
+choose checkstyle/checkstyle.xml file from this repository. Currently we use 8.20 version of the checkstyle, so select the version in the checkstyle plugin accordingly.
+
+You can also import the code style settings into the IntelliJ from checkstyle/intellij-settings.jar. This provides all necessary configuration that conforms the checkstyle ruleset.
+
+After importing the jar file, verify that you have _Scheme: Syndesis_ in Settings -> Editor -> Code Style -> Java
+
+If you don't use IntelliJ IDEA, you will need to configure the code style manually, the basic settings are:
+
+- Use spaces instead of tabs
+- Tab size 4, indent 4, continuation indent 4
+- Import order (new line between each group): static io.syndesis.\*, org.junit.\*, org.\*, javax.\*, java.\*, all other and then non-static imports following the same order
 
 **NOTE** IntelliJ Idea doesn't provide auto-format code after saving (because it provides auto-saving) by default. When you want to
 reformat your code, you can use shortcut **CTRL+ALT+L** or you can install and configure **[Save Actions](https://plugins.jetbrains.com/plugin/7642-save-actions)**
@@ -464,12 +474,18 @@ and commit changes via this dialog.
 
 ![Commit changes](docs/readme_images/idea_commit_changes.png)
 
+Checkstyle can be also run automatically on each commit, see [Git hooks](#git-hooks) below.
+
 #### Git hooks
 You can find the git hooks in the _hooks_ directory in the root of the project. You can enable them using following command in the root directory of this repository:
 
 ```
 for f in hooks/*; do ln -srf $f .git/hooks/; done
 ```
+
+Currently there are two hooks:
+- _pre-push_ - if you want additional control that you are not pushing directly to upstream
+- _prepare-commit-msg_ - runs checkstyle before each commit. Checkstyle verification can be temporarily disabled if the commit message starts with "tmp"
 
 #### Creating a Pull Request
 When you create a PR on GitHub a new Jenkins job is scheduled. This job runs on Fuse QE Jenkins instance and runs a basic subset of tests (annotated with @smoke tag).

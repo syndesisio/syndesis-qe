@@ -1,0 +1,21 @@
+#!/bin/sh
+
+CHECKSTYLE="checkstyle-8.20"
+CHECKSTYLE_JAR="${CHECKSTYLE}-all.jar"
+ROOT_DIR=$(git rev-parse --show-toplevel)
+
+FILES=$(git diff --cached --name-only --diff-filter=ACM | cat)
+
+COMMIT_MSG="$(cat "$1")"
+
+# Skip check if the commit msg starts with "tmp"
+[ "${COMMIT_MSG}" = "${COMMIT_MSG#tmp}" ] || exit 0
+
+[ -z "${FILES}" ] && exit 0
+
+if [ ! -f "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" ]; then
+	echo "First time use: Downloading checkstyle jar from https://github.com/checkstyle/checkstyle/releases/download/${CHECKSTYLE}/${CHECKSTYLE_JAR}"
+	curl -Lks -o "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" "https://github.com/checkstyle/checkstyle/releases/download/${CHECKSTYLE}/${CHECKSTYLE_JAR}"
+fi
+
+java -jar "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" -c "${ROOT_DIR}/checkstyle/checkstyle.xml" ${FILES}
