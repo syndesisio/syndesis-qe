@@ -111,14 +111,14 @@ public class SQSUtils {
      */
     public List<Message> getMessages(String queueName) {
         final int queueSize = getQueueSize(queueName);
-        List<Message> allMessages = new ArrayList<>(client.receiveMessage(b -> b.queueUrl(getQueueUrl(queueName))
-            .maxNumberOfMessages(10).attributeNames(QueueAttributeName.ALL)
-            .build()).messages());
+        List<Message> allMessages = new ArrayList<>();
 
         while (queueSize != allMessages.size()) {
-            allMessages.addAll(client.receiveMessage(b -> b.queueUrl(getQueueUrl(queueName))
-                .maxNumberOfMessages(10).attributeNames(QueueAttributeName.ALL)
-                .build()).messages());
+            allMessages.addAll(client.receiveMessage(
+                b -> b.queueUrl(getQueueUrl(queueName))
+                    .maxNumberOfMessages(10).attributeNames(QueueAttributeName.ALL)
+                    .build()).messages()
+            );
         }
 
         return allMessages;

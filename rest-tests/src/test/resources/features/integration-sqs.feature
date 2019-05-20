@@ -7,8 +7,8 @@ Feature: Integration - SQS
   Background:
     Given clean application state
       And purge SQS queues
+      And remove all records from table "CONTACT"
       And create SQS connection
-      And clean "CONTACT" table
 
   ############
   # Consumer #
@@ -57,7 +57,7 @@ Feature: Integration - SQS
       | Message 1 |
       And create SQS "polling" action step with properties
         | queueNameOrArn  | syndesis-in |
-        | delay           | 300000      |
+        | delay           | 600000      |
         | deleteAfterRead | false       |
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sqs-out"
       And create integration with name: "SQS-AMQ-dont-delete-after-read"
@@ -97,7 +97,7 @@ Feature: Integration - SQS
       | filter me out |
     When create SQS "polling" action step with properties
       | queueNameOrArn   | syndesis-in |
-      | delay            | 300000      |
+      | delay            | 600000      |
       | deleteAfterRead  | false       |
       | deleteIfFiltered | false       |
       And create basic filter step for "message" with word "ok" and operation "contains"
@@ -119,14 +119,12 @@ Feature: Integration - SQS
     Then wait for integration with name: "SQS-SQS-max-objects" to become active
     When send SQS messages to "syndesis-in" with content
       | Calibrate timeout |
-      And wait for the next SQS poll interval
-      And purge SQS queues
+    Then wait until the message appears in SQS queue "syndesis-out"
+    When purge SQS queues
       And send SQS messages to "syndesis-in" with content
       | Message 1 |
       | Message 2 |
       | Message 3 |
-      | Message 4 |
-      | Message 5 |
     Then verify that the SQS queue "syndesis-out" has 1 message after 45 seconds
       And verify that the SQS queue "syndesis-out" has 2 messages after 30 seconds
       And verify that the SQS queue "syndesis-out" has 3 messages after 30 seconds
@@ -151,12 +149,13 @@ Feature: Integration - SQS
     When send SQS message to "syndesis-in" with content
       | Calibrate timeout |
       # This ends as soon as it receives a message
-    Then verify that JMS queue "sqs-out" received a message in 90 seconds
+    Then verify that JMS queue "sqs-out" received a message in 300 seconds
     When send SQS message to "syndesis-in" with content
       | Hello from SQS! |
     # This waits for 60 seconds for the message, should be empty as the poll interval is 90s
     Then verify that the JMS queue "sqs-out" is empty
-      And verify that JMS message with content '{"body":"Hello from SQS!"}' was received from "queue" "sqs-out"
+      # According to the sqs docs, when there are extreme low amount of messages in the queue, it may not return anything and the request should be retried
+      And verify that JMS queue "sqs-out" received a message in 300 seconds
 
   @amqbroker
   @activemq
