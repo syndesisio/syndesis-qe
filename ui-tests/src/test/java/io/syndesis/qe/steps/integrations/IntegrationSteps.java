@@ -292,7 +292,7 @@ public class IntegrationSteps {
         detailPage.editIntegration();
     }
 
-    @Then("^validate that logs of integration \"([^\"]*)\" contains bodies of items \"([^\"]*)\"$")
+    @Then("^validate that logs of integration \"([^\"]*)\" contains items with IDs \"([^\"]*)\"$")
     public void validateThatLogsOfIntegrationContainsBodiesOfItems(String integrationName, String items) throws Throwable {
         String searchedString = "[" + String.join(", ",
                 Arrays.stream(items.split(","))
