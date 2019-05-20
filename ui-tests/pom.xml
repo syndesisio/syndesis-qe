@@ -71,6 +71,7 @@
                         <goals>
                             <goal>install-drivers</goal>
                         </goals>
+                        <phase>install</phase>
                     </execution>
                 </executions>
                 <configuration>
