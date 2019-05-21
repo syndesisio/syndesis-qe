@@ -19,7 +19,7 @@ Feature: Quickstart Hello World
     And Integration "Hello World" is present in integrations list
     And wait until integration "Hello World" gets into "Stopped" state
     And select the "Hello World" integration
-    And click on the "Edit" button
+    And click on the "Edit Integration" button
 
     Then check there are 3 integration steps
     And check that 1. step has Simple Timer title
