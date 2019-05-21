@@ -34,7 +34,12 @@ public class GMailSteps {
 
     @When("^.*send an e-mail$")
     public void sendMail() {
-        gmu.sendEmail("me", "jbossqa.fuse@gmail.com", "syndesis-tests", "Red Hat");
+        sendEmail("jbossqa.fuse@gmail.com");
+    }
+
+    @When("^.*send an e-mail to \"([^\"]*)\"$")
+    public void sendEmail(String sendTo) {
+        gmu.sendEmail("me", sendTo, "syndesis-tests", "Red Hat");
     }
 
     @Given("^delete emails from \"([^\"]*)\" with subject \"([^\"]*)\"$")
@@ -52,7 +57,7 @@ public class GMailSteps {
             assertThat(mime.getSubject()).isEqualToIgnoringCase(subject);
             //note that getContent() works here on because of specific message we sent (nothing special inside of the message,
             //no attachment etc. otherwise extracting text should be handled differently
-            assertThat(mime.getContent().toString()).isEqualToIgnoringCase(text);
+            assertThat(mime.getContent().toString().trim()).isEqualToIgnoringCase(text.trim());
 
         } catch (IOException | MessagingException e) {
             fail("Exception thrown while checking mails!", e);

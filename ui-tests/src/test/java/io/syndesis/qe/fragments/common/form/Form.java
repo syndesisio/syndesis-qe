@@ -1,8 +1,10 @@
 package io.syndesis.qe.fragments.common.form;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 
@@ -85,6 +87,12 @@ public class Form {
                 if (input.parent().$(By.tagName("select")).exists()) {
                     log.info("trying to set " + data.get(key) + " into element" + input.toString());
                     input.selectOptionContainingText(data.get(key));
+                } else if ("checkbox".equals(input.getAttribute("type"))) {
+                    // we only want to click the checkbox if it's current state and desired state are different
+                    boolean shouldClick = input.isSelected() != BooleanUtils.toBooleanObject(data.get(key));
+                    if (shouldClick) {
+                        input.click();
+                    }
                 } else {
                     input.clear();
                     input.sendKeys(data.get(key));
