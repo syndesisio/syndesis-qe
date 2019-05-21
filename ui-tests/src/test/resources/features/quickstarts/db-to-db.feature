@@ -23,7 +23,7 @@ Feature: Quickstart db to db
     And Integration "DB-2-DB" is present in integrations list
     And wait until integration "DB-2-DB" gets into "Stopped" state
     And select the "DB-2-DB" integration
-    And click on the "Edit" button
+    And click on the "Edit Integration" button
 
     Then check there are 3 integration steps
     And check that 1. step has Periodic SQL invocation title
