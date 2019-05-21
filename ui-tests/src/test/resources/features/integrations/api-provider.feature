@@ -633,6 +633,7 @@ Feature: API Provider Integration
         {"id":42,"task":"42"}
         """
 
+  @gh-5332
   @api-provider-openapi-modification
   @api-provider-openapi-edit-unimplemented
   Scenario: API Provider Edit OpenAPI - edit unimplemented operation
@@ -692,6 +693,7 @@ Feature: API Provider Integration
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
         """
 
+  @gh-5332
   @api-provider-openapi-modification
   @api-provider-openapi-edit-implemented
   Scenario: API Provider Edit OpenAPI - edit implemented operation
@@ -804,6 +806,7 @@ Feature: API Provider Integration
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
         """
 
+  @gh-5332
   @api-provider-openapi-modification
   @api-provider-openapi-delete-implemented
   Scenario: API Provider Edit OpenAPI - delete implemented operation
@@ -887,6 +890,7 @@ Feature: API Provider Integration
         """
 
 
+  @gh-5332
   @api-provider-openapi-modification
   @api-provider-openapi-delete-unimplemented
   Scenario: API Provider Edit OpenAPI - delete unimplemented operation
