@@ -26,7 +26,8 @@ Feature: Customization - API Connector - ApicurIO GUI
 
     When click on the "Review/Edit" button
 
-  @apicurio-check-warnings-change @gh-3459
+  @gh-3459
+  @apicurio-check-warnings-change
   Scenario: Check if warnings change is propagated into connector review page from ApicurIO GUI
     When remove warning via apicurio gui
     And click on button "Save" while in apicurio studio page
@@ -70,6 +71,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
 
+  @gh-5429
   @apicurio-check-security-settings-no-security
   Scenario: Check apicurio security settings - no security
     When click on the "Cancel" button
@@ -84,6 +86,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And select "Kie Server API" connection type
     Then check that connection authentication type has 1 options and contains text "No Security"
 
+  @gh-5429
   @apicurio-check-security-settings-basic
   Scenario: Check apicurio security settings - basic security
     When add security schema BASIC via apicurio gui
@@ -104,6 +107,7 @@ Feature: Customization - API Connector - ApicurIO GUI
 
   #this feature is not supported yet and does not work, but test is ready :)
   @disabled
+  @gh-5429
   @apicurio-check-security-settings-api-key
   Scenario: Check apicurio security settings - API key
     When add security schema API Key via apicurio gui
@@ -122,6 +126,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And select "Kie Server API" connection type
     Then check that connection authentication type has 1 option and contains text "API Key Authentication"
 
+  @gh-5429
   @apicurio-check-security-settings-oauth-2
   Scenario: Check apicurio security settings - OAuth 2
     When add security schema OAuth 2 via apicurio gui
