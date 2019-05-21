@@ -122,10 +122,7 @@ Feature: Integration - Databucket
     And publish integration
     Then Integration "Integration_with_buckets" is present in integrations list
     And wait until integration "Integration_with_buckets" gets into "Running" state
-
-    # give gmail time to receive and process the mail
-    When sleep for "10000" ms
-    Then check that email from "jbossqa.fuse@gmail.com" with subject "Red Hat" and text "Red Hat" exists
+    And check that email from "jbossqa.fuse@gmail.com" with subject "Red Hat" and text "Red Hat" exists
     And delete emails from "jbossqa.fuse@gmail.com" with subject "Red Hat"
 
 

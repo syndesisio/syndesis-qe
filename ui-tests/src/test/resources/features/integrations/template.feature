@@ -81,9 +81,6 @@ Feature: Templates
     Then Integration "DB to gmail (template)" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "DB to gmail (template)" gets into "Running" state
-    
-    #Wait for integration to really be running
-    And sleep for "10000" ms
 
     Then check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
@@ -161,8 +158,5 @@ Feature: Templates
     Then Integration "DB to gmail (template)" is present in integrations list
     #wait for integration to get in active state
     And wait until integration "DB to gmail (template)" gets into "Running" state
-    
-    #Wait for integration to really be running
-    And sleep for "10000" ms
 
     Then check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists

@@ -9,6 +9,7 @@ Feature: Email connector
   Background: Clean application state
     Given clean application state
     And reset content of "todo" table
+    And reset content of "contact" table
     And delete emails from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests"
     And log into the Syndesis
     And created connections
@@ -56,18 +57,15 @@ Feature: Email connector
     And click on the "Done" button
     Then check visibility of page "Add to Integration"
 
-    # Publish integration
+    # Publish integration and check that there is something on gmail account sent from tested connector
     When click on the "Save" button
     And set integration name "email-send-qe-integration"
     And publish integration
     Then Integration "email-send-qe-integration" is present in integrations list
     And wait until integration "email-send-qe-integration" gets into "Running" state
+    And check that email from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests" and text "Red Hat" exists
+    And delete emails from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests"
 
-    # Wait integration to do a first periodic query and check that email has arrived
-    When sleep for "10000" ms
-    Then Integration "email-send-qe-integration" is present in integrations list
-    Then check that email from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests" and text "Red Hat" exists
-    
   @email-receive  
   Scenario: Receive Email throught IMAP with SSL
     
@@ -113,6 +111,5 @@ Feature: Email connector
 
     # Send email to connector, wait for it to be received and check that it's content got into database
     When send an e-mail to "jbossqa.fuse.email@gmail.com"
-    And sleep for "60000" ms
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
 
