@@ -71,15 +71,18 @@
                         <goals>
                             <goal>install-drivers</goal>
                         </goals>
+                        <phase>install</phase>
                     </execution>
                 </executions>
                 <configuration>
                     <drivers>
                         <driver>
                             <name>chromedriver</name>
+                            <version>${chrome.driver.version}</version>
                         </driver>
                         <driver>
                             <name>geckodriver</name>
+                            <version>${firefox.driver.version}</version>
                         </driver>
                     </drivers>
                 </configuration>

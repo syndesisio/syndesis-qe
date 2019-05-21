@@ -56,6 +56,14 @@
 		<google.apis.sheets.version>v4-rev553-1.25.0</google.apis.sheets.version>
 		<github.core.version>2.1.5</github.core.version>
 		<irclib.version>1.10</irclib.version>
+		<!-- leave driver versions empty to use latest driver -->
+		<!-- Find supported webdriver version for your chrome browser here:
+		 	http://chromedriver.chromium.org/downloads -->
+		<chrome.driver.version></chrome.driver.version>
+
+		<!-- Find supported webdriver version for your firefox browser here:
+			https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html -->
+		<firefox.driver.version></firefox.driver.version>
 	</properties>
 
 	<description>Test suite for syndesis project</description>
