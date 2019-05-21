@@ -1,0 +1,91 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Todo App API",
+    "description": "Example Todo Application API",
+    "version": "1.0.0",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "hostname",
+  "basePath": "/api",
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/multi": {
+      "post": {
+        "tags": [
+          "tasks",
+          "creating"
+        ],
+        "summary": "POST multiple tasks",
+        "description": "POST multiple tasks",
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Created IDs",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Task"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All is good",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Task"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "username_password": {
+      "type": "basic"
+    }
+  },
+  "definitions": {
+    "Task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "title": "Task ID",
+          "description": "Unique task identifier"
+        },
+        "task": {
+          "type": "string",
+          "title": "The task",
+          "description": "Task line"
+        },
+        "completed": {
+          "type": "integer",
+          "title": "Task completition status",
+          "description": "0 - ongoing, 1 - completed",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}

@@ -342,30 +342,7 @@ Feature: API Provider Integration
   @reproducer
   @api-provider-post-collection
   Scenario: API Provider POST collection
-    When create an API Provider integration "TODO Integration post collection" from file swagger/connectors/todo.json
-    And edit API Provider OpenAPI specification
-
-    # creating operation
-
-    And create a new path with plus sign with name "multi"
-    And select path "/multi"
-
-    And create new "POST" operation
-    And select operation "POST"
-
-    And set summary "POST multiple tasks"
-    And set description "POST multiple tasks"
-
-    And set response 200 with plus sign
-    And set response description "Created IDs" for response 200
-    And set response type "Array" for response 200
-    And set response type of "Task" for response 200
-
-    And create request body
-    And set body description "Created IDs"
-
-    And set body response type "Array" of "Task" as ""
-    And click on button "Save" while in apicurio studio page
+    When create an API Provider integration "TODO Integration post collection" from file swagger/connectors/collection.json
 
     And select API Provider operation flow POST multiple tasks
     Then check flow title is "POST multiple tasks"
