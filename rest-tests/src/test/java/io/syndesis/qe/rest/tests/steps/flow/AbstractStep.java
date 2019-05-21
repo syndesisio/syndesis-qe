@@ -2,19 +2,6 @@ package io.syndesis.qe.rest.tests.steps.flow;
 
 import static org.assertj.core.api.Fail.fail;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.action.Action;
@@ -33,6 +20,20 @@ import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,7 +80,7 @@ public abstract class AbstractStep {
         } else {
             // It may not have an action
             action = properties.get(StepProperty.ACTION) == null ? null : findConnectorAction(connector, (String) properties.get(StepProperty.ACTION));
-            if (action != null) {
+            if (action!=null) {
                 // Get the action with datashapes configured
                 action = generateStepAction(action, getConnectorDescriptor(action, (Map) properties.get(StepProperty.PROPERTIES),
                         (String) properties.get(StepProperty.CONNECTION_ID)));
