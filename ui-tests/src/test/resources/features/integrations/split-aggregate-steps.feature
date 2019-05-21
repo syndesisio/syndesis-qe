@@ -81,5 +81,5 @@ Feature: Integration - DB to DB with split/aggregate
     And publish integration
     And wait until integration "Split/Aggregate" gets into "Running" state
 
-    Then validate that number of all todos with task "startTask" is "3", period in ms: "15000"
-    And validate that number of all todos with task "finalTask" is "1", period in ms: "1"
+    Then validate that number of all todos with task "startTask" is "3"
+    And validate that number of all todos with task "finalTask" is "1"
