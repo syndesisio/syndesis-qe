@@ -1,6 +1,5 @@
 package io.syndesis.qe.fragments.common.form;
 
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +9,7 @@ import org.openqa.selenium.By;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,16 +42,14 @@ public class Form {
      * @param data [attribute - value]
      */
     public void fillBy(FillBy fillBy, Map<String, String> data) {
+        if (data.isEmpty()) {
+            throw new IllegalArgumentException("account data is not set (empty)");
+        }
 
         String attribute = "";
-        List<SelenideElement> inputs = new ArrayList<>();
-        inputs.addAll(getRootElement().findAll(By.cssSelector("input")));
-
         switch (fillBy) {
             case ID:
                 attribute = "id";
-                inputs.addAll(getRootElement().findAll(By.tagName("textarea")));
-                inputs.addAll(getRootElement().findAll(By.tagName("select")));
                 break;
             case NAME:
                 attribute = "name";
@@ -60,36 +58,36 @@ public class Form {
                 Assert.fail("Input fillBy attribute not set.");
         }
 
-        if (data.isEmpty()) {
-            throw new IllegalArgumentException("can't find any data");
-        }
-
-        List<String> keys = new ArrayList<>();
-        log.debug("Size of inputs is " + inputs.size());
-
-        for (SelenideElement input : inputs) {
-            log.debug("Current input is:");
-            log.debug(input.toString());
-            String name = input.getAttribute(attribute);
-            keys.add(name);
+        // this is an inputs map, which contains inputs and their respective types (tag names) on the form
+        // that we are trying to fill
+        // here, key is attribute (name or id) value of the input
+        // and value of the map element pair is element's tag for later use
+        Map<String, String> inputsMap = new HashMap<>();
+        for (String tagName : Arrays.asList("input", "select", "textarea")) {
+            for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
+                inputsMap.put(element.getAttribute(attribute), tagName);
+            }
         }
 
         for (String key : data.keySet()) {
-            if (keys.contains(key)) {
+            // if the element we're looking for is on the form, then fill, otherwise error
+            if (inputsMap.containsKey(key)) {
                 log.info("fill value in {} ", key);
                 SelenideElement input;
 
                 if (attribute.equalsIgnoreCase("id")) {
                     input = getRootElement().$(By.id(key)).shouldBe(visible);
                 } else {
-                    input = getRootElement().$(String.format("input[" + attribute + "=\"%s\"", key)).shouldBe(visible);
+                    String cssSelector = String.format("%s[name='%s']", inputsMap.get(key), key);
+                    input = getRootElement().$(cssSelector).shouldBe(visible);
                 }
+
                 if (input.parent().$(By.tagName("select")).exists()) {
                     log.info("trying to set " + data.get(key) + " into element" + input.toString());
                     input.selectOptionContainingText(data.get(key));
                 } else if ("checkbox".equals(input.getAttribute("type"))) {
                     // we only want to click the checkbox if it's current state and desired state are different
-                    boolean shouldClick = input.isSelected() != BooleanUtils.toBooleanObject(data.get(key));
+                    boolean shouldClick = input.isSelected() != BooleanUtils.toBoolean(data.get(key));
                     if (shouldClick) {
                         input.click();
                     }
