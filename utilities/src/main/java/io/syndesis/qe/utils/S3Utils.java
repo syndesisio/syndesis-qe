@@ -55,7 +55,7 @@ public class S3Utils {
 
     public S3Utils() {
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account s3Account = accountsDirectory.getAccount("s3").get();
+        final Account s3Account = accountsDirectory.getAccount("AWS").get();
         final AWSCredentials credentials = new BasicAWSCredentials(
                 s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
         );
