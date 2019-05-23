@@ -6,6 +6,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.GoogleAccount;
+import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -34,7 +35,12 @@ public class GMailSteps {
 
     @When("^.*send an e-mail$")
     public void sendMail() {
-        gmu.sendEmail("me", "jbossqa.fuse@gmail.com", "syndesis-tests", "Red Hat");
+        sendEmail("jbossqa.fuse@gmail.com");
+    }
+
+    @When("^.*send an e-mail to \"([^\"]*)\"$")
+    public void sendEmail(String sendTo) {
+        gmu.sendEmail("me", sendTo, "syndesis-tests", "Red Hat");
     }
 
     @Given("^delete emails from \"([^\"]*)\" with subject \"([^\"]*)\"$")
@@ -44,18 +50,29 @@ public class GMailSteps {
 
     @Then("^check that email from \"([^\"]*)\" with subject \"([^\"]*)\" and text \"([^\"]*)\" exists$")
     public void checkMails(String from, String subject, String text) {
+        TestUtils.waitFor(() -> checkMailExists(from, subject, text),
+            1, 10,
+            "Could not find specified mail");
+    }
+
+    private boolean checkMailExists(String from, String subject, String text) {
         try {
             List<Message> messages = gmu.getMessagesMatchingQuery("me", "subject:" + subject + " AND from:" + from);
-            assertThat(messages.size()).isGreaterThanOrEqualTo(1);
+            // if messages list is empty, we haven't found anything, that's false
+            if (messages.size() == 0) {
+                return false;
+            }
 
             MimeMessage mime = gmu.getMimeMessage(messages.get(0).getId());
-            assertThat(mime.getSubject()).isEqualToIgnoringCase(subject);
-            //note that getContent() works here on because of specific message we sent (nothing special inside of the message,
-            //no attachment etc. otherwise extracting text should be handled differently
-            assertThat(mime.getContent().toString()).isEqualToIgnoringCase(text);
-
-        } catch (IOException | MessagingException e) {
-            fail("Exception thrown while checking mails!", e);
+            // now, if subject is the same and content is the same (some connectors might send trailing whitespaces)
+            // then we have found our message
+            if (mime.getSubject().equalsIgnoreCase(subject)
+                && mime.getContent().toString().trim().equalsIgnoreCase(text.trim())) {
+                return true;
+            }
+        } catch (IOException | MessagingException ignored) {
         }
+
+        return false;
     }
 }

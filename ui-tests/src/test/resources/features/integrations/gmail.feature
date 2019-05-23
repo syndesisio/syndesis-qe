@@ -65,10 +65,7 @@ Feature: Google mail Connector
     Then Integration "Integration_gmail_send" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_gmail_send" gets into "Running" state
-
-    #give gmail time to receive mail
-    When sleep for "10000" ms
-    Then check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-test" and text "Red Hat" exists
+    And check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-test" and text "Red Hat" exists
     And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
 
 #
@@ -117,7 +114,5 @@ Feature: Google mail Connector
 
     #give gmail time to receive mail
     When send an e-mail
-    #there is 30s pull time in gmail and delay when an e-mail is sent so we have to wait here
-    And sleep for "60000" ms
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere'" has some output
     And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-tests"
