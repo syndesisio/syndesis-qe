@@ -12,16 +12,17 @@ Feature: Email connector
     And reset content of "contact" table
     And delete emails from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests"
     And log into the Syndesis
-    And created connections
-      | Send Email (smtp)            | Email SMTP With SSL | Send Email with SSL QE     | Send email ssl test    |
-      | Receive Email (imap or pop3) | Email IMAP With SSL | Receive Email with IMAP QE | Receive email ssl test |
     And navigate to the "Home" page
 
   @email-send
-  Scenario: Send an e-mail
+  Scenario Outline: Send an e-mail
+
+    Given created connections
+      | Send Email (smtp) | Email SMTP With <security> | Send Email with <security> QE | Send email test |
 
     # Create integration
-    When click on the "Create Integration" button to create a new integration.
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -35,7 +36,7 @@ Feature: Email connector
     Then check that position of connection to fill is "Finish"
 
     # Second connection is email send (smtp)
-    When select the "Send Email with SSL QE" connection
+    When select the "Send Email with <security> QE" connection
     And select "Send Email" integration action
     And fill in values
       | Email to      | jbossqa.fuse@gmail.com       |
@@ -66,15 +67,25 @@ Feature: Email connector
     And check that email from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests" and text "Red Hat" exists
     And delete emails from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests"
 
+    Examples:
+      | security |
+      | SSL      |
+      | STARTTLS |
+
+
   @email-receive  
-  Scenario: Receive Email throught IMAP with SSL
-    
-    When click on the "Create Integration" button to create a new integration
+  Scenario Outline: Receive Email with SSL
+
+    Given created connections
+      | Receive Email (imap or pop3) | Email <protocol> With SSL | Receive Email with <protocol> QE | Receive email test |
+
+    When navigate to the "Home" page
+    And click on the "Create Integration" button to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
     # First connection is email receive (imap or pop3), by default it only fetches unread emails
-    When select the "Receive Email with IMAP QE" connection
+    When select the "Receive Email with <protocol> QE" connection
     Then select "Receive Email" integration action
     And fill in values
       | delay          | 30 |
@@ -82,7 +93,7 @@ Feature: Email connector
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
-    # Second connection is insert into TODO table in database
+    # Second connection is insert into TO-DO table in database
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into todo(task, completed) values(:#task, 0)" value
@@ -112,4 +123,9 @@ Feature: Email connector
     # Send email to connector, wait for it to be received and check that it's content got into database
     When send an e-mail to "jbossqa.fuse.email@gmail.com"
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
+
+    Examples:
+      | protocol |
+      | IMAP     |
+      | POP3     |
 
