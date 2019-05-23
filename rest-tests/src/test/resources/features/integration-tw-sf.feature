@@ -26,7 +26,7 @@ Feature: Integration - Twitter
         | sObjectName | Contact |
     And create integration with name: "Twitter to salesforce contact rest test"
     Then wait for integration with name: "Twitter to salesforce contact rest test" to become active
-    Then check SF does not contain contact for tw account: "twitter_talky"
+    Then check SF "does not contain" contact for tw account: "twitter_talky"
     Then tweet a message from twitter_talky to "Twitter Listener" with text "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
     Then validate contact for TW account: "twitter_talky" is present in SF with description: "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
     Given clean application state

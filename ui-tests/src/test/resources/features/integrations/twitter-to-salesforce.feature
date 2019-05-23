@@ -10,10 +10,10 @@ Feature: Integration - Twitter to Salesforce
 
   Background: Clean application state
     Given clean application state
-    Given clean SF contacts related to TW account: "twitter_talky"
-    Given clean all tweets in twitter_talky account
-    Given log into the Syndesis
-    Given created connections
+    And clean SF contacts related to TW account: "twitter_talky"
+    And clean all tweets in twitter_talky account
+    And log into the Syndesis
+    And created connections
       | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
       | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
 
@@ -23,10 +23,12 @@ Feature: Integration - Twitter to Salesforce
     And click on the "Create Integration" button to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
+
     # select twitter connection
     When select the "Twitter Listener" connection
     And select "Mention" integration action
     Then check that position of connection to fill is "Finish"
+
     # select salesforce connection
     When select the "QE Salesforce" connection
     And select "Create or update record" integration action
@@ -68,21 +70,17 @@ Feature: Integration - Twitter to Salesforce
     And set integration name "Twitter to Salesforce E2E"
     And publish integration
     Then Integration "Twitter to Salesforce E2E" is present in integrations list
-    # wait for integration to get in active state
-    Then wait until integration "Twitter to Salesforce E2E" gets into "Running" state
-    #And verify s2i build of integration "Twitter to Salesforce E2E" was finished in duration 1 min
+    And wait until integration "Twitter to Salesforce E2E" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #syndesis4ever"
-    And sleep for "30000" ms
-    Then check SF does not contain contact for tw account: "twitter_talky"
+    Then check SF "does not contain" contact for tw account: "twitter_talky"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e"
-    And sleep for "30000" ms
-    Then check SF does not contain contact for tw account: "twitter_talky"
+    Then check SF "does not contain" contact for tw account: "twitter_talky"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e #syndesis4ever"
-    And sleep for "30000" ms
-    Then check SF contains contact for tw account: "twitter_talky"
+    Then check SF "contains" contact for tw account: "twitter_talky"
     And check that contact from SF with last name: "Talky" has description "test #e2e #syndesis4ever @syndesis_listen"
+
     # clean-up in salesforce
     When delete contact from SF with last name: "Talky"
