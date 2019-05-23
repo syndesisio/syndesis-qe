@@ -103,7 +103,7 @@ public class ExtensionSteps {
 
         for (List<String> dataRow : dataTable) {
 
-            commonSteps.navigateTo(NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.clickOnLink(NavigationElements.CUSTOMIZATIONS_NAV);
             commonSteps.validatePage(NavigationElements.CUSTOMIZATIONS_NAV);
 
             commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
@@ -179,7 +179,7 @@ public class ExtensionSteps {
     public void expectExtensionNonPresent(String name) throws Throwable{
         log.info("Verifying if extension {} is present", name);
         //TODO is this necessary
-        //customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);
+        customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name)).isFalse();
     }
 

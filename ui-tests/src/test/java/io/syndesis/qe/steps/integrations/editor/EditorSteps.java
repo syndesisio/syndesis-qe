@@ -37,9 +37,9 @@ public class EditorSteps {
     }
 
     private static final class Button {
-        public static final By Publish = By.xpath("//a[text()[contains(.,'Publish')]]");
-        public static final By SaveAsDraft = By.xpath("//a[text()[contains(.,'Save')]]");
-        public static final By Cancel = By.xpath("//a[text()[contains(.,'Save')]]");
+        public static final By Publish = By.id("integration-editor-publish-button");
+        public static final By SaveAsDraft = By.xpath("integration-editor-save-button");
+        public static final By Cancel = By.xpath("integration-editor-cancel-button");
     }
 
     @Then("^check visibility of visual integration editor$")

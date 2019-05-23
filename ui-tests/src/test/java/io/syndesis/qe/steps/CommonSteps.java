@@ -21,7 +21,6 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -91,6 +90,11 @@ public class CommonSteps {
         public static final By LOGOUT_MENU = By.id("userMenuDropdownButton");
         public static final By LOGOUT_MENU_ACTION_TAG = By.tagName("a");
         public static final By LOGIN_BUTTON = By.className("btn");
+        public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
+
+        public static final By navigationLink(String tittle) {
+            return By.cssSelector(String.format("a[data-testid=\"navbar-link-/%s\"]",tittle.toLowerCase()));
+        }
     }
 
     @Autowired
@@ -244,7 +248,7 @@ public class CommonSteps {
             nameConnectionSteps.setConnectionName(connectionName);
             nameConnectionSteps.setConnectionDescription(connectionDescription);
 
-            clickOnButton("Done");
+            clickOnButton("Create");
 
             if (syndesisRootPage.getCurrentUrl().contains("connections/create/review")) {
                 clickOnButton("Create");
@@ -325,14 +329,14 @@ public class CommonSteps {
     @When("^navigate to the \"([^\"]*)\" page$")
     public void navigateTo(String title) {
         try {
-            OpenShiftWaitUtils.waitFor(() -> $(By.className("pf-c-nav")).exists(), 30 * 1000L);
+            OpenShiftWaitUtils.waitFor(() -> $(Element.NAVIGATION_PANEL).exists(), 30 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
             fail("Navigation panel was not found in 30s", e);
         }
 
-        SelenideElement selenideElement = $(By.className("pf-c-nav")).shouldBe(visible);
-        ElementsCollection allLinks = selenideElement.findAll(By.className("pf-c-nav__item"));
-        allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
+        SelenideElement selenideElement = $(Element.NAVIGATION_PANEL).shouldBe(visible);
+        ;
+        $(Element.navigationLink(title.equals("Home")?"":title+"/")).shouldBe(visible).click();
     }
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
@@ -568,6 +572,7 @@ public class CommonSteps {
 
     @Then("^.*fill in values by element ID")
     public void fillFormViaID(DataTable data) {
+        Form.waitForInpups(20);
         new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
     }
 
@@ -595,7 +600,7 @@ public class CommonSteps {
         assertThat(connections.size()).as("Connection with name " + newConnectionName + " already exists!")
                 .isEqualTo(0);
 
-        clickOnButton("Create Connection");
+        clickOnLink("Create Connection");
 
         //sometimes page is loaded but connections are not so we need to wait here a bit
         TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay());

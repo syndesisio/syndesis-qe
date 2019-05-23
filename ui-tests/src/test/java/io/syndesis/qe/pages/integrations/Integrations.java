@@ -18,10 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 public class Integrations extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-list-page");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
     }
 
-    IntegrationsList integrationsList = new IntegrationsList(By.cssSelector("syndesis-integration-list"));
+    IntegrationsList integrationsList = new IntegrationsList(By.cssSelector(".list-group.list-view-pf.list-view-pf-view"));
 
     @Override
     public SelenideElement getRootElement() {

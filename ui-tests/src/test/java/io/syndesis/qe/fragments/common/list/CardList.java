@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.fail;
 public class CardList extends AbstractUiElementsList {
 
     private static final class Element {
-        public static final By CARD = By.xpath("//*[contains(@class,'card-pf card-pf-match-height')]");
-        public static final By TITLE = By.xpath("//h1[contains(@class,'pf-c-title')]");
+        public static final By CARD = By.cssSelector("a[data-testid=\"connection-card-details\"]");
+        public static final By TITLE = By.cssSelector("h1[data-testid=\"connection-card-title\"]");
     }
 
     public CardList(By rootElement) {
@@ -34,7 +34,7 @@ public class CardList extends AbstractUiElementsList {
 
     @Override
     public SelenideElement getItem(String title) {
-        return getTitle(title).$(By.xpath("./ancestor::div[contains(concat(' ', @class, ' '), ' card-pf card-pf-match-height ')][1]"));
+        return getRootElement().$$(Element.CARD).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(title));
     }
 
     @Override

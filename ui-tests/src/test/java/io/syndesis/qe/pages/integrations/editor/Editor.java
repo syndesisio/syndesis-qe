@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Editor extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".integration-editor-layout__body");
+        public static final By ROOT = By.cssSelector(".integration-editor-layout");
     }
 
     @Override

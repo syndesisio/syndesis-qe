@@ -1,6 +1,7 @@
 package io.syndesis.qe.fragments.common.form;
 
 import com.codeborne.selenide.SelenideElement;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -83,7 +85,7 @@ public class Form {
                 }
 
                 if (input.parent().$(By.tagName("select")).exists()) {
-                    log.info("trying to set " + data.get(key) + " into element" + input.toString());
+                    log.debug("trying to set " + data.get(key) + " into element" + input.toString());
                     input.selectOptionContainingText(data.get(key));
                 } else if ("checkbox".equals(input.getAttribute("type"))) {
                     // we only want to click the checkbox if it's current state and desired state are different
@@ -92,8 +94,16 @@ public class Form {
                         input.click();
                     }
                 } else {
-                    input.clear();
-                    input.sendKeys(data.get(key));
+                    if (input.attr("type").equals("checkbox")) {
+                        if
+                        ("true".equals(data.get(key))) {
+                            input.click();
+                        }
+                    }
+                    else {
+                        input.clear();
+                        input.sendKeys(data.get(key));
+                    }
                 }
             } else {
                 log.warn("Input {} is not present on form!", key);
@@ -228,6 +238,11 @@ public class Form {
                 default:
             }
         }
+
+
+    }
+    public static void waitForInpups(int timeInSeconds) {
+        $(By.tagName("input")).waitUntil(exist,timeInSeconds * 1000);
     }
 
     private enum FillBy {

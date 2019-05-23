@@ -9,12 +9,17 @@ import io.syndesis.qe.utils.TestUtils;
 import org.openqa.selenium.By;
 
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 public class ConnectionsList extends CardList {
 
 
     private static final class Element {
         public static final By TECH_PREVIEW = By.xpath("syndesis-card-tech-preview");
+
+        public static By kebabMenu(String title) {
+            return By.cssSelector(String.format("button[id=\"connection-%s-menu\"]",title));
+        }
     }
 
     public ConnectionsList(By rootElement) {
@@ -23,9 +28,10 @@ public class ConnectionsList extends CardList {
 
     @Override
     public void invokeActionOnItem(String title, ListAction action) {
-        KebabMenu kebabMenu = new KebabMenu(getItem(title).$(By.xpath(".//button")));
+
         switch (action) {
             case DELETE:
+                KebabMenu kebabMenu = new KebabMenu($(Element.kebabMenu(title)).shouldBe(visible));
                 kebabMenu.open();
                 kebabMenu.getItemElement("Delete").shouldBe(visible).click();
                 TestUtils.sleepForJenkinsDelayIfHigher(3);
