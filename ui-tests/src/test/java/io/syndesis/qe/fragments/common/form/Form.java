@@ -38,6 +38,10 @@ public class Form {
         fillBy(FillBy.ID, data);
     }
 
+    public void fillByTestId(Map<String, String> data) {
+        fillBy(FillBy.TEST_ID, data);
+    }
+
     /**
      * Finds the input elements by element attribute and fills the data in
      *
@@ -52,6 +56,9 @@ public class Form {
         switch (fillBy) {
             case ID:
                 attribute = "id";
+                break;
+            case TEST_ID:
+                attribute = "data-testid";
                 break;
             case NAME:
                 attribute = "name";
@@ -80,7 +87,7 @@ public class Form {
                 if (attribute.equalsIgnoreCase("id")) {
                     input = getRootElement().$(By.id(key)).shouldBe(visible);
                 } else {
-                    String cssSelector = String.format("%s[name='%s']", inputsMap.get(key), key);
+                    String cssSelector = String.format("%s[" + attribute + "='%s']", inputsMap.get(key), key);
                     input = getRootElement().$(cssSelector).shouldBe(visible);
                 }
 
@@ -92,15 +99,7 @@ public class Form {
                     boolean shouldClick = input.isSelected() != BooleanUtils.toBoolean(data.get(key));
                     if (shouldClick) {
                         input.click();
-                    }
-                } else {
-                    if (input.attr("type").equals("checkbox")) {
-                        if
-                        ("true".equals(data.get(key))) {
-                            input.click();
-                        }
-                    }
-                    else {
+                    } else {
                         input.clear();
                         input.sendKeys(data.get(key));
                     }
@@ -241,12 +240,14 @@ public class Form {
 
 
     }
+
     public static void waitForInpups(int timeInSeconds) {
-        $(By.tagName("input")).waitUntil(exist,timeInSeconds * 1000);
+        $(By.tagName("input")).waitUntil(exist, timeInSeconds * 1000);
     }
 
     private enum FillBy {
         ID,
-        NAME
+        NAME,
+        TEST_ID
     }
 }

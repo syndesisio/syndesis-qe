@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.codeborne.selenide.Condition.visible;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.immutables.value.internal.$generator$.$Intrinsics.$;
 
 public class KebabMenu {
 

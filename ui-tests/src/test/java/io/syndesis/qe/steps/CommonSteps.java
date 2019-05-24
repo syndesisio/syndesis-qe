@@ -92,8 +92,8 @@ public class CommonSteps {
         public static final By LOGIN_BUTTON = By.className("btn");
         public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
 
-        public static final By navigationLink(String tittle) {
-            return By.cssSelector(String.format("a[data-testid=\"navbar-link-/%s\"]",tittle.toLowerCase()));
+        public static final By navigationLink(String title) {
+            return By.cssSelector(String.format("a[data-testid=\"ui-%s-\"]",title.toLowerCase()));
         }
     }
 
@@ -336,7 +336,7 @@ public class CommonSteps {
 
         SelenideElement selenideElement = $(Element.NAVIGATION_PANEL).shouldBe(visible);
         ;
-        $(Element.navigationLink(title.equals("Home")?"":title+"/")).shouldBe(visible).click();
+        $(Element.navigationLink(title.equals("Home")?"":"-"+title)).shouldBe(visible).click();
     }
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
@@ -574,6 +574,12 @@ public class CommonSteps {
     public void fillFormViaID(DataTable data) {
         Form.waitForInpups(20);
         new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
+    }
+
+    @Then("^.*fill in values by element data-testid")
+    public void fillFormViaTestID(DataTable data) {
+        Form.waitForInpups(20);
+        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(data.asMap(String.class, String.class));
     }
 
     @When("^.*create connections using oauth$")

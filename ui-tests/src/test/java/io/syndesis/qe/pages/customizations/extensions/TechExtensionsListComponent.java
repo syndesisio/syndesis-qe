@@ -9,7 +9,6 @@ import org.openqa.selenium.By;
 
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -25,6 +24,10 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         public static final By ITEM = By.cssSelector(".list-group-item.list-view-pf-stacked");
         public static final By ITEM_TITLE = By.className("list-group-item-heading");
         public static final By LIST_WRAPPER = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+
+        public static By extensionActionButton(String action) {
+            return By.cssSelector(String.format(".btn[data-testid=\"extension-list-item-%s\"]", action.toLowerCase()));
+        }
     }
 
     @Override
@@ -38,13 +41,13 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     }
 
     public SelenideElement getExtensionItem(String name) {
-      //TODO is this necessary ?
+        //TODO is this necessary ?
         //  $(Element.LIST_WRAPPER).shouldBe(visible);
 
         try {
             OpenShiftWaitUtils.waitFor(() ->
                     $$(Element.ITEM).stream()
-                    .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name)).count() > 0, 15*1000);
+                            .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name)).count() > 0, 15 * 1000);
         } catch (InterruptedException | TimeoutException e) {
             log.error("not found!");
             return null;
@@ -69,11 +72,9 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     public SelenideElement getActionOnExtensionButton(String name, String action) {
         SelenideElement extension = this.getExtensionItem(name);
         assertThat(extension).isNotNull();
-        SelenideElement actionButton = extension.findAll(By.cssSelector(".btn.btn-default")).filter(exactText(action)).first().shouldBe(visible);
-        assertThat(actionButton).isNotNull();
+        SelenideElement actionButton = $(Element.extensionActionButton(action)).shouldBe(visible);
         return actionButton;
     }
-
 
 
     public void chooseActionOnExtension(String name, String action) {

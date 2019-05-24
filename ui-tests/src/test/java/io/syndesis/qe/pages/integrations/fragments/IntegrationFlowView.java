@@ -36,7 +36,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
         public static final By DELETE = By.className("delete-icon");
-        public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integration-flow-add-step-add-step\"]");
+        public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integrationflowaddstep-add-step-link\"]");
 
         public static final By POPOVER_CLASS = By.className("popover");
         public static final By STEP_DETAILS = By.className("step-details");
@@ -112,10 +112,10 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
     public void clickAddStepLink(int pos) {
 
-        List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
+        List<SelenideElement> allStepInserts = $$(Element.STEP_INSERT)
                 .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
-        stepElement.$(By.className("fa-plus-square")).shouldBe(visible).click();
+        stepElement.shouldBe(visible).click();
     }
 
     public void clickAddConnectionLink(int pos) {
