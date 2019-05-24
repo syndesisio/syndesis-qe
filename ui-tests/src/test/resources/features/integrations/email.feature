@@ -100,13 +100,10 @@ Feature: Email connector
     And click on the "Next" button
     Then check visibility of page "Add to Integration"
 
-    # Two integration steps: split and data mapper, which maps email content to 'task' field in TODO table
+    # Integration step: data mapper, which maps email content to 'task' field in TO-DO table
     When add integration step on position "0"
-    And select "Split" integration step
-    Then check visibility of page "Add to Integration"
-
-    When add integration step on position "1"
     And select "Data Mapper" integration step
+    And open data mapper collection mappings
     And create data mapper mappings
       | content | task |
     And scroll "top" "right"
