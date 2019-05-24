@@ -13,10 +13,10 @@ Feature: Customization - Extensions CRUD
 
   @extension-CRUD-import-new
   Scenario: Import
-    When navigate to the "Customizations" page
-    Then check visibility of page "Customizations"
+    When click on the "Customizations" link
+#    Then check visibility of page "Customizations"
 
-    When click on the "Extensions" link
+    When navigate to the "Extensions" page
     Then check visibility of page "Extensions"
 
     When click on the "Import Extension" link

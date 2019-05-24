@@ -24,10 +24,9 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         public static final By ITEM = By.cssSelector(".list-group-item.list-view-pf-stacked");
         public static final By ITEM_TITLE = By.className("list-group-item-heading");
         public static final By LIST_WRAPPER = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+        public static final String EXTENSION_ACTION_EXPRESSION = ".btn[data-testid=\"extensionlistitem-%s-%s-button\"]";
 
-        public static By extensionActionButton(String action) {
-            return By.cssSelector(String.format(".btn[data-testid=\"extension-list-item-%s\"]", action.toLowerCase()));
-        }
+
     }
 
     @Override
@@ -40,6 +39,10 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         return $(Element.ROOT).is(visible);
     }
 
+    public static By extensionActionButton(String extension,String action) {
+        String ext = extension.toLowerCase().replaceAll(" ","-");
+        return By.cssSelector(String.format(Element.EXTENSION_ACTION_EXPRESSION, ext,action.toLowerCase()));
+    }
     public SelenideElement getExtensionItem(String name) {
         //TODO is this necessary ?
         //  $(Element.LIST_WRAPPER).shouldBe(visible);
@@ -70,9 +73,9 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     }
 
     public SelenideElement getActionOnExtensionButton(String name, String action) {
-        SelenideElement extension = this.getExtensionItem(name);
-        assertThat(extension).isNotNull();
-        SelenideElement actionButton = $(Element.extensionActionButton(action)).shouldBe(visible);
+//        SelenideElement extension = this.getExtensionItem(name);
+//        assertThat(extension).isNotNull();
+        SelenideElement actionButton = $(extensionActionButton(name,action)).shouldBe(visible);
         return actionButton;
     }
 
