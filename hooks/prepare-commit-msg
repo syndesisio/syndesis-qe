@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 CHECKSTYLE="checkstyle-8.20"
 CHECKSTYLE_JAR="${CHECKSTYLE}-all.jar"
@@ -13,9 +13,22 @@ COMMIT_MSG="$(cat "$1")"
 
 [ -z "${FILES}" ] && exit 0
 
+TMP_DIR="$(mktemp -d --tmpdir syndesis-checkstyle.XXX)"
+trap "rm -rf $TMP_DIR" 0
+while read -r F ; do 
+    FILE_DIR="$(dirname "$F")"
+    mkdir -p "$TMP_DIR/$FILE_DIR"
+    git show ":$F" > "$TMP_DIR/$F"
+done <<< "$FILES"
+
 if [ ! -f "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" ]; then
 	echo "First time use: Downloading checkstyle jar from https://github.com/checkstyle/checkstyle/releases/download/${CHECKSTYLE}/${CHECKSTYLE_JAR}"
 	curl -Lks -o "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" "https://github.com/checkstyle/checkstyle/releases/download/${CHECKSTYLE}/${CHECKSTYLE_JAR}"
 fi
 
-java -jar "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" -c "${ROOT_DIR}/checkstyle/checkstyle.xml" ${FILES}
+cd $TMP_DIR
+OUT=$(java -jar "${ROOT_DIR}/checkstyle/${CHECKSTYLE_JAR}" -c "${ROOT_DIR}/checkstyle/checkstyle.xml" ${FILES})
+EXIT=$?
+echo "${OUT}" | sed "s#${TMP_DIR}#${ROOT_DIR}#g"
+exit ${EXIT}
+
