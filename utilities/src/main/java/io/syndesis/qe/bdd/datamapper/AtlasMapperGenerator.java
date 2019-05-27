@@ -71,10 +71,10 @@ public class AtlasMapperGenerator {
     private List<StepDefinition> precedingSteps;
     private StepDefinition followingStep;
 
-    public void setSteps(StepDefinition mapping, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
-        this.mapping = mapping;
-        this.precedingSteps = precedingSteps;
-        this.followingStep = followingStep;
+    public void setSteps(StepDefinition mappingSd, List<StepDefinition> precedingStepsList, StepDefinition followingStepSd) {
+        this.mapping = mappingSd;
+        this.precedingSteps = precedingStepsList;
+        this.followingStep = followingStepSd;
     }
 
     /**
@@ -119,7 +119,7 @@ public class AtlasMapperGenerator {
                 List<JavaField> jfields = getJavaFields(jClass);
                 fields = jfields.stream().map(f -> (Field) f).collect(Collectors.toList());
             } catch (IOException e) {
-                log.error("error: {}" + e);
+                log.error("error: ", e);
             }
         } else if (dsKind.equals(DataShapeKinds.JSON_SCHEMA) || dsKind.equals(DataShapeKinds.JSON_INSTANCE)) {
             JsonInspectionResponse inspectionResponse = atlasmapEndpoint.inspectJson(dataShapeSpecification, dsKind);
@@ -127,7 +127,7 @@ public class AtlasMapperGenerator {
                 log.debug("Inspection API response: " + mapper.writeValueAsString(inspectionResponse));
                 fields = inspectionResponse.getJsonDocument().getFields().getField();
             } catch (JsonProcessingException e) {
-                log.error("Unable to write inspection API response as string: {}" + e);
+                log.error("Unable to write inspection API response as string", e);
             }
         } else if (dsKind.equals(DataShapeKinds.XML_SCHEMA) || dsKind.equals(DataShapeKinds.XML_INSTANCE)) {
             XmlInspectionResponse inspectionResponse = atlasmapEndpoint.inspectXml(dataShapeSpecification, dsKind);
@@ -135,7 +135,7 @@ public class AtlasMapperGenerator {
                 log.debug("Inspection API response: " + mapper.writeValueAsString(inspectionResponse));
                 fields = inspectionResponse.getXmlDocument().getFields().getField();
             } catch (JsonProcessingException e) {
-                log.error("Unable to write inspection API response as string: {}" + e);
+                log.error("Unable to write inspection API response as string", e);
             }
         }
         return fields;
@@ -237,7 +237,7 @@ public class AtlasMapperGenerator {
             mapperString = mapper.writeValueAsString(atlasMapping);
             log.debug(mapperString);
         } catch (JsonProcessingException e) {
-            log.error("Unable to write mapper json as string: {}" + e);
+            log.error("Unable to write mapper json as string", e);
         }
 
         return new Step.Builder()
@@ -300,8 +300,10 @@ public class AtlasMapperGenerator {
             in.add(inField);
         }
 
-        Field out = followingStep.getInspectionResponseFields().get()
-            .stream().filter(f -> f.getPath().matches(mappingDef.getOutputFields().get(0))).findFirst().get();
+        Field out = getField(followingStep.getInspectionResponseFields().get(), mappingDef.getOutputFields().get(0));
+        if (out == null) {
+            fail("Unable to find \"out\" field with path " + mappingDef.getOutputFields().get(0));
+        }
 
         return createMappingObject(mappingDef, MappingType.COMBINE, mappingDef.getStrategy().name(), in, Collections.singletonList(out));
     }
@@ -323,8 +325,10 @@ public class AtlasMapperGenerator {
             outField.setIndex(i);
             out.add(outField);
         }
-        Field in = precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get()
-            .stream().filter(f -> f.getPath().matches(mappingDef.getInputFields().get(0))).findFirst().get();
+        Field in = getField(precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get(), mappingDef.getInputFields().get(0));
+        if (in == null) {
+            fail("Unable to find \"in\" field with path " + mappingDef.getInputFields().get(0));
+        }
 
         return createMappingObject(mappingDef, MappingType.SEPARATE, mappingDef.getStrategy().name(), Collections.singletonList(in), out);
     }
