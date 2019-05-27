@@ -32,7 +32,7 @@ Feature: Integration - Salesforce
     When create SF "salesforce-on-delete" action step with properties
       | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
-    Then MAP using Step 1 and field "/id" to "/todo"
+    Then MAP using Step 1 and field "/id" to "/<>/todo"
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
@@ -45,7 +45,7 @@ Feature: Integration - Salesforce
     When create SF "salesforce-on-update" action step with properties
       | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
-    Then COMBINE using Step 1 and strategy "Space" into "/todo" and sources
+    Then COMBINE using Step 1 and strategy "Space" into "/<>/todo" and sources
       | /FirstName | /LastName | /Email |
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF update to DB rest test"
