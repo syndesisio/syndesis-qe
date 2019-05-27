@@ -1,5 +1,7 @@
 # @sustainer: avano@redhat.com
 
+# Temporary ignore until the versioning of komodo-server is figured out, otherwise it will block the execution of the rest tests
+@ignore
 @syndesis-upgrade
 @syndesis-upgrade-operator
 @gh-4781
