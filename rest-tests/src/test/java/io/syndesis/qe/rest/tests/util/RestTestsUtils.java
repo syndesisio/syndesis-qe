@@ -16,6 +16,7 @@ public class RestTestsUtils {
         KAFKA("kafka"),
         SALESFORCE("salesforce"),
         S3("aws-s3"),
+        SNS("aws-sns"),
         SQS("aws-sqs"),
         TWITTER("twitter");
 
@@ -39,6 +40,7 @@ public class RestTestsUtils {
         IRC("irc"),
         KAFKA("fuseqe-kafka"),
         SALESFORCE("fuseqe-salesforce"),
+        SNS("fuseqe-sns"),
         SQS("fuseqe-sqs"),
         TWITTER("fuseqe-twitter");
 

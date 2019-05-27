@@ -3,6 +3,7 @@ package io.syndesis.qe.rest.tests.steps.flow;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.BoxUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
+import io.syndesis.qe.utils.SNSUtils;
 import io.syndesis.qe.utils.SQSUtils;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -174,6 +175,16 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SALESFORCE.getId());
         super.addProperty(StepProperty.ACTION, action);
         super.addProperty(StepProperty.PROPERTIES, props.asMap(String.class, String.class));
+        super.createStep();
+    }
+
+    @When("^create SNS publish action step with topic \"([^\"]*)\"$")
+    public void createSNSStepWithProperties(String topic) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SNS.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SNS.getId());
+        super.addProperty(StepProperty.ACTION, "send-object");
+        final String topicNameOrArn = topic.contains("arn:") ? SNSUtils.getTopicArn(StringUtils.substringAfter(topic, "arn:")) : topic;
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map("topicNameOrArn", topicNameOrArn));
         super.createStep();
     }
 

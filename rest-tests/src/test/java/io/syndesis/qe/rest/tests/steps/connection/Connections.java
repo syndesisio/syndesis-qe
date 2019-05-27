@@ -189,6 +189,19 @@ public class Connections {
         );
     }
 
+    @Given("^create SNS connection$")
+    public void createSNSConnection() {
+        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "sns"),
+                accountProperty("accessKey"),
+                accountProperty("secretKey"),
+                accountProperty("region")
+            )
+        );
+    }
+
     @Given("^create SQS connection$")
     public void createSQSConnection() {
         account = accountsDirectory.getAccount(Account.Name.AWS).get();

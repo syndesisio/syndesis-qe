@@ -3,7 +3,6 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.utils.JMSUtils;
-import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.SQSUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -31,7 +30,16 @@ public class SQSValidationSteps {
 
     @Given("^purge SQS queues$")
     public void purge() {
-        sqs.purge("syndesis-in", "syndesis-out", "syndesis-in.fifo", "syndesis-out.fifo", "syndesis-out-content-based.fifo");
+        sqs.purge(
+            "syndesis-in",
+            "syndesis-out",
+            "syndesis-in.fifo",
+            "syndesis-out.fifo",
+            "syndesis-out-content-based.fifo",
+            "syndesis-sns-out"
+        );
+        // Purging a queue "may take up to 60 seconds"
+        TestUtils.sleepIgnoreInterrupt(60000L);
     }
 
     @When("^send SQS messages? to \"([^\"]*)\" with content$")
@@ -48,11 +56,11 @@ public class SQSValidationSteps {
         sqs.sendMessages(queue, messages);
     }
 
-    @When("^wait for the next SQS poll interval$")
-    public void waitForPollInterval() {
+    @When("^wait until the message appears in SQS queue \"([^\"]*)\"$")
+    public void waitForMessage(String queue) {
         // Wait until the calibration message was processed
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("i-").contains("\"status\":\"done\""), 1000L, 120000L);
+            OpenShiftWaitUtils.waitFor(() -> sqs.getQueueSize(queue) == 1, 1000L, 120000L);
         } catch (Exception e) {
             // ignore
         }
