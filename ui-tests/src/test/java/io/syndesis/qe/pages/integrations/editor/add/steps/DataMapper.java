@@ -121,7 +121,12 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public void openDataMapperCollectionElement() {
-        $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> e.shouldBe(visible).click());
+        $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
+            SelenideElement arrow = e.find("i.arrow.fa.fa-angle-right");
+            if (arrow.exists() && arrow.is(visible)) {
+                arrow.click();
+            }
+        });
     }
 
     public void doCreateMapping(String source, String target) {
