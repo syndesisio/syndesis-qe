@@ -27,7 +27,10 @@
         <module name="GenericWhitespace"/>
         <!-- Checks that a local variable or a parameter does not shadow a field that is defined in the same class -->
         <!-- See http://checkstyle.sourceforge.net/config_coding.html#HiddenField -->
-        <module name="HiddenField"/>
+        <module name="HiddenField">
+            <property name="ignoreSetter" value="true" />
+            <property name="ignoreConstructorParameter" value="true" />
+        </module>
         <!-- Checks the ordering/grouping of imports -->
         <!-- See http://checkstyle.sourceforge.net/config_imports.html#ImportOrder -->
         <module name="ImportOrder">
