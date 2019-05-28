@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.publicapi;
+package io.syndesis.qe.publicapisteps;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

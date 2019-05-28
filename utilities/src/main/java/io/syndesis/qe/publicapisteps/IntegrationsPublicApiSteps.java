@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.publicapi;
+package io.syndesis.qe.publicapisteps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
