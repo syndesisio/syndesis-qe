@@ -49,6 +49,8 @@ public class DataMapperSteps {
      */
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
+        mapper.openDataMapperCollectionElement();
+
         for (List<String> row : table.cells()) {
             if (row.size() > 2) {
                 mapper.doCreateMappingWithSeparator(row.get(0), row.get(1), row.get(2));
