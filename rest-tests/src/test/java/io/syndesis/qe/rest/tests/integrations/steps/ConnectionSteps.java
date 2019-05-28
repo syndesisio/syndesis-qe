@@ -164,7 +164,7 @@ public class ConnectionSteps {
     @Given("^create S3 connection using \"([^\"]*)\" bucket")
     public void createS3Connection(String s3Bucket) {
         final List<List<String>> table = new ArrayList<>();
-        final Account account = accountsDirectory.getAccount("s3").get();
+        final Account account = accountsDirectory.getAccount("AWS").get();
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
 
         table.add(Arrays.asList("connector", "s3"));
