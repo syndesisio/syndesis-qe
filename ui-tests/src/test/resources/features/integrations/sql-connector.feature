@@ -249,3 +249,35 @@ Feature: SQL Connector
     # Wait for "Running" state and validate
     And wait until integration "Generated_Keys" gets into "Running" state
     And validate that logs of integration "Generated_Keys" contains items with IDs "1"
+
+  @reproducer
+  @gh-5493
+  @sql-connector-return-keys-start-step
+  Scenario: Return generated keys for INSERT statement from start step
+
+    When click on the "Create Integration" button to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # Start step
+    And select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in invoke query input with "INSERT INTO todo (task, completed) VALUES ('task1', 0)" value
+    And click on the "Next" button
+    Then check visibility of page "Choose a Finish Connection"
+
+    # Finish step
+    When select the "Log" connection
+    And fill in values
+      | Message Context | false |
+      | Message Body    | true  |
+    Then click on the "Done" button
+
+
+    And publish integration
+    And set integration name "Generated_Keys"
+    And click on the "Publish" button
+
+    # Wait for "Running" state and validate
+    And wait until integration "Generated_Keys" gets into "Running" state
+    And validate that logs of integration "Generated_Keys" contains items with IDs "1"
