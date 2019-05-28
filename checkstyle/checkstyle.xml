@@ -33,7 +33,9 @@
         <module name="ImportOrder">
             <property name="option" value="top"/>
             <property name="separated" value="true"/>
+            <property name="separatedStaticGroups" value="true"/>
             <property name="groups" value="io.syndesis,org.junit,org,com,javax,java,"/>
+            <property name="staticGroups" value="io.syndesis,org.junit,org,com,javax,java,"/>
         </module>
         <!-- Checks correct indentation of Java code -->
         <!-- See http://checkstyle.sourceforge.net/config_misc.html#Indentation -->
