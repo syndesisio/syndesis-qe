@@ -1,6 +1,5 @@
-package io.syndesis.qe.rest.tests.publicapi;
+package io.syndesis.qe.publicapisteps;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
