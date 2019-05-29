@@ -3,8 +3,13 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import org.apache.commons.lang.RandomStringUtils;
+import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.utils.DbUtils;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.ResultSet;
@@ -17,11 +22,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.utils.DbUtils;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -53,8 +53,8 @@ public class DbValidationSteps {
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
         TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
-                5, 120,
-                "Lead record was not found in the table.");
+            5, 120,
+            "Lead record was not found in the table.");
 
         log.debug("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         // Now we verify, the created lead contains the correct personal information.
@@ -66,8 +66,8 @@ public class DbValidationSteps {
         final long start = System.currentTimeMillis();
         // We wait for exactly 1 record to appear in DB.
         TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
-                5, 120,
-                "Lead record was not found in the table.");
+            5, 120,
+            "Lead record was not found in the table.");
 
         log.debug("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         // Now we verify, the created lead contains the correct information.
@@ -77,8 +77,8 @@ public class DbValidationSteps {
     @Then("^validate add_lead procedure with last_name: \"([^\"]*)\", company: \"([^\"]*)\"$")
     public void validateAddLeadProcedure(String lastName, String company) {
         TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
-                5, 120,
-                "Lead record was not found in the table.");
+            5, 120,
+            "Lead record was not found in the table.");
 
         assertThat(getLeadTaskFromDb(lastName).contains(company)).isTrue();
     }
@@ -93,7 +93,7 @@ public class DbValidationSteps {
     public void insertsIntoTable(String tableName, DataTable data) {
         List<List<String>> dataTable = data.cells();
 
-        String sql = null;
+        String sql;
 
         Iterator it;
         String next;
@@ -108,6 +108,8 @@ public class DbValidationSteps {
                 case "CONTACT":
                     sql = "INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('%s'";
                     break;
+                default:
+                    throw new IllegalArgumentException("Unsupported table name " + tableName);
             }
             it = list.iterator();
             while (it.hasNext()) {
@@ -149,15 +151,15 @@ public class DbValidationSteps {
     @Then("^validate that number of all todos with task \"([^\"]*)\" is \"(\\w+)\"$")
     public void checksNumberOfTodos(String task, int val) {
         TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) == val,
-                5, 30,
-                "Number of todo tasks does not match!");
+            5, 30,
+            "Number of todo tasks does not match!");
     }
 
     @Then("^validate that number of all todos with task \"([^\"]*)\" is greater than \"(\\w+)\"$")
     public void checkNumberOfTodosMoreThan(String task, Integer val) {
         TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) > val,
-                5, 30,
-                "Not enough entries in the todo table in 30s");
+            5, 30,
+            "Not enough entries in the todo table in 30s");
     }
 
     @Then("^verify upgrade integration with task \"([^\"]*)\"$")
@@ -175,15 +177,15 @@ public class DbValidationSteps {
     @Then("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")
     public void checkNumberValuesExistInTable(String query, int number) {
         TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) == number,
-                5, 60,
-                "Query has no output.");
+            5, 60,
+            "Query has no output.");
     }
 
     @Then("^.*checks? that query \"([^\"]*)\" has some output$")
     public void checkValuesExistInTable(String query) {
         TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) > 0,
-                5, 60,
-                "Query has no output.");
+            5, 60,
+            "Query has no output.");
     }
 
     @Then("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
@@ -211,7 +213,7 @@ public class DbValidationSteps {
 
     @Given("^.*reset content of \"([^\"]*)\" table$")
     public void resetTableContent(String tableName) {
-        if (tableName.equalsIgnoreCase("contact")) {
+        if ("contact".equalsIgnoreCase(tableName)) {
             dbUtils.resetContactTable();
         } else {
             //there is no default content in other tables
@@ -273,7 +275,7 @@ public class DbValidationSteps {
         String leadTask = null;
         log.info("***SELECT id, task, completed FROM TODO WHERE task LIKE '%" + task + "%'***");
         try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO WHERE task LIKE '%"
-                + task + "%'");) {
+            + task + "%'")) {
             if (rs.next()) {
                 leadTask = rs.getString("task");
                 log.debug("task = " + leadTask);
@@ -300,7 +302,12 @@ public class DbValidationSteps {
     @Then("^check rows number of table \"([^\"]*)\" is greater than (\\d+)$")
     public void checkRowsNumberIsGreaterThan(String table, int threshold) {
         TestUtils.waitFor(() -> this.dbUtils.getNumberOfRecordsInTable(table) > threshold,
-                5, 30,
-                "Not enough entries in the database");
+            5, 30,
+            "Not enough entries in the database");
+    }
+
+    @Then("^verify that contact with first name \"([^\"]*)\" exists in database$")
+    public void verifyContactExists(String firstName) {
+        checkValuesExistInTable(String.format("SELECT * FROM CONTACT WHERE first_name = \'%s\'", firstName));
     }
 }

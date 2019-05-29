@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
+
 import org.assertj.core.api.Assertions;
 
 import java.sql.Connection;
@@ -170,5 +172,9 @@ public class DbUtils {
         }
         this.executeSQLGetUpdateNumber(sqlQuery3);
         this.executeSQLGetUpdateNumber(sqlQuery4);
+    }
+
+    public static String getStoredProcedureTemplate(String connectionId, String storedProcedureName, boolean start) {
+        return new ConnectionsActionsEndpoint(connectionId).getStoredProcedureTemplate(storedProcedureName, start);
     }
 }

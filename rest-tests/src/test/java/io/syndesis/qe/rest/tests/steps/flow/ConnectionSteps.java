@@ -2,6 +2,7 @@ package io.syndesis.qe.rest.tests.steps.flow;
 
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.BoxUtils;
+import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
 import io.syndesis.qe.utils.SNSUtils;
 import io.syndesis.qe.utils.SQSUtils;
@@ -35,8 +36,8 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.ACTIVEMQ.getId());
         super.addProperty(StepProperty.ACTION, action);
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-                "destinationType", destinationType.toLowerCase().equals("queue") ? "queue" : "topic",
-                "destinationName", destinationName
+            "destinationType", destinationType.toLowerCase().equals("queue") ? "queue" : "topic",
+            "destinationName", destinationName
         ));
         super.createStep();
     }
@@ -47,7 +48,7 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.BOX.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:box-download");
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-                "fileId", BoxUtils.getFileId()
+            "fileId", BoxUtils.getFileId()
         ));
         super.createStep();
     }
@@ -67,10 +68,10 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
         super.addProperty(StepProperty.ACTION, "sql-stored-start-connector");
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-                "procedureName", procedureName,
-                "schedulerExpression", ms,
-                "template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
-                        + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"));
+            "procedureName", procedureName,
+            "schedulerExpression", ms,
+            "template", DbUtils.getStoredProcedureTemplate(RestTestsUtils.Connection.DB.getId(), procedureName, true))
+        );
         super.createStep();
     }
 
@@ -89,9 +90,9 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
         super.addProperty(StepProperty.ACTION, "sql-stored-connector");
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-                "procedureName", procedureName,
-                "template", "add_lead(VARCHAR ${body[first_and_last_name]}, VARCHAR ${body[company]}, VARCHAR ${body[phone]}, VARCHAR ${body[email]}, "
-                        + "VARCHAR ${body[lead_source]}, VARCHAR ${body[lead_status]}, VARCHAR ${body[rating]})"));
+            "procedureName", procedureName,
+            "template", DbUtils.getStoredProcedureTemplate(RestTestsUtils.Connection.DB.getId(), procedureName, false))
+        );
         super.createStep();
     }
 
@@ -122,8 +123,8 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.HTTP.getId());
         super.addProperty(StepProperty.ACTION, period == -1 ? "http4-invoke-url" : "http4-periodic-invoke-url");
         final Map<String, String> properties = TestUtils.map(
-                "path", path,
-                "httpMethod", method
+            "path", path,
+            "httpMethod", method
         );
 
         if (period != -1) {
@@ -154,8 +155,8 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.IRC.getId());
         super.addProperty(StepProperty.ACTION, action);
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-                "nickname", nickname,
-                "channels", channels
+            "nickname", nickname,
+            "channels", channels
         ));
         super.createStep();
     }
@@ -216,8 +217,8 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTION_ID, S3BucketNameBuilder.getBucketName(bucketName));
         super.addProperty(StepProperty.ACTION, "aws-s3-polling-bucket-connector");
         final Map<String, String> properties = TestUtils.map(TestUtils.map("deleteAfterRead", "false",
-                "maxMessagesPerPoll", "10",
-                "delay", "1000"));
+            "maxMessagesPerPoll", "10",
+            "delay", "1000"));
         if (prefix != null) {
             properties.put("prefix", prefix);
         }
