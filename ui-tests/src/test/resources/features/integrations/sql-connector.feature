@@ -126,7 +126,7 @@ Feature: SQL Connector
     Then Integration "predicates" is present in integrations list
     And wait until integration "predicates" gets into "Running" state
 
-    Then validate that logs of integration "predicates" contains bodies of items "<result>"
+    Then validate that logs of integration "predicates" contains items with IDs "<result>"
 
     # TODO: we might want to add more predicates, also function calls on either side etc
     Examples:
@@ -200,11 +200,84 @@ Feature: SQL Connector
     Then Integration "predicates" is present in integrations list
     And wait until integration "predicates" gets into "Running" state
 
-    Then validate that logs of integration "predicates" contains bodies of items "<result>"
+    Then validate that logs of integration "predicates" contains items with IDs "<result>"
 
     Examples:
-      | predicate             | value | result  |
-      | :#id > id             | 3     | 1,2     |
-      | (id+1) < :#id         | 4     | 1,2     |
-      | id in (1, :#id)       | 4     | 1,4     |
-      | id = floor(:#id)      | 4     | 4       |
+      | predicate        | value | result |
+      | :#id > id        | 3     | 1,2    |
+      | (id+1) < :#id    | 4     | 1,2    |
+      | id in (1, :#id)  | 4     | 1,4    |
+      | id = floor(:#id) | 4     | 4      |
+
+  @reproducer
+  @gh-4466
+  @sql-connector-return-keys
+  Scenario: Return generated keys for INSERT statement
+
+    When click on the "Create Integration" button to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    #Start step
+    When select the "Timer" connection
+    And select "Simple Timer" integration action
+    And fill in values by element ID
+      | period        | 1       |
+      | select-period | Minutes |
+    And click on the "Done" button
+    Then check visibility of page "Choose a Finish Connection"
+
+    # Finish step
+    When select the "Log" connection
+    And fill in values
+      | Message Context | false |
+      | Message Body    | true  |
+    Then click on the "Done" button
+
+    # Select postgresDB as middle step and insert new value
+    When add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO todo (task, completed) VALUES ('task1', 0)" value
+    And click on the "Next" button
+    Then check visibility of page "Add to Integration"
+
+    And publish integration
+    And set integration name "Generated_Keys"
+    And click on the "Publish" button
+
+    # Wait for "Running" state and validate
+    And wait until integration "Generated_Keys" gets into "Running" state
+    And validate that logs of integration "Generated_Keys" contains items with IDs "1"
+
+  @reproducer
+  @gh-5493
+  @sql-connector-return-keys-start-step
+  Scenario: Return generated keys for INSERT statement from start step
+
+    When click on the "Create Integration" button to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # Start step
+    And select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in invoke query input with "INSERT INTO todo (task, completed) VALUES ('task1', 0)" value
+    And click on the "Next" button
+    Then check visibility of page "Choose a Finish Connection"
+
+    # Finish step
+    When select the "Log" connection
+    And fill in values
+      | Message Context | false |
+      | Message Body    | true  |
+    Then click on the "Done" button
+
+
+    And publish integration
+    And set integration name "Generated_Keys"
+    And click on the "Publish" button
+
+    # Wait for "Running" state and validate
+    And wait until integration "Generated_Keys" gets into "Running" state
+    And validate that logs of integration "Generated_Keys" contains items with IDs "1"
