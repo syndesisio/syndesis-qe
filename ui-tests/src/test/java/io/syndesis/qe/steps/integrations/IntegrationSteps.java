@@ -123,6 +123,11 @@ public class IntegrationSteps {
         ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
     }
 
+    @When("^open CI/CD dialog")
+    public void openCiCdDialog() {
+        detailPage.clickOnKebabMenuAction("CI/CD");
+    }
+
     @When("^import the integration from file ([^\"]*)$")
     public void importIntegration(String filePath) {
         importIntegration.importIntegration(new File(getClass().getClassLoader().getResource(filePath).getFile()));

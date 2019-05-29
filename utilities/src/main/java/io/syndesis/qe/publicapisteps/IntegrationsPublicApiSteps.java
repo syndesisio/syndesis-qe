@@ -142,6 +142,7 @@ public class IntegrationsPublicApiSteps {
     @When("^import integrations with tag (\\w+) with name \"([^\"]*)\"$")
     public void importIntegrations(String tag, String name) {
         integrationsEndpoint.importIntegration(tag, name);
+        TestUtils.sleepIgnoreInterrupt(5000);
     }
 
     @When("^delete integration with name (\\w+)$")
