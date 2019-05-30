@@ -307,3 +307,55 @@ Feature: Integration - DB to DB
 
     Then validate that number of all todos with task "Joe" is "0"
     Then validate that number of all todos with task "Jimmy" is "1"
+
+  @db-insert-multiple-rows
+  Scenario: Inserting multiple rows 
+    Given Set Todo app credentials
+    Then inserts into "todo" table
+      | Joe |
+    Then inserts into "todo" table
+      | Jimmy |
+    When navigate to the "Customizations" page
+    And create new API connector
+        | source   | file          | swagger/connectors/todo.json  |
+        | security | authType      | HTTP Basic Authentication     |
+        | details  | connectorName | TODO-API                      |
+        | details  | host          | http://todo.syndesis.svc:8080 |
+        | details  | baseUrl       | /api                          |
+    And navigate to the "Connections" page
+    And created connections
+        | TODO-API | todo | TODO-app | no validation |
+
+    When navigate to the "Home" page
+    And click on the "Create Integration" button    
+
+    Then check that position of connection to fill is "Start"
+    When select the "Timer" connection
+    And select "Simple Timer" integration action
+    And click on the "Done" button
+
+    Then check that position of connection to fill is "Finish"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO contact (first_name) VALUES (:#task)" value
+    And click on the "Done" button
+
+    Then check visibility of page "Add to Integration"
+    When add integration step on position "0"
+    And select the "TODO-app" connection
+    And select "List all tasks" integration action
+
+    Then check visibility of page "Add to Integration"
+    When add integration step on position "1"
+    And select the "Data Mapper" connection
+    And open data mapper collection mappings
+    And create mapping from "body.task" to "task"
+
+    And click on the "Done" button
+    And publish integration
+    And set integration name "DB Insert multiple rows"
+    And publish integration
+    Then wait until integration "DB Insert multiple rows" gets into "Running" state
+
+    Then check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
+    Then check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output
