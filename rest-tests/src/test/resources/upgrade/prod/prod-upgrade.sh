@@ -55,7 +55,11 @@ IMAGES="SERVER META UI S2I OPERATOR POSTGRES_EXPORTER"
 cp -f "${BASE_DIR}"/resources.yml /tmp/resources.yml
 for image in ${IMAGES}; do
 	echo "Using $image image ${!image}"
-	sed -i "s#\\\$$image\\\$#${REGISTRY}/${REGISTRY_NAMESPACE}/${!image}#g" /tmp/resources.yml
+	NS="${REGISTRY_NAMESPACE}"
+	if [[ "${image}" == "POSTGRES_EXPORTER" ]]; then
+		NS="${NS}-tech-preview"
+	fi
+	sed -i "s#\\\$$image\\\$#${REGISTRY}/${NS}/${!image}#g" /tmp/resources.yml
 done
 
 echo "Changing tag to ${TAG}"

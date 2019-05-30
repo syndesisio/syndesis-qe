@@ -32,7 +32,11 @@ for var in ${VARS}; do
 		"PROMETHEUS"|"OAUTH_PROXY"|*"TAG")
 			REPLACEMENT="${!var}";;
 		*)
-			REPLACEMENT="${REGISTRY}/${REGISTRY_NAMESPACE}/${!var}";;
+			NS="${REGISTRY_NAMESPACE}"
+			if [[ "${var}" == "POSTGRES_EXPORTER" ]]; then
+				NS="${NS}-tech-preview"
+			fi
+			REPLACEMENT="${REGISTRY}/${NS}/${!var}";;
 	esac
 	sed -i "s#\\\$$var\\\$#${REPLACEMENT}#g" /tmp/prod-resources.yml
 done
