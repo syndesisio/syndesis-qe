@@ -50,7 +50,11 @@ public class DataMapperSteps {
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
         mapper.switchToDatamapperIframe();
-        mapper.openDataMapperCollectionElement();
+
+        // only automatically open unnamed collections for data mapping
+        // if we want to open named collections, then use specific step for that
+        mapper.openDataMapperUnnamedCollectionElement();
+
         for (List<String> row : table.cells()) {
             if (row.size() > 2) {
                 mapper.doCreateMappingWithSeparator(row.get(0), row.get(1), row.get(2));
@@ -66,6 +70,11 @@ public class DataMapperSteps {
         mapper.switchToDatamapperIframe();
         mapper.openDataMapperCollectionElement();
         mapper.switchIframeBack();
+    }
+
+    @When("^open data mapper unnamed collection mappings$")
+    public void openUnnamedCollectionMappings() {
+        mapper.openDataMapperUnnamedCollectionElement();
     }
 
     @Then("^check visibility of data mapper ui$")

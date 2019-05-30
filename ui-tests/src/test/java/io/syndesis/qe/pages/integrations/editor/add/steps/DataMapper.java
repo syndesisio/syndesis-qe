@@ -122,11 +122,31 @@ public class DataMapper extends SyndesisPageObject {
         doCreateMapping(source, target);
     }
 
+    /**
+     * This method opens all collection mappings we can find on a data mapper
+     */
     public void openDataMapperCollectionElement() {
         $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
             SelenideElement arrow = e.find("i.arrow.fa.fa-angle-right");
             if (arrow.exists() && arrow.is(visible)) {
                 arrow.click();
+            }
+        });
+    }
+
+    /**
+     * This method opens only unnamed collection mappings we can find on a data mapper
+     */
+    public void openDataMapperUnnamedCollectionElement() {
+        $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
+            // if there is label on the collection, which is empty
+            // or if label does not exist, collection is unnamed
+            SelenideElement label = e.find("label");
+            if (!label.exists() || label.text().isEmpty()) {
+                SelenideElement arrow = e.find("i.arrow.fa.fa-angle-right");
+                if (arrow.exists() && arrow.is(visible)) {
+                    arrow.click();
+                }
             }
         });
     }
