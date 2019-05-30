@@ -296,7 +296,8 @@ Feature: Integration - DB to DB
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And open data mapper collection mappings
-    And create mapping from "first_name" to "TASK"
+    And create data mapper mappings
+      | first_name | TASK |
 
     And click on the "Done" button
     And publish integration

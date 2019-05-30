@@ -53,7 +53,8 @@ Feature: Integration - DB to DB oracle12
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And open data mapper collection mappings
-    And create mapping from "FIRST_NAME" to "TASK"
+    And create data mapper mappings
+      | FIRST_NAME | TASK |
 
 #    And scroll "top" "right"
     And click on the "Done" button
