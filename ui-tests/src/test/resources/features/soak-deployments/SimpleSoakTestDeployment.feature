@@ -12,7 +12,7 @@ Feature: Simple soak test
 
   Scenario Outline: Timer Publish to queue
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
 
     When selects the "Timer" connection
@@ -50,7 +50,7 @@ Feature: Simple soak test
 
   Scenario Outline: Read from Queue
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
 
     When selects the "AMQ" connection

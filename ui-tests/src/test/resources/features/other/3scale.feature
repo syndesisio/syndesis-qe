@@ -12,7 +12,7 @@ Feature: 3scale integration
   @3scale-annotations
   Scenario: 3scale discovery annotations
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 

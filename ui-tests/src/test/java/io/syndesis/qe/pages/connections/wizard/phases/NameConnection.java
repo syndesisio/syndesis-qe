@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NameConnection extends AbstractConnectionWizardStep {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".integration-editor-layout__content");
+        public static final By ROOT = By.cssSelector(".integration-editor-layout__body");
     }
 
     private static final class Input {

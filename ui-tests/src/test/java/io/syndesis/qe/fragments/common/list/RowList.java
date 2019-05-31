@@ -6,7 +6,6 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -34,14 +33,13 @@ public class RowList extends AbstractUiElementsList {
 
     @Override
     public SelenideElement getItem(String title) {
-      return   $(Element.ROW).shouldHave(text(title));
-       // return getTitle(title).$(By.xpath("./ancestor::*[@class='list-group-item']")).should(exist);
+        return $(Element.ROW).shouldHave(text(title));
     }
 
     @Override
     public SelenideElement getTitle(String title) {
         return getRootElement().shouldBe(visible).$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1))
-                .find(have(Condition.text(title)));
+                .find(have(text(title)));
     }
 
     public String getTitleOfItem(SelenideElement item) {

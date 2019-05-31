@@ -43,7 +43,6 @@ Feature: Log Connector
     When click on the "Save" link
     And set integration name "Integration_with_log"
     And publish integration
-    And clicks on the modal dialog "Confirm" button
     Then Integration "Integration_with_log" is present in integrations list
     And wait until integration "Integration_with_log" gets into "Running" state
 
@@ -100,7 +99,6 @@ Feature: Log Connector
     When click on the "Save" link
     And set integration name "Integration_with_log2"
     And publish integration
-    And clicks on the modal dialog "Confirm" button-
     Then Integration "Integration_with_log2" is present in integrations list
     And wait until integration "Integration_with_log2" starting status gets into "Starting..." state
     And validate that logs of integration "Integration_with_log2" doesn't contain string "IllegalArgumentException"

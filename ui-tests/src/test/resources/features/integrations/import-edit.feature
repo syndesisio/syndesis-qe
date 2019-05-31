@@ -10,7 +10,7 @@ Feature: Integration - import-edit
 
   Scenario: Import, edit, publish, check integration
     When navigate to the "Integrations" page
-    And click on the "Import" button
+    And click on the "Import" link
     And import the integration from file integrations/import-edit-integration-export.zip
     And navigate to the "Integrations" page
     And select the "import-edit-integration" integration

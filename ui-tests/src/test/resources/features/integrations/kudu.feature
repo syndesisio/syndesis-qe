@@ -42,7 +42,7 @@ Feature: Kudu connector
     When inserts into "todo with id" table
       | 1 | FirstValue |
 
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -82,7 +82,7 @@ Feature: Kudu connector
   @integrations-kudu-scan
   Scenario: Scan kudu table
     When insert a row into Kudu server table
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -117,7 +117,7 @@ Feature: Kudu connector
       | MQTT Message Broker | QE MQTT | MQTT test connection | some description |
 
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
 
     # select connection as 'start' point

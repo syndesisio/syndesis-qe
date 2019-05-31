@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -30,6 +32,11 @@ public class EditorSteps {
     private Editor editor = new Editor();
     private IntegrationFlowView flowViewComponent = new IntegrationFlowView();
     private ChooseConnection chooseConnection = new ChooseConnection();
+
+    @And("^add data mapper step before \"([^\"]*)\" action$")
+    public void addDataMapperStepBeforeAction(String actionId) {
+        flowViewComponent.addDatamapperStep(actionId);
+    }
 
     private static final class Element {
         public static final By EXPANDER = By.xpath("//button[contains(@class, 'toggle-collapsed')]");

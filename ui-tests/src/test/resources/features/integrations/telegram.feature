@@ -39,7 +39,7 @@ Feature: Integration - Telegram to Telegram
   @telegram-test
   Scenario: Telegram receive and send a message
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -55,7 +55,7 @@ Feature: Integration - Telegram to Telegram
     And fill in values by element ID
       | chatId | -299979044 |
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -78,7 +78,7 @@ Feature: Integration - Telegram to Telegram
 #  @telegram-database-publish
 #  Scenario: Telegram receive and send a message
     When navigate to the "Integrations" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -95,7 +95,7 @@ Feature: Integration - Telegram to Telegram
     And fill in values by element ID
       | chatId | 467639851 |
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -126,7 +126,7 @@ Feature: Integration - Telegram to Telegram
 #  @telegram-receive-database
 #  Scenario: Telegram receive and send a message
     When navigate to the "Integrations" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -138,7 +138,7 @@ Feature: Integration - Telegram to Telegram
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into CONTACT values ('Prokop' , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step

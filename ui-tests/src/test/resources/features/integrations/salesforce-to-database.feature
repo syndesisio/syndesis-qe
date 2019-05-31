@@ -4,7 +4,7 @@
 @salesforce
 @database
 @datamapper
-@integrations-salesforce-to-database
+@integrations-salesforce-to-db
 Feature: Integration - Salesforce to DB
 
 
@@ -21,7 +21,7 @@ Feature: Integration - Salesforce to DB
     When inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
     Then navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -39,7 +39,7 @@ Feature: Integration - Salesforce to DB
     And click on the "Done" button
 
       # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -72,10 +72,10 @@ Feature: Integration - Salesforce to DB
       #   B. Many steps: --END
 
 #    And sleep for "12000" ms
-    And scroll "top" "right"
+    # And scroll "top" "right"
     And click on the "Done" button
       # finish and save integration
-    And click on the "Save" button
+    And click on the "Save" link
 
     And set integration name "Salesforce to PostresDB E2E"
     And publish integration

@@ -20,7 +20,10 @@ public class ChooseAction extends SyndesisPageObject {
 
         public static final By ROOT = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
         public static final By TITLE = By.className("list-group-item-heading");
-        public static final By ACTION = By.cssSelector(".list-group-item.list-view-pf-stacked");
+        public static final By SELECT_BUTTON = By.cssSelector("[data-testid=\"select-action-page-select-button\"]");
+
+        public static final String ACTION_SELECTOR = "div[data-testid=\"integration-editor-actions-list-item-%s-list-item\"]";
+
     }
 
     @Override
@@ -36,13 +39,15 @@ public class ChooseAction extends SyndesisPageObject {
     public void selectAction(String name) {
         log.info("Searching for integration action {}", name);
         try {
-            OpenShiftWaitUtils.waitFor(() -> $(Element.ROOT).$$(Element.TITLE)
-                    .filterBy(Condition.text(name)).size() == 1, 30 * 1000L);
+            OpenShiftWaitUtils.waitFor(() -> $(getAction(name)).is(visible), 30 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
             fail("Action element was not found in 30s.", e);
         }
 
-        $(Element.ROOT).$$(Element.ACTION).filterBy(Condition.text(name))
-                .shouldHaveSize(1).first().shouldBe(visible).$(By.tagName("a")).click();
+        $(getAction(name)).$(Element.SELECT_BUTTON).click();
+    }
+
+    private By getAction(String action) {
+        return By.cssSelector(String.format(Element.ACTION_SELECTOR, action.replaceAll(" ", "-").toLowerCase()));
     }
 }

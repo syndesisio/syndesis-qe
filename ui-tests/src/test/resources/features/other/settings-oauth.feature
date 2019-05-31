@@ -1,8 +1,7 @@
 # @sustainer: mcada@redhat.com
-@react
 @ui
 @google-calendar
-@settings-oauth
+@settings-oauth-test
 Feature: Settings OAuth
 
   Background: Clean application state

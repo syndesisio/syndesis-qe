@@ -1,7 +1,6 @@
 package io.syndesis.qe.fragments.common.list;
 
 import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -11,6 +10,7 @@ import org.openqa.selenium.By;
 import java.util.concurrent.TimeoutException;
 
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Condition.text;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -28,7 +28,7 @@ public class CardList extends AbstractUiElementsList {
 
     @Override
     public ElementsCollection getItemsCollection() {
-        ElementsCollection allItems = getRootElement().shouldBe(Condition.visible).findAll(Element.CARD);
+        ElementsCollection allItems = getRootElement().shouldBe(visible).findAll(Element.CARD);
         return allItems;
     }
 

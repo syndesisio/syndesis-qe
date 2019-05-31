@@ -1,6 +1,9 @@
 package io.syndesis.qe.steps.integrations.editor.add;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.When;
+import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseStep;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import static org.assertj.core.api.Assertions.fail;
 public class ChooseStepSteps {
 
     private ChooseStep chooseStep = new ChooseStep();
+    private ConnectionsList connectionsList = new ConnectionsList(null);
 
     @When("^select \"([^\"]*)\" integration step$")
     public void chooseStep(String stepName) {
@@ -27,12 +31,8 @@ public class ChooseStepSteps {
             case "Log": //workaround, two logs exist as step. Before change, in the test  was used integration log step for middle step logging.
                 chooseStep.chooseStepByDescription("Send a message to the integration\\'s log.");
                 break;
-            case "Data Mapper":
-                chooseStep.chooseStep(stepName);
-                chooseStep.waitForStepAppears(By.className("dataMapperBody"), 10000);
-                break;
             default:
-                chooseStep.chooseStep(stepName);
+                connectionsList.getItem(stepName).click();
         }
     }
 }

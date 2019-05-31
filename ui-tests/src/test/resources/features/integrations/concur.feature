@@ -36,7 +36,7 @@ Feature: Concur Connector
   Scenario: Check message of concur get list action
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -89,7 +89,7 @@ Feature: Concur Connector
   Scenario: Check message of concur get listitems action
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -143,7 +143,7 @@ Feature: Concur Connector
   Scenario: Check if create and delete listitems actions work together
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     # DB - nothing

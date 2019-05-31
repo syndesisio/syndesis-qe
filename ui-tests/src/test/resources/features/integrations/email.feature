@@ -22,7 +22,7 @@ Feature: Email connector
 
     # Create integration
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -43,12 +43,12 @@ Feature: Email connector
       | Email from    | jbossqa.fuse.email@gmail.com |
       | Email subject | syndesis-tests               |
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     # Two integration steps - split and data mapper for email contents
     When add integration step on position "0"
     And select "Split" integration step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "1"
     And select "Data Mapper" integration step
@@ -56,7 +56,7 @@ Feature: Email connector
       | company | content |
     And scroll "top" "right"
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     # Publish integration and check that there is something on gmail account sent from tested connector
     When click on the "Save" button
@@ -73,7 +73,7 @@ Feature: Email connector
       | STARTTLS |
 
 
-  @email-receive  
+  @email-receive
   Scenario Outline: Receive Email with SSL
 
     Given created connections
@@ -98,7 +98,7 @@ Feature: Email connector
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into todo(task, completed) values(:#task, 0)" value
     And click on the "Next" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     # Integration step: data mapper, which maps email content to 'task' field in TO-DO table
     When add integration step on position "0"
@@ -108,7 +108,7 @@ Feature: Email connector
       | content | task |
     And scroll "top" "right"
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     # Publish integration
     When click on the "Save" button

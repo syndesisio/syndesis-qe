@@ -21,7 +21,7 @@ Feature: API Provider Integration
   Scenario Outline: Create API provider from <source> spec <location>
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -66,7 +66,7 @@ Feature: API Provider Integration
   @api-provider-create-from-scratch
   Scenario: Create from scratch
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -888,7 +888,7 @@ Feature: API Provider Integration
   @api-provider-empty-integration
   @api-provider-prevent-publishing-empty-integration-from-scratch
   Scenario: Publishing an integration without any operation should not be possible
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -969,7 +969,7 @@ Feature: API Provider Integration
 
   @api-provider-back-button-from-scratch
   Scenario: Clicking back button from Apicurio should work consistently in API Provider
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -985,7 +985,7 @@ Feature: API Provider Integration
 
   @api-provider-simple-response-type
   Scenario: API Provider operation with simple return type
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And select the "API Provider" connection
     And create API Provider spec from file swagger/connectors/simple-string.json
     And navigate to the next API Provider wizard step

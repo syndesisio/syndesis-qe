@@ -18,20 +18,20 @@ Feature: Integration - Webhook to DB
   @webhook-db-db
   Scenario: Webhook to db with middle db step
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
     When select the "Webhook" connection
     And select "Incoming Webhook" integration action
-    And fill in values
-      | Webhook Token | test-webhook |
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values
-      | Select Type | JSON Instance |
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input| JSON Instance |
     #only available after type is selected
-    And fill in values by element ID
-      | specification | {"first_name":"John","company":"Red Hat"} |
+    And fill text into text-editor
+       | {"first_name":"John","company":"Red Hat"} |
     And click on the "Done" button
 
     # finish point
@@ -47,7 +47,7 @@ Feature: Integration - Webhook to DB
     And fill in invoke query input with "INSERT INTO CONTACT(first_name, company) VALUES('middleSTEP', 'middleStep')" value
     And click on the "Done" button
 
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui

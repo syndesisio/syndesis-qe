@@ -82,15 +82,9 @@ public class ExtensionSteps {
         Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
 
         assertThat(techExtensionJar.toFile()).exists();
-        System.out.println(techExtensionJar.toAbsolutePath().toString());
-
-      //  $(By.className("dnd-file-chooser")).shouldBe(Condition.visible).sendKeys(techExtensionJar.toAbsolutePath().toString());
         DragAndDropFile.dragAndDropFile(new File(techExtensionJar.toUri()),
                 $(By.className("dnd-file-chooser")).shouldBe(visible),
                 By.className("extension-import-review__title"));
-        //DragAndDropFile.createInputFile();
-      //  $(By.id("selenideUpload")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
-    //    $(By.id("selenideUpload")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
 
         TestUtils.sleepForJenkinsDelayIfHigher(20);
     }
@@ -176,7 +170,7 @@ public class ExtensionSteps {
     }
 
     @Then("^check that technical extension \"([^\"]*)\" is not visible$")
-    public void expectExtensionNonPresent(String name) throws Throwable{
+    public void expectExtensionNonPresent(String name) {
         log.info("Verifying if extension {} is present", name);
         //TODO is this necessary
         customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);

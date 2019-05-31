@@ -29,7 +29,7 @@ Feature: Integration - ServiceNow-amq/log
 
     When select the "ServiceNow" connection
     And select "Retrieve Record" integration action
-    And .*fill in values by element ID
+    And fill in values by element ID
       | limit | 1                |
       | query | number=QACUSTOM4 |
       | table | Incident         |
@@ -41,7 +41,7 @@ Feature: Integration - ServiceNow-amq/log
     When select the "AMQ" connection
     And select "Publish Messages" integration action
 
-    And .*fill in values by element ID
+    And fill in values by element ID
       | destinationName | incidents |
       | destinationType | Queue     |
     And click on the "Next" button
@@ -68,7 +68,7 @@ Feature: Integration - ServiceNow-amq/log
 
     When select the "AMQ" connection
     And select "Subscribe for messages" integration action
-    And .*fill in values by element ID
+    And fill in values by element ID
       | destinationName | incidents-create |
       | destinationType | Queue            |
     And click on the "Next" button

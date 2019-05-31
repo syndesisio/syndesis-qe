@@ -23,7 +23,7 @@ Feature: Integration - Dropbox to Dropbox
     Then check that file with path "/testInputFile.txt" exists on Dropbox
 
     # create integration
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -31,7 +31,7 @@ Feature: Integration - Dropbox to Dropbox
     When select the "QE Dropbox" connection
     And select "Download" integration action
 
-    Then fill in "remotePath" action configure component input with "/testInputFile.txt" value
+    Then fill in "remotepath" action configure component input with "/testInputFile.txt" value
     Then click on the "Next" button
     Then click on the "Done" button
 
@@ -41,12 +41,12 @@ Feature: Integration - Dropbox to Dropbox
     When select the "QE Dropbox" connection
     And select "Upload" integration action
 
-    Then fill in "remotePath" action configure component input with "/testOutputFile.txt" value
+    Then fill in "remotepath" action configure component input with "/testOutputFile.txt" value
     Then click on the "Next" button
     Then click on the "Done" button
 
     # publish integration
-    Then click on the "Save" button
+    Then click on the "Save" link
     And set integration name "dropbox-to-dropbox"
     Then publish integration
 

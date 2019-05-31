@@ -49,8 +49,8 @@ public class DataMapperSteps {
      */
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
+        mapper.switchToDatamapperIframe();
         mapper.openDataMapperCollectionElement();
-
         for (List<String> row : table.cells()) {
             if (row.size() > 2) {
                 mapper.doCreateMappingWithSeparator(row.get(0), row.get(1), row.get(2));
@@ -58,11 +58,14 @@ public class DataMapperSteps {
                 mapper.doCreateMapping(row.get(0), row.get(1));
             }
         }
+        mapper.switchIframeBack();
     }
 
     @When("^open data mapper collection mappings$")
     public void openCollectionMappings() {
+        mapper.switchToDatamapperIframe();
         mapper.openDataMapperCollectionElement();
+        mapper.switchIframeBack();
     }
 
     @Then("^check visibility of data mapper ui$")
@@ -73,20 +76,26 @@ public class DataMapperSteps {
         } catch (TimeoutException | InterruptedException e) {
             fail("Data mapper was not loaded in 30s!", e);
         }
+        mapper.switchToDatamapperIframe();
         assertThat(mapper.fieldsCount(), greaterThan(0));
+        mapper.switchIframeBack();
     }
 
     @When("^select \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
     public void selectFromDropDownByElement(String option, String selectAlias) {
+        mapper.switchToDatamapperIframe();
         log.info(option);
         SelenideElement selectElement = mapper.getElementByAlias(selectAlias).shouldBe(visible);
         mapper.selectOption(selectElement, option);
+        mapper.switchIframeBack();
     }
 
     @Then("^fill in \"([^\"]*)\" selector-input with \"([^\"]*)\" value$")
     public void fillActionConfigureField(String selectorAlias, String value) {
+        mapper.switchToDatamapperIframe();
         SelenideElement inputElement = mapper.getElementByAlias(selectorAlias).shouldBe(visible);
         mapper.fillInput(inputElement, value);
+        mapper.switchIframeBack();
     }
 
     /**

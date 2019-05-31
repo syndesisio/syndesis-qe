@@ -46,7 +46,7 @@ Feature: Quickstart db to db
   # https://youtu.be/BeVK5RCkog0
   @quickstart-video
   Scenario: Check process in the video
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 

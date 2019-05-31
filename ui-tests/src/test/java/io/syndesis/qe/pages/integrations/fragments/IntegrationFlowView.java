@@ -36,7 +36,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
         public static final By DELETE = By.className("delete-icon");
-        public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integrationflowaddstep-add-step-link\"]");
+        public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integration-flow-add-step-add-step-link\"]");
 
         public static final By POPOVER_CLASS = By.className("popover");
         public static final By STEP_DETAILS = By.className("step-details");
@@ -177,7 +177,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
                 .get(position - 1).shouldBe(visible);
     }
 
-    public void deleteStepOnPostion(int stepPosition){
+    public void deleteStepOnPostion(int stepPosition) {
         SelenideElement step = getStepOnPosition(stepPosition);
         step.$(Element.TRASH).shouldBe(visible).click();
         Selenide.$(Element.DELETE_BUTTON).shouldBe(enabled, visible).click();
@@ -191,6 +191,14 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
     public String getConnectionPropertiesText(SelenideElement connectionStep) {
         return connectionStep.$(Element.STEP_DETAILS).shouldBe(visible).getText();
+    }
+
+    public void addDatamapperStep(String action) {
+        String cssselector = String.format("button[data-testid=\"integration-editor-steps-list-item-%s-warning-button\"]", action.toLowerCase().replaceAll(" ", "-"));
+        $(By.cssSelector(cssselector)).shouldBe(visible).click();
+        $(By.cssSelector("a[data-testid=\"integration-editor=step-adder-add-step-before-connection-link\"]")).shouldBe(visible).click();
+
+
     }
 
     public String getFlowTitle() {

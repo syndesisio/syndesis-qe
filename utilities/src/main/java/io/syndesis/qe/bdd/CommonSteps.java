@@ -3,6 +3,8 @@ package io.syndesis.qe.bdd;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

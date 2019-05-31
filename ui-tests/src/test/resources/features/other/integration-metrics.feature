@@ -17,7 +17,7 @@ Feature: Metrics
   @metrics-test
   Scenario: Check metrics
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -153,7 +153,7 @@ Feature: Metrics
   @metrics-error
   Scenario: Check error
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 

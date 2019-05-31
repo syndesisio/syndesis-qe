@@ -20,7 +20,7 @@ Feature: Integration - MQTT to MQTT
   @mqtt-connection-publish-subscribe-request
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
 
     # select connection as 'start' point
@@ -46,6 +46,7 @@ Feature: Integration - MQTT to MQTT
     When publish integration
     And set integration name "MQTT publish-subscribe-request E2E"
     And publish integration
+    #this will be deleted
     Then wait until integration "MQTT publish-subscribe-request E2E" gets into "Running" state
 
     Then verify that when message is sent to "news" topic it is redirected to "olds" topic via integration

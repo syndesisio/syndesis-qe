@@ -14,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 public class ConfigureAction extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-action-configure");
+        //TODO replace this when another selector will be in place
+        public static final By ROOT = By.cssSelector(".container-fluid");
     }
 
     @Override

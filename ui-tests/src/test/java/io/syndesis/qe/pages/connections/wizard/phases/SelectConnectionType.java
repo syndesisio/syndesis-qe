@@ -3,6 +3,7 @@ package io.syndesis.qe.pages.connections.wizard.phases;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class SelectConnectionType extends AbstractConnectionWizardStep {
     }
 
     public static final By ROOT = By.cssSelector(".pf-c-page__main-section.pf-m-no-padding");
-    private CardList connectionTypes = new CardList(By.cssSelector(".container-cards-pf.container-fluid"));
+    private CardList connectionTypes = new ConnectionsList(By.cssSelector(".container-cards-pf.container-fluid"));
 
 
     public void selectConnectionType(String title) {

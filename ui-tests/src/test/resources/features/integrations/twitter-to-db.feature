@@ -19,26 +19,27 @@ Feature: Integration - Twitter to Database
   Scenario: Create integration from twitter to database
     # create integration
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
       # select twitter connection as 'from' point
     When select the "Twitter Listener" connection
     And select "Mention" integration action
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
 
     # select postgresDB connection as 'to' point
     Then check visibility of page "Choose a Finish Connection"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
-    Then fill in invoke query input with "INSERT INTO CONTACT(first_name, company) VALUES(:#first_name, :#company)" value
+    And fill in invoke query input with "INSERT INTO CONTACT(first_name, company) VALUES(:#first_name, :#company)" value
     And click on the "Done" button
 
       # add data mapper step
-    Then check visibility of page "Add to Integration"
     When add integration step on position "0"
-    And select "Data Mapper" integration step
+     And select "Data Mapper" integration step
+  #  And add data mapper step before "Invoke sql" action
     Then check visibility of data mapper ui
     Then create data mapper mappings
       | text      | company    |
@@ -47,7 +48,7 @@ Feature: Integration - Twitter to Database
 #    And scroll "top" "right"
     And click on the "Done" button
     # finish and save integration
-    When click on the "Save" button
+    When publish integration
     And set integration name "Twitter to DB integration"
     And publish integration
 

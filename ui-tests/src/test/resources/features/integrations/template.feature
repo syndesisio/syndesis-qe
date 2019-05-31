@@ -17,7 +17,7 @@ Feature: Templates
   Scenario Outline: Send an Email with text formatted by <template_type> template
     #create integration
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -38,12 +38,12 @@ Feature: Templates
     And click on the "Done" button
 
     #adding split step to split the result of Db connection
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "0"
     And select "Split" integration step
 
     #adding <template_type> template to format the mail
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "1"
     And select "Template" integration step
     And set the template type to "<template_type>"
@@ -51,7 +51,7 @@ Feature: Templates
     And click on the "Done" button
 
     #add data mapper step for template
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "1"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
@@ -63,7 +63,7 @@ Feature: Templates
     And click on the "Done" button
 
     #add mapping for email step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "3"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
@@ -94,7 +94,7 @@ Feature: Templates
   Scenario: Send an Email with text formatted by Mustache template uploaded from resources/templates/mustache.tpl
     # create integration
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -115,12 +115,12 @@ Feature: Templates
     And click on the "Done" button
 
     #adding split step to split the result of Db connection
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "0"
     And select "Split" integration step
 
     #adding mustache template to format the mail
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "1"
     And select "Template" integration step
     And set the template type to "Mustache"
@@ -128,7 +128,7 @@ Feature: Templates
     And click on the "Done" button
 
     #add data mapper step for template
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "1"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
@@ -140,7 +140,7 @@ Feature: Templates
     And click on the "Done" button
 
     #add mapping for email step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     And add integration step on position "3"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui

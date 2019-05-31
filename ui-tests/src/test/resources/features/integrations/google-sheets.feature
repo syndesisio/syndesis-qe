@@ -23,7 +23,7 @@ Feature: Google Sheets Connector
 
 
   Scenario: create spreadsheet
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
     And select "Simple Timer" integration action
     And fill in values
@@ -216,7 +216,7 @@ Feature: Google Sheets Connector
   Scenario: create pivottable from sample data
     When clear range "'pivot rows'" in data test spreadsheet
     And clear range "'pivot-columns'" in data test spreadsheet
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     When select the "Google Sheets" connection
     And select "Get spreadsheet properties" integration action
     And fill in values
@@ -301,7 +301,7 @@ Feature: Google Sheets Connector
 
 
   Scenario: Update title
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
     And select "Simple Timer" integration action
     And fill in values
@@ -325,7 +325,7 @@ Feature: Google Sheets Connector
 
 
   Scenario: get properties of sheet
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And select the "Google Sheets" connection
     And select "Get spreadsheet properties" integration action
     And fill in values
@@ -362,7 +362,7 @@ Feature: Google Sheets Connector
 
 
   Scenario: add chart
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And select the "Google Sheets" connection
     And select "Get spreadsheet properties" integration action
     And fill in values
@@ -398,7 +398,7 @@ Feature: Google Sheets Connector
 
   Scenario: Copy big spreadsheet
     When clear test spreadsheet
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     And select the "Google Sheets" connection
     And select "Get sheet values" integration action
     And fill in values
@@ -441,7 +441,7 @@ Feature: Google Sheets Connector
 
   Scenario:Copy Big SS to DB and back using split/aggregate
     When clear test spreadsheet
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     And select the "Google Sheets" connection
     And select "Get sheet values" integration action
     And fill in values

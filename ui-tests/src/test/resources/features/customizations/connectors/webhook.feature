@@ -17,7 +17,7 @@ Feature: Webhook extension
 #
   @webhook-get
   Scenario: Check message
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And check visibility of visual integration editor
     Then check that position of connection to fill is "Start"
 
