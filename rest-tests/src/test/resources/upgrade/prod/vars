@@ -10,3 +10,5 @@ export TAG=
 export INSTALL_TAG=
 export INSTALL_DIR=
 export INFRA_ONLY=
+export NEXT_BRANCH=
+export PULL_SECRET=

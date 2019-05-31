@@ -21,14 +21,13 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #INSTALL_TAG        - git tag from fuse-online-install
 #INSTALL_DIR        - path to fuse-online-install repository
 #INFRA_ONLY         - flag for upgrading the infra only and skipping maven tasks
+#NEXT_BRANCH        - branch for the "upgraded" version
+#PULL_SECRET        - credentials to the registry.redhat.io
 
 [[ "$(git rev-parse --abbrev-ref HEAD)" =~ ^master$ ]] && echo "You shouldn't run this script from master branch!" && exit 1
 
-[[ ! "$(git rev-parse --abbrev-ref HEAD)" =~ ^1\.[0-9]\.x$ ]] && echo "You should run this script from 1.X.x branch!" && exit 1
-
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 CURRENT_VERSION="$(echo "${CURRENT_BRANCH}" | cut -c1-3)"
-NEXT_BRANCH="$(echo "$CURRENT_VERSION" + 0.1 | bc).x"
 
 git rev-parse --verify "${NEXT_BRANCH}" > /dev/null 2>&1 || (echo "Branch ${NEXT_BRANCH} not found!" && exit 1)
 
@@ -36,6 +35,16 @@ git rev-parse --verify "${NEXT_BRANCH}" > /dev/null 2>&1 || (echo "Branch ${NEXT
 [[ ! "z${OPERATOR}" == "z" ]] || source "${BASE_DIR}"/vars
 
 [[ "${CURRENT_VERSION}" != "$(echo "${INSTALL_TAG}" | cut -c1-3)" ]] && echo "Current branch ${CURRENT_BRANCH} does not match install tag ${INSTALL_TAG}" && exit 1
+
+cat << EOF | oc create -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: syndesis-pull-secret
+data:
+  .dockerconfigjson: "${PULL_SECRET}"
+type: kubernetes.io/dockerconfigjson
+EOF
 
 cd "${INSTALL_DIR}" && git checkout "${INSTALL_TAG}" 
 bash ./install_ocp.sh --setup
@@ -89,6 +98,8 @@ echo "Waiting for upgrade pod to complete..."
 until oc get pods | grep syndesis-upgrade | grep "Completed"; do echo "syndesis-upgrade not completed yet"; sleep 10; done
 
 if [ -z "${INFRA_ONLY}" ]; then
-	git checkout "${NEXT_BRANCH}"
+	if [ ! "${CURRENT_BRANCH}" == "${NEXT_BRANCH}" ]; then
+		git checkout "${NEXT_BRANCH}"
+	fi
 	cd "${BASE_DIR}"/../../../../../.. && ./mvnw clean install -P rest -Dcucumber.options="--tags @prod-upgrade-after"
 fi
