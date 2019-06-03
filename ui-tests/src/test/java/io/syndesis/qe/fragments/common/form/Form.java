@@ -1,11 +1,17 @@
 package io.syndesis.qe.fragments.common.form;
 
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
+import io.syndesis.qe.pages.integrations.editor.ApiProviderOperationEditorPage;
+import io.syndesis.qe.utils.OpenShiftUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -36,6 +43,10 @@ public class Form {
         fillBy(FillBy.ID, data);
     }
 
+    public void fillByTestId(Map<String, String> data) {
+        fillBy(FillBy.TEST_ID, data);
+    }
+
     /**
      * Finds the input elements by element attribute and fills the data in
      *
@@ -46,18 +57,6 @@ public class Form {
             throw new IllegalArgumentException("account data is not set (empty)");
         }
 
-        String attribute = "";
-        switch (fillBy) {
-            case ID:
-                attribute = "id";
-                break;
-            case NAME:
-                attribute = "name";
-                break;
-            default:
-                Assert.fail("Input fillBy attribute not set.");
-        }
-
         // this is an inputs map, which contains inputs and their respective types (tag names) on the form
         // that we are trying to fill
         // here, key is attribute (name or id) value of the input
@@ -65,25 +64,26 @@ public class Form {
         Map<String, String> inputsMap = new HashMap<>();
         for (String tagName : Arrays.asList("input", "select", "textarea")) {
             for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
-                inputsMap.put(element.getAttribute(attribute), tagName);
+                inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
         }
 
+        log.info(inputsMap.toString());
         for (String key : data.keySet()) {
             // if the element we're looking for is on the form, then fill, otherwise error
             if (inputsMap.containsKey(key)) {
                 log.info("fill value in {} ", key);
                 SelenideElement input;
 
-                if (attribute.equalsIgnoreCase("id")) {
+                if (fillBy.attribute.equalsIgnoreCase("id")) {
                     input = getRootElement().$(By.id(key)).shouldBe(visible);
                 } else {
-                    String cssSelector = String.format("%s[name='%s']", inputsMap.get(key), key);
+                    String cssSelector = String.format("%s[" + fillBy.attribute + "='%s']", inputsMap.get(key), key);
                     input = getRootElement().$(cssSelector).shouldBe(visible);
                 }
 
                 if (input.parent().$(By.tagName("select")).exists()) {
-                    log.info("trying to set " + data.get(key) + " into element" + input.toString());
+                    log.debug("trying to set " + data.get(key) + " into element" + input.toString());
                     input.selectOptionContainingText(data.get(key));
                 } else if ("checkbox".equals(input.getAttribute("type"))) {
                     // we only want to click the checkbox if it's current state and desired state are different
@@ -94,6 +94,7 @@ public class Form {
                 } else {
                     input.clear();
                     input.sendKeys(data.get(key));
+
                 }
             } else {
                 log.warn("Input {} is not present on form!", key);
@@ -101,6 +102,13 @@ public class Form {
         }
     }
 
+    public void fillEditor(String data) {
+        SelenideElement editor = $(By.className("CodeMirror")).shouldBe(visible);
+        WebDriver driver = WebDriverRunner.getWebDriver();
+        JavascriptExecutor jse = (JavascriptExecutor) driver;
+        jse.executeScript("arguments[0].CodeMirror.setValue(arguments[1]);", editor, data);
+        WebDriverWait wait = new WebDriverWait(driver, 20);
+    }
 
     /**
      * Finds the input elements by label and fills the data in
@@ -230,8 +238,19 @@ public class Form {
         }
     }
 
+    public static void waitForInpups(int timeInSeconds) {
+        $(By.cssSelector(".form-control")).waitUntil(exist, timeInSeconds * 1000);
+    }
+
     private enum FillBy {
-        ID,
-        NAME
+        ID("id"),
+        NAME("name"),
+        TEST_ID("data-testid");
+
+        public final String attribute;
+
+        FillBy(String att) {
+            attribute = att;
+        }
     }
 }

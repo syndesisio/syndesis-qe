@@ -14,15 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 public class CreateIntegration extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-integration-basics");
+        public static final By ROOT = By.cssSelector(".card-pf");
     }
 
     private static final class Input {
-        public static final By NAME = By.cssSelector("input[name='nameInput']");
+        public static final By NAME = By.cssSelector("input[name='name']");
     }
 
     private static final class TextArea {
-        public static final By DESCRIPTION = By.cssSelector("textarea[name='descriptionInput']");
+        public static final By DESCRIPTION = By.cssSelector("textarea[name='description']");
     }
 
     @Override

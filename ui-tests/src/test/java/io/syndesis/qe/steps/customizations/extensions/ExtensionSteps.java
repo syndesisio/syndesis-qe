@@ -5,6 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import com.codeborne.selenide.Condition;
+import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
+import io.syndesis.qe.utils.DragAndDropFile;
+import io.syndesis.qe.utils.TestUtils;
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -64,6 +69,26 @@ public class ExtensionSteps {
         }
     }
 
+    @Given("^upload extension \"([^\"]*)\" from syndesis-extensions dir using drag and drop$")
+    public void uploadExtensionFromSyndesisExtensionsDirUsingDragAndDrop(String extensionFolderName) throws Throwable {
+
+        String defaultPath = "../syndesis-extensions/" + extensionFolderName + "/target/";
+
+        File[] files = new File(defaultPath).listFiles((dir, name) -> !name.contains("original") && name.endsWith(".jar"));
+        assertThat(files).hasSize(1).doesNotContainNull();
+
+        String techExtensionUrl = defaultPath + files[0].getName();
+
+        Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
+
+        assertThat(techExtensionJar.toFile()).exists();
+        DragAndDropFile.dragAndDropFile(new File(techExtensionJar.toUri()),
+                $(By.className("dnd-file-chooser")).shouldBe(visible),
+                By.className("extension-import-review__title"));
+
+        TestUtils.sleepForJenkinsDelayIfHigher(20);
+    }
+
     @Given("^import extensions from syndesis-extensions folder$")
     public void importExtensionFromKnownFolder(DataTable extensionsData) throws Throwable {
         CommonSteps commonSteps = new CommonSteps();
@@ -72,15 +97,14 @@ public class ExtensionSteps {
 
         for (List<String> dataRow : dataTable) {
 
-            commonSteps.navigateTo(NavigationElements.CUSTOMIZATIONS_NAV);
+            commonSteps.clickOnLink(NavigationElements.CUSTOMIZATIONS_NAV);
             commonSteps.validatePage(NavigationElements.CUSTOMIZATIONS_NAV);
 
             commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
             commonSteps.validatePage(NavigationElements.EXTENSION_NAV);
 
-            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
+            commonSteps.clickOnLink(NavigationElements.IMPORT_EXTENSION_BUTTON);
             commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
-
 
             uploadExtensionFromFile(dataRow.get(0));
 
@@ -130,13 +154,13 @@ public class ExtensionSteps {
 
         assertThat(techExtensionJar.toFile()).exists();
 
-        $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
+        $(By.cssSelector("input")).uploadFile(techExtensionJar.toFile());
     }
 
     @When("^check visibility of details about imported extension$")
     public void importDetails() throws Throwable {
         //TODO Deeper validation
-        assertThat(techExtensionsImportPage.validate()).isTrue();
+        assertThat($(By.className("extension-import-review__title")).isDisplayed());
     }
 
     @Then("^extension \"([^\"]*)\" is present in list$")
@@ -146,8 +170,9 @@ public class ExtensionSteps {
     }
 
     @Then("^check that technical extension \"([^\"]*)\" is not visible$")
-    public void expectExtensionNonPresent(String name) throws Throwable {
+    public void expectExtensionNonPresent(String name) {
         log.info("Verifying if extension {} is present", name);
+        //TODO is this necessary
         customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name)).isFalse();
     }

@@ -16,7 +16,7 @@ import static com.codeborne.selenide.Selenide.$;
 public class ConfigureConnection extends AbstractConnectionWizardStep {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-connections-configure-fields");
+        public static final By ROOT = By.cssSelector(".integration-editor-layout__body");
 
     }
 

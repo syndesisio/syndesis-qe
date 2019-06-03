@@ -22,7 +22,7 @@ Feature: Integration - DB to DB
       | Joe |
 
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -46,17 +46,18 @@ Feature: Integration - DB to DB
 
 
     # add split step
-    Then check visibility of page "Add to Integration"
+
     When add integration step on position "0"
     And select "Split" integration step
+    And click on the "Next" button
 
     # add data mapper step
-    Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And open data mapper collection mappings
-    And create mapping from "first_name" to "TASK"
+    And create data mapper mappings
+      | first_name | TASK |
 
     And click on the "Done" button
     And publish integration
@@ -73,7 +74,7 @@ Feature: Integration - DB to DB
   @db-connection-crud-2-read-create
   Scenario: Read and create operations
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -97,16 +98,18 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
       # add split step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Split" integration step
+    And click on the "Next" button
 
       # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And create mapping from "first_name" to "TASK"
+    And create data mapper mappings
+      | first_name | TASK |
 
 #    And scroll "top" "right"
     And click on the "Done" button
@@ -128,7 +131,7 @@ Feature: Integration - DB to DB
       | Jimmy |
 
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -152,17 +155,19 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
     # add split step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Split" integration step
+    And click on the "Next" button
 
     # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 #    And sleep for "16000" ms
-    And create mapping from "first_name" to "TASK"
+    And create data mapper mappings
+      | first_name | TASK |
 
     And click on the "Done" button
     And publish integration
@@ -185,7 +190,7 @@ Feature: Integration - DB to DB
       | Josef | Stieranka | Istrochem | db |
 
     Then navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -208,12 +213,13 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
     # add split step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Split" integration step
+    And click on the "Next" button
 
       # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -244,7 +250,7 @@ Feature: Integration - DB to DB
       | Jimmy |
 
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -285,7 +291,7 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
       # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui

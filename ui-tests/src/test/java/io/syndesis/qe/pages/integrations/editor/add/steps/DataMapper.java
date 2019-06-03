@@ -18,6 +18,7 @@ import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.switchTo;
 
 /**
  * Created by sveres on 11/14/17.
@@ -56,6 +57,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final By PRIMARY_BUTTON = By.cssSelector("button.btn-primary");
         public static final By MAPPER_COLLECTION_ICON = By.className("parentField");
         public static final By ADD_MAPPING_ICON = By.className("fa-plus");
+        public static final By ATLASMAP_IFRAME = By.cssSelector("iframe[name=\"atlasmap-frame\"]");
     }
 
     @Override
@@ -65,7 +67,7 @@ public class DataMapper extends SyndesisPageObject {
 
     @Override
     public boolean validate() {
-        return $(Element.ROOT).is(visible);
+        return $(Element.ATLASMAP_IFRAME).is(visible);
     }
 
     /**
@@ -76,7 +78,7 @@ public class DataMapper extends SyndesisPageObject {
     private ElementsCollection dataMapperColumns() {
         log.info("searching for columns");
         //loadSelector should be visible:
-        this.getRootElement().$(Element.LOADER_SELECTOR).shouldBe(visible);
+        $(Element.LOADER_SELECTOR).shouldBe(visible);
         log.info("datamapper has been loaded");
         ElementsCollection dmColumns = this.getRootElement().findAll(Element.DM_COLLUMNS).shouldBe(size(2));
         log.info("found {} datamapper columns", dmColumns.size());
@@ -319,5 +321,21 @@ public class DataMapper extends SyndesisPageObject {
         SelenideElement select = constantFieldEdit.$(Element.CONSTANT_TYPE_SELECT).shouldBe(visible);
         select.selectOption(type);
         dialog.$(Element.PRIMARY_BUTTON).shouldBe(visible).click();
+    }
+
+    /**
+     * Switch driver context to data-mapper iframe. This is necessary because of all external components
+     * that are't coded in react (Datamapper, apicurito) are paced in different iframes.
+     */
+    public void switchToDatamapperIframe() {
+        switchTo().frame($(Element.ATLASMAP_IFRAME).shouldBe(visible).toWebElement());
+    }
+
+    /**
+     * Switch driver context back to syndesis iframe.
+     * This is necessary becasue all external components that are't coded in react (Datamapper, apicurito) are paced in different iframes.
+     */
+    public void switchIframeBack() {
+        switchTo().defaultContent();
     }
 }

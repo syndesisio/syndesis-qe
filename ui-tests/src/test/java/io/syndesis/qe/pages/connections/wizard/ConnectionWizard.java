@@ -17,7 +17,7 @@ import io.syndesis.qe.logic.common.wizard.WizardPhase;
 public class ConnectionWizard extends WizardPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-connection-create-page");
+        public static final By ROOT = By.cssSelector(".integration-editor-layout__content");
     }
 
     public ConnectionWizard() {

@@ -29,17 +29,17 @@ Feature: Integration - Webhook to API connector
   @gh-3729
   @gh-4125
   Scenario: Webhook to Custom API connector
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check that position of connection to fill is "Start"
     When select the "Webhook" connection
     And select "Incoming Webhook" integration action
     And fill in values
       | Webhook Token | test-webhook |
     And click on the "Next" button
-    And fill in values
+    And fill in values by element data-testid
       | Select Type | JSON Instance |
-    And fill in values by element ID
-      | specification | {"author":"New Author","title":"Book Title"} |
+    And fill in values
+      | stext-editor-describe-data-shape-form-definition-editor | {"author":"New Author","title":"Book Title"} |
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
@@ -68,7 +68,7 @@ Feature: Integration - Webhook to API connector
   @webhook-api-connector-list-tasks
   @gh-3727
   Scenario: Test to reproduce #3727
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check that position of connection to fill is "Start"
 
     When select the "Webhook" connection

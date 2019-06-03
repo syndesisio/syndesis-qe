@@ -21,7 +21,6 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -91,6 +90,11 @@ public class CommonSteps {
         public static final By LOGOUT_MENU = By.id("userMenuDropdownButton");
         public static final By LOGOUT_MENU_ACTION_TAG = By.tagName("a");
         public static final By LOGIN_BUTTON = By.className("btn");
+        public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
+
+        public static final By navigationLink(String title) {
+            return By.cssSelector(String.format("a[data-testid=\"ui-%s\"]", title.toLowerCase()));
+        }
     }
 
     @Autowired
@@ -220,7 +224,7 @@ public class CommonSteps {
                 }
             }
 
-            clickOnButton("Create Connection");
+            clickOnLink("Create Connection");
 
             log.info("Sleeping so jenkins has more time to load all connectors");
             TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
@@ -233,7 +237,7 @@ public class CommonSteps {
                     connectionDescription.equalsIgnoreCase("no validation"))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated.");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated");
                 scrollTo("top", "right");
                 clickOnButton("Next");
             } else if (connectionDescription.equalsIgnoreCase("no validation")) {
@@ -244,10 +248,10 @@ public class CommonSteps {
             nameConnectionSteps.setConnectionName(connectionName);
             nameConnectionSteps.setConnectionDescription(connectionDescription);
 
-            clickOnButton("Create");
+            clickOnButton("Save");
 
             if (syndesisRootPage.getCurrentUrl().contains("connections/create/review")) {
-                clickOnButton("Create");
+                clickOnButton("Save");
                 try {
                     OpenShiftWaitUtils.waitFor(() -> !syndesisRootPage.getCurrentUrl().contains("connections/create/review"), 15 * 1000L);
                 } catch (TimeoutException | InterruptedException e) {
@@ -325,14 +329,13 @@ public class CommonSteps {
     @When("^navigate to the \"([^\"]*)\" page$")
     public void navigateTo(String title) {
         try {
-            OpenShiftWaitUtils.waitFor(() -> $(By.className("nav-pf-vertical")).exists(), 30 * 1000L);
+            OpenShiftWaitUtils.waitFor(() -> $(Element.NAVIGATION_PANEL).exists(), 30 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
             fail("Navigation panel was not found in 30s", e);
         }
 
-        SelenideElement selenideElement = $(By.className("nav-pf-vertical")).shouldBe(visible);
-        ElementsCollection allLinks = selenideElement.findAll(By.className("list-group-item-value"));
-        allLinks.find(Condition.exactText(title)).shouldBe(visible).click();
+        $(Element.NAVIGATION_PANEL).shouldBe(visible);
+        $(Element.navigationLink(title)).shouldBe(visible).click();
     }
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
@@ -491,8 +494,8 @@ public class CommonSteps {
         int x = 0;
         int y = 0;
 
-        Long width = (Long) jse.executeScript("return $(document).width()");
-        Long height = (Long) jse.executeScript("return $(document).height()");
+        Long width = (Long) jse.executeScript("return document.documentElement.scrollWidth");
+        Long height = (Long) jse.executeScript("return document.documentElement.scrollHeight");
 
         if (leftRight.equals("right")) {
             y = width.intValue();
@@ -568,7 +571,24 @@ public class CommonSteps {
 
     @Then("^.*fill in values by element ID")
     public void fillFormViaID(DataTable data) {
+        Form.waitForInpups(20);
         new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
+    }
+
+    @Then("^.*fill in values by element data-testid")
+    public void fillFormViaTestID(DataTable data) {
+        Form.waitForInpups(20);
+        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(data.asMap(String.class, String.class));
+    }
+
+    @When("^fill text into text-editor$")
+    public void fillTextIntoTextEditor(DataTable data) {
+        StringBuilder text = new StringBuilder();
+        data.asList().forEach(s -> {
+            text.append(s);
+        });
+
+    new Form(new SyndesisRootPage().getRootElement()).fillEditor(text.toString());
     }
 
     @When("^.*create connections using oauth$")
@@ -595,7 +615,7 @@ public class CommonSteps {
         assertThat(connections.size()).as("Connection with name " + newConnectionName + " already exists!")
                 .isEqualTo(0);
 
-        clickOnButton("Create Connection");
+        clickOnLink("Create Connection");
 
         //sometimes page is loaded but connections are not so we need to wait here a bit
         TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay());

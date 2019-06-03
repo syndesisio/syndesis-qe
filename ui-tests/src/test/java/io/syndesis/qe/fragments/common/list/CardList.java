@@ -9,17 +9,17 @@ import org.openqa.selenium.By;
 
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.have;
+
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.text;
 import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class CardList extends AbstractUiElementsList {
 
     private static final class Element {
-        public static final By CARD = By.xpath("//*[contains(@class,'card-pf-view-select')]");
-        public static final By TITLE = By.xpath("//h2[contains(@class,'card-pf-title')]");
+        public static final By CARD = By.cssSelector("a[data-testid=\"connection-card-details\"]");
+        public static final By TITLE = By.cssSelector("h1[data-testid=\"connection-card-title\"]");
     }
 
     public CardList(By rootElement) {
@@ -34,7 +34,7 @@ public class CardList extends AbstractUiElementsList {
 
     @Override
     public SelenideElement getItem(String title) {
-        return getTitle(title).$(By.xpath("./ancestor::div[contains(concat(' ', @class, ' '), ' card-pf-body ')][1]"));
+        return getRootElement().$$(Element.CARD).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(title));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CardList extends AbstractUiElementsList {
         } catch (InterruptedException | TimeoutException e) {
             fail("Connection was not loaded in 60s", e);
         }
-        return getRootElement().$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(have(attribute("title", title)));
+        return getRootElement().$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(title));
 
     }
 }

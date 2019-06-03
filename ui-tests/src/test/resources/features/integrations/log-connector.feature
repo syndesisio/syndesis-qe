@@ -11,15 +11,15 @@ Feature: Log Connector
     And reset content of "contact" table
     And log into the Syndesis
     And navigate to the "Home" page
-
+#
 #
 #  1. Check that log message exists
-#
+
   @log-connector-error-message
   Scenario Outline: Check log message with body: <body> and context: <context>
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -34,13 +34,13 @@ Feature: Log Connector
     Then check visibility of page "Choose a Finish Connection"
 
     When select the "Log" connection
-    And fill in values
-      | Message Context | <context> |
-      | Message Body    | <body>    |
+    And fill in values by element data-testid
+      | contextloggingenabled | <context> |
+      | bodyloggingenabled    | <body>    |
 
     Then click on the "Done" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_log"
     And publish integration
     Then Integration "Integration_with_log" is present in integrations list
@@ -51,8 +51,8 @@ Feature: Log Connector
     And validate that logs of integration "integration_with_log" doesn't contain string "<log_not_contains>"
 
     Examples:
-      | context | body  | log_contains                    | log_not_contains              |
-      | true    | true  | Body: [[{"last_name":"Jackson", | "status":"done","failed":true |
+      | context | body | log_contains                    | log_not_contains              |
+      | true    | true | Body: [[{"last_name":"Jackson", | "status":"done","failed":true |
       | false   | true  | Body: [[{"last_name":"Jackson", | Message Context:              |
       | true    | false | Message Context:                | Body: []                      |
       | false   | false | "status":"done","failed":false  | Message Context:              |
@@ -65,7 +65,7 @@ Feature: Log Connector
   @log-connector-no-message
   Scenario: Check log without message
 
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -79,28 +79,27 @@ Feature: Log Connector
     And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
-    And select "Log" integration step
-    And fill in values
-      | Message Context | false |
-      | Message Body    | false |
-      | Custom Text     |       |
+    And select the "Log" connection
+    And fill in values by element data-testid
+      | contextloggingenabled | false |
+      | bodyloggingenabled    | false |
+      | customtext            |       |
 
     Then click on the "Done" button
 
     # add logger without anything
     When add integration step on position "0"
-    And select "Log" integration step
-    And fill in values
-      | Message Context | false |
-      | Message Body    | false |
-      | Custom Text     |       |
+    And select the "Log" connection
+    And fill in values by element data-testid
+      | contextloggingenabled | false |
+      | bodyloggingenabled    | false |
+      | customtext            |       |
     And click on the "Done" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_log2"
     And publish integration
-
     Then Integration "Integration_with_log2" is present in integrations list
-    And wait until integration "Integration_with_log2" starting status gets into "Deploying ( 3 / 4 )" state
+    And wait until integration "Integration_with_log2" starting status gets into "Starting..." state
     And validate that logs of integration "Integration_with_log2" doesn't contain string "IllegalArgumentException"
     And wait until integration "Integration_with_log2" gets into "Running" state

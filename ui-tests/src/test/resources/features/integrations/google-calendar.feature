@@ -31,7 +31,7 @@ Feature: Google Calendar Connector
     And create following "all" events in calendar "syndesis-test2" with account "QE Google Calendar"
       | summary     | start_date | start_time | end_date   | end_time | description  | attendees              |
       | past_event1 | 2018-10-01 | 10:00:00   | 2018-10-01 | 11:00:00 | An old event | jbossqa.fuse@gmail.com |
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     When select the "Timer" connection
@@ -87,7 +87,7 @@ Feature: Google Calendar Connector
     And create following "all" events in calendar "syndesis-test1" with account "QE Google Calendar"
       | summary     | start_date | end_date   | description  |
       | past_event1 | 2018-10-01 | 2018-10-01 | An old event |
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     When select the "Timer" connection
@@ -127,7 +127,7 @@ Feature: Google Calendar Connector
     And create following "all" events in calendar "syndesis-test1" with account "QE Google Calendar"
       | summary     | start_date | start_time | end_date   | end_time | description  | attendees              |
       | past_event1 | 2018-10-01 | 10:00:00   | 2018-10-01 | 11:00:00 | An old event | jbossqa.fuse@gmail.com |
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     When select the "Timer" connection
@@ -174,7 +174,7 @@ Feature: Google Calendar Connector
       | future_event1 |            |            |            |          | A future event  |
       | future_event2 |            |            |            |          | A future event2 |
 
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
 
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
@@ -247,7 +247,7 @@ Feature: Google Calendar Connector
       | future_event1 |            |            |            |          | A future event  |
       | future_event2 |            |            |            |          | A future event2 |
 
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
 
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"

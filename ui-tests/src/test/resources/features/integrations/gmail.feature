@@ -23,7 +23,7 @@ Feature: Google mail Connector
   Scenario: Send an e-mail
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -38,13 +38,12 @@ Feature: Google mail Connector
 
     When select the "My GMail Connector" connection
     And select "Send Email" integration action
-    And fill in values
-      | Email to      | jbossqa.fuse@gmail.com |
-      | Email subject | syndesis-test          |
+    And fill in values by element ID
+      | to      | jbossqa.fuse@gmail.com |
+      | subject | syndesis-test          |
     And click on the "Done" button
 
     # add split step
-    Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Split" integration step
 
@@ -75,7 +74,7 @@ Feature: Google mail Connector
   Scenario: Receive an e-mail
 
     # create integration
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 

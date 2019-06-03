@@ -15,7 +15,7 @@ Feature: Integration - Import Export
     And log into the Syndesis
 
 #
-#  1. integration-import both methods, for investigation one of them use integration-import-export_backup.feature
+#  1. integration-import both methods, for investigation one of them use integration-import(visible)-export_backup.feature
 #
   @integration-import-export-classic-and-dnd
   Scenario: Import and export both flows
@@ -25,7 +25,7 @@ Feature: Integration - Import Export
 
     # create integration
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     And check visibility of visual integration editor
     Then check that position of connection to fill is "Start"
 

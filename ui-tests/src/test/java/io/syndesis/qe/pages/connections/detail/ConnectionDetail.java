@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ConnectionDetail extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-connection-detail-page");
-        public static final By CONNECTION_DETAIL = By.cssSelector("syndesis-connection-detail-info");
-        public static final By CONNECTION_NAME = By.cssSelector("syndesis-editable-text");
+        public static final By ROOT = By.cssSelector("pf-c-page__main");
+        public static final By CONNECTION_DETAIL = By.cssSelector(".pf-c-page__main-section");
+        public static final By CONNECTION_NAME = By.cssSelector(".inline-text-readwidget.connection-details-header__connectionName");
     }
 
     @Override

@@ -17,16 +17,16 @@ Feature: Integration - Openwire to Openwire
 
   Scenario: Publish subscribe on queue
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
 
     # select connection as 'start' point
     And check that position of connection to fill is "Start"
     When select the "AMQ" connection
     And select "Subscribe for Messages" integration action
-    And fill in values
-      | Destination Name | cheese |
-      | Destination Type | Queue  |
+    And fill in values by element data-testid
+      | destinationname | cheese |
+      | destinationtype | Queue  |
     And click on the "Next" button
     # skip custom DataShape definition
     And click on the "Done" button
@@ -35,9 +35,9 @@ Feature: Integration - Openwire to Openwire
     # select connection as 'finish' point
     When select the "AMQ" connection
     And select "Publish Messages" integration action
-    And fill in values
-      | Destination Name | apple |
-      | Destination Type | Queue |
+    And fill in values by element data-testid
+      | destinationname | apple |
+      | destinationtype | Queue |
     And click on the "Next" button
     # skip custom DataShape definition
     And click on the "Done" button

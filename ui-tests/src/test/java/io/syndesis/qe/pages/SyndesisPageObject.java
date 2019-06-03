@@ -43,7 +43,7 @@ public abstract class SyndesisPageObject {
                         .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
-                OpenShiftWaitUtils.waitFor(() -> $(By.tagName("syndesis-root")).shouldBe(visible).findAll(By.tagName("button"))
+                OpenShiftWaitUtils.waitFor(() -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button"))
                         .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
             }
 
@@ -57,6 +57,7 @@ public abstract class SyndesisPageObject {
         if (foundButtons.size() > 1) {
             fail("Ambiguous button title. Found more that 1 button with title " + buttonTitle);
         }
+        log.info("Button found! ");
 
         return foundButtons.first();
     }

@@ -35,7 +35,7 @@ Feature: Integration - AMQ to REST
 
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
 
     # start point
@@ -54,7 +54,7 @@ Feature: Integration - AMQ to REST
     And select "Create new task" integration action
 
     # add custom step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Damage Reporter" integration step
 

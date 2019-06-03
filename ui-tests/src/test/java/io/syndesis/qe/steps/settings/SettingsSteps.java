@@ -54,10 +54,11 @@ public class SettingsSteps {
 
     private void assertOauthSettingsPresence(String itemTitle, boolean shouldBePresent) {
         SoftAssertions sa = new SoftAssertions();
+
         SelenideElement item = settingsPage.getSettingsItem(itemTitle);
         item.shouldBe(visible).click();
-        String title = item.$(By.className("list-pf-title")).getText();
-        SelenideElement expansion = item.$(By.tagName("syndesis-oauth-app-form"));
+        String title = item.$(By.className("list-group-item-heading")).getText();
+        SelenideElement expansion = item.$(By.cssSelector(".list-group-item-container.container-fluid"));
         By textOrPassword = By.xpath(".//input[@type='text' or @type='password']");
         ElementsCollection textFields = expansion.$$(textOrPassword).filterBy(Condition.visible);
         for (int i = 0; i < textFields.size(); i++) {
@@ -83,7 +84,7 @@ public class SettingsSteps {
 
     @When("^confirm settings removal$")
     public void confirmSettingsRemoval() {
-        $(By.tagName("modal-container")).$(By.cssSelector("button.btn-danger")).click();
+        $(By.className("modal-content")).$(By.cssSelector("button.btn-danger")).click();
     }
 
 }

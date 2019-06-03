@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import cucumber.api.PendingException;
+import cucumber.api.java.en.And;
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
@@ -31,15 +33,20 @@ public class EditorSteps {
     private IntegrationFlowView flowViewComponent = new IntegrationFlowView();
     private ChooseConnection chooseConnection = new ChooseConnection();
 
+    @And("^add data mapper step before \"([^\"]*)\" action$")
+    public void addDataMapperStepBeforeAction(String actionId) {
+        flowViewComponent.addDatamapperStep(actionId);
+    }
+
     private static final class Element {
         public static final By EXPANDER = By.xpath("//button[contains(@class, 'toggle-collapsed')]");
         public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
     }
 
     private static final class Button {
-        public static final By Publish = By.xpath("//button[text()[contains(.,'Publish')]]");
-        public static final By SaveAsDraft = By.xpath("//button[text()[contains(.,'Save')]]");
-        public static final By Cancel = By.xpath("//button[text()[contains(.,'Save')]]");
+        public static final By Publish = By.id("integration-editor-publish-button");
+        public static final By SaveAsDraft = By.xpath("integration-editor-save-button");
+        public static final By Cancel = By.xpath("integration-editor-cancel-button");
     }
 
     @Then("^check visibility of visual integration editor$")

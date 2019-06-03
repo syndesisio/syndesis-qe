@@ -1,9 +1,9 @@
 package io.syndesis.qe.fragments.common.list;
 
-import static com.codeborne.selenide.Condition.attribute;
-import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.have;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 import com.codeborne.selenide.CollectionCondition;
 import org.openqa.selenium.By;
@@ -17,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 public class RowList extends AbstractUiElementsList {
 
     private static final class Element {
-        public static final By ROW = By.xpath("//*[contains(@class,'list-pf-item')]");
-        public static final By TITLE = By.xpath("//*[contains(@class,'list-pf-title')]");
+        public static final By ROW = By.xpath("//*[contains(@class,'list-group-item')]");
+        public static final By TITLE = By.xpath("//*[contains(@class,'list-group-item-heading')]");
     }
 
     public RowList(By rootElement) {
@@ -33,13 +33,13 @@ public class RowList extends AbstractUiElementsList {
 
     @Override
     public SelenideElement getItem(String title) {
-        return getTitle(title).$(By.xpath("./ancestor::*[@class='list-pf-item']")).should(exist);
+        return $(Element.ROW).shouldHave(text(title));
     }
 
     @Override
     public SelenideElement getTitle(String title) {
         return getRootElement().shouldBe(visible).$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1))
-                .find(have(attribute("title", title)));
+                .find(have(text(title)));
     }
 
     public String getTitleOfItem(SelenideElement item) {

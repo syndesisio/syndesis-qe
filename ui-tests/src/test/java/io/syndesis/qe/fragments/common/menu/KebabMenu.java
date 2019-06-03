@@ -35,14 +35,14 @@ public class KebabMenu {
     }
 
     public SelenideElement getItemElement(String item) {
-        ElementsCollection found = menuButton.parent().$$(By.className("dropdown-item")).filter(Condition.exactText(item));
+        ElementsCollection found = menuButton.parent().$$(By.tagName("a")).filter(Condition.exactText(item));
         assertThat(found)
                 .size().isEqualTo(1);
         return found.first();
     }
 
     public boolean isItemElementVisible(String item) {
-        ElementsCollection found = menuButton.parent().$$(By.className("dropdown-item")).filter(Condition.exactText(item));
+        ElementsCollection found = menuButton.parent().$$(By.tagName("a")).filter(Condition.exactText(item));
         return found.size() == 1;
     }
 

@@ -20,10 +20,10 @@ public class IntegrationsList extends RowList {
     }
 
     private static final class Element {
-        public static final By ITEM = By.xpath("//*[contains(@class,'list-pf-item')]");
-        public static final By STATUS = By.xpath("//syndesis-integration-status//div[contains(@class,'status')]/span");
-        public static final By STARTING_STATUS = By.xpath("//syndesis-integration-status-detail//*[@class='statusDetail']//i");
+        public static final By STATUS = By.cssSelector("span[data-testid=\"integration-status-status-label\"]");
+        public static final By STARTING_STATUS = By.className("integration-list-item__additional-info");
         public static final By DESCRIPTION = By.className("description");
+        public static final String INTEGRATION_SELECTOR = "div[data-testid=\"integrations-list-item-%s-list-item\"]";
     }
 
     private static final class Button {
@@ -42,6 +42,12 @@ public class IntegrationsList extends RowList {
             default:
                 super.invokeActionOnItem(title, action);
         }
+    }
+
+    @Override
+    public SelenideElement getItem(String title) {
+        final String cssselector = String.format(Element.INTEGRATION_SELECTOR, title.toLowerCase().replaceAll(" ", "-"));
+        return $(By.cssSelector(cssselector)).shouldBe(visible);
     }
 
     public String getStatus(String title) {

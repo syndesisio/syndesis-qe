@@ -9,13 +9,14 @@ import org.openqa.selenium.By;
 
 import java.io.File;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 public class ImportIntegration extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-import-page-component");
+        public static final By ROOT = By.className("pf-c-page__main");
         public static final By FILE_INPUT = By.cssSelector("input[type='file']");
         public static final By FINISHED_PROGRESS_BAR = By.className("pficon-ok");
         public static final By DRAG_AND_DROP_PLACE = By.className("syn-drop-zone");
@@ -36,7 +37,7 @@ public class ImportIntegration extends SyndesisPageObject {
      * @param file
      */
     public void importIntegration(File file) {
-        getRootElement().find(Element.FILE_INPUT).shouldBe(visible).uploadFile(file);
+        getRootElement().find(Element.FILE_INPUT).should(exist).uploadFile(file);
         $(Element.FINISHED_PROGRESS_BAR).shouldBe(visible);
     }
 

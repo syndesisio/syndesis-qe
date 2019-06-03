@@ -26,7 +26,7 @@ Feature: Slack Connector
     When import extensions from syndesis-extensions folder
       | syndesis-extension-body |
     And navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -65,7 +65,7 @@ Feature: Slack Connector
   @slack-check-message-data-mapper
   Scenario: Check that slack received a message from an integration
 
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -105,7 +105,7 @@ Feature: Slack Connector
   @slack-to-db
   Scenario: Check that slack message is saved into DB
 
-    When click on the "Create Integration" button to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -119,7 +119,7 @@ Feature: Slack Connector
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into CONTACT values (:#AUTOR , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
     And click on the "Done" button
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -152,7 +152,7 @@ Feature: Slack Connector
   @slack-to-db-delay-and-maxmessage
   Scenario: Check Maximum Messages to Retrieve and Delay function in SLACK consumer
     # create integration
-    Given click on the "Create Integration" button to create a new integration.
+    Given click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -174,7 +174,7 @@ Feature: Slack Connector
     And click on the "Done" button
 
     # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     Then select "Data Mapper" integration step
     And check visibility of data mapper ui

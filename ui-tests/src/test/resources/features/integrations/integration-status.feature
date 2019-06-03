@@ -12,7 +12,7 @@ Feature: Integration - DB to DB
   @integration-check-starting-status-on-detail-page
   Scenario: Check starting integration status on detail page
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -27,7 +27,7 @@ Feature: Integration - DB to DB
     And publish integration
 
     And fill Name Integration form
-      | Integration Name | ASD |
+      |  name | ASD |
 
     And publish integration
 
@@ -36,7 +36,7 @@ Feature: Integration - DB to DB
   @integration-check-starting-status-on-integration-list
   Scenario: Check starting integration status on integration list
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -51,7 +51,7 @@ Feature: Integration - DB to DB
     And publish integration
 
     And fill Name Integration form
-      | Integration Name | ASD |
+      | name | ASD |
 
     And publish integration
 
@@ -62,7 +62,7 @@ Feature: Integration - DB to DB
   @integration-check-starting-status-on-home-page
   Scenario: Check starting integration status on home page
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -77,7 +77,7 @@ Feature: Integration - DB to DB
     And click on the "Publish" button
 
     And fill Name Integration form
-      | Integration Name | ASD |
+      | Name | ASD |
 
     And publish integration
 

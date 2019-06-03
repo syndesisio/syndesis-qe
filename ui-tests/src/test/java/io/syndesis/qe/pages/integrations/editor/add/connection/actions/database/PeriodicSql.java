@@ -1,5 +1,6 @@
 package io.syndesis.qe.pages.integrations.editor.add.connection.actions.database;
 
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -17,8 +18,8 @@ public class PeriodicSql extends Sql {
 
     private static final class Element {
         public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
-        public static final By INPUT_PERIOD = By.cssSelector("input[id='schedulerExpression']");
-        public static final By SELECT_PERIOD = By.cssSelector("select[id='select-schedulerExpression']");
+        public static final By INPUT_PERIOD = By.cssSelector("input[data-testid='schedulerexpression']");
+        public static final By SELECT_PERIOD = By.cssSelector("[data-testid='schedulerexpression-duration']");
         public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
     }
 
@@ -43,7 +44,10 @@ public class PeriodicSql extends Sql {
     public void selectSQLperiodUnits(String timeUnits) {
         log.debug("selecting sql period units: {}", timeUnits);
         SelenideElement selectElement = $(Element.SELECT_PERIOD).shouldBe(visible);
-        selectElement.selectOption(timeUnits);
+        selectElement.click();
+        log.info(selectElement.toString());
+        $(By.className("dropdown-menu")).$$(By.tagName("a")).filter(text(timeUnits)).get(0).click();
+       // selectElement.selectOption(timeUnits);
     }
 
 }

@@ -19,11 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 public class Connections extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-connections-list-page");
+        public static final By ROOT = By.cssSelector(".container-cards-pf.container-fluid");
     }
 
     @Getter
-    private ConnectionsList connectionsList = new ConnectionsList(By.xpath("//syndesis-connections-list"));
+    private ConnectionsList connectionsList = new ConnectionsList(Element.ROOT);
 
     @Override
     public SelenideElement getRootElement() {

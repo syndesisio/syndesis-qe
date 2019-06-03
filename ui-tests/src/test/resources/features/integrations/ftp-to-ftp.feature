@@ -17,19 +17,19 @@ Feature: Integration - FTP to FTP
   @ftp-download-ftp-upload
   Scenario: Create
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
       # select salesforce connection as 'from' point
     When select the "FTP" connection
     And select "download" integration action
-    And fill in values
-      | File name expression               | ui-ftp-ftp.txt |
-      | FTP directory                      | download       |
-      | Interval before polling starts     | 1000           |
-      | Time interval before the next poll | 500            |
-      | Delete file after download         | Yes            |
+    And fill in values by element data-testid
+      | filename      | ui-ftp-ftp.txt |
+      | directoryname | download       |
+      | initialdelay  | 1000           |
+      | delay         | 500            |
+      | delete        | Yes            |
 
     And click on the "Next" button
     And click on the "Done" button
@@ -37,18 +37,17 @@ Feature: Integration - FTP to FTP
     Then check visibility of page "Choose a Finish Connection"
     When select the "FTP" connection
     And select "Upload" integration action
-    And fill in values
-      | File name expression                | ui-ftp-ftp.txt   |
-      | FTP directory                       | upload           |
-      | If file exists                      | Override         |
-      | Temporary file prefix while copying | copyingprefix    |
-      | Temporary file name while copying   | copying_test_out |
+    And fill in values by element data-testid
+      | filename      | ui-ftp-ftp.txt   |
+      | directoryname | upload           |
+      | exists        | Override         |
+      | tempfilename  | copyingprefix    |
+      | tempprefix    | copying_test_out |
 
     And click on the "Next" button
 
     And click on the "Done" button
 
-    Then check visibility of page "Add to Integration"
     And publish integration
     And set integration name "ftp-to-ftp E2E"
     And publish integration

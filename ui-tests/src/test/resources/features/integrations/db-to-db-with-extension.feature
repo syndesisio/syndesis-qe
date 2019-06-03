@@ -20,7 +20,7 @@ Feature: Integration - DB to DB with extension
     Then inserts into "contact" table
       | Josef | Stieranka | Istrochem | db |
     And navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 

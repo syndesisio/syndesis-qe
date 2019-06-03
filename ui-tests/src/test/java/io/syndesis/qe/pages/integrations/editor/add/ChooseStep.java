@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChooseStep extends SyndesisPageObject {
     private static final class Element {
 
-        public static final By ROOT = By.cssSelector("syndesis-integration-step-select");
+        public static final By ROOT = By.className("container-cards-pf");
         public static final By STEP_ICON = By.cssSelector("syndesis-integration-flow-view-step div.icon");
     }
 

@@ -26,7 +26,7 @@ Feature: Integration - DB to DB oracle12
   @db-connection-crud-2-read-create-oracle12
   Scenario: Read and create operations
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -48,7 +48,7 @@ Feature: Integration - DB to DB oracle12
     And click on the "Next" button
 
       # add data mapper step
-    Then check visibility of page "Add to Integration"
+    # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui

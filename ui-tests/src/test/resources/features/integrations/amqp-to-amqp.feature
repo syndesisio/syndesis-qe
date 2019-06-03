@@ -19,16 +19,16 @@ Feature: Integration - AMQP to AMQP
   @amqp-connection-publish-subscribe-request
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration.
+    And click on the "Create Integration" link
     Then check visibility of visual integration editor
 
     # select connection as 'start' point
     And check that position of connection to fill is "Start"
     When select the "AMQP" connection
-    And select "Subscribe for Messages" integration action
-    And fill in values
-      | Destination Name | cheese |
-      | Destination Type | Queue  |
+    And select "Subscribe for messages" integration action
+    And fill in values by element data-testid
+      | destinationname | cheese |
+      | destinationtype | Queue  |
     And click on the "Next" button
 #    TODO(sveres) specify datatype
     And click on the "Done" button
@@ -38,9 +38,9 @@ Feature: Integration - AMQP to AMQP
     When select the "AMQP" connection
     And select "Publish messages" integration action
     # TODO: there's a mismatch between persistent on ActiveMQ and deliveryPersistent property on AMQP
-    And fill in values
-      | Destination Name | apple |
-      | Destination Type | Queue |
+    And fill in values by element data-testid
+      | destinationname | apple |
+      | destinationtype | Queue |
     And click on the "Next" button
 #    TODO(sveres) specify datatype
     And click on the "Done" button

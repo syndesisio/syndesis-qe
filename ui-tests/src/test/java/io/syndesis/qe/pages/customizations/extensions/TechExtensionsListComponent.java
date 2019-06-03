@@ -1,6 +1,7 @@
 package io.syndesis.qe.pages.customizations.extensions;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -9,7 +10,6 @@ import org.openqa.selenium.By;
 
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -20,11 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class TechExtensionsListComponent extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-tech-extensions-list");
+        public static final By ROOT = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+        public static final By ITEM_TITLE = By.className("list-group-item-heading");
+        public static final By LIST_WRAPPER = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
+        public static final String ITEM_SELECTOR = "[data-testid=\"extension-list-item-%s-list-item\"]";
+        public static final String EXTENSION_ACTION_SELECTOR = ".btn[data-testid=\"extension-list-item-%s-button\"]";
 
-        public static final By ITEM = By.className("list-pf-item");
-        public static final By ITEM_TITLE = By.className("list-pf-title");
-        public static final By LIST_WRAPPER = By.cssSelector("pfng-list");
+
     }
 
     @Override
@@ -37,21 +39,21 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         return $(Element.ROOT).is(visible);
     }
 
+    public static By extensionActionButton(String action) {
+        return By.cssSelector(String.format(Element.EXTENSION_ACTION_SELECTOR, action.toLowerCase()));
+    }
+
     public SelenideElement getExtensionItem(String name) {
-        $(Element.LIST_WRAPPER).shouldBe(visible);
+        String cssSelector = String.format(Element.ITEM_SELECTOR, name.toLowerCase().replaceAll(" ", "-"));
 
         try {
             OpenShiftWaitUtils.waitFor(() ->
-                    $$(Element.ITEM).stream()
-                    .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name)).count() > 0, 15*1000);
+                    $(By.cssSelector(cssSelector)).is(visible));
+            return $(By.cssSelector(cssSelector)).shouldBe(visible);
         } catch (InterruptedException | TimeoutException e) {
+            log.error("not found!");
             return null;
         }
-
-        ElementsCollection items = $$(Element.ITEM);
-        return items.stream()
-                .filter(item -> item.find(Element.ITEM_TITLE).getText().equals(name))
-                .findFirst().get();
     }
 
     public boolean isExtensionPresent(String name) {
@@ -65,12 +67,10 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     }
 
     public SelenideElement getActionOnExtensionButton(String name, String action) {
-        SelenideElement extension = this.getExtensionItem(name);
-        assertThat(extension).isNotNull();
-        SelenideElement actionButton = extension.findAll(By.tagName("button")).filter(exactText(action)).first().shouldBe(visible);
-        assertThat(actionButton).isNotNull();
-        return actionButton;
+        SelenideElement extensionElement = this.getExtensionItem(name);
+        return extensionElement.$(extensionActionButton(action)).shouldBe(visible);
     }
+
 
     public void chooseActionOnExtension(String name, String action) {
         getActionOnExtensionButton(name, action).shouldBe(visible).click();
