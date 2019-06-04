@@ -41,9 +41,9 @@ Feature: Integration - ServiceNow-amq/log
     When select the "AMQ" connection
     And select "Publish Messages" integration action
 
-    And fill in values by element ID
-      | destinationName | incidents |
-      | destinationType | Queue     |
+    And fill in values by element data-testid
+      | destinationname | incidents |
+      | destinationtype | Queue     |
     And click on the "Next" button
   #  And sleep for jenkins delay or "10" seconds
     And click on the "Done" button
@@ -52,7 +52,6 @@ Feature: Integration - ServiceNow-amq/log
     When publish integration
     And set integration name "service-now-2-amq"
     And publish integration
-    And clicks on the modal dialog "Confirm" button
     And create incident with "QACUSTOM4" number
 
     And navigate to the "Integrations" page
@@ -68,9 +67,9 @@ Feature: Integration - ServiceNow-amq/log
 
     When select the "AMQ" connection
     And select "Subscribe for messages" integration action
-    And fill in values by element ID
-      | destinationName | incidents-create |
-      | destinationType | Queue            |
+    And fill in values by element data-testid
+      | destinationname | incidents-create |
+      | destinationtype | Queue            |
     And click on the "Next" button
     And click on the "Done" button
     When select the "ServiceNow" connection
@@ -81,7 +80,6 @@ Feature: Integration - ServiceNow-amq/log
     When publish integration
     And set integration name "amq-2-snow"
     And publish integration
-    And clicks on the modal dialog "Confirm" button
     And navigate to the "Integrations" page
     And wait until integration "amq-2-snow" gets into "Running" state
     Then send "QACREATED1" incident to "incidents-create" queue and verify it was created in SN
