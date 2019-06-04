@@ -58,6 +58,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final By MAPPER_COLLECTION_ICON = By.className("parentField");
         public static final By ADD_MAPPING_ICON = By.className("fa-plus");
         public static final By ATLASMAP_IFRAME = By.cssSelector("iframe[name=\"atlasmap-frame\"]");
+        public static final By ARROW_POINTING_RIGHT = By.cssSelector("i.arrow.fa.fa-angle-right");
     }
 
     @Override
@@ -122,11 +123,31 @@ public class DataMapper extends SyndesisPageObject {
         doCreateMapping(source, target);
     }
 
+    /**
+     * This method opens all collection mappings we can find on a data mapper
+     */
     public void openDataMapperCollectionElement() {
         $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
-            SelenideElement arrow = e.find("i.arrow.fa.fa-angle-right");
+            SelenideElement arrow = e.find(Element.ARROW_POINTING_RIGHT);
             if (arrow.exists() && arrow.is(visible)) {
                 arrow.click();
+            }
+        });
+    }
+
+    /**
+     * This method opens only unnamed collection mappings we can find on a data mapper
+     */
+    public void openDataMapperUnnamedCollectionElement() {
+        $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
+            // if there is label on the collection, which is empty
+            // or if label does not exist, collection is unnamed
+            SelenideElement label = e.find("label");
+            if (!label.exists() || label.text().isEmpty()) {
+                SelenideElement arrow = e.find(Element.ARROW_POINTING_RIGHT);
+                if (arrow.exists() && arrow.is(visible)) {
+                    arrow.click();
+                }
             }
         });
     }
