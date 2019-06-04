@@ -1,30 +1,33 @@
 package io.syndesis.qe.pages;
 
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.CustomWebDriverProvider;
-import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
-import org.openqa.selenium.By;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
+import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.utils.TestUtils;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
+
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SupportPage extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.tagName("syndesis-support");
+        public static final By ROOT = By.id("root");
 
         public static final By SPECIFIC_LOGS = By.id("specificlogs");
         public static final By ALL_LOGS = By.id("alllogs");
 
         public static final By CHECKBOX = By.xpath("//*[@type='checkbox']");
-
-        public static final By PRODUCT_VERSION = By.id("productVersion");
     }
 
     @Override
@@ -49,15 +52,20 @@ public class SupportPage extends SyndesisPageObject {
     public File downloadZipLogs() throws InterruptedException {
         getButton("Download").shouldBe(visible).click();
 
-        Assertions.assertThat(TestUtils.waitForEvent(File::exists,
-                () -> new File(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + "syndesis.zip"),
-                TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 5))
-                .isTrue();
+        assertThat(TestUtils.waitForEvent(File::exists,
+            () -> new File(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + "syndesis.zip"),
+            TimeUnit.MINUTES, 5, TimeUnit.SECONDS, 5))
+            .isTrue();
 
         return new File(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + "syndesis.zip");
     }
 
     public String getVersion() {
-        return getRootElement().$(Element.PRODUCT_VERSION).shouldBe(visible).getText();
+        TestUtils.waitFor(() -> $(By.id("pf-about-modal-content-1")).$$(By.tagName("dd")).size() == 3,
+            3, 30, "Syndesis version was not loaded in 30s");
+
+        List<SelenideElement> elementsWithSyndesisText = $(By.id("pf-about-modal-content-1")).$$(By.tagName("dd"));
+        assertThat(elementsWithSyndesisText).hasSize(3);
+        return elementsWithSyndesisText.get(0).getText();
     }
 }
