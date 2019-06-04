@@ -17,7 +17,7 @@ Feature: Support page
 #
   @support-page-version-check
   Scenario: Version
-
+    When navigates to the "About" page in help menu
     And check version string
 
 #
@@ -25,7 +25,6 @@ Feature: Support page
 #
   @support-page-download-diagnostic
   Scenario: Export diagnostic of all
-
     And download diagnostics for all integrations
 
 #
