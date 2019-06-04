@@ -19,7 +19,7 @@ public class ConnectionsList extends CardList {
     private static final class Element {
         public static final By TECH_PREVIEW = By.xpath("syndesis-card-tech-preview");
         public static final String CONNECTION_CARD = "div[data-testid=\"connection-card-%s-card\"]";
-        public static String KEBAB_MENU_SELECTOR = "button[id=\"connection-%s-menu\"]";
+        public static String KEBAB_MENU_SELECTOR = "[id=\"connection-%s-menu\"]";
 
     }
 

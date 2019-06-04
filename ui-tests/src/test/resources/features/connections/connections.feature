@@ -20,7 +20,6 @@ Feature: Connection - CRUD
 
   @connection-create-delete-test
   Scenario: Create and delete
-
     And navigate to the "Connections" page
     And click on the "Create Connection" link
     And select "Red Hat AMQ" connection type
@@ -30,27 +29,24 @@ Feature: Connection - CRUD
     Then click on the "Validate" button
     Then check visibility of "Red Hat AMQ has been successfully validated" in alert-success notification
 
- #   Then scroll "top" "right"
+    Then scroll "top" "right"
     And click on the "Next" button
+    And type "amq sample" into connection name
+    And type "this connection is awsome" into connection description
 
-    And fill Name Connection form
-      | Name        | my sample tw conn         |
-      | Description | this connection is awsome |
-#    And type "my sample tw conn" into connection name
-#    And type "this connection is awesome" into connection description
-    And click on the "Done" button
+    And click on the "Save" button
     Then check visibility of page "Connections"
 
-    When opens the "my sample tw conn" connection detail
-    Then check visibility of "my sample tw conn" connection details
+    When opens the "amq sample" connection detail
+    Then check visibility of "amq sample" connection details
 
     When navigate to the "Connections" page
     Then check visibility of page "Connections"
 
-    When delete the "my sample tw conn" connection
+    When delete the "amq sample" connection
   # delete was not fast enough some times so sleep is necessary
   # Then sleep for "2000" ms
-    Then check that "my sample tw conn" connection is not visible
+    Then check that "amq sample" connection is not visible
 
 
   @connection-kebab-menu-test
@@ -65,11 +61,11 @@ Feature: Connection - CRUD
 
   # no validation as its not necessary for this scenario
 
-   # Then scroll "top" "right"
+    Then scroll "top" "right"
     And click on the "Next" button
     And type "amq-sample" into connection name
     And type "this connection is awesome" into connection description
-    And click on the "Done" button
+    And click on the "Save" button
     Then check visibility of page "Connections"
 
   # now we know there is at least one connection
@@ -84,7 +80,6 @@ Feature: Connection - CRUD
     Then check that "amq-sample" connection is not visible
 
 
-
   @connection-edit-view-test
   Scenario: Kebab menu edit and view
     And navigate to the "Connections" page
@@ -96,12 +91,12 @@ Feature: Connection - CRUD
     Then click on the "Validate" button
     Then check visibility of "Red Hat AMQ has been successfully validated" in alert-success notification
 
- #   Then scroll "top" "right"
+    Then scroll "top" "right"
     And click on the "Next" button
 
     And type "amq-sample" into connection name
     And type "this connection is awesome" into connection description
-    And click on the "Done" button
+    And click on the "Save" button
     Then check visibility of page "Connections"
 
     When click on the "Edit" kebab menu button of "amq-sample"
