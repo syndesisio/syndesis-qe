@@ -26,7 +26,7 @@ Feature: SQL Connector
       | XYZsampleTODO |
       | KLMsampleTODO |
 
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -36,15 +36,15 @@ Feature: SQL Connector
     And fill in values by element ID
       | period        | 1       |
       | select-period | Minutes |
-    And click on the "Done" button
+    And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
     # select Log as 'to' point
     When select the "Log" connection
-    And fill in values
-      | Message Context | true |
-      | Message Body    | true |
-    Then click on the "Done" button
+    And fill in values by element data-testid
+      | contextloggingenabled | true |
+      | bodyloggingenabled    | true |
+    Then click on the "Next" button
 
     # select postgresDB as middle point
     When add integration step on position "0"
@@ -57,7 +57,7 @@ Feature: SQL Connector
     And click on the "Next" button
 
     # save the integration with new name and publish it
-    When click on the "Publish" button
+    When click on the "Publish" link
     And set integration name "DB_2_Log"
     And publish integration
     Then Integration "DB_2_Log" is present in integrations list
@@ -81,7 +81,7 @@ Feature: SQL Connector
       | task4 |
       | task5 |
 
-    When click on the "Create Integration" button to create a new integration
+    When click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -93,10 +93,10 @@ Feature: SQL Connector
 
     # end connection
     And select the "Log" connection
-    And fill in values
-      | Message Context | true |
-      | Message Body    | true |
-    And click on the "Done" button
+    And fill in values by element data-testid
+      | contextloggingenabled | true |
+      | bodyloggingenabled    | true |
+    And click on the "Next" button
 
     # select postgresDB as middle point
     And add integration step on position "0"
@@ -113,14 +113,7 @@ Feature: SQL Connector
       | id | id |
     And click on the "Done" button
 
-    When add integration step on position "2"
-    And select "Log" integration step
-    And fill in values
-      | Message Context | true |
-      | Message Body    | true |
-    Then click on the "Done" button
-
-    And click on the "Publish" button
+    And click on the "Publish" link
     And set integration name "predicates"
     And publish integration
     Then Integration "predicates" is present in integrations list
@@ -155,7 +148,7 @@ Feature: SQL Connector
       | task4 |
       | task5 |
 
-    When click on the "Create Integration" button to create a new integration
+    When click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -167,10 +160,10 @@ Feature: SQL Connector
 
     # end connection
     And select the "Log" connection
-    And fill in values
-      | Message Context | true |
-      | Message Body    | true |
-    And click on the "Done" button
+    And fill in values by element data-testid
+      | contextloggingenabled | true |
+      | bodyloggingenabled    | true |
+    And click on the "Next" button
 
     # select postgresDB as middle point
     And add integration step on position "0"
@@ -187,14 +180,7 @@ Feature: SQL Connector
       | id | id |
     And click on the "Done" button
 
-    When add integration step on position "2"
-    And select "Log" integration step
-    And fill in values
-      | Message Context | true |
-      | Message Body    | true |
-    Then click on the "Done" button
-
-    And click on the "Publish" button
+    And click on the "Publish" link
     And set integration name "predicates"
     And publish integration
     Then Integration "predicates" is present in integrations list
@@ -214,7 +200,7 @@ Feature: SQL Connector
   @sql-connector-return-keys
   Scenario: Return generated keys for INSERT statement
 
-    When click on the "Create Integration" button to create a new integration
+    When click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -224,15 +210,15 @@ Feature: SQL Connector
     And fill in values by element ID
       | period        | 1       |
       | select-period | Minutes |
-    And click on the "Done" button
+    And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
     # Finish step
     When select the "Log" connection
-    And fill in values
-      | Message Context | false |
-      | Message Body    | true  |
-    Then click on the "Done" button
+    And fill in values by element data-testid
+      | contextloggingenabled | false |
+      | bodyloggingenabled    | true  |
+    Then click on the "Next" button
 
     # Select postgresDB as middle step and insert new value
     When add integration step on position "0"
@@ -242,9 +228,9 @@ Feature: SQL Connector
     And click on the "Next" button
     # Then check visibility of page "Add to Integration"
 
-    And publish integration
+    And click on the "Publish" link
     And set integration name "Generated_Keys"
-    And click on the "Publish" button
+    And publish integration
 
     # Wait for "Running" state and validate
     And wait until integration "Generated_Keys" gets into "Running" state
@@ -255,7 +241,7 @@ Feature: SQL Connector
   @sql-connector-return-keys-start-step
   Scenario: Return generated keys for INSERT statement from start step
 
-    When click on the "Create Integration" button to create a new integration
+    When click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -268,15 +254,15 @@ Feature: SQL Connector
 
     # Finish step
     When select the "Log" connection
-    And fill in values
-      | Message Context | false |
-      | Message Body    | true  |
-    Then click on the "Done" button
+    And fill in values by element data-testid
+      | contextloggingenabled | false |
+      | bodyloggingenabled    | true  |
+    Then click on the "Next" button
 
 
-    And publish integration
+    And click on the "Publish" link
     And set integration name "Generated_Keys"
-    And click on the "Publish" button
+    And publish integration
 
     # Wait for "Running" state and validate
     And wait until integration "Generated_Keys" gets into "Running" state
