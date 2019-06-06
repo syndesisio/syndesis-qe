@@ -70,7 +70,7 @@ Feature: Kudu connector
       | task | value |
     And click on the "Done" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_kudu_insert"
     And publish integration
     And wait until integration "Integration_kudu_insert" gets into "Running" state
@@ -100,7 +100,7 @@ Feature: Kudu connector
 
     Then click on the "Done" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_kudu_scan"
     And publish integration
 
@@ -149,7 +149,7 @@ Feature: Kudu connector
       | value | value |
     And click on the "Done" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_kudu_insert"
     And publish integration
     And wait until integration "Integration_kudu_insert" gets into "Running" state

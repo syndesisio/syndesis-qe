@@ -59,7 +59,7 @@ Feature: Email connector
     # Then check visibility of page "Add to Integration"
 
     # Publish integration and check that there is something on gmail account sent from tested connector
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "email-send-qe-integration"
     And publish integration
     Then Integration "email-send-qe-integration" is present in integrations list
@@ -111,7 +111,7 @@ Feature: Email connector
     # Then check visibility of page "Add to Integration"
 
     # Publish integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "email-receive-qe-integration"
     And publish integration
     Then Integration "email-receive-qe-integration" is present in integrations list

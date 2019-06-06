@@ -72,7 +72,7 @@ Feature: Google Calendar Connector
       | Message Body | true |
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "google_calendar_copy_event"
     And publish integration
     Then Integration "google_calendar_copy_event" is present in integrations list
@@ -110,7 +110,7 @@ Feature: Google Calendar Connector
       | title | task |
     And scroll "top" "right"
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "google_calendar_get_a_specific_event"
     And publish integration
     Then Integration "google_calendar_get_a_specific_event" is present in integrations list
@@ -155,7 +155,7 @@ Feature: Google Calendar Connector
       | location    | location    |
     And scroll "top" "right"
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "google_calendar_update_event_coming_in"
     And publish integration
     Then Integration "google_calendar_update_event_coming_in" is present in integrations list
@@ -212,7 +212,7 @@ Feature: Google Calendar Connector
     And scroll "top" "right"
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "google_calendar_<name>_on_<events_to_create>_events"
     And publish integration
 
@@ -285,7 +285,7 @@ Feature: Google Calendar Connector
     And scroll "top" "right"
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "google_calendar_get_events_poll_runtime"
     And publish integration
 

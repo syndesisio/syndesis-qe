@@ -57,7 +57,7 @@ Feature: Integration - Import Export
     And click on the "Done" button
 
     # finish and save integration
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "Integration_import_export_test"
     And publish integration
     Then Integration "Integration_import_export_test" is present in integrations list
@@ -163,7 +163,7 @@ Feature: Integration - Import Export
     And fill in "QE Slack" connection details from connection edit page
     And click on the "Validate" button
     Then check visibility of success notification
-    And click on the "Save" button
+    And click on the "Save" link
 
     When navigate to the "Integrations" page
 

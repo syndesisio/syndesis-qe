@@ -75,7 +75,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_concur"
     And publish integration
     Then Integration "Integration_with_concur" is present in integrations list
@@ -128,7 +128,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_concur"
     And publish integration
 
@@ -219,7 +219,7 @@ Feature: Concur Connector
     Then click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_concur"
     And publish integration
     Then Integration "Integration_with_concur" is present in integrations list
