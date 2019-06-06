@@ -59,7 +59,7 @@ Feature: Integration - Webhook to API connector
     And wait until integration "webhook-custom-api-connector-new-task" gets into "Running" state
 
     And select the "webhook-custom-api-connector-new-task" integration
-    And invoke post request to webhook with body {"author":"New Author","title":"Book Title"}
+    And invoke post request to webhook in integration webhook-custom-api-connector-new-task with token test-webhook and with body {"author":"New Author","title":"Book Title"}
     And sleep for jenkins delay or "3" seconds
 
     Then validate that number of all todos with task "New Author" is greater than "0"
@@ -91,4 +91,4 @@ Feature: Integration - Webhook to API connector
     And wait until integration "webhook-gh-3727" gets into "Running" state
     And select the "webhook-gh-3727" integration
         # here the original issue caused HTTP ERROR 500
-    And invoke post request to webhook with body {}
+    And invoke post request to webhook in integration webhook-gh-3727 with token test-webhook and with body {}

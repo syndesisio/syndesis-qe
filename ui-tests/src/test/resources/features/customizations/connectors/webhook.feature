@@ -24,8 +24,8 @@ Feature: Webhook extension
     # select salesforce connection as 'from' point
     When select the "Webhook" connection
     And select "Incoming Webhook" integration action
-    And fill in values
-      | Webhook Token | test-webhook |
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
     And click on the "Next" button
     And fill in values
       | Select Type | JSON Instance |
@@ -53,7 +53,7 @@ Feature: Webhook extension
 
     When select the "webhook-test" integration
     And sleep for jenkins delay or "10" seconds
-    And invoke post request to webhook with body {"author":"New Author","title":"Book Title"}
+    And invoke post request to webhook in integration webhook-test with token test-webhook and body {"author":"New Author","title":"Book Title"}
     # give integration time to invoke DB request
     And sleep for jenkins delay or "3" seconds
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere' AND company = 'New Author'" has some output

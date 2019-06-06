@@ -23,8 +23,8 @@ Feature: Metrics
 
     When select the "Webhook" connection
     And select "Incoming Webhook" integration action
-    And fill in values
-      | Webhook Token | test-webhook |
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
     And click on the "Next" button
     And fill in values
       | Select Type | JSON Instance |
@@ -110,7 +110,7 @@ Feature: Metrics
 
     When click on the "Details" tab
     And save time before request
-    And invoke post request to webhook with body {"first_name":"John","company":"incorrect company"}
+    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"incorrect company"}
     And save time after request
     And sleep for "3000" ms
     And click on the "Metrics" tab
@@ -124,7 +124,7 @@ Feature: Metrics
 
     When click on the "Details" tab
     And save time before request
-    And invoke post request to webhook with body {"first_name":"John","company":"Red Hat still incorrect"}
+    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
     And save time after request
     And sleep for "3000" ms
     And click on the "Metrics" tab
@@ -138,7 +138,7 @@ Feature: Metrics
 
     When click on the "Details" tab
     And save time before request
-    And invoke post request to webhook with body {"first_name":"John","company":"Red Hat"}
+    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
     And click on the "Metrics" tab
@@ -159,8 +159,8 @@ Feature: Metrics
 
     When select the "Webhook" connection
     And select "Incoming Webhook" integration action
-    And fill in values
-      | Webhook Token | test-webhook |
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
     And click on the "Next" button
     And fill in values
       | Select Type | JSON Instance |
@@ -226,7 +226,7 @@ Feature: Metrics
 
     When click on the "Details" tab
     And save time before request
-    And invoke post request to webhook with body {"first_name":"John","company":"Red Hat"}
+    And invoke post request to webhook in integration webhook-to-db-with-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
     And click on the "Metrics" tab

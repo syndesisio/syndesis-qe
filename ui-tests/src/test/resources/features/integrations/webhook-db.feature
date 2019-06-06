@@ -63,7 +63,7 @@ Feature: Integration - Webhook to DB
     And navigate to the "Integrations" page
     And wait until integration "Webhook to DB with DB" gets into "Running" state
     And select the "Webhook to DB with DB" integration
-    And invoke post request to webhook with body {"first_name":"John","company":"Red Hat"}
+    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat"}
 
     Then checks that query "select * from contact where first_name='middleSTEP'" has 1 row output
     And checks that query "select * from contact where first_name='John'" has 1 row output
