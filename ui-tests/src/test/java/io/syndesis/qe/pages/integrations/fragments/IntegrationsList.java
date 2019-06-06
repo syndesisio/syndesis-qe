@@ -4,14 +4,14 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import org.openqa.selenium.By;
-
-import com.codeborne.selenide.SelenideElement;
-
 import io.syndesis.qe.fragments.common.list.RowList;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.ModalDialogPage;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
 
 public class IntegrationsList extends RowList {
 
@@ -46,7 +46,9 @@ public class IntegrationsList extends RowList {
 
     @Override
     public SelenideElement getItem(String title) {
-        final String cssselector = String.format(Element.INTEGRATION_SELECTOR, title.toLowerCase().replaceAll(" ", "-"));
+        final String cssselector = String.format(Element.INTEGRATION_SELECTOR, title.toLowerCase()
+            .replaceAll(" ", "-")
+            .replaceAll("_", "-"));
         return $(By.cssSelector(cssselector)).shouldBe(visible);
     }
 
