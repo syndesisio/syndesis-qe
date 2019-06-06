@@ -1,17 +1,18 @@
 package io.syndesis.qe.fragments.common.form;
 
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
-import io.syndesis.qe.pages.integrations.editor.ApiProviderOperationEditorPage;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import org.apache.commons.lang3.BooleanUtils;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,9 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
@@ -29,7 +29,6 @@ public class Form {
     private SelenideElement rootElement;
     private final List<String> selectValues = new ArrayList<>(Arrays.asList("yes", "checked", "check", "select", "selected", "true"));
     private final List<String> unselectValues = new ArrayList<>(Arrays.asList("no", "unchecked", "uncheck", "unselect", "unselected", "false"));
-
 
     public Form(SelenideElement rootElement) {
         this.rootElement = rootElement;
@@ -92,9 +91,10 @@ public class Form {
                         input.click();
                     }
                 } else {
+                    input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+                    input.sendKeys(Keys.BACK_SPACE);
                     input.clear();
                     input.sendKeys(data.get(key));
-
                 }
             } else {
                 log.warn("Input {} is not present on form!", key);
@@ -128,32 +128,33 @@ public class Form {
 
             String xpath =
 
+                /**
+                 * regular input fields:
+                 * field label [              ]
+                 *
+                 * <label>label</label>
+                 * <?>
+                 *      <input, textarea, select> <.../>
+                 * <?/>
+                 */
+
+                "//label[translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
+                    + label.toLowerCase() +
+                    "']/following-sibling::*[position()=1]/descendant-or-self::*[self::input or self::textarea or self::select]"
+                    + "|"
+
                     /**
-                     * regular input fields:
-                     * field label [              ]
+                     * usually checkboxes:
+                     * [] checkbox label
                      *
-                     * <label>label</label>
-                     * <?>
-                     *      <input, textarea, select> <.../>
-                     * <?/>
+                     * <label>
+                     *      <input, textarea, select></>
+                     *      <span>label<span/>
+                     * </label>
+                     *
                      */
-
-                    "//label[translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
-                            + label.toLowerCase() + "']/following-sibling::*[position()=1]/descendant-or-self::*[self::input or self::textarea or self::select]"
-                            + "|"
-
-                            /**
-                             * usually checkboxes:
-                             * [] checkbox label
-                             *
-                             * <label>
-                             *      <input, textarea, select></>
-                             *      <span>label<span/>
-                             * </label>
-                             *
-                             */
-                            + "//label/span[translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
-                            + label.toLowerCase() + "']/preceding-sibling::*[position()=1]/self::*[self::input or self::textarea or self::select]";
+                    + "//label/span[translate(normalize-space(text()),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='"
+                    + label.toLowerCase() + "']/preceding-sibling::*[position()=1]/self::*[self::input or self::textarea or self::select]";
 
             SelenideElement element = $(By.xpath(xpath)).shouldBe(visible);
 
@@ -192,10 +193,10 @@ public class Form {
                                 element.setSelected(true);
                             } else {
                                 throw new UnsupportedOperationException(
-                                        "Unknown value <" + data.get(label) + "> for radiobutton \""
-                                                + label + "\": <" + "data.get(label)" + ">. " +
-                                                "The following case insensitive values can be used: \n [" +
-                                                "" + String.join(", ", selectValues) + "]");
+                                    "Unknown value <" + data.get(label) + "> for radiobutton \""
+                                        + label + "\": <" + "data.get(label)" + ">. " +
+                                        "The following case insensitive values can be used: \n [" +
+                                        "" + String.join(", ", selectValues) + "]");
                             }
 
                         case "checkbox":
@@ -208,11 +209,11 @@ public class Form {
                                 //unsupported value
                             } else {
                                 throw new UnsupportedOperationException(
-                                        "Unknown value <" + data.get(label) + "> for checkbox \""
-                                                + label + "\": <" + data.get(label) + ">. " +
-                                                "The following case insensitive values can be used: \n" +
-                                                "checked checkbox: [" + String.join(", ", selectValues) + "]" + "\n" +
-                                                "unchecked checkbox: [" + String.join(", ", unselectValues) + "]");
+                                    "Unknown value <" + data.get(label) + "> for checkbox \""
+                                        + label + "\": <" + data.get(label) + ">. " +
+                                        "The following case insensitive values can be used: \n" +
+                                        "checked checkbox: [" + String.join(", ", selectValues) + "]" + "\n" +
+                                        "unchecked checkbox: [" + String.join(", ", unselectValues) + "]");
                             }
                             break;
 
@@ -220,7 +221,7 @@ public class Form {
                         case "range":
                         default:
                             throw new UnsupportedOperationException(
-                                    "Input element type " + "\"" + inputType.toLowerCase() + "\" can't be filled with the data.");
+                                "Input element type " + "\"" + inputType.toLowerCase() + "\" can't be filled with the data.");
                     }
 
                     break;
