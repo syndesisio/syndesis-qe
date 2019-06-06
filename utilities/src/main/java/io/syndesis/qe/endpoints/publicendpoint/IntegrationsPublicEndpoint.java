@@ -1,11 +1,15 @@
 package io.syndesis.qe.endpoints.publicendpoint;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.common.model.integration.ContinuousDeliveryEnvironment;
 import io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler;
+
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
@@ -13,6 +17,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -25,9 +30,11 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipFile;
 
-import static org.assertj.core.api.Assertions.fail;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @Lazy
 public class IntegrationsPublicEndpoint extends PublicEndpoint {
@@ -39,16 +46,17 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
     /**
      * Import zip file with the integrations
      * endpoint -> POST ​/public​/integrations
-     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#importResources(SecurityContext, PublicApiHandler.ImportFormDataInput)}
+     * original method ->
+     * {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#importResources(SecurityContext, PublicApiHandler.ImportFormDataInput)}
      *
-     * @param tag  - tag for imported integrations
+     * @param tag - tag for imported integrations
      * @param name - name of the exported zip in target folder
      */
     public void importIntegration(String tag, String name) {
         MultipartFormDataOutput mdo = new MultipartFormDataOutput();
         try {
             mdo.addFormData("data", new FileInputStream(Paths.get("./target/" + name).toAbsolutePath().normalize().toFile()),
-                    MediaType.APPLICATION_OCTET_STREAM_TYPE);
+                MediaType.APPLICATION_OCTET_STREAM_TYPE);
             mdo.addFormData("environment", tag, MediaType.TEXT_PLAIN_TYPE);
         } catch (FileNotFoundException e) {
             fail("IO Exception during loading ZIP file.", e);
@@ -65,9 +73,9 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      * endpoint -> GET ​/public​/integrations​/{env}​/export.zip
      * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#exportResources(String, boolean)}
      *
-     * @param tag  - tag for exporting
+     * @param tag - tag for exporting
      * @param name - name of the exported zip in target folder
-     * @param all  - when all is set to true, all integrations are exported and tagged with the tag.
+     * @param all - when all is set to true, all integrations are exported and tagged with the tag.
      */
     public void exportIntegration(String tag, String name, boolean all) {
         Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/export.zip?all=%s", tag, all)));
@@ -181,15 +189,41 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      */
     private void exportZip(InputStream is, String name) {
         try {
-            byte[] buffer = new byte[is.available()];
-            is.read(buffer);
             File targetFile = Paths.get("./target/" + name).toAbsolutePath().normalize().toFile();
             OutputStream outStream = new FileOutputStream(targetFile);
-            outStream.write(buffer);
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+            is.close();
+            outStream.flush();
             outStream.close();
+            checkThatZipFileIsValid(Paths.get("./target/" + name).toAbsolutePath().normalize().toFile());
         } catch (IOException e) {
             e.printStackTrace();
             fail("IO Exception during exporting ZIP file.", e);
+        }
+    }
+
+    /**
+     * Check that imported zip file is valid
+     */
+    private void checkThatZipFileIsValid(File file) {
+        ZipFile zipfile = null;
+        try {
+            zipfile = new ZipFile(file);
+            log.debug("Size of the zipfile is: " + zipfile.size());
+        } catch (IOException e) {
+            fail("The zip file is not valid");
+        } finally {
+            try {
+                if (zipfile != null) {
+                    zipfile.close();
+                }
+            } catch (IOException e) {
+                fail("Error during closing zip file");
+            }
         }
     }
 }
