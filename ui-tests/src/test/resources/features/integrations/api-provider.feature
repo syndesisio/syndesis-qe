@@ -556,7 +556,7 @@ Feature: API Provider Integration
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "enabled"
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
     And sleep for jenkins delay or "5" seconds
     And check "Save" button is "enabled"
     And sleep for jenkins delay or "5" seconds
@@ -595,7 +595,7 @@ Feature: API Provider Integration
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "enabled"
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
 
     And publish API Provider integration
     And navigate to the "Integrations" page
@@ -652,7 +652,7 @@ Feature: API Provider Integration
     And check "Done" button is "enabled"
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
 
     And publish API Provider integration
     And navigate to the "Integrations" page
@@ -705,7 +705,7 @@ Feature: API Provider Integration
     And check "Done" button is "enabled"
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
 
     And publish API Provider integration
     And inserts into "todo" table
@@ -768,7 +768,7 @@ Feature: API Provider Integration
 
     And delete step on position 3
 
-    And click on the "Save" button
+    And click on the "Save" link
 
     And publish API Provider integration
     And navigate to the "Integrations" page
@@ -800,7 +800,7 @@ Feature: API Provider Integration
     And sleep for 2 seconds
     And check "Done" button is "enabled"
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
 
     # implement another operation (which we will keep in the integration after deleting the first one)
     And go to the List all tasks API Provider operation
@@ -822,7 +822,7 @@ Feature: API Provider Integration
     And sleep for 2 seconds
     And check "Done" button is "enabled"
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
 
     And publish API Provider integration
     And navigate to the "Integrations" page

@@ -51,7 +51,7 @@ Feature: Slack Connector
     And scroll "top" "right"
     And click on the "Done" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_slack"
     And publish integration
     Then Integration "Integration_with_slack" is present in integrations list
@@ -92,7 +92,7 @@ Feature: Slack Connector
     And create data mapper mappings
       | company | message |
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "Integration_with_slack"
     And publish integration
     Then Integration "Integration_with_slack" is present in integrations list
@@ -136,7 +136,7 @@ Feature: Slack Connector
 
     When fill in the configuration page for "Basic Filter" step with "ANY of the following, text, contains, Red Hat testSlack" parameter
     And click on the "Done" button
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "slack-to-db"
     And publish integration
     Then Integration "slack-to-db" is present in integrations list
@@ -185,7 +185,7 @@ Feature: Slack Connector
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "slack-to-db-delay-and-maxmessage"
     And send message "message1" on channel "random"
     And send message "message2" on channel "random"

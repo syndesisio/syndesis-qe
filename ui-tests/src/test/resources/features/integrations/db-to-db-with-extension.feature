@@ -60,7 +60,7 @@ Feature: Integration - DB to DB with extension
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "CRUD4-read-create-inbuilt E2E"
     And publish integration
 

@@ -117,7 +117,7 @@ Feature: Integration - Databucket
     And click on the "Done" button
     Then check that there is no warning inside of step number "5"
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_buckets"
     And publish integration
     Then Integration "Integration_with_buckets" is present in integrations list
@@ -295,7 +295,7 @@ Feature: Integration - Databucket
 
     ##################### start the integration ##################################
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_with_buckets"
     And publish integration
     Then Integration "Integration_with_buckets" is present in integrations list

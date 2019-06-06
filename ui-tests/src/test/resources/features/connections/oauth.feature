@@ -50,7 +50,7 @@ Feature: Connections - OAuth
       | Message Body | checked |
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "OAuth-gmail-test"
     And publish integration
 
@@ -89,7 +89,7 @@ Feature: Connections - OAuth
       | Message Body | checked |
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "OAuth-twitter-test"
     And publish integration
 
@@ -133,7 +133,7 @@ Feature: Connections - OAuth
       | Message Body | checked |
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "OAuth-Gcalendar-test"
     And publish integration
 
@@ -173,7 +173,7 @@ Feature: Connections - OAuth
       | Message Body | checked |
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "OAuth-Salesforce-test"
     And publish integration
 
@@ -211,7 +211,7 @@ Feature: Connections - OAuth
       | Message Body | checked |
     And click on the "Done" button
 
-    And click on the "Save" button
+    And click on the "Save" link
     And set integration name "OAuth-gsheets-test"
     And publish integration
 

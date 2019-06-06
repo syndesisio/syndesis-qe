@@ -74,7 +74,7 @@ Feature: Templates
     And click on the "Done" button
 
     #finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "DB to gmail (template)"
     And publish integration
 
@@ -151,7 +151,7 @@ Feature: Templates
     And click on the "Done" button
 
     #finish and save integration
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "DB to gmail (template)"
     And publish integration
 
