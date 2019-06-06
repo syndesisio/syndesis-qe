@@ -14,7 +14,7 @@ Feature: Connections - OAuth
   @oauth-validate-connectors
   Scenario: Create integration using connections with OAuth
     When navigate to the "Settings" page
-    Then check that settings item "Salesforce" has button "Register"
+    #Then check that settings item "Salesforce" has button "Register"
     When fill all oauth settings
     Then create connections using oauth
 #    Until the issue with @concur support is resolved, concur testing will be disabled.

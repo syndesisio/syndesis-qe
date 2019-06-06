@@ -1,22 +1,26 @@
 package io.syndesis.qe.pages.settings;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.SyndesisPageObject;
-import lombok.extern.slf4j.Slf4j;
+
 import org.junit.Assert;
+
 import org.openqa.selenium.By;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by sveres on 11/20/17.
@@ -50,8 +54,13 @@ public class SettingsPage extends SyndesisPageObject {
         // previously used foreach lead to stale elements
         for (int i = 0; i < getSettingsItems().size(); i++) {
             SelenideElement listItem = getSettingsItems().get(i);
-            listItem.shouldBe(visible).click();
             String text = listItem.$(Element.SETTINGS_TITLE).getText();
+            log.info("Filling in {}", text);
+            if ("OpenAPI client".matches(text)){
+                log.info("Skipping OpenAPI client due to bug #5532");
+                continue;
+            }
+            listItem.shouldBe(visible).click();
             String credentialsName = null;
             switch (text) {
                 case "Salesforce":
@@ -102,7 +111,11 @@ public class SettingsPage extends SyndesisPageObject {
         Form form = new Form(item);
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(credentialsName);
         if (optional.isPresent()) {
-            form.fillById(optional.get().getProperties());
+            Map<String, String> properties = new HashMap<>();
+            optional.get().getProperties().forEach((key, value) ->
+                properties.put(key.toLowerCase(), value)
+            );
+            form.fillByTestId(properties);
         } else {
             Assert.fail("Credentials for " + credentialsName + " were not found!");
         }
