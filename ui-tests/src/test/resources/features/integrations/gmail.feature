@@ -41,11 +41,12 @@ Feature: Google mail Connector
     And fill in values by element ID
       | to      | jbossqa.fuse@gmail.com |
       | subject | syndesis-test          |
-    And click on the "Done" button
+    And click on the "Next" button
 
     # add split step
     When add integration step on position "0"
     And select "Split" integration step
+    And click on the "Next" button
 
     # add data mapper step
     And add integration step on position "1"
@@ -54,7 +55,7 @@ Feature: Google mail Connector
     And create data mapper mappings
       | company | text |
     And scroll "top" "right"
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish and save integration
     When click on the "Save" link
@@ -80,16 +81,16 @@ Feature: Google mail Connector
 
     When select the "My GMail Connector" connection
     And select "Receive Email" integration action
-    And fill in values
+    And fill in values by element ID
       | labels | syndesis-test |
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into CONTACT values ('Prokop' , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     # add data mapper step
     And add integration step on position "0"
