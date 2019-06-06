@@ -1,14 +1,10 @@
 package io.syndesis.qe.pages;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
+import static org.junit.Assert.assertThat;
 
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
@@ -17,10 +13,20 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class SyndesisPageObject {
@@ -40,19 +46,18 @@ public abstract class SyndesisPageObject {
             //ugly but necessary due to syndesis page refreshing periodically
             try {
                 OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                        .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
                 OpenShiftWaitUtils.waitFor(() -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button"))
-                        .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
             }
-
         } catch (TimeoutException | InterruptedException e1) {
             fail(buttonTitle + " not found", e1);
         }
 
         ElementsCollection foundButtons = differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1));
+            .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1));
 
         if (foundButtons.size() > 1) {
             fail("Ambiguous button title. Found more that 1 button with title " + buttonTitle);
@@ -71,7 +76,7 @@ public abstract class SyndesisPageObject {
     /**
      * Fill form with given data. It will look for ui element for every map entry.
      *
-     * @param data           key,value data. Key is used for element lookup
+     * @param data key,value data. Key is used for element lookup
      * @param parrentElement search inputs in child elements of this one
      */
     public void fillForm(Map<By, String> data, SelenideElement parrentElement) {
@@ -186,6 +191,8 @@ public abstract class SyndesisPageObject {
         if (input.getAttribute("type").equals("checkbox")) {
             input.setSelected(Boolean.valueOf(value));
         } else {
+            input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+            input.sendKeys(Keys.BACK_SPACE);
             input.shouldBe(visible).clear();
             input.shouldBe(visible).sendKeys(value);
         }

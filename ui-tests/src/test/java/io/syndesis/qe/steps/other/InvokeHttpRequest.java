@@ -1,14 +1,13 @@
 package io.syndesis.qe.steps.other;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import cucumber.api.java.en.When;
+
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
+import io.syndesis.qe.utils.OpenShiftUtils;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import cucumber.api.java.en.When;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class InvokeHttpRequest {
@@ -19,19 +18,22 @@ public class InvokeHttpRequest {
      *
      * @param body
      */
-    @When("^invoke post request to webhook with body (.*)$")
-    public void invokeWebhookRequestCannotFail(String body) {
-        assertThat(this.invokeWebhookRequest(body).getCode()).isEqualTo(204);
+    @When("^invoke post request to webhook in integration (.*) with token (.*) and body (.*)$")
+    public void invokeWebhookRequestCannotFail(String nameOfIntegration, String token, String body) {
+        assertThat(this.invokeWebhookRequest(nameOfIntegration, token, body).getCode()).isEqualTo(204);
     }
 
-    @When("^invoke post request which can fail to webhook with body (.*)$")
-    public void invokeWebhookRequestCanFail(String body) {
-        this.invokeWebhookRequest(body);
+    @When("^invoke post request which can fail to webhook in integration (.*) with token (.*) and body (.*)$")
+    public void invokeWebhookRequestCanFail(String nameOfIntegration, String token, String body) {
+        this.invokeWebhookRequest(nameOfIntegration, token, body);
     }
 
-    private HTTPResponse invokeWebhookRequest(String body) {
+    private HTTPResponse invokeWebhookRequest(String nameOfIntegration, String token, String body) {
         log.debug("Body to set: " + body);
-        String url = $(By.className("pfng-block-copy-preview-txt")).shouldBe(visible).getAttribute("value");
+        String url = String.format("https://%s/webhook/%s",
+            OpenShiftUtils.getInstance().getRoutes().stream()
+                .filter(x -> x.getMetadata().getName().contains(nameOfIntegration))
+                .findFirst().get().getSpec().getHost(), token);
         log.info("WebHook URL: " + url);
         return HttpUtils.doPostRequest(url, body);
     }
