@@ -538,7 +538,7 @@ public class CommonSteps {
         assertThat(titleText).isEqualToIgnoringCase(title);
     }
 
-    @Then("^.*removes? file \"([^\"]*)\" if it exists$")
+    @Then("^removes? file \"([^\"]*)\" if it exists$")
     public void removeFileIfExists(String fileName) throws Throwable {
         Files.deleteIfExists(Paths.get(CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + fileName));
     }
@@ -565,23 +565,24 @@ public class CommonSteps {
      *
      * @param data data
      */
-    @Then("^.*fills? in values$")
+    @Then("^fills? in values$")
     public void fillForm(DataTable data) {
         new Form(new SyndesisRootPage().getRootElement()).fillByLabel(data.asMap(String.class, String.class));
     }
 
-    @Then("^.*fill in values by element ID")
+    @Then("^fill in values by element ID")
     public void fillFormViaID(DataTable data) {
         Form.waitForInpups(20);
         new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
     }
 
-    @Then("^.*fill in values by element data-testid")
+    @Then("^fill in values by element data-testid")
     public void fillFormViaTestID(DataTable data) {
         Form.waitForInpups(20);
         new Form(new SyndesisRootPage().getRootElement()).fillByTestId(data.asMap(String.class, String.class));
     }
 
+    // for CodeMirror text editor
     @When("^fill text into text-editor$")
     public void fillTextIntoTextEditor(DataTable data) {
         StringBuilder text = new StringBuilder();

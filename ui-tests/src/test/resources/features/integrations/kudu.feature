@@ -57,7 +57,7 @@ Feature: Kudu connector
     When select the "KuduConnector" connection
     And select "Insert a row in a kudu table" integration action
     And fill in values by element data-testid
-      | tableName | my-table |
+      | tablename | my-table |
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -68,7 +68,7 @@ Feature: Kudu connector
     And create data mapper mappings
       | id   | key   |
       | task | value |
-    And click on the "Next" button
+    And click on the "Done" button
 
     When click on the "Save" link
     And set integration name "Integration_kudu_insert"
@@ -126,19 +126,20 @@ Feature: Kudu connector
     And select "Subscribe" integration action
     And fill in "topic" action configure component input with "news" value
     And click on the "Next" button
-    And fill in values
-      | Select Type | JSON Instance |
-    #only available after type is selected
-    And fill in values by element ID
-      | specification | {"key" : 1,"value" : "FirstValue"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    # wait for UI to open definition
+    And sleep for jenkins delay or "5" seconds
+    And fill text into text-editor
+      | {"key" : 1,"value" : "FirstValue"} |
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
     # select connection as 'finish' point
     When select the "KuduConnector" connection
     And select "Insert a row in a kudu table" integration action
-    And fill in values
-      | Table | my-table |
+    And fill in values by element data-testid
+      | tablename | my-table |
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -147,7 +148,7 @@ Feature: Kudu connector
     And create data mapper mappings
       | key   | key   |
       | value | value |
-    And click on the "Next" button
+    And click on the "Done" button
 
     When click on the "Save" link
     And set integration name "Integration_kudu_insert"
