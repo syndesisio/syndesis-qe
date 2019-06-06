@@ -89,7 +89,8 @@ Feature: Slack Connector
     Then check visibility of data mapper ui
 
     When open data mapper collection mappings
-    And create mapping from "company" to "message"
+    And create data mapper mappings
+      | company | message |
     And click on the "Done" button
     And click on the "Save" button
     And set integration name "Integration_with_slack"

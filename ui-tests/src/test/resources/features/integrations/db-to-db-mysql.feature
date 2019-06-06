@@ -53,7 +53,8 @@ Feature: Integration - DB to DB mysql
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And open data mapper collection mappings
-    And create mapping from "first_name" to "TASK"
+    And create data mapper mappings
+      | first_name | TASK |
 
 #    And scroll "top" "right"
     And click on the "Done" button

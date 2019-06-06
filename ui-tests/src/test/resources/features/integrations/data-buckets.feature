@@ -284,7 +284,8 @@ Feature: Integration - Databucket
     And open data bucket "1 - SQL Result"
 
     When open data mapper collection mappings
-    And create mapping from "firma" to "COMPANY"
+    And create data mapper mappings
+      | firma | COMPANY |
     And scroll "top" "right"
     And click on the "Done" button
 

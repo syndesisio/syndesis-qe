@@ -43,7 +43,8 @@ Feature: Webhook extension
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
-    And create mapping from "author" to "COMPANY"
+    And create data mapper mappings
+      | author | COMPANY |
     And click on the "Done" button
     And publish integration
     And set integration name "webhook-test"
