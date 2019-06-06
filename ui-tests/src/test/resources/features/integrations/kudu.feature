@@ -56,8 +56,8 @@ Feature: Kudu connector
 
     When select the "KuduConnector" connection
     And select "Insert a row in a kudu table" integration action
-    And fill in values
-      | Table | my-table |
+    And fill in values by element data-testid
+      | tableName | my-table |
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -68,9 +68,9 @@ Feature: Kudu connector
     And create data mapper mappings
       | id   | key   |
       | task | value |
-    And click on the "Done" button
+    And click on the "Next" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_kudu_insert"
     And publish integration
     And wait until integration "Integration_kudu_insert" gets into "Running" state
@@ -88,19 +88,19 @@ Feature: Kudu connector
 
     When select the "KuduConnector" connection
     And select "Scan a kudu table" integration action
-    And fill in values
-      | Table | my-table |
+    And fill in values by element data-testid
+      | tablename | my-table |
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
     When select the "Log" connection
-    And fill in values
-      | Message Context | true |
-      | Message Body    | true |
+    And fill in values by element data-testid
+      | contextloggingenabled | true |
+      | bodyloggingenabled    | true |
 
-    Then click on the "Done" button
+    Then click on the "Next" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_kudu_scan"
     And publish integration
 
@@ -147,9 +147,9 @@ Feature: Kudu connector
     And create data mapper mappings
       | key   | key   |
       | value | value |
-    And click on the "Done" button
+    And click on the "Next" button
 
-    When click on the "Save" button
+    When click on the "Save" link
     And set integration name "Integration_kudu_insert"
     And publish integration
     And wait until integration "Integration_kudu_insert" gets into "Running" state
