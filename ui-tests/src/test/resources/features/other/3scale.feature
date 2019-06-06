@@ -22,14 +22,13 @@ Feature: 3scale integration
     # wait for redirect so it does not click twice on the same page
     And sleep for jenkins delay or "3" seconds
     And click on the "Next" button
-    And fill in values
-      | Integration Name | threeScaleIntegration |
-    And click on the "Save and continue" button
     # give UI time to render all operations
-    And sleep for jenkins delay or "10" seconds
     # TODO: should be refactored after api provider tests are done by asmigala
-    And select first api provider operation
-    And click on the "Publish" button
+    #And select first api provider operation
+    And click on the "Save" link
+    And fill in values by element data-testid
+      | name | threeScaleIntegration |
+    And click on the "Save and publish" button
     Then Integration "threeScaleIntegration" is present in integrations list
     And wait until integration "threeScaleIntegration" gets into "Running" state
     And check that 3scale annotations are present on integration "threeScaleIntegration"

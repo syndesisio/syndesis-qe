@@ -1,5 +1,7 @@
 package io.syndesis.qe.steps;
 
+import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.data.MapEntry.entry;
@@ -13,7 +15,29 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-import static io.syndesis.qe.wait.OpenShiftWaitUtils.waitFor;
+import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.fragments.common.form.Form;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.SyndesisPage;
+import io.syndesis.qe.pages.SyndesisRootPage;
+import io.syndesis.qe.pages.connections.Connections;
+import io.syndesis.qe.pages.login.GitHubLogin;
+import io.syndesis.qe.pages.login.MinishiftLogin;
+import io.syndesis.qe.pages.login.RHDevLogin;
+import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.CalendarUtils;
+import io.syndesis.qe.utils.GoogleAccount;
+import io.syndesis.qe.utils.GoogleAccounts;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -42,29 +66,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.CustomWebDriverProvider;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.fragments.common.form.Form;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.SyndesisPage;
-import io.syndesis.qe.pages.SyndesisRootPage;
-import io.syndesis.qe.pages.connections.Connections;
-import io.syndesis.qe.pages.login.GitHubLogin;
-import io.syndesis.qe.pages.login.MinishiftLogin;
-import io.syndesis.qe.pages.login.RHDevLogin;
-import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
-import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
-import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
-import io.syndesis.qe.utils.AccountUtils;
-import io.syndesis.qe.utils.CalendarUtils;
-import io.syndesis.qe.utils.GoogleAccount;
-import io.syndesis.qe.utils.GoogleAccounts;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -110,8 +111,8 @@ public class CommonSteps {
     public void logout() {
         $(Element.LOGOUT_MENU).shouldBe(visible).click();
         $(Element.LOGOUT_MENU).shouldBe(visible).parent()
-                .$$(Element.LOGOUT_MENU_ACTION_TAG).filter(matchText("(\\s*)" + "Logout" + "(\\s*)"))
-                .shouldHaveSize(1).first().click();
+            .$$(Element.LOGOUT_MENU_ACTION_TAG).filter(matchText("(\\s*)" + "Logout" + "(\\s*)"))
+            .shouldHaveSize(1).first().click();
 
         try {
             OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("/logout"), 20 * 1000);
@@ -197,7 +198,7 @@ public class CommonSteps {
             String connectionDescription = dataRow.get(3);
 
             if (connectionType.equalsIgnoreCase("Gmail") ||
-                    connectionType.equalsIgnoreCase("Google Calendar")) {
+                connectionType.equalsIgnoreCase("Google Calendar")) {
                 Account a = AccountUtils.get(connectionCredentialsName);
                 GoogleAccount googleAccount = googleAccounts.getGoogleAccountForTestAccount(connectionCredentialsName);
                 a.getProperties().put("accessToken", googleAccount.getCredential().getAccessToken());
@@ -234,7 +235,7 @@ public class CommonSteps {
 
             // do nothing if connection does not require any credentials
             if (!(connectionCredentialsName.equalsIgnoreCase("no credentials") ||
-                    connectionDescription.equalsIgnoreCase("no validation"))) {
+                connectionDescription.equalsIgnoreCase("no validation"))) {
 
                 clickOnButton("Validate");
                 successNotificationIsPresentWithError(connectionType + " has been successfully validated");
@@ -349,7 +350,7 @@ public class CommonSteps {
 
         SelenideElement dropdownElementsTable = $(By.className("pf-c-dropdown__menu")).shouldBe(visible);
         ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"))
-                .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
+            .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
 
         dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
 
@@ -377,7 +378,7 @@ public class CommonSteps {
             // this is hack to replace Done with Next if not present
             try {
                 syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
-                        .filter(matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
+                    .filter(matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
             } catch (Throwable t) {
                 buttonTitle = "Next";
             }
@@ -517,7 +518,7 @@ public class CommonSteps {
     public void selectsFromDropdown(String option, String selectId) {
         //search by name or by id because some dropdowns have only id
         SelenideElement selectElement = $(String.format("select[name=\"%s\"], select[id=\"%s\"]", selectId, selectId))
-                .shouldBe(visible);
+            .shouldBe(visible);
         selectElement.selectOption(option);
     }
 
@@ -588,7 +589,7 @@ public class CommonSteps {
             text.append(s);
         });
 
-    new Form(new SyndesisRootPage().getRootElement()).fillEditor(text.toString());
+        new Form(new SyndesisRootPage().getRootElement()).fillEditor(text.toString());
     }
 
     @When("^.*create connections using oauth$")
@@ -613,7 +614,7 @@ public class CommonSteps {
         connections = connections.filter(exactText(newConnectionName));
 
         assertThat(connections.size()).as("Connection with name " + newConnectionName + " already exists!")
-                .isEqualTo(0);
+            .isEqualTo(0);
 
         clickOnLink("Create Connection");
 
@@ -627,8 +628,8 @@ public class CommonSteps {
         doOAuthValidation(connectorName);
 
         assertThat(WebDriverRunner.currentFrameUrl())
-                .containsIgnoringCase("Successfully%20authorized")
-                .containsIgnoringCase("connections/create");
+            .containsIgnoringCase("Successfully%20authorized")
+            .containsIgnoringCase("connections/create");
 
         nameConnectionSteps.setConnectionName(newConnectionName);
 
@@ -751,10 +752,10 @@ public class CommonSteps {
         if (account.isPresent()) {
 
             $$(By.tagName("input")).stream().
-                    filter((e) ->
-                            e.getAttribute("name").equalsIgnoreCase("type") &&
-                                    e.getAttribute("value").equalsIgnoreCase("username"))
-                    .findFirst().get().click();
+                filter((e) ->
+                    e.getAttribute("name").equalsIgnoreCase("type") &&
+                        e.getAttribute("value").equalsIgnoreCase("username"))
+                .findFirst().get().click();
             $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
             $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
             TestUtils.sleepForJenkinsDelayIfHigher(3);
@@ -818,17 +819,20 @@ public class CommonSteps {
 
     @Then("^check that 3scale annotations are present on integration \"([^\"]*)\"")
     public void check3scaleAnnotations(String integrationName) {
-        Map<String, String> annotations = OpenShiftUtils.getInstance().getService(("i-" + integrationName).toLowerCase()).getMetadata().getAnnotations();
+        Map<String, String> annotations =
+            OpenShiftUtils.getInstance().getService(("i-" + integrationName).toLowerCase()).getMetadata().getAnnotations();
 
         assertThat(annotations)
-                .contains(entry("discovery.3scale.net/description-path", "/openapi.json"))
-                .contains(entry("discovery.3scale.net/port", "8080"))
-                .contains(entry("discovery.3scale.net/scheme", "http"));
+            .contains(entry("discovery.3scale.net/description-path", "/openapi.json"))
+            .contains(entry("discovery.3scale.net/port", "8080"))
+            .contains(entry("discovery.3scale.net/scheme", "http"));
     }
 
     //TODO: should be refactored after asmigala is done with api provider tests
     @When("^select first api provider operation$")
     public void clickFirstOperation() {
+        TestUtils.waitFor(() -> $$(By.className("list-pf-title")).size() >= 1,
+            2, 30, "Api provider operations were not loaded in 30s");
         $$(By.className("list-pf-title")).first().shouldBe(visible).click();
     }
 
@@ -839,7 +843,7 @@ public class CommonSteps {
     public void saveBeforeTime() {
         calendarUtils.setBeforeRequest(Calendar.getInstance());
         log.info("Time before request was saved: "
-                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getBeforeRequest().getTime()));
+            + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getBeforeRequest().getTime()));
         TestUtils.sleepIgnoreInterrupt(3000); // due to border values
     }
 
@@ -851,7 +855,7 @@ public class CommonSteps {
         TestUtils.sleepIgnoreInterrupt(3000); // due to border values
         calendarUtils.setAfterRequest(Calendar.getInstance());
         log.info("Time after request was saved: "
-                + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
+            + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
     }
 }
 
