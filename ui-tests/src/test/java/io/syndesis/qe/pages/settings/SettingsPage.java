@@ -107,7 +107,6 @@ public class SettingsPage extends SyndesisPageObject {
             getButton("Save").shouldBe(visible).click();
             Selenide.sleep(1000);
         } while ($(By.className("alert-success")).is(not(visible)));
-
         //close list item details
         getRootElement().$(By.cssSelector("div[class*='list-view-pf-expand active']")).click();
     }
