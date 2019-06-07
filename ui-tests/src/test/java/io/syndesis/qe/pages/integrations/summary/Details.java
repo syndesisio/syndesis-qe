@@ -27,8 +27,8 @@ public class Details extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
-        public static final By STATUS = By.cssSelector("textarea[data-testid=\"syndesis-integration-status\"]");
-        public static final By STARTING_STATUS = By.cssSelector("textarea[data-testid=\"integration-status-detail\"]");
+        public static final By STATUS = By.cssSelector("div[data-testid=\"syndesis-integration-status\"]");
+        public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
         public static final By TITLE = By.className("pf-c-title.pf-m-lg.integration-detail-editable-name.pf-u-mr-lg");
         public static final By KEBEB_OPEN_MENU = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");

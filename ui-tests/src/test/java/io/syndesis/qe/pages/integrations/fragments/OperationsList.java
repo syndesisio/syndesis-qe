@@ -7,6 +7,9 @@ import static com.codeborne.selenide.Condition.have;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.fragments.common.list.RowList;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.CollectionCondition;
@@ -16,12 +19,6 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import io.syndesis.qe.fragments.common.list.RowList;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class OperationsList extends RowList {
     public OperationsList(By rootElement) {
         super(rootElement);
@@ -55,7 +52,6 @@ public class OperationsList extends RowList {
     }
 
     public void apiOperationCreateFlow(String title) {
-        log.info("Searching for API provider operation {}", title);
         try {
             OpenShiftWaitUtils.waitFor(() -> $(getItem(title)).is(visible), 15 * 1000L);
         } catch (TimeoutException | InterruptedException e) {

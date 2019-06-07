@@ -39,7 +39,7 @@ Feature: Integration - DB to DB with extension
     When select the "PostgresDB" connection
     And select "Invoke Stored Procedure" integration action
     And select "add_lead" from "procedureName" dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
     # add data mapper step
     When add integration step on position "0"
@@ -52,12 +52,12 @@ Feature: Integration - DB to DB with extension
       | last_name   | first_and_last_name |
       | lead_source | lead_source         |
 
-    And click on the "Done" button
+    And click on the "Next" button
 
     # add tech extension step
     When add integration step on position "0"
     Then select "Log Body" integration step
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish and save integration
     When click on the "Save" link
@@ -71,8 +71,8 @@ Feature: Integration - DB to DB with extension
 
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 
-    When navigate to the "Customizations" page
-    And click on the "Extensions" link
+    And click on the "Customizations" link
+    And navigate to the "Extensions" page
     Then check visibility of page "Extensions"
 
     Then check action button  "Delete" disabled on "Log Message Body" technical extension

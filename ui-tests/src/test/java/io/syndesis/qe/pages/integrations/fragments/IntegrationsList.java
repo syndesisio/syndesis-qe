@@ -32,7 +32,7 @@ public class IntegrationsList extends RowList {
         public static final By STATUS = By.cssSelector("span[data-testid=\"integration-status-status-label\"]");
         public static final By STARTING_STATUS = By.className("integration-list-item__additional-info");
         public static final String INTEGRATION_SELECTOR = "div[data-testid=\"integrations-list-item-%s-list-item\"]";
-        public static final By VIEW_BUTTON = By.cssSelector("[data-testid=\"integration-actions-view-button\"]");
+        public static final By VIEW_INTEGRATION = By.cssSelector("a[data-testid=\"integration-actions-view-button\"]");
     }
 
     private static final class Button {
@@ -58,6 +58,7 @@ public class IntegrationsList extends RowList {
     public SelenideElement getItem(String title) {
         final String cssselector = String.format(Element.INTEGRATION_SELECTOR, title.toLowerCase()
             .replaceAll(" ", "-")
+            .replaceAll("/", "-")
             .replaceAll("_", "-"));
         return $(By.cssSelector(cssselector)).shouldBe(visible);
     }
@@ -88,13 +89,13 @@ public class IntegrationsList extends RowList {
     }
 
     public void viewIntegration(String name) {
-        log.info("Searching for integration action {}", name);
+        log.info("Searching for integration {} in list", name);
         try {
             OpenShiftWaitUtils.waitFor(() -> $(getItem(name)).is(visible), 15 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
             fail("Integration in list was not found in 15s.", e);
         }
 
-        $(getItem(name)).$(Element.VIEW_BUTTON).click();
+        $(getItem(name)).$(Element.VIEW_INTEGRATION).click();
     }
 }

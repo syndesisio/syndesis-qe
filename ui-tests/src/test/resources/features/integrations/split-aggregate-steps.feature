@@ -52,6 +52,7 @@ Feature: Integration - DB to DB with split/aggregate
     # Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select "Split" integration step
+    And click on the "Next" button
 
         # add DB step Insert
     # Then check visibility of page "Add to Integration"
@@ -73,6 +74,7 @@ Feature: Integration - DB to DB with split/aggregate
     # Then check visibility of page "Add to Integration"
     When add integration step on position "4"
     And select "Aggregate" integration step
+    And click on the "Next" button
     And sleep for jenkins delay or "2" seconds
     # Then check visibility of page "Add to Integration"
 
