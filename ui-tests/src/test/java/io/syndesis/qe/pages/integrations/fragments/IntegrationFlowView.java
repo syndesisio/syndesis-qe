@@ -173,7 +173,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public SelenideElement getStepOnPosition(int position) {
-        return $$(By.className("step")).shouldBe(sizeGreaterThanOrEqual(position))
+        return $$(By.className("list-group-item")).shouldBe(sizeGreaterThanOrEqual(position))
                 .get(position - 1).shouldBe(visible);
     }
 

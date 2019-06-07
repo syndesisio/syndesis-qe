@@ -45,7 +45,7 @@ public class Integrations extends SyndesisPageObject {
     }
 
     public void goToIntegrationDetail(String integrationName) {
-        integrationsList.invokeActionOnItem(integrationName, ListAction.CLICK);
+        integrationsList.invokeActionOnItem(integrationName, ListAction.VIEW);
     }
 
     public void deleteIntegration(String integrationName) {

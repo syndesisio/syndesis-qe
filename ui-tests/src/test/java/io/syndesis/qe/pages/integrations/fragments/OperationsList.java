@@ -1,8 +1,11 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.have;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
 
@@ -10,10 +13,15 @@ import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import io.syndesis.qe.fragments.common.list.RowList;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class OperationsList extends RowList {
     public OperationsList(By rootElement) {
         super(rootElement);
@@ -43,11 +51,22 @@ public class OperationsList extends RowList {
     public SelenideElement getTitle(String title) {
         // operation list does not have the title="..." attribute
         return getRootElement().shouldBe(visible).$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1))
-                .find(have(exactText(title)));
+            .find(have(exactText(title)));
+    }
+
+    public void apiOperationCreateFlow(String title) {
+        log.info("Searching for API provider operation {}", title);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> $(getItem(title)).is(visible), 15 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("API provider operation in list was not found in 15s.", e);
+        }
+
+        $(getItem(title)).$("[data-testid=\"api-provider-operations-create-flow\"]").click();
     }
 
     public List<String> getOperations() {
         return getRootElement().shouldBe(visible).$$(Element.TITLE).stream()
-                .map(SelenideElement::text).collect(Collectors.toList());
+            .map(SelenideElement::text).collect(Collectors.toList());
     }
 }

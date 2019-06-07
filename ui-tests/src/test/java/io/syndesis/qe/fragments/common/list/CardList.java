@@ -3,15 +3,19 @@ package io.syndesis.qe.fragments.common.list;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+
+import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.openqa.selenium.By;
 
 import java.util.concurrent.TimeoutException;
 
-
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Condition.text;
+
 import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
@@ -37,6 +41,15 @@ public class CardList extends AbstractUiElementsList {
         return getRootElement().$$(Element.CARD).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(title));
     }
 
+    public void invokeActionOnItem(String title, ListAction action) {
+        switch (action) {
+            case CLICK:
+                getItem(title).shouldBe(visible).click();
+                break;
+            default:
+        }
+    }
+
     @Override
     public SelenideElement getTitle(String title) {
         try {
@@ -45,6 +58,5 @@ public class CardList extends AbstractUiElementsList {
             fail("Connection was not loaded in 60s", e);
         }
         return getRootElement().$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(title));
-
     }
 }

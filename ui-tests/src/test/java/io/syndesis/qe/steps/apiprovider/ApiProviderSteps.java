@@ -50,7 +50,7 @@ public class ApiProviderSteps {
     @When("^select API Provider operation flow (.+)$")
     public void selectOperation(String operationName) {
         operationsList.validate();
-        operationsList.invokeActionOnItem(operationName, ListAction.CLICK);
+        operationsList.apiOperationCreateFlow(operationName);
     }
 
     @Then("check ([\\w ]+) operation is not present in API Provider operation list")
