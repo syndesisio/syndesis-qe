@@ -9,7 +9,6 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.SyndesisPageObject;
 
 public abstract class AbstractUiElementsList extends SyndesisPageObject {
@@ -35,13 +34,4 @@ public abstract class AbstractUiElementsList extends SyndesisPageObject {
     abstract SelenideElement getItem(String title);
 
     abstract SelenideElement getTitle(String title);
-
-    public void invokeActionOnItem(String title, ListAction action) {
-        switch(action) {
-            case CLICK:
-                getItem(title).shouldBe(visible).click();
-                break;
-            default:
-        }
-    }
 }

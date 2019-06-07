@@ -1,17 +1,17 @@
 package io.syndesis.qe.pages.connections.fragments.list;
 
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.conditions.Text;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.fragments.common.list.CardList;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.utils.TestUtils;
+
 import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import com.codeborne.selenide.SelenideElement;
 
 public class ConnectionsList extends CardList {
 

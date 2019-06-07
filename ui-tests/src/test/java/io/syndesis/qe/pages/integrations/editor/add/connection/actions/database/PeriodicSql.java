@@ -1,6 +1,6 @@
 package io.syndesis.qe.pages.integrations.editor.add.connection.actions.database;
 
-import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -46,7 +46,7 @@ public class PeriodicSql extends Sql {
         SelenideElement selectElement = $(Element.SELECT_PERIOD).shouldBe(visible);
         selectElement.click();
         log.info(selectElement.toString());
-        $(By.className("dropdown-menu")).$$(By.tagName("a")).filter(text(timeUnits)).get(0).click();
+        $(By.className("dropdown-menu")).$$(By.tagName("a")).filter(exactText(timeUnits)).get(0).click();
        // selectElement.selectOption(timeUnits);
     }
 

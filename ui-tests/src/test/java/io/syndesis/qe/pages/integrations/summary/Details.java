@@ -26,11 +26,11 @@ public class Details extends SyndesisPageObject {
     ModalDialogPage modal = new ModalDialogPage();
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-detail-page");
-        public static final By STATUS = By.cssSelector("syndesis-integration-status");
-        public static final By STARTING_STATUS = By.cssSelector("syndesis-integration-status-detail");
-        public static final By PUBLISHED_VERSION = By.xpath("//h1[@class='integration-detail__name']/following-sibling::div");
-        public static final By TITLE = By.cssSelector("h1 > syndesis-editable-text");
+        public static final By ROOT = By.className("pf-c-page__main");
+        public static final By STATUS = By.cssSelector("div[data-testid=\"syndesis-integration-status\"]");
+        public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
+        public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
+        public static final By TITLE = By.className("pf-c-title.pf-m-lg.integration-detail-editable-name.pf-u-mr-lg");
         public static final By KEBEB_OPEN_MENU = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
         public static final By INFO = By.className("integration-detail__info");

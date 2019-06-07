@@ -211,7 +211,7 @@ public class EditorSteps {
     public void editIntegrationStep(int oneBasedStepPosition) {
         log.info("Editing integration step #" + oneBasedStepPosition);
         flowViewComponent.getStepOnPosition(oneBasedStepPosition)
-                .$(By.className("step-container")).shouldBe(visible).click();
+                .$(By.cssSelector("[data-testid=\"integration-editor-step-adder-configure-button\"]")).shouldBe(visible).click();
     }
 
     @When("^delete step on position (\\d+)$")
