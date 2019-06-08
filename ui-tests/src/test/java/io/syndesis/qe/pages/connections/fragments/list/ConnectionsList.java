@@ -53,7 +53,9 @@ public class ConnectionsList extends CardList {
     @Override
     public SelenideElement getItem(String title) {
         return $(By.cssSelector(String.format(Element.CONNECTION_CARD,
-            title.toLowerCase().replaceAll(" ", "-"))));
+            title.toLowerCase()
+                .replaceAll("\\s|\\)", "-")
+                .replaceAll("\\(", ""))));
     }
 
     @Override
