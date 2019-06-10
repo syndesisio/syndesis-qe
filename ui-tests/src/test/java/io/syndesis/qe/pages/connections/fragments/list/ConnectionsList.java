@@ -19,6 +19,7 @@ public class ConnectionsList extends CardList {
     private static final class Element {
         public static final By TECH_PREVIEW = By.xpath("syndesis-card-tech-preview");
         public static final String CONNECTION_CARD = "div[data-testid=\"connection-card-%s-card\"]";
+        public static final String CONNECTION_TITLE = "h1[data-testid=\"connection-card-title\"]";
         public static String KEBAB_MENU_SELECTOR = "[id=\"connection-%s-menu\"]";
 
     }
@@ -38,6 +39,12 @@ public class ConnectionsList extends CardList {
                 TestUtils.sleepForJenkinsDelayIfHigher(3);
                 new ModalDialogPage().getButton("Delete").shouldBe(visible).click();
                 break;
+            case CLICK:
+                getItem(title)
+                    .find(By.cssSelector(Element.CONNECTION_TITLE))
+                    .shouldBe(visible)
+                    .click();
+                break;
             default:
                 super.invokeActionOnItem(title, action);
         }
@@ -45,7 +52,10 @@ public class ConnectionsList extends CardList {
 
     @Override
     public SelenideElement getItem(String title) {
-        return $(By.cssSelector(String.format(Element.CONNECTION_CARD, title.toLowerCase().replaceAll(" ", "-"))));
+        return $(By.cssSelector(String.format(Element.CONNECTION_CARD,
+            title.toLowerCase()
+                .replaceAll("\\s|\\)", "-")
+                .replaceAll("\\(", ""))));
     }
 
     @Override
