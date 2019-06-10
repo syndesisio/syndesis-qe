@@ -19,17 +19,16 @@ Feature: Customization - API Connector CRUD
     Then upload swagger file
       | url | http://petstore.swagger.io/v2/swagger.json |
 
-    And navigate to the next Api Connector wizard step "Review Actions"
+    And click on the "Next" button
     Then check visibility of page "Review Actions"
-    And navigate to the next Api Connector wizard step "Specify Security"
+    And click on the "Next" link
     Then check visibility of page "Specify Security"
     Then set up api connector security
-      | authType       | OAuth 2.0                             |
+      | authType | OAuth 2.0 |
+    And fill in values by element ID
       | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
-
-    And navigate to the next Api Connector wizard step "Review Edit Connector Details"
-    Then check visibility of page "Review Edit Connector Details"
-    And create new connector
+    And click on the "Next" button
+    And click on the "Save" button
 
     Then check visibility of the new connector "Swagger Petstore"
 
@@ -42,27 +41,40 @@ Feature: Customization - API Connector CRUD
     Then upload swagger file
       | file | swagger/connectors/petstore.json |
 
-    Then navigate to the next Api Connector wizard step "Review Actions"
+    And click on the "Next" button
     Then check visibility of page "Review Actions"
-    Then navigate to the next Api Connector wizard step "Specify Security"
+    And click on the "Next" link
     Then check visibility of page "Specify Security"
     Then set up api connector security
-      | authType       | OAuth 2.0                             |
+      | authType | OAuth 2.0 |
+    And fill in values by element ID
       | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
-
-    Then navigate to the next Api Connector wizard step "Review Edit Connector Details"
-    Then check visibility of page "Review Edit Connector Details"
-    And create new connector
+    And click on the "Next" button
+    And click on the "Save" button
 
     Then check visibility of the new connector "Swagger Petstore"
 
   @edit-api-connector
   Scenario: Edit parameters
-    When create new API connector
-      | source   | file           | swagger/connectors/petstore.json      |
-      | security | authType       | OAuth 2.0                             |
-      | security | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
-      | details  | connectorName  | Swagger Petstore                      |
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
+    And check visibility of page "Upload Swagger Specification"
+    Then upload swagger file
+      | file | swagger/connectors/petstore.json |
+
+    And click on the "Next" button
+    Then check visibility of page "Review Actions"
+    And click on the "Next" link
+    Then check visibility of page "Specify Security"
+    Then set up api connector security
+      | authType | OAuth 2.0 |
+    And fill in values by element ID
+      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
+    And click on the "Next" button
+    And fill in values by element ID
+      | name | Swagger Petstore |
+    And click on the "Save" button
 
     And open the API connector "Swagger Petstore" detail
     Then check visibility of page "Connector Details"
@@ -72,21 +84,36 @@ Feature: Customization - API Connector CRUD
       | name        | Swagger Petstore-1           |
       | description | Description-1                |
       | host        | http://petstore.swagger.io-1 |
-      | basePath    | /v2-1                        |
+      | basepath    | /v2-1                        |
     And click on the "Save" button
     Then validate connector detail values
       | name        | Swagger Petstore-1           |
       | description | Description-1                |
       | host        | http://petstore.swagger.io-1 |
-      | basePath    | /v2-1                        |
+      | basepath    | /v2-1                        |
 
   @create-delete-api-connector
   Scenario: Delete
-    When create new API connector
-      | source   | file           | swagger/connectors/petstore.json      |
-      | security | authType       | OAuth 2.0                             |
-      | security | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
-      | details  | connectorName  | Swagger Petstore                      |
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
+    And check visibility of page "Upload Swagger Specification"
+    Then upload swagger file
+      | file | swagger/connectors/petstore.json |
+
+    And click on the "Next" button
+    Then check visibility of page "Review Actions"
+    And click on the "Next" link
+    Then check visibility of page "Specify Security"
+    Then set up api connector security
+      | authType | OAuth 2.0 |
+    And fill in values by element ID
+      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
+    And click on the "Next" button
+    And fill in values by element ID
+      | name | Swagger Petstore |
+    And click on the "Save" button
+
     And click on the "Delete" button
     Then check visibility of page "Modal Dialog"
     When cancel modal dialog window

@@ -1,21 +1,21 @@
 package io.syndesis.qe.fragments.common.form;
 
-import java.io.File;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 import org.openqa.selenium.By;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Condition.visible;
+
+import java.io.File;
 
 /**
  * General implementation for the component used in API connector and API provider
- *
  */
 public class ApiSpecificationForm {
     private static class Input {
-        public static By CHOOSE_FILE = By.xpath("//input[@type='file']");
-        public static By URL = By.name("swaggerFileUrl");
-        public static By UPLOAD_AN_OPENAPI_FILE = By.xpath("//input[@type='radio' and ../text()[contains(.,'Upload an OpenAPI file')]]");
-        public static By USE_A_URL = By.xpath("//input[@type='radio' and ../text()[contains(.,'Use a URL')]]");
+        public static By CHOOSE_FILE = By.className("open-api-select-method__dnd-container");
+        public static By URL = By.id("method");
+        public static By UPLOAD_AN_OPENAPI_FILE = By.id("method-file");
+        public static By USE_A_URL = By.id("method-url");
         public static By CREATE_FROM_SCRATCH = By.xpath("//input[@type='radio' and ../text()[contains(.,'Create from scratch')]]");
     }
 
@@ -36,12 +36,13 @@ public class ApiSpecificationForm {
     }
 
     public void uploadFileFromPath(String path) {
-        $(Input.UPLOAD_AN_OPENAPI_FILE).shouldBe(visible).setSelected(true);
-        $(Input.CHOOSE_FILE).shouldBe(visible).uploadFile(new File(getClass().getClassLoader().getResource(path).getFile()));
+        $(Input.UPLOAD_AN_OPENAPI_FILE).shouldBe(visible).click();
+        $(Input.CHOOSE_FILE).shouldBe(visible).$(By.tagName("input"))
+            .uploadFile(new File(getClass().getClassLoader().getResource(path).getFile()));
     }
 
     public void uploadFileFromUrl(String url) {
-        $(Input.USE_A_URL).shouldBe(visible).setSelected(true);
+        $(Input.USE_A_URL).shouldBe(visible).click();
         $(Input.URL).shouldBe(visible).sendKeys(url);
     }
 

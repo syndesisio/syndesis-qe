@@ -5,16 +5,16 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byId;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
-
 public class ApiClientConnectorDetail extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-api-connector-detail");
+        public static final By ROOT = By.className("api-connector-details-form__card");
     }
 
     @Override
@@ -36,7 +36,8 @@ public class ApiClientConnectorDetail extends SyndesisPageObject {
     }
 
     public SelenideElement getTextToEditElement(String propertyName) {
-        return getEditablePropertyLabel(propertyName).$(By.xpath("./following-sibling::*/descendant-or-self::span[@class='syn-form-row__input--editor']"));
+        return getEditablePropertyLabel(propertyName)
+            .$(By.xpath("./following-sibling::*/descendant-or-self::span[@class='syn-form-row__input--editor']"));
     }
 
     public SelenideElement getTextEditor(String id) {
