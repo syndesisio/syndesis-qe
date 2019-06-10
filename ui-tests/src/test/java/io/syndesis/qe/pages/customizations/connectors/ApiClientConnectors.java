@@ -6,13 +6,13 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
-import com.codeborne.selenide.CollectionCondition;
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
-
-import io.syndesis.qe.pages.SyndesisPageObject;
 
 public class ApiClientConnectors extends SyndesisPageObject {
 
@@ -37,7 +37,6 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     public SelenideElement getConnectorItem(String connectorName) {
         return getRootElement().findAll(Element.CONNECTOR_TITLE).find(text(connectorName)).$(By.xpath("./ancestor::div[@class='list-pf-item']"));
-        //        return getRootElement().$(By.xpath("//div[@class='list-pf-title' AND text()='" + connectorName + "']/ancestor::div[@class='list-pf-item']"));
     }
 
     @Override
