@@ -88,8 +88,6 @@ public class CommonSteps {
     }
 
     private static class Element {
-        public static final By LOGOUT_MENU = By.id("userMenuDropdownButton");
-        public static final By LOGOUT_MENU_ACTION_TAG = By.tagName("a");
         public static final By LOGIN_BUTTON = By.className("btn");
         public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
 
@@ -109,10 +107,11 @@ public class CommonSteps {
 
     @When("^log out from Syndesis")
     public void logout() {
-        $(Element.LOGOUT_MENU).shouldBe(visible).click();
-        $(Element.LOGOUT_MENU).shouldBe(visible).parent()
-            .$$(Element.LOGOUT_MENU_ACTION_TAG).filter(matchText("(\\s*)" + "Logout" + "(\\s*)"))
-            .shouldHaveSize(1).first().click();
+        // https://github.com/syndesisio/syndesis/issues/5585
+        SelenideElement logoutDropdown = $(By.className("pf-c-page__header-tools"))
+            .$$(By.className("pf-c-dropdown")).shouldHaveSize(2).get(1);
+        logoutDropdown.shouldBe(visible).click();
+        clickOnButton("Logout");
 
         try {
             OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("/logout"), 20 * 1000);
