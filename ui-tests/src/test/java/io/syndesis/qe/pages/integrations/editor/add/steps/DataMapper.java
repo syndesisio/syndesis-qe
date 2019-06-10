@@ -154,7 +154,7 @@ public class DataMapper extends SyndesisPageObject {
 
     public void doCreateMapping(String source, String target) {
         createNewMapping(source, target);
-        $(Element.ADD_MAPPING_ICON).shouldBe(visible).click();
+        $(Element.ADD_MAPPING_ICON).scrollIntoView(true).shouldBe(visible).click();
     }
 
     private void createNewMapping(String source, String target) {
