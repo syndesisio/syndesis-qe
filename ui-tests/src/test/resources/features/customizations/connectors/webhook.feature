@@ -27,18 +27,19 @@ Feature: Webhook extension
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values
-      | Select Type | JSON Instance |
-    #only available after type is selected
-    And fill in values by element ID
-      | specification | {"author":"New Author","title":"Book Title"} |
-    And click on the "Done" button
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    # wait for UI to open definition
+    And sleep for jenkins delay or "5" seconds
+    And fill text into text-editor
+      | {"author":"New Author","title":"Book Title"} |
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into CONTACT values ('Prokop' , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
-    And click on the "Done" button
+    And click on the "Next" button
     # add data mapper step
     And add integration step on position "0"
     And select "Data Mapper" integration step
