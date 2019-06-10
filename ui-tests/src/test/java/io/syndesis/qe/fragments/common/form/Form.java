@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import com.codeborne.selenide.Condition;
 import org.apache.commons.lang3.BooleanUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -61,7 +62,7 @@ public class Form {
         // here, key is attribute (name or id) value of the input
         // and value of the map element pair is element's tag for later use
         Map<String, String> inputsMap = new HashMap<>();
-        for (String tagName : Arrays.asList("input", "select", "textarea")) {
+        for (String tagName : Arrays.asList("input", "select", "textarea", "button")) {
             for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
@@ -81,7 +82,10 @@ public class Form {
                     input = getRootElement().$(cssSelector).shouldBe(visible);
                 }
 
-                if (input.parent().$(By.tagName("select")).exists()) {
+                if (input.is(Condition.type("button")) && input.parent().has(Condition.cssClass("dropdown"))) {
+                    input.click();
+                    input.parent().$$(By.tagName("a")).find(Condition.exactText(data.get(key))).click();
+                } else if (input.parent().$(By.tagName("select")).exists()) {
                     log.debug("trying to set " + data.get(key) + " into element" + input.toString());
                     input.selectOptionContainingText(data.get(key));
                 } else if ("checkbox".equals(input.getAttribute("type"))) {
