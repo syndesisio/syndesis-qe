@@ -8,14 +8,9 @@ Feature: Customization - API Connector - ApicurIO GUI
   Background:
     Given log into the Syndesis
     And clean application state
-
-    When navigate to the "Customizations" page
-    Then check visibility of page "Customizations"
-
-    When click on the "API Client Connectors" link
-    Then check visibility of page "API Client Connectors"
-
-    When open new Api Connector wizard
+    And click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
     And check visibility of page "Upload Swagger Specification"
     And upload swagger file src/test/resources/swagger/connectors/invalid/kie-server-swagger.json
     And navigate to the next Api Connector wizard step "Review Actions"

@@ -18,9 +18,9 @@ Feature: Integration - AMQ to REST
     And reset content of "todo" table
     And Set Todo app credentials
     And deploy ActiveMQ broker
-    And navigate to the "Customizations" page
-    And click on the "Extensions" link
-    And click on the "Import Extension" button
+    When click on the "Customizations" link
+    And navigate to the "Extensions" page
+    And click on the "Import Extension" link
     And upload extension with name "sample-damage-reporter-extension-1.4.8.jar" from relative path "./src/test/resources/extensions/"
     And click on the "Import Extension" button
     # Same as 'create new API connector' but URL for t odo app is set in the code according to namespace and host

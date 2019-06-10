@@ -12,12 +12,9 @@ Feature: Customization - API Connector CRUD
 
   @create-api-connector-from-url-test
   Scenario: Create from url
-    When navigate to the "Customizations" page
-    Then check visibility of page "Customizations"
-
-    When click on the "API Client Connectors" link
-    Then check visibility of page "API Client Connectors"
-    And open new Api Connector wizard
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
     And check visibility of page "Upload Swagger Specification"
     Then upload swagger file
       | url | http://petstore.swagger.io/v2/swagger.json |
@@ -38,12 +35,9 @@ Feature: Customization - API Connector CRUD
 
   @create-api-connector-from-file-test
   Scenario: Create from local file
-    When navigate to the "Customizations" page
-    Then check visibility of page "Customizations"
-
-    When click on the "API Client Connectors" link
-    Then check visibility of page "API Client Connectors"
-    And open new Api Connector wizard
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
     And check visibility of page "Upload Swagger Specification"
     Then upload swagger file
       | file | swagger/connectors/petstore.json |
@@ -103,8 +97,8 @@ Feature: Customization - API Connector CRUD
     And created connections
       | Swagger Petstore | no credentials | Petstore conn | no validation |
 
-    Then navigate to the "Customizations" page
-    And click on the "API Client Connectors" link
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
 
     #delete created connector
     Then delete connector Swagger Petstore
