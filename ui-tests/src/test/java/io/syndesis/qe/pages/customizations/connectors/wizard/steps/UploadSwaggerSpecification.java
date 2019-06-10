@@ -21,7 +21,7 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     }
 
     private static class Element {
-        public static By ROOT = By.cssSelector("syndesis-api-connector-swagger-upload");
+        public static By ROOT = By.className("open-api-review-actions");
     }
 
     @Override

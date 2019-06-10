@@ -94,7 +94,7 @@ public class CommonSteps {
         public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
 
         public static final By navigationLink(String title) {
-            return By.cssSelector(String.format("a[data-testid=\"ui-%s\"]", title.toLowerCase()));
+            return By.cssSelector(String.format("a[data-testid=\"ui-%s\"]", title.toLowerCase().replaceAll("[\\s_]", "-")));
         }
     }
 
