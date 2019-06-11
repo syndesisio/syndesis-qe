@@ -3,11 +3,6 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import java.util.concurrent.TimeoutException;
-
-import cucumber.api.java.en.And;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
 import io.syndesis.qe.templates.HTTPEndpointsTemplate;
@@ -17,8 +12,14 @@ import io.syndesis.qe.templates.KuduRestAPITemplate;
 import io.syndesis.qe.templates.KuduTemplate;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.PublicOauthProxyTemplate;
+import io.syndesis.qe.templates.WildFlyTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import java.util.concurrent.TimeoutException;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,7 +32,7 @@ public class OpenshiftValidationSteps {
     @Then("^check that pod \"([^\"]*)\" logs contain string \"([^\"]*)\"$")
     public void checkPodHasInLog(String podPartialName, String expectedText) {
         assertThat(OpenShiftUtils.getPodLogs(podPartialName))
-                .containsIgnoringCase(expectedText);
+            .containsIgnoringCase(expectedText);
     }
 
     @Given("^deploy FTP server$")
@@ -99,7 +100,12 @@ public class OpenshiftValidationSteps {
         PublicOauthProxyTemplate.deploy();
     }
 
-    @And("^wait until \"([^\"]*)\" pod is reloaded$")
+    @Given("^deploy OData server$")
+    public void deployODataServer() {
+        WildFlyTemplate.deploy("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git", "odata");
+    }
+
+    @Given("^wait until \"([^\"]*)\" pod is reloaded$")
     public void waitUntilPodIsReloaded(String podName) {
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded(podName);
