@@ -224,7 +224,7 @@ public class AtlasMapperGenerator {
             atlasMapping.getDataSource().add(s);
         }
 
-        atlasMapping.setName("REST." + UUID.randomUUID().toString());
+        atlasMapping.setName("REST." + UUID.randomUUID().toString().replaceAll("-", ""));
         atlasMapping.setLookupTables(new LookupTables());
         atlasMapping.setProperties(new Properties());
         atlasMapping.getDataSource().add(processTarget());
@@ -370,7 +370,7 @@ public class AtlasMapperGenerator {
      */
     private Mapping createMappingObject(DataMapperStepDefinition mappingDef, MappingType type, String delimiter, List<Field> in, List<Field> out) {
         Mapping generatedMapping = new Mapping();
-        generatedMapping.setId(UUID.randomUUID().toString());
+        generatedMapping.setId(UUID.randomUUID().toString().replaceAll("-", ""));
         generatedMapping.setMappingType(type);
         if (delimiter != null) {
             generatedMapping.setDelimiter(delimiter);
