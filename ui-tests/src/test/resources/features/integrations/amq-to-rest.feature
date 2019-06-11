@@ -14,21 +14,39 @@ Feature: Integration - AMQ to REST
   Background: Clean application state and prepare what is needed
     Given log into the Syndesis
     And clean application state
-    And wait for Todo to become ready
-    And reset content of "todo" table
+    Then wait for Todo to become ready
+
+    When reset content of "todo" table
     And Set Todo app credentials
-    And deploy ActiveMQ broker
+    Then deploy ActiveMQ broker
+
     When click on the "Customizations" link
     And navigate to the "Extensions" page
     And click on the "Import Extension" link
     And upload extension with name "sample-damage-reporter-extension-1.4.8.jar" from relative path "./src/test/resources/extensions/"
-    And click on the "Import Extension" button
-    # Same as 'create new API connector' but URL for t odo app is set in the code according to namespace and host
-    And create new TODO API connector via URL
-      | security | authType      | HTTP Basic Authentication |
-      | details  | connectorName | Todo connector            |
-      | details  | routeHost     | todo                      |
-      | details  | baseUrl       | /api                      |
+    Then click on the "Import Extension" button
+
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
+    And check visibility of page "Upload Swagger Specification"
+    Then upload TODO API swagger from URL
+
+    When click on the "Next" button
+    Then check visibility of page "Review Actions"
+
+    When click on the "Next" link
+    Then check visibility of page "Specify Security"
+
+    When set up api connector security
+      | authType | HTTP Basic Authentication |
+    And click on the "Next" button
+    And fill in values by element ID
+      | name     | Todo connector |
+      | host     | todo           |
+      | basepath | /api           |
+    And click on the "Save" button
+
     And created connections
       | Red Hat AMQ    | AMQ  | AMQ             | AMQ on OpenShift |
       | Todo connector | todo | TODO connection | no validation    |
@@ -42,27 +60,29 @@ Feature: Integration - AMQ to REST
     And check that position of connection to fill is "Start"
     When select the "AMQ" connection
     And select "Subscribe for Messages" integration action
-    And fill in values
-      | Destination Name | inventoryReceived |
-      | Destination Type | Queue             |
+    And fill in values by element data-testid
+      | destinationname | inventoryReceived |
+      | destinationtype | Queue             |
     And click on the "Next" button
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish point
     Then check that position of connection to fill is "Finish"
     Then select the "TODO connection" connection
     And select "Create new task" integration action
+    And click on the "Next" button
 
     # add custom step
     # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
     And select "Damage Reporter" integration step
+    And click on the "Next" button
 
     # add data mapper
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-
+    And open data mapper collection mappings
     And create data mapper mappings
       | task | body.task |
     And click on the "Done" button

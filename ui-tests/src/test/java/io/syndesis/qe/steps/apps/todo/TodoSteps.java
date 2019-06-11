@@ -6,29 +6,27 @@ import static org.assertj.core.api.Assertions.fail;
 import static com.codeborne.selenide.Selenide.sleep;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.pages.apps.todo.Todo;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TodoUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import com.codeborne.selenide.Selenide;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.pages.apps.todo.Todo;
-import io.syndesis.qe.steps.customizations.connectors.ApiClientConnectorsSteps;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TodoUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -65,22 +63,15 @@ public class TodoSteps {
         assertThat(startCount).isLessThan(endCount);
     }
 
-    //Because app can have another route and url should set dynamically, url is added to the original DataTable
-    @Then("^create new TODO API connector via URL$")
-    public void createNewTodoApiConnector(DataTable properties) throws Throwable {
+    @When("^upload TODO API swagger from URL$")
+    public void createNewTodoApiConnector() {
         if (OpenShiftUtils.getInstance().getRoute("todo2") == null
-                || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")) {
+            || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")) {
             TodoUtils.createDefaultRouteForTodo("todo2", "/");
         }
         String host = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
         String url = host + "/swagger.json";
-        List<List<String>> originalTableModifiableCopy = new ArrayList<>(properties.cells());
-        List<String> newRow = new ArrayList<>();
-        newRow.add("source");
-        newRow.add("url");
-        newRow.add(url);
-        originalTableModifiableCopy.add(newRow);
-        new ApiClientConnectorsSteps().createNewApiConnector(DataTable.create(originalTableModifiableCopy));
+        new UploadSwaggerSpecification().upload("url", url);
     }
 
     @Then("^check Todo list has \"(\\w+)\" items")
@@ -95,7 +86,6 @@ public class TodoSteps {
             fail("Todo app list did not contain expected number of items in 15 seconds!", e);
         }
     }
-
 
     @When("^publish JMS message on Todo app page from resource \"([^\"]*)\"$")
     public void publishMessageFromResourceToDestinationWithName(String resourceName) {

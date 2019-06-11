@@ -2,14 +2,18 @@ package io.syndesis.qe.steps.customizations.extensions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import com.codeborne.selenide.Condition;
-import io.syndesis.qe.CustomWebDriverProvider;
-import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.customizations.CustomizationsPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
+import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
+import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.utils.TestUtils;
+
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -22,11 +26,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.customizations.CustomizationsPage;
-import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
-import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
-import io.syndesis.qe.steps.CommonSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -62,7 +61,6 @@ public class ExtensionSteps {
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
             commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
 
-
             uploadExtensionFromFile(dataRow.get(0), dataRow.get(1));
 
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
@@ -83,8 +81,8 @@ public class ExtensionSteps {
 
         assertThat(techExtensionJar.toFile()).exists();
         DragAndDropFile.dragAndDropFile(new File(techExtensionJar.toUri()),
-                $(By.className("dnd-file-chooser")).shouldBe(visible),
-                By.className("extension-import-review__title"));
+            $(By.className("dnd-file-chooser")).shouldBe(visible),
+            By.className("extension-import-review__title"));
 
         TestUtils.sleepForJenkinsDelayIfHigher(20);
     }
@@ -112,7 +110,6 @@ public class ExtensionSteps {
         }
     }
 
-
     @When("^.*uploads? extension \"([^\"]*)\"$")
     public void uploadFile(String extensionName) throws Throwable {
         uploadExtensionFromFile(extensionName);
@@ -130,9 +127,8 @@ public class ExtensionSteps {
 
         String techExtensionUrl = extensionPath + extensionName;
         Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
-        $(By.cssSelector("input[type='file']")).shouldBe(visible).uploadFile(techExtensionJar.toFile());
+        $(By.tagName("input")).should(exist).uploadFile(techExtensionJar.toFile());
     }
-
 
     /**
      * Method will download extension .jar file from ../syndesis-extensions/extensionFolderName/target/*.jar
