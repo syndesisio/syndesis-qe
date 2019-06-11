@@ -11,15 +11,15 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 
-import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 
 public class ApiClientConnectors extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-api-connector-list");
-        public static By CONNECTOR_TITLE = By.xpath("//div[@class='list-pf-title']");
-        public static By CONNECTORS_LIST_ITEM = By.xpath("//div[@class='list-pf-item']");
+        public static final By ROOT = By.className("list-group");
+        public static By CONNECTOR_TITLE = By.className("list-group-item-heading");
+        public static By CONNECTORS_LIST_ITEM = By.className("list-group-item");
+        public static By DETAIL_BUTTON = By.cssSelector("a[data-testid=\"api-connector-list-item-details-button\"]");
     }
 
     private static class Button {
@@ -36,7 +36,9 @@ public class ApiClientConnectors extends SyndesisPageObject {
     }
 
     public SelenideElement getConnectorItem(String connectorName) {
-        return getRootElement().findAll(Element.CONNECTOR_TITLE).find(text(connectorName)).$(By.xpath("./ancestor::div[@class='list-pf-item']"));
+        return $(By.cssSelector(("div[data-testid=\"api-connector-list-item-" + connectorName.trim() + "-list-item\"]")
+            .replaceAll("[\\s_]", "-").toLowerCase()))
+            .should(exist);
     }
 
     @Override
@@ -63,7 +65,9 @@ public class ApiClientConnectors extends SyndesisPageObject {
     }
 
     public void clickConnectorByTitle(String connectorName) {
-        $$(Element.CONNECTOR_TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1)).find(text(connectorName)).shouldBe(visible).click();
+        $(By.cssSelector(("div[data-testid=\"api-connector-list-item-" + connectorName.trim() + "-list-item\"]")
+            .replaceAll("[\\s_]", "-").toLowerCase()))
+            .should(exist).$(Element.DETAIL_BUTTON).shouldBe(visible).click();
     }
 
     public SelenideElement getDeleteButton(String connectorName) {

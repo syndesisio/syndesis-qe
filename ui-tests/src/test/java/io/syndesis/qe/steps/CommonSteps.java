@@ -61,7 +61,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -196,8 +195,8 @@ public class CommonSteps {
             String connectionName = dataRow.get(2);
             String connectionDescription = dataRow.get(3);
 
-            if (connectionType.equalsIgnoreCase("Gmail") ||
-                connectionType.equalsIgnoreCase("Google Calendar")) {
+            if ("Gmail".equalsIgnoreCase(connectionType) ||
+                "Google Calendar".equalsIgnoreCase(connectionType)) {
                 Account a = AccountUtils.get(connectionCredentialsName);
                 GoogleAccount googleAccount = googleAccounts.getGoogleAccountForTestAccount(connectionCredentialsName);
                 a.getProperties().put("accessToken", googleAccount.getCredential().getAccessToken());
@@ -233,14 +232,14 @@ public class CommonSteps {
             configureConnectionSteps.fillConnectionDetails(connectionCredentialsName);
 
             // do nothing if connection does not require any credentials
-            if (!(connectionCredentialsName.equalsIgnoreCase("no credentials") ||
-                connectionDescription.equalsIgnoreCase("no validation"))) {
+            if (!("no credentials".equalsIgnoreCase(connectionCredentialsName) ||
+                "no validation".equalsIgnoreCase(connectionDescription))) {
 
                 clickOnButton("Validate");
                 successNotificationIsPresentWithError(connectionType + " has been successfully validated");
                 scrollTo("top", "right");
                 clickOnButton("Next");
-            } else if (connectionDescription.equalsIgnoreCase("no validation")) {
+            } else if ("no validation".equalsIgnoreCase(connectionDescription)) {
                 scrollTo("top", "right");
                 clickOnButton("Next");
             }
@@ -261,7 +260,7 @@ public class CommonSteps {
         }
     }
 
-    @And("^.*validate credentials$")
+    @Then("^.*validate credentials$")
     public void validateCredentials() {
         Map<String, Account> accounts = AccountsDirectory.getInstance().getAccounts();
         List<List<String>> oneAccountList = new ArrayList<>();
@@ -373,7 +372,7 @@ public class CommonSteps {
 
     @When("^click? on the \"([^\"]*)\" button.*$")
     public void clickOnButton(String buttonTitle) {
-        if (buttonTitle.equals("Done")) {
+        if ("Done".equals(buttonTitle)) {
             // this is hack to replace Done with Next if not present
             try {
                 syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
@@ -408,6 +407,11 @@ public class CommonSteps {
 
     @When(".*clicks? on the \"([^\"]*)\" link.*$")
     public void clickOnLink(String linkTitle) {
+        if ("Customizations".equals(linkTitle) &&
+            $(By.cssSelector("[data-testid=\"ui-api-client-connectors\"]")).isDisplayed()) {
+            //do not click when customizations menu is already visible
+            return;
+        }
         new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();
     }
 
@@ -497,11 +501,11 @@ public class CommonSteps {
         Long width = (Long) jse.executeScript("return document.documentElement.scrollWidth");
         Long height = (Long) jse.executeScript("return document.documentElement.scrollHeight");
 
-        if (leftRight.equals("right")) {
+        if ("right".equals(leftRight)) {
             y = width.intValue();
         }
 
-        if (topBottom.equals("bottom")) {
+        if ("bottom".equals(topBottom)) {
             x = height.intValue();
         }
 
@@ -513,7 +517,7 @@ public class CommonSteps {
         SyndesisPage.get(pageName).validate();
     }
 
-    @And("^select \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
+    @When("^select \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
     public void selectsFromDropdown(String option, String selectId) {
         //search by name or by id because some dropdowns have only id
         SelenideElement selectElement = $(String.format("select[name=\"%s\"], select[id=\"%s\"]", selectId, selectId))
@@ -751,8 +755,8 @@ public class CommonSteps {
 
         if (account.isPresent()) {
 
-            $$(By.tagName("input")).stream().
-                filter((e) ->
+            $$(By.tagName("input")).stream()
+                .filter(e ->
                     e.getAttribute("name").equalsIgnoreCase("type") &&
                         e.getAttribute("value").equalsIgnoreCase("username"))
                 .findFirst().get().click();
@@ -791,6 +795,7 @@ public class CommonSteps {
             waitForStringInUrl(toFind, timeoutSeconds);
             result = true;
         } catch (InterruptedException | TimeoutException e) {
+            log.debug("error", e);
         }
         return result;
     }
