@@ -5,7 +5,18 @@ import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.visible;
 
-import cucumber.api.PendingException;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
+import io.syndesis.qe.pages.integrations.Integrations;
+import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
+import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,21 +30,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
-import io.syndesis.qe.pages.integrations.Integrations;
-import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
-import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
-import io.syndesis.qe.pages.integrations.summary.Details;
-import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -85,9 +84,9 @@ public class IntegrationSteps {
         SelenideElement integration = integrations.getIntegration(integrationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         assertThat(TestUtils.waitForEvent(
-                status -> status.contains(integrationStatus),
-                () -> integrations.getIntegrationItemStatus(integration),
-                TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
+            status -> status.contains(integrationStatus),
+            () -> integrations.getIntegrationItemStatus(integration),
+            TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
         ).isTrue();
     }
 
@@ -102,9 +101,9 @@ public class IntegrationSteps {
         SelenideElement integration = integrations.getIntegration(integrationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         assertThat(TestUtils.waitForEvent(
-                status -> status.equals(integrationStatus),
-                () -> integrations.getIntegrationItemStartingStatus(integration),
-                TimeUnit.MINUTES, 10, TimeUnit.MILLISECONDS, 30)
+            status -> status.equals(integrationStatus),
+            () -> integrations.getIntegrationItemStartingStatus(integration),
+            TimeUnit.MINUTES, 10, TimeUnit.MILLISECONDS, 30)
         ).isTrue();
     }
 
@@ -114,7 +113,7 @@ public class IntegrationSteps {
         integrations.checkAllIntegrationsKebabButtons();
     }
 
-    @And("^export the integrat?ion$")
+    @When("^export the integrat?ion$")
     public void exportIntegration() throws InterruptedException {
         File exportedIntegrationFile = detailPage.exportIntegration();
         assertThat(exportedIntegrationFile)
@@ -124,31 +123,31 @@ public class IntegrationSteps {
         ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
     }
 
-    @And("^import the integration from file ([^\"]*)$")
+    @When("^import the integration from file ([^\"]*)$")
     public void importIntegration(String filePath) {
         importIntegration.importIntegration(new File(getClass().getClassLoader().getResource(filePath).getFile()));
     }
 
-    @And("^start integration \"([^\"]*)\"$")
+    @When("^start integration \"([^\"]*)\"$")
     public void startIntegration(String integrationName) {
         detailPage.clickOnKebabMenuAction("Start");
         ModalDialogPage modal = new ModalDialogPage();
         modal.getButton("Start").shouldBe(visible).click();
     }
 
-    @And("^Wait until there is no integration pod with name \"([^\"]*)\"$")
+    @Then("^Wait until there is no integration pod with name \"([^\"]*)\"$")
     public void waitForIntegrationPodShutdown(String integartionPodName) throws InterruptedException {
         OpenShiftWaitUtils.assertEventually("Pod with name " + integartionPodName + "is still running.",
                 OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
     }
 
-    @And("^.*check that data bucket \"([^\"]*)\" is available$")
+    @Then("^.*check that data bucket \"([^\"]*)\" is available$")
     public void checkPreviousDataBuckets(String bucket) {
         //there is condition for element to be visible
         dataMapper.getDataBucketElement(bucket);
     }
 
-    @And("^.*open data bucket \"([^\"]*)\"$")
+    @When("^.*open data bucket \"([^\"]*)\"$")
     public void openDataBucket(String bucket) {
         //check if it exists included
         dataMapper.switchToDatamapperIframe();
@@ -156,14 +155,14 @@ public class IntegrationSteps {
         dataMapper.switchIframeBack();
     }
 
-    @And("^.*close data bucket \"([^\"]*)\"$")
+    @When("^.*close data bucket \"([^\"]*)\"$")
     public void closeDataBucket(String bucket) {
         dataMapper.switchToDatamapperIframe();
         dataMapper.closeBucket(bucket);
         dataMapper.switchIframeBack();
     }
 
-    @And("^.*perform action with data bucket")
+    @When("^.*perform action with data bucket")
     public void performActionWithBucket(DataTable table) {
         dataMapper.switchToDatamapperIframe();
         List<List<String>> rows = table.cells();
@@ -171,9 +170,9 @@ public class IntegrationSteps {
 
         for (List<String> row : rows) {
             action = row.get(1);
-            if (action.equalsIgnoreCase("open")) {
+            if ("open".equalsIgnoreCase(action)) {
                 dataMapper.openBucket(row.get(0));
-            } else if (action.equalsIgnoreCase("close")) {
+            } else if ("close".equalsIgnoreCase(action)) {
                 dataMapper.closeBucket(row.get(0));
             } else {
                 //check if exists, condition visible is in used method
@@ -301,10 +300,10 @@ public class IntegrationSteps {
     @Then("^validate that logs of integration \"([^\"]*)\" contains items with IDs \"([^\"]*)\"$")
     public void validateThatLogsOfIntegrationContainsBodiesOfItems(String integrationName, String items) throws Throwable {
         String searchedString = "[" + String.join(", ",
-                Arrays.stream(items.split(","))
-                        .map(
-                                s -> String.format("{\"id\":%s}", s))
-                        .collect(Collectors.toList())) + "]";
+            Arrays.stream(items.split(","))
+                .map(
+                    s -> String.format("{\"id\":%s}", s))
+                .collect(Collectors.toList())) + "]";
         log.info("Searching log for string '{}'", searchedString);
         checkThatLogsContain(integrationName, searchedString);
     }

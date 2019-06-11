@@ -6,6 +6,9 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -15,8 +18,6 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -56,8 +57,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     private static final class Button {
-        public static final By Expand = By.cssSelector("button.btn.btn-default.toggle-collapsed.collapsed");
-        public static final By Collapse = By.cssSelector("button.btn.btn-default.toggle-collapsed:not(.collapsed)");
+        public static final By EXPAND = By.cssSelector("button.btn.btn-default.toggle-collapsed.collapsed");
+        public static final By COLLAPSE = By.cssSelector("button.btn.btn-default.toggle-collapsed:not(.collapsed)");
     }
 
     private StepFactory stepComponentFactory = new StepFactory();
@@ -89,7 +90,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
     public List<String> getStepsTitlesArray() {
         if (isCollapsed()) {
-            $(Button.Expand).click();
+            $(Button.EXPAND).click();
         }
 
         ElementsCollection steps = this.getRootElement().findAll(Element.STEP);
@@ -102,7 +103,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
             stepsArray.add(title.getAttribute("title"));
         }
         if (isExpanded()) {
-            $(Button.Collapse).click();
+            $(Button.COLLAPSE).click();
         }
         return stepsArray;
     }
@@ -142,7 +143,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
      */
     public String checkTextInHoverTable(String stepPosition) {
         String text;
-        if (stepPosition.equalsIgnoreCase("middle")) {
+        if ("middle".equalsIgnoreCase(stepPosition)) {
             // This is ugly but for now it works - it has only one usage: for getting our data-mapper step
             // which is between start and finish step.
             // Explanation: we have 3 steps and between them 2 elements with insert step option --> 5 total
@@ -216,10 +217,10 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public boolean isCollapsed() {
-        return $(Button.Expand).exists();
+        return $(Button.EXPAND).exists();
     }
 
     public boolean isExpanded() {
-        return $(Button.Collapse).exists();
+        return $(Button.COLLAPSE).exists();
     }
 }
