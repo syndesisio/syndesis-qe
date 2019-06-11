@@ -31,22 +31,27 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By ROOT = By.cssSelector(".integration-vertical-flow__body");
 
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
-        public static final By STEP_ROOT = By.cssSelector("div.flow-view-step");
-        public static final By STEP = By.cssSelector("div.parent-step");
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
         public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integration-flow-add-step-add-step-link\"]");
 
-        public static final By POPOVER_CLASS = By.className("popover");
-        public static final By STEP_DETAILS = By.className("step-details");
+        public static final By POPOVER_CLASS = By.className("popover-content");
+        public static final By STEP_DETAILS = By.className("list-view-pf-body");
         public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
+        public static final By DATA_WARNING_BUTTON =
+            By.cssSelector("button[data-testid=\"integration-editor-steps-list-item-warning-button\"]");
+        public static final By DATA_WARNING_TEXT =
+            By.cssSelector("a[data-testid=\"integration-editor-step-adder-add-step-before-connection-link\"]");
 
         public static final By FLOW_TITLE = By.cssSelector(".step.start .step-name");
 
         public static final By TRASH = By.className("fa-trash");
 
         public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-danger");
+
+        public static final By STEP =
+            By.cssSelector("div.list-group-item");
 
     }
 
@@ -169,11 +174,11 @@ public class IntegrationFlowView extends SyndesisPageObject {
      * @return
      */
     public SelenideElement getStepWarningElement(int stepPosition) {
-        return getStepOnPosition(stepPosition).$(Element.DATA_WARNING_CLASS);
+        return getStepOnPosition(stepPosition).$(Element.DATA_WARNING_BUTTON);
     }
 
     public SelenideElement getStepOnPosition(int position) {
-        return $$(By.className("list-group-item")).shouldBe(sizeGreaterThanOrEqual(position))
+        return $$(Element.STEP).shouldBe(sizeGreaterThanOrEqual(position))
                 .get(position - 1).shouldBe(visible);
     }
 
@@ -184,7 +189,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public String getPopoverText() {
-        String text = $(Element.POPOVER_CLASS).shouldBe(visible).getText();
+        SelenideElement textElement = $(Element.POPOVER_CLASS);
+        String text = textElement.find(Element.DATA_WARNING_TEXT).shouldBe(visible).text();
         log.info("Text found: " + text);
         return text;
     }

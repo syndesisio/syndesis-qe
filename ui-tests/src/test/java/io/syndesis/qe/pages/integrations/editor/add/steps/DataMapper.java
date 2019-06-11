@@ -300,7 +300,7 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public SelenideElement getDataBucketElement(String bucketName) {
-        return getRootElement().$(By.id(bucketName)).shouldBe(visible);
+        return $(By.id(bucketName)).shouldBe(visible);
     }
 
     public void openBucket(String bucketName) {

@@ -151,16 +151,21 @@ public class IntegrationSteps {
     @And("^.*open data bucket \"([^\"]*)\"$")
     public void openDataBucket(String bucket) {
         //check if it exists included
+        dataMapper.switchToDatamapperIframe();
         dataMapper.openBucket(bucket);
+        dataMapper.switchIframeBack();
     }
 
     @And("^.*close data bucket \"([^\"]*)\"$")
     public void closeDataBucket(String bucket) {
+        dataMapper.switchToDatamapperIframe();
         dataMapper.closeBucket(bucket);
+        dataMapper.switchIframeBack();
     }
 
     @And("^.*perform action with data bucket")
     public void performActionWithBucket(DataTable table) {
+        dataMapper.switchToDatamapperIframe();
         List<List<String>> rows = table.cells();
         String action;
 
@@ -175,6 +180,7 @@ public class IntegrationSteps {
                 dataMapper.getDataBucketElement(row.get(0));
             }
         }
+        dataMapper.switchIframeBack();
     }
 
     @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"(.*)\"$")
