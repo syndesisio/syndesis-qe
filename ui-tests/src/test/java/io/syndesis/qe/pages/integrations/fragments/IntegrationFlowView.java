@@ -190,8 +190,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public String getPopoverText() {
-        SelenideElement textElement = $(Element.POPOVER_CLASS);
-        String text = textElement.find(Element.DATA_WARNING_TEXT).shouldBe(visible).text();
+        String text = $(Element.POPOVER_CLASS).shouldBe(visible).text();
         log.info("Text found: " + text);
         return text;
     }
