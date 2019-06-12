@@ -191,7 +191,7 @@ public abstract class SyndesisPageObject {
         if (input.getAttribute("type").equals("checkbox")) {
             input.setSelected(Boolean.valueOf(value));
         } else {
-            input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+            input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
             input.sendKeys(Keys.BACK_SPACE);
             input.shouldBe(visible).clear();
             input.shouldBe(visible).sendKeys(value);

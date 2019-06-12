@@ -31,21 +31,22 @@ Feature: Integration - Databucket
 
     When select the "Twitter Listener" connection
     And select "Mention" integration action
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
     And check visibility of page "Choose a Finish Connection"
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     Then fill in invoke query input with "UPDATE TODO SET completed=1 WHERE TASK = :#TASK" value
-    And click on the "Done" button
-    And check that text "Add a data mapping step" is "visible" in step warning inside of step number "3"
+    And click on the "Next" button
+    And check that text "Add a data mapping step" is "visible" in step warning inside of step number "2"
     And check that there is no warning inside of step number "1"
 
     When open integration flow details
     Then check that in connection info popover for step number "1" is following text
-      | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
-    And check that in connection info popover for step number "3" is following text
-      | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
+      | Action | Mention | Data Type | Twitter Mention |
+    And check that in connection info popover for step number "2" is following text
+      | Action | Invoke SQL | Data Type | SQL Parameter |
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -57,12 +58,12 @@ Feature: Integration - Databucket
     And click on the "Done" button
     And open integration flow details
     Then check that in connection info popover for step number "1" is following text
-      | Twitter Listener | Action | Mention | Data Type | Twitter Mention |
-    And check that in connection info popover for step number "5" is following text
-      | PostgresDB | Action | Invoke SQL | Data Type | SQL Parameter |
-    And check that there is no warning inside of step number "5"
-    And check that there is no warning inside of step number "1"
+      | Action | Mention | Data Type | Twitter Mention |
+    And check that in connection info popover for step number "3" is following text
+      | Action | Invoke SQL | Data Type | SQL Parameter |
     And check that there is no warning inside of step number "3"
+    And check that there is no warning inside of step number "1"
+    And check that there is no warning inside of step number "2"
 
 #
 #  2. check that data buckets are available
@@ -87,7 +88,7 @@ Feature: Integration - Databucket
 
     When select the "My GMail Connector" connection
     And select "Send Email" integration action
-    And fill in values
+    And fill in values by element ID
       | Email to | jbossqa.fuse@gmail.com |
     And click on the "Done" button
 
@@ -100,8 +101,8 @@ Feature: Integration - Databucket
 
     #And check that there is no warning inside of step number "2"
     When open integration flow details
-    Then check that in connection info popover for step number "3" is following text
-      | Name | PostgresDB | Action | Invoke SQL | Data Type | SQL Result |
+    Then check that in connection info popover for step number "2" is following text
+      | Action | Invoke SQL | Data Type | n/a |
 
     When add integration step on position "1"
     And select "Data Mapper" integration step
@@ -115,7 +116,7 @@ Feature: Integration - Databucket
       | firma   | subject |
     And scroll "top" "right"
     And click on the "Done" button
-    Then check that there is no warning inside of step number "5"
+    Then check that there is no warning inside of step number "3"
 
     When click on the "Save" link
     And set integration name "Integration_with_buckets"
@@ -191,7 +192,7 @@ Feature: Integration - Databucket
 
     Then check that there is no warning inside of step number "1"
     And check that text "Add a data mapping step" is "visible" in step warning inside of steps
-      | 3 | 5 | 7 | 9 | 11 |
+      | 2 | 3 | 4 | 5 | 6 |
 
     ##################### mappings ##################################
     #################################################################

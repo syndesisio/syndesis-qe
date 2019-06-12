@@ -6,6 +6,9 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -15,8 +18,6 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,16 +32,15 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By ROOT = By.cssSelector(".integration-vertical-flow__body");
 
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
-        public static final By STEP_ROOT = By.cssSelector("div.flow-view-step");
-        public static final By STEP = By.cssSelector("div.parent-step");
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
         public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integration-flow-add-step-add-step-link\"]");
 
-        public static final By POPOVER_CLASS = By.className("popover");
-        public static final By STEP_DETAILS = By.className("step-details");
-        public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
+        public static final By POPOVER_CLASS = By.className("popover-content");
+        public static final By STEP_DETAILS = By.className("list-view-pf-body");
+        public static final By DATA_WARNING_BUTTON =
+            By.cssSelector("button[data-testid=\"integration-editor-steps-list-item-warning-button\"]");
 
         public static final By FLOW_TITLE = By.cssSelector(".step.start .step-name");
 
@@ -48,11 +48,13 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
         public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-danger");
 
+        public static final By STEP = By.cssSelector("div.list-group-item");
+
     }
 
     private static final class Button {
-        public static final By Expand = By.cssSelector("button.btn.btn-default.toggle-collapsed.collapsed");
-        public static final By Collapse = By.cssSelector("button.btn.btn-default.toggle-collapsed:not(.collapsed)");
+        public static final By EXPAND = By.cssSelector("button.btn.btn-default.toggle-collapsed.collapsed");
+        public static final By COLLAPSE = By.cssSelector("button.btn.btn-default.toggle-collapsed:not(.collapsed)");
     }
 
     private StepFactory stepComponentFactory = new StepFactory();
@@ -84,7 +86,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
     public List<String> getStepsTitlesArray() {
         if (isCollapsed()) {
-            $(Button.Expand).click();
+            $(Button.EXPAND).click();
         }
 
         ElementsCollection steps = this.getRootElement().findAll(Element.STEP);
@@ -97,7 +99,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
             stepsArray.add(title.getAttribute("title"));
         }
         if (isExpanded()) {
-            $(Button.Collapse).click();
+            $(Button.COLLAPSE).click();
         }
         return stepsArray;
     }
@@ -137,7 +139,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
      */
     public String checkTextInHoverTable(String stepPosition) {
         String text;
-        if (stepPosition.equalsIgnoreCase("middle")) {
+        if ("middle".equalsIgnoreCase(stepPosition)) {
             // This is ugly but for now it works - it has only one usage: for getting our data-mapper step
             // which is between start and finish step.
             // Explanation: we have 3 steps and between them 2 elements with insert step option --> 5 total
@@ -169,11 +171,11 @@ public class IntegrationFlowView extends SyndesisPageObject {
      * @return
      */
     public SelenideElement getStepWarningElement(int stepPosition) {
-        return getStepOnPosition(stepPosition).$(Element.DATA_WARNING_CLASS);
+        return getStepOnPosition(stepPosition).$(Element.DATA_WARNING_BUTTON);
     }
 
     public SelenideElement getStepOnPosition(int position) {
-        return $$(By.className("list-group-item")).shouldBe(sizeGreaterThanOrEqual(position))
+        return $$(Element.STEP).shouldBe(sizeGreaterThanOrEqual(position))
                 .get(position - 1).shouldBe(visible);
     }
 
@@ -184,7 +186,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public String getPopoverText() {
-        String text = $(Element.POPOVER_CLASS).shouldBe(visible).getText();
+        String text = $(Element.POPOVER_CLASS).shouldBe(visible).text();
         log.info("Text found: " + text);
         return text;
     }
@@ -210,10 +212,10 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public boolean isCollapsed() {
-        return $(Button.Expand).exists();
+        return $(Button.EXPAND).exists();
     }
 
     public boolean isExpanded() {
-        return $(Button.Collapse).exists();
+        return $(Button.COLLAPSE).exists();
     }
 }

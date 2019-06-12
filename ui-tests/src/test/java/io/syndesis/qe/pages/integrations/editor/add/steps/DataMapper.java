@@ -1,24 +1,27 @@
 package io.syndesis.qe.pages.integrations.editor.add.steps;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.interactions.Actions;
-
-import java.util.Arrays;
-import java.util.List;
-
 import static com.codeborne.selenide.CollectionCondition.size;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.switchTo;
+
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.TestUtils;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.interactions.Actions;
+
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
+
+import java.util.Arrays;
+import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by sveres on 11/14/17.
@@ -300,7 +303,7 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public SelenideElement getDataBucketElement(String bucketName) {
-        return getRootElement().$(By.id(bucketName)).shouldBe(visible);
+        return $(By.id(bucketName)).shouldBe(visible);
     }
 
     public void openBucket(String bucketName) {
