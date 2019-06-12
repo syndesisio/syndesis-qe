@@ -39,11 +39,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
         public static final By POPOVER_CLASS = By.className("popover-content");
         public static final By STEP_DETAILS = By.className("list-view-pf-body");
-        public static final By DATA_WARNING_CLASS = By.className("data-mismatch");
         public static final By DATA_WARNING_BUTTON =
             By.cssSelector("button[data-testid=\"integration-editor-steps-list-item-warning-button\"]");
-        public static final By DATA_WARNING_TEXT =
-            By.cssSelector("a[data-testid=\"integration-editor-step-adder-add-step-before-connection-link\"]");
 
         public static final By FLOW_TITLE = By.cssSelector(".step.start .step-name");
 
@@ -51,8 +48,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
         public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-danger");
 
-        public static final By STEP =
-            By.cssSelector("div.list-group-item");
+        public static final By STEP = By.cssSelector("div.list-group-item");
 
     }
 
