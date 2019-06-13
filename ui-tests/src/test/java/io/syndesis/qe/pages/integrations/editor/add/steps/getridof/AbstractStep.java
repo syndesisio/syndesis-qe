@@ -1,16 +1,18 @@
 package io.syndesis.qe.pages.integrations.editor.add.steps.getridof;
 
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import org.openqa.selenium.By;
-
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
+import io.syndesis.qe.pages.SyndesisPageObject;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
 
 public abstract class AbstractStep extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-step-configure");
+        public static final By ROOT = By.className("container-fluid");
     }
 
     public static final class StepType {

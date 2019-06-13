@@ -39,7 +39,7 @@ public class Details extends SyndesisPageObject {
 
         public static final By MULTIFLOW_COUNT = By.cssSelector("#multi-flow div.icon span.badge");
 
-        public static final By TAB = By.cssSelector("li.syn-tabs__tab > a");
+        public static final By TAB = By.cssSelector("ul.nav-tabs > li > a");
     }
 
     public static final class Status {
@@ -81,7 +81,7 @@ public class Details extends SyndesisPageObject {
     }
 
     public void editIntegration() {
-        this.getButton(Actions.EDIT).shouldBe(visible).click();
+        this.getLink(Actions.EDIT).shouldBe(visible).click();
     }
 
     public void done() {

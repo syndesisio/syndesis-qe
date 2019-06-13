@@ -3,30 +3,35 @@ package io.syndesis.qe.pages.integrations.summary;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Activity extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-activity");
+        public static final By ROOT = By.className("pf-c-page__main");
 
         public static final By ACTIVITY_WRAPPED = By.className("list-group-item");
         public static final By ACTIVITY_EXPAND_BUTTON = By.className("fa-angle-right");
 
-        public static final By DATE = By.className("list-group-item-heading");
+        public static final By DATE = By.className("list-view-pf-left");
         public static final By TIME = By.className("list-group-item-text");
         public static final By VERSION = By.className("list-view-pf-additional-info-item");
-        public static final By ERRORS = By.className("list-view-pf-actions");
+        public static final By ERRORS = By.className("integration-detail-activity-item__status-item");
 
-        public static final By ONE_ROW_TABLE = By.cssSelector(".syn-nowrap.integration-step");
+        public static final By ONE_ROW_TABLE = By.cssSelector("table > tbody");
         public static final By ONE_CELL_IN_TABLE = By.xpath(".//td");
+    }
+
+    private static final class Button {
+        public static final By REFRESH = By.cssSelector("button[data-testid=\"integration-detail-activity-refresh-button\"]");
     }
 
     public enum COLUMN {
@@ -47,7 +52,6 @@ public class Activity extends SyndesisPageObject {
         }
     }
 
-
     @Override
     public SelenideElement getRootElement() {
         return $(Element.ROOT).shouldBe(visible);
@@ -59,6 +63,7 @@ public class Activity extends SyndesisPageObject {
     }
 
     public ElementsCollection getAllActivities() {
+        refresh();
         return getRootElement().findAll(Element.ACTIVITY_WRAPPED);
     }
 
@@ -86,7 +91,6 @@ public class Activity extends SyndesisPageObject {
         this.getActivity(indexOfActivity).find(Element.ACTIVITY_EXPAND_BUTTON).click();
     }
 
-
     public ElementsCollection getActivityLogRows(int indexOfActivity) {
         if (!isActivityDisplayed(indexOfActivity)) {
             this.clickOnActivity(indexOfActivity);
@@ -99,7 +103,7 @@ public class Activity extends SyndesisPageObject {
             this.clickOnActivity(indexOfActivity);
         }
         return this.getActivity(indexOfActivity).findAll(Element.ONE_ROW_TABLE).get(indexOfRow)
-                .findAll(Element.ONE_CELL_IN_TABLE);
+            .findAll(Element.ONE_CELL_IN_TABLE);
     }
 
     public String getColumnInRowInActivityLog(int indexOfActivity, int indexOfRow, Activity.COLUMN column) {
@@ -109,9 +113,11 @@ public class Activity extends SyndesisPageObject {
         return this.getRowInActivityLog(indexOfActivity, indexOfRow).get(column.value).getText();
     }
 
-
     private boolean isActivityDisplayed(int indexOfActivity) {
         return this.getActivity(indexOfActivity).find(Element.ONE_CELL_IN_TABLE).isDisplayed();
     }
 
+    private void refresh() {
+        getRootElement().find(Button.REFRESH).shouldBe(visible).click();
+    }
 }
