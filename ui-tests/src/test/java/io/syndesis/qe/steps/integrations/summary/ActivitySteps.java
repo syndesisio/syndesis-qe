@@ -1,10 +1,11 @@
 package io.syndesis.qe.steps.integrations.summary;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.qe.pages.integrations.summary.Activity;
 import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.utils.CalendarUtils;
 
-import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.Selenide;
@@ -38,7 +39,7 @@ public class ActivitySteps {
 
     @Then("^check that in the activity log are (\\w+) activities$")
     public void checkAllActivities(int numberOfActivities) {
-        Assertions.assertThat(activityTab.getAllActivities()).hasSize(numberOfActivities);
+        assertThat(activityTab.getAllActivities()).hasSize(numberOfActivities);
     }
 
     /**
@@ -51,11 +52,11 @@ public class ActivitySteps {
         refresh();
         String timeLabel = activityTab.getActivityTime(index - 1);
         String dateLabel = activityTab.getActivityDate(index - 1);
-        Assertions.assertThat(timeLabel)
+        assertThat(timeLabel)
             .matches("^\\d{1,2}:\\d{2}:\\d{2} (AM|PM)$");
-        Assertions.assertThat(dateLabel)
+        assertThat(dateLabel)
             .matches("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$");
-        Date activityDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(dateLabel + " " + timeLabel);
+        Date activityDate = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a").parse(dateLabel + " " + timeLabel);
         checkDateIsMiddle(activityDate, accuracy);
     }
 
@@ -64,7 +65,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). activity version contains ([^\"]*)$")
     public void checkVersion(int index, String version) {
-        Assertions.assertThat(activityTab.getActivityVersion(index - 1)).contains(version);
+        assertThat(activityTab.getActivityVersion(index - 1)).contains(version);
     }
 
     /**
@@ -72,7 +73,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). activity has error$")
     public void checkActivityError(int index) {
-        Assertions.assertThat(activityTab.getActivityError(index - 1)).contains("ErrorsFound"); //gh-5721
+        assertThat(activityTab.getActivityError(index - 1)).contains("ErrorsFound"); //gh-5721
     }
 
     /**
@@ -80,7 +81,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). activity has not any errors$")
     public void checkNoErrors(int index) {
-        Assertions.assertThat(activityTab.getActivityError(index - 1)).contains("No errors");
+        assertThat(activityTab.getActivityError(index - 1)).contains("No errors");
     }
 
     /**
@@ -88,7 +89,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). activity has (\\w+) steps in the log$")
     public void checkNumberOfSteps(int index, int numberOfSteps) {
-        Assertions.assertThat(activityTab.getActivityLogRows(index - 1)).hasSize(numberOfSteps);
+        assertThat(activityTab.getActivityLogRows(index - 1)).hasSize(numberOfSteps);
     }
 
     /**
@@ -97,7 +98,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). step in the (\\w+). activity contains (.*) in the output$")
     public void checkOutputOfStep(int indexRow, int indexActivity, String output) {
-        Assertions.assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow - 1, Activity.COLUMN.OUTPUT))
+        assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow - 1, Activity.COLUMN.OUTPUT))
             .contains(output);
     }
 
@@ -107,7 +108,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). step in the (\\w+). activity is ([^\"]*) step$")
     public void checkNameOfStep(int indexRow, int indexActivity, String nameOfStep) {
-        Assertions.assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow - 1, Activity.COLUMN.STEP))
+        assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow - 1, Activity.COLUMN.STEP))
             .contains(nameOfStep);
     }
 
@@ -128,7 +129,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). step in the (\\w+). activity has ([^\"]*) status$")
     public void checkStatusOfStep(int indexRow, int indexActivity, String status) {
-        Assertions.assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow - 1, Activity.COLUMN.STATUS))
+        assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow - 1, Activity.COLUMN.STATUS))
             .contains(status);
     }
 
@@ -142,8 +143,8 @@ public class ActivitySteps {
         int numberOfRow = activityTab.getActivityLogRows(indexActivity - 1).size();
         for (int indexRow = 0; indexRow < numberOfRow; indexRow++) {
             String timeLabel = activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.TIME);
-            Assertions.assertThat(timeLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{1,2}:\\d{2} (AM|PM)$");
-            Date dateOfStep = new SimpleDateFormat("MM/dd/yyyy, HH:mm:ss").parse(timeLabel);
+            assertThat(timeLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{1,2}:\\d{2} (AM|PM)$");
+            Date dateOfStep = new SimpleDateFormat("MM/dd/yyyy, hh:mm:ss a").parse(timeLabel);
             checkDateIsMiddle(dateOfStep, accuracy);
         }
     }
@@ -170,14 +171,14 @@ public class ActivitySteps {
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         if (!middleCalendar.equals(beforeRequest)) { //if not same, test whether it was after
-            Assertions.assertThat(middleCalendar.after(beforeRequest))
+            assertThat(middleCalendar.after(beforeRequest))
                 .as("Check that activity/step date and time \"%s\" is after %s",
                     outFormat.format(middleCalendar.getTime()),
                     outFormat.format(beforeRequest.getTime()))
                 .isTrue();
         }
         if (!middleCalendar.equals(afterRequest)) { //if not same, test whether it was before
-            Assertions.assertThat(middleCalendar.before(afterRequest))
+            assertThat(middleCalendar.before(afterRequest))
                 .as("Check that activity/step date and time \"%s\" is before %s",
                     outFormat.format(middleCalendar.getTime()),
                     outFormat.format(afterRequest.getTime()))
@@ -194,10 +195,10 @@ public class ActivitySteps {
     public void checkAllDurationOfStep(int indexActivity) {
         int numberOfRow = activityTab.getActivityLogRows(indexActivity - 1).size();
         for (int indexRow = 0; indexRow < numberOfRow; indexRow++) {
-            Assertions.assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
+            assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
                 .matches("^.*(\\d+ ms|\\d+ seconds)|(NaN)$"); // NaN is workaround for gh-5715
             //          prepared reproducer for gh-5715
-            //          Assertions.assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
+            //          assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
             //              .doesNotMatch("^.*(NaN)$");
         }
     }

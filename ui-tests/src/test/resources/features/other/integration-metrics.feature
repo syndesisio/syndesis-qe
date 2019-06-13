@@ -26,11 +26,12 @@ Feature: Metrics
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values
-      | Select Type | JSON Instance |
-    #only available after type is selected
-    And fill in values by element ID
-      | specification | {"first_name":"John","company":"Red Hat"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"first_name":"John","company":"Red Hat"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-name-input | personInstance |
     And click on the "Done" button
 
     # finish point
@@ -43,10 +44,10 @@ Feature: Metrics
     #add log
     And add integration step on position "0"
     And select "Log" integration step
-    And fill in values
-      | Message Context | false               |
-      | Message Body    | true                |
-      | Custom Text     | before basic filter |
+    And fill in values by element data-testid
+      | contextloggingenabled | false               |
+      | bodyloggingenabled    | true                |
+      | customtext            | before basic filter |
     And click on the "Done" button
 
     #add basic filter step
@@ -61,10 +62,10 @@ Feature: Metrics
     #add log
     And add integration step on position "2"
     And select "Log" integration step
-    And fill in values
-      | Message Context | false                  |
-      | Message Body    | true                   |
-      | Custom Text     | before advanced filter |
+    And fill in values by element data-testid
+      | contextloggingenabled | false                  |
+      | bodyloggingenabled    | true                   |
+      | customtext            | before advanced filter |
     And click on the "Done" button
 
     # add advanced filter step
@@ -77,10 +78,10 @@ Feature: Metrics
     # add log
     And add integration step on position "4"
     And select "Log" integration step
-    And fill in values
-      | Message Context | false                |
-      | Message Body    | true                 |
-      | Custom Text     | before mapper filter |
+    And fill in values by element data-testid
+      | contextloggingenabled | false              |
+      | bodyloggingenabled    | true               |
+      | customtext            | before data mapper |
     And click on the "Done" button
 
     # add data mapper
@@ -102,18 +103,17 @@ Feature: Metrics
     And select the "Webhook to DB" integration
     And click on the "Metrics" tab
     Then check that number of total error is 0
+    And check that last processed date is valid
     And check that number of valid messages is 0
     And check that number of error messages is 0
     And check that number of total messages is 0
     And check that uptime for webhook-to-db pod is valid
     And check that startdate for webhook-to-db pod is valid
 
-    When click on the "Details" tab
-    And save time before request
+    When save time before request
     And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"incorrect company"}
     And save time after request
     And sleep for "3000" ms
-    And click on the "Metrics" tab
     Then check that number of total error is 0
     And check that last processed date is valid
     And check that number of valid messages is 1
@@ -122,12 +122,10 @@ Feature: Metrics
     And check that uptime for webhook-to-db pod is valid
     And check that startdate for webhook-to-db pod is valid
 
-    When click on the "Details" tab
-    And save time before request
+    When save time before request
     And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
     And save time after request
     And sleep for "3000" ms
-    And click on the "Metrics" tab
     Then check that number of total error is 0
     And check that last processed date is valid
     And check that number of valid messages is 2
@@ -136,12 +134,10 @@ Feature: Metrics
     And check that uptime for webhook-to-db pod is valid
     And check that startdate for webhook-to-db pod is valid
 
-    When click on the "Details" tab
-    And save time before request
+    When save time before request
     And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
-    And click on the "Metrics" tab
     Then check that number of total error is 0
     And check that last processed date is valid
     And check that number of valid messages is 3
@@ -162,11 +158,12 @@ Feature: Metrics
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values
-      | Select Type | JSON Instance |
-    #only available after type is selected
-    And fill in values by element ID
-      | specification | {"first_name":"John","company":"Red Hat"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"first_name":"John","company":"Red Hat"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-name-input | personInstance |
     And click on the "Done" button
 
     # finish point
@@ -178,10 +175,10 @@ Feature: Metrics
 
     And add integration step on position "0"
     And select "Log" integration step
-    And fill in values
-      | Message Context | false               |
-      | Message Body    | true                |
-      | Custom Text     | before basic filter |
+    And fill in values by element data-testid
+      | contextloggingenabled | false               |
+      | bodyloggingenabled    | true                |
+      | customtext            | before basic filter |
     And click on the "Done" button
 
     # add advanced filter step
@@ -193,10 +190,10 @@ Feature: Metrics
 
     And add integration step on position "2"
     And select "Log" integration step
-    And fill in values
-      | Message Context | false             |
-      | Message Body    | true              |
-      | Custom Text     | before data maper |
+    And fill in values by element data-testid
+      | contextloggingenabled | false              |
+      | bodyloggingenabled    | true               |
+      | customtext            | before data mapper |
     And click on the "Done" button
 
     # add data mapper
@@ -224,12 +221,10 @@ Feature: Metrics
     And check that uptime for webhook-to-db pod is valid
     And check that startdate for webhook-to-db pod is valid
 
-    When click on the "Details" tab
-    And save time before request
+    When save time before request
     And invoke post request to webhook in integration webhook-to-db-with-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
-    And click on the "Metrics" tab
     Then check that number of total error is 0
     And check that last processed date is valid
     And check that number of valid messages is 1
