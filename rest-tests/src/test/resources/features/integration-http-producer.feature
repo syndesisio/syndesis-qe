@@ -117,7 +117,7 @@ Feature: Integration - HTTP
       And change "out" datashape of previous step to "JSON_INSTANCE" type with specification '[{"key":"value"}]'
       And add a split step
       And start mapper definition with name: "mapping"
-      And MAP using Step 2 and field "/key" to "/task"
+      And MAP using Step 2 and field "/key" to "/<>/task"
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
       And create integration with name: "HTTP-SQL-SPLIT"
     Then wait for integration with name: "HTTP-SQL-SPLIT" to become active
