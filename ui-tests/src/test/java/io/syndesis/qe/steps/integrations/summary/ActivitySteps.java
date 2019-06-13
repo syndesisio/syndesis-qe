@@ -193,7 +193,7 @@ public class ActivitySteps {
         int numberOfRow = activityTab.getActivityLogRows(indexActivity - 1).size();
         for (int indexRow = 0; indexRow < numberOfRow; indexRow++) {
             Assertions.assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
-                    .matches("^.*(\\d+ ms|\\d+ seconds)$");
+                    .matches("^.*(\\d+ ms|\\d+ seconds)|(-)$");
         }
     }
 }
