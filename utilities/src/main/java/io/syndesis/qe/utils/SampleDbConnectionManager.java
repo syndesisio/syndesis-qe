@@ -1,10 +1,10 @@
 package io.syndesis.qe.utils;
 
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.client.LocalPortForward;
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import lombok.extern.slf4j.Slf4j;
+
 import org.assertj.core.api.Assertions;
 
 import java.sql.Connection;
@@ -15,7 +15,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.assertj.core.api.Assertions.fail;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.LocalPortForward;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Nov 15, 2017 Red Hat
@@ -79,6 +81,10 @@ public class SampleDbConnectionManager {
             LocalPortForward localPortForward = createLocalPortForward(remotePort, localPort, podName);
             wrap.setLocalPortForward(localPortForward);
         }
+
+        // OCP4 has some problems here that are not present when debugging, so it probably takes some time until the port-forward starts working
+        TestUtils.sleepIgnoreInterrupt(30000L);
+
         try {
             if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
                 Connection dbConnection = SampleDbConnectionManager.createDbConnection(wrap.getLocalPortForward(), localPort, driver);
@@ -95,7 +101,7 @@ public class SampleDbConnectionManager {
     private static Connection createDbConnection(LocalPortForward localPortForward, int localPort, String driver) throws SQLException {
 
         final Properties props = new Properties();
-        if (driver.equalsIgnoreCase("mysql")) {
+        if ("mysql".equalsIgnoreCase(driver)) {
             props.setProperty("user", "developer");
             props.setProperty("password", "developer");
         } else {
