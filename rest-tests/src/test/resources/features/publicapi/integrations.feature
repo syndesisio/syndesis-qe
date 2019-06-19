@@ -58,7 +58,7 @@ Feature: Public API - integrations point
 
   # PUT ​/public​/integrations​/{id}​/tags
   @update-tags-on-integration-remove-previous
-  Scenario: Update tags on integration
+  Scenario: Update tags on integration uncheck previous
     When add tags to integration integration1
       | tag1 | tag2 |
     And add tags to integration integration2
@@ -73,7 +73,7 @@ Feature: Public API - integrations point
     And check that integration integration2 contains exactly tags
       | tagFor2 |
     And check that Syndesis contains exactly tags
-      | tagFor2 | tag3 | tag4 |
+      | tagFor2 | tag3 | tag4 | tag1 | tag2 |
     And check that integration integrationWithoutTags doesn't contain any tag
 
   # DELETE ​/public​/integrations​/{id}​/tags​/{env}
@@ -100,10 +100,10 @@ Feature: Public API - integrations point
       | tag4 |
     And check that integration integration2 doesn't contain tag tagForDelete
     And check that integration integrationWithoutTags doesn't contain any tag
-    # tagForDelete was deleted from integration2, no integration contains this tag so it have to be deleted from the Syndesis
-    And check that tag with name tagForDelete is not in the tag list
+    # tagForDelete was deleted from integration2, no integration contains this tag however it have to be still in the Syndesis gh-
+    And check that tag with name tagForDelete is in the tag list
     And check that Syndesis contains exactly tags
-      | tag2 | tag4 |
+      | tag2 | tag4 | tagForDelete |
 
   # PUT​ /public​/integrations​/{id}​/deployments​/stop - stop integration
   # POST /public​/integrations​/{id}​/deployments - start / redeploy

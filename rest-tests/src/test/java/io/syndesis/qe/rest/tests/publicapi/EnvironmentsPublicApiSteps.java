@@ -1,15 +1,19 @@
 package io.syndesis.qe.rest.tests.publicapi;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.cucumber.datatable.DataTable;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.qe.endpoints.publicendpoint.EnvironmentsPublicEndpoint;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class EnvironmentsPublicApiSteps {
@@ -29,8 +33,15 @@ public class EnvironmentsPublicApiSteps {
     public void checkAllTags(DataTable tagsData) {
         List<String> desiredTags = tagsData.cells().get(0);
         assertThat(environmentsEndpoint.getAllEnvironments())
-                .hasSameSizeAs(desiredTags)
-                .containsAll(desiredTags);
+            .hasSameSizeAs(desiredTags)
+            .containsAll(desiredTags);
+    }
+
+    @Then("^check that tag (\\w+) is used in (\\d+) integrations$")
+    public void checkAllTags(String tag, int numberOfUsag) {
+        Optional<Map<String, String>> particularTag = environmentsEndpoint.getAllEnvironmentsWithUses().stream()
+            .filter(map -> map.get("name").equalsIgnoreCase(tag)).findFirst();
+        assertThat(particularTag.get()).containsEntry("uses", String.valueOf(numberOfUsag));
     }
 
     @Then("^check that tag with name (\\w+) is in the tag list$")
@@ -58,5 +69,10 @@ public class EnvironmentsPublicApiSteps {
         for (String tag : environmentsEndpoint.getAllEnvironments()) {
             deleteTag(tag);
         }
+    }
+
+    @When("^add tag (\\w+) to Syndesis$")
+    public void addTag(String tagName) {
+        environmentsEndpoint.addNewEnvironment(tagName);
     }
 }
