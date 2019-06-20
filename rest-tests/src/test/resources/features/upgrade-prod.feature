@@ -18,14 +18,14 @@ Feature: Syndesis Upgrade - Productized Version
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
     Then create integration with name: "upgrade"
       And wait for integration with name: "upgrade" to become active
-      And verify integration with task "X"
+      And verify upgrade integration with task "X"
 
   # After the upgrade is done, create a new integration and verify that it is working + verify that the old one is still working as well
   @prod-upgrade-after
   Scenario: Syndesis Prod Upgrade - After upgrading
     When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
-      And verify integration with task "X"
+      And verify upgrade integration with task "X"
     Given add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
       | timer-action | 1000   |
@@ -33,4 +33,4 @@ Feature: Syndesis Upgrade - Productized Version
     And create integration with name: "timer-to-http"
     And wait for integration with name: "timer-to-http" to become active
     Then verify that after "2.5" seconds there were "2" calls
-      And verify integration with task "X"
+      And verify upgrade integration with task "X"
