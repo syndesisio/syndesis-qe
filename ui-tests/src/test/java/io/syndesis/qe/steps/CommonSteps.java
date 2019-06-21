@@ -170,6 +170,10 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+        } else if (currentUrl.contains("rhcloud")) {
+            $(By.partialLinkText("htpasswd")).click();
+            MinishiftLogin minishiftLogin = new MinishiftLogin();
+            minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         }
 
         currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
