@@ -1,58 +1,49 @@
 package io.syndesis.qe.steps.connections.wizard.phases;
 
-import cucumber.api.java.en.When;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
-import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnection;
+
 import org.openqa.selenium.By;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import cucumber.api.java.en.When;
 
 public class ConfigureConnectionSteps {
 
-    private final ConfigureConnection configureConnectionPage = new ConfigureConnection();
-
     @When("^fill in \"([^\"]*)\" connection details$")
     public void fillConnectionDetails(String connectionName) {
-        doFillConnectionDetails(connectionName, false);
-    }
-
-    @When("^fill in \"([^\"]*)\" connection details from connection edit page$")
-    public void fillConnectionDetailsFromConnectionEditPage(String connectionName) {
-        doFillConnectionDetails(connectionName, true);
-    }
-
-    private void doFillConnectionDetails(String connectionName, boolean isEditPage) {
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(connectionName);
 
         if (optional.isPresent()) {
             // if connectionName credentials exist
-            callCorrectFormFill(optional.get().getProperties(), isEditPage);
+            fillFormInLowerCase(optional.get().getProperties());
         } else {
             String nameTransformed = connectionName.toLowerCase().replaceAll(" ", "_");
             optional = AccountsDirectory.getInstance().getAccount(nameTransformed);
 
             if (optional.isPresent()) {
                 // if connectionName credentials exist with transformed name
-                callCorrectFormFill(optional.get().getProperties(), isEditPage);
+                fillFormInLowerCase(optional.get().getProperties());
             } else {
-                if (!connectionName.equalsIgnoreCase("no credentials")) {
+                if (!"no credentials".equalsIgnoreCase(connectionName)) {
                     throw new IllegalArgumentException("Credentials for " + connectionName + " were not found!");
                 }
             }
         }
     }
 
-    private void callCorrectFormFill(Map<String, String> properties, boolean isEditPage) {
-        if (isEditPage) {
-            new Form($(By.className("integration-editor-layout__body")).shouldBe(visible)).fillById(properties);
-        } else {
-            configureConnectionPage.fillForm(properties);
-        }
+    private void fillFormInLowerCase(Map<String, String> properties) {
+        //transfer all keys in properties to lower case
+        new Form($(By.className("integration-editor-layout__body")).shouldBe(visible)).fillByTestId(
+            properties.entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue))
+        );
     }
 }

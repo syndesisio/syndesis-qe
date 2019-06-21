@@ -3,11 +3,13 @@ package io.syndesis.qe.pages.connections.wizard.phases;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisRootPage;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisRootPage;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -46,10 +48,17 @@ public class NameConnection extends AbstractConnectionWizardStep {
     }
 
     public void setName(String name) {
-        getRootElement().find(Input.NAME).shouldBe(visible).setValue(name);
+        clearInput(getRootElement().find(Input.NAME).shouldBe(visible)).setValue(name);
     }
 
     public void setDescription(String description) {
-        getRootElement().find(Input.DESCRIPTION).shouldBe(visible).setValue(description);
+        clearInput(getRootElement().find(Input.DESCRIPTION).shouldBe(visible)).setValue(description);
+    }
+
+    private SelenideElement clearInput(SelenideElement input) {
+        input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        input.sendKeys(Keys.BACK_SPACE);
+        input.shouldBe(visible).clear();
+        return input;
     }
 }

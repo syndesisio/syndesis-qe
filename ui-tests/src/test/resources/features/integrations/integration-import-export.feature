@@ -160,7 +160,7 @@ Feature: Integration - Import Export
     Then check visibility of "QE Slack" connection details
 
     When click on the "Edit" button
-    And fill in "QE Slack" connection details from connection edit page
+    And fill in "QE Slack" connection details
     And click on the "Validate" button
     Then check visibility of success notification
     And click on the "Save" link
