@@ -50,6 +50,7 @@ Feature: Settings OAuth
   @reproducer
   @settings-oauth-validate
   @gh-4021
+  @gh-5891
   Scenario Outline: Fill <type> OAuth settings, create connection and validate
     When fill "<type>" oauth settings "<account>"
     And navigate to the "Connections" page
