@@ -1,8 +1,8 @@
-package io.syndesis.qe.steps.integrations;
+package io.syndesis.qe.steps.integrations.CiCd;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.pages.integrations.CiCdDialog;
+import io.syndesis.qe.pages.integrations.CiCd.ManageCiCdDialog;
 
 import java.util.List;
 
@@ -12,19 +12,9 @@ import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CiCdDialogSteps {
+public class ManageCiCdDialogSteps {
 
-    private CiCdDialog ciCdDialog = new CiCdDialog();
-
-    @When("^create new tag with name (\\w+) in CI/CD dialog$")
-    public void createNewTag(String tagName) {
-        ciCdDialog.addNewTag(tagName);
-    }
-
-    @When("^rename tag (\\w+) to (\\w+) in CI/CD dialog$")
-    public void renameTag(String tagName, String newName) {
-        ciCdDialog.updateTag(tagName, newName);
-    }
+    private ManageCiCdDialog ciCdDialog = new ManageCiCdDialog();
 
     @When("^uncheck tag (\\w+) in CI/CD dialog$")
     public void uncheck(String tagName) {
@@ -34,11 +24,6 @@ public class CiCdDialogSteps {
     @When("^check tag (\\w+) in CI/CD dialog$")
     public void checkTag(String tagName) {
         ciCdDialog.checkTag(tagName);
-    }
-
-    @When("^delete tag (\\w+) in CI/CD dialog$")
-    public void deleteTag(String tagName) {
-        ciCdDialog.removeTag(tagName);
     }
 
     @When("^save CI/CD dialog$")

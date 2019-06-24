@@ -6,6 +6,10 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.CollectionCondition;
@@ -14,9 +18,6 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
 
-import io.syndesis.qe.CustomWebDriverProvider;
-import io.syndesis.qe.pages.ModalDialogPage;
-import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +32,7 @@ public class Details extends SyndesisPageObject {
         public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
         public static final By TITLE = By.className("pf-c-title.pf-m-lg.integration-detail-editable-name.pf-u-mr-lg");
-        public static final By KEBEB_OPEN_MENU = By.cssSelector("div.dropdown.dropdown-kebab-pf.pull-right");
+        public static final By KEBEB_OPEN_MENU = By.className("dropdown-toggle");
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
         public static final By INFO = By.className("integration-detail__info");
         public static final By INTEGRATION_DESCRIPTION = By.cssSelector("section.integration-description");
@@ -129,7 +130,7 @@ public class Details extends SyndesisPageObject {
         return new File(filePath);
     }
 
-    public int getFlowCount(){
+    public int getFlowCount() {
         return Integer.parseInt($(Element.MULTIFLOW_COUNT).shouldBe(visible).getText());
     }
 
@@ -139,7 +140,7 @@ public class Details extends SyndesisPageObject {
 
         // click on action
         this.getRootElement().$(Element.KEBAB_DROPDOWN_MENU).shouldBe(visible).$$(By.tagName("a"))
-                .shouldHave(CollectionCondition.sizeGreaterThanOrEqual(3)).findBy(exactText(action)).shouldBe(visible).click();
+            .shouldHave(CollectionCondition.sizeGreaterThanOrEqual(3)).findBy(exactText(action)).shouldBe(visible).click();
     }
 
     public void selectTab(String tabName) {
@@ -153,7 +154,7 @@ public class Details extends SyndesisPageObject {
 
     public String getApiUrl() {
         return $(Element.INTEGRATION_DESCRIPTION)
-                .$$("input").shouldHaveSize(1).first().shouldBe(enabled, visible)
-                .getValue();
+            .$$("input").shouldHaveSize(1).first().shouldBe(enabled, visible)
+            .getValue();
     }
 }

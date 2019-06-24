@@ -125,7 +125,7 @@ public class IntegrationSteps {
 
     @When("^open CI/CD dialog")
     public void openCiCdDialog() {
-        detailPage.clickOnKebabMenuAction("CI/CD");
+        detailPage.clickOnKebabMenuAction("Manage CI/CD");
     }
 
     @When("^import the integration from file ([^\"]*)$")
