@@ -150,8 +150,8 @@ public class AtlasMapperGenerator {
         List<DataSource> sources = new ArrayList<>();
         precedingSteps.stream().filter(s -> s.getStep().getAction().isPresent()).forEach(s -> {
             DataShape outDataShape = s.getStep().getAction().get().getOutputDataShape().get();
-            // Steps with "ANY" are ignored for sources and only those that have proper datashape are used
-            if (outDataShape.getKind() != DataShapeKinds.ANY) {
+            // Steps with "ANY" or "NONE" are ignored for sources and only those that have proper datashape are used
+            if (outDataShape.getKind() != DataShapeKinds.ANY && outDataShape.getKind() != DataShapeKinds.NONE) {
                 sources.add(createDataSource(outDataShape, s, DataSourceType.SOURCE));
             }
         });

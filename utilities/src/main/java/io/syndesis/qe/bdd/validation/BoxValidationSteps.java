@@ -3,8 +3,9 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
-import org.apache.commons.io.FileUtils;
+import io.syndesis.qe.utils.BoxUtils;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.box.sdk.BoxFile;
@@ -17,7 +18,6 @@ import java.util.UUID;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.utils.BoxUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
