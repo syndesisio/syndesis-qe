@@ -1,17 +1,22 @@
 package io.syndesis.qe.steps.connections.detail;
 
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import static org.hamcrest.Matchers.is;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
-import cucumber.api.java.en.Then;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetail;
-import lombok.extern.slf4j.Slf4j;
+import io.syndesis.qe.steps.CommonSteps;
+
 import org.openqa.selenium.By;
+
+import com.codeborne.selenide.Condition;
+
+import cucumber.api.java.en.Then;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class DetailSteps {
@@ -27,15 +32,9 @@ public class DetailSteps {
     @Then("^validate oauth connection \"([^\"]*)\" by clicking Validate button$")
     public void validateOauthConnectionByClickingValidateButton(String connectionName) {
         Connections connectionsPage = new Connections();
-        SelenideElement connectionElement = connectionsPage.getConnection(connectionName);
-        connectionElement.shouldBe(Condition.visible).click();
+        connectionsPage.getConnection(connectionName).shouldBe(Condition.visible).click();
 
-        SelenideElement validationElement = detailPage.getRootElement().$(By.tagName("syndesis-connection-configuration-validation"));
-        validationElement.shouldBe(Condition.visible);
-        SelenideElement validateButton = validationElement.$(By.tagName("button")).shouldBe(Condition.visible);
-        assertThat("Validate Button couldn't be found.", validateButton, notNullValue());
-        assertThat("Validate button should be enabled", validateButton.isEnabled(), is(true));
-        validateButton.click();
+        new CommonSteps().clickOnButton("Validate");
+        $(By.className("alert-success")).should(exist);
     }
-
 }

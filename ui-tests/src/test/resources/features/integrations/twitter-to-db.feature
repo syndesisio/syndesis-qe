@@ -10,11 +10,15 @@ Feature: Integration - Twitter to Database
 
   Background: Clean application state
     Given clean application state
-    Given clean "contact" table
-    Given clean all tweets in twitter_talky account
-    Given log into the Syndesis
-    Given created connections
-      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
+    And reset content of "contact" table
+    And clean all tweets in twitter_talky account
+    And log into the Syndesis
+    And navigate to the "Settings" page
+    And fill "Twitter" oauth settings "Twitter Listener"
+
+    And create connections using oauth
+      | Twitter | Twitter Listener |
+
 
   Scenario: Create integration from twitter to database
     # create integration
@@ -38,27 +42,23 @@ Feature: Integration - Twitter to Database
 
       # add data mapper step
     When add integration step on position "0"
-     And select "Data Mapper" integration step
-  #  And add data mapper step before "Invoke sql" action
+    And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    Then create data mapper mappings
+
+    When create data mapper mappings
       | text      | company    |
       | user.name | first_name |
-
-#    And scroll "top" "right"
     And click on the "Done" button
+
     # finish and save integration
     When publish integration
     And set integration name "Twitter to DB integration"
     And publish integration
-
     Then Integration "Twitter to DB integration" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Twitter to DB integration" gets into "Running" state
 
-    And tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
     And sleep for "30000" ms
-
     Then checks that query "select * from contact where company like 'Red Hat%'" has some output
-
     And clean all tweets in twitter_talky account

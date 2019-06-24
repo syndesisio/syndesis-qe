@@ -634,12 +634,12 @@ public class CommonSteps {
         doOAuthValidation(connectorName);
 
         assertThat(WebDriverRunner.currentFrameUrl())
-            .containsIgnoringCase("Successfully%20authorized")
+            .containsIgnoringCase("review")
             .containsIgnoringCase("connections/create");
 
         nameConnectionSteps.setConnectionName(newConnectionName);
 
-        clickOnButton("Create");
+        clickOnButton("Save");
     }
 
     @When("^go back in browser history$")
@@ -648,7 +648,27 @@ public class CommonSteps {
     }
 
     private void doOAuthValidation(String type) {
+
+        WebDriver driver = WebDriverRunner.getWebDriver();
+
+        // Store the current window handle
+        String winHandleBefore = driver.getWindowHandle();
+        log.info("Current window handle identifier: " + winHandleBefore);
+
+        // Perform the click operation that opens new window
         clickOnButton("Connect " + type);
+
+        // Switch to new window opened
+        for (String winHandle : driver.getWindowHandles()) {
+            if (winHandle.equalsIgnoreCase(winHandleBefore)) {
+                continue;
+            }
+            log.info("Found another windows handle: " + winHandle);
+            driver.switchTo().window(winHandle);
+        }
+
+        // Perform the actions on new window
+
         switch (type) {
             case "Twitter":
                 waitForCallbackRedirect("twitter");
@@ -675,7 +695,11 @@ public class CommonSteps {
             default:
                 fail("Unknown oauth option: " + type);
         }
-        waitForCallbackRedirect(TestConfiguration.syndesisUrl());
+
+        // Switch back to original browser (first window)
+        driver.switchTo().window(winHandleBefore);
+
+        waitForCallbackRedirect("review");
     }
 
     private void loginToGoogleIfNeeded(String s) {
@@ -728,10 +752,6 @@ public class CommonSteps {
             $(By.id("Login")).shouldBe(visible).click();
             //give it time to log in
             TestUtils.sleepForJenkinsDelayIfHigher(10);
-            log.info(WebDriverRunner.currentFrameUrl());
-            if (!WebDriverRunner.currentFrameUrl().contains("connections/create/review")) {
-                $(By.id("oaapprove")).shouldBe(visible).click();
-            }
         } else {
             fail("Credentials for Salesforce were not found.");
         }

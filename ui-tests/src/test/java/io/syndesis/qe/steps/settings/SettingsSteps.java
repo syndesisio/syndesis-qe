@@ -1,19 +1,23 @@
 package io.syndesis.qe.steps.settings;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.settings.SettingsPage;
-import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.By;
+import static org.junit.Assert.assertThat;
+
+import static org.hamcrest.core.Is.is;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
+import io.syndesis.qe.pages.settings.SettingsPage;
+
+import org.assertj.core.api.SoftAssertions;
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 
 /**
  * Created by sveres on 11/20/17.
@@ -39,6 +43,7 @@ public class SettingsSteps {
 
     @When("^fill \"([^\"]*)\" oauth settings \"([^\"]*)\"")
     public void fillOAuthSettings(String itemTitle, String credential) {
+
         settingsPage.fillGivenOAuthSetting(settingsPage.getSettingsItem(itemTitle), credential);
     }
 
@@ -66,7 +71,8 @@ public class SettingsSteps {
             if (shouldBePresent) {
                 sa.assertThat(text.getValue()).as(String.format("OAuth element %s > %s is empty.", title, text.getAttribute("name"))).isNotEmpty();
             } else {
-                sa.assertThat(text.getValue()).as(String.format("OAuth element %s > %s is filled with '%s'.", title, text.getAttribute("name"), text.getValue())).isEmpty();
+                sa.assertThat(text.getValue())
+                    .as(String.format("OAuth element %s > %s is filled with '%s'.", title, text.getAttribute("name"), text.getValue())).isEmpty();
             }
         }
         sa.assertAll();
@@ -86,5 +92,4 @@ public class SettingsSteps {
     public void confirmSettingsRemoval() {
         $(By.className("modal-content")).$(By.cssSelector("button.btn-danger")).click();
     }
-
 }
