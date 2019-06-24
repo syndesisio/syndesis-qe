@@ -1,22 +1,23 @@
 package io.syndesis.qe.rest.tests.publicapi;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.cucumber.datatable.DataTable;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.common.model.integration.ContinuousDeliveryEnvironment;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.publicendpoint.IntegrationsPublicEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
 import io.syndesis.qe.utils.TestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 
 public class IntegrationsPublicApiSteps {
 
@@ -31,7 +32,7 @@ public class IntegrationsPublicApiSteps {
 
     @Then("^check that state of the integration (\\w+) is (\\w+)$")
     public void checkState(String integrationName, String desiredState) {
-        if (desiredState.equals("Unpublished")) {
+        if ("Unpublished".equals(desiredState)) {
             String integrationId = internalIntegrationsEndpoint.getIntegrationId(integrationName).get();
             final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
             TestUtils.waitForUnpublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 10);
@@ -54,7 +55,7 @@ public class IntegrationsPublicApiSteps {
             assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
         }
         assertThat(tags.keySet())
-                .containsAll(originalTags);
+            .containsAll(originalTags);
     }
 
     /**
@@ -72,7 +73,7 @@ public class IntegrationsPublicApiSteps {
             assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
         }
         assertThat(tags.keySet())
-                .containsExactlyInAnyOrderElementsOf(originalTags);
+            .containsExactlyInAnyOrderElementsOf(originalTags);
     }
 
     /**
@@ -89,8 +90,8 @@ public class IntegrationsPublicApiSteps {
         }
 
         assertThat(tags.keySet())
-                .hasSameSizeAs(desiredTags)
-                .containsExactlyInAnyOrderElementsOf(desiredTags);
+            .hasSameSizeAs(desiredTags)
+            .containsExactlyInAnyOrderElementsOf(desiredTags);
     }
 
     @Then("^check that integration (\\w+) doesn't contain any tag$")
@@ -117,7 +118,7 @@ public class IntegrationsPublicApiSteps {
     @When("^stop integration (\\w+)$")
     public void stopIntegration(String integrationName) {
         integrationsEndpoint.stopIntegration(integrationName);
-        TestUtils.sleepIgnoreInterrupt(5000);
+        TestUtils.sleepIgnoreInterrupt(10000);
     }
 
     @Then("^check that verion of the integration (\\w+) is (\\d+)$")
