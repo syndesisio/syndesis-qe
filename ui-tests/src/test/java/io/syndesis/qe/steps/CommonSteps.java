@@ -89,6 +89,7 @@ public class CommonSteps {
     private static class Element {
         public static final By LOGIN_BUTTON = By.className("btn");
         public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
+        public static final By NAVIGATION_USER_DROPDOWN = By.cssSelector("[data-testid=app-top-menu-user-dropdown");
 
         public static final By navigationLink(String title) {
             return By.cssSelector(String.format("a[data-testid=\"ui-%s\"]", title.toLowerCase().replaceAll("[\\s_]", "-")));
@@ -106,10 +107,7 @@ public class CommonSteps {
 
     @When("^log out from Syndesis")
     public void logout() {
-        // https://github.com/syndesisio/syndesis/issues/5585
-        SelenideElement logoutDropdown = $(By.className("pf-c-page__header-tools"))
-            .$$(By.className("pf-c-dropdown")).shouldHaveSize(2).get(1);
-        logoutDropdown.shouldBe(visible).click();
+        $(Element.NAVIGATION_USER_DROPDOWN).shouldBe(visible).click();
         clickOnButton("Logout");
 
         try {
