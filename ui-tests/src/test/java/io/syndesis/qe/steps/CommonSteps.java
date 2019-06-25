@@ -83,7 +83,20 @@ public class CommonSteps {
         S3,
         FTP,
         GOOGLE_MAIL,
-        SAP_CONCUR
+        GOOGLE_SHEETS,
+        GOOGLE_CALENDAR,
+        SAP_CONCUR,
+        AWS,
+        TELEGRAM,
+        SERVICENOW,
+        BOX,
+        SEND_EMAIL_SMTP,
+        RECEIVE_EMAIL_IMAP_OR_POP3,
+        GITHUB,
+        ZENHUB,
+        AMQ,
+        AMQP,
+        MQTT
     }
 
     private static class Element {
@@ -265,64 +278,69 @@ public class CommonSteps {
     @Then("^.*validate credentials$")
     public void validateCredentials() {
         Map<String, Account> accounts = AccountsDirectory.getInstance().getAccounts();
-        List<List<String>> oneAccountList = new ArrayList<>();
+        List<List<String>> allAccountsWithDetailsList = new ArrayList<>();
 
         accounts.keySet().forEach(key -> {
-            List<String> tmpList = new ArrayList<>();
+            List<String> accountWithDetailsInList = new ArrayList<>();
             Optional<Account> currentAccount = AccountsDirectory.getInstance().getAccount(key);
-            if (currentAccount.isPresent()) {
-
-                String service = currentAccount.get().getService();
-                Credentials current;
-                try {
-                    current = Credentials.valueOf(service.toUpperCase().replace(" ", "_"));
-                } catch (IllegalArgumentException ex) {
-                    log.error("Unable to find enum value for " + service.toUpperCase().replace(" ", "_") + " account. Skipping");
-                    return;
-                }
-
-                switch (current) {
-                    case DROPBOX:
-                        service = "DropBox";
-                        break;
-                    case SALESFORCE:
-                        //disable salesforce validation as it is not stable and smoke tests should be stable
-                        return;
-                    case TWITTER:
-                        service = "Twitter";
-                        break;
-                    case S3:
-                        return; //TODO: skip for now
-                    case SLACK:
-                        service = "Slack";
-                        break;
-                    case GOOGLE_MAIL:
-                        service = "Gmail";
-                        break;
-                    case SAP_CONCUR:
-                        //concur only works via OAUTH, there is another test fot it
-                        return; //TODO: skip for now
-                    default:
-                        return; //skip for other cred
-                }
-
-                //type
-                tmpList.add(service);
-                //name
-                tmpList.add(key);
-                //connection name
-                tmpList.add("my " + key + " connection");
-                //description
-                tmpList.add("some description");
-
-                log.trace("Inserting: " + tmpList.toString());
-                oneAccountList.add(new ArrayList<>(tmpList));
-                log.trace("Current values in list list: " + oneAccountList.toString());
+            if (!currentAccount.isPresent()) {
+                return;
             }
+
+            String service = currentAccount.get().getService();
+            Credentials current;
+            try {
+                current = Credentials.valueOf(service.toUpperCase()
+                    .replace(" ", "_")
+                    .replaceAll("[()]", ""));
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("Unable to find enum value for " + service + " account." +
+                    " New account should be included in smoke tests");
+            }
+
+            switch (current) {
+                case DROPBOX:
+                    service = "DropBox";
+                    break;
+                case SLACK:
+                    service = "Slack";
+                    break;
+                case TELEGRAM:
+                    service = "Telegram";
+                    break;
+                case SERVICENOW:
+                    service = "ServiceNow";
+                    break;
+                case BOX:
+                    service = "Box";
+                    break;
+                case SEND_EMAIL_SMTP:
+                    service = "Send Email (smtp)";
+                    break;
+                case RECEIVE_EMAIL_IMAP_OR_POP3:
+                    service = "Receive Email (imap or pop3)";
+                    break;
+                default:
+                    log.info("Credentials for " + current + " are either tested via OAuth or do not use 3rd party application. Skipping");
+                    return;
+            }
+
+            //type
+            accountWithDetailsInList.add(service);
+            //name
+            accountWithDetailsInList.add(key);
+            //connection name
+            accountWithDetailsInList.add("my " + key + " connection");
+            //description
+            accountWithDetailsInList.add("some description");
+
+            log.trace("Inserting: " + accountWithDetailsInList.toString());
+            allAccountsWithDetailsList.add(new ArrayList<>(accountWithDetailsInList));
+            log.trace("Current values in list list: " + allAccountsWithDetailsList.toString());
         });
 
-        log.debug("Final status of list: " + oneAccountList.toString());
-        DataTable accountsTalbe = DataTable.create(oneAccountList);
+        log.debug("Final status of list: " + allAccountsWithDetailsList.toString());
+        DataTable accountsTalbe = DataTable.create(allAccountsWithDetailsList);
 
         createConnections(accountsTalbe);
     }
