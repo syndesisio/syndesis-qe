@@ -14,7 +14,7 @@ Feature: Connection - CRUD
 
 
   @validate-connection-credentials
-  Scenario: Credentials
+  Scenario: Validate all credentials
     And validate credentials
 
 
