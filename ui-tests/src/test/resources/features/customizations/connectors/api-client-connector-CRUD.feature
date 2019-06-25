@@ -23,10 +23,6 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     And click on the "Next" link
     Then check visibility of page "Specify Security"
-    Then set up api connector security
-      | authType | OAuth 2.0 |
-    And fill in values by element ID
-      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
     And click on the "Next" button
     And click on the "Save" button
 
@@ -45,10 +41,6 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     And click on the "Next" link
     Then check visibility of page "Specify Security"
-    Then set up api connector security
-      | authType | OAuth 2.0 |
-    And fill in values by element ID
-      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
     And click on the "Next" button
     And click on the "Save" button
 
@@ -67,10 +59,6 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     And click on the "Next" link
     Then check visibility of page "Specify Security"
-    Then set up api connector security
-      | authType | OAuth 2.0 |
-    And fill in values by element ID
-      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
     And click on the "Next" button
     And fill in values by element ID
       | name | Swagger Petstore |
@@ -105,10 +93,6 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Review Actions"
     And click on the "Next" link
     Then check visibility of page "Specify Security"
-    Then set up api connector security
-      | authType | OAuth 2.0 |
-    And fill in values by element ID
-      | accessTokenUrl | syndesisUrl+syndesisCallbackUrlSuffix |
     And click on the "Next" button
     And fill in values by element ID
       | name | Swagger Petstore |

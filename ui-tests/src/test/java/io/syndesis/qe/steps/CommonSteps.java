@@ -89,7 +89,7 @@ public class CommonSteps {
     private static class Element {
         public static final By LOGIN_BUTTON = By.className("btn");
         public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
-        public static final By NAVIGATION_USER_DROPDOWN = By.cssSelector("[data-testid=app-top-menu-user-dropdown");
+        public static final By NAVIGATION_USER_DROPDOWN = By.cssSelector("[data-testid]=app-top-menu-user-dropdown");
 
         public static final By navigationLink(String title) {
             return By.cssSelector(String.format("a[data-testid=\"ui-%s\"]", title.toLowerCase().replaceAll("[\\s_]", "-")));

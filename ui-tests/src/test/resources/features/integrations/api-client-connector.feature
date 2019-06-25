@@ -16,16 +16,30 @@ Feature: Integration - DB to API
     And reset content of "TODO" table
     And reset content of "contact" table
 
-    And create new API connector
-      | source   | file          | swagger/connectors/todo.swagger.yaml |
-      | security | authType      | HTTP Basic Authentication            |
-      | details  | connectorName | Todo connector                       |
-      | details  | routeHost     | todo                                 |
-      | details  | baseUrl       | /api                                 |
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
+    And check visibility of page "Upload Swagger Specification"
+    Then upload swagger file
+      | file | swagger/connectors/todo.swagger.yaml |
 
-    And created connections
+    When click on the "Next" button
+    Then check visibility of page "Review Actions"
+
+    When click on the "Next" link
+    Then check visibility of page "Specify Security"
+
+    When set up api connector security
+      | authType | HTTP Basic Authentication |
+    And click on the "Next" button
+    And fill in values by element ID
+      | name     | Todo connector |
+      | host     | todo           |
+      | basepath | /api           |
+    And click on the "Save" button
+
+    When created connections
       | Todo connector | todo | Todo connection | no validation |
-
     And navigate to the "Home" page
 
   @DB-custom-api-connector-integration
