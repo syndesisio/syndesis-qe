@@ -57,8 +57,8 @@ public final class HttpUtils {
 
     public static HTTPResponse doPostRequest(String url, RequestBody body, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
-                .url(url)
-                .post(body);
+            .url(url)
+            .post(body);
         if (headers != null) {
             requestBuilder.headers(headers);
         }
@@ -72,8 +72,8 @@ public final class HttpUtils {
 
     public static HTTPResponse doGetRequest(String url, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
-                .url(url)
-                .get();
+            .url(url)
+            .get();
         if (headers != null) {
             requestBuilder.headers(headers);
         }
@@ -87,8 +87,8 @@ public final class HttpUtils {
 
     public static HTTPResponse doDeleteRequest(String url, Headers headers) {
         Request.Builder requestBuilder = new Request.Builder()
-                .url(url)
-                .delete();
+            .url(url)
+            .delete();
         if (headers != null) {
             requestBuilder.headers(headers);
         }
@@ -107,8 +107,8 @@ public final class HttpUtils {
     public static HTTPResponse doPutRequest(String url, String content, String contentType, Headers headers) {
         RequestBody body = RequestBody.create(MediaType.parse(contentType), content);
         Request.Builder requestBuilder = new Request.Builder()
-                .url(url)
-                .put(body);
+            .url(url)
+            .put(body);
         if (headers != null) {
             requestBuilder.headers(headers);
         }
@@ -116,23 +116,40 @@ public final class HttpUtils {
         return doRequest(requestBuilder.build());
     }
 
+    /**
+     * Check if the url is reachable.
+     * @param url url to check
+     * @return true if there is any response, false if there is an exception raised
+     */
+    public static boolean isReachable(String url) {
+        Request.Builder requestBuilder = new Request.Builder()
+            .url(url)
+            .get();
+        try {
+            getClient().newCall(requestBuilder.build()).execute();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static OkHttpClient getClient() {
         // Create a trust manager that does not validate certificate chains
-        final TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-                    @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                    }
-
-                    @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                    }
-
-                    @Override
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new java.security.cert.X509Certificate[]{};
-                    }
+        final TrustManager[] trustAllCerts = new TrustManager[] {
+            new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
                 }
+
+                @Override
+                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                }
+
+                @Override
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return new java.security.cert.X509Certificate[] {};
+                }
+            }
         };
 
         // Install the all-trusting trust manager
@@ -145,10 +162,10 @@ public final class HttpUtils {
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier((hostname, session) -> true);
             return builder
-                    .connectTimeout(15, TimeUnit.SECONDS)
-                    .writeTimeout(15, TimeUnit.SECONDS)
-                    .readTimeout(15, TimeUnit.SECONDS)
-                    .build();
+                .connectTimeout(15, TimeUnit.SECONDS)
+                .writeTimeout(15, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
+                .build();
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             fail("Error while creating Http client", e);
         }
