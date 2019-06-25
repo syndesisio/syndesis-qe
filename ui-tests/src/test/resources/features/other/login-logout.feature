@@ -6,9 +6,11 @@ Feature: Login logout
 
   Background: Clean application state
     Given log into the Syndesis
-    Given clean application state
-    Given created connections
-      | Twitter | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
+    And clean application state
+    And navigate to the "Settings" page
+    And fill "Twitter" oauth settings "Twitter Listener"
+    And create connections using oauth
+      | Twitter | Twitter Listener |
 
 
 #
@@ -17,8 +19,7 @@ Feature: Login logout
   @logout-test-logout
   Scenario: Log out
     Then check visibility of Syndesis home page
-
-    Then log out from Syndesis
+    And log out from Syndesis
 
 #
 #  2. logout -> login
@@ -27,9 +28,8 @@ Feature: Login logout
   Scenario: Log out and log in
     Then check visibility of Syndesis home page
 
-    Then log out from Syndesis
-
-    Given log into the Syndesis after logout
+    When log out from Syndesis
+    And log into the Syndesis after logout
     Then check visibility of Syndesis home page
 
     # check access after logout
