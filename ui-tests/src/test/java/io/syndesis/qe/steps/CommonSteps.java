@@ -401,10 +401,9 @@ public class CommonSteps {
                 buttonTitle = "Next";
             }
         }
-        log.info(syndesisRootPage.getButton(buttonTitle).toString());
-        TestUtils.sleepForJenkinsDelayIfHigher(2);
-        syndesisRootPage.getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
-        TestUtils.sleepForJenkinsDelayIfHigher(2);
+        SelenideElement button = syndesisRootPage.getButton(buttonTitle);
+        log.info(button.toString());
+        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
@@ -665,6 +664,14 @@ public class CommonSteps {
         Selenide.back();
     }
 
+    private void waitForAdditionalWindow() {
+        try {
+            OpenShiftWaitUtils.waitFor((() -> WebDriverRunner.getWebDriver().getWindowHandles().size() > 1),
+                1000, 10000);
+        } catch (TimeoutException|InterruptedException ignored) {
+        }
+    }
+
     private void doOAuthValidation(String type) {
 
         WebDriver driver = WebDriverRunner.getWebDriver();
@@ -675,6 +682,9 @@ public class CommonSteps {
 
         // Perform the click operation that opens new window
         clickOnButton("Connect " + type);
+
+        // we need to wait for an oauth window to open after button click
+        waitForAdditionalWindow();
 
         // Switch to new window opened
         for (String winHandle : driver.getWindowHandles()) {

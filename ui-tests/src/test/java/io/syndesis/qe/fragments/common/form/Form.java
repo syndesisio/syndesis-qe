@@ -95,7 +95,7 @@ public class Form {
                         input.click();
                     }
                 } else {
-                    input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+                    input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
                     input.sendKeys(Keys.BACK_SPACE);
                     input.clear();
                     input.sendKeys(data.get(key));
