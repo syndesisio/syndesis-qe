@@ -40,7 +40,12 @@ public class GMailSteps {
 
     @When("^.*send an e-mail to \"([^\"]*)\"$")
     public void sendEmail(String sendTo) {
-        gmu.sendEmail("me", sendTo, "syndesis-tests", "Red Hat");
+        sendEmail(sendTo, "syndesis-tests");
+    }
+
+    @When("^.*send an e-mail to \"([^\"]*)\" with subject \"([^\"]*)\"$")
+    public void sendEmail(String sendTo, String subject) {
+        gmu.sendEmail("me", sendTo, subject, "Red Hat");
     }
 
     @Given("^delete emails from \"([^\"]*)\" with subject \"([^\"]*)\"$")

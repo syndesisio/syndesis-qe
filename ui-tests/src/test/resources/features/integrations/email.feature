@@ -127,3 +127,49 @@ Feature: Email connector
       | IMAP     |
       | POP3     |
 
+  @email-receive-folder
+  Scenario: Receive an e-mail from specific folder
+
+    Given created connections
+      | Receive Email (imap or pop3) | Email IMAP With SSL | Receive Email from folder QE | Receive email test |
+
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # First connection is email receive (imap or pop3), by default it only fetches unread emails
+    When select the "Receive Email from folder QE" connection
+    And select "Receive Email" integration action
+    And fill in values by element ID
+      | delay      | 30     |
+      | maxresults | 10     |
+      | folder     | folder |
+    And click on the "Done" button
+    Then check that position of connection to fill is "Finish"
+
+    # Second connection is insert into TO-DO table in database
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert into todo(task, completed) values(:#task, 0)" value
+    And click on the "Next" button
+
+    # Integration step: data mapper, which maps email content to 'task' field in TO-DO table
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | content | task |
+    And scroll "top" "right"
+    And click on the "Done" button
+
+    # Publish integration
+    When click on the "Save" link
+    And set integration name "email-receive-qe-integration"
+    And publish integration
+    Then Integration "email-receive-qe-integration" is present in integrations list
+    And wait until integration "email-receive-qe-integration" gets into "Running" state
+
+    # Send email to connector, wait for it to be received and check that it's content got into database
+    When send an e-mail to "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests-folder"
+    Then check that query "select * from todo where task like '%Red Hat%'" has some output
