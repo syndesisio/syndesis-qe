@@ -665,12 +665,9 @@ public class CommonSteps {
     }
 
     private void waitForAdditionalWindow() {
-        try {
-            OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getWindowHandles().size() > 1,
-                1000, 10000);
-        } catch (TimeoutException | InterruptedException ignored) {
-            log.debug("Second window has not appeared");
-        }
+        TestUtils.waitFor(() -> WebDriverRunner.getWebDriver().getWindowHandles().size() > 1,
+            1, 10,
+            "Second window has not shown up");
     }
 
     private void doOAuthValidation(String type) {
