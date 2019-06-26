@@ -22,7 +22,7 @@ Feature: Email connector
 
     # Create integration
     When navigate to the "Home" page
-    When click on the "Create Integration" link to create a new integration.
+    And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
@@ -38,16 +38,17 @@ Feature: Email connector
     # Second connection is email send (smtp)
     When select the "Send Email with <security> QE" connection
     And select "Send Email" integration action
-    And fill in values
-      | Email to      | jbossqa.fuse@gmail.com       |
-      | Email from    | jbossqa.fuse.email@gmail.com |
-      | Email subject | syndesis-tests               |
+    And fill in values by element ID
+      | to      | jbossqa.fuse@gmail.com       |
+      | from    | jbossqa.fuse.email@gmail.com |
+      | subject | syndesis-tests               |
     And click on the "Done" button
     # Then check visibility of page "Add to Integration"
 
     # Two integration steps - split and data mapper for email contents
     When add integration step on position "0"
     And select "Split" integration step
+    And click on the "Next" button
     # Then check visibility of page "Add to Integration"
 
     When add integration step on position "1"
@@ -80,16 +81,16 @@ Feature: Email connector
       | Receive Email (imap or pop3) | Email <protocol> With SSL | Receive Email with <protocol> QE | Receive email test |
 
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
     # First connection is email receive (imap or pop3), by default it only fetches unread emails
     When select the "Receive Email with <protocol> QE" connection
     Then select "Receive Email" integration action
-    And fill in values
-      | delay          | 30 |
-      | maximum emails | 10 |
+    And fill in values by element ID
+      | delay      | 30 |
+      | maxresults | 10 |
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
