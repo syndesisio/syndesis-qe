@@ -1,4 +1,4 @@
-package io.syndesis.qe.rest.tests.publicapi;
+package io.syndesis.qe.publicapisteps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -142,6 +142,7 @@ public class IntegrationsPublicApiSteps {
     @When("^import integrations with tag (\\w+) with name \"([^\"]*)\"$")
     public void importIntegrations(String tag, String name) {
         integrationsEndpoint.importIntegration(tag, name);
+        TestUtils.sleepIgnoreInterrupt(5000);
     }
 
     @When("^delete integration with name (\\w+)$")

@@ -1,19 +1,21 @@
-package io.syndesis.qe.rest.tests.publicapi;
+package io.syndesis.qe.publicapisteps;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import io.cucumber.datatable.DataTable;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.ConnectionOverview;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.publicendpoint.ConnectionsPublicEndpoint;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Properties;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ConnectionsPublicApiSteps {
@@ -54,5 +56,4 @@ public class ConnectionsPublicApiSteps {
             assertThat(connection.getConfiguredProperties()).containsEntry(connectionProperty.get(0), connectionProperty.get(1));
         }
     }
-
 }

@@ -7,11 +7,17 @@ import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.editor.Editor;
+import io.syndesis.qe.pages.integrations.editor.add.ChooseConnection;
+import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
@@ -20,10 +26,6 @@ import java.util.concurrent.TimeoutException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.pages.integrations.editor.Editor;
-import io.syndesis.qe.pages.integrations.editor.add.ChooseConnection;
-import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,7 +35,7 @@ public class EditorSteps {
     private IntegrationFlowView flowViewComponent = new IntegrationFlowView();
     private ChooseConnection chooseConnection = new ChooseConnection();
 
-    @And("^add data mapper step before \"([^\"]*)\" action$")
+    @When("^add data mapper step before \"([^\"]*)\" action$")
     public void addDataMapperStepBeforeAction(String actionId) {
         flowViewComponent.addDatamapperStep(actionId);
     }
@@ -44,9 +46,9 @@ public class EditorSteps {
     }
 
     private static final class Button {
-        public static final By Publish = By.id("integration-editor-publish-button");
-        public static final By SaveAsDraft = By.xpath("integration-editor-save-button");
-        public static final By Cancel = By.xpath("integration-editor-cancel-button");
+        public static final By PUBLISH = By.id("integration-editor-publish-button");
+        public static final By SAVE_AS_DRAFT = By.id("integration-editor-save-button");
+        public static final By CANCEL = By.id("integration-editor-cancel-button");
     }
 
     @Then("^check visibility of visual integration editor$")
@@ -84,8 +86,8 @@ public class EditorSteps {
     public void verifyDeleteButtonOnStartFinishStepNotVisible(int position, String visibility) {
         SelenideElement trashIcon = flowViewComponent.getStepOnPosition(position).$(By.className("fa-trash"));
         assertEquals("Delete icon should" + visibility.replace("is", "") + " be visible",
-                "is".equals(visibility),
-                trashIcon.exists()
+            "is".equals(visibility),
+            trashIcon.exists()
         );
     }
 
@@ -94,14 +96,14 @@ public class EditorSteps {
      */
     @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in hover table over \"([^\"]*)\" step$")
     public void checkTextInHoverTable(String text, String isVisible, String stepPosition) {
-        if (isVisible.equalsIgnoreCase("visible")) {
+        if ("visible".equalsIgnoreCase(isVisible)) {
             Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
-                    .isNotEmpty()
-                    .containsIgnoringCase(text);
+                .isNotEmpty()
+                .containsIgnoringCase(text);
         } else {
             Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
-                    .isNotEmpty()
-                    .doesNotContain(text);
+                .isNotEmpty()
+                .doesNotContain(text);
         }
     }
 
@@ -115,7 +117,7 @@ public class EditorSteps {
      */
     @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of step number \"([^\"]*)\"$")
     public void checkTextInStepWarning(String text, String isVisible, int stepPosition) {
-        if (isVisible.equalsIgnoreCase("visible")) {
+        if ("visible".equalsIgnoreCase(isVisible)) {
             doCheckTextInStepsWarningTable(text, stepPosition, true);
         } else {
             doCheckTextInStepsWarningTable(text, stepPosition, false);
@@ -125,7 +127,7 @@ public class EditorSteps {
     @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in step warning inside of steps$")
     public void checkTextInStepsWarning(String text, String isVisible, DataTable table) {
         for (String index : table.asList()) {
-            if (isVisible.equalsIgnoreCase("visible")) {
+            if ("visible".equalsIgnoreCase(isVisible)) {
                 doCheckTextInStepsWarningTable(text, Integer.valueOf(index), true);
             } else {
                 doCheckTextInStepsWarningTable(text, Integer.valueOf(index), false);
@@ -136,12 +138,12 @@ public class EditorSteps {
     public void doCheckTextInStepsWarningTable(String text, int position, boolean visible) {
         if (visible) {
             Assertions.assertThat(flowViewComponent.getWarningTextFromStep(position))
-                    .isNotEmpty()
-                    .containsIgnoringCase(text);
+                .isNotEmpty()
+                .containsIgnoringCase(text);
         } else {
             Assertions.assertThat(flowViewComponent.getWarningTextFromStep(position))
-                    .isNotEmpty()
-                    .doesNotContain(text);
+                .isNotEmpty()
+                .doesNotContain(text);
         }
     }
 
@@ -154,7 +156,7 @@ public class EditorSteps {
 
         for (String column : data) {
             Assertions.assertThat(foundText)
-                    .containsIgnoringCase(column);
+                .containsIgnoringCase(column);
         }
     }
 
@@ -211,7 +213,7 @@ public class EditorSteps {
     public void editIntegrationStep(int oneBasedStepPosition) {
         log.info("Editing integration step #" + oneBasedStepPosition);
         flowViewComponent.getStepOnPosition(oneBasedStepPosition)
-                .$(By.cssSelector("[data-testid=\"integration-editor-step-adder-configure-button\"]")).shouldBe(visible).click();
+            .$(By.cssSelector("[data-testid=\"integration-editor-step-adder-configure-button\"]")).shouldBe(visible).click();
     }
 
     @When("^delete step on position (\\d+)$")
@@ -223,6 +225,16 @@ public class EditorSteps {
     @When("^publish integration$")
     public void publishIntegration() {
         log.info("Publishing integration");
-        editor.getRootElement().$(Button.Publish).shouldBe(visible).click();
+        editor.getRootElement().$(Button.PUBLISH).shouldBe(visible).click();
+    }
+
+    @When("^save and cancel integration editor$")
+    public void cancelIntegrationEditorSave() {
+        editor.getRootElement().$(Button.SAVE_AS_DRAFT).shouldBe(visible).click();
+        TestUtils.sleepIgnoreInterrupt(2000);
+        editor.getRootElement().$(Button.CANCEL).shouldBe(visible).click();
+        SelenideElement dialog = new ModalDialogPage().getRootElement();
+        dialog.find(By.xpath("//button[text()[contains(.,'Confirm')]]")).click();
+        dialog.waitUntil(Condition.not(visible), 10 * 1000);
     }
 }
