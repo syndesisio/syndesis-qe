@@ -3,6 +3,9 @@ package io.syndesis.qe.pages.integrations.editor.add.steps;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.integrations.editor.add.steps.basicfilter.BasicFilterRule;
+import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
@@ -12,35 +15,33 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.syndesis.qe.pages.integrations.editor.add.steps.basicfilter.BasicFilterRule;
-import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class BasicFilter extends AbstractStep {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-basic-filter");
+        public static final By ROOT = By.className("container-fluid");
 
         public static final By OPTION = By.cssSelector("option");
     }
 
     private static final class Input {
-        public static final By PATH = By.cssSelector("input[formcontrolname='path']");
-        public static final By VALUE = By.cssSelector("input[formcontrolname='value']");
+        public static final By PATH = By.cssSelector("input[data-testid=\"rules-0-path\"]");
+        public static final By VALUE = By.cssSelector("input[data-testid=\"rules-0-value\"]");
     }
 
     private static final class Select {
-        public static final By PREDICATE = By.id("basicFilterPredicateSelect");
-        public static final By OP = By.cssSelector("select[formcontrolname='op']");
+        public static final By PREDICATE = By.cssSelector("select[data-testid=\"predicate\"]");
+        public static final By OP = By.cssSelector("select[data-testid=\"rules-0-op\"]");
     }
 
     private static final class Link {
-        public static final By ADD_RULE = By.cssSelector(".add-rule");
+        public static final By ADD_RULE = By.xpath("//button[contains(.,'+ Add another rule')]");
     }
 
     private static final class DataList {
-        public static final By PATH_LIST = By.id("path-list-0");
+        public static final By PATH_LIST = By.id("rules-0-path-list");
     }
 
     public SelenideElement getRootElement() {
@@ -65,7 +66,7 @@ public class BasicFilter extends AbstractStep {
 
         for (int i = 1; i < (filterConditionsArray.length - 2); i = i + 3) {
             BasicFilterRule basicFilterRule =
-                    new BasicFilterRule(filterConditionsArray[i], filterConditionsArray[i + 1], filterConditionsArray[i + 2]);
+                new BasicFilterRule(filterConditionsArray[i], filterConditionsArray[i + 1], filterConditionsArray[i + 2]);
             this.ruleArray.add(basicFilterRule);
         }
     }
@@ -201,8 +202,8 @@ public class BasicFilter extends AbstractStep {
         this.ruleArray.add(basicFilterRule);
     }
 
-    public void setParameter(String filterCondition) {
-        this.setFilterCondition(filterCondition);
+    public void setParameter(String parameter) {
+        this.setFilterCondition(parameter);
     }
 
     public void setPredicate(String predicate) {

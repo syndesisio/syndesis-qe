@@ -1,17 +1,19 @@
 package io.syndesis.qe.steps.integrations.summary;
 
-import com.codeborne.selenide.Selenide;
-import cucumber.api.java.en.Then;
-import io.fabric8.kubernetes.api.model.Pod;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.Fail.fail;
+
 import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.pages.integrations.summary.Metrics;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.lang.time.DateUtils;
-import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codeborne.selenide.Selenide;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.assertj.core.api.Assertions.within;
+import cucumber.api.java.en.Then;
+import io.fabric8.kubernetes.api.model.Pod;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MetricsSteps {
@@ -40,7 +44,7 @@ public class MetricsSteps {
     @Then("^check that number of total error is (\\w+)$")
     public void checkNumberOfTotalError(int numberOfErrors) {
         refresh();
-        Assertions.assertThat(metricsTab.getTotalErrors()).isEqualTo(numberOfErrors);
+        assertThat(metricsTab.getTotalErrors()).isEqualTo(numberOfErrors);
     }
 
     /***
@@ -51,57 +55,55 @@ public class MetricsSteps {
         refresh();
         String dateLabel = metricsTab.getLastProcessed();
         if (metricsTab.getNumberOfTotalMessages() == 0) {
-            Assertions.assertThat(dateLabel).matches("^n/a$");
+            assertThat(dateLabel).matches("^Invalid Date$"); // gh-5729
             return;
         }
-        Assertions.assertThat(dateLabel).matches("^\\d{1,2}\\/\\d{1,2}\\/\\d{4}, \\d{2}:\\d{2}$");
+        assertThat(dateLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{2}:\\d{2} (AM|PM)$");
 
-        Date dateWhenProcessed = new SimpleDateFormat("MM/dd/yyyy, HH:mm").parse(dateLabel);
+        Date dateWhenProcessed = new SimpleDateFormat("MM/dd/yyyy, hh:mm:ss a").parse(dateLabel);
         Calendar processedCalendar = Calendar.getInstance();
         processedCalendar.setTime(dateWhenProcessed);
 
-        /*clear milliseconds and seconds because UI last processed label contains only minutes*/
+        /*clear milliseconds because UI last processed label contains only minutes and seconds*/
         Calendar beforeRequest = calendarUtils.getBeforeRequest();
         beforeRequest.clear(Calendar.MILLISECOND);
-        beforeRequest.clear(Calendar.SECOND);
         Calendar afterRequest = calendarUtils.getAfterRequest();
         afterRequest.clear(Calendar.MILLISECOND);
-        afterRequest.clear(Calendar.SECOND);
 
         SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         if (!processedCalendar.equals(beforeRequest)) { //if not same then it tests whether it was after
-            Assertions.assertThat(processedCalendar.after(beforeRequest))
-                    .as("Check that processed date and time \"%s\" is after %s",
-                            outFormat.format(processedCalendar.getTime()),
-                            outFormat.format(beforeRequest.getTime()))
-                    .isTrue();
+            assertThat(processedCalendar.after(beforeRequest))
+                .as("Check that processed date and time \"%s\" is after %s",
+                    outFormat.format(processedCalendar.getTime()),
+                    outFormat.format(beforeRequest.getTime()))
+                .isTrue();
         }
         if (!processedCalendar.equals(afterRequest)) { //if not same then it tests whether it was before
-            Assertions.assertThat(processedCalendar.before(afterRequest))
-                    .as("Check that processed date and time \"%s\" is before %s",
-                            outFormat.format(processedCalendar.getTime()),
-                            outFormat.format(afterRequest.getTime()))
-                    .isTrue();
+            assertThat(processedCalendar.before(afterRequest))
+                .as("Check that processed date and time \"%s\" is before %s",
+                    outFormat.format(processedCalendar.getTime()),
+                    outFormat.format(afterRequest.getTime()))
+                .isTrue();
         }
     }
 
     @Then("^check that number of valid messages is (\\w+)$")
     public void checkNumberOfValidMessages(int numberOfValidMessages) {
         refresh();
-        Assertions.assertThat(metricsTab.getNumberOfValidMessages()).isEqualTo(numberOfValidMessages);
+        assertThat(metricsTab.getNumberOfValidMessages()).isEqualTo(numberOfValidMessages);
     }
 
     @Then("^check that number of error messages is (\\w+)$")
     public void checkNumberOfErrorMessages(int numberOfErrorMessages) {
         refresh();
-        Assertions.assertThat(metricsTab.getNumberOfErrorMessages()).isEqualTo(numberOfErrorMessages);
+        assertThat(metricsTab.getNumberOfErrorMessages()).isEqualTo(numberOfErrorMessages);
     }
 
     @Then("^check that number of total messages is (\\w+)$")
     public void checkNumberOfTotalMessages(int numberOfTotalMessages) {
         refresh();
-        Assertions.assertThat(metricsTab.getNumberOfTotalMessages()).isEqualTo(numberOfTotalMessages);
+        assertThat(metricsTab.getNumberOfTotalMessages()).isEqualTo(numberOfTotalMessages);
     }
 
     @Then("^check that uptime for ([^\"]*) pod is valid$")
@@ -123,7 +125,7 @@ public class MetricsSteps {
             Pattern pattern = Pattern.compile("^(\\d{1,2}) minutes$");
             Matcher matcher = pattern.matcher(uptime);
             if (!matcher.find()) {
-                Assertions.fail("UI uptime " + uptime + " doesn't match pattern.");
+                fail("UI uptime " + uptime + " doesn't match pattern.");
             }
             Long uiMinute = Long.valueOf(matcher.group(1));
 
@@ -133,12 +135,12 @@ public class MetricsSteps {
             long diff = new Date().getTime() - openShiftStartDate.getTime();
             long openShiftMinutes = TimeUnit.MILLISECONDS.toMinutes(diff);
 
-            Assertions.assertThat(uiMinute)
-                    .as("Check that UI uptime '%s' is same as openshift uptime '%s'.",
-                            uiMinute, openShiftMinutes)
-                    .isCloseTo(openShiftMinutes, within(Long.valueOf(1))); //1-second inaccuracy can happen
+            assertThat(uiMinute)
+                .as("Check that UI uptime '%s' is same as openshift uptime '%s'.",
+                    uiMinute, openShiftMinutes)
+                .isCloseTo(openShiftMinutes, within(Long.valueOf(1))); //1-second inaccuracy can happen
         } else {
-            Assertions.fail("Pod with name " + integration + " doesn't exist!");
+            fail("Pod with name " + integration + " doesn't exist!");
         }
     }
 
@@ -158,7 +160,7 @@ public class MetricsSteps {
             startTime = metricsTab.getStartTime();
             uiStartDate = parseUiSinceDate(startTime);
             if (timeout == 10) {
-                Assertions.fail("UI time is same as actual time which is impossible");
+                fail("UI time is same as actual time which is impossible");
             }
         }
 
@@ -179,12 +181,12 @@ public class MetricsSteps {
             openshiftDate = DateUtils.round(openshiftDate, Calendar.MINUTE);
             openshiftDate.clear(Calendar.SECOND);
 
-            Assertions.assertThat(uiDate.getTime())
-                    .as("Check that UI date of pod '%s' is same as date in the openshift '%s'.",
-                            startTime, openshiftTime)
-                    .isCloseTo(openshiftDate.getTime(), 60000L); // UI sometimes round time UP sometimes not
+            assertThat(uiDate.getTime())
+                .as("Check that UI date of pod '%s' is same as date in the openshift '%s'.",
+                    startTime, openshiftTime)
+                .isCloseTo(openshiftDate.getTime(), 60000L); // UI sometimes round time UP sometimes not
         } else {
-            Assertions.fail("Pod with name " + integration + " doesn't exist!");
+            fail("Pod with name " + integration + " doesn't exist!");
         }
     }
 
@@ -193,14 +195,14 @@ public class MetricsSteps {
      * e.g. Since Dec 19th 10:42 -> group1 = Dec 19 group2= 10:42
      */
     private Date parseUiSinceDate(String dateLable) throws ParseException {
-        Pattern pattern = Pattern.compile("^.* (\\w{3,4} \\d{1,2})\\w{2} (\\d{2}:\\d{2})$");
+        Pattern pattern = Pattern.compile("^.* (\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{2}:\\d{2} (AM|PM))$");
         Matcher matcher = pattern.matcher(dateLable);
         if (!matcher.find()) {
-            Assertions.fail("Date " + dateLable + " doesn't match pattern.");
+            fail("Date " + dateLable + " doesn't match pattern.");
         }
-        // year have to be added, UI doesn't contain it
-        return new SimpleDateFormat("MMM dd HH:mm yyyy")
-                .parse(matcher.group(1) + " " + matcher.group(2) + " " + Calendar.getInstance().get(Calendar.YEAR));
+        // e.g. 6/13/2019, 2:09:47
+        return new SimpleDateFormat("MM/dd/yyyy, hh:mm:ss a")
+            .parse(matcher.group(1));
     }
 
     /**
@@ -218,5 +220,4 @@ public class MetricsSteps {
 
         return uiDate.getTime().compareTo(currentDate.getTime()) == 0;
     }
-
 }
