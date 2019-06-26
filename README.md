@@ -463,7 +463,8 @@ If you don't use IntelliJ IDEA, you will need to configure the code style manual
 - Import order (new line between each group): static io.syndesis.\*, org.junit.\*, org.\*, javax.\*, java.\*, all other and then non-static imports following the same order
 
 **NOTE** IntelliJ Idea doesn't provide auto-format code after saving (because it provides auto-saving) by default. When you want to
-reformat your code, you can use shortcut **CTRL+ALT+L** or you can install and configure **[Save Actions](https://plugins.jetbrains.com/plugin/7642-save-actions)**
+reformat your code, you can use shortcut **CTRL+ALT+L** or you can install and configure **[Save Actions](https://plugins.jetbrains.com/plugin/7642-save-actions)**.
+Please note that **CTRL+ALT+L** only reformat the code but it doesn't change the ordering of imports so you have to use also **CTRL+ALT+O** for optimizing imports.
 
 You can also use *Reformat Code* checkbox in *Commit Changes*
 dialog before you commit changes.
