@@ -3,9 +3,14 @@ package io.syndesis.qe.upgrade;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,11 +40,6 @@ import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.ImageStream;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -62,10 +62,11 @@ public class UpgradeSteps {
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
             // Parse "1.5"
-            BigDecimal version = new BigDecimal(Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3))).setScale(1, BigDecimal.ROUND_HALF_UP);
+            BigDecimal version = new BigDecimal(Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3)))
+                .setScale(1, BigDecimal.ROUND_HALF_UP);
             Request request = new Request.Builder()
-                    .url(DOCKER_HUB_SYNDESIS_TAGS_URL)
-                    .build();
+                .url(DOCKER_HUB_SYNDESIS_TAGS_URL)
+                .build();
             String response = "";
             try {
                 response = new OkHttpClient.Builder().build().newCall(request).execute().body().string();
@@ -130,10 +131,12 @@ public class UpgradeSteps {
     @When("^perform syndesis upgrade to newer version$")
     public void syndesisUpgrade() {
         ProcessBuilder pb = new ProcessBuilder(Paths.get(UPGRADE_FOLDER, "upgrade.sh").toString(),
-                "--template ", UPGRADE_TEMPLATE,
-                "--backup", BACKUP_DIR,
-                "--oc-login", "oc login " + TestConfiguration.openShiftUrl() + " --token=" + OpenShiftUtils.client().getConfiguration().getOauthToken() + " -n " + TestConfiguration.openShiftNamespace(),
-                "--migration", Paths.get(UPGRADE_FOLDER, "migration").toString());
+            "--template ", UPGRADE_TEMPLATE,
+            "--backup", BACKUP_DIR,
+            "--oc-login",
+            "oc login " + TestConfiguration.openShiftUrl() + " --token=" + OpenShiftUtils.getInstance().getConfiguration().getOauthToken() + " -n " +
+                TestConfiguration.openShiftNamespace(),
+            "--migration", Paths.get(UPGRADE_FOLDER, "migration").toString());
         pb.directory(new File(UPGRADE_FOLDER));
 
         try {
@@ -152,13 +155,14 @@ public class UpgradeSteps {
 
     @When("^perform syndesis upgrade to newer version using operator$")
     public void upgradeUsingOperator() {
-        try (InputStream is = new URL(TestConfiguration.syndesisOperatorUrl().replace(System.getProperty("syndesis.version"), System.getProperty("syndesis.upgrade.version"))).openStream()) {
-            List<HasMetadata> resources = OpenShiftUtils.client().load(is).get();
+        try (InputStream is = new URL(TestConfiguration.syndesisOperatorUrl().replace(System.getProperty("syndesis.version"), System.getProperty(
+            "syndesis.upgrade.version"))).openStream()) {
+            List<HasMetadata> resources = OpenShiftUtils.getInstance().load(is).get();
             for (HasMetadata resource : resources) {
                 if (resource instanceof DeploymentConfig) {
-                    OpenShiftUtils.client().deploymentConfigs().createOrReplace((DeploymentConfig) resource);
+                    OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace((DeploymentConfig) resource);
                 } else if (resource instanceof ImageStream) {
-                    OpenShiftUtils.client().imageStreams().createOrReplace((ImageStream) resource);
+                    OpenShiftUtils.getInstance().imageStreams().createOrReplace((ImageStream) resource);
                 }
             }
         } catch (Exception e) {
@@ -193,7 +197,7 @@ public class UpgradeSteps {
             if (!template.contains("- name: TEST")) {
                 template = StringUtils.replaceAll(template, "tmp", "tmp\"\n          - name: TEST\n            value: \"UPGRADE");
             }
-        FileUtils.write(new File(UPGRADE_TEMPLATE), template, "UTF-8", false);
+            FileUtils.write(new File(UPGRADE_TEMPLATE), template, "UTF-8", false);
         } catch (IOException e) {
             log.error("Unable to modify template", e);
         }
@@ -215,7 +219,7 @@ public class UpgradeSteps {
             upgradeDb = FileUtils.readFileToString(Paths.get(UPGRADE_FOLDER, "steps", "upgrade_10_migrate_db").toFile(), "UTF-8");
             if (!upgradeDb.contains("-t 99")) {
                 upgradeDb = upgradeDb.replaceAll("syndesis-cli.jar migrate", "syndesis-cli.jar migrate -t 99 -f "
-                        + upgradeResourcesPath);
+                    + upgradeResourcesPath);
 
                 upgradeDb = upgradeDb.replaceAll("port=5432", "port=5433");
                 upgradeDb = upgradeDb.replaceAll("pod 5432", "pod 5433\\:5432");
@@ -224,7 +228,6 @@ public class UpgradeSteps {
         } catch (IOException e) {
             log.error("Unable to modify modify cli", e);
         }
-
     }
 
     private void copyStatefulScripts() {
@@ -252,7 +255,7 @@ public class UpgradeSteps {
         System.setProperty("syndesis.upgrade.rollback", "");
         // Ideally this should be done in upgrade_60_restart_all but there is no rollback for that at the moment
         TestUtils.replaceInFile(Paths.get(UPGRADE_FOLDER, "steps", "upgrade_50_replace_template").toFile(),
-                "update_version \\$tag", "update_version \\$tag; exit 1");
+            "update_version \\$tag", "update_version \\$tag; exit 1");
     }
 
     @Then("^wait until upgrade pod is finished$")
@@ -277,11 +280,11 @@ public class UpgradeSteps {
 
     private void verifyTestModifications(boolean rollback) {
         // ConfigMap label change
-        ConfigMap cm = OpenShiftUtils.client().configMaps().withName("syndesis-ui-config").get();
+        ConfigMap cm = OpenShiftUtils.getInstance().configMaps().withName("syndesis-ui-config").get();
 
         // New ENV variable in syndesis-server and syndesis-meta
         EnvVar dcEnvVar = null;
-        DeploymentConfig dc = OpenShiftUtils.client().deploymentConfigs().withName("syndesis-server").get();
+        DeploymentConfig dc = OpenShiftUtils.getInstance().deploymentConfigs().withName("syndesis-server").get();
         for (EnvVar envVar : dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv()) {
             if (envVar.getName().equals("TEST")) {
                 dcEnvVar = envVar;
@@ -303,7 +306,8 @@ public class UpgradeSteps {
                 softAssertions.assertThat(cm.getMetadata().getLabels().get("TEST")).isEqualTo("UPGRADE");
                 softAssertions.assertThat(finalDcEnvVar.getValue()).isEqualTo("UPGRADE");
                 softAssertions.assertThat(integrationsEndpoint.get(integrationId).getName()).isEqualTo("UPGRADE INTEGRATION NAME");
-                softAssertions.assertThat(integrationsEndpoint.get(integrationId).getDescription().get()).isEqualTo("UPGRADE INTEGRATION DESCRIPTION");
+                softAssertions.assertThat(integrationsEndpoint.get(integrationId).getDescription().get())
+                    .isEqualTo("UPGRADE INTEGRATION DESCRIPTION");
             });
         }
     }
@@ -311,9 +315,9 @@ public class UpgradeSteps {
     private String getSyndesisVersion() {
         RestUtils.reset();
         Request request = new Request.Builder()
-                .url(RestUtils.getRestUrl() + VERSION_ENDPOINT)
-                .header("Accept", "text/plain")
-                .build();
+            .url(RestUtils.getRestUrl() + VERSION_ENDPOINT)
+            .header("Accept", "text/plain")
+            .build();
         try {
             return new OkHttpClient.Builder().build().newCall(request).execute().body().string();
         } catch (IOException e) {
@@ -327,7 +331,8 @@ public class UpgradeSteps {
         if (!Paths.get(UPGRADE_FOLDER, "syndesis-cli.jar").toFile().exists()) {
             log.info("Expecting to be run on jenkins, trying to copy ../../syndesis/app/server/cli/target/syndesis-cli.jar");
             try {
-                FileUtils.copyFile(Paths.get("../../syndesis/app/server/cli/target/syndesis-cli.jar").toFile(), Paths.get(UPGRADE_FOLDER, "syndesis-cli.jar").toFile());
+                FileUtils.copyFile(Paths.get("../../syndesis/app/server/cli/target/syndesis-cli.jar").toFile(),
+                    Paths.get(UPGRADE_FOLDER, "syndesis-cli.jar").toFile());
             } catch (IOException e) {
                 log.error("Unable to copy syndesis-cli.jar");
             }
@@ -367,20 +372,20 @@ public class UpgradeSteps {
     @Then("^verify correct s2i tag for builds$")
     public void verifyImageStreams() {
         final String expected = System.getProperty("syndesis.upgrade.rollback") != null
-                ? System.getProperty("syndesis.version")
-                : System.getProperty("syndesis.upgrade.version");
-        OpenShiftUtils.client().buildConfigs().list().getItems().stream()
-                .filter(bc -> bc.getMetadata().getName().startsWith("i-"))
-                .forEach(bc -> assertThat(bc.getSpec().getStrategy().getSourceStrategy().getFrom().getName()).contains(expected));
+            ? System.getProperty("syndesis.version")
+            : System.getProperty("syndesis.upgrade.version");
+        OpenShiftUtils.getInstance().buildConfigs().list().getItems().stream()
+            .filter(bc -> bc.getMetadata().getName().startsWith("i-"))
+            .forEach(bc -> assertThat(bc.getSpec().getStrategy().getSourceStrategy().getFrom().getName()).contains(expected));
     }
 
     @When("^delete buildconfig with name \"([^\"]*)\"$")
     public void deleteBc(String bc) {
-        OpenShiftUtils.client().buildConfigs().withName(bc).delete();
+        OpenShiftUtils.getInstance().buildConfigs().withName(bc).delete();
     }
 
     @Given("^delete syndesis operator$")
     public void deleteOperator() {
-        OpenShiftUtils.client().deploymentConfigs().withName("syndesis-operator").delete();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName("syndesis-operator").delete();
     }
 }

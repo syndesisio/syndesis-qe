@@ -71,7 +71,7 @@ public class RestTestHooks {
             TestUtils.printPods();
             log.warn("Scenario {} failed, saving integration logs to scenario", scenario.getName());
             // There can be multiple integration pods for one test
-            List<Pod> integrationPods = OpenShiftUtils.client().pods().list().getItems().stream().filter(
+            List<Pod> integrationPods = OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
                 p -> p.getMetadata().getName().startsWith("i-")
                     && !p.getMetadata().getName().contains("deploy")
                     && !p.getMetadata().getName().contains("build")

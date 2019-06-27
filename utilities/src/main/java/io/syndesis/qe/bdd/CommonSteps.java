@@ -1,6 +1,5 @@
 package io.syndesis.qe.bdd;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.connection.Connection;
@@ -10,7 +9,6 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.HttpUtils;
-import io.syndesis.qe.utils.LogCheckerUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.RestUtils;
@@ -21,7 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
@@ -29,14 +26,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.regex.Pattern;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.openshift.api.model.Build;
+import cz.xtf.core.waiting.WaiterException;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 
@@ -51,14 +45,18 @@ public class CommonSteps {
     @Given("^clean default namespace")
     public void cleanNamespace() {
         undeploySyndesis();
-        OpenShiftUtils.client().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
-        OpenShiftUtils.client().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
-        OpenShiftUtils.client().serviceAccounts().withName("syndesis-oauth-client").delete();
+        //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
+        OpenShiftUtils.binary().execute("delete", "template", "--all");
+        OpenShiftUtils.getInstance().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
+        OpenShiftUtils.getInstance().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
+        OpenShiftUtils.getInstance().serviceAccounts().withName("syndesis-oauth-client").delete();
         try {
-            OpenShiftUtils.getInstance().cleanAndWait();
-        } catch (TimeoutException e) {
+            OpenShiftUtils.getInstance().clean();
+            OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor();
+        } catch (WaiterException e) {
             log.warn("Project was not clean after 20s, retrying once again");
-            OpenShiftUtils.getInstance().cleanAndAssert();
+            OpenShiftUtils.getInstance().clean();
+            OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor();
         }
         OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
     }
@@ -164,13 +162,13 @@ public class CommonSteps {
                         .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
                         .interval(TimeUnit.SECONDS, 20)
                         .timeout(TimeUnit.MINUTES, timeout)
-                        .assertEventually();
+                        .waitFor();
                 } else {
                     OpenShiftUtils.xtf().waiters()
                         .areExactlyNPodsRunning(0, "syndesis.io/component", c.getName())
                         .interval(TimeUnit.SECONDS, 20)
                         .timeout(TimeUnit.MINUTES, timeout)
-                        .assertEventually();
+                        .waitFor();
                 }
             };
             executorService.submit(runnable);
@@ -186,35 +184,6 @@ public class CommonSteps {
         } catch (InterruptedException e) {
             TestUtils.printPods();
             fail(deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time");
-        }
-    }
-
-    @Then("^verify s2i build of integration \"([^\"]*)\" was finished in duration (\\d+) min$")
-    public void verifyBuild(String integrationName, int duration) {
-        String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
-
-        Optional<Build> s2iBuild = OpenShiftUtils.getInstance().getBuilds().stream()
-            .filter(b -> b.getMetadata().getName().contains(sanitizedName)).findFirst();
-
-        if (s2iBuild.isPresent()) {
-            Build build = s2iBuild.get();
-            String buildPodName = build.getMetadata().getAnnotations().get("openshift.io/build.pod-name");
-            Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream()
-                .filter(p -> p.getMetadata().getName().equals(buildPodName)).findFirst();
-            if (buildPod.isPresent()) {
-                try {
-                    boolean[] patternsInLogs = LogCheckerUtils.findPatternsInLogs(buildPod.get(), Pattern.compile(".*Downloading: \\b.*"));
-                    assertThat(patternsInLogs).containsOnly(false);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            assertThat(build.getStatus().getPhase()).isEqualTo("Complete");
-            // % 1_000L is there to parse OpenShift ms format
-            assertThat(build.getStatus().getDuration() % 1_000L).isLessThan(duration * 60 * 1000);
-        } else {
-            fail("No build found for integration with name " + sanitizedName);
         }
     }
 
@@ -285,7 +254,7 @@ public class CommonSteps {
                 .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
                 .interval(TimeUnit.SECONDS, 20)
                 .timeout(TimeUnit.MINUTES, 12)
-                .assertEventually();
+                .waitFor();
         executorService.submit(runnable);
 
         executorService.shutdown();

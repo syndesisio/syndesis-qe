@@ -4,13 +4,9 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeoutException;
 
-import io.fabric8.openshift.api.model.Template;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,20 +14,20 @@ public class WildFlyTemplate {
 
     public static void deploy(String gitURL, String appName) {
         if (!TestUtils.isDcDeployed(appName)) {
-            Template template;
-            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
-                template = OpenShiftUtils.client().templates().load(is).get();
-            } catch (IOException ex) {
-                throw new IllegalArgumentException("Unable to read template ", ex);
-            }
+//            Template template;
+//            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
+//                template = OpenShiftUtils.getInstance().templates().load(is).get();
+//            } catch (IOException ex) {
+//                throw new IllegalArgumentException("Unable to read template ", ex);
+//            }
+//
+//            Map<String, String> templateParams = new HashMap<>();
+//            templateParams.put("GITHUB_REPO", gitURL);
+//            templateParams.put("APPLICATION_NAME", appName);
+//
+//            OpenShiftUtils.getInstance().templates().withName(appName).delete();
 
-            Map<String, String> templateParams = new HashMap<>();
-            templateParams.put("GITHUB_REPO", gitURL);
-            templateParams.put("APPLICATION_NAME", appName);
-
-            OpenShiftUtils.client().templates().withName(appName).delete();
-
-            OpenShiftUtils.client().imageStreams().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().imageStreams().createOrReplaceWithNew()
                 .editOrNewMetadata()
                 .withName("wildfly-130-centos7")
                 .addToLabels("app", appName)
@@ -54,7 +50,11 @@ public class WildFlyTemplate {
                 .endSpec()
                 .done();
 
-            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams));
+            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
+            OpenShiftUtils.binary().execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-wildfly.yml").toAbsolutePath().toString());
+            OpenShiftUtils.binary().execute("new-app", "wildfly-s2i-template", "-p", "GITHUB_REPO=" + gitURL, "-p", "APPLICATION_NAME=" + appName);
+
+//            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams));
 
             try {
                 log.info("Waiting for " + appName + " to be ready");
@@ -67,12 +67,12 @@ public class WildFlyTemplate {
     }
 
     public static void cleanUp(String appName) {
-        OpenShiftUtils.client().deploymentConfigs().withName(appName).delete();
-        OpenShiftUtils.client().services().withName(appName).delete();
-        OpenShiftUtils.client().routes().withName(appName).delete();
-        OpenShiftUtils.client().imageStreams().withName(appName).delete();
-        OpenShiftUtils.client().imageStreams().withName("wildfly-130-centos7").delete();
-        OpenShiftUtils.client().buildConfigs().withName(appName).delete();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(appName).delete();
+        OpenShiftUtils.getInstance().services().withName(appName).delete();
+        OpenShiftUtils.getInstance().routes().withName(appName).delete();
+        OpenShiftUtils.getInstance().imageStreams().withName(appName).delete();
+        OpenShiftUtils.getInstance().imageStreams().withName("wildfly-130-centos7").delete();
+        OpenShiftUtils.getInstance().buildConfigs().withName(appName).delete();
     }
 
 }

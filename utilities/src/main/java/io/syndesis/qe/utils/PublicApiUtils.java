@@ -1,11 +1,9 @@
 package io.syndesis.qe.utils;
 
-import cz.xtf.openshift.OpenShiftBinaryClient;
-import io.fabric8.kubernetes.api.model.ServiceAccount;
-import io.syndesis.qe.TestConfiguration;
-import lombok.extern.slf4j.Slf4j;
-
 import static org.assertj.core.api.Assertions.fail;
+
+import io.fabric8.kubernetes.api.model.ServiceAccount;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PublicApiUtils {
@@ -20,19 +18,18 @@ public class PublicApiUtils {
      * Method creates service account for Public API and gives them competent role
      */
     public static void createServiceAccount() {
-        ServiceAccount existServiceAccount = OpenShiftUtils.client().serviceAccounts().withName(SERVICE_ACCOUNT_NAME).get();
+        ServiceAccount existServiceAccount = OpenShiftUtils.getInstance().serviceAccounts().withName(SERVICE_ACCOUNT_NAME).get();
 
         if (existServiceAccount == null) {
-            OpenShiftUtils.client().serviceAccounts()
+            OpenShiftUtils.getInstance().serviceAccounts()
                     .createNew()
                     .withNewMetadata()
                     .withName(SERVICE_ACCOUNT_NAME)
                     .endMetadata()
                     .done();
-            OpenShiftUtils.xtf().addRoleToUser("edit", "system:serviceaccount:syndesis:syndesis-cd-client");
+//            OpenShiftUtils.xtf().addRoleToUser("edit", "system:serviceaccount:syndesis:syndesis-cd-client");
         }
-        OpenShiftBinaryClient.getInstance().project(TestConfiguration.openShiftNamespace());
-        publicApiToken = OpenShiftBinaryClient.getInstance().executeCommandWithReturn("", "sa", "get-token", SERVICE_ACCOUNT_NAME);
+        publicApiToken = OpenShiftUtils.binary().execute("sa", "get-token", SERVICE_ACCOUNT_NAME);
     }
 
     public static String getPublicToken() {

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,9 +82,6 @@ public class SampleDbConnectionManager {
             wrap.setLocalPortForward(localPortForward);
         }
 
-        // OCP4 has some problems here that are not present when debugging, so it probably takes some time until the port-forward starts working
-        TestUtils.sleepIgnoreInterrupt(30000L);
-
         try {
             if (wrap.getDbConnection() == null || wrap.getDbConnection().isClosed()) {
                 Connection dbConnection = SampleDbConnectionManager.createDbConnection(wrap.getLocalPortForward(), localPort, driver);
@@ -141,13 +138,11 @@ public class SampleDbConnectionManager {
         return null;
     }
 
-    private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String podName) {
-        LocalPortForward localPortForward;
-
-        Optional<Pod> dbPodOpt = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().contains(podName)).findFirst();
-
-        localPortForward = OpenShiftUtils.portForward(dbPodOpt.get(), remotePort, localPort);
-        return localPortForward;
+    private static LocalPortForward createLocalPortForward(int remotePort, int localPort, String name) {
+        final Service service = OpenShiftUtils.getInstance().services().list().getItems().stream()
+            .filter(s -> s.getMetadata().getName().startsWith(name)).findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("No service with name " + name + " found"));
+        return OpenShiftUtils.getInstance().services().withName(service.getMetadata().getName()).portForward(remotePort, localPort);
     }
 
     private static void releaseDbWrapper(DbWrapper wrap) {

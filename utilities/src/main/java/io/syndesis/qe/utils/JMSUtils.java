@@ -6,7 +6,6 @@ import org.apache.activemq.command.ActiveMQTextMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import cz.xtf.jms.JmsClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -20,7 +19,7 @@ public final class JMSUtils {
     }
 
     public static Message getMessage(Destination type, String destinationName, long timeout) {
-        try(JmsClientManager manager = new JmsClientManager("tcp")) {
+        try (JmsClientManager manager = new JmsClientManager("tcp")) {
             return withDestination(manager, type, destinationName).receiveMessage(timeout);
         } catch (Exception e) {
             log.error("Unable to get message from JMS", e);
@@ -36,7 +35,7 @@ public final class JMSUtils {
         }
         String text = null;
         if (m instanceof ActiveMQBytesMessage) {
-            text = new String(((ActiveMQBytesMessage)m).getContent().getData());
+            text = new String(((ActiveMQBytesMessage) m).getContent().getData());
         } else {
             try {
                 text = ((ActiveMQTextMessage) m).getText();
@@ -50,7 +49,7 @@ public final class JMSUtils {
     }
 
     public static void sendMessage(Destination type, String name, String content) {
-        try(JmsClientManager manager = new JmsClientManager("tcp")) {
+        try (JmsClientManager manager = new JmsClientManager("tcp")) {
             withDestination(manager, type, name).sendMessage(content);
         } catch (Exception e) {
             log.error("Unable to send message to queue", e);

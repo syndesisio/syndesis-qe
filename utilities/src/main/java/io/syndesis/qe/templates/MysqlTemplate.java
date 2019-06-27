@@ -1,17 +1,12 @@
 package io.syndesis.qe.templates;
 
-import io.fabric8.kubernetes.api.model.ContainerPort;
-import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.kubernetes.api.model.IntOrString;
-import io.fabric8.kubernetes.api.model.ServicePortBuilder;
-import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +15,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import static org.assertj.core.api.Assertions.fail;
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServicePortBuilder;
+import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class MysqlTemplate {
@@ -45,7 +46,7 @@ public class MysqlTemplate {
         templateParams.add(new EnvVar("MYSQL_PASSWORD", DB_PASSWORD, null));
         templateParams.add(new EnvVar("MYSQL_DATABASE", DB_SCHEMA, null));
 
-        OpenShiftUtils.client().deploymentConfigs().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
                 .editOrNewMetadata()
                 .withName(APP_NAME)
                 .addToLabels(LABEL_NAME, APP_NAME)
@@ -79,7 +80,7 @@ public class MysqlTemplate {
                 .withTargetPort(new IntOrString(3306))
                 .build());
 
-        OpenShiftUtils.getInstance().client().services().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
                 .editOrNewMetadata()
                 .withName(APP_NAME)
                 .addToLabels(LABEL_NAME, APP_NAME)

@@ -2,14 +2,15 @@ package io.syndesis.qe.rest.tests.steps.state;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
 import cucumber.api.java.en.When;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 public class IntegrationStateHandler {
     @Autowired
@@ -27,9 +28,9 @@ public class IntegrationStateHandler {
         int retries = 0;
         boolean buildPodPresent = false;
         while (!buildPodPresent && retries < maxRetries) {
-            buildPodPresent = OpenShiftUtils.client().pods().list().getItems().stream().anyMatch(
-                    p -> p.getMetadata().getName().contains(name.toLowerCase().replaceAll(" ", "-"))
-                            && p.getMetadata().getName().endsWith("-build"));
+            buildPodPresent = OpenShiftUtils.getInstance().pods().list().getItems().stream().anyMatch(
+                p -> p.getMetadata().getName().contains(name.toLowerCase().replaceAll(" ", "-"))
+                    && p.getMetadata().getName().endsWith("-build"));
             TestUtils.sleepIgnoreInterrupt(10000L);
             retries++;
         }

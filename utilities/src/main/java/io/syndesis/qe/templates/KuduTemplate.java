@@ -2,13 +2,13 @@ package io.syndesis.qe.templates;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.TimeoutException;
-
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import java.nio.file.Paths;
+import java.util.concurrent.TimeoutException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,12 +19,13 @@ public class KuduTemplate {
 
     public static void deploy() {
         if (!TestUtils.isDcDeployed(APP_NAME)) {
-
-            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-kudu.yml")) {
-                OpenShiftUtils.client().load(is).createOrReplace();
-            } catch (IOException e) {
-                fail("Template processing failed", e);
-            }
+            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
+            OpenShiftUtils.binary().execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-kudu.yml").toAbsolutePath().toString());
+//            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-kudu.yml")) {
+//                OpenShiftUtils.getInstance().load(is).createOrReplace();
+//            } catch (IOException e) {
+//                fail("Template processing failed", e);
+//            }
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady(LABEL_NAME, APP_NAME), 15 * 60 * 1000L);

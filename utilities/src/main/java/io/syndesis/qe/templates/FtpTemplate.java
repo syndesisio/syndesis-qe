@@ -1,5 +1,11 @@
 package io.syndesis.qe.templates;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,11 +17,6 @@ import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,7 +41,7 @@ public class FtpTemplate {
                 ports.add(dataPort);
             }
 
-            OpenShiftUtils.client().deploymentConfigs().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
                     .editOrNewMetadata()
                     .withName(APP_NAME)
                     .addToLabels(LABEL_NAME, APP_NAME)
@@ -81,7 +82,7 @@ public class FtpTemplate {
                         .build());
             }
 
-            OpenShiftUtils.getInstance().client().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
                     .editOrNewMetadata()
                     .withName(APP_NAME)
                     .addToLabels(LABEL_NAME, APP_NAME)

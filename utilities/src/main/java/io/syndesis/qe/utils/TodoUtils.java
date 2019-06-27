@@ -27,6 +27,6 @@ public final class TodoUtils {
                 .endSpec()
                 .build();
         log.info("Creating route {} with path {}", name, path);
-        OpenShiftUtils.client().routes().createOrReplace(route);
+        OpenShiftUtils.getInstance().routes().createOrReplace(route);
     }
 }

@@ -1,13 +1,13 @@
 package io.syndesis.qe.templates;
 
-import cz.xtf.openshift.OpenShiftBinaryClient;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeoutException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class PublicOauthProxyTemplate {
@@ -17,18 +17,14 @@ public class PublicOauthProxyTemplate {
 
     public static void deploy() {
         if (OpenShiftUtils.getInstance().getTemplate(TEMPLATE_NAME) == null || !OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME).getAsBoolean()) {
-            OpenShiftBinaryClient.getInstance().project(TestConfiguration.openShiftNamespace());
-
             log.info("Creating {} template", TEMPLATE_NAME);
 
-            OpenShiftBinaryClient.getInstance().executeCommand(
-                    "Unable to create syndesis public oauthproxy template " + TestConfiguration.syndesisPublicOauthProxyTemplateUrl(),
+            OpenShiftUtils.binary().execute(
                     "apply",
                     "-f", TestConfiguration.syndesisPublicOauthProxyTemplateUrl()
             );
             clearClusterRoleBindings();
-            OpenShiftBinaryClient.getInstance().executeCommand(
-                    "Unable to process syndesis public oauthproxy template " + TestConfiguration.syndesisPublicOauthProxyTemplateUrl(),
+            OpenShiftUtils.binary().execute(
                     "new-app",
                     "--template", "syndesis-public-oauthproxy",
                     "-p", "PUBLIC_API_ROUTE_HOSTNAME=" + PUBLIC_API_PROXY_ROUTE,
@@ -46,12 +42,11 @@ public class PublicOauthProxyTemplate {
 
     public static void cleanUp() {
         log.info("Cleaning up everything for {} template", TEMPLATE_NAME);
-        OpenShiftBinaryClient.getInstance().project(TestConfiguration.openShiftNamespace());
 
         OpenShiftUtils.getInstance().getServiceAccounts().stream().filter(sa -> "syndesis-public-oauthproxy".equals(sa.getMetadata().getName())).findFirst()
                 .ifPresent(sa -> OpenShiftUtils.getInstance().deleteServiceAccount(sa));
-        OpenShiftUtils.getInstance().getRoleBindings().stream().filter(rb -> "syndesis-public-oauthproxy:viewers".equals(rb.getMetadata().getName())).findFirst()
-                .ifPresent(rb -> OpenShiftUtils.getInstance().deleteRoleBinding(rb));
+        OpenShiftUtils.getInstance().getRoleBindings().stream().filter(rb -> "syndesis-public-oauthproxy:viewers".equals(rb.getMetadata().getName()))
+            .findFirst().ifPresent(rb -> OpenShiftUtils.getInstance().deleteRoleBinding(rb));
         // OpenShiftUtils.getInstance() doesn't provide clusterrolebindings
         clearClusterRoleBindings();
         OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-public-oauthproxy".equals(is.getMetadata().getName())).findFirst()
@@ -67,12 +62,11 @@ public class PublicOauthProxyTemplate {
     }
 
     private static String getOathToken() {
-        return OpenShiftBinaryClient.getInstance().executeCommandWithReturn("", "sa", "get-token", "syndesis-oauth-client");
+        return OpenShiftUtils.binary().execute("sa", "get-token", "syndesis-oauth-client");
     }
 
     private static void clearClusterRoleBindings() {
-        OpenShiftBinaryClient.getInstance().executeCommandWithReturn(
-                "Unable to delete cluster role bindings",
+        OpenShiftUtils.binary().execute(
                 "delete",
                 "clusterrolebindings.authorization.openshift.io",
                 "syndesis-syndesis-auth-delegator"
