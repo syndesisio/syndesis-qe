@@ -1,6 +1,7 @@
 package io.syndesis.qe.pages.settings;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -14,6 +15,7 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.HashMap;
@@ -56,7 +58,7 @@ public class SettingsPage extends SyndesisPageObject {
             SelenideElement listItem = getSettingsItems().get(i);
             String text = listItem.$(Element.SETTINGS_TITLE).getText();
             log.info("Filling in {}", text);
-            if ("OpenAPI client".matches(text)){
+            if ("OpenAPI client".matches(text)) {
                 log.info("Skipping OpenAPI client due to bug #5532");
                 continue;
             }
@@ -93,16 +95,19 @@ public class SettingsPage extends SyndesisPageObject {
         }
     }
 
-    public void fillOauthSettings(String service,String credentials){
-        fillGivenOAuthSetting(getSettingsItem(service),credentials);
+    public void fillOauthSettings(String service, String credentials) {
+        fillGivenOAuthSetting(getSettingsItem(service), credentials);
     }
 
     public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {
-        listItem.shouldBe(visible).click();
-        fillOAuthItem(listItem, credentialsName);
-        getButton("Save").shouldBe(visible).click();
-        //alert-success should show
-        $(By.className("alert-success")).shouldBe(visible);
+        do {
+            Selenide.refresh();
+            listItem.shouldBe(visible).click();
+            fillOAuthItem(listItem, credentialsName);
+            getButton("Save").shouldBe(visible).click();
+            Selenide.sleep(1000);
+        } while ($(By.className("alert-success")).is(not(visible)));
+
         //close list item details
         getRootElement().$(By.cssSelector("div[class*='list-view-pf-expand active']")).click();
     }
@@ -120,7 +125,6 @@ public class SettingsPage extends SyndesisPageObject {
             Assert.fail("Credentials for " + credentialsName + " were not found!");
         }
     }
-
 
     public ElementsCollection getSettingsItems() {
         ElementsCollection items = getOauthAppsRootElement().$(Element.SETTINGS_LIST).$$(Element.SETTINGS_ITEM);
@@ -164,7 +168,7 @@ public class SettingsPage extends SyndesisPageObject {
      * Click on button which is child element of given settings item
      *
      * @param settingsItemName name of settings item
-     * @param buttonTitle      title of button
+     * @param buttonTitle title of button
      * @returns resolved once clicked
      */
     public void clickButton(String settingsItemName, String buttonTitle) {
