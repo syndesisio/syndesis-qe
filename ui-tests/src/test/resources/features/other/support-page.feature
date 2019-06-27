@@ -15,10 +15,15 @@ Feature: Support page
 #
 #  1. version check
 #
+  @gh-5960
   @support-page-version-check
   Scenario: Version
     When navigates to the "About" page in help menu
-    And check version string
+    Then check version string in about page
+    And check that commit id exists in about page
+    And check that build id exists in about page
+
+
 
 #
 #  2. download all diagnostic info
@@ -33,10 +38,12 @@ Feature: Support page
   @support-page-download-specific-diagnostic
   Scenario: Export diagnostic of single integration
     Given remove file "syndesis.zip" if it exists
+    And navigate to the "Settings" page
+    And fill all oauth settings
 
-    Given created connections
-      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-      | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
+    Given create connections using oauth
+      | Twitter    | Twitter Listener |
+      | Salesforce | QE Salesforce    |
 
     # create integration
     And navigate to the "Home" page
@@ -47,6 +54,7 @@ Feature: Support page
     # select twitter connection
     When select the "Twitter Listener" connection
     And select "Mention" integration action
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
 
     # select salesforce connection
@@ -76,7 +84,6 @@ Feature: Support page
     And publish integration
     Then wait until integration "my-integration" gets into "Running" state
 
-    #TODO: create integration - use rest steps so it is easier?
     When navigate to the "Support" page in help menu
 
     And download diagnostics for "my-integration" integration
