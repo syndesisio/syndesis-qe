@@ -34,21 +34,21 @@ Feature: Connections - OAuth
     And create connections using oauth
       | Gmail | Test-Gmail |
     And navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
 
     Then check that position of connection to fill is "Start"
     When select the "Test-Gmail" connection
     And select "Receive Email" integration action
-    And fill in values 
+    And fill in values by element data-testid
       | labels | syndesis-test |
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
-    When select "Log" integration step  
-    And fill in values
-      | Message Body | checked |
-    And click on the "Done" button
+    When select the "Log" connection  
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Next" button
 
     And click on the "Save" link
     And set integration name "OAuth-gmail-test"
@@ -75,18 +75,18 @@ Feature: Connections - OAuth
     And create connections using oauth
       | Twitter | Twitter-test |
     And navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     
     Then check that position of connection to fill is "Start"
     When select the "Twitter-test" connection
     And select "Mention" integration action
-    #And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
-    When select "Log" integration step
-    And fill in values 
-      | Message Body | checked |
+    When select the "Log" connection  
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
     And click on the "Done" button
 
     And click on the "Save" link
@@ -98,7 +98,7 @@ Feature: Connections - OAuth
     And wait until integration "OAuth-twitter-test" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "OAuth testing"
-    When sleep for "2000" ms
+    When sleep for "10000" ms
     Then validate that logs of integration "OAuth-twitter-test" contains string "OAuth testing"
     And clean all tweets in twitter_talky account
 
@@ -115,22 +115,22 @@ Feature: Connections - OAuth
     And create connections using oauth
       | Google Calendar | Gcalendar-test |
     And navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
     
     Then check that position of connection to fill is "Start"
     When select the "Gcalendar-test" connection
     And select "Get Events" integration action
-    And fill in values 
-      | Calendar name                                            | syndesis-test1 |
-      | Consume from the current date ahead                      | false          |
-      | Consume from the last event update date on the next poll | false          |
+    And fill in values by element data-testid
+      | calendarid         | syndesis-test1 |
+      | consumefromnow     | false          |
+      | considerlastupdate | false          |
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
-    When select "Log" integration step
-    And fill in values 
-      | Message Body | checked |
+    When select the "Log" connection  
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
     And click on the "Done" button
 
     And click on the "Save" link
@@ -144,7 +144,7 @@ Feature: Connections - OAuth
       | past_event1 | 2018-10-01 | 10:00:00   | 2018-10-01 | 11:00:00 | An old event | jbossqa.fuse@gmail.com |
     And wait until integration "OAuth-Gcalendar-test" gets into "Running" state
 
-    When sleep for "2000" ms
+    When sleep for "6000" ms
     Then validate that logs of integration "OAuth-Gcalendar-test" contains string "past_event1"
   
   @oauth-salesforce
@@ -158,7 +158,7 @@ Feature: Connections - OAuth
       | Salesforce | Salesforce-test |
     
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     And check visibility of visual integration editor
 
     Then check that position of connection to fill is "Start"
@@ -168,9 +168,9 @@ Feature: Connections - OAuth
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
-    When select "Log" integration step
-    And fill in values 
-      | Message Body | checked |
+    When select the "Log" connection  
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
     And click on the "Done" button
 
     And click on the "Save" link
@@ -182,7 +182,7 @@ Feature: Connections - OAuth
 
     And wait until integration "OAuth-Salesforce-test" gets into "Running" state
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
-    When sleep for "2000" ms
+    When sleep for "6000" ms
     
     Then validate that logs of integration "OAuth-Salesforce-test" contains string "k1stieranka1@istrochem.sk"
     Then delete lead from SF with email: "k1stieranka1@istrochem.sk"
@@ -195,20 +195,20 @@ Feature: Connections - OAuth
     And create connections using oauth
       | Google Sheets | Gsheets-test |
     When navigate to the "Home" page
-    And click on the "Create Integration" button to create a new integration
+    And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
 
     Then check that position of connection to fill is "Start"
     When select the "Gsheets-test" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values 
-      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
-    When select "Log" integration step  
-    And fill in values
-      | Message Body | checked |
+    When select the "Log" connection  
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
     And click on the "Done" button
 
     And click on the "Save" link
