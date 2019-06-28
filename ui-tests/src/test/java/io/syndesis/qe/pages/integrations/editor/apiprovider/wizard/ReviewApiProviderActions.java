@@ -14,8 +14,8 @@ import static com.codeborne.selenide.Condition.visible;
 public class ReviewApiProviderActions extends SyndesisPageObject implements WizardPhase {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("api-provider-creation-step-validate");
-        public static final By OPERATIONS = By.cssSelector("div.openapi-review-actions ol.openapi-review-actions__operations");
+        public static final By ROOT = By.cssSelector(".open-api-review-actions");
+        public static final By OPERATIONS = By.cssSelector("div.openapi-review-actions .review-actions__heading ~ p");
         public static final By TAGGED_OPERATIONS = By.cssSelector("div.openapi-review-actions" +
                 " ol.openapi-review-actions__operations ol.openapi-review-actions__operations");
         public static final By WARNINGS = By.cssSelector(".openapi-review-actions__label--warning");

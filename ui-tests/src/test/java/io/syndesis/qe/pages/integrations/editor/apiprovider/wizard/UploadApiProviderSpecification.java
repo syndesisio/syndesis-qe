@@ -13,7 +13,7 @@ public class UploadApiProviderSpecification extends SyndesisPageObject implement
     private ApiSpecificationForm apiSpecificationForm = new ApiSpecificationForm();
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("api-provider-creation-step-upload");
+        public static final By ROOT = By.cssSelector(".open-api-select-method");
     }
 
     private static class Button {
