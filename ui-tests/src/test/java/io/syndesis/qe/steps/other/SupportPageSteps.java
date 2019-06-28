@@ -43,14 +43,6 @@ public class SupportPageSteps {
         checkDownloadedFileContent(downloadedLogs);
     }
 
-    @When("^.*checks? version string$")
-    public void checkVersionString() {
-        String nightlyVersion = System.getProperty("syndesis.nightly.version");
-        assertThat(supportPage.getVersion())
-            .isNotEmpty()
-            .containsIgnoringCase(nightlyVersion == null ? System.getProperty("syndesis.version") : nightlyVersion);
-    }
-
     private void checkDownloadedFileContent(File file) throws IOException {
 
         try (ZipFile zipFile = new ZipFile(file)) {

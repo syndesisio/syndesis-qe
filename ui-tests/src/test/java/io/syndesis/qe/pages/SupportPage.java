@@ -27,7 +27,7 @@ public class SupportPage extends SyndesisPageObject {
         public static final By SPECIFIC_LOGS = By.id("specificlogs");
         public static final By ALL_LOGS = By.id("alllogs");
 
-        public static final By CHECKBOX = By.xpath("//*[@type='checkbox']");
+        public static final By CHECKBOX = By.cssSelector("[data-testid='selective-integration-list-integrations-input']");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SupportPage extends SyndesisPageObject {
         $(Element.ALL_LOGS).shouldBe(visible).click();
     }
 
-    public void selectSpecificIntegrationDownload(String integrationName) throws InterruptedException {
+    public void selectSpecificIntegrationDownload(String integrationName) {
         $(Element.SPECIFIC_LOGS).shouldBe(visible).click();
         $(Element.CHECKBOX).shouldBe(visible).click();
     }
