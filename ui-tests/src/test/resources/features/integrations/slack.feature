@@ -14,51 +14,7 @@ Feature: Slack Connector
     And created connections
       | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
     And navigate to the "Home" page
-
-
-#
-#  1. Check that slack message exists
-#
-  @deprecated
-  @slack-check-message-body
-  Scenario: Check message with logger
-
-    When import extensions from syndesis-extensions folder
-      | syndesis-extension-body |
-    And navigate to the "Home" page
-    And click on the "Create Integration" link to create a new integration.
-    Then check visibility of visual integration editor
-    And check that position of connection to fill is "Start"
-
-    When select the "Timer" connection
-    And select "Simple Timer" integration action
-    And fill in values by element ID
-      | period        | 200     |
-      | select-period | Seconds |
-    And click on the "Done" button
-    Then check that position of connection to fill is "Finish"
-
-    When select the "QE Slack" connection
-    And select "Channel" integration action
-    And fill in values
-      | Channel | test |
-    And click on the "Done" button
-    Then add integration step on position "0"
-
-    When select "Set Body" integration step
-    And fill in values
-      | Body | test message |
-    And scroll "top" "right"
-    And click on the "Done" button
-
-    When click on the "Save" link
-    And set integration name "Integration_with_slack"
-    And publish integration
-    Then Integration "Integration_with_slack" is present in integrations list
-    And wait until integration "Integration_with_slack" gets into "Running" state
-    And check that last slack message equals "test message" on channel "test"
-
-
+    
 #
 #  2. Check that slack message exists, use data mapper
 #
@@ -70,6 +26,7 @@ Feature: Slack Connector
     And check that position of connection to fill is "Start"
 
     When select the "PostgresDB" connection
+
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
 
@@ -81,8 +38,8 @@ Feature: Slack Connector
 
     When select the "QE Slack" connection
     And select "Channel" integration action
-    And fill in values
-      | Channel | test |
+    And fill in values by element data-testid
+      | channel | test |
     And click on the "Done" button
     And add integration step on position "0"
     And select "Data Mapper" integration step
@@ -162,9 +119,8 @@ Feature: Slack Connector
     Then select "Read Messages" integration action
     And select "random" from "channel" dropdown
     And fill in values by element ID
-      | maxResults | 2  |
-      | delay      | 60 |
-    And select "Seconds" from "select-delay" dropdown
+      | maxresults | 2     |
+      | delay      | 60000 |
     And click on the "Done" button.
 
     # select postgresDB connection as finish integration
