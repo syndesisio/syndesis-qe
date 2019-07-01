@@ -3,8 +3,19 @@ package io.syndesis.qe.bdd;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
+import io.syndesis.common.model.connection.Connection;
+import io.syndesis.qe.Component;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.utils.HttpUtils;
+import io.syndesis.qe.utils.LogCheckerUtils;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.PublicApiUtils;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,18 +37,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
-import io.syndesis.common.model.connection.Connection;
-import io.syndesis.qe.Component;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.templates.SyndesisTemplate;
-import io.syndesis.qe.utils.HttpUtils;
-import io.syndesis.qe.utils.LogCheckerUtils;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.PublicApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 
@@ -45,6 +44,9 @@ import okhttp3.Headers;
 public class CommonSteps {
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
+
+    // Flag is the cluster reachability test failed, if it does, all remaining tests will be failed
+    private static boolean isClusterReachable = true;
 
     @Given("^clean default namespace")
     public void cleanNamespace() {
@@ -105,12 +107,13 @@ public class CommonSteps {
      */
     private static Set<String> customResourceNames() {
         final Set<String> names = new HashSet<>();
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural();
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace()
+            + "/" + TestConfiguration.customResourcePlural();
         String responseBody = OpenShiftUtils.invokeApi(
-                HttpUtils.Method.GET,
-                url,
-                null,
-                Headers.of("Accept", "application/json")
+            HttpUtils.Method.GET,
+            url,
+            null,
+            Headers.of("Accept", "application/json")
         ).getBody();
         JSONArray items = new JSONArray();
         try {
@@ -132,7 +135,8 @@ public class CommonSteps {
      */
     private static void undeployCustomResource(String name) {
         log.info("Undeploying Syndesis custom resource \"" + name + "\"");
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural() + "/" + name;
+        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace()
+            + "/" + TestConfiguration.customResourcePlural() + "/" + name;
         OpenShiftUtils.invokeApi(HttpUtils.Method.DELETE, url, null, null);
     }
 
@@ -157,16 +161,16 @@ public class CommonSteps {
             Runnable runnable = () -> {
                 if (deploy) {
                     OpenShiftUtils.xtf().waiters()
-                            .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
-                            .interval(TimeUnit.SECONDS, 20)
-                            .timeout(TimeUnit.MINUTES, timeout)
-                            .assertEventually();
+                        .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
+                        .interval(TimeUnit.SECONDS, 20)
+                        .timeout(TimeUnit.MINUTES, timeout)
+                        .assertEventually();
                 } else {
                     OpenShiftUtils.xtf().waiters()
-                            .areExactlyNPodsRunning(0, "syndesis.io/component", c.getName())
-                            .interval(TimeUnit.SECONDS, 20)
-                            .timeout(TimeUnit.MINUTES, timeout)
-                            .assertEventually();
+                        .areExactlyNPodsRunning(0, "syndesis.io/component", c.getName())
+                        .interval(TimeUnit.SECONDS, 20)
+                        .timeout(TimeUnit.MINUTES, timeout)
+                        .assertEventually();
                 }
             };
             executorService.submit(runnable);
@@ -177,11 +181,11 @@ public class CommonSteps {
             if (!executorService.awaitTermination(timeout, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
                 TestUtils.printPods();
-                fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
+                fail(deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time");
             }
         } catch (InterruptedException e) {
             TestUtils.printPods();
-            fail((deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time"));
+            fail(deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time");
         }
     }
 
@@ -189,12 +193,14 @@ public class CommonSteps {
     public void verifyBuild(String integrationName, int duration) {
         String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
 
-        Optional<Build> s2iBuild = OpenShiftUtils.getInstance().getBuilds().stream().filter(b -> b.getMetadata().getName().contains(sanitizedName)).findFirst();
+        Optional<Build> s2iBuild = OpenShiftUtils.getInstance().getBuilds().stream()
+            .filter(b -> b.getMetadata().getName().contains(sanitizedName)).findFirst();
 
         if (s2iBuild.isPresent()) {
             Build build = s2iBuild.get();
             String buildPodName = build.getMetadata().getAnnotations().get("openshift.io/build.pod-name");
-            Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream().filter(p -> p.getMetadata().getName().equals(buildPodName)).findFirst();
+            Optional<Pod> buildPod = OpenShiftUtils.getInstance().getPods().stream()
+                .filter(p -> p.getMetadata().getName().equals(buildPodName)).findFirst();
             if (buildPod.isPresent()) {
                 try {
                     boolean[] patternsInLogs = LogCheckerUtils.findPatternsInLogs(buildPod.get(), Pattern.compile(".*Downloading: \\b.*"));
@@ -214,6 +220,7 @@ public class CommonSteps {
 
     @Given("^clean application state")
     public void resetState() {
+        waitUntilClusterIsReachable();
         //check that postgreSQl connection has been created
         int i = 0;
         while (i < 10) {
@@ -225,6 +232,37 @@ public class CommonSteps {
             i++;
         }
         fail("Default PostgresDB connection has not been created, please contact engineering!");
+    }
+
+    /**
+     * Performs a simple reachability check in a loop.
+     *
+     * Waits up to 30 minutes for the cluster to be reachable. The check is done using a simple HTTP GET to the cluster api endpoint
+     */
+    private void waitUntilClusterIsReachable() {
+        if (!isClusterReachable) {
+            fail("Previous reachability test failed, skipping remaining tests.");
+        }
+        final int maxRetries = 1;
+        int retries = 0;
+        boolean isReachable = false;
+        log.info("Checking if OpenShift cluster at {} is reachable.", TestConfiguration.openShiftUrl());
+        while (retries < maxRetries) {
+            isReachable = HttpUtils.isReachable(TestConfiguration.openShiftUrl());
+            if (isReachable) {
+                log.info("  Cluster at {} is reachable.", TestConfiguration.openShiftUrl());
+                break;
+            } else {
+                log.debug("  Cluster at {} is was not reachable. Retrying in 1 minute.", TestConfiguration.openShiftUrl());
+                // The test takes 15 seconds when not available
+                TestUtils.sleepIgnoreInterrupt(45000L);
+                retries++;
+            }
+        }
+        if (!isReachable) {
+            isClusterReachable = false;
+            fail("Unable to contact OpenShift cluster after " + maxRetries + " tries.");
+        }
     }
 
     @Then("^sleep for jenkins delay or \"([^\"]*)\" seconds")
@@ -243,11 +281,11 @@ public class CommonSteps {
         log.info("Waiting for Todo to get ready");
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         Runnable runnable = () ->
-                OpenShiftUtils.xtf().waiters()
-                        .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
-                        .interval(TimeUnit.SECONDS, 20)
-                        .timeout(TimeUnit.MINUTES, 12)
-                        .assertEventually();
+            OpenShiftUtils.xtf().waiters()
+                .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
+                .interval(TimeUnit.SECONDS, 20)
+                .timeout(TimeUnit.MINUTES, 12)
+                .assertEventually();
         executorService.submit(runnable);
 
         executorService.shutdown();
