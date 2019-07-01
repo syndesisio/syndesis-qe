@@ -1,6 +1,7 @@
 package io.syndesis.qe.pages.integrations.editor.add.connection.actions.google;
 
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
+
 import org.openqa.selenium.By;
 
 import java.util.HashMap;
@@ -19,12 +20,12 @@ public class EventForm extends ConfigureAction {
     }
 
     public EventForm setCalendarName(String calendarName) {
-        values.put(By.id("calendarId"), calendarName);
+        values.put(By.id("calendarid"), calendarName);
         return this;
     }
 
     public EventForm setEventId(String eventId) {
-        values.put(By.id("eventId"), eventId);
+        values.put(By.id("eventid"), eventId);
         return this;
     }
 

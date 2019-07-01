@@ -12,8 +12,12 @@ Feature: Google Calendar Connector
     And reset content of "TODO" table
     And log into the Syndesis
     And renew access token for "QE Google Calendar" google account
-    And created connections
-      | Google Calendar | QE Google Calendar | My Google Calendar Connector | SyndesisQE Google Calendar test |
+
+    And navigate to the "Settings" page
+    And fill "Google Calendar" oauth settings "QE Google Calendar"
+    And create connections using oauth
+      | Google Calendar | My Google Calendar Connector |
+
     And navigate to the "Home" page
     And create calendars
       | google_account     | calendar_summary | calendar_description                      |
@@ -35,20 +39,20 @@ Feature: Google Calendar Connector
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     When select the "Timer" connection
-    And select "Simple Timer" integration action
+    And select "Simple" integration action
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
     When select the "My Google Calendar Connector" connection
     And select "Create Event" integration action
     And fill in create event form using calendar "syndesis-test1", summary "new_event" and description "about_the_event"
-    And click on the "Done" button
+    And click on the "Next" button
 
     And add integration step on position "0"
     And select the "My Google Calendar Connector" connection
     And select "Get a specific Event" integration action
     And fill in get specific event form using account "QE Google Calendar", calendar "syndesis-test2" and event "past_event1"
-    And click on the "Done" button
+    And click on the "Next" button
     And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -68,8 +72,8 @@ Feature: Google Calendar Connector
     And click on the "Done" button
     And add integration step on position "2"
     And select "Log" integration step
-    And fill in values
-      | Message Body | true |
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
     And click on the "Done" button
 
     And click on the "Save" link
@@ -91,18 +95,18 @@ Feature: Google Calendar Connector
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     When select the "Timer" connection
-    And select "Simple Timer" integration action
-    And click on the "Done" button
+    And select "Simple" integration action
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into TODO(task, completed) values (:#task, 3)" value
-    And click on the "Done" button
+    And click on the "Next" button
     And add integration step on position "0"
     And select the "My Google Calendar Connector" connection
     And select "Get a specific Event" integration action
     And fill in get specific event form using account "QE Google Calendar", calendar "syndesis-test1" and event "past_event1"
-    And click on the "Done" button
+    And click on the "Next" button
     And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -131,7 +135,7 @@ Feature: Google Calendar Connector
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
     When select the "Timer" connection
-    And select "Simple Timer" integration action
+    And select "Simple" integration action
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
     When select the "My Google Calendar Connector" connection
@@ -142,17 +146,17 @@ Feature: Google Calendar Connector
     And select the "My Google Calendar Connector" connection
     And select "Get a specific Event" integration action
     And fill in get specific event form using account "QE Google Calendar", calendar "syndesis-test1" and event "past_event1"
-    And click on the "Done" button
+    And click on the "Next" button
     And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
-      | startDate   | startDate   |
-      | startTime   | startTime   |
-      | endDate     | endDate     |
-      | endTime     | endTime     |
-      | attendees   | attendees   |
-      | location    | location    |
+      | startDate | startDate |
+      | startTime | startTime |
+      | endDate   | endDate   |
+      | endTime   | endTime   |
+      | attendees | attendees |
+      | location  | location  |
     And scroll "top" "right"
     And click on the "Done" button
     And click on the "Save" link
@@ -182,25 +186,25 @@ Feature: Google Calendar Connector
     When select the "My Google Calendar Connector" connection
     And select "Get Events" integration action
     And fill in aliased calendar values
-      | Delay                                                    | 30                        |
-      | Calendar name                                            | syndesis-test1            |
-      | Max results                                              | <max_results>             |
-      | Consume from the current date ahead                      | <from_current_date_ahead> |
-      | Consume from the last event update date on the next poll | <from_last_event_update>  |
-      | Query for events                                         | <query_for_events>        |
-    And click on the "Done" button
+      | delay              | 30                        |
+      | calendarid         | syndesis-test1            |
+      | maxresults         | <max_results>             |
+      | consumefromnow     | <from_current_date_ahead> |
+      | considerlastupdate | <from_last_event_update>  |
+      | query              | <query_for_events>        |
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into TODO(task, completed) values (:#task, 3)" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     And add integration step on position "0"
     And select "Log" integration step
-    And fill in values
-      | Message Body | true |
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
     And click on the "Done" button
 
     And add integration step on position "1"
@@ -255,26 +259,26 @@ Feature: Google Calendar Connector
     When select the "My Google Calendar Connector" connection
     And select "Get Events" integration action
     And fill in aliased calendar values
-      | Delay                                                    | 30             |
-      | Calendar name                                            | syndesis-test1 |
-      | Max results                                              | 10             |
-      | Consume from the current date ahead                      | false          |
-      | Consume from the last event update date on the next poll | true           |
-      | Query for events                                         |                |
-    And click on the "Done" button
+      | delay              | 30             |
+      | calendarid         | syndesis-test1 |
+      | maxresults         | 10             |
+      | consumefromnow     | false          |
+      | considerlastupdate | true           |
+      | query              |                |
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into TODO(task, completed) values (:#task, 3)" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     And add integration step on position "0"
     And select "Log" integration step
-    And fill in values
-      | Message Body | true |
-    And click on the "Done" button
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Next" button
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
@@ -304,3 +308,4 @@ Feature: Google Calendar Connector
     And validate that number of all todos with task "past_event3" is greater than "0"
     And validate that number of all todos with task "future_event3" is greater than "0"
     And validate that number of all todos with task "past_event1" is greater than "0"
+
