@@ -14,10 +14,12 @@ Feature: Integration - Databucket
     And reset content of "contact" table
     And delete emails from "jbossqa.fuse@gmail.com" with subject "Red Hat"
     And log into the Syndesis
-    And created connections
-      | Twitter | Twitter Listener | Twitter Listener   | SyndesisQE Twitter listener account |
-      | DropBox | QE Dropbox       | QE Dropbox         | SyndesisQE DropBox test             |
-      | Gmail   | QE Google Mail   | My GMail Connector | SyndesisQE GMail test               |
+    And navigate to the "Settings" page
+    And fill all oauth settings
+    And create connections using oauth
+      | Twitter | Twitter Listener |
+      | DropBox | QE Dropbox       |
+      | Gmail   | QE Google Mail   |
     And navigate to the "Home" page
 
 #
