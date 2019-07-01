@@ -1,5 +1,12 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.templates.AmqTemplate;
+import io.syndesis.qe.templates.MysqlTemplate;
+import io.syndesis.qe.templates.PublicOauthProxyTemplate;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +15,6 @@ import com.codeborne.selenide.WebDriverRunner;
 
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
-import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.templates.AmqTemplate;
-import io.syndesis.qe.templates.MysqlTemplate;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,7 +29,8 @@ public class CommonHooks {
         scenario.embed(screenshotAsBytes, "image/png");
     }
 
-    //we can close it after specific scenarios, but it will do nothing if connection == null and I do not know exactly all scenarios which opens DB connection
+    //we can close it after specific scenarios, but it will do nothing if connection == null and I do not know exactly all scenarios which opens DB
+    // connection
     //@After("@scenario1,@scenario2")
     @After
     public void closeDBConnection() {
@@ -46,6 +49,12 @@ public class CommonHooks {
     public void closeAMQBroker() {
         log.info("Deleting AMQ broker");
         AmqTemplate.cleanUp();
+    }
+
+    @After("@publicapi")
+    public void cleanPublicApi() {
+        log.info("Deleting Public API");
+        PublicOauthProxyTemplate.cleanUp();
     }
 
     @After("@integrations-db-to-db-mysql")
