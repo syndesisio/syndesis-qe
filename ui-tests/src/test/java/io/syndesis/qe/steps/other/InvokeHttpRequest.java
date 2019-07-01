@@ -30,11 +30,15 @@ public class InvokeHttpRequest {
 
     private HTTPResponse invokeWebhookRequest(String nameOfIntegration, String token, String body) {
         log.debug("Body to set: " + body);
-        String url = String.format("https://%s/webhook/%s",
+        String url = getUrlForWebhook(nameOfIntegration, token);
+        log.info("WebHook URL: " + url);
+        return HttpUtils.doPostRequest(url, body);
+    }
+
+    public static String getUrlForWebhook(String nameOfIntegration, String token) {
+        return String.format("https://%s/webhook/%s",
             OpenShiftUtils.getInstance().getRoutes().stream()
                 .filter(x -> x.getMetadata().getName().contains(nameOfIntegration))
                 .findFirst().get().getSpec().getHost(), token);
-        log.info("WebHook URL: " + url);
-        return HttpUtils.doPostRequest(url, body);
     }
 }

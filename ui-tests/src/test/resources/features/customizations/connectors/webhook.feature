@@ -58,3 +58,37 @@ Feature: Webhook extension
     # give integration time to invoke DB request
     And sleep for jenkins delay or "3" seconds
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere' AND company = 'New Author'" has some output
+
+  @reproducer
+  @gh-5575
+  @webhook-ui-url
+  Scenario: Check whether UI contains webhook URL
+    When click on the "Create Integration" link to create a new integration.
+    Then check that position of connection to fill is "Start"
+
+    # select salesforce connection as 'from' point
+    When select the "Webhook" connection
+    And select "Incoming Webhook" integration action
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
+    And click on the "Next" button
+    And click on the "Next" button
+    Then check that position of connection to fill is "Finish"
+
+    Then check visibility of page "Choose a Finish Connection"
+    When select "Log" integration step
+    And fill in values by element data-testid
+      | contextloggingenabled | false                  |
+      | bodyloggingenabled    | true                   |
+      | customtext            | test visibility of URL |
+    And click on the "Done" button
+    And publish integration
+    And set integration name "webhook-test-5575"
+    And publish integration
+    Then wait until integration "webhook-test-5575" gets into "Running" state
+
+    When select the "webhook-test-5575" integration
+    And sleep for jenkins delay or "10" seconds
+
+    Then check that webhook url for "webhook-test-5575" with token "test-webhook" in UI is same as in routes
+    And verify the displayed webhook URL matches regex ^https://i-.*-syndesis\..*/webhook/.*$

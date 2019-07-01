@@ -35,7 +35,6 @@ public class Details extends SyndesisPageObject {
         public static final By KEBEB_OPEN_MENU = By.className("dropdown-toggle");
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
         public static final By INFO = By.className("integration-detail__info");
-        public static final By INTEGRATION_DESCRIPTION = By.cssSelector("section.integration-description");
 
         public static final By MULTIFLOW_COUNT = By.cssSelector("#multi-flow div.icon span.badge");
 
@@ -153,8 +152,8 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getApiUrl() {
-        return $(Element.INTEGRATION_DESCRIPTION)
-            .$$("input").shouldHaveSize(1).first().shouldBe(enabled, visible)
+        return getRootElement()
+            .findAll("input").shouldHaveSize(1).first().shouldBe(enabled, visible)
             .getValue();
     }
 }
