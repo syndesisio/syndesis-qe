@@ -1,24 +1,25 @@
 package io.syndesis.qe.steps.other;
 
-import com.google.api.services.gmail.model.Message;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.TestUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.google.api.services.gmail.model.Message;
 
 import javax.annotation.PostConstruct;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
 import java.io.IOException;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GMailSteps {
@@ -40,7 +41,12 @@ public class GMailSteps {
 
     @When("^.*send an e-mail to \"([^\"]*)\"$")
     public void sendEmail(String sendTo) {
-        gmu.sendEmail("me", sendTo, "syndesis-tests", "Red Hat");
+        sendEmail(sendTo, "syndesis-tests");
+    }
+
+    @When("^.*send an e-mail to \"([^\"]*)\" with subject \"([^\"]*)\"$")
+    public void sendEmail(String sendTo, String subject) {
+        gmu.sendEmail("me", sendTo, subject, "Red Hat");
     }
 
     @Given("^delete emails from \"([^\"]*)\" with subject \"([^\"]*)\"$")
@@ -70,7 +76,8 @@ public class GMailSteps {
                 && mime.getContent().toString().trim().equalsIgnoreCase(text.trim())) {
                 return true;
             }
-        } catch (IOException | MessagingException ignored) {
+        } catch (IOException | MessagingException e) {
+            log.debug("There has been an error while checking for existing mail", e);
         }
 
         return false;
