@@ -1,16 +1,15 @@
 package io.syndesis.qe.steps.integrations.summary;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.Matchers.is;
+import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.steps.integrations.IntegrationSteps;
+import io.syndesis.qe.steps.other.InvokeHttpRequest;
 
 import org.assertj.core.api.Assertions;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.pages.integrations.summary.Details;
-import io.syndesis.qe.steps.integrations.IntegrationSteps;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,7 +21,7 @@ public class DetailsSteps {
     @Then("^check visibility of \"([^\"]*)\" integration details$")
     public void verifyIntegrationDetails(String integrationName) {
         log.info("Integration detail editPage must show integration name");
-        assertThat(detailPage.getIntegrationName(), is(integrationName));
+        assertThat(detailPage.getIntegrationName()).isEqualTo(integrationName);
     }
 
     @When("^delete the integration on detail page.*$")
@@ -34,16 +33,28 @@ public class DetailsSteps {
     public void checkStatusOnIntegrationDetail(String expectedStatus) {
         String status = detailPage.getIntegrationInfo();
         log.info("Status: {}", status);
-        Assertions.assertThat(status.contains(expectedStatus)).isTrue();
+        assertThat(status.contains(expectedStatus)).isTrue();
     }
 
-    @And("^click on the \"([^\"]*)\" tab$")
+    @When("^click on the \"([^\"]*)\" tab$")
     public void clicksOnTheTab(String tabName) {
         detailPage.selectTab(tabName);
     }
 
     @Then("^check starting integration status on Integration Detail page$")
     public void checkStartingStatusOnIntegrationDetail() {
-        integrationSteps.checkStartingStatus("","Integration detail");
+        integrationSteps.checkStartingStatus("", "Integration detail");
+    }
+
+    @Then("check that webhook url for \"([^\"]*)\" with token \"([^\"]*)\" in UI is same as in routes$")
+    public void checkWebhookUrl(String nameOfIntegration, String token) {
+        String url = InvokeHttpRequest.getUrlForWebhook(nameOfIntegration, token);
+        assertThat(detailPage.getApiUrl()).isEqualToIgnoringCase(url);
+    }
+
+    @Then("^verify the displayed webhook URL matches regex (.*)$")
+    public void verifyWebhookUrl(String regex) {
+        String apiUrl = new Details().getApiUrl();
+        Assertions.assertThat(apiUrl).matches(regex);
     }
 }
