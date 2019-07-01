@@ -1,5 +1,15 @@
 package io.syndesis.qe.templates;
 
+import static org.assertj.core.api.Assertions.fail;
+
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.IntOrString;
@@ -7,16 +17,7 @@ import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeoutException;
-
-import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class KuduRestAPITemplate {
@@ -31,7 +32,7 @@ public class KuduRestAPITemplate {
                     .withContainerPort(8080)
                     .build());
 
-            OpenShiftUtils.client().deploymentConfigs().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
                     .editOrNewMetadata()
                     .withName(APP_NAME)
                     .addToLabels(LABEL_NAME, APP_NAME)
@@ -64,7 +65,7 @@ public class KuduRestAPITemplate {
                     .withTargetPort(new IntOrString(8080))
                     .build());
 
-            OpenShiftUtils.getInstance().client().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
                     .editOrNewMetadata()
                     .withName(APP_NAME)
                     .addToLabels(LABEL_NAME, APP_NAME)
@@ -91,7 +92,7 @@ public class KuduRestAPITemplate {
                     .build();
 
             log.info("Creating route {} with path {}", APP_NAME, "/");
-            OpenShiftUtils.client().routes().createOrReplace(route);
+            OpenShiftUtils.getInstance().routes().createOrReplace(route);
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, APP_NAME, 1), 15 * 60 * 1000L);

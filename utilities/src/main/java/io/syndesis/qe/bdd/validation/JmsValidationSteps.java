@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.utils.JMSUtils;
+import io.syndesis.qe.utils.JmsClient;
 import io.syndesis.qe.utils.JmsClientManager;
 
 import org.assertj.core.api.Assertions;
@@ -16,7 +17,6 @@ import java.nio.file.Files;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import cz.xtf.jms.JmsClient;
 
 public class JmsValidationSteps {
 

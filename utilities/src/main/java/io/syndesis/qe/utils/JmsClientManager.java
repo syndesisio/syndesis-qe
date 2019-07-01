@@ -3,7 +3,6 @@ package io.syndesis.qe.utils;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionFactory;
 
-import cz.xtf.jms.JmsClient;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +22,8 @@ public class JmsClientManager implements AutoCloseable {
         initValues(protocol);
     }
 
-    private void initValues(String protocol) {
-        this.protocol = protocol;
+    private void initValues(String setProtocol) {
+        this.protocol = setProtocol;
         switch (protocol) {
             case "tcp":
             case "openwire":
@@ -47,6 +46,7 @@ public class JmsClientManager implements AutoCloseable {
         return this.initClient();
     }
 
+    @Override
     public void close() {
         if (jmsClient != null) {
             jmsClient.disconnect();

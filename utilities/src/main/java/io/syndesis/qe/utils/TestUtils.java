@@ -2,6 +2,15 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
+import io.syndesis.qe.model.IntegrationOverview;
+import io.syndesis.qe.utils.dballoc.DBAllocation;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -15,19 +24,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import cz.xtf.openshift.OpenShiftBinaryClient;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.syndesis.common.model.integration.IntegrationDeploymentState;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
-import io.syndesis.qe.model.IntegrationOverview;
-import io.syndesis.qe.utils.dballoc.DBAllocation;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,7 +48,8 @@ public final class TestUtils {
      * @param <T> Type of tested value by a predicate
      * @return True if predicate become true within a timeout, otherwise returns false.
      */
-    public static <T> boolean waitForEvent(Predicate<T> predicate, Supplier<T> supplier, TimeUnit unit, long timeout, TimeUnit sleepUnit, long sleepTime) {
+    public static <T> boolean waitForEvent(Predicate<T> predicate, Supplier<T> supplier, TimeUnit unit, long timeout, TimeUnit sleepUnit,
+        long sleepTime) {
         final long start = System.currentTimeMillis();
         long elapsed = 0;
         while (!predicate.test(supplier.get()) && unit.toMillis(timeout) >= elapsed) {
@@ -83,15 +84,16 @@ public final class TestUtils {
      * @param timeout timeout
      * @return True if integration is activated within a timeout. False otherwise.
      */
-    public static boolean waitForState(IntegrationOverviewEndpoint e, IntegrationOverview i, IntegrationDeploymentState state, TimeUnit unit, long timeout) {
+    public static boolean waitForState(IntegrationOverviewEndpoint e, IntegrationOverview i, IntegrationDeploymentState state, TimeUnit unit,
+        long timeout) {
         return waitForEvent(
-                //                integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
-                integration -> integration.getCurrentState() == state,
-                () -> getIntegration(e, i.getId()).orElse(i),
-                unit,
-                timeout,
-                TimeUnit.SECONDS,
-                10
+            // integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
+            integration -> integration.getCurrentState() == state,
+            () -> getIntegration(e, i.getId()).orElse(i),
+            unit,
+            timeout,
+            TimeUnit.SECONDS,
+            10
         );
     }
 
@@ -113,7 +115,7 @@ public final class TestUtils {
     }
 
     public static boolean isDcDeployed(String dcName) {
-        DeploymentConfig dc = OpenShiftUtils.client().deploymentConfigs().withName(dcName).get();
+        DeploymentConfig dc = OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get();
         return dc != null && dc.getStatus().getReadyReplicas() != null && dc.getStatus().getReadyReplicas() > 0;
     }
 
@@ -219,7 +221,7 @@ public final class TestUtils {
      */
     public static boolean isUserAdmin() {
         try {
-            OpenShiftUtils.client().users().list();
+            OpenShiftUtils.getInstance().users().list();
             return true;
         } catch (KubernetesClientException ex) {
             return false;
@@ -248,10 +250,9 @@ public final class TestUtils {
      * Prints pods using oc binary client.
      */
     public static void printPods() {
-        // Use oc client directly, as it has nice output
-        final String output = OpenShiftBinaryClient.getInstance().executeCommandWithReturn(
-                "Unable to list pods",
-                "get", "pods", "-n", TestConfiguration.openShiftNamespace()
+        //         Use oc client directly, as it has nice output
+        final String output = OpenShiftUtils.binary().execute(
+            "get", "pods", "-n", TestConfiguration.openShiftNamespace()
         );
         log.info(output);
     }

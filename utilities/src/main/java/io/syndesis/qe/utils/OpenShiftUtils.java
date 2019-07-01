@@ -3,25 +3,26 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 
-import io.fabric8.kubernetes.api.model.EnvVar;
-import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.syndesis.qe.Component;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.List;
 import java.util.Optional;
 
-import cz.xtf.openshift.OpenShiftBinaryClient;
-import cz.xtf.openshift.OpenShiftUtil;
+import cz.xtf.core.openshift.OpenShift;
+import cz.xtf.core.openshift.OpenShiftBinary;
+import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.DoneablePod;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.dsl.PodResource;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftConfigBuilder;
-import io.syndesis.qe.Component;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 
@@ -35,17 +36,25 @@ import okhttp3.Headers;
 @Slf4j
 public final class OpenShiftUtils {
 
-    private static OpenShiftUtil xtfUtils = null;
+    private static OpenShift xtfUtils = null;
+    private static OpenShiftBinary binary = null;
 
-    public static OpenShiftUtil getInstance() {
+    public static OpenShift getInstance() {
         if (xtfUtils == null) {
             new OpenShiftUtils();
         }
         return xtfUtils;
     }
 
-    public static OpenShiftUtil xtf() {
+    public static OpenShift xtf() {
         return getInstance();
+    }
+
+    public static OpenShiftBinary binary() {
+        if (binary == null) {
+            binary = OpenShifts.masterBinary(TestConfiguration.openShiftNamespace());
+        }
+        return binary;
     }
 
     private OpenShiftUtils() {
@@ -60,12 +69,16 @@ public final class OpenShiftUtils {
                 //otherwise f8 client should be able to leverage ~/.kube/config or mounted secrets
                 openShiftConfigBuilder.withOauthToken(TestConfiguration.openShiftToken());
             }
-            xtfUtils = new OpenShiftUtil(openShiftConfigBuilder.build());
+            xtfUtils = new OpenShift(openShiftConfigBuilder.build());
         }
     }
 
+    /**
+     * @deprecated use OpenshiftUtils.getInstance()
+     */
+    @Deprecated
     public static NamespacedOpenShiftClient client() {
-        return getInstance().client();
+        return getInstance();
     }
 
     public static Route createRestRoute(String openShiftNamespace, String urlSuffix) {
@@ -163,10 +176,10 @@ public final class OpenShiftUtils {
     public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body, Headers headers) {
         url = TestConfiguration.openShiftUrl() + url;
         if (headers == null) {
-            headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken());
+            headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken());
         } else {
             if (headers.get("Authorization") == null) {
-                headers = headers.newBuilder().add("Authorization", "Bearer " + OpenShiftUtils.client().getConfiguration().getOauthToken()).build();
+                headers = headers.newBuilder().add("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken()).build();
             }
         }
 
@@ -202,8 +215,7 @@ public final class OpenShiftUtils {
      * @param resource path to resource file to use with -f
      */
     public static void create(String resource) {
-        final String output = OpenShiftBinaryClient.getInstance().executeCommandWithReturn(
-                "Unable to create resource " + resource,
+        final String output = binary().execute(
                 "apply",
                 "--overwrite=false",
                 "-n", TestConfiguration.openShiftNamespace(),

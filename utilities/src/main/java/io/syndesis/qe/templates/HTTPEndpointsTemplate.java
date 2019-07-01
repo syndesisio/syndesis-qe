@@ -1,30 +1,31 @@
 package io.syndesis.qe.templates;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
-
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HTTPEndpointsTemplate {
-    private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/avano/HTTPEndpoints/master/template.yml";
+    private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-qe-HTTPEndpoints/master/template.yml";
 
     public static void deploy() {
         if (!TestUtils.isDcDeployed("httpendpoints")) {
-            try {
-                OpenShiftUtils.client().load(new URL(TEMPLATE_URL).openStream()).createOrReplace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following lines can be removed later
+            OpenShiftUtils.binary().execute("create", "-f", TEMPLATE_URL);
+            OpenShiftUtils.binary().execute("new-app", "http-endpoints");
+//            try {
+//                OpenShiftUtils.getInstance().load(new URL(TEMPLATE_URL).openStream()).createOrReplace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "httpendpoints"));
             } catch (InterruptedException | TimeoutException e) {

@@ -13,12 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ODataUtils {
 
     public static String getOpenshiftRoute() {
-        String host = OpenShiftUtils.client().routes().withName("odata").get().getSpec().getHost();
+        String host = OpenShiftUtils.getInstance().routes().withName("odata").get().getSpec().getHost();
         return "http://" + host + "/TripPin/";
     }
 
     public static String getOpenshiftService() {
-        String clusterIp = OpenShiftUtils.client().services().withName("odata").get().getSpec().getClusterIP();
+        String clusterIp = OpenShiftUtils.getInstance().services().withName("odata").get().getSpec().getClusterIP();
         return "http://" + clusterIp + ":8080/TripPin";
     }
 

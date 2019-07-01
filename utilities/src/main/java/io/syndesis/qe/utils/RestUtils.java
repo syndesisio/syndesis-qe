@@ -1,5 +1,10 @@
 package io.syndesis.qe.utils;
 
+import io.syndesis.qe.Component;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.exceptions.RestClientException;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
@@ -7,7 +12,6 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
-
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.jboss.resteasy.plugins.providers.InputStreamProvider;
@@ -34,12 +38,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
-import cz.xtf.http.HttpUtil;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.Route;
-import io.syndesis.qe.Component;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.exceptions.RestClientException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -69,7 +69,7 @@ public final class RestUtils {
 
     public static Client getWrappedClient() throws RestClientException {
         final ResteasyJackson2Provider jackson2Provider = RestUtils.createJackson2Provider(Optional.of(SerializationFeature.WRAP_ROOT_VALUE),
-                Optional.of(DeserializationFeature.UNWRAP_ROOT_VALUE));
+            Optional.of(DeserializationFeature.UNWRAP_ROOT_VALUE));
         return getClient(jackson2Provider);
     }
 
@@ -77,19 +77,21 @@ public final class RestUtils {
         final ApacheHttpClient4Engine engine = new ApacheHttpClient4Engine(RestUtils.createAllTrustingClient());
 
         final Client client = new ResteasyClientBuilder()
-                .providerFactory(new ResteasyProviderFactory()) // this is needed otherwise default jackson2provider is used, which causes problems with JDK8 Optional
-                .register(jackson2Provider)
-                .register(new InputStreamProvider()) // needed for GET application/octet-stream in PublicAPI to export zip
-                .register(new MultipartFormDataWriter()) // needed to POST mutipart form data (necessary for API provider + PublicAPI)
-                .register(new StringTextStar()) // needed to serialize text/plain (again for API provider)
-                .register(new ErrorLogger())
-                .httpEngine(engine)
-                .build();
+            .providerFactory(
+                new ResteasyProviderFactory()) // this is needed otherwise default jackson2provider is used, which causes problems with JDK8 Optional
+            .register(jackson2Provider)
+            .register(new InputStreamProvider()) // needed for GET application/octet-stream in PublicAPI to export zip
+            .register(new MultipartFormDataWriter()) // needed to POST mutipart form data (necessary for API provider + PublicAPI)
+            .register(new StringTextStar()) // needed to serialize text/plain (again for API provider)
+            .register(new ErrorLogger())
+            .httpEngine(engine)
+            .build();
 
         return client;
     }
 
-    private static ResteasyJackson2Provider createJackson2Provider(Optional<SerializationFeature> serialization, Optional<DeserializationFeature> deserialization) {
+    private static ResteasyJackson2Provider createJackson2Provider(Optional<SerializationFeature> serialization,
+        Optional<DeserializationFeature> deserialization) {
         final ResteasyJackson2Provider jackson2Provider = new ResteasyJackson2Provider();
         final ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new Jdk8Module());
@@ -110,14 +112,14 @@ public final class RestUtils {
             final SSLContextBuilder builder = new SSLContextBuilder();
             builder.loadTrustMaterial((TrustStrategy) (X509Certificate[] chain, String authType) -> true);
             final SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                    builder.build(),
-                    new NoopHostnameVerifier()); // needed to connections to API Provider integrations
+                builder.build(),
+                new NoopHostnameVerifier()); // needed to connections to API Provider integrations
             httpclient = HttpClients
-                    .custom()
-                    .setSSLSocketFactory(sslsf)
-                    .setMaxConnTotal(1000)
-                    .setMaxConnPerRoute(1000)
-                    .build();
+                .custom()
+                .setSSLSocketFactory(sslsf)
+                .setMaxConnTotal(1000)
+                .setMaxConnPerRoute(1000)
+                .build();
         } catch (NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
             throw new RestClientException("Cannot create all SSL certificates trusting client", e);
         }
@@ -135,7 +137,8 @@ public final class RestUtils {
                 setupLocalPortForward();
             }
             try {
-                HttpUtil.waitForHttpOk(restUrl.get() + "/api/v1/version");
+                OpenShiftWaitUtils.waitFor(() -> HttpUtils.doGetRequest(restUrl.get() + "/api/v1/version").getCode() == 200, 90000L);
+                TestUtils.sleepIgnoreInterrupt(15000L);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("Backend is not responding");
@@ -155,7 +158,8 @@ public final class RestUtils {
             log.debug("creating local port forward for pod syndesis-server");
             localPortForward = TestUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
             try {
-                restUrl = Optional.of(String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort()));
+                restUrl = Optional.of(String
+                    .format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort()));
             } catch (IllegalStateException ex) {
                 restUrl = Optional.of(String.format("http://%s:%s", "127.0.0.1", 8080));
             }

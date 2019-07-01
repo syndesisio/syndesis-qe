@@ -11,10 +11,14 @@
 	<artifactId>utilities</artifactId>
 
 	<dependencies>
+		<dependency>
+			<groupId>io.fabric8</groupId>
+			<artifactId>openshift-client</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>cz.xtf</groupId>
-			<artifactId>utilities</artifactId>
+			<artifactId>core</artifactId>
 		</dependency>
 
 		<dependency>

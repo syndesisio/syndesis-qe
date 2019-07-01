@@ -1,19 +1,17 @@
 package io.syndesis.qe.templates;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
-
-import io.fabric8.kubernetes.api.model.KubernetesList;
-import io.fabric8.openshift.api.model.Template;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,25 +20,30 @@ public class AmqTemplate {
     public static void deploy() {
         if (!TestUtils.isDcDeployed("broker-amq")) {
             // For some reason the productized operator creates broker-amq-tcp service, so delete it if it is present
-            OpenShiftUtils.client().services().withName("broker-amq-tcp").delete();
-            Template template;
-            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
-                template = OpenShiftUtils.client().templates().load(is).get();
-            } catch (IOException ex) {
-                throw new IllegalArgumentException("Unable to read template ", ex);
-            }
-
-            Map<String, String> templateParams = new HashMap<>();
-            templateParams.put("MQ_USERNAME", "amq");
-            templateParams.put("MQ_PASSWORD", "topSecret");
+            OpenShiftUtils.getInstance().services().withName("broker-amq-tcp").delete();
+//            Template template;
+//            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
+//                template = OpenShiftUtils.getInstance().templates().load(is).get();
+//            } catch (IOException ex) {
+//                throw new IllegalArgumentException("Unable to read template ", ex);
+//            }
+//
+//            Map<String, String> templateParams = new HashMap<>();
+//            templateParams.put("MQ_USERNAME", "amq");
+//            templateParams.put("MQ_PASSWORD", "topSecret");
 
             // try to delete previous broker
             cleanUp();
-            OpenShiftUtils.client().templates().withName("syndesis-amq").delete();
+//            OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
 
-            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
+            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
+            OpenShiftUtils.binary().execute("delete", "template", "syndesis-amq");
+            OpenShiftUtils.binary().execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-amq.yml").toAbsolutePath().toString());
+            OpenShiftUtils.binary().execute("new-app", "syndesis-amq", "-p", "MQ_USERNAME=amq", "-p", "MQ_PASSWORD=topSecret");
 
-            OpenShiftUtils.getInstance().createResources(processedTemplate);
+//            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
+
+//            OpenShiftUtils.getInstance().createResources(processedTemplate);
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));

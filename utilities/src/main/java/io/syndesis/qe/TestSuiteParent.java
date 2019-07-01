@@ -52,7 +52,7 @@ public abstract class TestSuiteParent {
         }
         cleanNamespace();
         log.info("Creating namespace lock via secret `test-lock`");
-        lockSecret = OpenShiftUtils.client().secrets()
+        lockSecret = OpenShiftUtils.getInstance().secrets()
             .createOrReplaceWithNew()
             .withNewMetadata()
             .withName("test-lock")

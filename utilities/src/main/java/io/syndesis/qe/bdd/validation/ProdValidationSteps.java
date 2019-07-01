@@ -3,8 +3,10 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
-import org.apache.commons.io.FileUtils;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.OpenShiftUtils;
 
+import org.apache.commons.io.FileUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -17,9 +19,6 @@ import javax.xml.xpath.XPathFactory;
 import java.io.File;
 
 import cucumber.api.java.en.Then;
-import cz.xtf.openshift.OpenShiftBinaryClient;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.utils.OpenShiftUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,12 +36,12 @@ public class ProdValidationSteps {
         final String integrationPodName = OpenShiftUtils.getPodByPartialName("i-").get().getMetadata().getName();
         log.info(integrationPodName);
         // It adds quotes around the command for exec and oc client doesn't understand that, so rsync the file instead
-        OpenShiftBinaryClient.getInstance().executeCommand("Unable to get integration's POM file",
-                "rsync",
-                "-n", TestConfiguration.openShiftNamespace(),
-                integrationPodName + ":/tmp/src/pom.xml",
-                "/tmp"
-                );
+        OpenShiftUtils.binary().execute(
+            "rsync",
+            "-n", TestConfiguration.openShiftNamespace(),
+            integrationPodName + ":/tmp/src/pom.xml",
+            "/tmp"
+        );
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         try {
@@ -57,8 +56,8 @@ public class ProdValidationSteps {
         loadIntegrationXml();
         final XPath xPath = XPathFactory.newInstance().newXPath();
         try {
-            assertThat(((Node)xPath.compile("//project/properties/" + property).evaluate(pom, XPathConstants.NODE)).getTextContent())
-                    .contains("redhat");
+            assertThat(((Node) xPath.compile("//project/properties/" + property).evaluate(pom, XPathConstants.NODE)).getTextContent())
+                .contains("redhat");
         } catch (XPathExpressionException e) {
             fail("Unable to compile xpath expression: ", e);
         }
