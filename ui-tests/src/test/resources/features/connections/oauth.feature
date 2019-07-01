@@ -29,7 +29,7 @@ Feature: Connections - OAuth
   Scenario: Testing Gmail OAuth connector
     Given delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-tests"
     When navigate to the "Settings" page
-    And fill all oauth settings
+    And fill "Gmail" oauth settings "QE Google Mail"
     And navigate to the "Connections" page
     And create connections using oauth
       | Gmail | Test-Gmail |
@@ -45,7 +45,7 @@ Feature: Connections - OAuth
     And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
-    When select the "Log" connection  
+    When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Next" button
@@ -65,26 +65,26 @@ Feature: Connections - OAuth
     When sleep for "6000" ms
     Then validate that logs of integration "OAuth-gmail-test" contains string "syndesis-tests"
     And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-tests"
-  
+
   @oauth-twitter
   Scenario: Testing Twitter OAuth connector
     Given clean all tweets in twitter_talky account
     When navigate to the "Settings" page
-    And fill all oauth settings
+    And fill "Twitter" oauth settings "Twitter Listener"
     And navigate to the "Connections" page
     And create connections using oauth
       | Twitter | Twitter-test |
     And navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
-    
+
     Then check that position of connection to fill is "Start"
     When select the "Twitter-test" connection
     And select "Mention" integration action
     And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
-    When select the "Log" connection  
+    When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Done" button
@@ -117,7 +117,7 @@ Feature: Connections - OAuth
     And navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration
     Then check visibility of visual integration editor
-    
+
     Then check that position of connection to fill is "Start"
     When select the "Gcalendar-test" connection
     And select "Get Events" integration action
@@ -128,7 +128,7 @@ Feature: Connections - OAuth
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
-    When select the "Log" connection  
+    When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Done" button
@@ -146,7 +146,7 @@ Feature: Connections - OAuth
 
     When sleep for "6000" ms
     Then validate that logs of integration "OAuth-Gcalendar-test" contains string "past_event1"
-  
+
   @oauth-salesforce
   Scenario: Testing Salesforce OAuth connector
     Given delete lead from SF with email: "k1stieranka1@istrochem.sk"
@@ -156,7 +156,7 @@ Feature: Connections - OAuth
     And navigate to the "Connections" page
     And create connections using oauth
       | Salesforce | Salesforce-test |
-    
+
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration
     And check visibility of visual integration editor
@@ -168,7 +168,7 @@ Feature: Connections - OAuth
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
-    When select the "Log" connection  
+    When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Done" button
@@ -183,10 +183,10 @@ Feature: Connections - OAuth
     And wait until integration "OAuth-Salesforce-test" gets into "Running" state
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
     When sleep for "6000" ms
-    
+
     Then validate that logs of integration "OAuth-Salesforce-test" contains string "k1stieranka1@istrochem.sk"
     Then delete lead from SF with email: "k1stieranka1@istrochem.sk"
-  
+
   @oauth-gsheets
   Scenario: Testing Google Sheets OAuth connector
     When navigate to the "Settings" page
@@ -206,7 +206,7 @@ Feature: Connections - OAuth
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
-    When select the "Log" connection  
+    When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Done" button

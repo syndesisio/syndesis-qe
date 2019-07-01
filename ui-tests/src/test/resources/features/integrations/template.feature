@@ -9,8 +9,10 @@ Feature: Templates
     Given clean application state
     And log into the Syndesis
     And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test"
-    And created connections
-      | Gmail | QE Google Mail | QE Google Mail | SyndesisQE Template test |
+    And navigate to the "Settings" page
+    And fill "Gmail" oauth settings "QE Google Mail"
+    And create connections using oauth
+      | Gmail | QE Google Mail |
     And reset content of "contact" table
 
   @db-template-send
@@ -57,7 +59,7 @@ Feature: Templates
     And check visibility of data mapper ui
     And create data mapper mappings
       | first_name | firstname |
-      | last_name  | surname   | 
+      | last_name  | surname   |
       | company    | company   |
     And scroll "top" "right"
     And click on the "Done" button
@@ -69,7 +71,7 @@ Feature: Templates
     And check visibility of data mapper ui
     And open data bucket "4 - Template JSON Schema"
     And create data mapper mappings
-      | message      | text    |
+      | message | text |
     And scroll "top" "right"
     And click on the "Done" button
 
@@ -85,11 +87,11 @@ Feature: Templates
     Then check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
     Examples:
-      | template_type | template_text                                   |  
-      | Mustache      | {{firstname}} {{surname}} works at {{company}}  | 
-      | Freemarker    | ${firstname} ${surname} works at ${company}     |
-      | Velocity      | $firstname $surname works at $company           |
-  
+      | template_type | template_text                                  |
+      | Mustache      | {{firstname}} {{surname}} works at {{company}} |
+      | Freemarker    | ${firstname} ${surname} works at ${company}    |
+      | Velocity      | $firstname $surname works at $company          |
+
   @db-template-mustache-file-upload
   Scenario: Send an Email with text formatted by Mustache template uploaded from resources/templates/mustache.tpl
     # create integration
@@ -134,7 +136,7 @@ Feature: Templates
     And check visibility of data mapper ui
     And create data mapper mappings
       | first_name | firstname |
-      | last_name  | surname   | 
+      | last_name  | surname   |
       | company    | company   |
     And scroll "top" "right"
     And click on the "Done" button
@@ -146,7 +148,7 @@ Feature: Templates
     And check visibility of data mapper ui
     And open data bucket "4 - Template JSON Schema"
     And create data mapper mappings
-      | message      | text    |
+      | message | text |
     And scroll "top" "right"
     And click on the "Done" button
 

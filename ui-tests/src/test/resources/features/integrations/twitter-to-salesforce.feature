@@ -13,9 +13,11 @@ Feature: Integration - Twitter to Salesforce
     And clean SF contacts related to TW account: "twitter_talky"
     And clean all tweets in twitter_talky account
     And log into the Syndesis
-    And created connections
-      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-      | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
+    And navigate to the "Settings" page
+    And fills all oauth settings
+    And create connections using oauth
+      | Twitter    | Twitter Listener |
+      | Salesforce | QE Salesforce    |
 
   Scenario: Create
     # create integration
