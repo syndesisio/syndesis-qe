@@ -212,7 +212,7 @@ public class CommonSteps {
         if (!isClusterReachable) {
             fail("Previous reachability test failed, skipping remaining tests.");
         }
-        final int maxRetries = 1;
+        final int maxRetries = 30;
         int retries = 0;
         boolean isReachable = false;
         log.info("Checking if OpenShift cluster at {} is reachable.", TestConfiguration.openShiftUrl());
