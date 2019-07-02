@@ -150,6 +150,7 @@ For Chrome version 74, the parameter would be `74.0.3729.6`
 
 For Chrome version 73, the parameter would be `73.0.3683.68`
 
+The downloading of another driver has to be forced by `mvn webdriverextensions:install-drivers`
 
 ##### Firefox
 Find supported driver version for your firefox browser here: https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html
