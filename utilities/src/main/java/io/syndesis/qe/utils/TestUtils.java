@@ -207,7 +207,7 @@ public final class TestUtils {
                 properties.put("url", sourceMap.get("db.jdbc_url"));
                 properties.put("user", sourceMap.get("db.username"));
                 properties.put("password", sourceMap.get("db.password"));
-                properties.put("schema", sourceMap.get("db.name"));
+                properties.put("schema", sourceMap.get("db.schema"));
                 log.debug("UPDATED ACCOUNT {} PROPERTIES:", account.getService());
                 properties.forEach((key, value) -> log.debug("Key: *{}*, value: *{}*", key, value));
                 break;
