@@ -275,7 +275,6 @@ public class TestConfiguration {
         System.setProperty("xtf.openshift.url", properties.getProperty(OPENSHIFT_URL));
         System.setProperty("xtf.openshift.master.username", properties.getProperty(SYNDESIS_UI_USERNAME));
         System.setProperty("xtf.openshift.master.password", properties.getProperty(SYNDESIS_UI_PASSWORD));
-        System.setProperty("xtf.openshift.master.token", properties.getProperty(OPENSHIFT_TOKEN));
         System.setProperty("xtf.openshift.namespace", properties.getProperty(OPENSHIFT_NAMESPACE));
 
         // Set oc version - this version of the client will be used as the binary client

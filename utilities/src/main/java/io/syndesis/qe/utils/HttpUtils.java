@@ -126,7 +126,9 @@ public final class HttpUtils {
             .url(url)
             .get();
         try {
-            getClient().newCall(requestBuilder.build()).execute();
+            Response r = getClient().newCall(requestBuilder.build()).execute();
+            // Close the body to prevent leaked connections
+            r.body().close();
             return true;
         } catch (Exception e) {
             return false;
