@@ -18,17 +18,15 @@ Feature: Integration - DB to DB
 
     When select the "PostgresDB" connection
     And select "Periodic stored procedure invocation" integration action
-    And click on the "Done" button
+    And click on the "Next" button
 
     When select the "PostgresDB" connection
     And select "Invoke stored procedure" integration action
-    And click on the "Done" button
+    And click on the "Next" button
 
     And publish integration
-
     And fill Name Integration form
       |  name | ASD |
-
     And publish integration
 
     Then check starting integration status on Integration Detail page
@@ -42,17 +40,15 @@ Feature: Integration - DB to DB
 
     When select the "PostgresDB" connection
     And select "Periodic stored procedure invocation" integration action
-    And click on the "Done" button
+    And click on the "Next" button
 
     When select the "PostgresDB" connection
     And select "Invoke stored procedure" integration action
-    And click on the "Done" button
+    And click on the "Next" button
 
     And publish integration
-
     And fill Name Integration form
       | name | ASD |
-
     And publish integration
 
     When navigate to the "Integrations" page
@@ -68,17 +64,15 @@ Feature: Integration - DB to DB
 
     When select the "PostgresDB" connection
     And select "Periodic stored procedure invocation" integration action
-    And click on the "Done" button
+    And click on the "Next" button
 
     When select the "PostgresDB" connection
     And select "Invoke stored procedure" integration action
-    And click on the "Done" button
+    And click on the "Next" button
 
-    And click on the "Publish" button
-
+    And publish integration
     And fill Name Integration form
       | Name | ASD |
-
     And publish integration
 
     When navigate to the "Home" page
