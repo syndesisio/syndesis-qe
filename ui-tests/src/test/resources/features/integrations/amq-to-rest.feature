@@ -43,14 +43,15 @@ Feature: Integration - AMQ to REST
     And click on the "Next" button
     And fill in values by element ID
       | name     | Todo connector |
-      | host     | todo           |
       | basepath | /api           |
+    And fill in TODO API host URL
     And click on the "Save" button
 
     And created connections
       | Red Hat AMQ    | AMQ  | AMQ             | AMQ on OpenShift |
       | Todo connector | todo | TODO connection | no validation    |
 
+  @integrations-amq-to-rest-xml-message
   Scenario: Publish subscribe on topic
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
