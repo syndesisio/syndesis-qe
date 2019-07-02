@@ -10,9 +10,9 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #S2I                         - s2i image
 #OPERATOR                    - operator
 #TAG                         - tag which is expected by the operator
-#OAUTH_PROXY                 - oauth proxy image, defaults to "registry.access.redhat.com/openshift3/oauth-proxy:v3.11"
+#OAUTH_PROXY                 - oauth proxy image, defaults to "registry.redhat.io/openshift4/ose-oauth-proxy:4.1"
 #OAUTH_PROXY_TAG             - oauth proxy image stream tag, defaults to "v1.1.0"
-#PROMETHEUS                  - prometheus image, defaults to "registry.access.redhat.com/openshift3/prometheus:v3.9.25"
+#PROMETHEUS                  - prometheus image, defaults to "registry.redhat.io/openshift3/prometheus:v3.9.25"
 #PROMETHEUS_TAG              - prometheus image stream tag, defaults to "v2.1.0"
 #POSTGRES_EXPORTER           - postgres exporter image
 #POSTGRES_EXPORTER_TAG       - postgres exporter image stream tag, default to "v0.4.7"
