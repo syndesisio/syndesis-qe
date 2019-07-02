@@ -10,6 +10,8 @@ import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$$;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -19,9 +21,12 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.ElementsCollection;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,6 +38,16 @@ public class ApiClientConnectorsSteps {
     @Then("^open new Api Connector wizard$")
     public void openNewApiConnectorWizard() {
         apiClientConnectorsPage.startWizard();
+    }
+
+    @When("^set swagger petstore credentials")
+    public void setPetstoreCredentials() {
+        Account petStoreAccount = new Account();
+        petStoreAccount.setService("Swagger Petstore");
+        Map<String, String> accountParameters = new HashMap<>();
+        accountParameters.put("authenticationparametervalue", "special-key");
+        petStoreAccount.setProperties(accountParameters);
+        AccountsDirectory.getInstance().addAccount("Swagger Petstore Account", petStoreAccount);
     }
 
     @Then("^open the API connector \"([^\"]*)\" detail$")

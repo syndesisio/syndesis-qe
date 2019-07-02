@@ -105,8 +105,9 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "API Client Connectors"
 
     #create new connection from the connector
+    When set swagger petstore credentials
     And created connections
-      | Swagger Petstore | no credentials | Petstore conn | no validation |
+      | Swagger Petstore | Swagger Petstore Account | Petstore conn | no validation |
 
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page
