@@ -29,6 +29,7 @@ Feature: Integration - Twitter to Salesforce
     # select twitter connection
     When select the "Twitter Listener" connection
     And select "Mention" integration action
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
 
     # select salesforce connection
