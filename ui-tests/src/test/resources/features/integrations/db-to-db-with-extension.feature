@@ -52,7 +52,7 @@ Feature: Integration - DB to DB with extension
       | last_name   | first_and_last_name |
       | lead_source | lead_source         |
 
-    And click on the "Next" button
+    And click on the "Done" button
 
     # add tech extension step
     When add integration step on position "0"
