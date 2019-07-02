@@ -3,16 +3,20 @@ package io.syndesis.qe.steps.apps.todo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.sleep;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.apps.todo.Todo;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Selenide;
 
@@ -72,6 +76,21 @@ public class TodoSteps {
         String host = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
         String url = host + "/swagger.json";
         new UploadSwaggerSpecification().upload("url", url);
+    }
+
+    @When("^fill in TODO API host URL$")
+    public void fillHostUrl() {
+        if (OpenShiftUtils.getInstance().getRoute("todo2") == null
+            || !OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost().equals("/")) {
+            TodoUtils.createDefaultRouteForTodo("todo2", "/");
+        }
+
+        String host = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
+
+        Map<String, String> todoConfigMap = new HashMap<>();
+        todoConfigMap.put("host", host);
+
+        new Form($(By.id("root"))).fillByTestId(todoConfigMap);
     }
 
     @Then("^check Todo list has \"(\\w+)\" items")
