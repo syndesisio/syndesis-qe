@@ -54,6 +54,7 @@ Feature: Integration - DB to API
 
     When select the "Todo connection" connection
     Then select "Create new task" integration action
+    And click on the "Next" button
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -96,6 +97,7 @@ Feature: Integration - DB to API
     When add integration step on position "0"
     And select the "Todo connection" connection
     Then select "Fetch task" integration action
+    And click on the "Next" button
 
     #start - here - middle -finish
     When add integration step on position "0"

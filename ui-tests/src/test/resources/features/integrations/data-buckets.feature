@@ -18,8 +18,9 @@ Feature: Integration - Databucket
     And fill all oauth settings
     And create connections using oauth
       | Twitter | Twitter Listener |
-      | DropBox | QE Dropbox       |
       | Gmail   | QE Google Mail   |
+    And created connections
+      | DropBox | QE Dropbox |
     And navigate to the "Home" page
 
 #
