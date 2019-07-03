@@ -62,6 +62,7 @@ public class SyndesisTemplate {
     }
 
     public static void deploy() {
+        createPullSecret();
         if (TestConfiguration.useOperator()) {
             deployUsingOperator();
         } else {
@@ -69,9 +70,21 @@ public class SyndesisTemplate {
         }
     }
 
+    private static void createPullSecret() {
+        if (TestConfiguration.syndesisPullSecret() != null) {
+            log.info("Creating a pull secret with name " + TestConfiguration.syndesisPullSecretName());
+            OpenShiftUtils.client().secrets().createOrReplaceWithNew()
+                .withNewMetadata()
+                .withName(TestConfiguration.syndesisPullSecretName())
+                .endMetadata()
+                .withData(TestUtils.map(".dockerconfigjson", TestConfiguration.syndesisPullSecret()))
+                .withType("kubernetes.io/dockerconfigjson")
+                .done();
+        }
+    }
+
     public static void deployUsingTemplate() {
         log.info("Deploying using template");
-        OpenShiftUtils.getInstance().cleanAndAssert();
 
         // get & create restricted SA
         OpenShiftUtils.getInstance().createServiceAccount(getSupportSA());
@@ -135,7 +148,6 @@ public class SyndesisTemplate {
             throw new RuntimeException(sb.toString());
         }
 
-        OpenShiftUtils.getInstance().cleanAndAssert();
         deployCrd();
         // When testing upgrade using operator, the operator deploys last released version tag (and it is upgrading to latest daily), so this can be removed
         // when the version in syndesis-qe will be 1.7-SNAPSHOT

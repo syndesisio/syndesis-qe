@@ -365,6 +365,11 @@ In such a case (and perhaps in any case), you can add the following test propert
 syndesis.config.upstream.repository=<your maven central proxy>
 ```
 
+##### Pulling from private registries
+If the images are deployed to a registry that requires authentication, you can use the *syndesis.config.pull.secret* property to specify the base64 encoded content of the docker config to use.
+Optionally you can also use *syndesis.config.pull.secret.name* to specify the name of the created secret - if not present, it will default to *syndesis-pull-secret*.
+This secret will be linked to *syndesis-operator* service account automatically.
+
 
 ##### Most common problems
 * If you set *syndesis.config.openshift.namespace.lock* parameter to true and you stop tests during running, the lock will not be released! 
