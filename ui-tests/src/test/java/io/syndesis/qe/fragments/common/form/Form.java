@@ -4,7 +4,6 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import com.codeborne.selenide.Condition;
 import org.apache.commons.lang3.BooleanUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -12,6 +11,7 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
@@ -95,7 +95,7 @@ public class Form {
                         input.click();
                     }
                 } else {
-                    input.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+                    input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
                     input.sendKeys(Keys.BACK_SPACE);
                     input.clear();
                     input.sendKeys(data.get(key));

@@ -42,6 +42,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.CollectionCondition;
@@ -401,10 +402,9 @@ public class CommonSteps {
                 buttonTitle = "Next";
             }
         }
-        log.info(syndesisRootPage.getButton(buttonTitle).toString());
-        TestUtils.sleepForJenkinsDelayIfHigher(2);
-        syndesisRootPage.getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
-        TestUtils.sleepForJenkinsDelayIfHigher(2);
+        SelenideElement button = syndesisRootPage.getButton(buttonTitle);
+        log.info(button.toString());
+        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
@@ -665,6 +665,24 @@ public class CommonSteps {
         Selenide.back();
     }
 
+    private void waitForAdditionalWindow() {
+        TestUtils.waitFor(() -> WebDriverRunner.getWebDriver().getWindowHandles().size() > 1,
+            1, 10,
+            "Second window has not shown up");
+    }
+
+    private void waitForWindowToShowUrl() {
+        TestUtils.waitFor(() -> {
+            try {
+                WebDriverRunner.getWebDriver().getCurrentUrl();
+            } catch (WebDriverException e) {
+                return false;
+            }
+
+            return true;
+        }, 1, 5, "Window has not returned valid url");
+    }
+
     private void doOAuthValidation(String type) {
 
         WebDriver driver = WebDriverRunner.getWebDriver();
@@ -676,6 +694,9 @@ public class CommonSteps {
         // Perform the click operation that opens new window
         clickOnButton("Connect " + type);
 
+        // we need to wait for an oauth window to open after button click
+        waitForAdditionalWindow();
+
         // Switch to new window opened
         for (String winHandle : driver.getWindowHandles()) {
             if (winHandle.equalsIgnoreCase(winHandleBefore)) {
@@ -684,6 +705,9 @@ public class CommonSteps {
             log.info("Found another windows handle: " + winHandle);
             driver.switchTo().window(winHandle);
         }
+
+        // need to wait a bit until window is able to return url
+        waitForWindowToShowUrl();
 
         // Perform the actions on new window
 
@@ -723,9 +747,11 @@ public class CommonSteps {
     private void loginToGoogleIfNeeded(String s) {
         // if the browser has previously logged into google account syndesis will
         // immediately move to next screen and will have "Successfully%20authorized%20Syndesis's%20access" in the URL
-        log.info("Current url: {}", WebDriverRunner.currentFrameUrl().toLowerCase());
+        log.info("Current url: {}", WebDriverRunner.getWebDriver().getCurrentUrl().toLowerCase());
 
-        if (isStringInUrl("connections/create/review", 5) || $(By.className("alert-success")).is(visible)) {
+        if (isStringInUrl("Successfully%20authorized%20Syndesis's%20access", 5)
+            || $(By.className("alert-success")).is(visible)) {
+
             log.info("User is already logged");
             return;
         }
@@ -829,7 +855,7 @@ public class CommonSteps {
 
     private void waitForStringInUrl(String expectedPartOfUrl, int timeoutSeconds) throws TimeoutException, InterruptedException {
         waitFor(() -> {
-            String frameUrl = WebDriverRunner.currentFrameUrl().toLowerCase();
+            String frameUrl = WebDriverRunner.getWebDriver().getCurrentUrl().toLowerCase();
             return frameUrl.contains(expectedPartOfUrl.toLowerCase());
         }, timeoutSeconds * 1000);
     }

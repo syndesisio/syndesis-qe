@@ -3,13 +3,15 @@ package io.syndesis.qe.steps.integrations.editor.add;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import io.syndesis.qe.fragments.common.list.actions.ListAction;
+import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
+import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.openqa.selenium.By;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.fragments.common.list.actions.ListAction;
-import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
-import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,7 +28,9 @@ public class ChooseConnectionSteps {
     @Then("^check that position of connection to fill is \"([^\"]*)\"$")
     public void verifyTypeOfConnection(String position) {
         log.info("{} connection must be active", position);
-        assertTrue("There was no active icon found for position " + position, integrationFlowView.verifyActivePosition(position));
+        TestUtils.waitFor(() -> integrationFlowView.verifyActivePosition(position),
+            1, 10,
+            "There was no active icon found for position " + position);
     }
 
     @When("^.*selects? the \"([^\"]*)\" connection$")

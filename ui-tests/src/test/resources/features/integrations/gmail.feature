@@ -12,8 +12,10 @@ Feature: Google mail Connector
     And reset content of "contact" table
     And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
     And log into the Syndesis
-    And created connections
-      | Gmail | QE Google Mail | My GMail Connector | SyndesisQE Slack test |
+    And navigate to the "Settings" page
+    And fill "Gmail" oauth settings "QE Google Mail"
+    And create connections using oauth
+      | Gmail | My GMail Connector |
     And navigate to the "Home" page
 
 #
@@ -55,7 +57,7 @@ Feature: Google mail Connector
     And create data mapper mappings
       | company | text |
     And scroll "top" "right"
-    And click on the "Next" button
+    And click on the "Done" button
 
     # finish and save integration
     When click on the "Save" link
