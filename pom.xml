@@ -27,7 +27,7 @@
 		<commons.io.version>2.5</commons.io.version>
 		<resteasy.version>3.6.1.Final</resteasy.version>
 		<jackson.version>2.8.6</jackson.version>
-		<twitter4j.version>4.0.5</twitter4j.version>
+		<twitter4j.version>4.0.7</twitter4j.version>
 		<logback.classic.version>1.2.3</logback.classic.version>
 		<force.rest.api.version>0.0.37</force.rest.api.version>
 		<selenide.version>4.10.01</selenide.version>
