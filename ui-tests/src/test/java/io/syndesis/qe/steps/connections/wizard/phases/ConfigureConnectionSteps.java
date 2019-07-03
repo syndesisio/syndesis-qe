@@ -7,8 +7,6 @@ import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
 
-import org.openqa.selenium.By;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,7 +39,7 @@ public class ConfigureConnectionSteps {
 
     private void fillFormInLowerCase(Map<String, String> properties) {
         //transfer all keys in properties to lower case
-        new Form($(By.className("integration-editor-layout__body")).shouldBe(visible)).fillByTestId(
+        new Form($("form .row-cards-pf").shouldBe(visible)).fillByTestId(
             properties.entrySet().stream()
                 .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue))
         );
