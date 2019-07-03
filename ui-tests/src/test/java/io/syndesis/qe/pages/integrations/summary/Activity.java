@@ -21,7 +21,7 @@ public class Activity extends SyndesisPageObject {
         public static final By ACTIVITY_WRAPPED = By.className("list-group-item");
         public static final By ACTIVITY_EXPAND_BUTTON = By.className("fa-angle-right");
 
-        public static final By DATE = By.className("list-view-pf-left");
+        public static final By DATE = By.className("list-group-item-heading");
         public static final By TIME = By.className("list-group-item-text");
         public static final By VERSION = By.className("list-view-pf-additional-info-item");
         public static final By ERRORS = By.className("integration-detail-activity-item__status-item");
