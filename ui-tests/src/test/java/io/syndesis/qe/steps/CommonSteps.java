@@ -40,6 +40,7 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -159,6 +160,10 @@ public class CommonSteps {
     private void doLogin(boolean afterLogout) {
         if (!afterLogout) {
             Selenide.open(TestConfiguration.syndesisUrl());
+        }
+
+        if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
+            WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
         }
 
         String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
@@ -709,6 +714,10 @@ public class CommonSteps {
         // need to wait a bit until window is able to return url
         waitForWindowToShowUrl();
 
+        if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
+            WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
+        }
+
         // Perform the actions on new window
 
         switch (type) {
@@ -740,6 +749,10 @@ public class CommonSteps {
 
         // Switch back to original browser (first window)
         driver.switchTo().window(winHandleBefore);
+
+        if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
+            WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
+        }
 
         waitForCallbackRedirect("review");
     }
