@@ -2,9 +2,6 @@
 BASE_DIR=$(dirname "$(readlink -f "$0")")
 
 # Variables used:
-#REGISTRY                    - docker registry to use
-#REGISTRY_NAMESPACE          - docker registry for all productized images except pg exporter
-#TECH_PREVIEW_NAMESPACE      - namespace for tech preview images
 #SERVER                      - server image
 #META                        - meta image
 #UI                          - ui image
@@ -33,22 +30,7 @@ VARS="SERVER META UI S2I OPERATOR OAUTH_PROXY PROMETHEUS TAG OAUTH_PROXY_TAG PRO
 cp -f "${BASE_DIR}"/prod.template.yml /tmp/prod-resources.yml
 
 for var in ${VARS}; do
-	case "$var" in
-		"PROMETHEUS"|"OAUTH_PROXY"|*"TAG")
-			# For prometheus, oauth proxy and all variables ending with "tag", the replacement will be the value of the property
-			REPLACEMENT="${!var}";;
-		*)
-			# Otherwise, we need to construct the docker image path in form of registry/namespace/image
-			case "${var}" in
-				# PG Exporter and komodo server use tech preview namespace
-				"POSTGRES_EXPORTER"|"KOMODO_SERVER")
-					NS="${TECH_PREVIEW_NAMESPACE}";;
-				*)
-					NS="${REGISTRY_NAMESPACE}";;
-			esac
-			REPLACEMENT="${REGISTRY}/${NS}/${!var}";;
-	esac
-	sed -i "s#\\\$$var\\\$#${REPLACEMENT}#g" /tmp/prod-resources.yml
+	sed -i "s#\\\$$var\\\$#${!var}#g" /tmp/prod-resources.yml
 done
 
 cat /tmp/prod-resources.yml
