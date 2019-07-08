@@ -59,6 +59,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.syndesis.server</groupId>
+            <artifactId>syndesis-cli</artifactId>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

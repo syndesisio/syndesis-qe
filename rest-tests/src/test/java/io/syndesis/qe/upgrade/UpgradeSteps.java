@@ -25,11 +25,10 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -38,6 +37,7 @@ import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.ReplicationController;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.ImageStream;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class UpgradeSteps {
     public void getUpgradeVersions() {
         if (System.getProperty("syndesis.upgrade.version") == null) {
             // Parse "1.5"
-            BigDecimal version = new BigDecimal(Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3)))
+            final BigDecimal version = new BigDecimal(Double.parseDouble(StringUtils.substring(System.getProperty("syndesis.version"), 0, 3)))
                 .setScale(1, BigDecimal.ROUND_HALF_UP);
             Request request = new Request.Builder()
                 .url(DOCKER_HUB_SYNDESIS_TAGS_URL)
@@ -81,35 +81,33 @@ public class UpgradeSteps {
                 tags.add(((JSONObject) o).getString("name"));
             }
 
-            // Use only daily tags corresponding to the latest major version
-            Pattern pattern = Pattern.compile("^" + (version + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?-\\d{8}$");
-
-            Collections.sort(tags);
-            Collections.reverse(tags);
-            for (String tag : tags) {
-                Matcher matcher = pattern.matcher(tag);
-                if (matcher.matches()) {
-                    if (System.getProperty("syndesis.upgrade.version") == null) {
-                        log.info("Setting syndesis.upgrade.version to " + tag);
-                        System.setProperty("syndesis.upgrade.version", tag);
-                    }
-                }
+            // Grab "1.7.X" if exists, otherwise get the daily
+            Optional<String> tag = tags.stream().filter(
+                t -> t.matches("^" + version.toString().replaceAll("\\.", "\\\\.") + "\\.\\d+")
+            ).findFirst();
+            if (!tag.isPresent()) {
+                List<String> daily = tags.stream().filter(
+                    t -> t.matches("^" + (version + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?-\\d{8}$")
+                ).collect(Collectors.toList());
+                tag = Optional.of(daily.get(daily.size() - 1));
             }
+            log.info("Setting syndesis.upgrade.version to " + tag.get());
+            System.setProperty("syndesis.upgrade.version", tag.get() + "");
 
             // Get penultimate version - not daily
-            outer:
-            while (version.doubleValue() >= 1.0) {
-                version = version.subtract(new BigDecimal(0.1));
-                pattern = Pattern.compile("^" + (version.doubleValue() + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$");
-                for (String tag : tags) {
-                    Matcher matcher = pattern.matcher(tag);
-                    if (matcher.matches()) {
-                        log.info("Setting syndesis.version to " + tag);
-                        // Save the original syndesis version
-                        System.setProperty("syndesis.upgrade.backup.version", System.getProperty("syndesis.version"));
-                        System.setProperty("syndesis.version", tag);
-                        break outer;
-                    }
+            BigDecimal previousVersion = version;
+            while (previousVersion.doubleValue() >= 1.0) {
+                previousVersion = previousVersion.subtract(new BigDecimal(0.1));
+                BigDecimal finalPreviousVersion = previousVersion;
+                Optional<String> previousTag = tags.stream().filter(
+                    t -> t.matches("^" + (finalPreviousVersion.doubleValue() + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$")
+                ).findFirst();
+                if (previousTag.isPresent()) {
+                    log.info("Setting syndesis.version to " + previousTag.get());
+                    // Save the original syndesis version
+                    System.setProperty("syndesis.upgrade.backup.version", System.getProperty("syndesis.version"));
+                    System.setProperty("syndesis.version", previousTag.get());
+                    break;
                 }
             }
         }
@@ -160,7 +158,10 @@ public class UpgradeSteps {
             List<HasMetadata> resources = OpenShiftUtils.getInstance().load(is).get();
             for (HasMetadata resource : resources) {
                 if (resource instanceof DeploymentConfig) {
-                    OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace((DeploymentConfig) resource);
+                    //OCP4HACK - "the API version in the data (v1) does not match the expected API version (apps.openshift.io/v1)"
+                    DeploymentConfig dc = (DeploymentConfig) resource;
+                    dc.setApiVersion("apps.openshift.io/v1");
+                    OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(dc);
                 } else if (resource instanceof ImageStream) {
                     OpenShiftUtils.getInstance().imageStreams().createOrReplace((ImageStream) resource);
                 }
@@ -172,7 +173,7 @@ public class UpgradeSteps {
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
     public void verifyVersion(String version) {
-        assertThat(getSyndesisVersion()).isEqualTo(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
+        assertThat(getSyndesisVersion()).startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
     }
 
     @When("^perform test modifications$")
@@ -186,16 +187,16 @@ public class UpgradeSteps {
 
     private void modifyTemplate() {
         // Change the install template to use newer version
+        runShellInSyndesisHome("git", "fetch", "--tag");
+        // Checkout the tag so that we don't need to modify the versions in the template
+        runShellInSyndesisHome("git", "checkout", System.getProperty("syndesis.upgrade.version"));
         String template;
         try {
             template = FileUtils.readFileToString(new File(UPGRADE_TEMPLATE), "UTF-8");
-            String version = StringUtils.substringBefore(StringUtils.substringAfter(template, "syndesis: ").substring(1), "\"");
-            template = template.replaceAll(version, System.getProperty("syndesis.upgrade.version"));
-
             // Modify deployment config
             // This is easier than messing with yaml directly and it adds the env for syndesis-meta and syndesis-server
             if (!template.contains("- name: TEST")) {
-                template = StringUtils.replaceAll(template, "tmp", "tmp\"\n          - name: TEST\n            value: \"UPGRADE");
+                template = StringUtils.replaceAll(template, "tmp\"", "tmp\"\n          - name: TEST\n            value: \"UPGRADE\"");
             }
             FileUtils.write(new File(UPGRADE_TEMPLATE), template, "UTF-8", false);
         } catch (IOException e) {
@@ -276,6 +277,9 @@ public class UpgradeSteps {
             TestUtils.sleepIgnoreInterrupt(5000L);
             retries++;
         }
+        if (retries == 180) {
+            fail("Upgrade pod didn't finish in 15 minutes!");
+        }
     }
 
     private void verifyTestModifications(boolean rollback) {
@@ -334,7 +338,20 @@ public class UpgradeSteps {
                 FileUtils.copyFile(Paths.get("../../syndesis/app/server/cli/target/syndesis-cli.jar").toFile(),
                     Paths.get(UPGRADE_FOLDER, "syndesis-cli.jar").toFile());
             } catch (IOException e) {
-                log.error("Unable to copy syndesis-cli.jar");
+                // If no artifacts were built, grab some cli from local maven repository
+                log.warn("Unable to find cli in syndesis folder, trying local repository");
+                File cli = FileUtils.listFiles(
+                    Paths.get(System.getenv("HOME"), ".m2", "repository", "io",
+                        "syndesis", "server", "syndesis-cli").toFile(),
+                    new String[] {"jar"},
+                    true)
+                    .stream().filter(f -> f.getName().contains(System.getProperty("syndesis.upgrade.backup.version")))
+                    .findFirst().orElseThrow(() -> new IllegalArgumentException("Unable to find jar for syndesis cli in local repository"));
+                try {
+                    FileUtils.copyFile(cli, Paths.get(UPGRADE_FOLDER, "syndesis-cli.jar").toFile());
+                } catch (IOException ex) {
+                    fail("Unable to copy syndesis-cli", ex);
+                }
             }
         }
     }
@@ -349,10 +366,9 @@ public class UpgradeSteps {
         TestUtils.replaceInFile(newFile, whatToReplace, whatToUse);
     }
 
-    @Given("^clean upgrade modifications$")
-    public void cleanUpgradeModifications() {
-        log.info("Running \"git checkout .\" in \"" + SYNDESIS + "\"");
-        ProcessBuilder pb = new ProcessBuilder("git", "checkout", ".");
+    private void runShellInSyndesisHome(String... command) {
+        log.info("Running \"" + String.join(" ", command) + "\" in \"" + SYNDESIS + "\"");
+        ProcessBuilder pb = new ProcessBuilder(command);
         pb.directory(new File(SYNDESIS));
 
         try {
@@ -362,11 +378,16 @@ public class UpgradeSteps {
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
             }
-            p.waitFor();
+            p.waitFor(15, TimeUnit.MINUTES);
         } catch (Exception e) {
             log.error("Error while running script: ", e);
             e.printStackTrace();
         }
+    }
+
+    @Given("^clean upgrade modifications$")
+    public void cleanUpgradeModifications() {
+        runShellInSyndesisHome("git", "checkout", ".");
     }
 
     @Then("^verify correct s2i tag for builds$")
@@ -387,5 +408,11 @@ public class UpgradeSteps {
     @Given("^delete syndesis operator$")
     public void deleteOperator() {
         OpenShiftUtils.getInstance().deploymentConfigs().withName("syndesis-operator").delete();
+        Optional<ReplicationController> operatorRc = OpenShiftUtils.getInstance().replicationControllers().list().getItems().stream()
+            .filter(rc -> rc.getMetadata().getName().startsWith("syndesis-operator")).findAny();
+        operatorRc.ifPresent(rc -> OpenShiftUtils.getInstance().replicationControllers().withName(rc.getMetadata().getName()).delete());
+        OpenShiftUtils.getPodByPartialName("syndesis-operator").ifPresent(
+            pod -> OpenShiftUtils.getInstance().pods().withName(pod.getMetadata().getName()).delete()
+        );
     }
 }
