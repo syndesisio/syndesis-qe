@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.editor.Editor;
@@ -35,20 +36,22 @@ public class EditorSteps {
     private IntegrationFlowView flowViewComponent = new IntegrationFlowView();
     private ChooseConnection chooseConnection = new ChooseConnection();
 
-    @When("^add data mapper step before \"([^\"]*)\" action$")
-    public void addDataMapperStepBeforeAction(String actionId) {
-        flowViewComponent.addDatamapperStep(actionId);
-    }
-
     private static final class Element {
         public static final By EXPANDER = By.xpath("//button[contains(@class, 'toggle-collapsed')]");
         public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
+        public static final By INTEGRATION_EDITOR_STEPS_LIST = By.className("integration-editor-steps-list");
+        public static final By INTEGRATION_EDITOR_STEPS_LIST_ITEM = By.className("list-group-item");
     }
 
     private static final class Button {
         public static final By PUBLISH = By.id("integration-editor-publish-button");
         public static final By SAVE_AS_DRAFT = By.id("integration-editor-save-button");
         public static final By CANCEL = By.id("integration-editor-cancel-button");
+    }
+
+    @When("^add data mapper step before \"([^\"]*)\" action$")
+    public void addDataMapperStepBeforeAction(String actionId) {
+        flowViewComponent.addDatamapperStep(actionId);
     }
 
     @Then("^check visibility of visual integration editor$")
@@ -196,7 +199,11 @@ public class EditorSteps {
 
     @Then("^check there are (\\d+) integration steps$")
     public void checkNumberOfIntegrationSteps(int n) {
-        assertEquals("Wrong number of steps", n, flowViewComponent.getNumberOfSteps());
+        TestUtils.waitFor(() -> $(Element.INTEGRATION_EDITOR_STEPS_LIST).exists(), 3, 30, "Step list not found");
+
+        int found = $(Element.INTEGRATION_EDITOR_STEPS_LIST).shouldBe(visible)
+            .$$(Element.INTEGRATION_EDITOR_STEPS_LIST_ITEM).size();
+        assertEquals("Wrong number of steps", n, found);
     }
 
     @Then("^check there is a step with \"([^\"]*)\" title")
