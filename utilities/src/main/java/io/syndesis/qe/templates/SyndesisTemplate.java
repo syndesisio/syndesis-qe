@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.KubernetesList;
+import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
@@ -62,6 +63,7 @@ public class SyndesisTemplate {
     }
 
     public static void deploy() {
+        createPullSecret();
         if (TestConfiguration.useOperator()) {
             deployUsingOperator();
         } else {
@@ -69,10 +71,21 @@ public class SyndesisTemplate {
         }
     }
 
+    private static void createPullSecret() {
+        if (TestConfiguration.syndesisPullSecret() != null) {
+            log.info("Creating a pull secret with name " + TestConfiguration.syndesisPullSecretName());
+            OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
+                .withNewMetadata()
+                .withName(TestConfiguration.syndesisPullSecretName())
+                .endMetadata()
+                .withData(TestUtils.map(".dockerconfigjson", TestConfiguration.syndesisPullSecret()))
+                .withType("kubernetes.io/dockerconfigjson")
+                .done();
+        }
+    }
+
     public static void deployUsingTemplate() {
         log.info("Deploying using template");
-        OpenShiftUtils.getInstance().clean();
-        OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor();
 
         // get & create restricted SA
         OpenShiftUtils.getInstance().createServiceAccount(getSupportSA());
@@ -140,8 +153,6 @@ public class SyndesisTemplate {
             throw new RuntimeException(sb.toString());
         }
 
-        OpenShiftUtils.getInstance().clean();
-        OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor();
         deployCrd();
         deployOperator();
         importProdImages();
@@ -176,6 +187,14 @@ public class SyndesisTemplate {
         );
         log.debug(output);
 
+        final String operatorServiceAccountName = "syndesis-operator";
+        if (TestConfiguration.syndesisPullSecret() != null) {
+            log.info("Linking pull secret {} to service account {}", TestConfiguration.syndesisPullSecretName(), operatorServiceAccountName);
+            OpenShiftUtils.getInstance().serviceAccounts().withName(operatorServiceAccountName).edit()
+                .withSecrets(
+                    new ObjectReferenceBuilder().withName(TestConfiguration.syndesisPullSecretName()).build()
+                ).done();
+        }
         importProdImage("operator");
 
         log.info("Waiting for syndesis-operator to be ready");

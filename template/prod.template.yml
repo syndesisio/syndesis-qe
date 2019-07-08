@@ -142,6 +142,8 @@ metadata:
     syndesis.io/app: syndesis
     syndesis.io/type: operator
     syndesis.io/component: syndesis-operator
+imagePullSecrets:
+  - name: "syndesis-pull-secret"
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -354,3 +356,23 @@ spec:
         name: fuse-online-operator:$TAG$
     type: ImageChange
   - type: ConfigChange
+---
+apiVersion: v1
+kind: ImageStream
+metadata:
+  annotations:
+    openshift.io/image.insecureRepository: "true"
+  labels:
+    syndesis.io/app: syndesis
+    syndesis.io/type: infrastructure
+    syndesis.io/component: komodo-server
+  name: data-virtualization-server
+spec:
+  tags:
+  - from:
+      kind: DockerImage
+      name: $KOMODO_SERVER$
+    importPolicy:
+      scheduled: true
+      insecure: true
+    name: "$KOMODO_SERVER_TAG$"

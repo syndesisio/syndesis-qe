@@ -46,6 +46,9 @@ public class TestConfiguration {
     public static final String SYNDESIS_OPERATOR_URL = "syndesis.config.operator.url";
     public static final String SYNDESIS_OPERATOR_TEMPLATE_URL = "syndesis.config.operator.template.url";
 
+    public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
+    public static final String SYNDESIS_PULL_SECRET_NAME = "syndesis.config.pull.secret.name";
+
     public static final String SYNDESIS_PUBLIC_OAUTH_PROXY_URL = "syndesis.config.template.public.oath.proxy.url";
 
     public static final String SYNDESIS_CUSTOM_RESOURCE_PLURAL = "syndesis.config.custom.resource.plural";
@@ -146,6 +149,14 @@ public class TestConfiguration {
 
     public static String syndesisPublicOauthProxyTemplateUrl() {
         return get().readValue(SYNDESIS_PUBLIC_OAUTH_PROXY_URL);
+    }
+
+    public static String syndesisPullSecret() {
+        return get().readValue(SYNDESIS_PULL_SECRET);
+    }
+
+    public static String syndesisPullSecretName() {
+        return get().readValue(SYNDESIS_PULL_SECRET_NAME);
     }
 
     public static boolean useOperator() {
@@ -279,6 +290,10 @@ public class TestConfiguration {
 
         // Set oc version - this version of the client will be used as the binary client
         System.setProperty("xtf.openshift.version", "3.10.70");
+
+        if (props.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
+            props.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
+        }
         return props;
     }
 
