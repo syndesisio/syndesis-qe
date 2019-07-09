@@ -3,6 +3,8 @@ package io.syndesis.qe.fragments.common.form;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.UploadFile;
+
 import org.openqa.selenium.By;
 
 import java.io.File;
@@ -37,8 +39,8 @@ public class ApiSpecificationForm {
 
     public void uploadFileFromPath(String path) {
         $(Input.UPLOAD_AN_OPENAPI_FILE).shouldBe(visible).click();
-        $(Input.CHOOSE_FILE).shouldBe(visible).$(By.tagName("input"))
-            .uploadFile(new File(getClass().getClassLoader().getResource(path).getFile()));
+        UploadFile.uploadFile($(Input.CHOOSE_FILE).shouldBe(visible).$(By.tagName("input")),
+            new File(getClass().getClassLoader().getResource(path).getFile()));
     }
 
     public void uploadFileFromUrl(String url) {
