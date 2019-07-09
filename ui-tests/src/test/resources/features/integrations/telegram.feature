@@ -45,6 +45,7 @@ Feature: Integration - Telegram to Telegram
 
     When select the "Telegram test connection" connection
     And select "Receive Messages" integration action
+    And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
     When select the "Telegram test connection" connection
@@ -53,9 +54,8 @@ Feature: Integration - Telegram to Telegram
     # to get ID, you have to get updates via curl with bot and find it in json response:
     # curl https://api.telegram.org/bot<insert-bot-token-here>/getUpdates
     And fill in values by element ID
-      | chatId | -299979044 |
+      | chatid | 67507165 |
     And click on the "Done" button
-    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -66,8 +66,7 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     And publish integration
     And set integration name "telegram_integration_receive_publish"
-    And click on the "Save" link
-    And click on the "Cancel" button
+    And publish integration
 
 #
 #  2. Telegram database - publish message
@@ -75,8 +74,8 @@ Feature: Integration - Telegram to Telegram
 #  Just run this test, it will prepare an integration. Start the integration. Then check that there is "Red Hat" message
 #  in channel "testBotSyndesis". The message should be sent every minute.
 #
-#  @telegram-database-publish
-#  Scenario: Telegram receive and send a message
+  @telegram-database-publish
+  Scenario: Telegram receive and send a message
     When navigate to the "Integrations" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -93,9 +92,8 @@ Feature: Integration - Telegram to Telegram
     When select the "Telegram test connection" connection
     And select "Send a Text Message" integration action
     And fill in values by element ID
-      | chatId | 467639851 |
+      | chatid | 67507165 |
     And click on the "Done" button
-    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -106,8 +104,7 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     And publish integration
     And set integration name "telegram_integration_database_publish"
-    And click on the "Save" link
-    And click on the "Cancel" button
+    And publish integration
 
 #
 #  3. Telegram receive a message - database
@@ -123,8 +120,8 @@ Feature: Integration - Telegram to Telegram
 #  2. connect to database:     `psql -h localhost -U sampledb`
 #  3. read table:  `select * from contact;` :)
 
-#  @telegram-receive-database
-#  Scenario: Telegram receive and send a message
+  @telegram-receive-database
+  Scenario: Telegram receive and send a message
     When navigate to the "Integrations" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -132,13 +129,13 @@ Feature: Integration - Telegram to Telegram
 
     When select the "Telegram test connection" connection
     And select "Receive Messages" integration action
+    And click on the "Next" button
     Then check visibility of page "Choose a Finish Connection"
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into CONTACT values ('Prokop' , 'Dvere', :#COMPANY , 'some lead', '1999-01-01')" value
     And click on the "Done" button
-    # Then check visibility of page "Add to Integration"
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
@@ -148,6 +145,5 @@ Feature: Integration - Telegram to Telegram
     And click on the "Done" button
     And publish integration
     And set integration name "telegram_integration_receive_database"
-    And click on the "Save" link
-    And click on the "Cancel" button
+    And publish integration
 
