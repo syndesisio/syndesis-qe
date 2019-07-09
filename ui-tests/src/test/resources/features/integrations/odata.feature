@@ -154,3 +154,67 @@ Feature: OData Connector
     When sleep for "10000" ms
 
     Then check that entity "1" is not present in "Products" collection on OData service
+
+  # Those bugs were very similar in reproducing - created one scenario outline for all of them
+  @reproducer
+  @integrations-odata-read-update
+  Scenario Outline: Read <name> from OData service tests
+
+    # Create new integration
+    When click on the "Create Integration" link to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # Add OData connection as start step
+    When selects the "OData" connection
+    And select "Read" integration action
+    # check button to make sure correct page is loaded
+    Then check visibility of the "Next" button
+    When fill in values by element data-testid
+      | resourcepath      | Products        |
+      | keypredicate      | <key_predicate> |
+      | filteralreadyseen | <filter>        |
+      | splitresult       | <split>         |
+    And click on the "Next" button
+
+    Then check that position of connection to fill is "Finish"
+
+    # Add OData update as finish step
+    When select the "OData" connection
+    And select "Update" integration action
+    When select "Products" from "resourcePath" dropdown
+    And click on the "Next" button
+
+    # Add Data mapper (checks output datashape of OData read action is correct)
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | Name | Name         |
+      | Name | Description  |
+      | ID   | keyPredicate |
+    And click on the "Done" button
+
+    # Save integration and publish it
+    When publish integration
+    And set integration name "<name>"
+    And publish integration
+    Then Integration "<name>" is present in integrations list
+    And wait until integration "<name>" gets into "Running" state
+
+    #Validate logs output
+    When sleep for "5000" ms
+    Then validate that OData service contains entity with "Description":"<value>" property:value pair in "Products" collection
+
+    @gh-5386
+    Examples:
+      | name            | key_predicate | filter | split | value      |
+      | wrong_datashape | 2             | false  | false | 1UMTS PDA  |
+      # When sending an array to data mapper, only the last item is updated - checking that the description of last item is same as it's name
+      | calling_null    |               | false  | false | Flat Basic |
+
+
+    @gh-5533
+    Examples:
+      | name | key_predicate | filter | split | value     |
+      | NPE  | 2             | true   | true  | 1UMTS PDA |
