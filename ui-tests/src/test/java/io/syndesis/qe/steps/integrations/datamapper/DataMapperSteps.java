@@ -111,6 +111,8 @@ public class DataMapperSteps {
 
     @When("^define property \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
     public void definePropertyWithValueOfTypeInDataMapper(String name, String value, String type) {
+        mapper.switchToDatamapperIframe();
         mapper.addProperty(name, value, type);
+        mapper.switchIframeBack();
     }
 }

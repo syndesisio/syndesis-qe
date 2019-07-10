@@ -13,42 +13,44 @@ Feature: Google Sheets Connector
     And clean "todo" table
     And log into the Syndesis
     And navigate to the "Settings" page
-    And check that settings item "Google Sheets" has button "Register"
     And fill "Google Sheets" oauth settings "QE Google Sheets"
     And renew access token for "QE Google Sheets" google account
-    And create connection "Google Sheets" with name "Google Sheets" using oauth
+    And create connections using oauth
+      | Google Sheets | google-sheets |
     And created connections
       | Red Hat AMQ | AMQ | AMQ | AMQ connection |
     And navigate to the "Home" page
 
 
+  @create-spreadsheet
   Scenario: create spreadsheet
     When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
-    And select "Simple Timer" integration action
-    And fill in values
-      | Period | 1000 |
+    And select "Simple" integration action
+    And fill in values by element data-testid
+      | period | 1000 |
     Then click on the "Done" button
 
     When select the "AMQ" connection
     And select "Publish Messages" integration action
-    And fill in values
-      | Destination Name | sheets |
-      | Destination Type | Queue  |
+    And fill in values by element data-testid
+      | destinationname | sheets |
+      | destinationtype | Queue  |
     And click on the "Next" button
-    And fill in values
-      | Select Type    | JSON Instance |
-      | Data Type Name | spreadsheetID |
-    And fill in values by element ID
-      | specification | {"id":"id"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    #only available after type is selected
+    And fill text into text-editor
+      | {"id":"id"} |
     Then click on the "Done" button
 
     When add integration step on position "0"
-    And select the "Google Sheets" connection
+    And select the "google-sheets" connection
     And select "Create spreadsheet" integration action
-    And fill in values
-      | Title | brand-new-spreadsheet |
-    Then click on the "Done" button
+    And fill in values by element data-testid
+      | title | brand-new-spreadsheet |
+    Then click on the "Next" button
+    Then click on the "Next" button232
 
     When add integration step on position "1"
     And select the "Data Mapper" connection
@@ -56,16 +58,16 @@ Feature: Google Sheets Connector
       | spreadsheetId | id |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "create-sheet"
-
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "create-sheet" gets into "Running" state
     And sleep for "3000" ms
     Then verify that spreadsheet was created
 
 
+  @spreadsheet-append
   Scenario: Append messages from DB
     When clear test spreadsheet
     And inserts into "contact" table
@@ -73,18 +75,18 @@ Feature: Google Sheets Connector
       | Matej | Bar    | Red Hat | db |
       | Fuse  | Online | Red Hat | db |
 
-    Then click on the "Create Integration" button to create a new integration
+    Then click on the "Create Integration" link to create a new integration
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
-    And fill in values
-      | SQL statement | SELECT * FROM contact |
-      | Period        | 1000                  |
+    And fill in values by element data-testid
+      | query  | SELECT * FROM contact |
+      | period | 1000                  |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Append values to a sheet" integration action
-    And fill in values
-      | Range | A1:E1 |
+    And fill in values by element data-testid
+      | range | A1:E1 |
     And fill spreadsheet ID
     And click on the "Next" button
     Then click on the "Next" button
@@ -104,9 +106,9 @@ Feature: Google Sheets Connector
       | create_date   | E             |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "from-db-to-sheets"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets" gets into "Running" state
     And sleep for "3000" ms
@@ -116,23 +118,25 @@ Feature: Google Sheets Connector
       | Fuse  | Online | Red Hat | db |
 
 
+  @from-db-rows
   Scenario: Update messages from DB - Rows
     When inserts into "contact" table
       | New    | Updated | Red Hat | db |
       | Second | Update  | IBM     | db |
-    Then click on the "Create Integration" button to create a new integration
+    Then click on the "Create Integration" link to create a new integration
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
-    And fill in values
-      | SQL statement | SELECT * FROM contact COUNT |
-      | Period        | 1000                        |
+    And fill in values by element data-testid
+      | query  | SELECT * FROM contact COUNT |
+      | period | 1000                        |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Update sheet values" integration action
-    And fill in values
-      | Range           | A2:E3 |
-      | Major dimension | Rows  |
+    And fill in values by element data-testid
+      | range          | A2:E3                                        |
+      | majordimension | Rows                                         |
+      | spreadsheetid  | 1RdaQ1sb90ugxAh1Z6oZD87XhgmmhKs6tDturft_wsAk |
     And click on the "Next" button
     Then click on the "Next" button
 
@@ -151,10 +155,11 @@ Feature: Google Sheets Connector
       | create_date   | E             |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "from-db-to-sheets-update"
-    And click on the "Publish" button
-    And navigate to the "Integrations" page
+    And publish integration
+    And sleep for 10 seconds
+    And Integration "from-db-to-sheets-update" is present in integrations list
     And wait until integration "from-db-to-sheets-update" gets into "Running" state
     And sleep for "3000" ms
     Then verify that test sheet contains values on range "A2:D2"
@@ -167,25 +172,26 @@ Feature: Google Sheets Connector
       | Matej | Foo    | Red Hat | db |
       | Matej | Bar    | Red Hat | db |
       | Fuse  | Online | Red Hat | db |
-    Then click on the "Create Integration" button to create a new integration
+    Then click on the "Create Integration" link to create a new integration
 
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
-    And fill in values
-      | SQL statement | SELECT * FROM contact |
-      | Period        | 1000                  |
+    And fill in values by element data-testid
+      | query  | SELECT * FROM contact |
+      | period | 1000                  |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Update sheet values" integration action
-    And fill in values
-      | Range           | E1:E5   |
-      | Major dimension | Columns |
+    And fill in values by element data-testid
+      | range          | E1:E5   |
+      | majordimension | Columns |
     And click on the "Next" button
     Then click on the "Next" button
 
     When add integration step on position "0"
     And select the "Split" connection
+    And click on the "Next" button
     And add integration step on position "1"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
@@ -201,9 +207,9 @@ Feature: Google Sheets Connector
       | create_date   | #5            |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "from-db-to-sheets-update-column"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets-update-column" gets into "Running" state
     And sleep for "3000" ms
@@ -213,22 +219,23 @@ Feature: Google Sheets Connector
       | Red Hat |
       | db      |
 
+  @pivot-tables
   Scenario: create pivottable from sample data
     When clear range "'pivot rows'" in data test spreadsheet
     And clear range "'pivot-columns'" in data test spreadsheet
     And click on the "Create Integration" link to create a new integration.
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values
-      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Add pivot tables" integration action
     Then click on the "Done" button
 
     When add integration step on position "0"
-    And select the "Google Sheets" connection
+    And select the "google-sheets" connection
     And select "Add pivot tables" integration action
     Then click on the "Done" button
 
@@ -242,7 +249,7 @@ Feature: Google Sheets Connector
     And define property "sourceGroupColumn" with value "C" of type "String" in data mapper
     And define property "sourceValuesColumn" with value "D" of type "String" in data mapper
     And open data bucket "Properties"
-    And open data mapper collection mappings
+   # And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId             |
       | sheetId            | sheetId                   |
@@ -267,7 +274,7 @@ Feature: Google Sheets Connector
 
     And open data bucket "Properties"
     And open data bucket "1 - Spreadsheet"
-    And open data mapper collection mappings
+  #  And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId            |
       | sheetId            | sheetId                  |
@@ -278,11 +285,12 @@ Feature: Google Sheets Connector
       | sourceGroupColumn  | rowGroups.sourceColumn   |
       | start              | start                    |
       | layout             | valueLayout              |
+    And sleep for 60 seconds
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "pivot-table"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "pivot-table" gets into "Running" state
     Then verify that data test sheet contains values on range "'pivot rows'!A1:B90"
@@ -303,21 +311,21 @@ Feature: Google Sheets Connector
   Scenario: Update title
     When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
-    And select "Simple Timer" integration action
-    And fill in values
-      | Period | 1000 |
+    And select "Simple" integration action
+    And fill in values by element data-testid
+      | period | 1000 |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Update spreadsheet properties" integration action
     And fill spreadsheet ID
-    And fill in values
-      | Title | updated-title |
+    And fill in values by element data-testid
+      | title | updated-title |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "update-sheet-title"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "update-sheet-title" gets into "Running" state
     And sleep for "3000" ms
@@ -326,23 +334,23 @@ Feature: Google Sheets Connector
 
   Scenario: get properties of sheet
     When click on the "Create Integration" link to create a new integration.
-    And select the "Google Sheets" connection
+    And select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values
-      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
     Then click on the "Done" button
 
     When select the "AMQ" connection
     And select "Publish Messages" integration action
-    And fill in values
-      | Destination Name | sheety |
-      | Destination Type | Queue  |
+    And fill in values by element data-testid
+      | destinationname | sheety |
+      | destinationtype | Queue  |
     And click on the "Next" button
-    And fill in values
-      | Select Type    | JSON Instance |
-      | Data Type Name | spreadsheetID |
-    And fill in values by element ID
-      | specification | {"sheets":[{"sheet":"id"}]} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    #only available after type is selected
+    And fill text into text-editor
+      | {"sheets":[{"sheet":"id"}]} |
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -353,23 +361,24 @@ Feature: Google Sheets Connector
 
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "properties"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "properties" gets into "Running" state
     Then verify that message from "sheety" queue contains "Sheet1,sheet2,pivot-columns,pivot rows"
 
 
+  @add-chart-to-spreadsheet
   Scenario: add chart
     When click on the "Create Integration" link to create a new integration.
-    And select the "Google Sheets" connection
+    And select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values
-      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Add charts" integration action
     Then click on the "Done" button
 
@@ -388,30 +397,31 @@ Feature: Google Sheets Connector
       | domainRange   | pieChart.domainRange |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "charts"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "charts" gets into "Running" state
     Then verify that chart was created
 
-
+#
+  @big-spreadsheet-copy
   Scenario: Copy big spreadsheet
     When clear test spreadsheet
     And click on the "Create Integration" link to create a new integration.
-    And select the "Google Sheets" connection
+    And select the "google-sheets" connection
     And select "Get sheet values" integration action
-    And fill in values
-      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
-      | Range         | A1:R25000                                    |
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+      | range         | A1:R25000                                    |
     And click on the "Next" button
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Append values to a sheet" integration action
     And fill spreadsheet ID
-    And  fill in values
-      | Range | A1:H25000 |
+    And  fill in values by element data-testid
+      | range | A1:H25000 |
     And click on the "Next" button
     Then click on the "Done" button
 
@@ -430,25 +440,26 @@ Feature: Google Sheets Connector
       | H | H |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "copy"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "copy" gets into "Running" state
     Then verify that data test sheet contains values on range "A25000:H25000"
       | 241178 | FL | PALM BEACH COUNTY | 0 | 1810826.38 | 0 | 0 | 1810826.38 |
 
-
+  @disabled
+  @big-spreadsheet-db
   Scenario:Copy Big SS to DB and back using split/aggregate
     When clear test spreadsheet
     And click on the "Create Integration" link to create a new integration.
-    And select the "Google Sheets" connection
+    And select the "google-sheets" connection
     And select "Get sheet values" integration action
-    And fill in values
-      | SpreadsheetId | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
-      | Range         | A1:R5000                                     |
-      | Delay         | 30000                                        |
-      | Max results   | 4999                                         |
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+      | range         | A1:R5000                                     |
+      | delay         | 30000                                        |
+      | maxresults    | 4999                                         |
     And fill in values by element ID
       | delay | 30000 |
     And click on the "Next" button
@@ -461,6 +472,7 @@ Feature: Google Sheets Connector
 
     When add integration step on position "0"
     Then select the "Split" connection
+    Then click on the "Next" button
 
     When add integration step on position "1"
     And select the "Data Mapper" connection
@@ -468,46 +480,47 @@ Feature: Google Sheets Connector
     And create data mapper mappings
       | A;B;C;D;E;F;G | task | Underscore [_] |
     Then click on the "Done" button
-    When click on the "Publish" button
+    When publish integration
     And set integration name "to-db"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "to-db" gets into "Running" state
     Then navigate to the "Home" page
 
-    When click on the "Create Integration" button to create a new integration
+    When click on the "Create Integration" link to create a new integration
     And select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
-    And fill in values
-      | SQL statement | SELECT * FROM todo |
-      | Period        | 10000              |
+    And fill in values by element data-testid
+      | query  | SELECT * FROM todo |
+      | period | 10000              |
     Then click on the "Done" button
 
-    When select the "Google Sheets" connection
+    When select the "google-sheets" connection
     And select "Append values to a sheet" integration action
-    And fill in values
-      | Range | A1:H1 |
+    And fill in values by element data-testid
+      | range | A1:H1 |
     And fill spreadsheet ID
     And click on the "Next" button
     Then click on the "Next" button
 
     When add integration step on position "0"
     And select the "Split" connection
+    Then click on the "Next" button
 
     When add integration step on position "1"
     And select the "Aggregate" connection
+    Then click on the "Next" button
 
     When add integration step on position "1"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And open data bucket "Properties"
     And create data mapper mappings
       | task | A;B;C;D;E;F;G | Underscore [_] |
     Then click on the "Done" button
 
-    When click on the "Publish" button
+    When publish integration
     And set integration name "from-db-to-sheets"
-    And click on the "Publish" button
+    And publish integration
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets" gets into "Running" state
     #it takes some time to copy that big amount of messages
