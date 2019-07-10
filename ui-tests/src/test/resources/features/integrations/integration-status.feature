@@ -74,7 +74,7 @@ Feature: Integration - DB to DB
     And select "Invoke stored procedure" integration action
     And click on the "Done" button
 
-    And click on the "Publish" button
+    And publish integration
 
     And fill Name Integration form
       | Name | ASD |

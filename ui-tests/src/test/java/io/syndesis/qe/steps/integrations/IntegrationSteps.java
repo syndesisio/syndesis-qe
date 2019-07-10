@@ -218,12 +218,17 @@ public class IntegrationSteps {
         statuses.add(IntegrationStartingStatus.BUILDING);
         statuses.add(IntegrationStartingStatus.DEPLOYING);
         statuses.add(IntegrationStartingStatus.STARTING);
+        switch (checkedPage) {
+            case "Home":
+            case "Integrations":
+                statuses.add(IntegrationStartingStatus.RUNNING);
+            default:
+        }
 
         int lastStatusIndex = 0;
         int matchingStatesNumber = 0;
         StringBuilder statusesMessage = new StringBuilder("");
         String lastStatus = "";
-
         //polling every 200 ms for 10 minutes
         for (int i = 0; i < 5 * 60 * 10; i++) {
             if (lastStatusIndex == statuses.size() - 1) {
@@ -260,14 +265,14 @@ public class IntegrationSteps {
                 lastStatusIndex = statuses.size() - 1;
                 continue;
             }
-
             if (!lastStatus.equals(status)) {
                 lastStatus = status;
                 statusesMessage.append(" " + status);
             }
+            log.info(statusesMessage.toString());
 
             for (int j = lastStatusIndex; j < statuses.size(); j++) {
-                if (statuses.get(j).getStatus().equals(status)) {
+                if (status.toLowerCase().startsWith(statuses.get(j).getStatus().toLowerCase())) {
                     if (matchingStatesNumber == 0) {
                         matchingStatesNumber++;
                         lastStatusIndex = j;

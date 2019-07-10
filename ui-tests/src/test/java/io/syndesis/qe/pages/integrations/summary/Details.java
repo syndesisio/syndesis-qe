@@ -29,7 +29,7 @@ public class Details extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By STATUS = By.cssSelector("div[data-testid=\"syndesis-integration-status\"]");
-        public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
+        public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"progress-with-link-value\"]");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
         public static final By TITLE = By.className("pf-c-title.pf-m-lg.integration-detail-editable-name.pf-u-mr-lg");
         public static final By KEBEB_OPEN_MENU = By.className("dropdown-toggle");
@@ -106,7 +106,7 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getStartingStatus() {
-        return $(Element.STARTING_STATUS).$(By.xpath(".//i")).text();
+        return $(Element.STARTING_STATUS).shouldBe(visible).text();
     }
 
     public String getIntegrationInfo() {
