@@ -1,13 +1,14 @@
 package io.syndesis.qe.fragments.common.list;
 
-import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.have;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
-import com.codeborne.selenide.CollectionCondition;
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -33,13 +34,13 @@ public class RowList extends AbstractUiElementsList {
 
     @Override
     public SelenideElement getItem(String title) {
-        return $(Element.ROW).shouldHave(text(title));
+        return $$(Element.ROW).findBy(Condition.text(title));
     }
 
     @Override
     public SelenideElement getTitle(String title) {
         return getRootElement().shouldBe(visible).$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1))
-                .find(have(text(title)));
+            .find(have(text(title)));
     }
 
     public String getTitleOfItem(SelenideElement item) {

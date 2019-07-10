@@ -12,18 +12,21 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
 
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.concurrent.TimeoutException;
 
+import apicurito.tests.configuration.TestConfiguration;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,6 +34,7 @@ public class ApicurioSteps {
 
     private static class Elements {
         public static final By SYNDESIS_ROOT = By.cssSelector("syndesis-root");
+        public static final By APICURIO_ROOT = By.name("apicurio-frame");
 
         //apicurio gui elements
         public static By WARNING_ICON = By.className("validation-icon");
@@ -95,15 +99,15 @@ public class ApicurioSteps {
         SelenideElement operations = $(Elements.OPERATIONS).shouldBe(visible).$$(Elements.OPERATION_ITEM).get(0);
         assertThat(operations).isNotNull();
         assertThat(operations.getText())
-                .containsIgnoringCase(Integer.toString(expectedCount))
-                .containsIgnoringCase("operations");
+            .containsIgnoringCase(Integer.toString(expectedCount))
+            .containsIgnoringCase("operations");
     }
 
     @When("^check that apicurio imported operations number is loaded$")
     public void verifyOperationsAreVisible() {
         try {
             OpenShiftWaitUtils.waitFor(() -> !$(Elements.OPERATIONS).shouldBe(visible).$$(Elements.OPERATION_ITEM).get(0)
-                    .getText().equalsIgnoreCase("{{0}} operations"), 1000 * 60);
+                .getText().equalsIgnoreCase("{{0}} operations"), 1000 * 60);
         } catch (InterruptedException | TimeoutException e) {
             fail("Operations number was not loaded in 60s.", e);
         }
@@ -114,7 +118,7 @@ public class ApicurioSteps {
         SelenideElement operations = $(Elements.WARNINGS).shouldBe(visible);
         assertThat(operations).isNotNull();
         assertThat(operations.getText())
-                .containsIgnoringCase(Integer.toString(expectedCount));
+            .containsIgnoringCase(Integer.toString(expectedCount));
     }
 
     @Then("^check that apicurio shows (\\d+) errors?$")
@@ -122,7 +126,7 @@ public class ApicurioSteps {
         SelenideElement operations = $(Elements.ERRORS).shouldBe(visible);
         assertThat(operations).isNotNull();
         assertThat(operations.getText())
-                .containsIgnoringCase(Integer.toString(expectedCount));
+            .containsIgnoringCase(Integer.toString(expectedCount));
     }
 
     @When("^remove warning via apicurio gui$")
@@ -131,7 +135,7 @@ public class ApicurioSteps {
         //there isn't really a nice way how to wait as the box is there all the time, we are waiting for different items to show
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         SelenideElement firstProblemElement = $(Elements.PROBLEMS_CONTAINER).shouldBe(visible)
-                .$$(Elements.VALIDATION_PROBLEM).get(0);
+            .$$(Elements.VALIDATION_PROBLEM).get(0);
         assertThat(firstProblemElement).isNotNull();
         assertThat(firstProblemElement.text()).containsIgnoringCase("Operation Summary should be less than 120 characters");
 
@@ -139,7 +143,7 @@ public class ApicurioSteps {
             firstProblemElement.shouldBe(visible).$(By.tagName("a")).shouldBe(visible).click();
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             $(Elements.PROBLEMS_CONTAINER).shouldBe(visible)
-                    .$$(Elements.VALIDATION_PROBLEM).get(0).shouldBe(visible).$(By.tagName("a")).shouldBe(visible).click();
+                .$$(Elements.VALIDATION_PROBLEM).get(0).shouldBe(visible).$(By.tagName("a")).shouldBe(visible).click();
         }
 
         $(Elements.WARNING_ICON).shouldBe(visible).click();
@@ -153,7 +157,7 @@ public class ApicurioSteps {
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             $(Elements.INFO_SECTION).$(TextFormElements.INPUT_TEXT).shouldBe(visible).clear();
             $(Elements.INFO_SECTION).$(TextFormElements.INPUT_TEXT).shouldBe(visible)
-                    .sendKeys("Short description");
+                .sendKeys("Short description");
         }
 
         $(Elements.INFO_SECTION).$(TextFormElements.SAVE).shouldBe(visible).click();
@@ -187,31 +191,31 @@ public class ApicurioSteps {
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_PATH_INPUT).shouldBe(visible).clear();
             $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_PATH_INPUT).shouldBe(visible)
-                    .sendKeys("/syndesistestpath");
+                .sendKeys("/syndesistestpath");
         }
 
         $(Elements.MODAL_FOOTER).shouldBe(visible).$(Elements.MODAL_SUBMIT_ADD).shouldBe(visible).click();
         clickOnButtonInApicurio("Add Operation");
 
         $(Elements.RESPONSE_SECTION).shouldBe(visible).scrollIntoView(true)
-                .$$(By.tagName("button")).filter(Condition.attribute("title", "Add a response to the operation."))
-                .shouldHaveSize(1).first().click();
+            .$$(By.tagName("button")).filter(Condition.attribute("title", "Add a response to the operation."))
+            .shouldHaveSize(1).first().click();
 
         $(Elements.MODAL_SUBMIT_ADD).shouldBe(visible).click();
 
         if (!withError) {
             $(Elements.RESPONSE_SECTION).shouldBe(visible).scrollIntoView(true)
-                    .$(Elements.MARKDOWN_EDITOR).shouldBe(visible)
-                    .click();
+                .$(Elements.MARKDOWN_EDITOR).shouldBe(visible)
+                .click();
 
             executeJavaScript(
-                    "document.getElementsByTagName(\"ace-editor\").item(0).setAttribute(\"id\", \"editor\");" +
-                            "ace.edit(\"editor\").setValue('description here');"
+                "document.getElementsByTagName(\"ace-editor\").item(0).setAttribute(\"id\", \"editor\");" +
+                    "ace.edit(\"editor\").setValue('description here');"
             );
 
             $(Elements.RESPONSE_SECTION).shouldBe(visible).scrollIntoView(true)
-                    .$$(By.tagName("button")).filter(Condition.attribute("title", "Save changes."))
-                    .shouldHaveSize(1).first().click();
+                .$$(By.tagName("button")).filter(Condition.attribute("title", "Save changes."))
+                .shouldHaveSize(1).first().click();
         }
     }
 
@@ -224,8 +228,8 @@ public class ApicurioSteps {
             kebabMenu.$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible).click();
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             $(Elements.OPERATION_KEBAB_MENU)
-                    .$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible)
-                    .click();
+                .$(Elements.OPERATION_KEBAB_MENU_DELETE).shouldBe(visible)
+                .click();
         }
     }
 
@@ -241,20 +245,20 @@ public class ApicurioSteps {
             nameInput.sendKeys("ImmovableName");
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             $(SecurityPageElements.NAME).shouldBe(visible)
-                    .sendKeys("ImmovableName");
+                .sendKeys("ImmovableName");
         }
 
         //select security option
         $(SecurityPageElements.EDITOR).shouldBe(visible).$(SecurityPageElements.SECURITY_TYPE_DROPDOWN).shouldBe(visible).click();
         $(SecurityPageElements.EDITOR).shouldBe(visible).$(SecurityPageElements.SECURITY_DROPDOWN_MENU).shouldBe(visible)
-                .$(By.xpath("//a[contains(text(), \"" + schemeType + "\")]")).shouldBe(visible).click();
+            .$(By.xpath("//a[contains(text(), \"" + schemeType + "\")]")).shouldBe(visible).click();
 
-        if (schemeType.equalsIgnoreCase("API Key")) {
+        if ("API Key".equalsIgnoreCase(schemeType)) {
             $(By.id("name20")).sendKeys("headerName");
             //TODO: not supported from syndesis yet and needs more settings here
         }
 
-        if (schemeType.equalsIgnoreCase("OAuth 2")) {
+        if ("OAuth 2".equalsIgnoreCase(schemeType)) {
             $(By.id("flow")).shouldBe(visible).click();
             $(By.id("flow")).shouldBe(visible).parent().$(By.xpath("//a[contains(text(), \"Password\")]")).shouldBe(visible).click();
             $(By.id("tokenUrl")).sendKeys("https://hihi");
@@ -273,7 +277,7 @@ public class ApicurioSteps {
         }
 
         ElementsCollection items = $$(SecurityPageElements.SECURITY_REQUIREMENT_ITEMS)
-                .shouldBe(sizeGreaterThanOrEqual(1)).filterBy(text("ImmovableName"));
+            .shouldBe(sizeGreaterThanOrEqual(1)).filterBy(text("ImmovableName"));
         assertThat(items).hasSize(1);
         items.first().click();
 
@@ -285,7 +289,7 @@ public class ApicurioSteps {
     @Then("^check that api connector authentication section contains text \"([^\"]*)\"$")
     public void verifySelectedSecurity(String expectedText) {
         assertThat($(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible).text())
-                .containsIgnoringCase(expectedText);
+            .containsIgnoringCase(expectedText);
     }
 
     @When("^click on button \"([^\"]*)\" while in apicurio studio page$")
@@ -298,6 +302,17 @@ public class ApicurioSteps {
     public SelenideElement getButton(String buttonTitle) {
         log.info("searching for button {}", buttonTitle);
         return $(Elements.SYNDESIS_ROOT).shouldBe(visible).findAll(By.tagName("button"))
-                .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
+            .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
+    }
+
+    @When("switch context to apicurio")
+    public void switchContextOn() {
+        Selenide.switchTo().frame($(Elements.APICURIO_ROOT));
+        log.info("Apicurito app root: {}", TestConfiguration.getAppRoot());
+    }
+
+    @When("leave apicurio context")
+    public void switchContextOff() {
+        Selenide.switchTo().parentFrame();
     }
 }

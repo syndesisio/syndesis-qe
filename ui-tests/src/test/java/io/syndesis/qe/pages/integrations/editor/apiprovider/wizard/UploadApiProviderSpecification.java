@@ -1,12 +1,15 @@
 package io.syndesis.qe.pages.integrations.editor.apiprovider.wizard;
 
-import com.codeborne.selenide.SelenideElement;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.fragments.common.form.ApiSpecificationForm;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
 
 public class UploadApiProviderSpecification extends SyndesisPageObject implements WizardPhase {
 
@@ -39,5 +42,4 @@ public class UploadApiProviderSpecification extends SyndesisPageObject implement
     public void upload(String source, String url) {
         apiSpecificationForm.upload(source, url);
     }
-
 }

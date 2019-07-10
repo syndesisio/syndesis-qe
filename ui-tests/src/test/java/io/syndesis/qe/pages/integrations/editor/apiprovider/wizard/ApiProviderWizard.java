@@ -1,12 +1,15 @@
 package io.syndesis.qe.pages.integrations.editor.apiprovider.wizard;
 
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.logic.common.wizard.WizardPhase;
-import io.syndesis.qe.pages.WizardPageObject;
-import org.openqa.selenium.By;
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
+import io.syndesis.qe.logic.common.wizard.WizardPhase;
+import io.syndesis.qe.pages.WizardPageObject;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
 
 public class ApiProviderWizard extends WizardPageObject {
     private static final class Element {
@@ -14,7 +17,7 @@ public class ApiProviderWizard extends WizardPageObject {
     }
 
     public ApiProviderWizard() {
-        setSteps(new WizardPhase[]{new UploadApiProviderSpecification(), new ReviewApiProviderActions(), new NameApiProviderIntegration()});
+        setSteps(new WizardPhase[]{new UploadApiProviderSpecification(), new ReviewApiProviderActions()});
     }
 
     @Override

@@ -46,18 +46,18 @@ public abstract class SyndesisPageObject {
             //ugly but necessary due to syndesis page refreshing periodically
             try {
                 OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+                    .filter(Condition.exactText(buttonTitle)).size() >= 1, (long) (60 * 1000.0));
             } catch (org.openqa.selenium.StaleElementReferenceException ex) {
                 log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
                 OpenShiftWaitUtils.waitFor(() -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).size() >= 1, (long) (60 * 1000.0));
+                    .filter(Condition.exactText(buttonTitle)).size() >= 1, (long) (60 * 1000.0));
             }
         } catch (TimeoutException | InterruptedException e1) {
             fail(buttonTitle + " not found", e1);
         }
 
         ElementsCollection foundButtons = differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-            .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1));
+            .filter(Condition.exactText(buttonTitle)).shouldHave(sizeGreaterThanOrEqual(1));
 
         if (foundButtons.size() > 1) {
             fail("Ambiguous button title. Found more that 1 button with title " + buttonTitle);

@@ -6,6 +6,21 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
+import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ApiProviderWizard;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ReviewApiProviderActions;
+import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.UploadApiProviderSpecification;
+import io.syndesis.qe.pages.integrations.fragments.OperationsList;
+import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.steps.integrations.editor.CreateIntegrationSteps;
+import io.syndesis.qe.steps.integrations.editor.EditorSteps;
+import io.syndesis.qe.steps.integrations.editor.add.ChooseConnectionSteps;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.TodoUtils;
+
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
@@ -21,21 +36,6 @@ import java.util.List;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.openshift.api.model.Route;
-import io.syndesis.qe.fragments.common.list.actions.ListAction;
-import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
-import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ApiProviderWizard;
-import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.NameApiProviderIntegration;
-import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ReviewApiProviderActions;
-import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.UploadApiProviderSpecification;
-import io.syndesis.qe.pages.integrations.fragments.OperationsList;
-import io.syndesis.qe.pages.integrations.summary.Details;
-import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.steps.integrations.editor.EditorSteps;
-import io.syndesis.qe.steps.integrations.editor.add.ChooseConnectionSteps;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.TodoUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -45,7 +45,7 @@ public class ApiProviderSteps {
 
     private ReviewApiProviderActions reviewApiProviderActions = new ReviewApiProviderActions();
     private ApiProviderToolbar toolbar = new ApiProviderToolbar();
-    private OperationsList operationsList = new OperationsList(By.cssSelector("syndesis-integration-api-provider-operations-list pfng-list"));
+    private OperationsList operationsList = new OperationsList(By.cssSelector(".list-view-pf-view"));
 
     @When("^select API Provider operation flow (.+)$")
     public void selectOperation(String operationName) {
@@ -72,11 +72,6 @@ public class ApiProviderSteps {
     public void navigateToTheNextAPIProviderWizardStep() {
         wizard.nextStep();
         wizard.getCurrentStep().validate();
-    }
-
-    @When("^fill in API Provider integration name \"([^\"]*)\"$")
-    public void fillInIntegrationName(String integrationName) {
-        new NameApiProviderIntegration().setName(integrationName);
     }
 
     @When("^finish API Provider wizard$")
@@ -128,14 +123,16 @@ public class ApiProviderSteps {
      */
     @When("^create an API Provider integration \"([^\"]*)\" from (\\w+) (.+)$")
     public void createTheTODOIntegration(String name, String source, String path) {
-        new CommonSteps().clickOnButton("Create Integration");
+        CommonSteps cs = new CommonSteps();
+        cs.clickOnLink("Create Integration");
         new EditorSteps().verifyNewIntegrationEditorOpened();
         new ChooseConnectionSteps().selectConnection("API Provider");
         createApiProviderSpec(source, path);
         navigateToTheNextAPIProviderWizardStep();
-        navigateToTheNextAPIProviderWizardStep();
-        fillInIntegrationName(name);
-        finishAPIProviderWizard();
+        cs.clickOnButton("Next");
+        cs.clickOnLink("Save");
+        new CreateIntegrationSteps().setIntegrationName(name);
+        cs.clickOnButton("Save");
     }
 
     @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+) and body$")
@@ -147,7 +144,7 @@ public class ApiProviderSteps {
 
     @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" with request '(.+)' returns status (\\d+) and body$")
     public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName,
-            String endpoint, String requestBody, int status, String body) {
+        String endpoint, String requestBody, int status, String body) {
         String url = getUrl(routeName, endpoint);
         Response response = getInvocation(url).method(method, Entity.entity(requestBody, MediaType.APPLICATION_JSON_TYPE));
         checkResponse(response, status, body);
@@ -177,11 +174,11 @@ public class ApiProviderSteps {
     private Invocation.Builder getInvocation(String url) {
         Client client = RestUtils.getClient();
         Invocation.Builder invocation = client
-                .target(url)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral")
-                .header("SYNDESIS-XSRF-TOKEN", "awesome");
+            .target(url)
+            .request(MediaType.APPLICATION_JSON)
+            .header("X-Forwarded-User", "pista")
+            .header("X-Forwarded-Access-Token", "kral")
+            .header("SYNDESIS-XSRF-TOKEN", "awesome");
         return invocation;
     }
 

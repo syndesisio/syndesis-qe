@@ -27,9 +27,8 @@ public class OperationsList extends RowList {
     private static final class Element {
         public static final By TITLE = By.xpath("//*[contains(@class,'list-pf-title')]");
         public static final By STATUS = By.cssSelector(".list-pf-additional-content div");
-        public static final By DESCRIPTION = By.cssSelector(".list-pf-description");
-        public static final By DESCRIPTION_VERB = By.cssSelector("span.verb");
-        public static final By DESCRIPTION_URL = By.cssSelector("span.url");
+        public static final By DESCRIPTION = By.cssSelector(".list-group-item-heading");
+        public static final By PATH = By.cssSelector(".item__operation-path");
     }
 
     public String getStatus(String operationName) {
@@ -37,11 +36,11 @@ public class OperationsList extends RowList {
     }
 
     public String getVerb(String operationName) {
-        return getItem(operationName).$(Element.DESCRIPTION).$(Element.DESCRIPTION_VERB).shouldBe(visible).getText().trim();
+        return getItem(operationName).$(Element.DESCRIPTION).shouldBe(visible).getText().trim();
     }
 
     public String getUrl(String operationName) {
-        return getItem(operationName).$(Element.DESCRIPTION).$(Element.DESCRIPTION_URL).shouldBe(visible).getText().trim();
+        return getItem(operationName).$(Element.PATH).shouldBe(visible).getText().trim();
     }
 
     @Override

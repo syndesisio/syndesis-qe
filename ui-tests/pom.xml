@@ -111,7 +111,7 @@
                 <configuration>
                     <systemProperties>
                         <syndesis.version>${syndesis.version}</syndesis.version>
-                        <apicurito.config.app.root>.openapi-editor</apicurito.config.app.root>
+                        <apicurito.config.app.root>.api-editor</apicurito.config.app.root>
                     </systemProperties>
                 </configuration>
             </plugin>
