@@ -407,9 +407,10 @@ public class CommonSteps {
                 buttonTitle = "Next";
             }
         }
-        SelenideElement button = syndesisRootPage.getButton(buttonTitle);
-        log.info(button.toString());
-        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+        log.info(syndesisRootPage.getButton(buttonTitle).toString());
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
+        syndesisRootPage.getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
     }
 
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
@@ -761,10 +762,7 @@ public class CommonSteps {
         // if the browser has previously logged into google account syndesis will
         // immediately move to next screen and will have "Successfully%20authorized%20Syndesis's%20access" in the URL
         log.info("Current url: {}", WebDriverRunner.getWebDriver().getCurrentUrl().toLowerCase());
-
-        if (isStringInUrl("Successfully%20authorized%20Syndesis's%20access", 5)
-            || $(By.className("alert-success")).is(visible)) {
-
+        if (isStringInUrl("successfully%20authorized", 5) || isStringInUrl("connections/create/review", 5) || $(By.className("alert-success")).is(visible)) {
             log.info("User is already logged");
             return;
         }
