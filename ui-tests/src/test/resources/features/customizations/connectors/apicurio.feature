@@ -25,7 +25,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio shows 218 imported operations
     And check that apicurio shows 58 warnings
 
-    And .*clicks on the "Review/Edit" link.*
+    And clicks on the "Review/Edit" link
     And change frame to "apicurio"
 
 
@@ -34,7 +34,7 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check if warnings change is propagated into connector review page from ApicurIO GUI
     When remove warning via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     Then check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
@@ -44,7 +44,7 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check if operations change is propagated into connector review page from ApicurIO GUI
     When add an operation via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     And check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     Then check that apicurio shows 219 imported operations
@@ -54,7 +54,7 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check if operations change with an error is propagated into connector review page from ApicurIO GUI
     When add an operation with error via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     And check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     Then check that apicurio shows 219 imported operations
@@ -64,7 +64,7 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check if removing an operations is reflected in connector review page from ApicurIO GUI
     When remove an operation via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     And check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     Then check that apicurio shows 217 imported operations
@@ -73,7 +73,7 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check if operations change is correctly not propagated into connector when changes from ApicurIO GUI are not saved
     When add an operation via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Cancel" link.*
+    And clicks on the "Cancel" link
     Then check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
@@ -82,14 +82,14 @@ Feature: Customization - API Connector - ApicurIO GUI
   @apicurio-check-security-settings-no-security
   Scenario: Check apicurio security settings - no security
     And change frame to "syndesis"
-    And .*clicks on the "Cancel" link.*
-    And .*clicks on the "Next" link.*
+    And clicks on the "Cancel" link
+    And clicks on the "Next" link
     Then check that api connector authentication section contains text "No Security"
 
     When click on the "Next" button
-    And click on the "Create API Connector" button
+    And click on the "Save" button
     And navigate to the "Connections" page
-    And click on the "Create Connection" button
+    And click on the "Create Connection" link
     And select "Kie Server API" connection type
     Then check that connection authentication type has 1 options and contains text "No Security"
 
@@ -98,12 +98,12 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check apicurio security settings - basic security
     When add security schema BASIC via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     Then check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
 
-    When .*clicks on the "Next" link.*
+    When clicks on the "Next" link
     Then check that api connector authentication section contains text "HTTP Basic Authentication"
 
     When click on the "Next" button
@@ -120,12 +120,12 @@ Feature: Customization - API Connector - ApicurIO GUI
   Scenario: Check apicurio security settings - API key
     When add security schema API Key via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     Then check visibility of page "Review Actions"
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
 
-    When .*clicks on the "Next" link.*
+    When clicks on the "Next" link
     Then check that api connector authentication section contains text "API Key"
 
     When click on the "Next" button
@@ -136,17 +136,18 @@ Feature: Customization - API Connector - ApicurIO GUI
     Then check that connection authentication type has 1 option and contains text "API Key Authentication"
 
   @gh-5429
+  @gh-6123
   @apicurio-check-security-settings-oauth-2
   Scenario: Check apicurio security settings - OAuth 2
     When add security schema OAuth 2 via apicurio gui
     And change frame to "syndesis"
-    And .*clicks on the "Save" link.*
+    And clicks on the "Save" link
     Then check visibility of page "Review Actions"
     # we need to give time to UI to fetch the changes
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
 
-    When .*clicks on the "Next" link.*
+    When clicks on the "Next" link
     Then check that api connector authentication section contains text "OAuth 2.0"
     And fill in values
       | Access Token URL  | https://hehe                            |
