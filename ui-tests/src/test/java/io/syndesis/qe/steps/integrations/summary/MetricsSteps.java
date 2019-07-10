@@ -36,6 +36,7 @@ public class MetricsSteps {
 
     public void refresh() {
         Selenide.refresh();
+        TestUtils.sleepIgnoreInterrupt(2000);
     }
 
     @Autowired
@@ -55,7 +56,8 @@ public class MetricsSteps {
         refresh();
         String dateLabel = metricsTab.getLastProcessed();
         if (metricsTab.getNumberOfTotalMessages() == 0) {
-            assertThat(dateLabel).matches("^Invalid Date$"); // gh-5729
+            // gh-6117 after resolving this issue, it needs to test when the Last processed contains information that no messages were processed yet
+            assertThat(dateLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{2}:\\d{2} (AM|PM)$"); //
             return;
         }
         assertThat(dateLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{2}:\\d{2} (AM|PM)$");
@@ -115,7 +117,7 @@ public class MetricsSteps {
             String uptime = metricsTab.getUpTime();
             String openshiftTime = pod.get().getStatus().getStartTime();
 
-            if (uptime.contains("n/a")) {
+            if (uptime.contains("No Data Available")) {
                 TestUtils.sleepIgnoreInterrupt(61000); // gh-5100
                 refresh();
                 uptime = metricsTab.getUpTime();
