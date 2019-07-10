@@ -13,6 +13,7 @@ import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponen
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.UploadFile;
 
 import org.openqa.selenium.By;
 
@@ -127,7 +128,7 @@ public class ExtensionSteps {
 
         String techExtensionUrl = extensionPath + extensionName;
         Path techExtensionJar = Paths.get(techExtensionUrl).toAbsolutePath();
-        $(By.tagName("input")).should(exist).uploadFile(techExtensionJar.toFile());
+        UploadFile.uploadFile($(By.tagName("input")).should(exist), techExtensionJar.toFile());
     }
 
     /**
@@ -150,7 +151,7 @@ public class ExtensionSteps {
 
         assertThat(techExtensionJar.toFile()).exists();
 
-        $(By.cssSelector("input")).uploadFile(techExtensionJar.toFile());
+        UploadFile.uploadFile(By.cssSelector("input"), techExtensionJar.toFile());
     }
 
     @When("^check visibility of details about imported extension$")

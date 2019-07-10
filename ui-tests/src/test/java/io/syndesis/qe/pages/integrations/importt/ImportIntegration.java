@@ -1,17 +1,20 @@
 package io.syndesis.qe.pages.integrations.importt;
 
-import com.codeborne.selenide.SelenideElement;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.UploadFile;
+
 import org.openqa.selenium.By;
 
-import java.io.File;
+import com.codeborne.selenide.SelenideElement;
 
-import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import java.io.File;
 
 public class ImportIntegration extends SyndesisPageObject {
 
@@ -37,7 +40,7 @@ public class ImportIntegration extends SyndesisPageObject {
      * @param file
      */
     public void importIntegration(File file) {
-        getRootElement().find(Element.FILE_INPUT).should(exist).uploadFile(file);
+        UploadFile.uploadFile(getRootElement().find(Element.FILE_INPUT).should(exist), file);
         $(Element.FINISHED_PROGRESS_BAR).shouldBe(visible);
     }
 
