@@ -34,8 +34,8 @@ Feature: Integration - DB to API
     And click on the "Next" button
     And fill in values by element ID
       | name     | Todo connector |
-      | host     | todo           |
       | basepath | /api           |
+    And fill in TODO API host URL
     And click on the "Save" button
 
     When created connections

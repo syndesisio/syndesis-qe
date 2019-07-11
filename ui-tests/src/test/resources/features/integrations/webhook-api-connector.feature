@@ -31,8 +31,8 @@ Feature: Integration - Webhook to API connector
     And click on the "Next" button
     And fill in values by element ID
       | name     | Todo connector |
-      | host     | todo           |
       | basepath | /api           |
+    And fill in TODO API host URL
     And click on the "Save" button
     And created connections
       | Todo connector | todo | Todo connection | no validation |
