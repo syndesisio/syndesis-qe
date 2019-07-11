@@ -47,6 +47,7 @@ import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -270,13 +271,13 @@ public class CommonSteps {
 
             clickOnButton("Save");
 
-            if (syndesisRootPage.getCurrentUrl().contains("connections/create/review")) {
+            try {
+                TestUtils.sleepForJenkinsDelayIfHigher(2);
+                OpenShiftWaitUtils.waitFor(() -> !syndesisRootPage.getCurrentUrl().contains("connections/create"), 2, 20);
+            } catch (TimeoutException | InterruptedException e) {
                 clickOnButton("Save");
-                try {
-                    OpenShiftWaitUtils.waitFor(() -> !syndesisRootPage.getCurrentUrl().contains("connections/create/review"), 15 * 1000L);
-                } catch (TimeoutException | InterruptedException e) {
-                    fail("Unable to create a connection - create button does nothing.");
-                }
+                TestUtils.waitFor(() -> !syndesisRootPage.getCurrentUrl().contains("connections/create"),
+                    2, 20, "Unable to create a connection - create button does nothing.");
             }
         }
     }
@@ -496,10 +497,11 @@ public class CommonSteps {
 
     @Then("^check visibility of \"([^\"]*)\" in alert-success notification$")
     public void successNotificationIsPresentWithError(String textMessage) {
-        SelenideElement successAlert = new SyndesisRootPage().getElementByClassName("alert-success");
-        successAlert.shouldBe(visible);
-        assertThat(successAlert.getText()).isEqualTo(textMessage);
+        TestUtils.waitFor(() -> $$(By.className("alert-success")).filterBy(Condition.exactText(textMessage)).size() == 1,
+            2, 20, "Success notification not found!");
 
+        ElementsCollection successList = $$(By.className("alert-success")).filterBy(Condition.exactText(textMessage));
+        assertThat(successList).hasSize(1);
         log.info("Text message {} was found.", textMessage);
     }
 
