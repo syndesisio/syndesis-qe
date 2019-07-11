@@ -838,7 +838,7 @@ Feature: API Provider Integration
     And check "Done" button is "enabled"
     And click on the "Done" button
 
-    And delete step on position 3
+    And delete step on position 2
 
     And click on the "Save" link
     And set integration name "TODO Integration edit implemented"

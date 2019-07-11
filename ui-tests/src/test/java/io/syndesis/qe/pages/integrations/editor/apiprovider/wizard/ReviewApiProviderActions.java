@@ -22,7 +22,7 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
         public static final By TAGGED_OPERATIONS = By.cssSelector("div.openapi-review-actions" +
                 " ol.openapi-review-actions__operations ol.openapi-review-actions__operations");
         public static final By WARNINGS = By.xpath("//*[text()=\"WARNINGS\"]");
-        public static final By ERRORS = By.xpath("//*[text()=\"ERRORS\"]/following-sibling::*");
+        public static final By ERRORS = By.xpath("//*[text()=\"ERRORS\"]");
     }
 
     private static class Button {

@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
@@ -36,6 +37,7 @@ public class Details extends SyndesisPageObject {
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
         public static final By INFO = By.className("integration-detail-info");
         public static final By INTEGRATION_DESCRIPTION = By.cssSelector("section.integration-description");
+        public static final By EXPOSED_URL = By.cssSelector(".integration-exposed-url__list dd input");
 
         public static final By MULTIFLOW_COUNT = By.cssSelector("#multi-flow div.icon span.badge");
 
@@ -153,8 +155,7 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getApiUrl() {
-        return $(Element.INTEGRATION_DESCRIPTION)
-            .$$("input").shouldHaveSize(1).first().shouldBe(enabled, visible)
+        return $$(Element.EXPOSED_URL).shouldHaveSize(1).first().shouldBe(enabled, visible)
             .getValue();
     }
 }
