@@ -106,7 +106,7 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getStartingStatus() {
-        return $(Element.STARTING_STATUS).$(By.xpath(".//i")).text();
+        return $(Element.STARTING_STATUS).text().replace("View Logs", "").trim();
     }
 
     public String getIntegrationInfo() {

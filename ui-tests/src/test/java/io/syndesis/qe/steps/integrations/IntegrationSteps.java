@@ -117,9 +117,9 @@ public class IntegrationSteps {
     public void exportIntegration() throws InterruptedException {
         File exportedIntegrationFile = detailPage.exportIntegration();
         assertThat(exportedIntegrationFile)
-                .exists()
-                .isFile()
-                .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+            .exists()
+            .isFile()
+            .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
         ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
     }
 
@@ -143,7 +143,7 @@ public class IntegrationSteps {
     @Then("^Wait until there is no integration pod with name \"([^\"]*)\"$")
     public void waitForIntegrationPodShutdown(String integartionPodName) throws InterruptedException {
         OpenShiftWaitUtils.assertEventually("Pod with name " + integartionPodName + "is still running.",
-                OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
+            OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
     }
 
     @Then("^.*check that data bucket \"([^\"]*)\" is available$")
@@ -231,14 +231,16 @@ public class IntegrationSteps {
                     case "Home":
                     case "Integrations":
                         log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim());
-                        assertThat(integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim()).isEqualToIgnoringWhitespace("Running");
+                        assertThat(integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim())
+                            .isEqualToIgnoringWhitespace("Running");
                         break;
                     case "Integration detail":
                         log.info("Status changed to: " + detailPage.getPublishedVersion().getText().trim());
                         assertThat(detailPage.getPublishedVersion().getText()).isEqualToIgnoringWhitespace("Published version 1");
                         break;
                     default:
-                        fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
+                        fail("Integration status can't be checked on <" + checkedPage +
+                            "> page. Only valid options are [Integrations, Integration detail, Home]");
                 }
                 break;
             }
@@ -254,9 +256,11 @@ public class IntegrationSteps {
                         status = detailPage.getStartingStatus();
                         break;
                     default:
-                        fail("Integration status can't be checked on <" + checkedPage + "> page. Only valid options are [Integrations, Integration detail, Home]");
+                        fail("Integration status can't be checked on <" + checkedPage +
+                            "> page. Only valid options are [Integrations, Integration detail, Home]");
                 }
             } catch (Throwable t) {
+                log.info("Starting status no longer visible, checking deployed integration status");
                 lastStatusIndex = statuses.size() - 1;
                 continue;
             }
@@ -268,18 +272,11 @@ public class IntegrationSteps {
 
             for (int j = lastStatusIndex; j < statuses.size(); j++) {
                 if (statuses.get(j).getStatus().equals(status)) {
-                    if (matchingStatesNumber == 0) {
+                    if (matchingStatesNumber == 0 || lastStatusIndex < j) {
                         matchingStatesNumber++;
                         lastStatusIndex = j;
                         log.info("Status changed to: " + status);
-                    } else {
-                        if (lastStatusIndex < j) {
-                            matchingStatesNumber++;
-                            lastStatusIndex = j;
-                            log.info("Status changed to: " + status);
-                        }
                     }
-                } else {
                 }
             }
             try {
