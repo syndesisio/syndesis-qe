@@ -31,10 +31,10 @@ public class Details extends SyndesisPageObject {
         public static final By STATUS = By.cssSelector("div[data-testid=\"syndesis-integration-status\"]");
         public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
-        public static final By TITLE = By.className("pf-c-title.pf-m-lg.integration-detail-editable-name.pf-u-mr-lg");
+        public static final By TITLE = By.className("integration-detail-editable-name");
         public static final By KEBEB_OPEN_MENU = By.className("dropdown-toggle");
         public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
-        public static final By INFO = By.className("integration-detail__info");
+        public static final By INFO = By.className("integration-detail-info");
 
         public static final By MULTIFLOW_COUNT = By.cssSelector("#multi-flow div.icon span.badge");
 
