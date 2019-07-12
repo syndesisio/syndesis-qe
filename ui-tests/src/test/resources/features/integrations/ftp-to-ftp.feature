@@ -25,14 +25,16 @@ Feature: Integration - FTP to FTP
     When select the "FTP" connection
     And select "download" integration action
     And fill in values by element data-testid
-      | filename      | ui-ftp-ftp.txt |
-      | directoryname | download       |
-      | initialdelay  | 1000           |
-      | delay         | 500            |
-      | delete        | Yes            |
+      | filename              | ui-ftp-ftp.txt |
+      | directoryname         | download       |
+      | initialdelay          | 1000           |
+      | initialdelay-duration | Milliseconds   |
+      | delay                 | 500            |
+      | delay-duration        | Milliseconds   |
+      | delete                | Yes            |
 
     And click on the "Next" button
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check visibility of page "Choose a Finish Connection"
     When select the "FTP" connection
@@ -45,8 +47,7 @@ Feature: Integration - FTP to FTP
       | tempprefix    | copying_test_out |
 
     And click on the "Next" button
-
-    And click on the "Done" button
+    And click on the "Next" button
 
     And publish integration
     And set integration name "ftp-to-ftp E2E"
