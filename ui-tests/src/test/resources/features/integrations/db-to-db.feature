@@ -307,3 +307,70 @@ Feature: Integration - DB to DB
 
     Then validate that number of all todos with task "Joe" is "0"
     Then validate that number of all todos with task "Jimmy" is "1"
+
+  @db-insert-multiple-rows
+  Scenario: Inserting multiple rows 
+    Given Set Todo app credentials
+    Then inserts into "todo" table
+      | Joe |
+    And inserts into "todo" table
+      | Jimmy |
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
+    And check visibility of page "Upload Swagger Specification"
+    Then upload swagger file
+      | file | swagger/connectors/todo.swagger.yaml |
+
+    When click on the "Next" button
+    Then check visibility of page "Review Actions"
+
+    When click on the "Next" link
+    Then check visibility of page "Specify Security"
+
+    When set up api connector security
+      | authType | HTTP Basic Authentication |
+    And click on the "Next" button
+    And fill in values by element ID
+      | name     | Todo connector |
+      | basepath | /api           |
+    And fill in TODO API host URL
+    And click on the "Save" button
+
+    When created connections
+      | Todo connector | todo | Todo connection | no validation |
+    And navigate to the "Connections" page
+
+    When navigate to the "Home" page
+    And click on the "Create Integration" link
+
+    Then check that position of connection to fill is "Start"
+    When select the "Timer" connection
+    And select "Simple" integration action
+    And click on the "Done" button
+
+    Then check that position of connection to fill is "Finish"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO contact (first_name) VALUES (:#task)" value
+    And click on the "Done" button
+
+    When add integration step on position "0"
+    And select the "Todo connection" connection
+    And select "List all tasks" integration action
+    And click on the "Next" button
+
+    When add integration step on position "1"
+    And select the "Data Mapper" connection
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | body.task | task |
+
+    And click on the "Done" button
+    And publish integration
+    And set integration name "DB Insert multiple rows"
+    And publish integration
+    Then wait until integration "DB Insert multiple rows" gets into "Running" state
+
+    And check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
+    And check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output
