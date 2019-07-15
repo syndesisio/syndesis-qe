@@ -194,7 +194,7 @@ public class EditorSteps {
 
     @Then("^check flow title is \"([^\"]*)\"$")
     public void checkFlowTitleIs(String title) {
-        log.warn("Operations don't have titles displayed");
+        log.warn("Operations don't have titles displayed until #6162 gets resolved");
         //assertEquals("Wrong flow title", title, flowViewComponent.getFlowTitle());
     }
 

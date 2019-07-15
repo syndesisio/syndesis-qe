@@ -133,7 +133,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body.id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link 
@@ -165,7 +165,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And add integration step on position "2"
@@ -177,7 +177,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -211,7 +211,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -250,7 +250,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -292,7 +292,7 @@ Feature: API Provider Integration
       | body.completed | completed |
       | body.task      | task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And add integration step on position "2"
@@ -303,7 +303,7 @@ Feature: API Provider Integration
       | body.completed | body.completed |
       | body.task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -338,7 +338,7 @@ Feature: API Provider Integration
       | body.completed | completed |
       | body.task      | task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And add integration step on position "2"
@@ -349,7 +349,7 @@ Feature: API Provider Integration
       | body.completed | body.completed |
       | body.task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -401,7 +401,7 @@ Feature: API Provider Integration
       | completed | completed |
       | task      | task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And add integration step on position "3"
@@ -412,7 +412,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -450,7 +450,7 @@ Feature: API Provider Integration
       | body.completed | completed |
       | body.task      | task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And add integration step on position "2"
@@ -461,7 +461,7 @@ Feature: API Provider Integration
       | body.completed | body.completed |
       | body.task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -516,7 +516,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -546,7 +546,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body.id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
   
     And click on the "Save" link  
@@ -608,11 +608,11 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body.id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
     And click on the "Save" link
     And sleep for jenkins delay or "5" seconds
-    And check "Save" button is "enabled"
+    And check "Save" button is "visible"
     And sleep for jenkins delay or "5" seconds
 
     # create new operation in apicurio
@@ -653,7 +653,7 @@ Feature: API Provider Integration
       | parameters.id | body.id   |
       | parameters.id | body.task |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
     And click on the "Save" link
 
@@ -715,7 +715,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -761,7 +761,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     # add mapping for parameter
@@ -770,7 +770,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -835,7 +835,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And delete step on position 2
@@ -872,7 +872,7 @@ Feature: API Provider Integration
       | parameters.id | body.id |
     And sleep for jenkins delay or "2" seconds
     And sleep for 2 seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     # implement another operation (which we will keep in the integration after deleting the first one)
@@ -893,7 +893,7 @@ Feature: API Provider Integration
       | completed | body.completed |
       | task      | body.task      |
     And sleep for 2 seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
@@ -1053,7 +1053,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body.id |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And go to API Provider operation list
@@ -1098,7 +1098,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body |
     And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "enabled"
+    And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link

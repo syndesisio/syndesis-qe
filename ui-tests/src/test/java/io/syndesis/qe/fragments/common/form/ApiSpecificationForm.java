@@ -47,7 +47,6 @@ public class ApiSpecificationForm {
     }
 
     public void createFromScratch() {
-        //$(Input.CREATE_FROM_SCRATCH).shouldBe(visible).setSelected(true);
         $(Input.CREATE_FROM_SCRATCH).shouldBe(visible).click();
     }
 }

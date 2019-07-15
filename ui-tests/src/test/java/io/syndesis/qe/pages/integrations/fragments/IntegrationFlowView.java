@@ -12,7 +12,6 @@ import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.ArrayList;
@@ -183,7 +182,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
     public void deleteStepOnPostion(int stepPosition) {
         SelenideElement step = getStepOnPosition(stepPosition);
         step.$(Element.TRASH).shouldBe(visible).click();
-        Selenide.$(Element.DELETE_BUTTON).shouldBe(enabled, visible).click();
+        $(Element.DELETE_BUTTON).shouldBe(enabled, visible).click();
     }
 
     public String getPopoverText() {

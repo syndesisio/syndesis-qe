@@ -254,7 +254,7 @@ public abstract class SyndesisPageObject {
                 break;
             default:
                 log.error("Invalid status {} supplied, please check your feature files for typos", status);
-                Assert.fail();
+                Assert.fail("Invalid status " + status + " supplied, please check your feature files for typos");
                 condition = visible;
                 break;
         }

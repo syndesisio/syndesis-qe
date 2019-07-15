@@ -49,10 +49,10 @@ public class ApiProviderToolbar extends SyndesisPageObject {
 
     public void goToOperationList() {
         getRootElement().$(Element.OPERATIONS_DROPDOWN).click();
-        if (!$(Element.GO_TO_OPERATION_LIST_BUTTON).exists()) {
-            $$(By.className("pf-c-breadcrumb__item")).get(1).click();
-        } else {
+        if ($(Element.GO_TO_OPERATION_LIST_BUTTON).exists()) {
             getRootElement().$(Element.GO_TO_OPERATION_LIST_BUTTON).shouldBe(visible).click();
+        } else {
+            $$(By.className("pf-c-breadcrumb__item")).get(1).click();
         }
     }
 
