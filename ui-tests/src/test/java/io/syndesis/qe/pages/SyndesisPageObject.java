@@ -16,6 +16,8 @@ import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.junit.Assert;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
@@ -241,16 +243,18 @@ public abstract class SyndesisPageObject {
 
     public Condition conditionValueOf(String status) {
         Condition condition;
-        switch (status) {
-            case "Active":
-            case "Visible":
+        switch (status.toLowerCase()) {
+            case "active":
+            case "visible":
                 condition = visible;
                 break;
-            case "Disabled":
-            case "Inactive":
+            case "disabled":
+            case "inactive":
                 condition = disabled;
                 break;
             default:
+                log.error("Invalid status {} supplied, please check your feature files for typos", status);
+                Assert.fail();
                 condition = visible;
                 break;
         }
