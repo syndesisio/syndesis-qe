@@ -313,25 +313,40 @@ Feature: Integration - DB to DB
     Given Set Todo app credentials
     Then inserts into "todo" table
       | Joe |
-    Then inserts into "todo" table
+    And inserts into "todo" table
       | Jimmy |
-    When navigate to the "Customizations" page
-    And create new API connector
-        | source   | file          | swagger/connectors/todo.json  |
-        | security | authType      | HTTP Basic Authentication     |
-        | details  | connectorName | TODO-API                      |
-        | details  | host          | http://todo.syndesis.svc:8080 |
-        | details  | baseUrl       | /api                          |
+    When click on the "Customizations" link
+    And navigate to the "API Client Connectors" page
+    And click on the "Create API Connector" link
+    And check visibility of page "Upload Swagger Specification"
+    Then upload swagger file
+      | file | swagger/connectors/todo.swagger.yaml |
+
+    When click on the "Next" button
+    Then check visibility of page "Review Actions"
+
+    When click on the "Next" link
+    Then check visibility of page "Specify Security"
+
+    When set up api connector security
+      | authType | HTTP Basic Authentication |
+    And click on the "Next" button
+    And fill in values by element ID
+      | name     | Todo connector |
+      | basepath | /api           |
+    And fill in TODO API host URL
+    And click on the "Save" button
+
+    When created connections
+      | Todo connector | todo | Todo connection | no validation |
     And navigate to the "Connections" page
-    And created connections
-        | TODO-API | todo | TODO-app | no validation |
 
     When navigate to the "Home" page
-    And click on the "Create Integration" button    
+    And click on the "Create Integration" link
 
     Then check that position of connection to fill is "Start"
     When select the "Timer" connection
-    And select "Simple Timer" integration action
+    And select "Simple" integration action
     And click on the "Done" button
 
     Then check that position of connection to fill is "Finish"
@@ -340,16 +355,16 @@ Feature: Integration - DB to DB
     And fill in invoke query input with "INSERT INTO contact (first_name) VALUES (:#task)" value
     And click on the "Done" button
 
-    Then check visibility of page "Add to Integration"
     When add integration step on position "0"
-    And select the "TODO-app" connection
+    And select the "Todo connection" connection
     And select "List all tasks" integration action
+    And click on the "Next" button
 
-    Then check visibility of page "Add to Integration"
     When add integration step on position "1"
     And select the "Data Mapper" connection
     And open data mapper collection mappings
-    And create mapping from "body.task" to "task"
+    And create data mapper mappings
+      | body.task | task |
 
     And click on the "Done" button
     And publish integration
@@ -357,5 +372,5 @@ Feature: Integration - DB to DB
     And publish integration
     Then wait until integration "DB Insert multiple rows" gets into "Running" state
 
-    Then check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
-    Then check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output
+    And check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
+    And check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output
