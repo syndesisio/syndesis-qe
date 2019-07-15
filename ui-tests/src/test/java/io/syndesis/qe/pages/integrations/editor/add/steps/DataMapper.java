@@ -186,9 +186,10 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public void doCreateMappingWithSeparator(String source, String target, String separator) {
-        createNewMapping(source, target);
-        $(By.id("select-separator")).shouldBe(visible).selectOptionContainingText(separator);
         $(Element.ADD_MAPPING_ICON).shouldBe(visible).click();
+        createNewMapping(source, target);
+        $(By.id("separator")).shouldBe(visible).selectOptionContainingText(separator);
+
     }
 
     /**

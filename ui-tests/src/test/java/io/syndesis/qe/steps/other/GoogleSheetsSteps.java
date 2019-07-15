@@ -1,12 +1,14 @@
 package io.syndesis.qe.steps.other;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
 import io.syndesis.qe.utils.GoogleSheetsUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.When;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleSheetsSteps {
@@ -17,12 +19,14 @@ public class GoogleSheetsSteps {
     @When("^define spreadsheetID as property in data mapper$")
     public void defineSpreadaheetIDAsPropertyInDataMapper() {
         DataMapper mapper = new DataMapper();
+        mapper.switchToDatamapperIframe();
         mapper.addProperty("spreadsheetId", gcu.getTestSheetId(), "String");
+        mapper.switchIframeBack();
     }
 
     @When("^fill spreadsheet ID$")
     public void fillSpreadsheetID() {
-        new SyndesisRootPage().getRootElement().findElementById("spreadsheetId").sendKeys(gcu.getTestSheetId());
+        new SyndesisRootPage().getElementByCssSelector("*[data-testid=\"spreadsheetid\"").sendKeys(gcu.getTestSheetId());
     }
 
     @Given("^clear range \"([^\"]*)\" in data test spreadsheet$")
