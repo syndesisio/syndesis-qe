@@ -112,7 +112,7 @@ public class IntegrationsPublicApiSteps {
     @When("^deploy integration (\\w+)$")
     public void deployIntegration(String integrationName) {
         integrationsEndpoint.deployIntegration(integrationName);
-        TestUtils.sleepIgnoreInterrupt(5000);
+        TestUtils.sleepIgnoreInterrupt(10000);
     }
 
     @When("^stop integration (\\w+)$")

@@ -75,6 +75,12 @@ spec:
     importPolicy:
       scheduled: true
     name: "$OAUTH_PROXY_TAG$"
+  - from:
+      kind: DockerImage
+      name: $OAUTH_PROXY$
+    importPolicy:
+      scheduled: true
+    name: "v4.0.0"
 ---
 apiVersion: v1
 kind: ImageStream
