@@ -33,7 +33,17 @@ CURRENT_VERSION="$(echo "${CURRENT_BRANCH}" | cut -c1-3)"
 
 git rev-parse --verify "${NEXT_BRANCH}" > /dev/null 2>&1 || (echo "Branch ${NEXT_BRANCH} not found!" && exit 1)
 
-#[[ "${CURRENT_VERSION}" != "$(echo "${INSTALL_TAG}" | cut -c1-3)" ]] && echo "Current branch ${CURRENT_BRANCH} does not match install tag ${INSTALL_TAG}" && exit 1
+[[ "${CURRENT_VERSION}" != "$(echo "${INSTALL_TAG}" | cut -c1-3)" ]] && echo "Current branch ${CURRENT_BRANCH} does not match install tag ${INSTALL_TAG}" && exit 1
+
+cat << EOF | oc create -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: syndesis-pull-secret
+data:
+  .dockerconfigjson: "${PULL_SECRET}"
+type: kubernetes.io/dockerconfigjson
+EOF
 
 cd "${INSTALL_DIR}" && git checkout "${INSTALL_TAG}"
 bash ./install_ocp.sh --setup
