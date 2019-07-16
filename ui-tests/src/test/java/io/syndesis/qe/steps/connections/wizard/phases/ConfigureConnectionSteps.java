@@ -9,6 +9,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 
@@ -46,6 +47,9 @@ public class ConfigureConnectionSteps {
 
     private void fillFormInLowerCase(Map<String, String> properties) {
         //transfer all keys in properties to lower case
+        TestUtils.waitFor(() -> $$(By.tagName("form")).filter(cssClass("required-pf")).size() > 0,
+            1, 20, "Form was not loaded in 20s");
+
         ElementsCollection formsCollection = $$(By.tagName("form")).filter(cssClass("required-pf"));
         assertThat(formsCollection).hasSize(1);
 
