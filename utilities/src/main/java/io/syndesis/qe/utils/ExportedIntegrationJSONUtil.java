@@ -76,10 +76,6 @@ public class ExportedIntegrationJSONUtil {
                 .isNotEmpty()
                 .containsIgnoringCase("»ENC:");
 
-        Assertions.assertThat(configuredProperties.getString("password"))
-                .isNotEmpty()
-                .containsIgnoringCase("»ENC:");
-
         Assertions.assertThat(configuredProperties.getString("clientId"))
                 .isNotEmpty();
     }

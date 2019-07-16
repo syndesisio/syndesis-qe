@@ -13,13 +13,16 @@ Feature: Integration - Import Export
 
   Background: Clean application state
     Given clean application state
-    Given log into the Syndesis
-    Given created connections
-      | Twitter    | Twitter Listener | Twitter Listener | SyndesisQE Twitter listener account |
-      | Salesforce | QE Salesforce    | QE Salesforce    | SyndesisQE salesforce test          |
+    And log into the Syndesis
+    And navigate to the "Settings" page
+    And fill "Twitter" oauth settings "Twitter Listener"
+    And fill "Salesforce" oauth settings "QE Salesforce"
+    And create connections using oauth
+      | Twitter    | Twitter Listener |
+      | Salesforce | QE Salesforce    |
 
     # create integration
-    And navigate to the "Home" page
+    When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
@@ -27,6 +30,7 @@ Feature: Integration - Import Export
     # select twitter connection
     When select the "Twitter Listener" connection
     And select "Mention" integration action
+    And click on the "Next" button
     Then check that position of connection to fill is "Finish"
 
     # select salesforce connection
@@ -42,21 +46,20 @@ Feature: Integration - Import Export
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    Then create data mapper mappings
+    When create data mapper mappings
       | user.screenName | TwitterScreenName__c |
       | text            | Description          |
       | user.name       | FirstName; LastName  |
-
     And scroll "top" "right"
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" link
+    When publish integration
     And set integration name "Integration_import_export_test"
     And publish integration
     Then Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "Integration_import_export_test" gets into "Running" state
+    And wait until integration "Integration_import_export_test" gets into "Running" state
 
     # export the integration for import tests
     When select the "Integration_import_export_test" integration
@@ -70,7 +73,7 @@ Feature: Integration - Import Export
 
     Given log into the Syndesis
     And navigate to the "Integrations" page
-    And click on the "Import" button
+    And click on the "Import" link
 
 #
 #  1. integration-import classic method
