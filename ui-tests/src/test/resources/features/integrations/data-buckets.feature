@@ -20,7 +20,7 @@ Feature: Integration - Databucket
       | Twitter | Twitter Listener |
       | Gmail   | QE Google Mail   |
     And created connections
-      | DropBox | QE Dropbox |
+      | Dropbox | QE Dropbox | QE Dropbox | SyndesisQE Dropbox test |
     And navigate to the "Home" page
 
 #
@@ -89,7 +89,7 @@ Feature: Integration - Databucket
     And click on the "Next" button
     Then check that position of connection to fill is "Finish"
 
-    When select the "My GMail Connector" connection
+    When select the "QE Google Mail" connection
     And select "Send Email" integration action
     And fill in values by element ID
       | Email to | jbossqa.fuse@gmail.com |
