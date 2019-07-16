@@ -674,7 +674,7 @@ public class CommonSteps {
 
     private void waitForAdditionalWindow() {
         TestUtils.waitFor(() -> WebDriverRunner.getWebDriver().getWindowHandles().size() > 1,
-            1, 10,
+            2, 60,
             "Second window has not shown up");
     }
 
@@ -687,16 +687,22 @@ public class CommonSteps {
             }
 
             return true;
-        }, 1, 5, "Window has not returned valid url");
+        }, 1, 20, "Window has not returned valid url");
     }
 
     private void doOAuthValidation(String type) {
 
         WebDriver driver = WebDriverRunner.getWebDriver();
 
-        // Store the current window handle
+        // store the current window handle
         String winHandleBefore = driver.getWindowHandle();
         log.info("Current window handle identifier: " + winHandleBefore);
+
+        // close additional browser windows
+        if (driver.getWindowHandles().size() > 1) {
+            log.error("There is more than one window opened!");
+            closeAdditionalBrowserWindows(winHandleBefore);
+        }
 
         // Perform the click operation that opens new window
         clickOnButton("Connect " + type);
@@ -752,11 +758,26 @@ public class CommonSteps {
         // Switch back to original browser (first window)
         driver.switchTo().window(winHandleBefore);
 
+        waitForCallbackRedirect("review");
+
+        // close hanging windows
+        closeAdditionalBrowserWindows(winHandleBefore);
+
         if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
             WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
         }
+    }
 
-        waitForCallbackRedirect("review");
+    private void closeAdditionalBrowserWindows(String currentWindow) {
+        for (String winHandle : WebDriverRunner.getWebDriver().getWindowHandles()) {
+            if (winHandle.equalsIgnoreCase(currentWindow)) {
+                continue;
+            }
+            log.warn("Found another browser window handle and closing: " + winHandle);
+            WebDriverRunner.getWebDriver().switchTo().window(winHandle);
+            WebDriverRunner.getWebDriver().close();
+        }
+        WebDriverRunner.getWebDriver().switchTo().window(currentWindow);
     }
 
     private void loginToGoogleIfNeeded(String s) {
@@ -778,7 +799,9 @@ public class CommonSteps {
     private void fillAndValidateTwitter() {
         Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.TWITTER_LISTENER);
 
-        if (!$(By.id("username_or_email")).exists()) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> $(By.id("username_or_email")).exists(), 10 * 1000L);
+        } catch (InterruptedException | TimeoutException e) {
             log.info("Already logged into Twitter, clicking on validate");
             $(By.id("allow")).click();
             return;
@@ -796,7 +819,7 @@ public class CommonSteps {
     private void fillAndValidateSalesforce() {
         Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.SALESFORCE);
 
-        if (isStringInUrl("connections/create/review", 5) || $(By.className("alert-success")).is(visible)) {
+        if (isStringInUrl("review", 5) || $(By.className("alert-success")).is(visible)) {
             log.info("Salesforce is already connected");
             return;
         }
@@ -862,9 +885,11 @@ public class CommonSteps {
 
     private void waitForCallbackRedirect(String expectedPartOfUrl, int timeoutSeconds) {
         try {
-            waitFor(() -> WebDriverRunner.currentFrameUrl().contains(expectedPartOfUrl.toLowerCase()), 60 * 1000);
+            waitFor(() -> WebDriverRunner.currentFrameUrl().contains(expectedPartOfUrl.toLowerCase()), timeoutSeconds * 1000);
         } catch (InterruptedException | TimeoutException e) {
-            fail("Error while redirecting to " + expectedPartOfUrl, e);
+            assertThat(WebDriverRunner.currentFrameUrl())
+                .as("Error while redirecting to " + expectedPartOfUrl)
+                .containsIgnoringCase(expectedPartOfUrl);
         }
     }
 
