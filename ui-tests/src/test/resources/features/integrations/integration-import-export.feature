@@ -15,7 +15,7 @@ Feature: Integration - Import Export
     And log into the Syndesis
 
 #
-#  1. integration-import both methods, for investigation one of them use integration-import(visible)-export_backup.feature
+#  1. integration-import both methods
 #
   @integration-import-export-classic-input
   Scenario: Import and export classic-input
@@ -32,7 +32,8 @@ Feature: Integration - Import Export
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
-    And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
+
+    When fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
     And fill in period input with "60" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button
@@ -57,17 +58,15 @@ Feature: Integration - Import Export
     And click on the "Done" button
 
     # finish and save integration
-    And click on the "Save" link
+    When click on the "Save" link
     And set integration name "Integration_import_export_test"
     And publish integration
     Then Integration "Integration_import_export_test" is present in integrations list
 
     When inserts into "CONTACT" table
       | Lorem | Ipsum | Red Hat | e_db |
-
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
-
     Then check that last slack message equals "Red Hat" on channel "test"
 
     # Add a new contact
@@ -82,7 +81,7 @@ Feature: Integration - Import Export
     # now we have exported integration, we can clean state and try to import
     Given clean application state
     And log into the Syndesis
-    And navigate to the "Integrations" page
+    When navigate to the "Integrations" page
     And click on the "Import" link
     Then import integration "Integration_import_export_test"
 
@@ -92,7 +91,8 @@ Feature: Integration - Import Export
 
     # check draft status after import
     When select the "Integration_import_export_test" integration
-    And check visibility of "Stopped" integration status on Integration Detail page
+    Then check visibility of "Stopped" integration status on Integration Detail page
+
     # start integration and wait for published state
     When click on the "Edit Integration" link
     And click on the "Save" link

@@ -2,13 +2,14 @@ package io.syndesis.qe.steps.integrations.editor.add.connection;
 
 import static com.codeborne.selenide.Condition.visible;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.editor.add.connection.ChooseAction;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.InvokeSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.PeriodicSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
 import io.syndesis.qe.utils.TestUtils;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,17 +41,17 @@ public class ConnectionActionSteps {
         configureAction.fillInput(fieldId, value);
     }
 
-    @Then("^fill in periodic query input with \"([^\"]*)\" value$")
+    @When("^fill in periodic query input with \"([^\"]*)\" value$")
     public void fillPerodicSQLquery(String query) {
         periodicSql.fillSqlInput(query);
     }
 
-    @Then("^fill in period input with \"([^\"]*)\" value$")
+    @When("^fill in period input with \"([^\"]*)\" value$")
     public void fillSQLperiod(String period) {
         periodicSql.fillSQLperiod(period);
     }
 
-    @Then("^fill in invoke query input with \"([^\"]*)\" value$")
+    @When("^fill in invoke query input with \"([^\"]*)\" value$")
     public void fillInvokeSQLquery(String query) {
         invokeSql.fillSqlInput(query);
         //verifying of the querry sometimes fails but there is no success notifier, it just jumps to the next page
