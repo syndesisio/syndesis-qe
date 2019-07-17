@@ -5,6 +5,7 @@
 @webhook
 @database
 @datamapper
+@conditional-flow
 @integrations-conditional-flows
 Feature: Conditional flows - content base routing
 

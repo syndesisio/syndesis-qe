@@ -244,4 +244,10 @@ public class EditorSteps {
         dialog.find(By.xpath("//button[text()[contains(.,'Confirm')]]")).click();
         dialog.waitUntil(Condition.not(visible), 10 * 1000);
     }
+
+    @Then("^validate that input datashape on step (\\d+) contains \"([^\"]*)\"$")
+    public void validateInputDataShape(int stepPosition, String expectedDataShape) {
+        Assertions.assertThat(flowViewComponent.getStepOnPosition(stepPosition).$(By.className("list-view-pf-additional-info")).text())
+            .containsIgnoringCase("Data Type: " + expectedDataShape);
+    }
 }
