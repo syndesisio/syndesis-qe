@@ -11,6 +11,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
+import static com.codeborne.selenide.Selenide.switchTo;
 
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -65,13 +66,12 @@ public class ApicurioSteps {
         public static By MODAL_PATH_INPUT = By.id("path");
 
         //syndesis apicurio-review page elements
-        public static By WARNINGS = By.className("openapi-review-actions__label--warning");
-        public static By ERRORS = By.className("openapi-review-actions__label--error");
-        public static By OPERATIONS = By.className("openapi-review-actions");
-        public static By OPERATION_ITEM = By.tagName("li");
+        public static By WARNINGS = By.className("review-actions__warnings");
+        public static By ERRORS = By.className("review-actions__errors");
+        public static By PAGE_ROOT = By.className("pf-c-content");
 
         //specify security elements
-        public static By AUTHENTICATION_CONTAINER = By.tagName("syndesis-api-connector-auth");
+        public static By AUTHENTICATION_CONTAINER = By.className("form-group");
     }
 
     private static class TextFormElements {
@@ -96,7 +96,7 @@ public class ApicurioSteps {
 
     @Then("^check that apicurio shows (\\d+) imported operations$")
     public void verifyOperations(int expectedCount) {
-        SelenideElement operations = $(Elements.OPERATIONS).shouldBe(visible).$$(Elements.OPERATION_ITEM).get(0);
+        SelenideElement operations = $(Elements.PAGE_ROOT).shouldBe(visible).$$("div").filter(attribute("class", "container-fluid")).first();
         assertThat(operations).isNotNull();
         assertThat(operations.getText())
             .containsIgnoringCase(Integer.toString(expectedCount))
@@ -106,7 +106,7 @@ public class ApicurioSteps {
     @When("^check that apicurio imported operations number is loaded$")
     public void verifyOperationsAreVisible() {
         try {
-            OpenShiftWaitUtils.waitFor(() -> !$(Elements.OPERATIONS).shouldBe(visible).$$(Elements.OPERATION_ITEM).get(0)
+            OpenShiftWaitUtils.waitFor(() -> !$(Elements.PAGE_ROOT).shouldBe(visible).$$("div").filter(attribute("class", "container-fluid")).first()
                 .getText().equalsIgnoreCase("{{0}} operations"), 1000 * 60);
         } catch (InterruptedException | TimeoutException e) {
             fail("Operations number was not loaded in 60s.", e);
@@ -135,7 +135,7 @@ public class ApicurioSteps {
         //there isn't really a nice way how to wait as the box is there all the time, we are waiting for different items to show
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         SelenideElement firstProblemElement = $(Elements.PROBLEMS_CONTAINER).shouldBe(visible)
-            .$$(Elements.VALIDATION_PROBLEM).get(0);
+            .$$(Elements.VALIDATION_PROBLEM).get(2);
         assertThat(firstProblemElement).isNotNull();
         assertThat(firstProblemElement.text()).containsIgnoringCase("Operation Summary should be less than 120 characters");
 
@@ -266,7 +266,7 @@ public class ApicurioSteps {
 
         ElementsCollection saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);
         assertThat(saveButtons.size()).isGreaterThan(1);
-        saveButtons.get(2).shouldBe(visible).click();
+        saveButtons.get(1).shouldBe(visible).click();
 
         $(Elements.BUTTON_ADD_REQUIREMENT).shouldBe(visible).click();
 
@@ -283,7 +283,7 @@ public class ApicurioSteps {
 
         saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);
         assertThat(saveButtons.size()).isGreaterThan(1);
-        saveButtons.get(2).shouldBe(visible).click();
+        saveButtons.get(1).shouldBe(visible).click();
     }
 
     @Then("^check that api connector authentication section contains text \"([^\"]*)\"$")
@@ -297,6 +297,15 @@ public class ApicurioSteps {
         TestUtils.sleepForJenkinsDelayIfHigher(2);
         getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
         TestUtils.sleepForJenkinsDelayIfHigher(2);
+    }
+
+    @When("^change frame to \"([^\"]*)\"$")
+    public void changeFrameTo(String frame) {
+        if ("apicurio".equals(frame)) {
+            switchTo().frame("apicurio-frame");
+        } else if ("syndesis".equals(frame)) {
+            switchTo().parentFrame();
+        }
     }
 
     public SelenideElement getButton(String buttonTitle) {

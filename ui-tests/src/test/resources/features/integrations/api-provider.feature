@@ -423,7 +423,7 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration post collection" gets into "Running" state
     And verify that executing POST on API Provider route i-todo-integration-post-collection endpoint "/api/multi" with request '[{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]' returns status 200 and body
         """
-        {"body":[{"id":2,"completed":1,"task":"task2"}]},{"body":[{"id":3,"completed":1,"task":"task3"}]}
+        [{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]
         """
     And validate that number of all todos with task "task1" is "1"
     And validate that number of all todos with task "task2" is "1"
@@ -1150,4 +1150,4 @@ Feature: API Provider Integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration base path" gets into "Running" state
     When select the "TODO Integration base path" integration
-    Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-syndesis.*$
+    Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-syndesis.*/api$

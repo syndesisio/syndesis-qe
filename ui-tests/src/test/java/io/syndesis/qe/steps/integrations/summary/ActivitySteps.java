@@ -196,10 +196,9 @@ public class ActivitySteps {
         int numberOfRow = activityTab.getActivityLogRows(indexActivity - 1).size();
         for (int indexRow = 0; indexRow < numberOfRow; indexRow++) {
             assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
-                .matches("^.*(\\d+ ms|\\d+ seconds)|(NaN)$"); // NaN is workaround for gh-5715
-            //          prepared reproducer for gh-5715
-            //          assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
-            //              .doesNotMatch("^.*(NaN)$");
+                .matches("^.*(\\d+ ms|\\d+ seconds)$");
+            assertThat(activityTab.getColumnInRowInActivityLog(indexActivity - 1, indexRow, Activity.COLUMN.DURATION))
+                .doesNotMatch("^.*(NaN)$"); //reproducer for gh-5715
         }
     }
 }

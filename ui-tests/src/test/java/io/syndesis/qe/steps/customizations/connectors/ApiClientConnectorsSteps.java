@@ -14,6 +14,7 @@ import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
+import io.syndesis.qe.utils.UploadFile;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
@@ -97,12 +98,12 @@ public class ApiClientConnectorsSteps {
             }
             col = $$(By.tagName("input")).filter(attribute("type", "file"));
             assertThat(col).size().isEqualTo(1);
-            col.get(0).uploadFile(new File(filePath));
+            UploadFile.uploadFile(col.get(0), new File(filePath));
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             log.error("An error happened, retrying once");
             col = $$(By.tagName("input")).filter(attribute("type", "file"));
             assertThat(col).size().isEqualTo(1);
-            col.get(0).uploadFile(new File(filePath));
+            UploadFile.uploadFile(col.get(0), new File(filePath));
         }
     }
 }

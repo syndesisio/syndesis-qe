@@ -1,17 +1,20 @@
 package io.syndesis.qe.pages.integrations.importt;
 
-import com.codeborne.selenide.SelenideElement;
+import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.UploadFile;
+
 import org.openqa.selenium.By;
 
-import java.io.File;
+import com.codeborne.selenide.SelenideElement;
 
-import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
+import java.io.File;
 
 public class ImportIntegration extends SyndesisPageObject {
 
@@ -19,7 +22,7 @@ public class ImportIntegration extends SyndesisPageObject {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By FILE_INPUT = By.cssSelector("input[type='file']");
         public static final By FINISHED_PROGRESS_BAR = By.className("pficon-ok");
-        public static final By DRAG_AND_DROP_PLACE = By.className("syn-drop-zone");
+        public static final By DRAG_AND_DROP_PLACE = By.className("dnd-file-chooser__helpText");
     }
 
     @Override
@@ -37,18 +40,16 @@ public class ImportIntegration extends SyndesisPageObject {
      * @param file
      */
     public void importIntegration(File file) {
-        getRootElement().find(Element.FILE_INPUT).should(exist).uploadFile(file);
+        UploadFile.uploadFile(getRootElement().find(Element.FILE_INPUT).should(exist), file);
         $(Element.FINISHED_PROGRESS_BAR).shouldBe(visible);
     }
-
 
     /**
      * Import integration from browsers default download dir
      *
      * @param integrationName name of integration which was exported to browsers default download dir
-     * @throws InterruptedException
      */
-    public void importIntegration(String integrationName) throws InterruptedException {
+    public void importIntegration(String integrationName) {
 
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + integrationName + "-export.zip";
         File exportedIntegrationFile = new File(filePath);
@@ -65,8 +66,8 @@ public class ImportIntegration extends SyndesisPageObject {
         String filePath = CustomWebDriverProvider.DOWNLOAD_DIR + File.separator + integrationName + "-export.zip";
 
         DragAndDropFile.dragAndDropFile(new File(filePath),
-                $(Element.DRAG_AND_DROP_PLACE).shouldBe(visible),
-                Element.FINISHED_PROGRESS_BAR);
+            $(Element.DRAG_AND_DROP_PLACE).shouldBe(visible),
+            Element.FINISHED_PROGRESS_BAR);
 
         TestUtils.sleepForJenkinsDelayIfHigher(2);
     }

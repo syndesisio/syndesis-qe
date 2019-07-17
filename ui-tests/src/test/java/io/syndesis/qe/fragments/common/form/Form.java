@@ -4,6 +4,8 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.TestUtils;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -107,6 +109,9 @@ public class Form {
     }
 
     public void fillEditor(String data) {
+        TestUtils.waitFor(() -> $(By.className("CodeMirror")).exists(),
+            1, 20, "Text editor was not loaded in 20s");
+
         SelenideElement editor = $(By.className("CodeMirror")).shouldBe(visible);
         WebDriver driver = WebDriverRunner.getWebDriver();
         JavascriptExecutor jse = (JavascriptExecutor) driver;
