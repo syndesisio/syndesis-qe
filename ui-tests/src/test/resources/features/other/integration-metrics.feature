@@ -26,7 +26,7 @@ Feature: Metrics
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
     And fill text into text-editor
       | {"first_name":"John","company":"Red Hat"} |
@@ -158,7 +158,7 @@ Feature: Metrics
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
     And fill text into text-editor
       | {"first_name":"John","company":"Red Hat"} |

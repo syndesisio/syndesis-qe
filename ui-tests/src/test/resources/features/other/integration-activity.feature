@@ -25,13 +25,13 @@ Feature: Activity
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
     And fill text into text-editor
       | {"first_name":"John","company":"Red Hat"} |
     And fill in values by element data-testid
       | describe-data-shape-form-name-input | personInstance |
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish point
     Then check visibility of page "Choose a Finish Connection"
@@ -213,13 +213,13 @@ Feature: Activity
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
     And fill text into text-editor
       | {"first_name":"John","company":"Red Hat"} |
     And fill in values by element data-testid
       | describe-data-shape-form-name-input | personInstance |
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish point
     Then check visibility of page "Choose a Finish Connection"
@@ -286,13 +286,13 @@ Feature: Activity
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
     And fill text into text-editor
       | {"first_name":"John","company":"Red Hat"} |
     And fill in values by element data-testid
       | describe-data-shape-form-name-input | personInstance |
-    And click on the "Done" button
+    And click on the "Next" button
 
     # finish point
     Then check visibility of page "Choose a Finish Connection"

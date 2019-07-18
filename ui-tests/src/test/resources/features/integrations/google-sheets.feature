@@ -37,9 +37,8 @@ Feature: Google Sheets Connector
       | destinationname | sheets |
       | destinationtype | Queue  |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
-    #only available after type is selected
     And fill text into text-editor
       | {"id":"id"} |
     Then click on the "Done" button
@@ -346,9 +345,8 @@ Feature: Google Sheets Connector
       | destinationname | sheety |
       | destinationtype | Queue  |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
-    #only available after type is selected
     And fill text into text-editor
       | {"sheets":[{"sheet":"id"}]} |
     Then click on the "Done" button
