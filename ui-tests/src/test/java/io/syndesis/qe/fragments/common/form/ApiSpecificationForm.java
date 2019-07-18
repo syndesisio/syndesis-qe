@@ -18,7 +18,7 @@ public class ApiSpecificationForm {
         public static By URL = By.id("method");
         public static By UPLOAD_AN_OPENAPI_FILE = By.id("method-file");
         public static By USE_A_URL = By.id("method-url");
-        public static By CREATE_FROM_SCRATCH = By.xpath("//input[@type='radio' and ../text()[contains(.,'Create from scratch')]]");
+        public static By CREATE_FROM_SCRATCH = By.id("method-scratch");
     }
 
     public void upload(String source, String url) {
@@ -49,6 +49,6 @@ public class ApiSpecificationForm {
     }
 
     public void createFromScratch() {
-        $(Input.CREATE_FROM_SCRATCH).shouldBe(visible).setSelected(true);
+        $(Input.CREATE_FROM_SCRATCH).shouldBe(visible).click();
     }
 }

@@ -1,25 +1,28 @@
 package io.syndesis.qe.pages.integrations.editor.apiprovider.wizard;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+
+import io.syndesis.qe.logic.common.wizard.WizardPhase;
+import io.syndesis.qe.pages.SyndesisPageObject;
+
+import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.logic.common.wizard.WizardPhase;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import org.openqa.selenium.By;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Condition.visible;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReviewApiProviderActions extends SyndesisPageObject implements WizardPhase {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("api-provider-creation-step-validate");
-        public static final By OPERATIONS = By.cssSelector("div.openapi-review-actions ol.openapi-review-actions__operations");
+        public static final By ROOT = By.cssSelector(".open-api-review-actions");
+        public static final By OPERATIONS = By.xpath("//*[text()=\"IMPORTED\"]/following-sibling::*");
         public static final By TAGGED_OPERATIONS = By.cssSelector("div.openapi-review-actions" +
                 " ol.openapi-review-actions__operations ol.openapi-review-actions__operations");
-        public static final By WARNINGS = By.cssSelector(".openapi-review-actions__label--warning");
-        public static final By ERRORS = By.cssSelector(".openapi-review-actions__label--error");
+        public static final By WARNINGS = By.xpath("//*[text()=\"WARNINGS\"]");
+        public static final By ERRORS = By.xpath("//*[text()=\"ERRORS\"]");
     }
 
     private static class Button {
@@ -45,7 +48,7 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
     }
 
     public int getNumberOfOperations() {
-        String operations = $(Element.OPERATIONS).$("li strong").shouldBe(visible).getText().trim();
+        String operations = $(Element.OPERATIONS).shouldBe(visible).getText().trim().split(" ")[0];
         return Integer.parseInt(operations);
     }
 
@@ -71,7 +74,7 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
     private int getNumberFromLabel(By selector) {
         SelenideElement labelElement = $(selector);
         if (labelElement.exists()) {
-            return Integer.parseInt(labelElement.getText());
+            return Integer.parseInt(labelElement.$(By.className("label")).getText());
         } else {
             return 0;
         }
