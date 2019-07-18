@@ -23,6 +23,7 @@ Feature: Google Sheets Connector
 
 
   @create-spreadsheet
+  @big-spreadsheet-db
   Scenario: create spreadsheet
     When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
@@ -50,7 +51,6 @@ Feature: Google Sheets Connector
     And fill in values by element data-testid
       | title | brand-new-spreadsheet |
     Then click on the "Next" button
-    Then click on the "Next" button232
 
     When add integration step on position "1"
     And select the "Data Mapper" connection
