@@ -1,7 +1,5 @@
 # @sustainer: avano@redhat.com
 
-# Temporary ignore until the versioning of komodo-server is figured out, otherwise it will block the execution of the rest tests
-@ignore
 @syndesis-upgrade
 Feature: Syndesis Upgrade
 
@@ -29,12 +27,16 @@ Feature: Syndesis Upgrade
       And verify upgrade integration with task "X"
 
   @upgrade
+  @gh-6111
   Scenario: Syndesis Upgrade
     When perform test modifications
       And perform syndesis upgrade to newer version
     Then verify syndesis "upgraded" version
       And verify successful test modifications
       And verify upgrade integration with task "X"
+    And execute SQL command "CREATE SCHEMA AUTHORIZATION sampledb;"
+    And execute SQL command "ALTER TABLE contact SET SCHEMA sampledb;"
+    And execute SQL command "ALTER TABLE todo SET SCHEMA sampledb;"
     When rebuild integration with name "UPGRADE INTEGRATION NAME"
       # Integration name was updated, so this bc is not valid anymore
       And delete buildconfig with name "i-upgrade"

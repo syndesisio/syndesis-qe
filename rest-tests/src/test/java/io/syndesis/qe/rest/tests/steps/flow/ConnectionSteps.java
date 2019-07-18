@@ -80,7 +80,10 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DB.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DB.getId());
         super.addProperty(StepProperty.ACTION, "sql-connector");
-        super.addProperty(StepProperty.PROPERTIES, TestUtils.map("query", sqlQuery));
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
+            "query", sqlQuery,
+            "batch", true
+        ));
         super.createStep();
     }
 
@@ -91,8 +94,9 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.ACTION, "sql-stored-connector");
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
             "procedureName", procedureName,
-            "template", DbUtils.getStoredProcedureTemplate(RestTestsUtils.Connection.DB.getId(), procedureName, false))
-        );
+            "template", DbUtils.getStoredProcedureTemplate(RestTestsUtils.Connection.DB.getId(), procedureName, false),
+            "batch", true
+        ));
         super.createStep();
     }
 

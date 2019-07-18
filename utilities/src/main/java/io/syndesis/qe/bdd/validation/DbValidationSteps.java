@@ -169,9 +169,9 @@ public class DbValidationSteps {
             dbUtils = new DbUtils("postgresql");
         }
         int oldTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        TestUtils.sleepIgnoreInterrupt(40000L);
+        TestUtils.sleepIgnoreInterrupt(20000L);
         int newTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        assertThat(newTaskCount).isGreaterThan(oldTaskCount + 5);
+        assertThat(newTaskCount).isGreaterThan(oldTaskCount);
     }
 
     @Then("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")
