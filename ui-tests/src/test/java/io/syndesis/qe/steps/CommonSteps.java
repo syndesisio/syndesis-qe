@@ -819,7 +819,7 @@ public class CommonSteps {
     private void fillAndValidateSalesforce() {
         Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.SALESFORCE);
 
-        if (isStringInUrl("review", 5) || $(By.className("alert-success")).is(visible)) {
+        if (isStringInUrl("%22message%22:%22Successfully%20authorized", 5)) {
             log.info("Salesforce is already connected");
             return;
         }
