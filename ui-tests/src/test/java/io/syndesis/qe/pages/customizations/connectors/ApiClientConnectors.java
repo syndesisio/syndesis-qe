@@ -11,6 +11,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 public class ApiClientConnectors extends SyndesisPageObject {
@@ -43,7 +44,8 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     @Override
     public boolean validate() {
-        return getRootElement().exists();
+        ElementsCollection pageTitleCollection = $$(".simple-page-header__title-text").filter(text("API Client Connectors"));
+        return pageTitleCollection.size() == 1;
     }
 
     public boolean isConnectorPresent(String connectorName) {
