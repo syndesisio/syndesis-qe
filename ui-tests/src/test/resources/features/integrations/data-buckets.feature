@@ -83,7 +83,7 @@ Feature: Integration - Databucket
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
 
-    When fill in periodic query input with "select * from contact" value
+    When fill in periodic query input with "select * from contact limit(1)" value
     And fill in period input with "10" value
     And select "Minutes" from sql dropdown
     And click on the "Next" button
@@ -91,8 +91,8 @@ Feature: Integration - Databucket
 
     When select the "QE Google Mail" connection
     And select "Send Email" integration action
-    And fill in values by element ID
-      | Email to | jbossqa.fuse@gmail.com |
+    And fill in values by element data-testid
+      | to | jbossqa.fuse@gmail.com |
     And click on the "Done" button
 
     # add another connection
