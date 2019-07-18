@@ -45,7 +45,25 @@ public class Form {
         fillBy(FillBy.ID, data);
     }
 
+    /**
+     * Fill elements by data testid but skip non-existent elements
+     *
+     * @param data
+     */
     public void fillByTestId(Map<String, String> data) {
+        fillBy(FillBy.TEST_ID, data);
+    }
+
+    /**
+     * Test if all input elements exist then fill them by data testid
+     *
+     * @param data
+     */
+    public void forceFillByTestId(Map<String, String> data) {
+        for (String testId : data.keySet()) {
+            TestUtils.waitFor(() -> $("[data-testid='" + testId + "']").exists(), 1, 15, "Fill in element " + testId + " was not found");
+        }
+
         fillBy(FillBy.TEST_ID, data);
     }
 
@@ -248,7 +266,7 @@ public class Form {
         }
     }
 
-    public static void waitForInpups(int timeInSeconds) {
+    public static void waitForInputs(int timeInSeconds) {
         $(By.cssSelector(".form-control")).waitUntil(exist, timeInSeconds * 1000);
     }
 

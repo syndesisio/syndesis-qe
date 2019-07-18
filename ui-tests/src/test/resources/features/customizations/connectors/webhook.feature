@@ -27,10 +27,8 @@ Feature: Webhook extension
     And fill in values by element data-testid
       | contextpath | test-webhook |
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
-    # wait for UI to open definition
-    And sleep for jenkins delay or "5" seconds
     And fill text into text-editor
       | {"author":"New Author","title":"Book Title"} |
     And click on the "Next" button

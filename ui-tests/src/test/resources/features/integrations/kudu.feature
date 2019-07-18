@@ -126,10 +126,8 @@ Feature: Kudu connector
     And select "Subscribe" integration action
     And fill in "topic" action configure component input with "news" value
     And click on the "Next" button
-    And fill in values by element data-testid
+    And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
-    # wait for UI to open definition
-    And sleep for jenkins delay or "5" seconds
     And fill text into text-editor
       | {"key" : 1,"value" : "FirstValue"} |
     And click on the "Done" button
