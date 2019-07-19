@@ -427,12 +427,6 @@
 				<artifactId>openshift-client</artifactId>
 				<version>${openshift.client.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>io.syndesis.server</groupId>
-				<artifactId>syndesis-cli</artifactId>
-				<version>${syndesis.version}</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
