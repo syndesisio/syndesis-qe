@@ -12,20 +12,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WildFlyTemplate {
 
-    public static void deploy(String gitURL, String appName) {
+    public static void deploy(String gitURL, String appName, String branchName) {
         if (!TestUtils.isDcDeployed(appName)) {
-//            Template template;
-//            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
-//                template = OpenShiftUtils.getInstance().templates().load(is).get();
-//            } catch (IOException ex) {
-//                throw new IllegalArgumentException("Unable to read template ", ex);
-//            }
-//
-//            Map<String, String> templateParams = new HashMap<>();
-//            templateParams.put("GITHUB_REPO", gitURL);
-//            templateParams.put("APPLICATION_NAME", appName);
-//
-//            OpenShiftUtils.getInstance().templates().withName(appName).delete();
+            //            Template template;
+            //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
+            //                template = OpenShiftUtils.getInstance().templates().load(is).get();
+            //            } catch (IOException ex) {
+            //                throw new IllegalArgumentException("Unable to read template ", ex);
+            //            }
+            //
+            //            Map<String, String> templateParams = new HashMap<>();
+            //            templateParams.put("GITHUB_REPO", gitURL);
+            //            templateParams.put("APPLICATION_NAME", appName);
+            //
+            //            OpenShiftUtils.getInstance().templates().withName(appName).delete();
 
             OpenShiftUtils.getInstance().imageStreams().createOrReplaceWithNew()
                 .editOrNewMetadata()
@@ -51,10 +51,14 @@ public class WildFlyTemplate {
                 .done();
 
             //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
-            OpenShiftUtils.binary().execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-wildfly.yml").toAbsolutePath().toString());
-            OpenShiftUtils.binary().execute("new-app", "wildfly-s2i-template", "-p", "GITHUB_REPO=" + gitURL, "-p", "APPLICATION_NAME=" + appName);
+            OpenShiftUtils.binary()
+                .execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-wildfly.yml").toAbsolutePath().toString());
+            OpenShiftUtils.binary()
+                .execute("new-app", "wildfly-s2i-template", "-p", "GITHUB_REPO=" + gitURL, "-p", "APPLICATION_NAME=" + appName, "-p",
+                    "SOURCE_REF=" + (branchName != null ? branchName : "master"));
 
-//            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams));
+            //            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template,
+            //            templateParams));
 
             try {
                 log.info("Waiting for " + appName + " to be ready");
@@ -62,7 +66,6 @@ public class WildFlyTemplate {
             } catch (InterruptedException | TimeoutException e) {
                 log.error("Wait for " + appName + " failed ", e);
             }
-
         }
     }
 
@@ -74,5 +77,4 @@ public class WildFlyTemplate {
         OpenShiftUtils.getInstance().imageStreams().withName("wildfly-130-centos7").delete();
         OpenShiftUtils.getInstance().buildConfigs().withName(appName).delete();
     }
-
 }
