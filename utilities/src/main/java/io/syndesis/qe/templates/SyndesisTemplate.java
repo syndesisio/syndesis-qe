@@ -11,6 +11,7 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
 import org.apache.commons.codec.binary.Base64;
+import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -157,7 +159,7 @@ public class SyndesisTemplate {
         deployOperator();
         importProdImages();
         deploySyndesisViaOperator();
-        fixMavenRepos();
+        replaceMavenRepos();
         patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.getInstance().deploymentConfigs().withName("broker-amq").delete();
@@ -310,7 +312,7 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void fixMavenRepos() {
+    private static void replaceMavenRepos() {
         String replacementRepo = null;
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
@@ -323,9 +325,11 @@ public class SyndesisTemplate {
                 replacementRepo = TestConfiguration.upstreamRepository();
             } else {
                 // no replacement, will use maven central
+                log.warn("No replacement repo, skipping");
                 return;
             }
         }
+        log.info("Replacing maven repo with {}", replacementRepo);
 
         Optional<ConfigMap> cm = OpenShiftUtils.getInstance().configMaps().list().getItems().stream()
             .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
@@ -345,6 +349,7 @@ public class SyndesisTemplate {
         // ensure maven repos in config map (not there by default in upstream)
         // we should ideally parse the yaml, but this should be good for now
         if (!data.contains("maven:")) {
+            log.warn("No maven repos specified in config, adding the defaults");
             String mavenRepos = "\nmaven:\n" +
                 "  repositories:\n" +
                 "    01_maven_central: https://repo1.maven.org/maven2\n" +
@@ -352,7 +357,10 @@ public class SyndesisTemplate {
                 "    03_jboss_ea: https://repository.jboss.org/\n";
             data += mavenRepos;
         }
-        data = data.replaceAll("https://repo1.maven.org/maven2", replacementRepo);
+        String repoRegex = "https://.*\\.maven(\\.apache)?\\.org/maven2";
+        Assertions.assertThat(data).as("The repo you are trying to replace does not exist in the config")
+            .containsPattern(Pattern.compile(repoRegex, Pattern.MULTILINE));
+        data = data.replaceAll(repoRegex, replacementRepo);
 
         OpenShiftUtils.getInstance().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
     }
