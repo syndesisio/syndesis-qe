@@ -19,6 +19,7 @@ objects:
       source:
         git:
           uri: ${GITHUB_REPO}
+          ref: ${SOURCE_REF}
         type: Git
       strategy:
         sourceStrategy:
@@ -127,3 +128,7 @@ parameters:
   - name: GITHUB_REPO
     description: The URL of GitHub repository to build and deploy
     required: true
+  - description: Git branch/tag reference
+    name: SOURCE_REF
+    required: false
+    value: master
