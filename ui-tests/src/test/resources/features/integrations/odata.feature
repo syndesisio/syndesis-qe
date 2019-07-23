@@ -171,10 +171,10 @@ Feature: OData Connector
     # check button to make sure correct page is loaded
     Then check visibility of the "Next" button
     When fill in values by element data-testid
-      | resourcepath      | Products        |
-      | keypredicate      | <key_predicate> |
-      | filteralreadyseen | <filter>        |
-      | splitresult       | <split>         |
+      | resourcepath      | <resource_collection> |
+      | keypredicate      | <key_predicate>       |
+      | filteralreadyseen | <filter>              |
+      | splitresult       | <split>               |
     And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
@@ -182,7 +182,7 @@ Feature: OData Connector
     # Add OData update as finish step
     When select the "OData" connection
     And select "Update" integration action
-    When select "Products" from "resourcePath" dropdown
+    When select "<resource_collection>" from "resourcePath" dropdown
     And click on the "Next" button
 
     # Add Data mapper (checks output datashape of OData read action is correct)
@@ -190,9 +190,8 @@ Feature: OData Connector
     And select "Data Mapper" integration step
     And open data mapper collection mappings
     And create data mapper mappings
-      | Name | Name         |
-      | Name | Description  |
-      | ID   | keyPredicate |
+      | <mapping_one> | <mapping_two> |
+      | ID            | keyPredicate  |
     And click on the "Done" button
 
     # Save integration and publish it
@@ -204,17 +203,76 @@ Feature: OData Connector
 
     #Validate logs output
     When sleep for "5000" ms
-    Then validate that OData service contains entity with "Description":"<value>" property:value pair in "Products" collection
+    Then validate that OData service contains entity with "<key>":"<value>" property:value pair in "<resource_collection>" collection
 
-    @gh-5386
+  @gh-5386
     Examples:
-      | name            | key_predicate | filter | split | value      |
-      | wrong_datashape | 2             | false  | false | 1UMTS PDA  |
+      | name            | resource_collection | key_predicate | filter | split | key         | value      | mapping_one | mapping_two |
+      | wrong_datashape | Products            | 2             | false  | false | Description | 1UMTS PDA  | Name        | Description |
       # When sending an array to data mapper, only the last item is updated - checking that the description of last item is same as it's name
-      | calling_null    |               | false  | false | Flat Basic |
+      | calling_null    | Products            |               | false  | false | Description | Flat Basic | Name        | Description |
 
 
-    @gh-5533
+  @gh-5533
     Examples:
-      | name | key_predicate | filter | split | value     |
-      | NPE  | 2             | true   | true  | 1UMTS PDA |
+      | name | resource_collection | key_predicate | filter | split | key         | value     | mapping_one | mapping_two |
+      | NPE  | Products            | 2             | true   | true  | Description | 1UMTS PDA | Name        | Description |
+
+  @gh-5241
+    Examples:
+      | name                            | resource_collection | key_predicate | filter | split | key       | value    | mapping_one | mapping_two |
+      | string predicate without quotes | Users               | coolBob       | true   | true  | FirstName | CoolName | LastName    | FirstName   |
+
+  @gh-5060
+  @reproducer
+  @integrations-odata-read-update
+  Scenario: Read enum mapping from OData service tests
+
+    # Create new integration
+    When click on the "Create Integration" link to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # Add OData connection as start step
+    When selects the "OData" connection
+    And select "Read" integration action
+    # check button to make sure correct page is loaded
+    Then check visibility of the "Next" button
+    When fill in values by element data-testid
+      | resourcepath      | Users   |
+      | keypredicate      | coolBob |
+      # for gh-6294 the filteralreadyseen can be set to true
+      | filteralreadyseen | false   |
+      | splitresult       | true    |
+    And click on the "Next" button
+
+    Then check that position of connection to fill is "Finish"
+
+    # Add OData update as finish step
+    When select the "OData" connection
+    And select "Update" integration action
+    When select "Users" from "resourcePath" dropdown
+    And click on the "Next" button
+
+    # Add Data mapper (checks output datashape of OData read action is correct)
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    When define constant "whatever" of type "String" in data mapper
+    And open data bucket "Constants"
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | Gender   | Gender       |
+      | whatever | keyPredicate |
+    And click on the "Done" button
+
+    # Save integration and publish it
+    When publish integration
+    And set integration name "Enum"
+    And publish integration
+    Then Integration "Enum" is present in integrations list
+    And wait until integration "Enum" gets into "Running" state
+
+    #Validate logs output
+    When sleep for "1000" ms
+    Then check that "whatever" entity in "Users" collection contains
+      | Gender | MALE |

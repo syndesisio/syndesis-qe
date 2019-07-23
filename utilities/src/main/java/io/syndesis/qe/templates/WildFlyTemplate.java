@@ -66,6 +66,14 @@ public class WildFlyTemplate {
             } catch (InterruptedException | TimeoutException e) {
                 log.error("Wait for " + appName + " failed ", e);
             }
+
+            try {
+                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(appName).contains("OData service has started"), 5 * 60 * 1000L);
+            } catch (TimeoutException | InterruptedException e) {
+                log.error(appName + " pod logs did not contain expected message. Pod logs:");
+                log.error(OpenShiftUtils.getPodLogs(appName));
+            }
+
         }
     }
 
@@ -76,5 +84,6 @@ public class WildFlyTemplate {
         OpenShiftUtils.getInstance().imageStreams().withName(appName).delete();
         OpenShiftUtils.getInstance().imageStreams().withName("wildfly-130-centos7").delete();
         OpenShiftUtils.getInstance().buildConfigs().withName(appName).delete();
+        OpenShiftUtils.getInstance().pods().withLabel("deploymentconfig", "odata").delete();
     }
 }
