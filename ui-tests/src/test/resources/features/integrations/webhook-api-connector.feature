@@ -89,10 +89,10 @@ Feature: Integration - Webhook to API connector
 
     When select the "Webhook" connection
     And select "Incoming Webhook" integration action
-    And fill in values
-      | Webhook Token | test-webhook |
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
     And click on the "Next" button
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
 
@@ -106,5 +106,10 @@ Feature: Integration - Webhook to API connector
     When navigate to the "Integrations" page
     And wait until integration "webhook-gh-3727" gets into "Running" state
     And select the "webhook-gh-3727" integration
-        # here the original issue caused HTTP ERROR 500
-    And invoke post request to webhook in integration webhook-gh-3727 with token test-webhook and body {}
+
+    # need to add a task, otherwise the /api path returns 404
+    And inserts into "todo" table
+      | any task |
+
+    # here the original issue caused HTTP ERROR 500
+    Then invoke post request to webhook in integration webhook-gh-3727 with token test-webhook and body {}
