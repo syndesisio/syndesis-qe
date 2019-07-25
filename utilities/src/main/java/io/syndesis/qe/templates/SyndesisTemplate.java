@@ -11,12 +11,13 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
 import org.apache.commons.codec.binary.Base64;
-import org.assertj.core.api.Assertions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
 
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -159,7 +159,7 @@ public class SyndesisTemplate {
         deployOperator();
         importProdImages();
         deploySyndesisViaOperator();
-        replaceMavenRepos();
+        addMavenRepo();
         patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.getInstance().deploymentConfigs().withName("broker-amq").delete();
@@ -312,7 +312,7 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void replaceMavenRepos() {
+    private static void addMavenRepo() {
         String replacementRepo = null;
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
@@ -325,11 +325,11 @@ public class SyndesisTemplate {
                 replacementRepo = TestConfiguration.upstreamRepository();
             } else {
                 // no replacement, will use maven central
-                log.warn("No replacement repo, skipping");
+                log.warn("No repo to add, skipping");
                 return;
             }
         }
-        log.info("Replacing maven repo with {}", replacementRepo);
+        log.info("Adding maven repo {}", replacementRepo);
 
         Optional<ConfigMap> cm = OpenShiftUtils.getInstance().configMaps().list().getItems().stream()
             .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
@@ -346,23 +346,30 @@ public class SyndesisTemplate {
         }
         String data = cm.get().getData().get("application.yml");
 
-        // ensure maven repos in config map (not there by default in upstream)
-        // we should ideally parse the yaml, but this should be good for now
-        if (!data.contains("maven:")) {
-            log.warn("No maven repos specified in config, adding the defaults");
-            String mavenRepos = "\nmaven:\n" +
-                "  repositories:\n" +
-                "    01_maven_central: https://repo1.maven.org/maven2\n" +
-                "    02_redhat_ea_repository: https://maven.repository.redhat.com/ga/\n" +
-                "    03_jboss_ea: https://repository.jboss.org/\n";
-            data += mavenRepos;
+        YAMLFactory yf = new YAMLFactory();
+        ObjectMapper mapper = new ObjectMapper(yf);
+        ObjectNode root = null;
+        try {
+            root = (ObjectNode) mapper.readTree(data);
+        } catch (IOException e) {
+            fail("Could not parse server config map", e);
         }
-        String repoRegex = "https://.*\\.maven(\\.apache)?\\.org/maven2";
-        Assertions.assertThat(data).as("The repo you are trying to replace does not exist in the config")
-            .containsPattern(Pattern.compile(repoRegex, Pattern.MULTILINE));
-        data = data.replaceAll(repoRegex, replacementRepo);
+
+        if (!root.has("maven")) {
+            log.warn("No maven repos specified in config, adding only nexus");
+            root.putObject("maven").putObject("repositories");
+        }
+
+        root.with("maven").with("repositories").put("fuse_nexus", replacementRepo);
+
+        try {
+            data = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
+        } catch (JsonProcessingException e) {
+            fail("Could not write server config map", e);
+        }
 
         OpenShiftUtils.getInstance().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
+        OpenShiftUtils.getInstance().deployLatest("syndesis-server");
     }
 
     /**
