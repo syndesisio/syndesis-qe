@@ -94,6 +94,9 @@ public class ConditionalFlowSteps {
 
     @Then("^validate that condition count is equal to (.)$")
     public void validateConditionCount(int count) {
+        TestUtils.waitFor(() -> $$(EditFlowStepElements.CONDITION_LIST_ITEM).size() > 0,
+            1, 20, "No condition found");
+
         assertThat($$(EditFlowStepElements.CONDITION_LIST_ITEM)).hasSize(count);
     }
 
