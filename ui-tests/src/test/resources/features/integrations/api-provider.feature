@@ -1151,3 +1151,73 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration base path" gets into "Running" state
     When select the "TODO Integration base path" integration
     Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-syndesis.*/api$
+
+  @api-provider-conditional-flow
+  Scenario: Conditional flows used in API Provider
+    When create an API Provider integration "conditional-provider" from file swagger/connectors/todo.json
+    And select API Provider operation flow Create new task
+    Then check flow title is "Create new task"
+    When add integration step on position "0"
+    And select "Conditional Flows" integration step
+
+    And fill in values by element data-testid
+      | flowconditions-0-condition | ${body.body.completed} == -1 |
+      | usedefaultflow             | true                         |
+    And click on the "Done" button
+    
+    When configure condition on position 2
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "DELETE FROM TODO WHERE task = :#task" value
+    And click on the "Next" button
+
+    And add integration step on position "0"
+    And select the "Data Mapper" connection
+    And create data mapper mappings
+      | body.task | task |
+    And click on the "Done" button
+    And return to primary flow from integration flow
+
+    When configure condition on position 3
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO TODO (task, completed) VALUES (:#task, :#completed)" value
+    And click on the "Next" button
+
+    And add integration step on position "0"
+    And select the "Data Mapper" connection
+    And create data mapper mappings
+      | body.task      | task      |
+      | body.completed | completed |
+    And click on the "Done" button
+    And return to primary flow from integration flow
+
+    #Adding a constant response for validating the requests later
+    #The tests don't care about the response body, only the behavior of Conditional flows
+    And add integration step on position "1"
+    And select the "Data Mapper" connection
+    And define constant "1" of type "Integer" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | 1 | body.id |
+    And click on the "Done" button
+
+    And click on the "Save" link
+    And publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "conditional-provider" gets into "Running" state
+    When select the "conditional-provider" integration
+
+    #The body is checked only for the step to pass, more important checks are validating the number of TODOs in the table
+    Then verify that executing POST on API Provider route i-conditional-provider endpoint "/api" with request '{"completed":1,"task":"task7", "id": 1}' returns status 201 and body
+    """
+{"id":1}
+    """
+    And validate that number of all todos with task "task7" is "1"
+    Then verify that executing POST on API Provider route i-conditional-provider endpoint "/api" with request '{"completed":-1,"task":"task7", "id": 1}' returns status 201 and body
+    """
+{"id":1}
+    """
+    And validate that number of all todos with task "task7" is "0"

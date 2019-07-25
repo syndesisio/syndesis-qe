@@ -7,7 +7,6 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
 
-import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -31,8 +30,10 @@ public class ConditionalFlowSteps {
         private static By ICON_DELETE = By.className("fa-trash-o");
         private static By CONDITION_LIST_ITEM = By.className("form-control");
         private static By OPEN_FLOW_CONDITION_BUTTON_PARENT = By.className("list-view-pf-actions");
+        private static By FLOW_DROPDOWN_CONTAINER = By.className("pf-c-dropdown");
         private static By FLOW_DROPDOWN = By.className("pf-c-dropdown__toggle-icon");
         private static By FLOW_DROPDOWN_ITEM = By.className("pf-c-dropdown__menu-item");
+        private static By FLOW_BACK_BUTTON = By.cssSelector("a[data-testid=\"conditions-back-button-item-back-button\"]");
 
         private static By getConditionOnPosition(String position) {
             return By.cssSelector("[data-testid=\"flowconditions-X-condition\"]".replace("X", position));
@@ -71,7 +72,7 @@ public class ConditionalFlowSteps {
     //  |0          |DOWN     |
     //  |1          |DELETE   |
     @When("^click on the condition icon$")
-    public void sendEmail(DataTable data) {
+    public void clickOnConditionIcon(DataTable data) {
         for (List<String> row : data.cells()) {
             SelenideElement selectedCondition = $(EditFlowStepElements.getConditionIconsOnPosition(row.get(0))).shouldBe(visible);
             By iconSelector;
@@ -112,7 +113,7 @@ public class ConditionalFlowSteps {
     @When("^return to primary flow from integration flow$")
     public void goBackToPrimaryFlow() {
         openDropdownWithConditions();
-        new CommonSteps().clickOnLink("Back to Primary Flow");
+        $(EditFlowStepElements.FLOW_BACK_BUTTON).shouldBe(visible).click();
     }
 
     @Then("^check that conditional flow step contains (\\d+) flows$")
@@ -147,7 +148,7 @@ public class ConditionalFlowSteps {
 
         TestUtils.waitFor(() -> {
             List<SelenideElement> flowDropdown =
-                $$(By.tagName("Button"))
+                $$(EditFlowStepElements.FLOW_DROPDOWN_CONTAINER)
                     .stream()
                     .filter(e -> e.$(EditFlowStepElements.FLOW_DROPDOWN).exists())
                     .collect(Collectors.toList());
@@ -157,9 +158,11 @@ public class ConditionalFlowSteps {
         log.info("dropdown for back button was found!");
 
         List<SelenideElement> flowDropdown =
-            $$(By.tagName("Button"))
+            $$(EditFlowStepElements.FLOW_DROPDOWN_CONTAINER)
                 .stream()
                 .filter(e -> e.$(EditFlowStepElements.FLOW_DROPDOWN).exists())
+                .filter(e -> e.parent().text().contains("Flow"))
+                .map(e -> e.$(By.tagName("button")))
                 .collect(Collectors.toList());
         assertThat(flowDropdown).hasSize(1);
         flowDropdown.get(0).click();
