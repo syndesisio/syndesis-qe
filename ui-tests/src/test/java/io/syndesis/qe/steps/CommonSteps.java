@@ -136,7 +136,8 @@ public class CommonSteps {
         $(Element.LOGIN_BUTTON).shouldBe(visible).click();
 
         try {
-            OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("login"), 20 * 1000);
+            OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("login") ||
+                $(By.cssSelector("a[title=\"Log in with htpasswd\"]")).is(visible), 20 * 1000);
         } catch (InterruptedException | TimeoutException e) {
             fail("Log in page was never loaded");
         }
@@ -188,7 +189,7 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if (currentUrl.contains("rhcloud")) {
+        } else if (currentUrl.contains("rhcloud") || currentUrl.contains("crc")) {
             $(By.partialLinkText("htpasswd")).click();
             MinishiftLogin minishiftLogin = new MinishiftLogin();
             minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
