@@ -159,6 +159,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>io.syndesis.server</groupId>
+				<artifactId>syndesis-cli</artifactId>
+				<version>${syndesis.version}</version>
+			</dependency>
+
+			<dependency>
 				<groupId>commons-net</groupId>
 				<artifactId>commons-net</artifactId>
 				<version>${ftp.client.version}</version>
