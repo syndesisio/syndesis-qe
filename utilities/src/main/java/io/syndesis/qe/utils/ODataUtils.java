@@ -14,12 +14,12 @@ public class ODataUtils {
 
     public static String getOpenshiftRoute() {
         String host = OpenShiftUtils.getInstance().routes().withName("odata").get().getSpec().getHost();
-        return "http://" + host + "/TripPin/";
+        return "http://" + host + "/TripPin/odata.svc/";
     }
 
     public static String getOpenshiftService() {
         String clusterIp = OpenShiftUtils.getInstance().services().withName("odata").get().getSpec().getClusterIP();
-        return "http://" + clusterIp + ":8080/TripPin";
+        return "http://" + clusterIp + ":8080/TripPin/odata.svc/";
     }
 
     public static String readResourceFile(URL file) {

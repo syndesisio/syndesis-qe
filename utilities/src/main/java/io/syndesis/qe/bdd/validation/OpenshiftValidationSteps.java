@@ -102,7 +102,7 @@ public class OpenshiftValidationSteps {
 
     @Given("^deploy OData server$")
     public void deployODataServer() {
-        WildFlyTemplate.deploy("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git", "odata");
+        WildFlyTemplate.deploy("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git", "odata", null);
     }
 
     @Given("^wait until \"([^\"]*)\" pod is reloaded$")
