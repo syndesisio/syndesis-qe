@@ -142,6 +142,8 @@ metadata:
     syndesis.io/app: syndesis
     syndesis.io/type: operator
     syndesis.io/component: syndesis-operator
+imagePullSecrets:
+  - name: "syndesis-pull-secret"
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1beta1
