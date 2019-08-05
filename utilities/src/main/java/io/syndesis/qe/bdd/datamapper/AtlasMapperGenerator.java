@@ -2,6 +2,19 @@ package io.syndesis.qe.bdd.datamapper;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.common.model.DataShape;
+import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.StepAction;
+import io.syndesis.common.model.action.StepDescriptor;
+import io.syndesis.common.model.integration.Step;
+import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.common.util.Json;
+import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
+import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.endpoints.AtlasmapEndpoint;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,18 +51,6 @@ import io.atlasmap.xml.v2.XmlComplexType;
 import io.atlasmap.xml.v2.XmlDataSource;
 import io.atlasmap.xml.v2.XmlInspectionResponse;
 import io.atlasmap.xml.v2.XmlNamespaces;
-import io.syndesis.common.model.DataShape;
-import io.syndesis.common.model.DataShapeKinds;
-import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.StepAction;
-import io.syndesis.common.model.action.StepDescriptor;
-import io.syndesis.common.model.integration.Step;
-import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.common.util.Json;
-import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
-import io.syndesis.qe.bdd.entities.StepDefinition;
-import io.syndesis.qe.endpoints.AtlasmapEndpoint;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -225,7 +226,7 @@ public class AtlasMapperGenerator {
             atlasMapping.getDataSource().add(s);
         }
 
-        atlasMapping.setName("REST." + UUID.randomUUID().toString());
+        atlasMapping.setName("REST." + UUID.randomUUID().toString().replaceAll("-", ""));
         atlasMapping.setLookupTables(new LookupTables());
         atlasMapping.setProperties(new Properties());
         atlasMapping.getDataSource().add(processTarget(followingStep));
