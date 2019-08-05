@@ -35,7 +35,7 @@ public class PublicOauthProxyTemplate {
                 "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()
             );
             try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME));
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
             } catch (InterruptedException | TimeoutException e) {
                 log.error("Wait for {} template failed ", TEMPLATE_NAME, e);
             }
@@ -44,26 +44,17 @@ public class PublicOauthProxyTemplate {
 
     public static void cleanUp() {
         log.info("Cleaning up everything for {} template", TEMPLATE_NAME);
-
-        OpenShiftUtils.getInstance().getServiceAccounts().stream().filter(sa -> "syndesis-public-oauthproxy".equals(sa.getMetadata().getName()))
-            .findFirst()
-            .ifPresent(sa -> OpenShiftUtils.getInstance().deleteServiceAccount(sa));
-        OpenShiftUtils.getInstance().getRoleBindings().stream().filter(rb -> "syndesis-public-oauthproxy:viewers".equals(rb.getMetadata().getName()))
-            .findFirst().ifPresent(rb -> OpenShiftUtils.getInstance().deleteRoleBinding(rb));
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(TEMPLATE_NAME).delete();
+        OpenShiftUtils.getInstance().services().withName(TEMPLATE_NAME).delete();
+        OpenShiftUtils.getInstance().routes().withName("syndesis-public-api").delete();
+        OpenShiftUtils.getInstance().serviceAccounts().withName(TEMPLATE_NAME).delete();
+        OpenShiftUtils.getInstance().roleBindings().withName("syndesis-public-oauthproxy:viewers").delete();
         // OpenShiftUtils.getInstance() doesn't provide clusterrolebindings
         clearClusterRoleBindings();
-        OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-public-oauthproxy".equals(is.getMetadata().getName()))
+        OpenShiftUtils.getInstance().deleteTemplate(TEMPLATE_NAME);
+        OpenShiftUtils.getInstance().getPods().stream().filter(pod -> pod.getMetadata().getName().contains("syndesis-public-oauthproxy"))
             .findFirst()
-            .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> "syndesis-public-oauthproxy".equals(service.getMetadata().getName()))
-            .findFirst()
-            .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        OpenShiftUtils.getInstance().getRoutes().stream().filter(route -> "syndesis-public-api".equals(route.getMetadata().getName())).findFirst()
-            .ifPresent(route -> OpenShiftUtils.getInstance().deleteRoute(route));
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "syndesis-public-oauthproxy".equals(dc.getMetadata().getName()))
-            .findFirst()
-            .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-
+            .ifPresent(pod -> OpenShiftUtils.getInstance().deletePod(pod));
         TestUtils.sleepIgnoreInterrupt(10 * 1000);
     }
 

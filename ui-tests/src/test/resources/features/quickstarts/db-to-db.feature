@@ -5,6 +5,8 @@
 @database
 @datamapper
 @quickstart-db-2-db
+#(https://issues.jboss.org/browse/FUSEQE-4592)
+@ignore
 Feature: Quickstart db to db
 
   Background: Clean application state and prepare what is needed
