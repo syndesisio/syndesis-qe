@@ -3,6 +3,7 @@
 @ui
 @publicapi
 @export-import
+@gh-6360
 Feature: Import and export integration test
 
   Background: Clean application state
@@ -104,17 +105,15 @@ Feature: Import and export integration test
     When navigate to the "Integrations" page
     And select the "integration3" integration
     And open CI/CD dialog
-#   gh-5917
-#   Then check that CI/CD dialog contains tags
-#     | anotherTag1 | anotherTag2 | tag13 | tag1 | tag2 | tag12 |
+
     Then check that CI/CD dialog contains tags
-      | anotherTag1 | anotherTag2 | tag13 |
+      | anotherTag1 | anotherTag2 | tag13 | tag1 | tag2 | tag12 |
     And check that only following tags are checked in CI/CD dialog
       | anotherTag1 | anotherTag2 | tag13 |
     # Check that some tags are not used gh-5917
-#    And check that tag tag1 is used in 0 integrations
-#    And check that tag tag2 is used in 0 integrations
-#    And check that tag tag12 is used in 0 integrations
+    And check that tag tag1 is used in 0 integrations
+    And check that tag tag2 is used in 0 integrations
+    And check that tag tag12 is used in 0 integrations
     And check that tag tag13 is used in 1 integrations
     And check that tag anotherTag1 is used in 1 integrations
     And check that tag anotherTag2 is used in 1 integrations
@@ -214,16 +213,14 @@ Feature: Import and export integration test
     And select the "integration3" integration
     And open CI/CD dialog
 #   gh-5917
-#   Then check that CI/CD dialog contains tags
-#     | anotherTag1 | anotherTag2 | tag13 | tag12 | tag1 | tag2 |
     Then check that CI/CD dialog contains tags
-      | anotherTag1 | anotherTag2 | tag13 | tag12 |
+      | anotherTag1 | anotherTag2 | tag13 | tag12 | tag1 | tag2 |
     And check that only following tags are checked in CI/CD dialog
       | anotherTag1 | anotherTag2 | tag13 | tag12 |
     # Check that some tags are not used gh-5917
-#    And check that tag tag1 is used in 0 integrations
-#    And check that tag tag2 is used in 0 integrations
-#    And check that tag tag12 is used in 0 integrations
+    And check that tag tag1 is used in 0 integrations
+    And check that tag tag2 is used in 0 integrations
+    And check that tag tag12 is used in 0 integrations
 
     # tag12 was added to integration3
     And check that tag tag12 is used in 1 integrations

@@ -60,7 +60,7 @@ public class ManageCiCdPageSteps {
     public void checkAllTags(DataTable tagsData) {
         List<String> desiredTags = tagsData.cells().get(0);
         List<String> tags = ciCdPage.getAllTags();
-        assertThat(tags).hasSameElementsAs(desiredTags);
+        assertThat(tags).containsExactlyInAnyOrderElementsOf(desiredTags);
     }
 
     @Then("^check that tag (\\w+) cannot be created because another tag with same name exist$")

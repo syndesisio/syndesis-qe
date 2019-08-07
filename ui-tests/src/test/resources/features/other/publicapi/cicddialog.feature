@@ -3,6 +3,7 @@
 @ui
 @publicapi
 @cicddialog
+@gh-6362
 Feature: Test tagging integration in CI CD dialog
 
   Background: Clean application state

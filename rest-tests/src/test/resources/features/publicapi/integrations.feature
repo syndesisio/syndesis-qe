@@ -10,13 +10,19 @@ Feature: Public API - integrations point
     And deploy public oauth proxy
     And set up ServiceAccount for Public API
     And delete all tags in Syndesis
-    And create start DB periodic sql invocation action step with query "SELECT 'integration1'" and period "50000" ms
+    And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
     And add log step
     And create new integration with name: "integration1" and desiredState: "Unpublished"
-    And create start DB periodic sql invocation action step with query "SELECT 'integration2'" and period "50000" ms
+    And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
     And add log step
     And create new integration with name: "integration2" and desiredState: "Unpublished"
-    And create start DB periodic sql invocation action step with query "SELECT 'integrationWithoutTags'" and period "50000" ms
+    And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
     And add log step
     And create new integration with name: "integrationWithoutTags" and desiredState: "Unpublished"
     Then check that integration integration1 doesn't contain any tag
@@ -140,6 +146,7 @@ Feature: Public API - integrations point
   # GET ​/public​/integrations​/{env}​/export.zip?all=false
   # POST ​/public​/integrations
   @export-import-integrations
+  @gh-6360
   Scenario: Export and import integrations according to tag
     When add tags to integration integration1
       | tag1 | tag12 |
@@ -157,7 +164,7 @@ Feature: Public API - integrations point
     And check that integration integrationWithoutTags contains exactly tags
       | anotherTag1 | anotherTag2 |
     And check that Syndesis contains exactly tags
-      | anotherTag1 | anotherTag2 |
+      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 |
 
     When import integrations with tag importedTag with name "export12.zip"
     Then check that Syndesis contains exactly tags
