@@ -3,6 +3,8 @@
 
 @quickstart
 @quickstart-hello-world
+#(https://issues.jboss.org/browse/FUSEQE-4593)
+@ignore
 Feature: Quickstart Hello World
 
   Background: Clean application state and prepare what is needed
