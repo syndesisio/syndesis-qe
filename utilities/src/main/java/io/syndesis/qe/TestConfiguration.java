@@ -15,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestConfiguration {
 
+
+    private static final String TEST_PROPERTIES_FILE = "syndesis.config.test.properties";
+
     public static final String OPENSHIFT_URL = "syndesis.config.openshift.url";
     public static final String OPENSHIFT_TOKEN = "syndesis.config.openshift.token";
     public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
@@ -70,11 +73,11 @@ public class TestConfiguration {
     private final Properties properties = new Properties();
 
     private TestConfiguration() {
-        // first let's try product properties
+        // first let's try properties in module dir
         copyValues(fromPath("test.properties"), true);
 
-        // then product properties
-        copyValues(fromPath("../test.properties"));
+        // then properties in repo root
+        copyValues(fromPath("../" + System.getProperty(TEST_PROPERTIES_FILE, "test.properties")));
 
         // then system variables
         copyValues(System.getProperties());
