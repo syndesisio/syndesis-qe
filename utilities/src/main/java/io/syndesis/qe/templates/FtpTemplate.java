@@ -102,8 +102,6 @@ public class FtpTemplate {
         ftpAccount.setService("ftp");
         Map<String, String> accountParameters = new HashMap<>();
         accountParameters.put("host", "ftpd");
-        // workaround for #6141
-        accountParameters.put("username", "anonymous");
         accountParameters.put("port", "2121");
         ftpAccount.setProperties(accountParameters);
         AccountsDirectory.getInstance().addAccount("FTP", ftpAccount);
