@@ -11,6 +11,7 @@ import io.syndesis.qe.templates.IrcTemplate;
 import io.syndesis.qe.templates.KafkaTemplate;
 import io.syndesis.qe.templates.KuduRestAPITemplate;
 import io.syndesis.qe.templates.KuduTemplate;
+import io.syndesis.qe.templates.MongoDb36Template;
 import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.PublicOauthProxyTemplate;
 import io.syndesis.qe.templates.WildFlyTemplate;
@@ -113,6 +114,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy OData server$")
     public void deployODataServer() {
         WildFlyTemplate.deploy("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git", "odata", null);
+    }
+
+    @Given("^deploy MongoDB 3.6 database$")
+    public void deployMongoDB36() {
+        MongoDb36Template.deploy();
     }
 
     @Given("^wait until \"([^\"]*)\" pod is reloaded$")

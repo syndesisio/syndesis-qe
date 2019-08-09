@@ -26,6 +26,7 @@ public class Account {
         IRC("irc"),
         JIRA_HOOK("Jira Hook"),
         KAFKA("kafka"),
+        MONGODB36("mongodb36"),
         MQTT("QE MQTT"),
         SALESFORCE("QE Salesforce"),
         SERVICENOW("Servicenow"),

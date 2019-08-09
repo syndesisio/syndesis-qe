@@ -196,6 +196,17 @@ public class IntegrationSteps {
         }
     }
 
+    /**
+     * Version of checkThatLogsContain which accepts docstring
+     *
+     * @param integrationName
+     * @param text
+     */
+    @Then("validate that logs of integration {string} contains string:")
+    public void validateThatLogsOfIntegrationContainsString(String integrationName, String text) {
+        checkThatLogsContain(integrationName, text.trim());
+    }
+
     @Then("^.*validate that logs of integration \"([^\"]*)\" doesn't contain string \"(.*)\"$")
     public void checkThatLogsDoesNotContain(final String integrationName, final String text) {
         try {
