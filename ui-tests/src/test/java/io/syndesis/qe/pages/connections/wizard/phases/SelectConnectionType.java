@@ -3,18 +3,19 @@ package io.syndesis.qe.pages.connections.wizard.phases;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.fragments.common.list.CardList;
+import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
+import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
+import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnection;
+import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnectionAmq;
+
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
-import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnection;
-import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnectionAmq;
-import io.syndesis.qe.fragments.common.list.CardList;
-import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,16 +31,16 @@ public class SelectConnectionType extends AbstractConnectionWizardStep {
     }
 
     public static final By ROOT = By.cssSelector(".pf-c-page__main-section.pf-m-no-padding");
-    private CardList connectionTypes = new ConnectionsList(By.cssSelector(".container-cards-pf.container-fluid"));
+    private CardList connectionTypes = new ConnectionsList(By.cssSelector(".pf-c-page__main-section"));
 
 
     public void selectConnectionType(String title) {
-        switch(title) {
+        switch (title) {
             case "Red Hat AMQ":
-                wizard.replaceStep(new ConfigureConnectionAmq(),1);
+                wizard.replaceStep(new ConfigureConnectionAmq(), 1);
                 break;
             default:
-                wizard.replaceStep(new ConfigureConnection(),1);
+                wizard.replaceStep(new ConfigureConnection(), 1);
         }
 
         log.info("Selected " + title + " connection type.");

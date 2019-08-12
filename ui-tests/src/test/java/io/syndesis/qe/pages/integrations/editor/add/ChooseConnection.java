@@ -3,16 +3,16 @@ package io.syndesis.qe.pages.integrations.editor.add;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
-
 public class ChooseConnection extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".container-cards-pf.container-fluid");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
     }
 
     @Override

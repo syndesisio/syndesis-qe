@@ -5,19 +5,20 @@ import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ChooseStep extends SyndesisPageObject {
     private static final class Element {
 
-        public static final By ROOT = By.className("container-cards-pf");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
         public static final By STEP_ICON = By.cssSelector("syndesis-integration-flow-view-step div.icon");
     }
 
@@ -40,8 +41,8 @@ public class ChooseStep extends SyndesisPageObject {
     public void chooseStep(int index) {
         log.info("choosing step on position {}", index);
         this.getRootElement().$$(Element.STEP_ICON)
-                .shouldHave(CollectionCondition.sizeGreaterThan(index))
-                .get(index).shouldBe(visible, enabled).click();
+            .shouldHave(CollectionCondition.sizeGreaterThan(index))
+            .get(index).shouldBe(visible, enabled).click();
     }
 
     public void chooseStepByDescription(String description) {

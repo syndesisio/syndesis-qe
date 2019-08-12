@@ -3,15 +3,16 @@ package io.syndesis.qe.pages.connections;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.fragments.common.list.actions.ListAction;
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.SyndesisRootPage;
+import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.fragments.common.list.actions.ListAction;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.pages.SyndesisRootPage;
-import io.syndesis.qe.pages.connections.fragments.list.ConnectionsList;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class Connections extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".container-cards-pf.container-fluid");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
     }
 
     @Getter

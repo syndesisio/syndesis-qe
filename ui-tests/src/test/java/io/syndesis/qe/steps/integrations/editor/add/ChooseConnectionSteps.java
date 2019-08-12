@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChooseConnectionSteps {
 
-    private ConnectionsList connectionsList = new ConnectionsList(By.cssSelector(".container-cards-pf.container-fluid"));
+    private ConnectionsList connectionsList = new ConnectionsList(By.cssSelector(".pf-c-page__main-section"));
     private IntegrationFlowView integrationFlowView = new IntegrationFlowView();
 
     /**
