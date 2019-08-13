@@ -56,8 +56,7 @@ public class MetricsSteps {
         refresh();
         String dateLabel = metricsTab.getLastProcessed();
         if (metricsTab.getNumberOfTotalMessages() == 0) {
-            // gh-6117 after resolving this issue, it needs to test when the Last processed contains information that no messages were processed yet
-            assertThat(dateLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{2}:\\d{2} (AM|PM)$"); //
+            assertThat(dateLabel).matches("^No Data Available$");
             return;
         }
         assertThat(dateLabel).matches("^\\d{1,2}/\\d{1,2}/\\d{4}, \\d{1,2}:\\d{2}:\\d{2} (AM|PM)$");

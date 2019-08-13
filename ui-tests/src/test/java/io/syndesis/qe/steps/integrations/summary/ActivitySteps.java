@@ -73,7 +73,7 @@ public class ActivitySteps {
      */
     @Then("^check that (\\w+). activity has error$")
     public void checkActivityError(int index) {
-        assertThat(activityTab.getActivityError(index - 1)).contains("ErrorsFound"); //gh-5721
+        assertThat(activityTab.getActivityError(index - 1)).contains("Errors Found");
     }
 
     /**
