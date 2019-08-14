@@ -16,30 +16,27 @@ public class PublicOauthProxyTemplate {
     public static final String PUBLIC_API_PROXY_ROUTE =
         "public-" + TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix();
 
-    public static void deploy() {
-        if (OpenShiftUtils.getInstance().getTemplate(TEMPLATE_NAME) == null ||
-            !OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME).getAsBoolean()) {
-            log.info("Creating {} template", TEMPLATE_NAME);
-
-            OpenShiftUtils.binary().execute(
-                "apply",
-                "-f", TestConfiguration.syndesisPublicOauthProxyTemplateUrl()
-            );
-            clearClusterRoleBindings();
-            OpenShiftUtils.binary().execute(
-                "new-app",
-                "--template", "syndesis-public-oauthproxy",
-                "-p", "PUBLIC_API_ROUTE_HOSTNAME=" + PUBLIC_API_PROXY_ROUTE,
-                "-p", "OPENSHIFT_PROJECT=" + TestConfiguration.openShiftNamespace(),
-                "-p", "OPENSHIFT_OAUTH_CLIENT_SECRET=" + getOathToken(),
-                "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()
-            );
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
-            } catch (InterruptedException | TimeoutException e) {
-                log.error("Wait for {} template failed ", TEMPLATE_NAME, e);
-            }
+    public static void deploy() throws TimeoutException, InterruptedException {
+        if (OpenShiftUtils.getInstance().getTemplate(TEMPLATE_NAME) != null ||
+            OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME).getAsBoolean()) {
+            cleanUp();
         }
+        log.info("Creating {} template", TEMPLATE_NAME);
+
+        OpenShiftUtils.binary().execute(
+            "apply",
+            "-f", TestConfiguration.syndesisPublicOauthProxyTemplateUrl()
+        );
+        clearClusterRoleBindings();
+        OpenShiftUtils.binary().execute(
+            "new-app",
+            "--template", "syndesis-public-oauthproxy",
+            "-p", "PUBLIC_API_ROUTE_HOSTNAME=" + PUBLIC_API_PROXY_ROUTE,
+            "-p", "OPENSHIFT_PROJECT=" + TestConfiguration.openShiftNamespace(),
+            "-p", "OPENSHIFT_OAUTH_CLIENT_SECRET=" + getOathToken(),
+            "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()
+        );
+        OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
     }
 
     public static void cleanUp() {

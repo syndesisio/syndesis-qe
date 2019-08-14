@@ -96,7 +96,7 @@ public class OpenshiftValidationSteps {
     }
 
     @Given("^deploy public oauth proxy$")
-    public void deployApiOauthProxy() {
+    public void deployApiOauthProxy() throws TimeoutException, InterruptedException {
         PublicOauthProxyTemplate.deploy();
     }
 
