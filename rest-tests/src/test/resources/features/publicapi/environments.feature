@@ -10,13 +10,19 @@ Feature: Public API - environments point
     And deploy public oauth proxy
     And set up ServiceAccount for Public API
     And delete all tags in Syndesis
-    And create start DB periodic sql invocation action step with query "SELECT 'integration1'" and period "50000" ms
+    And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
     And add log step
     And create new integration with name: "integration1" and desiredState: "Unpublished"
-    And create start DB periodic sql invocation action step with query "SELECT 'integration1'" and period "50000" ms
+    And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
     And add log step
     And create new integration with name: "integration2" and desiredState: "Unpublished"
-    And create start DB periodic sql invocation action step with query "SELECT 'integration1'" and period "50000" ms
+    And add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
     And add log step
     And create new integration with name: "integrationWithoutTags" and desiredState: "Unpublished"
     Then check that integration integration1 doesn't contain any tag
