@@ -1,28 +1,30 @@
 package io.syndesis.qe.fragments.common.list;
 
-import com.codeborne.selenide.CollectionCondition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import static org.assertj.core.api.Assertions.fail;
+
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.openqa.selenium.By;
+
+import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import java.util.concurrent.TimeoutException;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Condition.text;
-
-import static org.assertj.core.api.Assertions.fail;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CardList extends AbstractUiElementsList {
 
     private static final class Element {
-        public static final By CARD = By.cssSelector("a[data-testid=\"connection-card-details\"]");
+        //Each card has different data-testid, so this selector looks up all elements that contain connection-card and restricts it to articles
+        //which are used for the connection cards
+        public static final By CARD = By.cssSelector("article[data-testid*=\"connection-card\"]");
         public static final By TITLE = By.cssSelector("h1[data-testid=\"connection-card-title\"]");
     }
 

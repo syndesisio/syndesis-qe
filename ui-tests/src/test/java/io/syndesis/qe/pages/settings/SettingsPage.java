@@ -1,7 +1,6 @@
 package io.syndesis.qe.pages.settings;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
-import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -100,13 +99,10 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {
-        do {
-            Selenide.refresh();
-            listItem.shouldBe(visible).click();
-            fillOAuthItem(listItem, credentialsName);
-            getButton("Save").shouldBe(visible).click();
-            Selenide.sleep(1000);
-        } while ($(By.className("alert-success")).is(not(visible)));
+        listItem.shouldBe(visible).click();
+        fillOAuthItem(listItem, credentialsName);
+        getButton("Save").shouldBe(visible).click();
+        Selenide.sleep(1000);
         //close list item details
         getRootElement().$(By.cssSelector("div[class*='list-view-pf-expand active']")).click();
     }

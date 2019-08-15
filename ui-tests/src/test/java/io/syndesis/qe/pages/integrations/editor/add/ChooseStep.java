@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChooseStep extends SyndesisPageObject {
     private static final class Element {
 
-        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
+        public static final By ROOT = By.className("pf-l-gallery");
         public static final By STEP_ICON = By.cssSelector("syndesis-integration-flow-view-step div.icon");
     }
 
@@ -55,7 +55,7 @@ public class ChooseStep extends SyndesisPageObject {
      * e.g. Data Mapper is shown after click on Data Mapper step with small delay which causes test fail.
      *
      * @param stepIdentificationElement - element which identify step page
-     * @param timeoutMillis             - timeout
+     * @param timeoutMillis - timeout
      */
     public void waitForStepAppears(By stepIdentificationElement, long timeoutMillis) {
         $(stepIdentificationElement).waitUntil(appears, timeoutMillis);
