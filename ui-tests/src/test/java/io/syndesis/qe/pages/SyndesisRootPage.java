@@ -17,7 +17,8 @@ public class SyndesisRootPage extends SyndesisPageObject {
     }
 
     private static final class Element {
-        public static final By ROOT = By.id("root");
+        public static final By ROOT = By.tagName("body");
+        public static final By ALERT = By.cssSelector(".alert-danger");
     }
 
     public SelenideElement getRootElement() {

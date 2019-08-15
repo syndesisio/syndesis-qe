@@ -63,7 +63,7 @@ public abstract class SyndesisPageObject {
             .filter(Condition.exactText(buttonTitle)).shouldHave(sizeGreaterThanOrEqual(1));
 
         if (foundButtons.size() > 1) {
-            fail("Ambiguous button title. Found more that 1 button with title " + buttonTitle);
+            log.warn("Ambiguous button title. Found more that 1 button with title {}", buttonTitle);
         }
         log.info("Button found! ");
 
