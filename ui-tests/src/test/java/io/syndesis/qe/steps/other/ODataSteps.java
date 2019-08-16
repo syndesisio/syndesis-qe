@@ -42,8 +42,10 @@ public class ODataSteps {
     }
 
     @Then("^.*check that \"([^\"]*)\" entity in \"([^\"]*)\" collection contains$")
-    public void oDataServiceContains(final String entityKey, final String collection, DataTable table) {
-        // Currently supports only entityKey in number format
+    public void oDataServiceContains(String entityKey, final String collection, DataTable table) {
+        if (entityKey.matches("[A-Za-z]*")) {
+            entityKey = "'" + entityKey + "'";
+        }
         HTTPResponse response = HttpUtils.doGetRequest(ODataUtils.getOpenshiftRoute() + collection + "(" + entityKey + ")");
         assertThat(response.getCode()).isEqualTo(200);
         for (List<String> row : table.cells()) {
@@ -71,5 +73,4 @@ public class ODataSteps {
         log.info("Checking if entity with " + propertyName + ":" + expectedValue + " property:value pair is present");
         assertThat(response.getBody()).contains("\"" + propertyName + "\":\"" + expectedValue + "\"");
     }
-
 }
