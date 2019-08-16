@@ -86,4 +86,9 @@ public class ManageCiCdPageSteps {
         editDialog.getButton("Save").shouldBe(Condition.disabled);
         new ModalDialogPage().getButton("Cancel").click();
     }
+
+    @Then("^check in CI/CD page that tag (\\w+) is used in (\\d+) integrations")
+    public void checkUsage(String tagName, int numberOfUsage) {
+        assertThat(ciCdPage.getNumberOfUsage(tagName)).isEqualTo(numberOfUsage);
+    }
 }

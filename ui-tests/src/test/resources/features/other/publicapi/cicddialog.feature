@@ -320,3 +320,53 @@ Feature: Test tagging integration in CI CD dialog
       | tag1 | tag12Renamed |
     And check that integration integration2 contains exactly tags
       | tag2 | tag12Renamed |
+
+  @tag-usages
+  Scenario: Test check number of tag
+    # one more integration only for this test
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    And check that position of connection to fill is "Start"
+    And select the "Timer" connection
+    And select "Simple" integration action
+    And click on the "Next" button
+    And select the "Log" connection
+    And click on the "Next" button
+    And click on the "Save" link
+    And set integration name "integration3"
+    And save and cancel integration editor
+
+    And navigate to the "Integrations" page
+    And click on the "Manage CI/CD" link to manage tags.
+    And create new tag with name tag1 in Manage CI/CD page
+    And create new tag with name tag2 in Manage CI/CD page
+    And create new tag with name tag12 in Manage CI/CD page
+    And create new tag with name tag123 in Manage CI/CD page
+    And create new tag with name tagNotUsed in Manage CI/CD page
+
+    And navigate to the "Integrations" page
+    And select the "integration1" integration
+    And open CI/CD dialog
+    And check tag tag1 in CI/CD dialog
+    And check tag tag12 in CI/CD dialog
+    And check tag tag123 in CI/CD dialog
+    And save CI/CD dialog
+    And navigate to the "Integrations" page
+    And select the "integration2" integration
+    And open CI/CD dialog
+    And check tag tag2 in CI/CD dialog
+    And check tag tag12 in CI/CD dialog
+    And check tag tag123 in CI/CD dialog
+    And save CI/CD dialog
+    And navigate to the "Integrations" page
+    And select the "integration3" integration
+    And open CI/CD dialog
+    And check tag tag123 in CI/CD dialog
+    And save CI/CD dialog
+    And navigate to the "Integrations" page
+    And click on the "Manage CI/CD" link to manage tags.
+    Then check in CI/CD page that tag tagNotUsed is used in 0 integrations
+    And check in CI/CD page that tag tag1 is used in 1 integrations
+    And check in CI/CD page that tag tag2 is used in 1 integrations
+    And check in CI/CD page that tag tag12 is used in 2 integrations
+    And check in CI/CD page that tag tag123 is used in 3 integrations
