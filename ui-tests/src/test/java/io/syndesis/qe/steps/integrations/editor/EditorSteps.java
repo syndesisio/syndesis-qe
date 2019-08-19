@@ -245,7 +245,7 @@ public class EditorSteps {
         TestUtils.sleepIgnoreInterrupt(2000);
         editor.getRootElement().$(Button.CANCEL).shouldBe(visible).click();
         SelenideElement dialog = new ModalDialogPage().getRootElement();
-        dialog.find(By.xpath("//button[text()[contains(.,'Confirm')]]")).click();
+        dialog.find(By.xpath("//button[text()[contains(.,'Confirm')]]")).waitUntil(Condition.appears, 10000).click();
         dialog.waitUntil(Condition.not(visible), 10 * 1000);
     }
 

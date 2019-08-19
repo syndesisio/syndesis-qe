@@ -3,8 +3,6 @@ package io.syndesis.qe.pages;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import io.syndesis.qe.utils.TestUtils;
-
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -22,7 +20,7 @@ public class ModalDialogPage extends SyndesisPageObject {
 
     @Override
     public SelenideElement getRootElement() {
-        TestUtils.waitFor(() -> $(Element.ROOT).exists(), 3, 30, "Modal dialog was not found");
+        $(Element.ROOT).waitUntil(visible, 30000);
         return $(Element.ROOT).shouldBe(visible);
     }
 
