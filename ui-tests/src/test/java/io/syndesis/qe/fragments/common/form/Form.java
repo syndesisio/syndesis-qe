@@ -267,7 +267,7 @@ public class Form {
     }
 
     public static void waitForInputs(int timeInSeconds) {
-        $(By.cssSelector(".form-control")).waitUntil(exist, timeInSeconds * 1000);
+        $(By.cssSelector("form input,select")).waitUntil(exist, timeInSeconds * 1000);
     }
 
     private enum FillBy {
