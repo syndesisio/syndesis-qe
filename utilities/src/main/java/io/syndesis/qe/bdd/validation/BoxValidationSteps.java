@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
 import io.syndesis.qe.utils.BoxUtils;
+import io.syndesis.qe.utils.JMSUtils;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +54,12 @@ public class BoxValidationSteps {
         } catch (IOException ex) {
             fail("Unable to process file from Box: ", ex);
         }
+    }
+
+    @Then("^verify the Box AMQ response from queue \"([^\"]*)\" with text \"([^\"]*)\"$")
+    public void verifyBoxResponse(String queueName, String text) {
+        final String message = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queueName);
+        final int expectedMessageSize = text.getBytes().length;
+        assertThat(message).isEqualTo(String.format("{\"text\":\"%s-%s-%d\"}", text, BoxUtils.getFileId(), expectedMessageSize));
     }
 }
