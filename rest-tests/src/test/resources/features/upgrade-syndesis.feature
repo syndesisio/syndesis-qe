@@ -34,9 +34,6 @@ Feature: Syndesis Upgrade
     Then verify syndesis "upgraded" version
       And verify successful test modifications
       And verify upgrade integration with task "X"
-    And execute SQL command "CREATE SCHEMA AUTHORIZATION sampledb;"
-    And execute SQL command "ALTER TABLE contact SET SCHEMA sampledb;"
-    And execute SQL command "ALTER TABLE todo SET SCHEMA sampledb;"
     When rebuild integration with name "UPGRADE INTEGRATION NAME"
       # Integration name was updated, so this bc is not valid anymore
       And delete buildconfig with name "i-upgrade"
