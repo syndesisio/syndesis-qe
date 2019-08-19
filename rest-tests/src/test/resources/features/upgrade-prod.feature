@@ -23,10 +23,7 @@ Feature: Syndesis Upgrade - Productized Version
   # After the upgrade is done, create a new integration and verify that it is working + verify that the old one is still working as well
   @prod-upgrade-after
   Scenario: Syndesis Prod Upgrade - After upgrading
-    When execute SQL command "CREATE SCHEMA AUTHORIZATION sampledb;"
-      And execute SQL command "ALTER TABLE contact SET SCHEMA sampledb;"
-      And execute SQL command "ALTER TABLE todo SET SCHEMA sampledb;"
-      And rebuild integration with name "upgrade"
+    When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
       And verify upgrade integration with task "X"
     Given add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
