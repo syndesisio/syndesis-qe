@@ -46,7 +46,7 @@ public class PeriodicSql extends Sql {
         SelenideElement selectElement = $(Element.SELECT_PERIOD).shouldBe(visible);
         selectElement.click();
         log.info(selectElement.toString());
-        $(By.className("dropdown-menu")).$$(By.tagName("a")).filter(exactText(timeUnits)).get(0).click();
+        $(By.className("pf-c-dropdown__menu")).$$(By.tagName("li")).filter(exactText(timeUnits)).get(0).click();
        // selectElement.selectOption(timeUnits);
     }
 
