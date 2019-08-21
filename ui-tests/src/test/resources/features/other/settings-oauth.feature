@@ -2,6 +2,7 @@
 @ui
 @google-calendar
 @settings-oauth-test
+@oauth
 Feature: Settings OAuth
 
   Background: Clean application state

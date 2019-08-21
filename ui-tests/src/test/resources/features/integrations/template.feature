@@ -3,6 +3,7 @@
 @ui
 @data-mapper
 @template
+@oauth
 Feature: Templates
 
   Background: Clean application state

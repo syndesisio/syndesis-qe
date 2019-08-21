@@ -3,6 +3,7 @@
 @ui
 @doc-tutorial
 @twitter
+@oauth
 @database
 @datamapper
 @integrations-twitter-to-db

@@ -2,6 +2,7 @@
 
 @ui
 @salesforce
+@oauth
 @database
 @datamapper
 @integrations-salesforce-to-db

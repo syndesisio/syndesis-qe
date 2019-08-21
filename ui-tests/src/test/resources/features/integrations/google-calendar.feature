@@ -2,6 +2,7 @@
 
 @ui
 @google-calendar
+@oauth
 @database
 @datamapper
 @integrations-google-calendar

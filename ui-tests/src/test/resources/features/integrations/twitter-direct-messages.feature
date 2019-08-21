@@ -2,6 +2,7 @@
 
 @ui
 @twitter
+@oauth
 @database
 @datamapper
 @integrations-twitter-direct-messages

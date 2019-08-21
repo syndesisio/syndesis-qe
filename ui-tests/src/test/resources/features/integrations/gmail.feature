@@ -2,6 +2,7 @@
 
 @ui
 @gmail
+@oauth
 @database
 @datamapper
 @integrations-gmail

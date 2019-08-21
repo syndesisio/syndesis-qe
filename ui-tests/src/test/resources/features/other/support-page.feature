@@ -35,6 +35,7 @@ Feature: Support page
 #
 #  3. download specific diagnostic info
 #
+  @oauth
   @support-page-download-specific-diagnostic
   Scenario: Export diagnostic of single integration
     Given remove file "syndesis.zip" if it exists
