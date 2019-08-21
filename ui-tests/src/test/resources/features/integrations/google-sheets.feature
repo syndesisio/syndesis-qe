@@ -1,6 +1,7 @@
 # @sustainer: mmelko@redhat.com
 @ui
 @google-sheets
+@oauth
 @database
 @datamapper
 @integrations-google-sheets

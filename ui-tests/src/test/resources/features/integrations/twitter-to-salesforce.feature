@@ -2,6 +2,7 @@
 
 @ui
 @doc-tutorial
+@oauth
 @twitter
 @salesforce
 @datamapper

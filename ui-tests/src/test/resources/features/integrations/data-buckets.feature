@@ -4,6 +4,7 @@
 @dropbox
 @twitter
 @gmail
+@oauth
 @database
 @datamapper
 @integrations-data-buckets
