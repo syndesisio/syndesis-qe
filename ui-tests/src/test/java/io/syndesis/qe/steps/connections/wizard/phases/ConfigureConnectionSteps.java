@@ -1,10 +1,7 @@
 package io.syndesis.qe.steps.connections.wizard.phases;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static com.codeborne.selenide.Condition.cssClass;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
@@ -12,7 +9,7 @@ import io.syndesis.qe.fragments.common.form.Form;
 
 import org.openqa.selenium.By;
 
-import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
 
 import java.util.Map;
 import java.util.Optional;
@@ -45,10 +42,9 @@ public class ConfigureConnectionSteps {
     }
 
     private void fillFormInLowerCase(Map<String, String> properties) {
-        ElementsCollection formsCollection = $$(By.tagName("form")).filter(cssClass("pf-c-form"));
-        assertThat(formsCollection).hasSize(1);
+        SelenideElement form = $(By.className("pf-c-form")).waitUntil(visible, 5000);
 
-        new Form(formsCollection.get(0).shouldBe(visible)).fillByTestId(
+        new Form(form.shouldBe(visible)).fillByTestId(
             properties.entrySet().stream()
                 .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue))
         );
