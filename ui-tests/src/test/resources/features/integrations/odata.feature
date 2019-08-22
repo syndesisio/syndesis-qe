@@ -205,7 +205,7 @@ Feature: OData Connector
     When sleep for "5000" ms
     Then validate that OData service contains entity with "<key>":"<value>" property:value pair in "<resource_collection>" collection
 
-  @gh-5386
+    @gh-5386
     Examples:
       | name            | resource_collection | key_predicate | filter | split | key         | value      | mapping_one | mapping_two |
       | wrong_datashape | Products            | 2             | false  | false | Description | 1UMTS PDA  | Name        | Description |
@@ -213,12 +213,12 @@ Feature: OData Connector
       | calling_null    | Products            |               | false  | false | Description | Flat Basic | Name        | Description |
 
 
-  @gh-5533
+    @gh-5533
     Examples:
       | name | resource_collection | key_predicate | filter | split | key         | value     | mapping_one | mapping_two |
       | NPE  | Products            | 2             | true   | true  | Description | 1UMTS PDA | Name        | Description |
 
-  @gh-5241
+    @gh-5241
     Examples:
       | name                            | resource_collection | key_predicate | filter | split | key       | value    | mapping_one | mapping_two |
       | string predicate without quotes | Users               | coolBob       | true   | true  | FirstName | CoolName | LastName    | FirstName   |
@@ -276,3 +276,93 @@ Feature: OData Connector
     When sleep for "1000" ms
     Then check that "whatever" entity in "Users" collection contains
       | Gender | MALE |
+
+  @reproducer
+  @gh-5151
+  @integrations-odata-map-complex-schema
+  Scenario: Map complex properties
+
+    When truncate "todo" table
+
+    # Create new integration
+    When click on the "Create Integration" link to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # Add OData connection as start step
+    When selects the "OData" connection
+    And select "Read" integration action
+    # check button to make sure correct page is loaded
+    Then check visibility of the "Next" button
+    When fill in values by element data-testid
+      | resourcepath      | Products |
+      | keypredicate      | 1        |
+      | filteralreadyseen | false    |
+      | splitresult       | false    |
+    And click on the "Next" button
+
+    Then check that position of connection to fill is "Finish"
+
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO todo (task) VALUES (:#task)" value
+    And click on the "Next" button
+
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | Configuration.GPU | task |
+    And click on the "Done" button
+
+    # Save integration and publish it
+    When publish integration
+    And set integration name "map_complex_property"
+    And publish integration
+    Then Integration "map_complex_property" is present in integrations list
+    And wait until integration "map_complex_property" gets into "Running" state
+
+    Then validate that number of all todos with task "GTX2080Ti" is greater than "0"
+
+  @reproducer
+  @gh-5067
+  @integrations-odata-return-complex-attr
+  Scenario: Read complex property
+
+    When truncate "todo" table
+
+    # Create new integration
+    When click on the "Create Integration" link to create a new integration
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # Add OData connection as start step
+    When selects the "OData" connection
+    And select "Read" integration action
+    # check button to make sure correct page is loaded
+    Then check visibility of the "Next" button
+    When fill in values by element data-testid
+      | resourcepath      | Products          |
+      | keypredicate      | (1)/Configuration |
+      | filteralreadyseen | false             |
+      | splitresult       | false             |
+    And click on the "Next" button
+
+    Then check that position of connection to fill is "Finish"
+
+    # Add Log step as finish step
+    When select the "Log" connection
+    And fill in values by element data-testid
+      | contextloggingenabled | false |
+      | bodyloggingenabled    | true  |
+    Then click on the "Next" button
+
+    # Save integration and publish it
+    When publish integration
+    And set integration name "read_complex_property"
+    And publish integration
+    Then Integration "read_complex_property" is present in integrations list
+    And wait until integration "read_complex_property" gets into "Running" state
+    When sleep for "10000" ms
+
+    Then validate that logs of integration "read_complex_property" contains string "GTX2080Ti"
