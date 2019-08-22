@@ -1078,7 +1078,8 @@ Feature: API Provider Integration
     And go back in browser history
     Then check visibility of page "Upload API Provider Specification"
 
-  
+  @reproducer
+  @gh-4031
   @api-provider-simple-response-type
   Scenario: API Provider operation with simple return type
     When click on the "Create Integration" link to create a new integration.
@@ -1106,7 +1107,7 @@ Feature: API Provider Integration
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "Simple API Provider Integration" gets into "Running" state
-    And verify that executing GET on API Provider route i-simple-api-provider-integration endpoint "/api/1" returns status 200 and body
+    And verify that executing GET on API Provider route i-simple-api-provider-integration endpoint "/api/1" returns status 200, response type text/plain and body
         """
         1
         """
@@ -1221,3 +1222,32 @@ Feature: API Provider Integration
 {"id":1}
     """
     And validate that number of all todos with task "task7" is "0"
+
+  @reproducer
+  @gh-6230
+  Scenario: Check that API Provider shows the number of flow instead of steps for random flow
+    When create an API Provider integration "TODO Integration" from file swagger/connectors/todo.json
+    And select API Provider operation flow List all tasks
+    Then check flow title is "List all tasks"
+
+    When add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "SELECT * FROM todo" value
+    And click on the "Done" button
+
+    And add integration step on position "1"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | id        | body.id        |
+      | completed | body.completed |
+      | task      | body.task      |
+    And sleep for jenkins delay or "2" seconds
+    And check "Done" button is "visible"
+    And click on the "Done" button
+    And click on the "Save" link
+    And save and cancel integration editor
+    And navigate to the "Integrations" page
+    And select the "TODO Integration" integration
+    Then verify there are 5 flows in the integration

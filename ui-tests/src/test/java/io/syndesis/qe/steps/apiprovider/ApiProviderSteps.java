@@ -139,15 +139,22 @@ public class ApiProviderSteps {
     public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName, String endpoint, int status, String body) {
         String url = getUrl(routeName, endpoint);
         Response response = getInvocation(url).method(method);
-        checkResponse(response, status, body);
+        checkResponse(response, status, body, null);
+    }
+
+    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+), response type ([^\"]*) and body$")
+    public void verifyThatEndpointReturnsStatusResponseTypeAndBody(String method, String routeName, String endpoint, int status, String responseType, String body) {
+        String url = getUrl(routeName, endpoint);
+        Response response = getInvocation(url).method(method);
+        checkResponse(response, status, body, responseType);
     }
 
     @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" with request '(.+)' returns status (\\d+) and body$")
     public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName,
-        String endpoint, String requestBody, int status, String body) {
+                                                       String endpoint, String requestBody, int status, String body) {
         String url = getUrl(routeName, endpoint);
         Response response = getInvocation(url).method(method, Entity.entity(requestBody, MediaType.APPLICATION_JSON_TYPE));
-        checkResponse(response, status, body);
+        checkResponse(response, status, body, null);
     }
 
     @When("^publish API Provider integration$")
@@ -156,11 +163,14 @@ public class ApiProviderSteps {
         toolbar.publish();
     }
 
-    private void checkResponse(Response response, int status, String body) {
+    private void checkResponse(Response response, int status, String body, String responseType) {
         SoftAssertions sa = new SoftAssertions();
         sa.assertThat(response.getStatus()).isEqualTo(status).describedAs("Wrong status");
         String responseBody = response.readEntity(String.class);
         sa.assertThat(responseBody).isEqualTo(body).describedAs("Wrong body");
+        if (responseType != null) {
+            sa.assertThat(response.getMediaType().toString()).isEqualTo(responseType).describedAs("Wrong response type");
+        }
         sa.assertAll();
     }
 
