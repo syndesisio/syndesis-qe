@@ -14,6 +14,7 @@ import io.syndesis.qe.pages.SyndesisPageObject;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.CollectionCondition;
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
@@ -40,7 +41,7 @@ public class Details extends SyndesisPageObject {
         public static final By INTEGRATION_DESCRIPTION = By.cssSelector("section.integration-description");
         public static final By EXPOSED_URL = By.cssSelector(".integration-exposed-url__list dd input");
 
-        public static final By MULTIFLOW_COUNT = By.cssSelector("#multi-flow div.icon span.badge");
+        public static final By STEP_ICON_ELEMENT = By.className("integration-steps-horizontal-item");
 
         public static final By TAB = By.cssSelector("ul.nav-tabs > li > a");
     }
@@ -134,7 +135,8 @@ public class Details extends SyndesisPageObject {
     }
 
     public int getFlowCount() {
-        return Integer.parseInt($(Element.MULTIFLOW_COUNT).shouldBe(visible).getText());
+        SelenideElement flowsIconElement = getRootElement().findAll(Element.STEP_ICON_ELEMENT).find(Condition.matchText("Flow"));
+        return Integer.parseInt(flowsIconElement.getText().replaceAll("\\D+", "")); // extract digit from text e.g. "5 Flows"
     }
 
     public void clickOnKebabMenuAction(String action) {
