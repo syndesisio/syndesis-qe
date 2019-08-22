@@ -220,6 +220,14 @@ public class SyndesisTemplate {
             crd.getSpec().getAdditionalProperties()
                 .put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
+
+            if (TestConfiguration.syndesisTemplateVersion() != null) {
+                setTagInCustomResource(crd, "meta", TestConfiguration.syndesisTemplateVersion());
+                setTagInCustomResource(crd, "s2i", TestConfiguration.syndesisTemplateVersion());
+                setTagInCustomResource(crd, "server", TestConfiguration.syndesisTemplateVersion());
+                setTagInCustomResource(crd, "ui", TestConfiguration.syndesisTemplateVersion());
+            }
+
             OpenShiftUtils.invokeApi(
                 HttpUtils.Method.POST,
                 "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural(),
@@ -228,6 +236,14 @@ public class SyndesisTemplate {
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
+    }
+
+    private static void setTagInCustomResource(CustomResourceDefinition cr, String imageName, String tag) {
+        Map<String, Object> components = (Map<String, Object>) cr.getSpec().getAdditionalProperties()
+            .computeIfAbsent("components", s -> new HashMap<String, Object>());
+        Map<String, Object> image = (Map<String, Object>) components
+            .computeIfAbsent(imageName, s -> new HashMap<String, Object>());
+        image.put("tag", tag);
     }
 
     private static void patchImageStreams() {

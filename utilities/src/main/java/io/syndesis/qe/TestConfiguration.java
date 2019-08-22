@@ -186,6 +186,10 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_UI_BROWSER);
     }
 
+    public static String syndesisTemplateVersion() {
+        return System.getProperty(SYNDESIS_TEMPLATE_VERSION);
+    }
+
     public static boolean namespaceCleanup() {
         return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP));
     }
