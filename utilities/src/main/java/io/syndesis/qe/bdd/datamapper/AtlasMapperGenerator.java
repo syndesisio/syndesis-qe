@@ -116,8 +116,7 @@ public class AtlasMapperGenerator {
         if (dsKind.equals(DataShapeKinds.JAVA)) {
             try {
                 JavaClass jClass = mapper.readValue(dataShapeSpecification, JavaClass.class);
-                List<JavaField> jfields = getJavaFields(jClass);
-                fields = jfields.stream().map(f -> (Field) f).collect(Collectors.toList());
+                fields = getJavaFields(jClass).stream().map(this::replacePrimitiveWithObject).collect(Collectors.toList());
             } catch (IOException e) {
                 log.error("error: ", e);
             }
@@ -139,6 +138,35 @@ public class AtlasMapperGenerator {
             }
         }
         return fields;
+    }
+
+    /**
+     * Converts the className and canonicalClassName from primitives to object,
+     * because otherwise it would fail at runtime with: class "int" not found on classpath.
+     *
+     * @param f java field
+     * @return atlasmap field
+     */
+    private Field replacePrimitiveWithObject(JavaField f) {
+        switch (f.getClassName()) {
+            case "boolean":
+            case "byte":
+            case "double":
+            case "float":
+            case "long":
+            case "short":
+                f.setClassName("java.lang." + StringUtils.capitalize(f.getClassName()));
+                f.setCanonicalClassName("java.lang." + StringUtils.capitalize(f.getClassName()));
+                break;
+            case "char":
+                f.setClassName("java.lang.Character");
+                f.setCanonicalClassName("java.lang.Character");
+                break;
+            case "int":
+                f.setClassName("java.lang.Integer");
+                f.setCanonicalClassName("java.lang.Integer");
+        }
+        return (Field) f;
     }
 
     /**

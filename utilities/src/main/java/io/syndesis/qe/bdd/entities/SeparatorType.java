@@ -20,5 +20,5 @@ package io.syndesis.qe.bdd.entities;
  * @author tplevko
  */
 public enum SeparatorType {
-    Colon, Comma, Multispace, Space
+    Colon, Comma, Dash, Multispace, Space
 }

@@ -21,9 +21,10 @@ Feature: Integration - File transfer
       | timer-action | 10000  |
       And create Box download action step
       And start mapper definition with name: "box-amq"
-      And MAP using Step 2 and field "/content" to "/text"
+      And COMBINE using Step 2 and strategy "Dash" into "/text" and sources
+        | /content | /id | /size |
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "box-out"
       And change "in" datashape of previous step to "JSON_INSTANCE" type with specification '{"text":"a"}'
     When create integration with name: "BOX-AMQ"
     Then wait for integration with name: "BOX-AMQ" to become active
-      And verify that JMS message with content '{"text":"Hello integration!"}' was received from "queue" "box-out"
+      And verify the Box AMQ response from queue "box-out" with text "Hello integration!"
