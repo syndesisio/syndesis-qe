@@ -87,7 +87,7 @@ Feature: Connections - OAuth
     When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
-    And click on the "Done" button
+    And click on the "Next" button
 
     And click on the "Save" link
     And set integration name "OAuth-twitter-test"
@@ -122,16 +122,16 @@ Feature: Connections - OAuth
     When select the "Gcalendar-test" connection
     And select "Get Events" integration action
     And fill in values by element data-testid
-      | calendarid         | syndesis-test1 |
       | consumefromnow     | false          |
       | considerlastupdate | false          |
-    And click on the "Done" button
+      | calendarid         | syndesis-test1 |
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
     When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
-    And click on the "Done" button
+    And click on the "Next" button
 
     And click on the "Save" link
     And set integration name "OAuth-Gcalendar-test"
@@ -165,13 +165,13 @@ Feature: Connections - OAuth
     When select the "Salesforce-test" connection
     And select "On create" integration action
     And select "Lead" from "sObjectName" dropdown
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
     When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
-    And click on the "Done" button
+    And click on the "Next" button
 
     And click on the "Save" link
     And set integration name "OAuth-Salesforce-test"
@@ -203,13 +203,13 @@ Feature: Connections - OAuth
     And select "Get spreadsheet properties" integration action
     And fill in values by element data-testid
       | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
-    And click on the "Done" button
+    And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
     When select the "Log" connection
     And fill in values by element data-testid
       | bodyloggingenabled | true |
-    And click on the "Done" button
+    And click on the "Next" button
 
     And click on the "Save" link
     And set integration name "OAuth-gsheets-test"
