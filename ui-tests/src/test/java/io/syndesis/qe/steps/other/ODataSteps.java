@@ -22,14 +22,35 @@ import okhttp3.Headers;
 public class ODataSteps {
 
     @When("^create OData credentials$")
-    public void createODataCredentials() {
+    public void createODataHttpCredentials() {
+        createODataCredentials(false);
+    }
+
+    @When("^create OData https credentials$")
+    public void createODataHttpsCredentials() {
+        createODataCredentials(true);
+    }
+
+    private void createODataCredentials(boolean https) {
         Account oData = new Account();
         oData.setService("OData");
         Map<String, String> properties = new HashMap<>();
-        properties.put("serviceUri", ODataUtils.getOpenshiftService());
+
+        String serviceUri;
+        String key;
+
+        if (https) {
+            serviceUri = "https://services.odata.org/TripPinRESTierService/";
+            key = "odataHttps";
+        } else {
+            serviceUri = ODataUtils.getOpenshiftService();
+            key = "odata";
+        }
+
+        properties.put("serviceUri", serviceUri);
         oData.setProperties(properties);
-        AccountsDirectory.getInstance().addAccount("odata", oData);
-        log.info("Created new Account: odata");
+        AccountsDirectory.getInstance().addAccount(key, oData);
+        log.info("Created new Account: {}", key);
     }
 
     @When("^.*insert entity \"([^\"]*)\" into \"([^\"]*)\" collection on OData service$")
