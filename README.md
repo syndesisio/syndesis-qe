@@ -91,10 +91,10 @@ If you want to execute tests for specific component - both UI and REST, you can 
 The list of all scenarios(tags) is in the [List of scenarios](#list-of-scenarios) chapter.
 
 
-#### GitHub issue tags
+#### GitHub and ENTESB Jira issue tags
 
-A scenario may optionally be tagged with one or more tags in the form `@gh-<issue-number>`. 
-If such a scenario fails, the relevant GitHub issues are checked and a summary is written in the cucumber report.
+A scenario may optionally be tagged with one or more tags in the form `@gh-<issue-number>` or `@ENTESB-<issue-number>`
+If such a scenario fails, the relevant GitHub or Jira issues are checked and a summary is written in the cucumber report.
 See javadoc of the OnFailHooks class for more info.
 
 ##### Skipping tests with open issues

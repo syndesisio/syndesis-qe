@@ -55,6 +55,8 @@
 		<google.apis.calendar.version>v3-rev347-1.25.0</google.apis.calendar.version>
 		<google.apis.sheets.version>v4-rev553-1.25.0</google.apis.sheets.version>
 		<github.core.version>2.1.5</github.core.version>
+		<jira.client.version>5.1.6</jira.client.version>
+		<jira.fugue.version>4.7.2</jira.fugue.version>
 		<irclib.version>1.10</irclib.version>
 		<el.version>3.0.0</el.version>
 		<box.version>2.30.1</box.version>
@@ -396,6 +398,18 @@
 				<groupId>org.eclipse.mylyn.github</groupId>
 				<artifactId>org.eclipse.egit.github.core</artifactId>
 				<version>${github.core.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.atlassian.jira</groupId>
+				<artifactId>jira-rest-java-client-core</artifactId>
+				<version>${jira.client.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.atlassian.fugue</groupId>
+				<artifactId>fugue</artifactId>
+				<version>${jira.fugue.version}</version>
 			</dependency>
 
 			<dependency>

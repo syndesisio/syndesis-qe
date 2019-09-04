@@ -1,37 +1,25 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.issue.IssueState;
+import io.syndesis.qe.issue.SimpleIssue;
+import io.syndesis.qe.utils.IssueHooksUtils;
+
 import org.junit.Assume;
 
-import org.eclipse.egit.github.core.Issue;
-import org.eclipse.egit.github.core.Repository;
-import org.eclipse.egit.github.core.client.GitHubClient;
-import org.eclipse.egit.github.core.service.IssueService;
-import org.eclipse.egit.github.core.service.RepositoryService;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.issue.IssueState;
-import io.syndesis.qe.issue.SimpleIssue;
-import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -43,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IssueHooks {
 
     /**
-     * This hook skips tests that have open github issues
+     * This hook skips tests that have open github and ENTESB jira issues
      * <p>
      * Only runs when {@link TestConfiguration#SKIP_TESTS_WITH_OPEN_ISSUES} property is set to true
      *
@@ -54,20 +42,20 @@ public class IssueHooks {
         if (TestConfiguration.skipTestsWithOpenIssues()) {
             log.info(scenario.getName());
 
-            List<Issue> issues = getIssues(scenario);
+            List<SimpleIssue> issues = getAllIssues(scenario);
 
-            for (Issue issue : issues) {
+            for (SimpleIssue issue : issues) {
                 // assumeFalse will skip the test if the argument evaluates to true, i.e. when the issue is open
-                Assume.assumeFalse(IssueState.OPEN.equals(getIssueState(scenario, issue)));
+                Assume.assumeFalse(IssueState.OPEN.equals(issue.getState()));
             }
         }
     }
 
     /**
-     * This hook checks and reports status of linked github issues.
+     * This hook checks and reports status of linked github and ENTESB Jira issues.
      * <p>
-     * Each failed scenario is checked if it contains a tag in the form @gh-&lt;issue-number&gt;.
-     * If it does, GitHub and ZenHub are queried for the status of each issue and a summary is written into log and cucumber report.
+     * Each failed scenario is checked if it contains a tag in the form @gh-&lt;issue-number&gt; or @ENTESB-&lt;issue-number&gt;.
+     * If it does, Jira or GitHub and ZenHub are queried for the status of each issue and a summary is written into log and cucumber report.
      * <p>
      * For the purposes of this report, the following issue states are recognized:
      * <ol>
@@ -83,26 +71,26 @@ public class IssueHooks {
      * @param scenario
      */
     @After
-    public void checkGitHubIssues(Scenario scenario) {
+    public void checkIssues(Scenario scenario) {
         if (!scenario.isFailed()) {
             return;
         }
 
-        List<Issue> issues = getIssues(scenario);
+        List<SimpleIssue> issues = getAllIssues(scenario);
 
         if (issues.isEmpty()) {
-            logError(scenario, "############ No GitHub issue annotations found ############");
+            IssueHooksUtils.logError(scenario, "############ No GitHub or Jira issue annotations found ############");
             return;
         }
 
         try {
-            List<Issue> openIssues = new ArrayList<>();
-            List<Issue> doneIssues = new ArrayList<>();
-            List<Issue> closedIssues = new ArrayList<>();
+            List<SimpleIssue> openIssues = new ArrayList<>();
+            List<SimpleIssue> doneIssues = new ArrayList<>();
+            List<SimpleIssue> closedIssues = new ArrayList<>();
 
-            for (Issue issue : issues) {
+            for (SimpleIssue issue : issues) {
 
-                switch (getIssueState(scenario, issue)) {
+                switch (issue.getState()) {
                     case DONE:
                         doneIssues.add(issue);
                         break;
@@ -115,27 +103,27 @@ public class IssueHooks {
                 }
             }
 
-            logError(scenario, "############ FAILED PROBABLY DUE TO: ################");
-            logError(scenario, "######## DONE issues ########");
-            logIssues(scenario, doneIssues);
-            logError(scenario, "######## CLOSED issues ########");
-            logIssues(scenario, closedIssues);
-            logError(scenario, "######## OPEN issues ########");
-            logIssues(scenario, openIssues);
+            IssueHooksUtils.logError(scenario, "############ FAILED PROBABLY DUE TO: ################");
+            IssueHooksUtils.logError(scenario, "######## DONE issues ########");
+            IssueHooks.logIssues(scenario, doneIssues);
+            IssueHooksUtils.logError(scenario, "######## CLOSED issues ########");
+            IssueHooks.logIssues(scenario, closedIssues);
+            IssueHooksUtils.logError(scenario, "######## OPEN issues ########");
+            IssueHooks.logIssues(scenario, openIssues);
             embedIssues(scenario, issues);
         } catch (Exception e) {
-            log.error("Error while processing GitHub issues", e);
-            scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
+            log.error("Error while processing GH & Jira issues", e);
+            scenario.embed("Error while processing GH & Jira issues".getBytes(), "text/plain");
             e.printStackTrace();
         }
     }
 
-    private void embedIssues(Scenario scenario, List<Issue> issues) throws IOException {
+    private void embedIssues(Scenario scenario, List<SimpleIssue> issues) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode array = mapper.createArrayNode();
 
-        for (Issue issue : issues) {
-            array.addPOJO(new SimpleIssue(issue.getNumber(), issue.getUrl(), getIssueState(scenario, issue)));
+        for (SimpleIssue issue : issues) {
+            array.addPOJO(issue);
         }
 
         StringWriter sw = new StringWriter();
@@ -143,115 +131,30 @@ public class IssueHooks {
         scenario.embed(sw.toString().getBytes(), "application/x.issues+json");
     }
 
-    public static IssueState getIssueState(Scenario scenario, Issue issue) {
-        if ("open".equals(issue.getState())) {
-            // need to get issue from zenhub to determine the pipeline status
-            String zenHubPipeline = getZenHubPipeline(scenario, String.valueOf(issue.getNumber()));
-            if ("Done".equals(zenHubPipeline)) {
-                return IssueState.DONE;
-            } else {
-                return IssueState.OPEN;
-            }
-        } else if ("closed".equals(issue.getState())) {
-            return IssueState.CLOSED;
-        }
-        throw new IllegalArgumentException("Unknown issue state " + issue.getState());
-    }
+    public static List<SimpleIssue> getAllIssues(Scenario scenario) {
+        List<SimpleIssue> issues = new ArrayList<>();
 
-    public static List<Issue> getIssues(Scenario scenario) {
         List<String> ghIssues = scenario.getSourceTagNames().stream().filter(t -> t.matches("^@gh-\\d+$")).collect(Collectors.toList());
+        List<String> jiraIssues = scenario.getSourceTagNames().stream().filter(t -> t.matches("^@ENTESB-\\d+$")).collect(Collectors.toList());
 
-        if (ghIssues.isEmpty()) {
+        if (ghIssues.isEmpty() && jiraIssues.isEmpty()) {
             return Collections.emptyList();
         }
-
-        GitHubClient client = getGitHubClient(scenario);
-        if (client == null) {
-            return Collections.emptyList();
+        if (!ghIssues.isEmpty()) {
+            issues.addAll(IssueHooksUtils.analyzeGithubIssues(ghIssues, scenario));
         }
-
-        RepositoryService repositoryService = new RepositoryService(client);
-        IssueService issueService = new IssueService(client);
-
-        List<Issue> issues = new ArrayList<>();
-        try {
-            Repository repository = repositoryService.getRepository("syndesisio", "syndesis");
-
-            for (String tag : ghIssues) {
-                String issueNumber = tag.replaceFirst("^@gh-", "");
-                Issue issue = issueService.getIssue(repository, issueNumber);
-                issues.add(issue);
-            }
-        } catch (IOException e) {
-            log.error("Error while processing GitHub issues", e);
-            scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
-            e.printStackTrace();
+        if (!jiraIssues.isEmpty()) {
+            issues.addAll(IssueHooksUtils.analyzeJiraIssues(jiraIssues, scenario));
         }
 
         return issues;
     }
 
-    private static void logIssues(Scenario scenario, List<Issue> issues) {
-        for (Issue issue : issues) {
-            logError(scenario, "#### Title: " + issue.getTitle());
-            logError(scenario, "#### Link: " + issue.getHtmlUrl());
-            logError(scenario, "----------------------------------------");
+    private static void logIssues(Scenario scenario, List<SimpleIssue> issues) {
+        for (SimpleIssue issue : issues) {
+            IssueHooksUtils.logError(scenario, "#### Title: " + issue.getIssueSummary());
+            IssueHooksUtils.logError(scenario, "#### Link: " + issue.getUrl());
+            IssueHooksUtils.logError(scenario, "----------------------------------------");
         }
-    }
-
-    private static GitHubClient getGitHubClient(Scenario scenario) {
-        String oauthToken = "";
-
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.GITHUB);
-        if (optional.isPresent()) {
-            if (!optional.get().getProperties().containsKey("PersonalAccessToken")) {
-                logError(scenario, "Account with name \"GitHub\" and property \"PersonalAccessToken\" is required in credentials.json file.");
-                logError(scenario, "If you want to get known issues from github in logs in case of scenario fails, update your credentials.");
-                return null;
-            } else {
-                oauthToken = optional.get().getProperty("PersonalAccessToken");
-            }
-        }
-
-        GitHubClient client = new GitHubClient();
-        client.setOAuth2Token(oauthToken);
-        return client;
-    }
-
-    private static String getZenHubPipeline(Scenario scenario, String issueNumber) {
-        // TODO: this whole thing should probably be refactored eventually
-        String oauthToken = "";
-
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.ZENHUB);
-        if (optional.isPresent()) {
-            if (!optional.get().getProperties().containsKey("APIToken")) {
-                logError(scenario, "Account with name \"ZenHub\" and property \"APIToken\" is required in credentials.json file.");
-                return null;
-            } else {
-                oauthToken = optional.get().getProperty("APIToken");
-            }
-        }
-
-        Client client = RestUtils.getClient();
-        // hardcoded syndesis repo id for now
-        JsonNode jsonNode = client.target("https://api.zenhub.io/p1/repositories/105563335/issues/" + issueNumber)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Authentication-Token", oauthToken)
-                .get(JsonNode.class);
-
-        if (jsonNode != null &&
-                jsonNode.has("pipeline") &&
-                jsonNode.get("pipeline").has("name")) {
-            return jsonNode.get("pipeline").get("name").asText();
-        } else {
-            logError(scenario, "No ZenHub pipeline info found for issue " + issueNumber);
-            return null;
-        }
-    }
-
-    private static void logError(Scenario scenario, String message) {
-        scenario.embed(message.getBytes(), "text/plain");
-        log.error(message);
     }
 }
-

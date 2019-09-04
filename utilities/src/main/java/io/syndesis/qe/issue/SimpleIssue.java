@@ -11,7 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SimpleIssue {
 
-    private int issueNumber;
+    private String issue;
     private String url;
+    private String issueSummary;
     private IssueState state;
 }
