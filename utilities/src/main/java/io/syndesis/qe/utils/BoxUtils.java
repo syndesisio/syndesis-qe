@@ -2,9 +2,11 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -26,8 +28,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Lazy
 public class BoxUtils {
-    private static final String SYNDESIS_BOX_DIRECTORY_ID = "72743300980";
     private static final String OAUTH_URL = "https://account.box.com/api/oauth2/authorize?response_type=code&client_id=";
 
     private Account boxAccount;
@@ -46,6 +45,7 @@ public class BoxUtils {
     private BoxAPIConnection boxConnection;
     @Getter
     private static String fileId;
+    private String folderId;
 
     @PostConstruct
     public void initClient() {
@@ -59,11 +59,12 @@ public class BoxUtils {
             throw new RuntimeException("Unable to obtain box access token!", e);
         }
         boxConnection = new BoxAPIConnection(boxAccount.getProperty("clientId"), boxAccount.getProperty("clientSecret"), accessToken);
+        folderId = boxAccount.getProperty("folderId");
     }
 
     public void clearBox() {
         log.info("Clearing Box folder");
-        for (BoxItem.Info itemInfo : new BoxFolder(this.boxConnection, BoxUtils.SYNDESIS_BOX_DIRECTORY_ID)) {
+        for (BoxItem.Info itemInfo : new BoxFolder(this.boxConnection, folderId)) {
             log.debug("Deleting file {} (id {})", itemInfo.getName(), itemInfo.getID());
             new BoxFile(this.boxConnection, itemInfo.getID()).delete();
         }
@@ -71,7 +72,7 @@ public class BoxUtils {
 
     public void uploadFile(String name, String content) {
         try {
-            BoxFile.Info info = new BoxFolder(this.boxConnection, SYNDESIS_BOX_DIRECTORY_ID).uploadFile(
+            BoxFile.Info info = new BoxFolder(this.boxConnection, folderId).uploadFile(
                     IOUtils.toInputStream(content, "UTF-8"), name);
             fileId = info.getID();
         } catch (Exception ex) {
@@ -80,11 +81,11 @@ public class BoxUtils {
     }
 
     public int getFileCount() {
-        return ((Collection<?>) new BoxFolder(this.boxConnection, SYNDESIS_BOX_DIRECTORY_ID)).size();
+        return ((Collection<?>) new BoxFolder(this.boxConnection, folderId)).size();
     }
 
     public BoxFile getFile(String name) {
-        for (BoxItem.Info info : new BoxFolder(this.getBoxConnection(), SYNDESIS_BOX_DIRECTORY_ID)) {
+        for (BoxItem.Info info : new BoxFolder(this.getBoxConnection(), folderId)) {
             if (name.equals(info.getName())) {
                 return new BoxFile(this.getBoxConnection(), info.getID());
             }
