@@ -69,7 +69,8 @@ Feature: Slack Connector
 
     When select the "QE Slack" connection
     And select "Read Messages" integration action
-    And select "test" from "channel" dropdown
+    And fill in values by element data-testid
+      | channel  | test |
     And click on the "Done" button
     Then check visibility of page "Choose a Finish Connection"
 
