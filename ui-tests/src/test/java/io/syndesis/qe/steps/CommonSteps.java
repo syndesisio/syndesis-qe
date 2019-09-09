@@ -54,6 +54,7 @@ import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
@@ -973,12 +974,17 @@ public class CommonSteps {
     /**
      * Save current time to the singleton class
      */
-    @Then("^save time after request$")
+    @When("^save time after request$")
     public void saveAfterTime() {
         TestUtils.sleepIgnoreInterrupt(3000); // due to border values
         calendarUtils.setAfterRequest(Calendar.getInstance());
         log.info("Time after request was saved: "
             + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
+    }
+
+    @When("^clean webdriver download folder$")
+    public void cleanDownloadFolder() throws IOException {
+        CustomWebDriverProvider.cleanDownloadFolder();
     }
 }
 

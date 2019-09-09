@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: mkralik@redhat.com
 
 @ui
 @slack
@@ -16,7 +16,7 @@ Feature: Slack Connector
     And navigate to the "Home" page
     
 #
-#  2. Check that slack message exists, use data mapper
+#  1. Check that slack message exists, use data mapper
 #
   @slack-check-message-data-mapper
   Scenario: Check that slack received a message from an integration
@@ -39,7 +39,7 @@ Feature: Slack Connector
     When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values by element data-testid
-      | channel | test |
+      | channel | slack_connector_test |
     And click on the "Done" button
     And add integration step on position "0"
     And select "Data Mapper" integration step
@@ -55,10 +55,10 @@ Feature: Slack Connector
     Then Integration "Integration_with_slack" is present in integrations list
     And wait until integration "Integration_with_slack" gets into "Running" state
     And sleep for jenkins delay or "15" seconds
-    And check that last slack message equals "Red Hat" on channel "test"
+    And check that last slack message equals "Red Hat" on channel "slack_connector_test"
 
 #
-#  3. Check that slack message is saved to DB. The data mapper and basic filter are used.
+#  2. Check that slack message is saved to DB. The data mapper and basic filter are used.
 #
   @slack-to-db
   Scenario: Check that slack message is saved into DB
@@ -69,7 +69,7 @@ Feature: Slack Connector
 
     When select the "QE Slack" connection
     And select "Read Messages" integration action
-    And select "test" from "channel" dropdown
+    And select "slack_connector_test" from slack channel dropdown
     And click on the "Done" button
     Then check visibility of page "Choose a Finish Connection"
 
@@ -99,13 +99,13 @@ Feature: Slack Connector
     Then Integration "slack-to-db" is present in integrations list
     And wait until integration "slack-to-db" gets into "Running" state
 
-    When send message "Red Hat testSlack" on channel "test"
-    And send message "Red Hat test incorrect Slack" on channel "test"
+    When send message "Red Hat testSlack" on channel "slack_connector_test"
+    And send message "Red Hat test incorrect Slack" on channel "slack_connector_test"
     Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
     And checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
 
 #
-#  4. Check Maximum Messages to Retrieve and Delay function in SLACK consumer ( GH issue: #3761 )
+#  3. Check Maximum Messages to Retrieve and Delay function in SLACK consumer ( GH issue: #3761 )
 #
   @slack-to-db-delay-and-maxmessage
   Scenario: Check Maximum Messages to Retrieve and Delay function in SLACK consumer
@@ -116,11 +116,12 @@ Feature: Slack Connector
 
     # select slack connection as start integration
     When select the "QE Slack" connection
-    Then select "Read Messages" integration action
-    And select "random" from "channel" dropdown
+    And select "Read Messages" integration action
+    And select "slack_connector_test" from slack channel dropdown
     And fill in values by element ID
-      | maxresults | 2     |
-      | delay      | 60000 |
+      | maxresults | 2  |
+      | delay      | 60 |
+    And select "Seconds" from slack delay time units dropdown
     And click on the "Done" button.
 
     # select postgresDB connection as finish integration
@@ -133,24 +134,24 @@ Feature: Slack Connector
     # add data mapper step
     # Then check visibility of page "Add to Integration"
     When add integration step on position "0"
-    Then select "Data Mapper" integration step
-    And check visibility of data mapper ui
-    And create data mapper mappings
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    When create data mapper mappings
       | username | AUTOR   |
       | text     | COMPANY |
     And click on the "Done" button
 
     # finish and save integration
-    When click on the "Save" link
+    And click on the "Save" link
     And set integration name "slack-to-db-delay-and-maxmessage"
-    And send message "message1" on channel "random"
-    And send message "message2" on channel "random"
-    And send message "message3" on channel "random"
-    And send message "message4" on channel "random"
+    And send message "message1" on channel "slack_connector_test"
+    And send message "message2" on channel "slack_connector_test"
+    And send message "message3" on channel "slack_connector_test"
+    And send message "message4" on channel "slack_connector_test"
     And publish integration
 
     Then Integration "slack-to-db-delay-and-maxmessage" is present in integrations list
-    And wait until integration "slack-to-db-delay-and-maxmessage" gets into "Running" state
+    When wait until integration "slack-to-db-delay-and-maxmessage" gets into "Running" state
     And sleep for jenkins delay or "15" seconds
 
     # test Maximum Messages to Retrieve after start
@@ -160,23 +161,27 @@ Feature: Slack Connector
     And checks that query "select * from contact where company = 'message4' AND first_name = 'syndesis-bot'" has "1" output
 
     # test delay
-    Then send message "messageDelayed" on channel "random"
-    And checks that query "select * from contact where company = 'messageDelayed'" has no output
-    And sleep for "60000" ms
+    When send message "messageDelayed" on channel "slack_connector_test"
+    # test if the message is not arrive immediately
+    And sleep for 2 seconds
+    Then checks that query "select * from contact where company = 'messageDelayed'" has no output
+    When wait until query "select * from contact where company = 'messageDelayed' AND first_name = 'syndesis-bot'" has output with timeout 60
     Then checks that query "select * from contact where company = 'messageDelayed' AND first_name = 'syndesis-bot'" has "1" output
 
-    # test Maximum Messages to Retrive after delay
-    Then send message "message5" on channel "random"
-    And send message "message6" on channel "random"
-    And send message "message7" on channel "random"
-    And send message "message8" on channel "random"
-    And sleep for "60000" ms
-    #After first delay it should consume only two messages (Max)
-    Then checks that query "select * from contact where company = 'message5' AND first_name = 'syndesis-bot'" has "1" output
-    And checks that query "select * from contact where company = 'message6' AND first_name = 'syndesis-bot'" has "1" output
-    And checks that query "select * from contact where company = 'message7'" has no output
+    When send message "message5" on channel "slack_connector_test"
+    And send message "message6" on channel "slack_connector_test"
+    And send message "message7" on channel "slack_connector_test"
+    And send message "message8" on channel "slack_connector_test"
+    Then checks that query "select * from contact where company = 'message7'" has no output
     And checks that query "select * from contact where company = 'message8'" has no output
-    And sleep for "60000" ms
+    #After first delay it should consume only two messages (Max)
+    And wait until query "select * from contact where company = 'message5'" has output with timeout 60
+    Then checks that query "select * from contact where company = 'message7'" has no output
+    And checks that query "select * from contact where company = 'message8'" has no output
+    And checks that query "select * from contact where company = 'message5' AND first_name = 'syndesis-bot'" has "1" output
+    And checks that query "select * from contact where company = 'message6' AND first_name = 'syndesis-bot'" has "1" output
+    #+5 seconds due to overhead till the message arrives in the syndesis db
+    When wait until query "select * from contact where company = 'message7'" has output with timeout 65
     #After next delay it should consume next two messages
     Then checks that query "select * from contact where company = 'message7' AND first_name = 'syndesis-bot'" has "1" output
     And checks that query "select * from contact where company = 'message8' AND first_name = 'syndesis-bot'" has "1" output
