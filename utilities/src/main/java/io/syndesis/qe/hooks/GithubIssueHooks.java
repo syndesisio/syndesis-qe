@@ -1,5 +1,12 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.issue.IssueState;
+import io.syndesis.qe.issue.SimpleIssue;
+import io.syndesis.qe.utils.RestUtils;
+
 import org.junit.Assume;
 
 import org.eclipse.egit.github.core.Issue;
@@ -26,12 +33,6 @@ import java.util.stream.Collectors;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.issue.IssueState;
-import io.syndesis.qe.issue.SimpleIssue;
-import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -40,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
  * fail investigation.
  */
 @Slf4j
-public class IssueHooks {
+public class GithubIssueHooks {
 
     /**
      * This hook skips tests that have open github issues
@@ -135,7 +136,7 @@ public class IssueHooks {
         ArrayNode array = mapper.createArrayNode();
 
         for (Issue issue : issues) {
-            array.addPOJO(new SimpleIssue(issue.getNumber(), issue.getUrl(), getIssueState(scenario, issue)));
+            array.addPOJO(new SimpleIssue(Integer.toString(issue.getNumber()), issue.getUrl(), getIssueState(scenario, issue)));
         }
 
         StringWriter sw = new StringWriter();
