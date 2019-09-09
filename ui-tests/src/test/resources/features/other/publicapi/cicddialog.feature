@@ -3,7 +3,6 @@
 @ui
 @publicapi
 @cicddialog
-@gh-6362
 Feature: Test tagging integration in CI CD dialog
 
   Background: Clean application state
@@ -38,6 +37,7 @@ Feature: Test tagging integration in CI CD dialog
     And save and cancel integration editor
     And navigate to the "Home" page
 
+  @ENTESB-11386
   @create-tag
   Scenario: Test creating new tag
     When navigate to the "Integrations" page
@@ -60,6 +60,7 @@ Feature: Test tagging integration in CI CD dialog
     And click on the "Manage CI/CD" link to manage tags.
     And check that tag tag1 cannot be created because another tag with same name exist
 
+  @ENTESB-11386
   @update-tag
   Scenario: Test updating tag in CI CD dialog
     When navigate to the "Integrations" page
