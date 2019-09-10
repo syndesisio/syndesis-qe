@@ -146,7 +146,7 @@ Feature: Public API - integrations point
   # GET ​/public​/integrations​/{env}​/export.zip?all=false
   # POST ​/public​/integrations
   @export-import-integrations
-  @gh-6360
+  @ENTESB-11387
   Scenario: Export and import integrations according to tag
     When add tags to integration integration1
       | tag1 | tag12 |

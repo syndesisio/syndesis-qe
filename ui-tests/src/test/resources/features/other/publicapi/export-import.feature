@@ -3,7 +3,7 @@
 @ui
 @publicapi
 @export-import
-@gh-6360
+@ENTESB-11387
 Feature: Import and export integration test
 
   Background: Clean application state
