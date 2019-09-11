@@ -276,3 +276,13 @@ Feature: OData Connector
     When sleep for "1000" ms
     Then check that "whatever" entity in "Users" collection contains
       | Gender | MALE |
+
+    @gh-5559
+    @reproducer
+    @odata-server-certificate
+    Scenario: OData connector needs server certificate
+      When create OData https credentials
+      And log into the Syndesis
+      And created connections
+        | OData | odataHttps | ODataHttps | sample OData service |
+      Then check visibility of the "ODataHttps" connection
