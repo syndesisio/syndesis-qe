@@ -52,7 +52,7 @@ public class IntegrationsPublicApiSteps {
 
         //check that tags response is valid
         for (Map.Entry<String, ContinuousDeliveryEnvironment> entry : tags.entrySet()) {
-            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
+            assertThat(entry.getKey()).isEqualTo(entry.getValue().getEnvironmentId());
         }
         assertThat(tags.keySet())
             .containsAll(originalTags);
@@ -70,7 +70,7 @@ public class IntegrationsPublicApiSteps {
 
         //check that tags response is valid
         for (Map.Entry<String, ContinuousDeliveryEnvironment> entry : tags.entrySet()) {
-            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
+            assertThat(entry.getKey()).isEqualTo(entry.getValue().getEnvironmentId());
         }
         assertThat(tags.keySet())
             .containsExactlyInAnyOrderElementsOf(originalTags);
@@ -86,7 +86,7 @@ public class IntegrationsPublicApiSteps {
 
         //check that tags response is valid
         for (Map.Entry<String, ContinuousDeliveryEnvironment> entry : tags.entrySet()) {
-            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
+            assertThat(entry.getKey()).isEqualTo(entry.getValue().getEnvironmentId());
         }
 
         assertThat(tags.keySet())
