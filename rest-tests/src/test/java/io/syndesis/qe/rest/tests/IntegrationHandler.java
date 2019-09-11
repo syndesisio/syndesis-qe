@@ -9,6 +9,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.Verifier;
+import io.syndesis.server.openshift.Exposure;
 
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,17 +60,18 @@ public class IntegrationHandler {
         }
 
         Integration integration = new Integration.Builder()
-                    .name(integrationName)
-                    .description("Awkward integration.")
-                    .tags(tags)
-                    .addFlow(
-                            new Flow.Builder()
-                                    .id(UUID.randomUUID().toString())
-                                    .description(integrationName + "Flow")
-                                    .steps(steps.getSteps())
-                                    .build()
-                    )
-                    .build();
+            .name(integrationName)
+            .description("Awkward integration.")
+            .tags(tags)
+            .exposure(Exposure.SERVICE.toString())
+            .addFlow(
+                new Flow.Builder()
+                    .id(UUID.randomUUID().toString())
+                    .description(integrationName + "Flow")
+                    .steps(steps.getSteps())
+                    .build()
+            )
+            .build();
 
         log.info("Creating integration {}", integration.getName());
         String integrationId = integrationsEndpoint.create(integration).getId().get();
@@ -101,18 +103,18 @@ public class IntegrationHandler {
     public void sameNameIntegrationValidation(String integrationName, String desiredState) {
 
         final Integration integration = new Integration.Builder()
-                .steps(steps.getSteps())
-                .name(integrationName)
-                .description("Awkward integration.")
-                .build();
+            .steps(steps.getSteps())
+            .name(integrationName)
+            .description("Awkward integration.")
+            .build();
 
         log.info("Creating integration {}", integration.getName());
         Assertions.assertThatExceptionOfType(BadRequestException.class)
-                .isThrownBy(() -> {
-                    integrationsEndpoint.create(integration);
-                })
-                .withMessageContaining("HTTP 400 Bad Request")
-                .withNoCause();
+            .isThrownBy(() -> {
+                integrationsEndpoint.create(integration);
+            })
+            .withMessageContaining("HTTP 400 Bad Request")
+            .withNoCause();
         log.debug("Flushing used steps");
         steps.flushStepDefinitions();
     }
