@@ -31,7 +31,8 @@ Feature: Integration - Salesforce to DB
       # select salesforce connection as 'from' point
     When select the "QE Salesforce" connection
     And select "On create" integration action
-    And select "Lead" from "sObjectName" dropdown
+    And fill in values by element data-testid
+      | sobjectname      | Lead |
     And click on the "Done" button
 
       # select postgresDB connection as 'to' point
