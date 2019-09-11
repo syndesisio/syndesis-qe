@@ -459,7 +459,7 @@ For IntelliJ Idea, you have to install *[CheckStyle-IDEA](https://plugins.jetbra
 After that, open Settings > Editor > CodeStyle and click on cogwheel, select Import Scheme > CheckStyle configuration and
 choose checkstyle/checkstyle.xml file from this repository. Currently we use 8.20 version of the checkstyle, so select the version in the checkstyle plugin accordingly.
 
-You can also import the code style settings into the IntelliJ from checkstyle/intellij-settings.jar. This provides all necessary configuration that conforms the checkstyle ruleset.
+Second, import the code style settings into the IntelliJ from checkstyle/intellij-settings.jar (File -> Import settings). This provides all necessary configuration that conforms the checkstyle ruleset.
 
 After importing the jar file, verify that you have _Scheme: Syndesis_ in Settings -> Editor -> Code Style -> Java
 
