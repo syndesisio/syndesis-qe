@@ -15,6 +15,7 @@ BASE_DIR=$(dirname "$(readlink -f "$0")")
 #UI                 - ui image
 #S2I                - s2i image
 #OPERATOR           - operator image
+#UPGRADE            - upgrade image
 #POSTGRES_EXPORTER  - postgres exporter image
 #KOMODO_SERVER      - komodo server image
 #TAG                - tag which is expected by the operator
@@ -29,7 +30,19 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 # If the properties aren't defined, source vars file
 [[ ! "z${OPERATOR}" == "z" ]] || source "${BASE_DIR}"/vars
 
-git rev-parse --verify "${PREVIOUS_BRANCH}" > /dev/null 2>&1 || (echo "Branch ${PREVIOUS_BRANCH} not found!" && exit 1)
+
+# check that upgrade image defined in operator is the same as the latest upgrade image
+UPGRADE_IMAGE_VERSION="$(echo "$UPGRADE" | sed 's/^.*fuse-ignite-upgrade:\(.*\)$/\1/')"
+UPGRADE_IN_OPERATOR=$(docker run -i --entrypoint '["/bin/bash", "-c", "cat /conf/syndesis-template.yaml"]' $OPERATOR | sed -n 's/^.*fuse-ignite-upgrade:\(.*\)$/\1/p')
+
+if [ "$UPGRADE_IMAGE_VERSION" != "$UPGRADE_IN_OPERATOR" ] ; then
+    echo "Wrong upgrade image version in operator!"
+    echo "upgrade image: $UPGRADE_IMAGE_VERSION"
+    echo "upgrade image in operator: $UPGRADE_IN_OPERATOR"
+    exit 1
+fi
+
+git rev-parse --verify "${PREVIOUS_BRANCH}" > /dev/null 2>&1 || { echo "Branch ${PREVIOUS_BRANCH} not found!" && exit 1; }
 
 # Create secret for pulling the images
 cat << EOF | oc create -f -
