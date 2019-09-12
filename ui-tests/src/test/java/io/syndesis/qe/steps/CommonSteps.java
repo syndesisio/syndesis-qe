@@ -59,6 +59,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -611,6 +612,15 @@ public class CommonSteps {
     public void fillFormViaTestID(DataTable data) {
         Form.waitForInputs(20);
         new Form(new SyndesisRootPage().getRootElement()).fillByTestId(data.asMap(String.class, String.class));
+    }
+
+    @Then("^fill in data-testid field \"([^\"]*)\" from property \"([^\"]*)\" of credentials \"([^\"]*)\"")
+    public void fillFormByTestIdFromCreds(String testId, String property, String credentials) {
+        Account account = AccountUtils.get(credentials);
+        Map<String, String> map = new HashMap<>();
+        map.put(testId, account.getProperty(property));
+
+        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(map);
     }
 
     @Then("^force fill in values by element data-testid$")

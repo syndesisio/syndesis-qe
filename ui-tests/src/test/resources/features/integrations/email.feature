@@ -10,7 +10,6 @@ Feature: Email connector
     Given clean application state
     And reset content of "todo" table
     And reset content of "contact" table
-    And delete emails from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests"
     And log into the Syndesis
     And navigate to the "Home" page
 
@@ -19,6 +18,7 @@ Feature: Email connector
 
     Given created connections
       | Send Email (smtp) | Email SMTP With <security> | Send Email with <security> QE | Send email test |
+    And delete emails from credentials "Email SMTP With <security>" with subject "syndesis-tests"
 
     # Create integration
     When navigate to the "Home" page
@@ -40,8 +40,8 @@ Feature: Email connector
     And select "Send Email" integration action
     And fill in values by element ID
       | to      | jbossqa.fuse@gmail.com       |
-      | from    | jbossqa.fuse.email@gmail.com |
       | subject | syndesis-tests               |
+    And fill in data-testid field "from" from property "username" of credentials "Email SMTP With <security>"
     And click on the "Done" button
     # Then check visibility of page "Add to Integration"
 
@@ -65,8 +65,8 @@ Feature: Email connector
     And publish integration
     Then Integration "email-send-qe-integration" is present in integrations list
     And wait until integration "email-send-qe-integration" gets into "Running" state
-    And check that email from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests" and text "Red Hat" exists
-    And delete emails from "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests"
+    And check that email from credenitals "Email SMTP With <security>" with subject "syndesis-tests" and text "Red Hat" exists
+    And delete emails from credentials "Email SMTP With <security>" with subject "syndesis-tests"
 
     Examples:
       | security |
@@ -89,8 +89,9 @@ Feature: Email connector
     When select the "Receive Email with <protocol> QE" connection
     Then select "Receive Email" integration action
     And fill in values by element ID
-      | delay      | 30 |
-      | maxresults | 10 |
+      | delay      | 30   |
+      | maxresults | 10   |
+      | unseenonly | true |
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
@@ -119,7 +120,7 @@ Feature: Email connector
     And wait until integration "email-receive-qe-integration" gets into "Running" state
 
     # Send email to connector, wait for it to be received and check that it's content got into database
-    When send an e-mail to "jbossqa.fuse.email@gmail.com"
+    When send an e-mail to credentials "Email <protocol> With SSL"
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
 
     Examples:
@@ -145,6 +146,7 @@ Feature: Email connector
       | delay      | 30     |
       | maxresults | 10     |
       | folder     | folder |
+      | unseenonly | true   |
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
 
@@ -171,5 +173,5 @@ Feature: Email connector
     And wait until integration "email-receive-qe-integration" gets into "Running" state
 
     # Send email to connector, wait for it to be received and check that it's content got into database
-    When send an e-mail to "jbossqa.fuse.email@gmail.com" with subject "syndesis-tests-folder"
+    When send an e-mail to credentials "Email IMAP With SSL" with subject "syndesis-tests-folder"
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
