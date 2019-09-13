@@ -1,7 +1,7 @@
 # @sustainer: mcada@redhat.com
 
 @ui
-@salesforce
+@slack
 @database
 @datamapper
 @import

@@ -9,7 +9,7 @@ Feature: Integration - Twitter
   @integration-tw-sf
   Scenario: Mention to Salesforce create object
     Given clean application state
-    Given clean SF contacts related to TW account: "twitter_talky"
+    And delete contact from SF with email: "integrations-twitter-to-salesforce-rest"
     And clean all tweets in twitter_talky account
     And create Twitter connection using "Twitter Listener" account
     And create SalesForce connection
@@ -20,15 +20,15 @@ Feature: Integration - Twitter
     Then SEPARATE using Step 1 and strategy "Space" and source "//user/name" into targets
         | /FirstName | /LastName |
     Then MAP using Step 1 and field "//user/screenName" to "/TwitterScreenName__c"
-    Then MAP using Step 1 and field "//text" to "/Description"
+    Then MAP using Step 1 and field "//text" to "/Email"
 
     When create SF "create-sobject" action step with properties
         | sObjectName | Contact |
     And create integration with name: "Twitter to salesforce contact rest test"
-    Then wait for integration with name: "Twitter to salesforce contact rest test" to become active
-    Then check SF "does not contain" contact for tw account: "twitter_talky"
-    Then tweet a message from twitter_talky to "Twitter Listener" with text "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
-    Then validate contact for TW account: "twitter_talky" is present in SF with description: "#backendTest Have you heard about Syndesis project? It is pretty amazing..."
-    Given clean application state
-    And clean SF contacts related to TW account: "twitter_talky"
+    And wait for integration with name: "Twitter to salesforce contact rest test" to become active
+    Then check SF "does not contain" contact with a email: "integrations-twitter-to-salesforce-rest"
+    When tweet a message from twitter_talky to "Twitter Listener" with text "integrations-twitter-to-salesforce-rest"
+    Then check SF "contain" contact with a email: "integrations-twitter-to-salesforce-rest"
+    When clean application state
+    And delete contact from SF with email: "integrations-twitter-to-salesforce-rest"
     And clean all tweets in twitter_talky account

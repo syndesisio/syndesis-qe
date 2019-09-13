@@ -9,7 +9,7 @@
 @activemq
 Feature: Integration - Kafka
   Background:
-    Given clean SF, removes all leads with email: "jdoe@acme.com"
+    Given clean SF, removes all leads with email: "test@integration-kafka.feature"
       And deploy Kafka broker and add account
       And deploy ActiveMQ broker
       And create ActiveMQ connection
@@ -17,6 +17,8 @@ Feature: Integration - Kafka
       And create Kafka connection
     When create SF "on-create" action step with properties
       | sObjectName | Lead |
+      # filter, due to other test can create Lead in the same time
+    And create basic filter step for "Email" with word "test@integration-kafka.feature" and operation "contains"
       And start mapper definition with name: "mapping 1"
       And MAP using Step 1 and field "/Id" to "/Id"
       And create Kafka "publish" step with topic "sf-leads"
@@ -30,5 +32,5 @@ Feature: Integration - Kafka
 
   @integration-kafka-to-sf
   Scenario: SalesForce to Kafka to AMQ
-    When create SF lead with first name: "John", last name: "Doe", email: "jdoe@acme.com" and company: "ACME"
+    When create SF lead with first name: "John", last name: "Doe", email: "test@integration-kafka.feature" and company: "ACME"
     Then verify that lead json object was received from queue "sf-leads"

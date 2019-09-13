@@ -604,18 +604,21 @@ public class CommonSteps {
     @Then("^fill in values by element ID")
     public void fillFormViaID(DataTable data) {
         Form.waitForInputs(20);
+        TestUtils.sleepIgnoreInterrupt(2000);
         new Form(new SyndesisRootPage().getRootElement()).fillById(data.asMap(String.class, String.class));
     }
 
     @Then("^fill in values by element data-testid")
     public void fillFormViaTestID(DataTable data) {
         Form.waitForInputs(20);
+        TestUtils.sleepIgnoreInterrupt(2000);
         new Form(new SyndesisRootPage().getRootElement()).fillByTestId(data.asMap(String.class, String.class));
     }
 
     @Then("^force fill in values by element data-testid$")
     public void forceFillFormViaTestID(DataTable data) {
         Form.waitForInputs(20);
+        TestUtils.sleepIgnoreInterrupt(2000);
         new Form(new SyndesisRootPage().getRootElement()).forceFillByTestId(data.asMap(String.class, String.class));
     }
 

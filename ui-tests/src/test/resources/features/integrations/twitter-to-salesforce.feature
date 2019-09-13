@@ -11,7 +11,7 @@ Feature: Integration - Twitter to Salesforce
 
   Background: Clean application state
     Given clean application state
-    And clean SF contacts related to TW account: "twitter_talky"
+    And delete contact from SF with email: "integrations-twitter-to-salesforce-ui"
     And clean all tweets in twitter_talky account
     And log into the Syndesis
     And navigate to the "Settings" page
@@ -53,6 +53,11 @@ Feature: Integration - Twitter to Salesforce
       | text            | Description          |
       | user.name       | FirstName; LastName  |
 
+    And define constant "integrations-twitter-to-salesforce" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | integrations-twitter-to-salesforce | Email |
+
     And scroll "top" "right"
     And click on the "Done" button
 
@@ -79,14 +84,14 @@ Feature: Integration - Twitter to Salesforce
     And wait until integration "Twitter to Salesforce E2E" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #syndesis4ever"
-    Then check SF "does not contain" contact for tw account: "twitter_talky"
+    Then check SF "does not contain" contact with a email: "integrations-twitter-to-salesforce"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e"
-    Then check SF "does not contain" contact for tw account: "twitter_talky"
+    Then check SF "does not contain" contact with a email: "integrations-twitter-to-salesforce"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e #syndesis4ever"
-    Then check SF "contains" contact for tw account: "twitter_talky"
-    And check that contact from SF with last name: "Talky" has description "test #e2e #syndesis4ever @syndesis_listen"
+    Then check SF "contains" contact with a email: "integrations-twitter-to-salesforce"
+    And check that contact from SF with last name: "integrations-twitter-to-salesforce" has description "test #e2e #syndesis4ever @syndesis_listen"
 
     # clean-up in salesforce
-    When delete contact from SF with last name: "Talky"
+    When delete contact from SF with last name: "integrations-twitter-to-salesforce-ui"
