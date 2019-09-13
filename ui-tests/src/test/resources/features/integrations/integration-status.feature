@@ -72,7 +72,7 @@ Feature: Integration - DB to DB
 
     And publish integration
     And fill Name Integration form
-      | Name | ASD |
+      | name | ASD |
     And publish integration
 
     When navigate to the "Home" page
