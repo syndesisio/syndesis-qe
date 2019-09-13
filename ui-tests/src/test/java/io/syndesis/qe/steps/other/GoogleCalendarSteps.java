@@ -34,13 +34,15 @@ public class GoogleCalendarSteps {
         GetSpecificEvent getSpecificEvent = new GetSpecificEvent();
         String calendarId = gcu.getPreviouslyCreatedCalendar(account, aliasedCalendarSummary).getId();
         String eventId = gcu.getEventBySummary(account, calendarId, eventSummary).getId();
-        getSpecificEvent.fillEventInput(aliasedCalendarSummary, eventId);
+        getSpecificEvent.fillEventInput(calendarId, eventId);
     }
 
     @When("^fill in create event form using calendar \"([^\"]*)\", summary \"([^\"]*)\" and description \"([^\"]*)\"$")
     public void fillInCreateEventFormUsingCalendarSummaryAndDescription(String calendar, String summary, String description) throws Throwable {
+        String aliasedCalendarSummary = gcu.getAliasedCalendarName(calendar);
+        String calendarId = gcu.getPreviouslyCreatedCalendar("QE Google Calendar", aliasedCalendarSummary).getId();
         new EventForm()
-            .setCalendarName(gcu.getAliasedCalendarName(calendar))
+            .setCalendarName(calendarId)
             .setTitle(summary)
             .setDescription(description)
             .fill();
@@ -49,7 +51,9 @@ public class GoogleCalendarSteps {
     @When("^fill in update event form using calendar \"([^\"]*)\", summary \"([^\"]*)\" and description \"([^\"]*)\" for user \"([^\"]*)\"$")
     public void fillInUpdateEventFormUsingCalendarSummaryAndDescription(String calendarName, String summary, String description, String ga)
         throws Throwable {
-        fillInUpdateEventForm(calendarName, null, summary, description);
+        String aliasedCalendarSummary = gcu.getAliasedCalendarName(calendarName);
+        String calendarId = gcu.getPreviouslyCreatedCalendar(ga, aliasedCalendarSummary).getId();
+        fillInUpdateEventForm(calendarId, null, summary, description);
     }
 
     @When("^fill in update event form using calendar \"([^\"]*)\", old summary \"([^\"]*)\", summary \"([^\"]*)\" and description \"([^\"]*)\" for " +
@@ -61,7 +65,7 @@ public class GoogleCalendarSteps {
         Assert.assertThat(String.format("Calendar %s is not amongst the created calendars.", aliasedCalendarName), c, Matchers.notNullValue());
         Event e = gcu.getEventBySummary(ga, c.getId(), oldSummary);
         Assert.assertThat(String.format("Event %s is not present in calendar %s.", oldSummary, aliasedCalendarName), e, Matchers.notNullValue());
-        fillInUpdateEventForm(aliasedCalendarName, e.getId(), summary, description);
+        fillInUpdateEventForm(c.getId(), e.getId(), summary, description);
     }
 
     @When("^fill in aliased calendar values$")
@@ -73,7 +77,9 @@ public class GoogleCalendarSteps {
             List<String> newRow = new ArrayList<>(row);
             newCells.add(newRow);
             if ("calendarid".equals(newRow.get(0))) {
-                newRow.set(1, gcu.getAliasedCalendarName(newRow.get(1)));
+                String aliasedCalendarName = gcu.getAliasedCalendarName(newRow.get(1));
+                Calendar c = gcu.getPreviouslyCreatedCalendar("QE Google Calendar", aliasedCalendarName);
+                newRow.set(1, gcu.getAliasedCalendarName(c.getId()));
             }
         }
         // oh well, things are never as nice as you want them to be
