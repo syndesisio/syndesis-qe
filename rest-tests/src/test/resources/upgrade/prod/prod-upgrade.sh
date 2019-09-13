@@ -31,9 +31,17 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 [[ ! "z${OPERATOR}" == "z" ]] || source "${BASE_DIR}"/vars
 
 
+# pull the operator image if we're using podman - docker happily downloads from
+# non-https registry, but does not like the --tls-verify option that podman needs
+if command -v podman > /dev/null ; then
+    # we assume that if we have `podman` on PATH, `docker` is in fact podman-docker
+    # if you have both docker and podman, you're on your own
+    docker pull --tls-verify=false $OPERATOR
+fi
+
 # check that upgrade image defined in operator is the same as the latest upgrade image
 UPGRADE_IMAGE_VERSION="$(echo "$UPGRADE" | sed 's/^.*fuse-ignite-upgrade:\(.*\)$/\1/')"
-UPGRADE_IN_OPERATOR=$(docker run -i --entrypoint '["/bin/bash", "-c", "cat /conf/syndesis-template.yaml"]' $OPERATOR | sed -n 's/^.*fuse-ignite-upgrade:\(.*\)$/\1/p')
+UPGRADE_IN_OPERATOR=$(docker run -i --entrypoint "/bin/bash" $OPERATOR -c "cat /conf/syndesis-template.yaml" | sed -n 's/^.*fuse-ignite-upgrade:\(.*\)$/\1/p')
 
 if [ "$UPGRADE_IMAGE_VERSION" != "$UPGRADE_IN_OPERATOR" ] ; then
     echo "Wrong upgrade image version in operator!"
