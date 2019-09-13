@@ -63,6 +63,7 @@ public class TestConfiguration {
     public static final String SKIP_TESTS_WITH_OPEN_ISSUES = "syndesis.skip.open.issues";
 
     public static final String STATE_CHECK_INTERVAL = "syndesis.server.state.check.interval";
+    public static final String SNOOP_SELECTORS = "syndesis.snoopselectors";
 
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
@@ -159,6 +160,7 @@ public class TestConfiguration {
     public static String syndesisCrdUrl() {
         return get().readValue(SYNDESIS_CRD_URL);
     }
+
     public static String syndesisOperatorImage() {
         return get().readValue(SYNDESIS_OPERATOR_IMAGE);
     }
@@ -217,6 +219,10 @@ public class TestConfiguration {
 
     public static int stateCheckInterval() {
         return Integer.parseInt(get().readValue(STATE_CHECK_INTERVAL));
+    }
+
+    public static boolean snoopSelectors() {
+        return Boolean.parseBoolean(get().readValue(SNOOP_SELECTORS));
     }
 
     private Properties defaultValues() {
@@ -284,6 +290,9 @@ public class TestConfiguration {
         }
 
         props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
+        if (props.getProperty(SNOOP_SELECTORS) == null) {
+            props.setProperty(SNOOP_SELECTORS, "false");
+        }
         return props;
     }
 

@@ -33,6 +33,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.CalendarUtils;
+import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -723,6 +724,7 @@ public class CommonSteps {
         }, 1, 20, "Window has not returned valid url");
     }
 
+    @ExcludeFromSelectorReports
     private void doOAuthValidation(String type) {
 
         WebDriver driver = WebDriverRunner.getWebDriver();

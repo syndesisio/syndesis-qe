@@ -2,6 +2,8 @@ package io.syndesis.qe.pages.login;
 
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.ExcludeFromSelectorReports;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
@@ -16,6 +18,7 @@ public class MinishiftLogin implements Login {
         public static final By PASSWORD = By.id("inputPassword");
     }
 
+    @ExcludeFromSelectorReports
     @Override
     public void login(String username, String password) {
         $(Input.USERNAME).shouldBe(Condition.visible).setValue(username);

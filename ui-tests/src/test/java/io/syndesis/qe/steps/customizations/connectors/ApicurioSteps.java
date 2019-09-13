@@ -14,6 +14,7 @@ import static com.codeborne.selenide.Selenide.executeJavaScript;
 import static com.codeborne.selenide.Selenide.switchTo;
 
 import io.syndesis.qe.fragments.common.form.Form;
+import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
@@ -102,6 +103,7 @@ public class ApicurioSteps {
         public static By SECURITY_REQUIREMENT_ITEMS = By.className("list-group-item-heading");
     }
 
+    @ExcludeFromSelectorReports
     @Then("^check that apicurio shows (\\d+) imported operations$")
     public void verifyOperations(int expectedCount) {
         SelenideElement operations = $(Elements.PAGE_ROOT).shouldBe(visible).$$("div").filter(attribute("class", "container-fluid")).first();
@@ -111,6 +113,7 @@ public class ApicurioSteps {
             .containsIgnoringCase("operations");
     }
 
+    @ExcludeFromSelectorReports
     @When("^check that apicurio imported operations number is loaded$")
     public void verifyOperationsAreVisible() {
         try {
@@ -121,6 +124,7 @@ public class ApicurioSteps {
         }
     }
 
+    @ExcludeFromSelectorReports
     @Then("^check that apicurio shows (\\d+) warnings$")
     public void verifyWarnings(int expectedCount) {
         SelenideElement operations = $(Elements.WARNINGS).shouldBe(visible);
@@ -129,6 +133,7 @@ public class ApicurioSteps {
             .containsIgnoringCase(Integer.toString(expectedCount));
     }
 
+    @ExcludeFromSelectorReports
     @Then("^check that apicurio shows (\\d+) errors?$")
     public void verifyErrors(int expectedCount) {
         SelenideElement operations = $(Elements.ERRORS).shouldBe(visible);
@@ -137,6 +142,7 @@ public class ApicurioSteps {
             .containsIgnoringCase(Integer.toString(expectedCount));
     }
 
+    @ExcludeFromSelectorReports
     @When("^remove warning via apicurio gui$")
     public void removeWarning() {
         $(Elements.WARNING_ICON).shouldBe(visible).click();
@@ -189,6 +195,7 @@ public class ApicurioSteps {
      *
      * @param withError - true to invoke an error in syndesis apicurito review due to empty description field
      */
+    @ExcludeFromSelectorReports
     public void doAddOperation(boolean withError) {
         $(Elements.OPERATIONS_CONTAINER).shouldBe(visible).$(Elements.ADD_OPERATION).shouldBe(visible).click();
 
@@ -227,6 +234,7 @@ public class ApicurioSteps {
         }
     }
 
+    @ExcludeFromSelectorReports
     @When("^remove an operation via apicurio gui$")
     public void removeOperation() {
         $(Elements.PATH_SECTION).shouldBe(visible).$(Elements.OPERATION).shouldBe(visible).click();
@@ -241,6 +249,7 @@ public class ApicurioSteps {
         }
     }
 
+    @ExcludeFromSelectorReports
     @When("^add security schema (BASIC|API Key|OAuth 2) via apicurio gui$")
     public void addSecuritySchema(String schemeType) {
         //child span element selected so the click is inside of the element
@@ -294,12 +303,14 @@ public class ApicurioSteps {
         saveButtons.get(1).shouldBe(visible).click();
     }
 
+    @ExcludeFromSelectorReports
     @Then("^check that api connector authentication section contains text \"([^\"]*)\"$")
     public void verifySelectedSecurity(String expectedText) {
         SelenideElement el = $(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible);
         assertThat($(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible).text()).containsIgnoringCase(expectedText);
     }
 
+    @ExcludeFromSelectorReports
     @When("^click on button \"([^\"]*)\" while in apicurio studio page$")
     public void clickOnButtonInApicurio(String buttonTitle) {
         TestUtils.sleepForJenkinsDelayIfHigher(2);
