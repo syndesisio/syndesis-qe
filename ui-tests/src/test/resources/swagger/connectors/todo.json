@@ -103,6 +103,9 @@
           },
           "404": {
             "description": "No task with provided identifier found"
+          },
+          "418": {
+            "description": "Server error ;)"
           }
         }
       },
