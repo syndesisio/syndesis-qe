@@ -55,8 +55,7 @@ public class FtpTemplate {
                 .addToLabels(LABEL_NAME, APP_NAME)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(APP_NAME).withImage("dsimansk/ftpd:latest").addAllToPorts(ports)
-
+                .addNewContainer().withName(APP_NAME).withImage("syndesisqe/ftpd:latest").addAllToPorts(ports)
                 .endContainer()
                 .endSpec()
                 .endTemplate()
