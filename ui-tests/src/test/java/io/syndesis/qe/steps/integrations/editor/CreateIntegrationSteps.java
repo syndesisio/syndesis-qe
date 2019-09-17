@@ -1,10 +1,11 @@
 package io.syndesis.qe.steps.integrations.editor;
 
-import cucumber.api.java.en.When;
-import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.integrations.editor.CreateIntegration;
 import io.syndesis.qe.utils.TestUtils;
+
+import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,7 +20,7 @@ public class CreateIntegrationSteps {
 
     @When("^fills? Name Integration form$")
     public void fillNameConnectionForm(DataTable data) {
-        new Form(createIntegration.getRootElement()).fillByLabel(data.asMap(String.class, String.class));
+        new Form(createIntegration.getRootElement()).fillByTestId(data.asMap(String.class, String.class));
         TestUtils.sleepForJenkinsDelayIfHigher(1);
     }
 }
