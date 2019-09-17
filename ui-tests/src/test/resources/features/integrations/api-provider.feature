@@ -6,6 +6,7 @@
 @database
 @datamapper
 @integrations-api-provider
+@long-running
 Feature: API Provider Integration
 
   # TODO: test editing integration name (also after publishing)

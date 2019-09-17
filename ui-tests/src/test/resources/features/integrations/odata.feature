@@ -2,6 +2,7 @@
 
 @ui
 @odata
+@long-running
 Feature: OData Connector
 
   Background: Clean application state and get new key from sample service
