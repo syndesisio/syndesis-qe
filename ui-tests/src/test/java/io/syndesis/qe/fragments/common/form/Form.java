@@ -1,5 +1,7 @@
 package io.syndesis.qe.fragments.common.form;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -14,6 +16,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
@@ -32,6 +35,12 @@ public class Form {
     private SelenideElement rootElement;
     private final List<String> selectValues = new ArrayList<>(Arrays.asList("yes", "checked", "check", "select", "selected", "true"));
     private final List<String> unselectValues = new ArrayList<>(Arrays.asList("no", "unchecked", "uncheck", "unselect", "unselected", "false"));
+
+    private static final class Elements {
+        private static By DROPDOWN_TOGGLE = By.className("pf-c-dropdown__toggle");
+        private static By DROPDOWN_MENU_ITEM = By.className("pf-c-dropdown__menu-item");
+        private static By DROPDOWN_MENU = By.className("pf-c-dropdown__menu");
+    }
 
     public Form(SelenideElement rootElement) {
         this.rootElement = rootElement;
@@ -82,7 +91,7 @@ public class Form {
         // here, key is attribute (name or id) value of the input
         // and value of the map element pair is element's tag for later use
         Map<String, String> inputsMap = new HashMap<>();
-        for (String tagName : Arrays.asList("input", "select", "textarea", "button")) {
+        for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div")) {
             for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
@@ -114,6 +123,11 @@ public class Form {
                     if (shouldClick) {
                         input.click();
                     }
+                } else if ("div".equals(inputsMap.get(key))) {
+                    //1. click on toggle-icon:
+                    openDivDropdownWithConditions(input);
+                    //2. check if value is present in dropdown menu and select value:
+                    assertThat(selectDivDropdownValue(input, data.get(key))).isTrue();
                 } else {
                     input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
                     input.sendKeys(Keys.BACK_SPACE);
@@ -268,6 +282,27 @@ public class Form {
 
     public static void waitForInputs(int timeInSeconds) {
         $(By.cssSelector("form input,select")).waitUntil(exist, timeInSeconds * 1000);
+    }
+
+    public boolean selectDivDropdownValue(SelenideElement parent, String itemValue) {
+
+        ElementsCollection dropdownElements = parent.$$(Elements.DROPDOWN_MENU_ITEM);
+
+        for (SelenideElement item : dropdownElements) {
+            if (itemValue.equals(item.getText())) {
+                item.click();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void openDivDropdownWithConditions(SelenideElement parent) {
+        if (parent.$(Elements.DROPDOWN_MENU).exists()) {
+            return;
+        }
+        SelenideElement dropdownToggle = parent.$(Elements.DROPDOWN_TOGGLE).waitUntil(visible, 30000);
+        dropdownToggle.click();
     }
 
     private enum FillBy {
