@@ -20,7 +20,6 @@ Feature: Integration - ServiceNow-amq/log
 
 
   Scenario: Get incident from service now
-    # create integration
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -32,7 +31,7 @@ Feature: Integration - ServiceNow-amq/log
     And fill in values by element ID
       | limit | 1                |
       | query | number=QACUSTOM4 |
-      | table | Incident         |
+      | table | incident         |
 
     And click on the "Next" button
     And sleep for jenkins delay or "10" seconds
@@ -45,7 +44,6 @@ Feature: Integration - ServiceNow-amq/log
       | destinationname | incidents |
       | destinationtype | Queue     |
     And click on the "Next" button
-  #  And sleep for jenkins delay or "10" seconds
     And click on the "Done" button
     And sleep for jenkins delay or "30" seconds
 
@@ -71,12 +69,29 @@ Feature: Integration - ServiceNow-amq/log
       | destinationname | incidents-create |
       | destinationtype | Queue            |
     And click on the "Next" button
-    And click on the "Done" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"description":"d","impact":1,"number":"n","urgency":1,"short_description":"d","user_input":"ui"} |
+    Then click on the "Done" button
+
     When select the "ServiceNow" connection
     And select "Add Record" integration action
-    And select "Add new Incident" from "table" dropdown
-    And click on the "Next" button
-    And sleep for jenkins delay or "35" seconds
+    And fill in values by element data-testid
+      | table | u_qa_create_incident |
+    Then click on the "Next" button
+
+    When add integration step on position "0"
+    And select the "Data Mapper" connection
+    And create data mapper mappings
+      | number            | u_number            |
+      | description       | u_description       |
+      | impact            | u_impact            |
+      | urgency           | u_urgency           |
+      | short_description | u_short_description |
+      | user_input        | u_user_input        |
+    Then click on the "Done" button
+
     When publish integration
     And set integration name "amq-2-snow"
     And publish integration
