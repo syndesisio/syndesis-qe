@@ -4,6 +4,7 @@
 @database
 @log
 @sql-connector
+@long-running
 Feature: SQL Connector
 
   Background: Clean application state

@@ -5,6 +5,7 @@
 @salesforce
 @amqbroker
 @activemq
+@long-running
 Feature: Integration - Salesforce
   Background:
     Given clean SF, removes all leads with email: "jdoeprod@acme.com,joedoeprod@acme.com"

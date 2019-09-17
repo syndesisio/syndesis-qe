@@ -6,6 +6,7 @@
 @database
 @datamapper
 @integrations-google-calendar
+@long-running
 Feature: Google Calendar Connector
 
   Background: Clean application state
