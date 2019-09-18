@@ -32,10 +32,8 @@ Feature: Public API - environments point
   # GET ​/public​/environments
   @get-all-tags
   Scenario: Get all tags from Syndesis
-    When add tags to integration integration1
-      | tag1 | tag2 |
-    And add tags to integration integration2
-      | tag3 | tag4 |
+    When add tags to Syndesis
+      | tag1 | tag2 | tag3 | tag4 |
 
     Then check that Syndesis contains exactly tags
       | tag1 | tag2 | tag3 | tag4 |
@@ -43,11 +41,12 @@ Feature: Public API - environments point
   # GET ​/public​/environments?withUses=true
   @get-all-tag-with-usages
   Scenario: Get all tags with the number of usages
+    When add tags to Syndesis
+      | tag1 | tag2 | tag3 |
     When add tags to integration integration1
       | tag1 | tag2 |
     And add tags to integration integration2
       | tag1 |
-    And add tag tag3 to Syndesis
 
     Then check that tag tag1 is used in 2 integrations
     And check that tag tag2 is used in 1 integrations
@@ -58,9 +57,10 @@ Feature: Public API - environments point
   @reproducer
   @get-all-tags-without-duplicates
   Scenario: Get all tags from Syndesis without duplicates
+    When add tags to Syndesis
+      | tag1 | tag2 | tag3 |
     When add tags to integration integration1
       | tag1 | tag2 |
-    And add tag tag3 to Syndesis
 
     Then check that Syndesis contains exactly tags
       | tag1 | tag2 | tag3 |
@@ -79,7 +79,8 @@ Feature: Public API - environments point
   # POST /public​/environments​/{env}
   @add-new-tag
   Scenario: Add new tag to the Syndesis
-    When add tag tagAlone to Syndesis
+    When add tags to Syndesis
+      | tagAlone |
     Then check that Syndesis contains exactly tags
       | tagAlone |
     And check that integration integration1 doesn't contain tag tagAlone
@@ -87,7 +88,10 @@ Feature: Public API - environments point
   # PUT /public​/environments​/{env}
   @update-tag-globally
   Scenario: Update tag in all integration
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tagOriginal | tag2 | tag4 |
+
+    And add tags to integration integration1
       | tagOriginal | tag2 |
     And add tags to integration integration2
       | tagOriginal | tag4 |
@@ -103,7 +107,8 @@ Feature: Public API - environments point
     And check that integration integrationWithoutTags doesn't contain any tag
 
     # update unassigned tag
-    When add tag tagAloneOriginal to Syndesis
+    When add tags to Syndesis
+      | tagAloneOriginal |
     And update tag with name tagAloneOriginal to tagAloneRenamed
     And check that tag with name tagAloneRenamed is in the tag list
     And check that tag with name tagAloneOriginal is not in the tag list
@@ -114,6 +119,8 @@ Feature: Public API - environments point
   # DELETE /public​/environments​/{env}
   @delete-tag-globally
   Scenario: Delete tag from all integrations
+    When add tags to Syndesis
+      | tagForDelete | tag2 | tag4 |
     When add tags to integration integration1
       | tagForDelete | tag2 |
     And add tags to integration integration2
@@ -130,6 +137,7 @@ Feature: Public API - environments point
     And check that integration integrationWithoutTags doesn't contain any tag
 
     # delete unassigned tag
-    When add tag tagAlone to Syndesis
+    When add tags to Syndesis
+      | tagAlone |
     And delete tag with name tagAlone
     Then check that tag with name tagAlone is not in the tag list

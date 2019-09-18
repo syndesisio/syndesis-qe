@@ -71,8 +71,13 @@ public class EnvironmentsPublicApiSteps {
         }
     }
 
-    @When("^add tag (\\w+) to Syndesis$")
-    public void addTag(String tagName) {
-        environmentsEndpoint.addNewEnvironment(tagName);
+    /**
+     * DataTable ->  | tag1 | tag2 | tag3 |
+     */
+    @When("^add tags to Syndesis$")
+    public void addTag(DataTable tagsData) {
+        for (String tagName : tagsData.asList()) {
+            environmentsEndpoint.addNewEnvironment(tagName);
+        }
     }
 }

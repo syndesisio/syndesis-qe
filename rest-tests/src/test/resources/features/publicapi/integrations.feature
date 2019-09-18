@@ -32,7 +32,9 @@ Feature: Public API - integrations point
   # GET /public​/integrations​/{id}​/tags
   @add-tags-to-integration
   Scenario: Add and get tags in integration
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tag1 | tag2 | tag3 |
+    And add tags to integration integration1
       | tag1 | tag2 | tag3 |
 
     Then check that integration integration1 contains exactly tags
@@ -45,7 +47,9 @@ Feature: Public API - integrations point
   # PATCH ​/public​/integrations​/{id}​/tags
   @add-tags-on-integration-not-remove-previous
   Scenario: Update tags on integration without remove previous
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tag1 | tag2 | tagFor2 | tag3 | tag4 |
+    And add tags to integration integration1
       | tag1 | tag2 |
     And add tags to integration integration2
       | tagFor2 |
@@ -65,7 +69,9 @@ Feature: Public API - integrations point
   # PUT ​/public​/integrations​/{id}​/tags
   @update-tags-on-integration-remove-previous
   Scenario: Update tags on integration uncheck previous
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tag1 | tag2 | tagFor2 | tag3 | tag4 |
+    And add tags to integration integration1
       | tag1 | tag2 |
     And add tags to integration integration2
       | tagFor2 |
@@ -85,7 +91,9 @@ Feature: Public API - integrations point
   # DELETE ​/public​/integrations​/{id}​/tags​/{env}
   @delete-tag-from-integration
   Scenario: Delete tag from integration
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tagForDelete | tag2 | tag4 |
+    And add tags to integration integration1
       | tagForDelete | tag2 |
     And add tags to integration integration2
       | tagForDelete | tag4 |
@@ -146,9 +154,11 @@ Feature: Public API - integrations point
   # GET ​/public​/integrations​/{env}​/export.zip?all=false
   # POST ​/public​/integrations
   @export-import-integrations
-  @ENTESB-11387
+  @ENTESB-11653
   Scenario: Export and import integrations according to tag
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 |
+    And add tags to integration integration1
       | tag1 | tag12 |
     And add tags to integration integration2
       | tag3 | tag12 |
@@ -180,7 +190,9 @@ Feature: Public API - integrations point
   # POST ​/public​/integrations
   @export-import-all-integrations
   Scenario: Export and import all integrations from Syndesis according to tag
-    When add tags to integration integration1
+    When add tags to Syndesis
+      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 | importedTag |
+    And add tags to integration integration1
       | tag1 | tag12 |
     And add tags to integration integration2
       | tag3 | tag12 |
@@ -194,7 +206,9 @@ Feature: Public API - integrations point
     When clean application state
     Then check that Syndesis doesn't contain any tag
 
-    When import integrations with tag importedTag with name "exportAll.zip"
+    When add tags to Syndesis
+      | importedTag |
+    And import integrations with tag importedTag with name "exportAll.zip"
     Then check that Syndesis contains exactly tags
       | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 | importedTag |
     And check that integration integration1 contains exactly tags
