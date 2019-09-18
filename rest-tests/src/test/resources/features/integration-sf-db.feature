@@ -7,7 +7,7 @@
 Feature: Integration - Salesforce
 
   Background: Clean application state
-    Given clean SF, removes all leads with email: "jdoesfdb@acme.com"
+    Given clean SF, removes all leads with email: "test@integration-sf-db.feature"
     And remove all records from table "todo"
     And create SalesForce connection
 
@@ -23,12 +23,12 @@ Feature: Integration - Salesforce
     And create finish DB invoke stored procedure "add_lead" action step
     When create integration with name: "SF create to DB rest test"
     Then wait for integration with name: "SF create to DB rest test" to become active
-    Then create SF lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com" and company: "ACME"
-    Then validate DB created new lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com"
+    Then create SF lead with first name: "John", last name: "Doe", email: "test@integration-sf-db.feature" and company: "ACME"
+    Then validate DB created new lead with first name: "John", last name: "Doe", email: "test@integration-sf-db.feature"
 
   @integration-sf-db @integration-sf-db-delete
   Scenario: On delete to DB
-    Then create SF lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com" and company: "ACME"
+    Then create SF lead with first name: "John", last name: "Doe", email: "test@integration-sf-db.feature" and company: "ACME"
     When create SF "salesforce-on-delete" action step with properties
       | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
@@ -36,12 +36,12 @@ Feature: Integration - Salesforce
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
-    Then delete lead from SF with email: "jdoesfdb@acme.com"
+    Then delete lead from SF with email: "test@integration-sf-db.feature"
     Then validate SF on delete to DB created new task
 
   @integration-sf-db @integration-sf-db-update
   Scenario: On update to DB
-    Then create SF lead with first name: "John", last name: "Doe", email: "jdoesfdb@acme.com" and company: "ACME"
+    Then create SF lead with first name: "John", last name: "Doe", email: "test@integration-sf-db.feature" and company: "ACME"
     When create SF "salesforce-on-update" action step with properties
       | sObjectName | Lead |
     And start mapper definition with name: "mapping 1"
@@ -50,5 +50,5 @@ Feature: Integration - Salesforce
     And create finish DB invoke sql action step with query "INSERT INTO TODO(task) VALUES(:#todo)"
     When create integration with name: "SF update to DB rest test"
     Then wait for integration with name: "SF update to DB rest test" to become active
-    Then update SF lead with email "jdoesfdb@acme.com" to first name: "Joe", last name "Carrot", email "jdoesfdb@acme.com", company name "EMCA"
-    Then validate DB created new lead with first name: "Joe", last name: "Carrot", email: "jdoesfdb@acme.com"
+    Then update SF lead with email "test@integration-sf-db.feature" to first name: "Joe", last name "Carrot", email "test@integration-sf-db.feature", company name "EMCA"
+    Then validate DB created new lead with first name: "Joe", last name: "Carrot", email: "test@integration-sf-db.feature"

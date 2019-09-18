@@ -3,7 +3,6 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.salesforce.Contact;
 import io.syndesis.qe.salesforce.Lead;
@@ -16,7 +15,6 @@ import com.force.api.ApiException;
 import com.force.api.QueryResult;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Given;
@@ -45,13 +43,6 @@ public class SfValidationSteps {
         }
     }
 
-    //twitter_talky
-    @Given("^clean SF contacts related to TW account: \"([^\"]*)\"")
-    public void cleanupSfContacts(String twAccount) {
-        assertThat(AccountsDirectory.getInstance().getAccount(twAccount))
-            .isPresent();
-        deleteSalesforceContact(AccountsDirectory.getInstance().getAccount(twAccount).get().getProperty("screenName"));
-    }
 
     @Then("^create SF lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\" and company: \"([^\"]*)\"")
     public void createNewSalesforceLead(String firstName, String lastName, String email, String companyName) {
@@ -110,7 +101,8 @@ public class SfValidationSteps {
             .isEqualToIgnoringCase(description);
     }
 
-    @Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)\"")
+    @Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)" +
+        "\"")
     public void updateLead(String origEmail, String newFirstName, String newLastName, String newEmailAddress, String companyName) {
         Optional<Lead> sfLead = getSalesforceLeadByEmail(origEmail);
         assertThat(sfLead).isPresent();
@@ -125,54 +117,25 @@ public class SfValidationSteps {
         SalesforceAccount.getInstance().updateSObject("lead", leadId, lead);
     }
 
-    @Then("^validate contact for TW account: \"([^\"]*)\" is present in SF with description: \"([^\"]*)\"")
-    public void validateIntegration(String twAccount, String record) {
-        log.info("Waiting until a contact appears in salesforce...");
-        assertThat(AccountsDirectory.getInstance().getAccount(twAccount)).isPresent();
-        final long start = System.currentTimeMillis();
-        final boolean contactCreated = TestUtils.waitForEvent(Optional::isPresent,
-            () -> getSalesforceContact(AccountsDirectory.getInstance().getAccount(twAccount).get().getProperty("screenName")),
-            TimeUnit.MINUTES,
-            3,
-            TimeUnit.SECONDS,
-            5);
-        assertThat(contactCreated).as("Contact has appeard in salesforce").isEqualTo(true);
-        log.info("Contact appeared in salesforce. It took {}s to create contact.",
-            TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
-
-        final Contact createdContact =
-            getSalesforceContact(AccountsDirectory.getInstance().getAccount(twAccount).get().getProperty("screenName")).get();
-        assertThat(createdContact.getDescription()).startsWith(record);
-        assertThat(createdContact.getFirstName()).isNotEmpty();
-        assertThat(createdContact.getLastname()).isNotEmpty();
-        log.info("Salesforce contains contact with T integration test finished.");
-    }
 
     /**
      * Check if salesforce contact exists or does not exist, based on parameter `contains`
      *
      * @param contains if parameter contains == "contains" the method expects contact to exist
-     * @param twAccount
      */
-    @Then("^check SF \"([^\"]*)\" contact for tw account: \"([^\"]*)\"$")
-    public void checkSalesforceContact(String contains, String twAccount) {
-        assertThat(AccountsDirectory.getInstance().getAccount(twAccount))
-            .isPresent();
-
-        TestUtils.waitFor(() -> getSalesforceContact(AccountsDirectory.getInstance().getAccount(twAccount)
-            .get().getProperty("screenName")).isPresent() == ("contains".equals(contains)), 5, 60, "Salesforce contact does not exist!");
-
-        if (!"contains".equals(contains)) {
+    @Then("^check SF \"([^\"]*)\" contact with a email: \"([^\"]*)\"$")
+    public void checkSalesforceContact(String contains, String email) {
+        if ("contains".equalsIgnoreCase(contains)) {
+            TestUtils.waitFor(() -> getSalesforceContactByEmail(email).isPresent(), 5, 60, "Salesforce contact does not exist!");
+        } else {
             try {
                 OpenShiftWaitUtils.waitFor(() -> {
-                        log.info("Check that salesforce twitter account does not exist...");
-                        return getSalesforceContact(AccountsDirectory.getInstance().getAccount(twAccount)
-                            .get().getProperty("screenName")).isPresent() != ("contains".equals(contains));
-                    },
-                    5 * 1000L, 30 * 1000L);
-                fail("Salesforce twitter account should not exist!");
+                    log.info("Check that salesforce account with last name {} does not exist...", email);
+                    return getSalesforceContactByEmail(email).isPresent();
+                }, 5 * 1000L, 30 * 1000L);
+                fail("Salesforce account with email {} should not exist!", email);
             } catch (InterruptedException | TimeoutException e) {
-                log.info("Salesforce twitter account should not exist and was not found = correct.");
+                log.info("Salesforce account with email {} should not exist and was not found = correct.", email);
             }
         }
     }
@@ -248,8 +211,8 @@ public class SfValidationSteps {
         }
     }
 
-    private Lead getLeadWithId(String leadId) {
-        return SalesforceAccount.getInstance().getSObject("lead", leadId).as(Lead.class);
+    private Lead getLeadWithId(String id) {
+        return SalesforceAccount.getInstance().getSObject("lead", id).as(Lead.class);
     }
 
     private void deleteSalesforceContact(String screenName) {
@@ -261,10 +224,10 @@ public class SfValidationSteps {
         }
     }
 
-    private Optional<Contact> getSalesforceContact(String twitterName) {
+    private Optional<Contact> getSalesforceContact(String lastName) {
         final QueryResult<Contact> queryResult =
-            SalesforceAccount.getInstance().query("SELECT Id,FirstName,LastName,Description,Title FROM contact where TwitterScreenName__c='"
-                + twitterName + "'", Contact.class);
+            SalesforceAccount.getInstance().query("SELECT Id,FirstName,LastName,Description,Title FROM contact where LastName='"
+                + lastName + "'", Contact.class);
         return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
     }
 

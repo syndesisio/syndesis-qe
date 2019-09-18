@@ -12,8 +12,8 @@ Feature: Integration - Salesforce to DB
   Background: Clean application state
     Given clean application state
     And log into the Syndesis
-    And clean "TODO" table
-    And clean SF, removes all leads with email: "k1stieranka1@istrochem.sk"
+    And clean "contact" table
+    And clean SF, removes all leads with email: "test@salesfoce-to-database.feature"
     And navigate to the "Settings" page
     And fill "Salesforce" oauth settings "QE Salesforce"
     And create connections using oauth
@@ -21,9 +21,7 @@ Feature: Integration - Salesforce to DB
 
   @integrations-salesforce-to-database-scenario
   Scenario: Create
-    When inserts into "contact" table
-      | Josef | Stieranka | Istrochem | db |
-    Then navigate to the "Home" page
+    When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
@@ -31,7 +29,8 @@ Feature: Integration - Salesforce to DB
       # select salesforce connection as 'from' point
     When select the "QE Salesforce" connection
     And select "On create" integration action
-    And select "Lead" from "sObjectName" dropdown
+    And fill in values by element data-testid
+      | sobjectname | Lead |
     And click on the "Done" button
 
       # select postgresDB connection as 'to' point
@@ -85,10 +84,10 @@ Feature: Integration - Salesforce to DB
       # wait for integration to get in active state
     Then wait until integration "Salesforce to PostresDB E2E" gets into "Running" state
 #    VALIDATION:
-    And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
+    And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "test@salesfoce-to-database.feature" and company: "Istrochem"
     # give it more time to propagate lead from sf to db
-    And sleep for jenkins delay or "10" seconds
-    And validate DB created new lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk"
+    And sleep for jenkins delay or "15" seconds
+    And validate DB created new lead with first name: "Karol1", last name: "Stieranka1", email: "test@salesfoce-to-database.feature"
 #    And remove all records from table "todo"
-    Given clean SF, removes all leads with email: "k1stieranka1@istrochem.sk"
+    Given clean SF, removes all leads with email: "test@salesfoce-to-database.feature"
 
