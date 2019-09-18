@@ -6,7 +6,7 @@
 @database
 @datamapper
 @gh-4303
-@gh-6357
+@ENTESB-11388
 @integration-metrics
 Feature: Metrics
 

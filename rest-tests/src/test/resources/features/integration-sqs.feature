@@ -3,6 +3,7 @@
 @rest
 @integration-sqs
 @sqs
+@long-running
 Feature: Integration - SQS
   Background:
     Given clean application state

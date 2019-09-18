@@ -50,10 +50,6 @@ public class IntegrationsPublicApiSteps {
 
         Map<String, ContinuousDeliveryEnvironment> tags = integrationsEndpoint.addTagsToIntegration(integrationName, originalTags);
 
-        //check that tags response is valid
-        for (Map.Entry<String, ContinuousDeliveryEnvironment> entry : tags.entrySet()) {
-            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
-        }
         assertThat(tags.keySet())
             .containsAll(originalTags);
     }
@@ -68,10 +64,6 @@ public class IntegrationsPublicApiSteps {
 
         Map<String, ContinuousDeliveryEnvironment> tags = integrationsEndpoint.updateTagsInIntegration(integrationName, tagsData.cells().get(0));
 
-        //check that tags response is valid
-        for (Map.Entry<String, ContinuousDeliveryEnvironment> entry : tags.entrySet()) {
-            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
-        }
         assertThat(tags.keySet())
             .containsExactlyInAnyOrderElementsOf(originalTags);
     }
@@ -83,11 +75,6 @@ public class IntegrationsPublicApiSteps {
     public void checkTagsInIntegration(String integrationName, DataTable tagsData) {
         List<String> desiredTags = tagsData.cells().get(0);
         Map<String, ContinuousDeliveryEnvironment> tags = integrationsEndpoint.getAllTagsInIntegration(integrationName);
-
-        //check that tags response is valid
-        for (Map.Entry<String, ContinuousDeliveryEnvironment> entry : tags.entrySet()) {
-            assertThat(entry.getKey()).isEqualTo(entry.getValue().getName());
-        }
 
         assertThat(tags.keySet())
             .hasSameSizeAs(desiredTags)
