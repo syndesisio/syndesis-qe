@@ -157,7 +157,7 @@ Feature: Public API - integrations point
   @ENTESB-11653
   Scenario: Export and import integrations according to tag
     When add tags to Syndesis
-      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 |
+      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 | importedTag |
     And add tags to integration integration1
       | tag1 | tag12 |
     And add tags to integration integration2
@@ -174,7 +174,7 @@ Feature: Public API - integrations point
     And check that integration integrationWithoutTags contains exactly tags
       | anotherTag1 | anotherTag2 |
     And check that Syndesis contains exactly tags
-      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 |
+      | tag1 | tag12 | tag3 | anotherTag1 | anotherTag2 | importedTag |
 
     When import integrations with tag importedTag with name "export12.zip"
     Then check that Syndesis contains exactly tags

@@ -16,15 +16,11 @@ public class Metrics extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("integration-detail-metrics");
-        public static final By ROOT_TOTAL_ERROR =
-            By.xpath("//div[@class='card-pf card-pf-accented card-pf-aggregate-status card-pf-match-height' and contains(.,'Total Errors')]");
-        public static final By ROOT_LAST_POCESSED =
-            By.xpath("//div[@class='card-pf card-pf-accented card-pf-aggregate-status card-pf-match-height' and contains(.,'Last Processed')]");
-        public static final By ROOT_TOTAL_MESSAGES =
-            By.xpath("//div[@class='card-pf card-pf-accented card-pf-aggregate-status card-pf-match-height' and contains(.,'Total Messages')]");
+        public static final By ROOT_TOTAL_ERROR = By.cssSelector("[data-testid=\"integration-detail-metrics-total-errors-card\"]");
+        public static final By ROOT_LAST_POCESSED = By.cssSelector("[data-testid=\"integration-detail-metrics-last-processed-card\"]");
+        public static final By ROOT_TOTAL_MESSAGES = By.cssSelector("[data-testid=\"integration-detail-metrics-total-messages-card\"]");
         //div has two h3 elements but contains method wants only one as first argument so the class have to be specified
-        public static final By ROOT_UPTIME =
-            By.xpath("//div[@class='card-pf card-pf-accented card-pf-aggregate-status card-pf-match-height' and contains(.,'Uptime')]");
+        public static final By ROOT_UPTIME = By.cssSelector("[data-testid=\"integration-detail-metrics-uptime-card\"]");
     }
 
     @Override
