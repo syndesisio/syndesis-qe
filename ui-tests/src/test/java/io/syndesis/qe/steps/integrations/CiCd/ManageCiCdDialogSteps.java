@@ -43,7 +43,7 @@ public class ManageCiCdDialogSteps {
     public void checkAllTags(DataTable tagsData) {
         List<String> desiredTags = tagsData.cells().get(0);
         List<String> tags = ciCdDialog.getAllTags();
-        assertThat(tags).hasSameElementsAs(desiredTags);
+        assertThat(tags).containsExactlyInAnyOrderElementsOf(desiredTags);
     }
 
     /**
@@ -53,7 +53,7 @@ public class ManageCiCdDialogSteps {
     public void checkCheckedTags(DataTable tagsData) {
         List<String> desiredTags = tagsData.cells().get(0);
         List<String> checkedTags = ciCdDialog.getOnlyCheckedTags();
-        assertThat(checkedTags).hasSameElementsAs(desiredTags);
+        assertThat(checkedTags).containsExactlyInAnyOrderElementsOf(desiredTags);
     }
 
     @Then("^check that tag (\\w+) doesn't exist in CI/CD dialog$")
