@@ -1,5 +1,7 @@
 package io.syndesis.qe.steps.other;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.GoogleAccount;
 import io.syndesis.qe.utils.TestUtils;
@@ -44,6 +46,17 @@ public class GMailSteps {
         sendEmail(sendTo, "syndesis-tests");
     }
 
+    @When("^.*send an e-mail to credentials \"([^\"]*)\"$")
+    public void sendEmailToCreds(String credentials) {
+        sendEmailToCreds(credentials, "syndesis-tests");
+    }
+
+    @When("^.*send an e-mail to credentials \"([^\"]*)\" with subject \"([^\"]*)\"$")
+    public void sendEmailToCreds(String credentials, String subject) {
+        Account account = AccountUtils.get(credentials);
+        sendEmail(account.getProperty("username"), subject);
+    }
+
     @When("^.*send an e-mail to \"([^\"]*)\" with subject \"([^\"]*)\"$")
     public void sendEmail(String sendTo, String subject) {
         gmu.sendEmail("me", sendTo, subject, "Red Hat");
@@ -54,11 +67,25 @@ public class GMailSteps {
         gmu.deleteMessages(from, subject);
     }
 
+    @Given("^delete emails from credentials \"([^\"]*)\" with subject \"([^\"]*)\"$")
+    public void deleteMailsFromCreds(String creds, String subject) {
+        Account account = AccountUtils.get(creds);
+        deleteMails(account.getProperty("username"), subject);
+    }
+
     @Then("^check that email from \"([^\"]*)\" with subject \"([^\"]*)\" and text \"([^\"]*)\" exists$")
     public void checkMails(String from, String subject, String text) {
         TestUtils.waitFor(() -> checkMailExists(from, subject, text),
-            1, 10,
+            1, 60,
             "Could not find specified mail");
+    }
+
+    @Then("^check that email from credenitals \"([^\"]*)\" with subject \"([^\"]*)\" and text \"([^\"]*)\" exists")
+    public void checkMailsFromCredentials(String credentials, String subject, String text) {
+        Account account = AccountUtils.get(credentials);
+        String username = account.getProperty("username");
+
+        checkMails(username, subject, text);
     }
 
     private boolean checkMailExists(String from, String subject, String text) {
