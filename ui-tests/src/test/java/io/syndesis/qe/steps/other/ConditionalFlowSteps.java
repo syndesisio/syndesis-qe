@@ -33,7 +33,7 @@ public class ConditionalFlowSteps {
         private static By FLOW_DROPDOWN_CONTAINER = By.className("pf-c-dropdown");
         private static By FLOW_DROPDOWN = By.className("pf-c-dropdown__toggle-icon");
         private static By FLOW_DROPDOWN_ITEM = By.className("pf-c-dropdown__menu-item");
-        private static By FLOW_BACK_BUTTON = By.cssSelector("a[data-testid=\"conditions-back-button-item-back-button\"]");
+        private static By FLOW_BACK_BUTTON = By.cssSelector("a[data-testid=\"editor-toolbar-dropdown-back-button-item-back-button\"]");
 
         private static By getConditionOnPosition(String position) {
             return By.cssSelector("[data-testid=\"flowconditions-X-condition\"]".replace("X", position));
