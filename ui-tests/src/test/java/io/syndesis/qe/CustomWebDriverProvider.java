@@ -1,8 +1,6 @@
 package io.syndesis.qe;
 
-
-import com.codeborne.selenide.WebDriverProvider;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -10,11 +8,16 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.codeborne.selenide.WebDriverProvider;
+
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CustomWebDriverProvider implements WebDriverProvider {
@@ -26,11 +29,9 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     public WebDriver createDriver(DesiredCapabilities capabilities) {
         log.info("malphite - I am now inside CustomWebDriverProvider");
 
-
         if (TestConfiguration.syndesisBrowser().contentEquals("chrome")) {
 
             return prepareChromeWebDriver();
-
         } else {
 
             // firefox needs to have DOWNLOAD_DIR path already created
@@ -44,6 +45,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     /**
      * Helper function to find out path of web driver which was downloaded with
      * command `mvn webdriverextensions:install-drivers`
+     *
      * @return path of currently set web driver
      */
     private String findDriverPath() {
@@ -56,30 +58,28 @@ public class CustomWebDriverProvider implements WebDriverProvider {
             public boolean accept(File dir, String name) {
                 Boolean isChrome = TestConfiguration.syndesisBrowser().contentEquals("chrome");
 
-                return (!name.contains("version") &&
-                        ((isChrome && name.contains("chrome")) || (!isChrome && name.contains("geckodriver"))));
-
+                return !name.contains("version") &&
+                    ((isChrome && name.contains("chrome")) || (!isChrome && name.contains("geckodriver")));
             }
         };
         File[] match = folder.listFiles(fnf);
 
         //if there is more than one driver or zero - something is wrong and we have to exit
-        if(match.length != 1) {
+        if (match.length != 1) {
             log.error("We found " + match.length + "drivers");
             log.error("Something is wrong with web drivers, did you run `mvn webdriverextensions:install-drivers`" +
-                    "before running ui-tests?");
+                "before running ui-tests?");
             throw new RuntimeException("Problem with setting webdriver");
         }
         //we know that based on filter there will be just one match
         log.info("We found out that you want to use driver: " + match[0].getAbsolutePath());
 
-
         return match[0].getAbsolutePath();
-
     }
 
     /**
      * Method will prepare chrome driver with custom profile
+     *
      * @return
      */
     private ChromeDriver prepareChromeWebDriver() {
@@ -87,12 +87,10 @@ public class CustomWebDriverProvider implements WebDriverProvider {
 
         System.setProperty("webdriver.chrome.driver", findDriverPath());
 
-
         Map<String, Object> preferences = new Hashtable<String, Object>();
         preferences.put("profile.default_content_settings.popups", 0);
         preferences.put("download.prompt_for_download", "false");
         preferences.put("download.default_directory", DOWNLOAD_DIR);
-
 
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", preferences);
@@ -109,11 +107,11 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         */
 
         return new ChromeDriver(options);
-
     }
 
     /**
      * Method will prepare firefox driver with custom profile
+     *
      * @return
      */
     private FirefoxDriver prepareFirefoxDriver() {
@@ -130,7 +128,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         firefoxOptions.addPreference("browser.download.panel.shown", false);
         firefoxOptions.addPreference("browser.download.dir", DOWNLOAD_DIR);
         firefoxOptions.addPreference("browser.download.useDownloadDir", true);
-        firefoxOptions.addPreference("browser.helperApps.neverAsk.saveToDisk",INTEGRATION_EXPORT_MIME_TYPE);
+        firefoxOptions.addPreference("browser.helperApps.neverAsk.saveToDisk", INTEGRATION_EXPORT_MIME_TYPE);
         firefoxOptions.addPreference("javascript.enabled", true);
         firefoxOptions.addPreference("app.update.enabled", false);
         firefoxOptions.addPreference("app.update.service.enabled", false);
@@ -142,9 +140,20 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         firefoxOptions.addPreference("extensions.update.autoUpdateEnabled", false);
         firefoxOptions.addPreference("extensions.update.enabled", false);
         firefoxOptions.addPreference("extensions.update.autoUpdateDefault", false);
-        firefoxOptions.addPreference("extensions.logging.enabled",false);
+        firefoxOptions.addPreference("extensions.logging.enabled", false);
         firefoxOptions.addPreference("lightweightThemes.update.enabled", false);
 
         return new FirefoxDriver(firefoxOptions);
+    }
+
+    /**
+     * Cleaning webdriver download folder
+     */
+    public static void cleanDownloadFolder() throws IOException {
+        try {
+            FileUtils.cleanDirectory(new File(DOWNLOAD_DIR));
+        } catch (IllegalArgumentException ex) {
+            log.info("Temp download dir for webdriver not found, skip cleaning");
+        }
     }
 }

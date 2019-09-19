@@ -22,6 +22,8 @@ Feature: Integration - Import Export
 
     Given created connections
       | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
+    # Indicate boundary that new test start because the last message from the last run could influence this run
+    And send message "StartingNewTest" on channel "import_export_test"
 
     # create integration
     When navigate to the "Home" page
@@ -43,12 +45,16 @@ Feature: Integration - Import Export
     When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values by element data-testid
-      | channel | test |
+      | channel | import_export_test |
 
     And click on the "Next" button
 
+    And add integration step on position "0"
+    And select "Split" integration step
+    And click on the "Next" button
+
     # add data mapper step
-    When add integration step on position "0"
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And open data mapper collection mappings
@@ -68,7 +74,7 @@ Feature: Integration - Import Export
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
 
-    Then check that last slack message equals "Red Hat" on channel "test"
+    Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
     # Add a new contact
     When inserts into "CONTACT" table
@@ -77,10 +83,11 @@ Feature: Integration - Import Export
     # export the integration for import tests
     And select the "Integration_import_export_test" integration
     Then check visibility of "Integration_import_export_test" integration details
+    When clean webdriver download folder
     And export the integraion
 
     # now we have exported integration, we can clean state and try to import
-    Given clean application state
+    And clean application state
     And log into the Syndesis
     And navigate to the "Integrations" page
     And click on the "Import" link
@@ -99,7 +106,7 @@ Feature: Integration - Import Export
     And publish integration
     Then Integration "Integration_import_export_test" is present in integrations list
     And wait until integration "Integration_import_export_test" gets into "Running" state
-    And check that last slack message equals "RH" on channel "test"
+    And check that last slack message equals "RH" on channel "import_export_test"
 
 
   #disabled due to bugged dnd selenide method and javascript is not working now - TODO
@@ -108,6 +115,8 @@ Feature: Integration - Import Export
   Scenario: Import and export drag and drop
     Given created connections
       | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
+    # Indicate boundary that new test start because the last message from the last run could influence this run
+    And send message "StartingNewTest" on channel "import_export_test"
 
     # create integration
     When navigate to the "Home" page
@@ -129,7 +138,7 @@ Feature: Integration - Import Export
     When select the "QE Slack" connection
     And select "Channel" integration action
     And fill in values by element data-testid
-      | channel | test |
+      | channel | import_export_test |
 
     And click on the "Next" button
 
@@ -154,7 +163,7 @@ Feature: Integration - Import Export
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
 
-    Then check that last slack message equals "Red Hat" on channel "test"
+    Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
     # Add a new contact
     When inserts into "CONTACT" table
@@ -190,7 +199,7 @@ Feature: Integration - Import Export
     And navigate to the "Integrations" page
     Then Integration "Integration_import_export_test" is present in integrations list
     And wait until integration "Integration_import_export_test" gets into "Running" state
-    And check that last slack message equals "New RH" on channel "test"
+    And check that last slack message equals "New RH" on channel "import_export_test"
 
 #
 #  3. integration-import from different syndesis instance
@@ -201,6 +210,8 @@ Feature: Integration - Import Export
     #Add a new contact
     When inserts into "CONTACT" table
       | RedHat | HatRed | RHEL | h_db |
+    # Indicate boundary that new test start because the last message from the last run could influence this run
+    And send message "StartingNewTest" on channel "import_export_test"
 
     And navigate to the "Integrations" page
     And click on the "Import" link
@@ -229,4 +240,5 @@ Feature: Integration - Import Export
     Then Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
-    And check that last slack message equals "RHEL" on channel "test"
+    Then validate that logs of integration "Integration_import_export_test" contains string ""status":"done","failed":false"
+    And check that last slack message equals "RHEL" on channel "import_export_test"

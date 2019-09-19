@@ -310,4 +310,11 @@ public class DbValidationSteps {
     public void verifyContactExists(String firstName) {
         checkValuesExistInTable(String.format("SELECT * FROM CONTACT WHERE first_name = \'%s\'", firstName));
     }
+
+    @When("^wait until query \"([^\"]*)\" has output with timeout (\\d+)$")
+    public void waitTillQueryHasOutput(String query, int timeout) {
+        TestUtils.waitFor(() -> this.dbUtils.getCountOfInvokedQuery(query) > 0,
+            1, timeout,
+            "Data is not in the table after " + timeout + " seconds.");
+    }
 }
