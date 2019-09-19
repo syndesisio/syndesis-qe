@@ -2,6 +2,8 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.TestConfiguration;
+
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,7 +29,7 @@ public class PublicApiUtils {
                     .withName(SERVICE_ACCOUNT_NAME)
                     .endMetadata()
                     .done();
-            OpenShiftUtils.xtf().addRoleToUser("edit", "system:serviceaccount:syndesis:syndesis-cd-client");
+            OpenShiftUtils.xtf().addRoleToUser("edit", "system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":syndesis-cd-client");
         }
         publicApiToken = OpenShiftUtils.binary().execute("sa", "get-token", SERVICE_ACCOUNT_NAME);
     }
