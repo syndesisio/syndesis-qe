@@ -2,7 +2,6 @@ package io.syndesis.qe.templates;
 
 import static org.assertj.core.api.Fail.fail;
 
-import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
@@ -10,67 +9,46 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
-import org.apache.commons.codec.binary.Base64;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.api.model.KubernetesList;
-import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
-import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.utils.Serialization;
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
 import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.ImageStreamList;
 import io.fabric8.openshift.api.model.TagImportPolicy;
-import io.fabric8.openshift.api.model.Template;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SyndesisTemplate {
-    private static final int IMAGE_STREAM_COUNT = TestConfiguration.useOperator() ? 8 : 7;
-
-    public static Template getTemplate() {
-        try (InputStream is = new URL(TestConfiguration.syndesisTemplateUrl()).openStream()) {
-            return OpenShiftUtils.getInstance().templates().load(is).get();
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to read template ", ex);
-        }
-    }
-
-    public static ServiceAccount getSupportSA() {
-        // Refresh the support SA URL as it can change during multiple tests executions
-        try (InputStream is = new URL(TestConfiguration.syndesisTemplateSA()).openStream()) {
-            return OpenShiftUtils.getInstance().serviceAccounts().load(is).get();
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to read SA ", ex);
-        }
-    }
+    private static final int IMAGE_STREAM_COUNT = 8;
 
     public static void deploy() {
         createPullSecret();
-        if (TestConfiguration.useOperator()) {
-            deployUsingOperator();
-        } else {
-            deployUsingTemplate();
-        }
+        deployUsingOperator();
     }
 
     private static void createPullSecret() {
@@ -86,61 +64,6 @@ public class SyndesisTemplate {
         }
     }
 
-    public static void deployUsingTemplate() {
-        log.info("Deploying using template");
-
-        // get & create restricted SA
-        OpenShiftUtils.getInstance().createServiceAccount(getSupportSA());
-        // get token from SA `oc secrets get-token` && wait until created to prevent 404
-        TestUtils.waitForEvent(Optional::isPresent,
-            () -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> s.getMetadata().getName().startsWith("syndesis-oauth-client-token"))
-                .findFirst(),
-            TimeUnit.MINUTES,
-            2,
-            TimeUnit.SECONDS,
-            5);
-
-        Secret secret = OpenShiftUtils.getInstance().getSecrets().stream()
-            .filter(s -> s.getMetadata().getName().startsWith("syndesis-oauth-client-token")).findFirst().get();
-        // token is Base64 encoded by default
-        String oauthTokenEncoded = secret.getData().get("token");
-        byte[] oauthTokenBytes = Base64.decodeBase64(oauthTokenEncoded);
-        String oauthToken = new String(oauthTokenBytes);
-
-        // get the template
-        Template template = getTemplate();
-        // set params
-        Map<String, String> templateParams = new HashMap<>();
-        templateParams.put("ROUTE_HOSTNAME", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
-        templateParams.put("OPENSHIFT_MASTER", TestConfiguration.openShiftUrl());
-        templateParams.put("OPENSHIFT_PROJECT", TestConfiguration.openShiftNamespace());
-        templateParams.put("SAR_PROJECT", TestConfiguration.openShiftSARNamespace());
-        templateParams.put("OPENSHIFT_OAUTH_CLIENT_SECRET", oauthToken);
-        templateParams.put("TEST_SUPPORT_ENABLED", "true");
-        templateParams.put("MAX_INTEGRATIONS_PER_USER", "5");
-        if (TestUtils.isJenkins()) {
-            templateParams.put("INTEGRATION_STATE_CHECK_INTERVAL", "150");
-        }
-        // process & create
-        KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
-        for (HasMetadata hasMetadata : processedTemplate.getItems()) {
-            OpenShiftUtils.getInstance().createResources(hasMetadata);
-        }
-
-        //TODO: there's a bug in openshift-client, we need to initialize manually
-        OpenShiftUtils.getInstance().roleBindings().createOrReplaceWithNew()
-            .withNewMetadata()
-            .withName("syndesis:editors")
-            .endMetadata()
-            .withNewRoleRef().withName("edit").endRoleRef()
-            .addNewSubject().withKind("ServiceAccount").withName(Component.SERVER.getName()).withNamespace(TestConfiguration.openShiftNamespace())
-            .endSubject()
-            .addToUserNames(String.format("system:serviceaccount:%s:%s", TestConfiguration.openShiftNamespace(), Component.SERVER.getName()))
-            .done();
-        patchImageStreams();
-        importProdImages();
-    }
-
     private static void deployUsingOperator() {
         log.info("Deploying using Operator");
         if (!TestUtils.isUserAdmin()) {
@@ -150,7 +73,6 @@ public class SyndesisTemplate {
             sb.append("****************************************************\n");
             sb.append(
                 "If you are using minishift, you can use \"oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer\"\n");
-            sb.append("Or use syndesis.config.template.use.operator=false\n");
             log.error(sb.toString());
             throw new RuntimeException(sb.toString());
         }
@@ -159,16 +81,59 @@ public class SyndesisTemplate {
         deployOperator();
         importProdImages();
         deploySyndesisViaOperator();
-        addMavenRepo();
         patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.getInstance().deploymentConfigs().withName("broker-amq").delete();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
     }
 
+    public static Map<String, Object> getDeployedCr(String namespace, String name) {
+        return getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), name);
+    }
+
+    public static Map<String, Object> editCr(String namespace, String name, Map<String, Object> cr) throws IOException {
+        return SyndesisTemplate.getSyndesisCrClient().edit(namespace, name, cr);
+    }
+
+    public static void deleteCr(String namespace, String name) {
+        getSyndesisCrClient().delete(namespace, name);
+    }
+
+    public static Set<String> getCrNames(String namespace) {
+        final Set<String> names = new HashSet<>();
+        Map<String, Object> crs = getSyndesisCrClient().list(namespace);
+        JSONArray items = new JSONArray();
+        try {
+            items = new JSONObject(crs).getJSONArray("items");
+        } catch (JSONException ex) {
+            // probably the CRD isn't present in the cluster
+        }
+        for (int i = 0; i < items.length(); i++) {
+            names.add(items.getJSONObject(i).getJSONObject("metadata").getString("name"));
+        }
+
+        return names;
+    }
+
+    public static RawCustomResourceOperationsImpl getSyndesisCrClient() {
+        return OpenShiftUtils.getInstance().customResource(makeSyndesisContext());
+    }
+
+    private static CustomResourceDefinitionContext makeSyndesisContext() {
+        CustomResourceDefinition syndesisCrd = OpenShiftUtils.getInstance().customResourceDefinitions().withName("syndesises.syndesis.io").get();
+        CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
+            .withGroup(syndesisCrd.getSpec().getGroup())
+            .withPlural(syndesisCrd.getSpec().getNames().getPlural())
+            .withScope(syndesisCrd.getSpec().getScope())
+            .withVersion(syndesisCrd.getSpec().getVersion());
+        CustomResourceDefinitionContext context = builder.build();
+
+        return context;
+    }
+
     private static void deployCrd() {
-        log.info("Creating custom resource definition from " + TestConfiguration.syndesisOperatorCrdUrl());
-        try (InputStream is = new URL(TestConfiguration.syndesisOperatorCrdUrl()).openStream()) {
+        log.info("Creating custom resource definition from " + TestConfiguration.syndesisCrdUrl());
+        try (InputStream is = new URL(TestConfiguration.syndesisCrdUrl()).openStream()) {
             CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().load(is).get();
             OpenShiftUtils.getInstance().customResourceDefinitions().create(crd);
         } catch (IOException ex) {
@@ -181,22 +146,45 @@ public class SyndesisTemplate {
     }
 
     private static void deployOperator() {
-        log.info("Deploying operator from " + TestConfiguration.syndesisOperatorUrl());
-        final String output = OpenShiftUtils.binary().execute(
-            "create",
-            "-n", TestConfiguration.openShiftNamespace(),
-            "-f", TestConfiguration.syndesisOperatorUrl()
+
+        log.info("Generating resources using operator image " + TestConfiguration.syndesisOperatorImage());
+
+        ProcessBuilder pb = new ProcessBuilder("docker",
+            "run",
+            "--rm",
+            "--entrypoint",
+            "operator",
+            TestConfiguration.syndesisOperatorImage(),
+            "install",
+            "operator",
+            "-e", "yaml"
         );
-        log.debug(output);
+
+        List<HasMetadata> resourceList = null;
+        try {
+            Process p = pb.start();
+            resourceList = OpenShiftUtils.getInstance().load(p.getInputStream()).get();
+            p.waitFor();
+        } catch (Exception e) {
+            log.error("Could not load resources from operator image", e);
+            fail("Failed to install using operator");
+        }
 
         final String operatorServiceAccountName = "syndesis-operator";
-        if (TestConfiguration.syndesisPullSecret() != null) {
-            log.info("Linking pull secret {} to service account {}", TestConfiguration.syndesisPullSecretName(), operatorServiceAccountName);
-            OpenShiftUtils.getInstance().serviceAccounts().withName(operatorServiceAccountName).edit()
-                .withSecrets(
-                    new ObjectReferenceBuilder().withName(TestConfiguration.syndesisPullSecretName()).build()
-                ).done();
+
+        Optional<HasMetadata> serviceAccount = resourceList.stream()
+            .filter(resource -> operatorServiceAccountName.equals(resource.getMetadata().getName()))
+            .findFirst();
+
+        if (serviceAccount.isPresent()) {
+            ((ServiceAccount) serviceAccount.get())
+                .getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
+        } else {
+            log.error("Service account not found in resources");
         }
+
+        OpenShiftUtils.getInstance().createResources(resourceList);
+
         importProdImage("operator");
 
         log.info("Waiting for syndesis-operator to be ready");
@@ -208,23 +196,39 @@ public class SyndesisTemplate {
     }
 
     private static void deploySyndesisViaOperator() {
-        log.info("Deploying syndesis resource from " + TestConfiguration.syndesisOperatorTemplateUrl());
-        try (InputStream is = new URL(TestConfiguration.syndesisOperatorTemplateUrl()).openStream()) {
-            CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().load(is).get();
-            Map<String, Object> integration = (Map) crd.getSpec().getAdditionalProperties().get("integration");
+        log.info("Deploying syndesis resource from " + TestConfiguration.syndesisCrUrl());
+        try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
+            Map<String, Object> cr = getSyndesisCrClient().load(is);
+
+            Map<String, Object> spec = (Map<String, Object>) cr.get("spec");
+
+            // setup integration limit and state check interval
+            Map<String, Object> integration =
+                (Map<String, Object>) spec.computeIfAbsent("integration", s -> new HashMap<String, Object>());
             integration.put("limit", 5);
             if (TestUtils.isJenkins()) {
                 integration.put("stateCheckInterval", 150);
             }
-            crd.getSpec().getAdditionalProperties().put("testSupport", true);
-            crd.getSpec().getAdditionalProperties()
-                .put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
-            crd.getSpec().getAdditionalProperties().put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
-            OpenShiftUtils.invokeApi(
-                HttpUtils.Method.POST,
-                "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace() + "/" + TestConfiguration.customResourcePlural(),
-                Serialization.jsonMapper().writeValueAsString(crd)
-            );
+
+            // disable scheduled image update
+            Map<String, Object> components =
+                (Map<String, Object>) spec.computeIfAbsent("components", s -> new HashMap<String, Object>());
+            components.put("scheduled", false);
+
+            // enable test support
+            spec.put("testSupport", true);
+
+            // set route hostname
+            spec.put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
+
+            // set correct image stream namespace
+            spec.put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
+
+            // add nexus
+            addMavenRepo(spec);
+
+            getSyndesisCrClient()
+                .create(TestConfiguration.openShiftNamespace(), cr);
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -300,7 +304,8 @@ public class SyndesisTemplate {
             while (isl.getItems().size() < IMAGE_STREAM_COUNT) {
                 TestUtils.sleepIgnoreInterrupt(5000L);
                 isl =
-                    OpenShiftUtils.getInstance().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
+                    OpenShiftUtils.getInstance().imageStreams().inNamespace(TestConfiguration.openShiftNamespace())
+                        .withLabel("syndesis.io/component")
                         .list();
                 retries++;
                 if (retries == maxRetries) {
@@ -312,7 +317,7 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void addMavenRepo() {
+    private static void addMavenRepo(Map<String, Object> spec) {
         String replacementRepo = null;
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
@@ -331,45 +336,9 @@ public class SyndesisTemplate {
         }
         log.info("Adding maven repo {}", replacementRepo);
 
-        Optional<ConfigMap> cm = OpenShiftUtils.getInstance().configMaps().list().getItems().stream()
-            .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-        int retries = 0;
-        final int maxRetries = TestUtils.isJenkins() ? 60 : 12;
-        while (!cm.isPresent() && retries < maxRetries) {
-            TestUtils.sleepIgnoreInterrupt(10000L);
-            cm = OpenShiftUtils.getInstance().configMaps().list().getItems().stream()
-                .filter(cMap -> cMap.getMetadata().getName().equals("syndesis-server-config")).findFirst();
-            if (retries == (maxRetries - 1)) {
-                fail("Unable to find syndesis-server-config configmap after {} tries", maxRetries);
-            }
-            retries++;
-        }
-        String data = cm.get().getData().get("application.yml");
-
-        YAMLFactory yf = new YAMLFactory();
-        ObjectMapper mapper = new ObjectMapper(yf);
-        ObjectNode root = null;
-        try {
-            root = (ObjectNode) mapper.readTree(data);
-        } catch (IOException e) {
-            fail("Could not parse server config map", e);
-        }
-
-        if (!root.has("maven")) {
-            log.warn("No maven repos specified in config, adding only nexus");
-            root.putObject("maven").putObject("repositories");
-        }
-
-        root.with("maven").with("repositories").put("fuse_nexus", replacementRepo);
-
-        try {
-            data = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(root);
-        } catch (JsonProcessingException e) {
-            fail("Could not write server config map", e);
-        }
-
-        OpenShiftUtils.getInstance().configMaps().withName("syndesis-server-config").edit().withData(TestUtils.map("application.yml", data)).done();
-        OpenShiftUtils.getInstance().deployLatest("syndesis-server");
+        Map<String, Object> mavenRepositories = (Map<String, Object>) spec
+            .computeIfAbsent("mavenRepositories", s -> new HashMap<String, Object>());
+        mavenRepositories.put("fuseqe_nexus", replacementRepo);
     }
 
     /**

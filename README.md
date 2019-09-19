@@ -49,6 +49,8 @@ Test actions are mainly UI driven with additional 3rd party validation like Sale
 
 - Added Fuse repositories to maven due to dependencies
 
+- sudoless docker access (either by being in the `docker` group or using `podman` instead)
+
 Before you import maven project to the IDE, you have to install 
 **Lombok** and 
 **Cucumber** plugins to your IDE. 
@@ -354,11 +356,11 @@ You can use profile `-P deploy` that sets all 3 parameters to lock the namespace
 
 To select syndesis version, add another maven parameter:
 
-	-Dsyndesis.config.template.version=<version>
+	-Dsyndesis.config.install.version=<version>
 
-To install syndesis from operator template, add maven parameter:
+To install syndesis using a particular operator image, use the following parameter:
 
-	-Dsyndesis.config.operator.url=<url-to-operator.yml>
+	-Dsyndesis.config.operator.image="[registry/]<namespace>/<syndesis|fuse-online>-operator:<version>"
 
 
 ##### Using maven central proxy
