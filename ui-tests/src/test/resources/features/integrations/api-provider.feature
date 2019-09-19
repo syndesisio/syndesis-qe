@@ -206,6 +206,7 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
+    And sleep for 2 seconds
     And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
@@ -318,7 +319,7 @@ Feature: API Provider Integration
     And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
     And validate that number of all todos with task "task1" is "1"
 
-  
+  @ENTESB-11675
   @api-provider-post-existing
   Scenario: API Provider POST existing
     When create an API Provider integration "TODO Integration post existing" from file swagger/connectors/todo.json

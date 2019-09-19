@@ -109,6 +109,7 @@ Feature: SQL Connector
     # add data mapper
     And add integration step on position "0"
     And select "Data Mapper" integration step
+    And sleep for 2 seconds
     And open data mapper collection mappings
     And create data mapper mappings
       | id | id |
