@@ -77,6 +77,24 @@ public class Form {
     }
 
     /**
+     *  This is an inputs map, which contains inputs and their respective types (tag names) on the form
+     *  that we are trying to fill.
+     *  Here, key is attribute (name or id) value of the input
+     *  and value of the map element pair is element's tag for later use
+     *
+     * @param fillBy [attribute - value]
+     */
+    private Map<String, String> getInputMap(FillBy fillBy) {
+        Map<String, String> inputsMap = new HashMap<>();
+        for (String tagName : Arrays.asList("input", "select", "textarea", "button")) {
+            for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
+                inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
+            }
+        }
+        return inputsMap;
+    }
+
+    /**
      * Finds the input elements by element attribute and fills the data in
      *
      * @param data [attribute - value]
@@ -85,17 +103,7 @@ public class Form {
         if (data.isEmpty()) {
             throw new IllegalArgumentException("account data is not set (empty)");
         }
-
-        // this is an inputs map, which contains inputs and their respective types (tag names) on the form
-        // that we are trying to fill
-        // here, key is attribute (name or id) value of the input
-        // and value of the map element pair is element's tag for later use
-        Map<String, String> inputsMap = new HashMap<>();
-        for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div")) {
-            for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
-                inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
-            }
-        }
+        Map<String, String> inputsMap = getInputMap(fillBy);
 
         log.info(inputsMap.toString());
         for (String key : data.keySet()) {
@@ -303,6 +311,22 @@ public class Form {
         }
         SelenideElement dropdownToggle = parent.$(Elements.DROPDOWN_TOGGLE).waitUntil(visible, 30000);
         dropdownToggle.click();
+    }
+    public void checkByTestId(List<String> values) {
+        checkBy(FillBy.TEST_ID, values);
+    }
+
+    private void checkBy(FillBy fillBy, List<String> values) {
+        Map<String, String> inputsMap = getInputMap(fillBy);
+        for (String value : values) {
+            // if the element we're looking for is on the form, then fill, otherwise error
+            if (inputsMap.containsKey(value)) {
+                String cssSelector = String.format("%s[" + fillBy.attribute + "='%s']", inputsMap.get(value), value);
+                SelenideElement el = getRootElement().$(cssSelector).shouldBe(visible);
+                log.info("ELEMENT: *{}*", el.toString());
+            }
+        }
+        log.info("All required fields are visible!");
     }
 
     private enum FillBy {

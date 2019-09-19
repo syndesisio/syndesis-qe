@@ -11,6 +11,14 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.fragments.common.menu.KebabMenu;
+import io.syndesis.qe.pages.connections.Connections;
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
+import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,13 +33,6 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.fragments.common.menu.KebabMenu;
-import io.syndesis.qe.pages.connections.Connections;
-import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
-import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
-import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -61,7 +62,6 @@ public class ConnectionSteps {
     public void deleteConnection(String connectionName) {
         connectionsPage.deleteConnection(connectionName);
     }
-
 
     @Then("^check visibility of \"(\\d+)\" connections$")
     public void connectionsCount(Integer connectionCount) {
@@ -113,7 +113,7 @@ public class ConnectionSteps {
 
     @Given("^creates connections without validation$")
     public void createConnectionsWithoutValidation(DataTable connectionsData) {
-        Connections connectionsPage = new Connections();
+        Connections connectionsLayout = new Connections();
         CommonSteps cs = new CommonSteps();
 
         ConfigureConnectionSteps configureConnectionSteps = new ConfigureConnectionSteps();
@@ -130,7 +130,7 @@ public class ConnectionSteps {
             cs.navigateTo("Connections");
             cs.validatePage("Connections");
 
-            ElementsCollection connections = connectionsPage.getAllConnections();
+            ElementsCollection connections = connectionsLayout.getAllConnections();
             connections = connections.filter(exactText(connectionName));
 
             if (connections.size() != 0) {
@@ -157,10 +157,9 @@ public class ConnectionSteps {
         ElementsCollection optionsFound = $(By.id("authenticationType")).shouldBe(visible).$$(By.tagName("option"));
         assertThat(optionsFound).hasSize(expectedSize);
         boolean expectedTextIsPresent = false;
-        for(SelenideElement e : optionsFound) {
+        for (SelenideElement e : optionsFound) {
             expectedTextIsPresent = e.getText().contains(expectedString);
         }
         assertThat(expectedTextIsPresent).isTrue();
     }
-
 }
