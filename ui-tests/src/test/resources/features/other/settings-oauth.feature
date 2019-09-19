@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: sveres@redhat.com
 @ui
 @google-calendar
 @settings-oauth-test

@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: mastepan@redhat.com
 
 @ui
 @database

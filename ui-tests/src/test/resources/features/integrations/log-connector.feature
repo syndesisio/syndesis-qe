@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: mmajerni@redhat.com
 @stage-smoke
 @ui
 @log

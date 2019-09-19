@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: arum@redhat.com
 
 @manual
 @telegram

@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: jsafarik@redhat.com
 
 @ui
 @3scale
