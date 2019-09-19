@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: mmuzikar@redhat.com
 
 @ui
 @amq

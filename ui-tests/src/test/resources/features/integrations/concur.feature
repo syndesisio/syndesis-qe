@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: tplevko@redhat.com
 #
 # Concur credentials callback can be only changed by concur support, to test it
 # one must install syndesis with --route=syndesis.my-minishift.syndesis.io and
