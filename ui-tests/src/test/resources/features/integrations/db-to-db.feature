@@ -15,6 +15,7 @@ Feature: Integration - DB to DB
 #
 #  1. select - update
 #
+  @smoke
   @db-connection-crud-1-read-update
   Scenario: Read and update operations
 
