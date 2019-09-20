@@ -15,6 +15,7 @@ import com.codeborne.selenide.WebDriverRunner;
 
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
+import cucumber.api.java.AfterStep;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,10 +24,12 @@ public class CommonHooks {
     @Autowired
     CommonSteps cs;
 
-    @After
+    @AfterStep
     public void afterScreenshot(Scenario scenario) {
-        byte[] screenshotAsBytes = ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);
-        scenario.embed(screenshotAsBytes, "image/png");
+        if (scenario.isFailed()) {
+            byte[] screenshotAsBytes = ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);
+            scenario.embed(screenshotAsBytes, "image/png");
+        }
     }
 
     //we can close it after specific scenarios, but it will do nothing if connection == null and I do not know exactly all scenarios which opens DB
