@@ -1,24 +1,28 @@
 package io.syndesis.qe.utils;
 
-import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.ClearValuesRequest;
-import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
-import com.google.api.services.sheets.v4.model.Request;
-import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
-import com.google.api.services.sheets.v4.model.Sheet;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
-import com.google.api.services.sheets.v4.model.ValueRange;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import io.syndesis.qe.TestConfiguration;
+
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
+import com.google.api.services.sheets.v4.Sheets;
+import com.google.api.services.sheets.v4.model.BatchUpdateSpreadsheetRequest;
+import com.google.api.services.sheets.v4.model.ClearValuesRequest;
+import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
+import com.google.api.services.sheets.v4.model.Request;
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.ValueRange;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -29,9 +33,9 @@ public class GoogleSheetsUtils {
     @Getter
     @Setter
     private String testSheetId = "";
-    @Getter
-    @Setter
+
     private String testDataSpreadSheet = "1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw";
+    private String testDataSpreadSheetFirefox = "1yzYO6cV-YbtyJW8POQwjLVu86I3AU45QEmGs3_HalYg";
 
     private Sheets getSheets() {
         if (sheets == null) {
@@ -39,6 +43,7 @@ public class GoogleSheetsUtils {
         }
         return sheets;
     }
+
     public List<String> getSpreadSheetValues() {
         return getSpreadSheetValues(testSheetId, "A1:E3");
     }
@@ -50,26 +55,47 @@ public class GoogleSheetsUtils {
     public void clearSpreadSheetValues(String id, String range) {
         ClearValuesRequest clear = new ClearValuesRequest();
         try {
-            getSheets().spreadsheets().values().clear(id, range, clear).execute();
+            getSheets()
+                .spreadsheets()
+                .values()
+                .clear(id, range, clear)
+                .execute();
         } catch (IOException e) {
             Assertions.fail("clear spreadsheet values shouldn't throw any exception: " + e.getMessage());
         }
     }
 
+    public boolean spreadSheetExists(String id) {
+        try {
+            getSheets()
+                .spreadsheets()
+                .values()
+                .get(id, "A1:E1")
+                .execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public boolean spreadSheetExists() {
+        return spreadSheetExists(testSheetId);
+    }
+
     public List<String> getSpreadSheetValues(String id, String range) {
         List<String> result = new ArrayList<>();
         try {
-            ValueRange response = getSheets().spreadsheets().values()
-                    .get(id, range)
-                    .execute();
-            List<List<Object>> values = response.getValues();
-            if (values == null || values.isEmpty()) {
-                log.info("No data found.");
-            } else {
-                for (List row : values) {
-                    result.add(row.toString());
-                }
-            }
+            ValueRange response = getSheets()
+                .spreadsheets()
+                .values()
+                .get(id, range)
+                .execute();
+            log.info(response.toPrettyString());
+            result = response.getValues()
+                .stream()
+                .map(List::toString)
+                .collect(Collectors.toList());
         } catch (IOException e) {
             Assertions.fail("get spreadsheet values shouldn't throw any exception: " + e.getMessage());
         }
@@ -101,6 +127,13 @@ public class GoogleSheetsUtils {
         } catch (IOException e) {
             Assertions.fail("clear sheet shouldn't throw any exception: " + e.getMessage());
         }
+    }
+
+    public String getTestDataSpreadSheet() {
+        if (TestConfiguration.syndesisBrowser().equals("firefox")) {
+            return testDataSpreadSheetFirefox;
+        }
+        return testDataSpreadSheet;
     }
 
     public Spreadsheet getSpreadSheet(String id) {
