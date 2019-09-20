@@ -2,13 +2,22 @@ package io.syndesis.qe.endpoints;
 
 import static org.junit.Assert.fail;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
+
+import org.apache.commons.io.FileUtils;
+
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.TestUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -20,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public final class TestSupport {
 
     private static final String ENDPOINT_NAME = "/test-support";
-    private static final String apiPath = TestConfiguration.syndesisRestApiPath();
+    private static final String API_PATH = TestConfiguration.syndesisRestApiPath();
     private static Client client;
     private static TestSupport instance = null;
 
@@ -63,14 +72,27 @@ public final class TestSupport {
                 .request(MediaType.APPLICATION_JSON)
                 .header("X-Forwarded-User", "pista")
                 .header("X-Forwarded-Access-Token", "kral");
-        int responseCode = invocation.get().getStatus();
+        int responseCode = -1;
+        try {
+            responseCode = invocation.get().getStatus();
+        } catch (ProcessingException e) {
+            log.error("Error while invoking reset-db: ", e);
+            final String fileName = "error-" + new Date().getTime() + ".log";
+            final String content = TestUtils.printPods() + "\n" + OpenShiftUtils.getPodLogs("syndesis-server");
+            try {
+                FileUtils.writeStringToFile(new File("log/" + fileName), content, "UTF-8");
+                log.error("Wrote server debug stuff to " + fileName);
+            } catch (IOException ex) {
+                log.error("Unable to write string to file: ", ex);
+            }
+        }
         log.info("syndesis-db has been reset, via url: *{}*, responseCode:*{}*", url, responseCode);
         log.debug("Reset endpoint reponse: {}", responseCode);
         return responseCode;
     }
 
     public String getEndpointUrl() {
-        String restEndpoint = String.format("%s%s%s%s", RestUtils.getRestUrl(), apiPath, ENDPOINT_NAME, "/reset-db");
+        String restEndpoint = String.format("%s%s%s%s", RestUtils.getRestUrl(), API_PATH, ENDPOINT_NAME, "/reset-db");
         log.debug("Reset endpoint URL: *{}*", restEndpoint);
         return restEndpoint;
     }

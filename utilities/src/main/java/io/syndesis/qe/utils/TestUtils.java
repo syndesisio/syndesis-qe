@@ -248,13 +248,16 @@ public final class TestUtils {
 
     /**
      * Prints pods using oc binary client.
+     *
+     * @return output of oc get pods
      */
-    public static void printPods() {
-        //         Use oc client directly, as it has nice output
+    public static String printPods() {
+        // Use oc client directly, as it has nice output
         final String output = OpenShiftUtils.binary().execute(
             "get", "pods", "-n", TestConfiguration.openShiftNamespace()
         );
-        log.info(output);
+        log.error(output);
+        return output;
     }
 
     /**
