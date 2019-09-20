@@ -38,7 +38,7 @@ public class GMailSteps {
 
     @When("^.*send an e-mail$")
     public void sendMail() {
-        sendEmail("jbossqa.fuse@gmail.com");
+        sendEmail(gmu.getGmailAddress("QE Google Mail"));
     }
 
     @When("^.*send an e-mail to \"([^\"]*)\"$")
@@ -64,18 +64,18 @@ public class GMailSteps {
 
     @Given("^delete emails from \"([^\"]*)\" with subject \"([^\"]*)\"$")
     public void deleteMails(String from, String subject) {
-        gmu.deleteMessages(from, subject);
+        gmu.deleteMessages(gmu.getGmailAddress(from), subject);
     }
 
     @Given("^delete emails from credentials \"([^\"]*)\" with subject \"([^\"]*)\"$")
     public void deleteMailsFromCreds(String creds, String subject) {
         Account account = AccountUtils.get(creds);
-        deleteMails(account.getProperty("username"), subject);
+        gmu.deleteMessages(account.getProperty("username"), subject);
     }
 
     @Then("^check that email from \"([^\"]*)\" with subject \"([^\"]*)\" and text \"([^\"]*)\" exists$")
     public void checkMails(String from, String subject, String text) {
-        TestUtils.waitFor(() -> checkMailExists(from, subject, text),
+        TestUtils.waitFor(() -> checkMailExists(gmu.getGmailAddress(from), subject, text),
             1, 60,
             "Could not find specified mail");
     }
@@ -85,7 +85,9 @@ public class GMailSteps {
         Account account = AccountUtils.get(credentials);
         String username = account.getProperty("username");
 
-        checkMails(username, subject, text);
+        TestUtils.waitFor(() -> checkMailExists(username, subject, text),
+            1, 60,
+            "Could not find specified mail");
     }
 
     private boolean checkMailExists(String from, String subject, String text) {

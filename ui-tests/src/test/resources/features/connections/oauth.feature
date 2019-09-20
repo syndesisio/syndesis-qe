@@ -27,7 +27,7 @@ Feature: Connections - OAuth
 
   @oauth-gmail
   Scenario: Testing Gmail OAuth connector
-    Given delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-tests"
+    Given delete emails from "QE Google Mail" with subject "syndesis-tests"
     When navigate to the "Settings" page
     And fill "Gmail" oauth settings "QE Google Mail"
     And navigate to the "Connections" page
@@ -64,7 +64,7 @@ Feature: Connections - OAuth
 
     When sleep for "6000" ms
     Then validate that logs of integration "OAuth-gmail-test" contains string "syndesis-tests"
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-tests"
+    And delete emails from "QE Google Mail" with subject "syndesis-tests"
 
   @oauth-twitter
   Scenario: Testing Twitter OAuth connector

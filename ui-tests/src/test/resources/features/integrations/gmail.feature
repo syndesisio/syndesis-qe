@@ -11,7 +11,7 @@ Feature: Google mail Connector
   Background: Clean application state
     Given clean application state
     And reset content of "contact" table
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
+    And delete emails from "QE Google Mail" with subject "syndesis-test"
     And log into the Syndesis
     And navigate to the "Settings" page
     And fill "Gmail" oauth settings "QE Google Mail"
@@ -41,9 +41,9 @@ Feature: Google mail Connector
 
     When select the "My GMail Connector" connection
     And select "Send Email" integration action
-    And fill in values by element ID
-      | to      | jbossqa.fuse@gmail.com |
+    And fill in values by element data-testid
       | subject | syndesis-test          |
+    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
     And click on the "Next" button
 
     # add split step
@@ -68,8 +68,8 @@ Feature: Google mail Connector
     Then Integration "Integration_gmail_send" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_gmail_send" gets into "Running" state
-    And check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-test" and text "Red Hat" exists
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-test"
+    And check that email from "QE Google Mail" with subject "syndesis-test" and text "Red Hat" exists
+    And delete emails from "QE Google Mail" with subject "syndesis-test"
 
 #
 #  2. Receive an e-mail
@@ -119,4 +119,4 @@ Feature: Google mail Connector
     #give gmail time to receive mail
     When send an e-mail
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere'" has some output
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-tests"
+    And delete emails from "QE Google Mail" with subject "syndesis-tests"

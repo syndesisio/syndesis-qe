@@ -1,5 +1,9 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.fail;
+
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;
@@ -7,20 +11,20 @@ import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
 
-import lombok.extern.slf4j.Slf4j;
-
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
-import static org.assertj.core.api.Assertions.fail;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GMailUtils {
@@ -34,12 +38,23 @@ public class GMailUtils {
     }
 
     private Gmail getClient() {
-        if(client == null){
+        if (client == null) {
             client = ga.gmail();
         }
         return client;
     }
 
+    public String getGmailAddress(String gmailAccount) {
+        String gmailAddress = null;
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(gmailAccount);
+        if (account.isPresent()) {
+            gmailAddress = account.get().getProperty("email");
+        } else {
+            fail("Credentials for " + gmailAccount + " were not found.");
+        }
+
+        return gmailAddress;
+    }
 
     /**
      * Create a MimeMessage using the parameters provided.
@@ -210,7 +225,6 @@ public class GMailUtils {
             for (Message m : messages) {
                 trashMessage(m.getId());
             }
-
         } catch (IOException e) {
             fail("Exception was thrown while deleting messages.", e);
         }
