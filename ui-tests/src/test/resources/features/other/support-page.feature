@@ -15,6 +15,7 @@ Feature: Support page
 #
 #  1. version check
 #
+#  this is trivial issue: syndesis.version in syndesis-qe pom.xml does not match version of syndesis installed on openshift
   @gh-5960
   @support-page-version-check
   Scenario: Version
@@ -35,6 +36,7 @@ Feature: Support page
 #
 #  3. download specific diagnostic info
 #
+#    works OK on local computer, seems to be some unstability issue with jenkins job.
   @oauth
   @support-page-download-specific-diagnostic
   Scenario: Export diagnostic of single integration

@@ -102,6 +102,7 @@ Feature: Connections - OAuth
     Then validate that logs of integration "OAuth-twitter-test" contains string "OAuth testing"
     And clean all tweets in twitter_talky account
 
+  @ENTESB-11282
   @oauth-gcalendar
   Scenario: Testing Google calendar OAuth connector
     Given renew access token for "QE Google Calendar" google account
@@ -125,6 +126,7 @@ Feature: Connections - OAuth
       | consumefromnow     | false          |
       | considerlastupdate | false          |
       | calendarid         | syndesis-test1 |
+
     And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
@@ -147,6 +149,7 @@ Feature: Connections - OAuth
     When sleep for "6000" ms
     Then validate that logs of integration "OAuth-Gcalendar-test" contains string "past_event1"
 
+  @ENTESB-11282
   @oauth-salesforce
   Scenario: Testing Salesforce OAuth connector
     Given delete lead from SF with email: "k1stieranka1@istrochem.sk"
@@ -164,6 +167,7 @@ Feature: Connections - OAuth
     Then check that position of connection to fill is "Start"
     When select the "Salesforce-test" connection
     And select "On create" integration action
+#    test fails on this line, which is ENTESB-11822 issue (field is input, but should be select)
     And select "Lead" from "sObjectName" dropdown
     And click on the "Next" button
 
