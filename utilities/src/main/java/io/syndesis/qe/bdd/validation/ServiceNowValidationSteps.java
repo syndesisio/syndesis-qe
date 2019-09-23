@@ -2,6 +2,11 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.servicenow.ServiceNow;
+import io.syndesis.qe.servicenow.model.Incident;
+import io.syndesis.qe.utils.JMSUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,10 +14,6 @@ import java.util.List;
 import java.util.UUID;
 
 import cucumber.api.java.en.When;
-import io.syndesis.qe.servicenow.ServiceNow;
-import io.syndesis.qe.servicenow.model.Incident;
-import io.syndesis.qe.utils.JMSUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 public class ServiceNowValidationSteps {
     private static String incidentId;
@@ -42,8 +43,11 @@ public class ServiceNowValidationSteps {
         i.setDescription(description);
         JMSUtils.sendMessage(JMSUtils.Destination.valueOf("QUEUE"), queue, ServiceNow.getIncidentJson(i));
         //wait till message gets through integration
-        TestUtils.sleepForJenkinsDelayIfHigher(3);
-        Incident created = ServiceNow.getFilteredIncidents("number=" + incidentNumber, 1).get(0);
+        TestUtils.sleepForJenkinsDelayIfHigher(5);
+        List<Incident> list = ServiceNow.getFilteredIncidents("number=" + incidentNumber, 1);
+        assertThat(list).isNotEmpty();
+
+        Incident created = list.get(0);
         ServiceNow.deleteIncident(created.getSysId());
         assertThat(created.getNumber()).isEqualToIgnoringCase(i.getNumber());
         assertThat(created.getDescription()).contains(description);

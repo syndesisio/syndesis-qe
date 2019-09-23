@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.math.BigInteger;
+import java.util.Date;
 
 import lombok.Data;
 
@@ -108,7 +109,6 @@ public class Incident {
     private LinkValue resolvedBy;
     private String rfc;
     private BigInteger severity;
-    @JsonProperty("short_description")
     private String shortDescription;
     @JsonProperty("sla_due")
     private String slaDue;
@@ -156,12 +156,14 @@ public class Incident {
 
     /**
      * Creates sample incident with description, short_description, user_input, urgency and impact set.
+     *
      * @return incident instance
      */
     public static Incident getSampleIncident() {
         Incident i = new Incident();
+        i.setSysId("custom123");
         i.setDescription("Syndesis QE incident created using API");
-        i.setShortDescription("Syndesis QE test");
+        i.setShortDescription("Syndesis QE test | Date " + new Date().toLocaleString());
         i.setUserInput("syndesisqe");
         i.setUrgency(new BigInteger("1"));
         i.setImpact(new BigInteger("1"));
