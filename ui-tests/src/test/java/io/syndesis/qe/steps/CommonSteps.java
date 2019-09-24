@@ -685,7 +685,14 @@ public class CommonSteps {
 
         nameConnectionSteps.setConnectionName(newConnectionName);
 
-        clickOnButton("Save");
+        try {
+            TestUtils.sleepForJenkinsDelayIfHigher(2);
+            OpenShiftWaitUtils.waitFor(() -> !syndesisRootPage.getCurrentUrl().contains("connections/create"), 2, 20);
+        } catch (TimeoutException | InterruptedException e) {
+            clickOnButton("Save");
+            TestUtils.waitFor(() -> !syndesisRootPage.getCurrentUrl().contains("connections/create"),
+                2, 20, "Unable to create a connection - create button does nothing.");
+        }
     }
 
     @When("^go back in browser history$")

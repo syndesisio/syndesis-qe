@@ -89,6 +89,8 @@ Feature: Google Sheets Connector
       | range | A1:E1 |
     And fill spreadsheet ID
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | E |
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -187,6 +189,8 @@ Feature: Google Sheets Connector
       | range          | E1:E5   |
       | majordimension | Columns |
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | E |
     Then click on the "Next" button
 
     When add integration step on position "0"
