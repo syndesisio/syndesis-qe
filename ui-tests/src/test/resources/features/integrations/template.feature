@@ -9,7 +9,7 @@ Feature: Templates
   Background: Clean application state
     Given clean application state
     And log into the Syndesis
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test"
+    And delete emails from "QE Google Mail" with subject "syndesis-template-test"
     And navigate to the "Settings" page
     And fill "Gmail" oauth settings "QE Google Mail"
     And create connections using oauth
@@ -34,8 +34,8 @@ Feature: Templates
     When select the "QE Google Mail" connection
     And select "Send Email" integration action
     And fill in values by element data-testid
-      | to      | jbossqa.fuse@gmail.com |
       | subject | syndesis-template-test |
+    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
     And click on the "Next" button
 
     #adding split step to split the result of Db connection
@@ -83,7 +83,7 @@ Feature: Templates
     # wait for integration to get in active state
     And wait until integration "DB to gmail-template" gets into "Running" state
 
-    Then check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
+    Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
     Examples:
       | template_type | template_text                                  |
@@ -110,8 +110,8 @@ Feature: Templates
     When select the "QE Google Mail" connection
     And select "Send Email" integration action
     And fill in values by element data-testid
-      | to      | jbossqa.fuse@gmail.com |
       | subject | syndesis-template-test |
+    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
     And click on the "Done" button
 
     #adding split step to split the result of Db connection
@@ -161,7 +161,7 @@ Feature: Templates
     #wait for integration to get in active state
     And wait until integration "DB to gmail-template" gets into "Running" state
 
-    Then check that email from "jbossqa.fuse@gmail.com" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
+    Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
   @gh-6317
   @template-code-editor
@@ -182,8 +182,8 @@ Feature: Templates
     When select the "QE Google Mail" connection
     And select "Send Email" integration action
     And fill in values by element data-testid
-      | to      | jbossqa.fuse@gmail.com |
       | subject | syndesis-template-test |
+    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
     And click on the "Done" button
 
     #adding split step to split the result of Db connection

@@ -13,7 +13,7 @@ Feature: Integration - Databucket
   Background: Clean application state
     Given clean application state
     And reset content of "contact" table
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "Red Hat"
+    And delete emails from "QE Google Mail" with subject "Red Hat"
     And log into the Syndesis
     And navigate to the "Settings" page
     And fill all oauth settings
@@ -92,8 +92,7 @@ Feature: Integration - Databucket
 
     When select the "QE Google Mail" connection
     And select "Send Email" integration action
-    And fill in values by element data-testid
-      | to | jbossqa.fuse@gmail.com |
+    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
     And click on the "Done" button
 
     # add another connection
@@ -127,8 +126,8 @@ Feature: Integration - Databucket
     And publish integration
     Then Integration "Integration_with_buckets" is present in integrations list
     And wait until integration "Integration_with_buckets" gets into "Running" state
-    And check that email from "jbossqa.fuse@gmail.com" with subject "Red Hat" and text "Red Hat" exists
-    And delete emails from "jbossqa.fuse@gmail.com" with subject "Red Hat"
+    And check that email from "QE Google Mail" with subject "Red Hat" and text "Red Hat" exists
+    And delete emails from "QE Google Mail" with subject "Red Hat"
 
 
 #

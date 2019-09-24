@@ -38,9 +38,9 @@ Feature: Email connector
     # Second connection is email send (smtp)
     When select the "Send Email with <security> QE" connection
     And select "Send Email" integration action
-    And fill in values by element ID
-      | to      | jbossqa.fuse@gmail.com       |
-      | subject | syndesis-tests               |
+    And fill in values by element data-testid
+      | subject | syndesis-tests |
+    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
     And fill in data-testid field "from" from property "username" of credentials "Email SMTP With <security>"
     And click on the "Done" button
     # Then check visibility of page "Add to Integration"
