@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TestConfiguration {
 
-
     private static final String TEST_PROPERTIES_FILE = "syndesis.config.test.properties";
 
     public static final String OPENSHIFT_URL = "syndesis.config.openshift.url";
@@ -41,13 +40,10 @@ public class TestConfiguration {
     public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
     public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
 
-    public static final String SYNDESIS_TEMPLATE_URL = "syndesis.config.template.url";
-    public static final String SYNDESIS_TEMPLATE_SA = "syndesis.config.template.sa";
-    public static final String SYNDESIS_TEMPLATE_VERSION = "syndesis.config.template.version";
-    public static final String SYNDESIS_TEMPLATE_USE_OPERATOR = "syndesis.config.template.use.operator";
-    public static final String SYNDESIS_OPERATOR_CRD_URL = "syndesis.config.operator.crd";
-    public static final String SYNDESIS_OPERATOR_URL = "syndesis.config.operator.url";
-    public static final String SYNDESIS_OPERATOR_TEMPLATE_URL = "syndesis.config.operator.template.url";
+    public static final String SYNDESIS_INSTALL_VERSION = "syndesis.config.install.version";
+    public static final String SYNDESIS_CRD_URL = "syndesis.config.crd.url";
+    public static final String SYNDESIS_OPERATOR_IMAGE = "syndesis.config.operator.image";
+    public static final String SYNDESIS_CR_URL = "syndesis.config.cr.url";
 
     public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
     public static final String SYNDESIS_PULL_SECRET_NAME = "syndesis.config.pull.secret.name";
@@ -142,14 +138,6 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_VERSIONS_FILE);
     }
 
-    public static String syndesisTemplateUrl() {
-        return get().readValue(SYNDESIS_TEMPLATE_URL);
-    }
-
-    public static String syndesisTemplateSA() {
-        return get().readValue(SYNDESIS_TEMPLATE_SA);
-    }
-
     public static String syndesisPublicOauthProxyTemplateUrl() {
         return get().readValue(SYNDESIS_PUBLIC_OAUTH_PROXY_URL);
     }
@@ -162,24 +150,19 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_PULL_SECRET_NAME);
     }
 
-    public static boolean useOperator() {
-        return Boolean.parseBoolean(get().readValue(SYNDESIS_TEMPLATE_USE_OPERATOR));
-    }
-
     public static boolean enableTestSupport() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_ENABLE_TEST_SUPPORT, "false"));
     }
 
-    public static String syndesisOperatorCrdUrl() {
-        return get().readValue(SYNDESIS_OPERATOR_CRD_URL);
+    public static String syndesisCrdUrl() {
+        return get().readValue(SYNDESIS_CRD_URL);
+    }
+    public static String syndesisOperatorImage() {
+        return get().readValue(SYNDESIS_OPERATOR_IMAGE);
     }
 
-    public static String syndesisOperatorUrl() {
-        return get().readValue(SYNDESIS_OPERATOR_URL);
-    }
-
-    public static String syndesisOperatorTemplateUrl() {
-        return get().readValue(SYNDESIS_OPERATOR_TEMPLATE_URL);
+    public static String syndesisCrUrl() {
+        return get().readValue(SYNDESIS_CR_URL);
     }
 
     public static String syndesisBrowser() {
@@ -253,8 +236,8 @@ public class TestConfiguration {
         }
 
         String syndesisVersion;
-        if (System.getProperty(SYNDESIS_TEMPLATE_VERSION) != null) {
-            syndesisVersion = System.getProperty(SYNDESIS_TEMPLATE_VERSION);
+        if (System.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
+            syndesisVersion = System.getProperty(SYNDESIS_INSTALL_VERSION);
         } else {
             syndesisVersion = "master";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
@@ -263,25 +246,21 @@ public class TestConfiguration {
             }
         }
 
-        if (props.getProperty(SYNDESIS_TEMPLATE_URL) == null) {
-            props.setProperty(SYNDESIS_TEMPLATE_URL,
-                String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", syndesisVersion));
-        }
-        if (props.getProperty(SYNDESIS_OPERATOR_URL) == null) {
-            props.setProperty(SYNDESIS_OPERATOR_URL, String
-                .format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", syndesisVersion));
-        }
         if (props.getProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL) == null) {
             props.setProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL, String
                 .format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/syndesis-public-oauth-proxy.yml", syndesisVersion));
         }
 
-        props.setProperty(SYNDESIS_OPERATOR_CRD_URL,
+        props.setProperty(SYNDESIS_CRD_URL,
             String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", syndesisVersion));
-        props.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL,
-            String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", syndesisVersion));
-
-        props.setProperty(SYNDESIS_TEMPLATE_USE_OPERATOR, "true");
+        String operatorVersion;
+        if (System.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
+            operatorVersion = System.getProperty(SYNDESIS_INSTALL_VERSION);
+        } else {
+            operatorVersion = "latest";
+        }
+        props.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
+        props.setProperty(SYNDESIS_CR_URL, getClass().getClassLoader().getResource("syndesis-minimal.yaml").toString());
 
         props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
 
@@ -333,25 +312,6 @@ public class TestConfiguration {
         source.stringPropertyNames().stream()
             .filter(key -> overwrite || !this.properties.containsKey(key))
             .forEach(key -> this.properties.setProperty(key, source.getProperty(key)));
-    }
-
-    /**
-     * Used to override syndesis version when the property is defined later than TestConfiguration is initialized.
-     *
-     * @param version syndesis version
-     */
-    public void overrideSyndesisVersion(String version) {
-        properties.setProperty(SYNDESIS_TEMPLATE_URL,
-            String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/syndesis.yml", version));
-        properties.setProperty(SYNDESIS_TEMPLATE_SA, String
-            .format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/serviceaccount-as-oauthclient-restricted.yml",
-                version));
-        properties.setProperty(SYNDESIS_OPERATOR_CRD_URL,
-            String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", version));
-        properties.setProperty(SYNDESIS_OPERATOR_URL,
-            String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-operator.yml", version));
-        properties.setProperty(SYNDESIS_OPERATOR_TEMPLATE_URL,
-            String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis.yml", version));
     }
 
     public static Optional<String> browserBinary() {

@@ -14,15 +14,10 @@ import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +27,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import cz.xtf.core.waiting.WaiterException;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
 
 @Slf4j
 public class CommonSteps {
@@ -72,11 +66,6 @@ public class CommonSteps {
         SyndesisTemplate.deploy();
     }
 
-    @When("^deploy Syndesis from template$")
-    public void deploySyndesisFromTemplate() {
-        SyndesisTemplate.deployUsingTemplate();
-    }
-
     @Then("^wait for Syndesis to become ready")
     public static void waitForSyndesis() {
         waitFor(true);
@@ -93,37 +82,9 @@ public class CommonSteps {
     }
 
     public static void undeployCustomResources() {
-        for (String s : customResourceNames()) {
+        for (String s : SyndesisTemplate.getCrNames(TestConfiguration.openShiftNamespace())) {
             undeployCustomResource(s);
         }
-    }
-
-    /**
-     * Gets the Set of deployed syndesis custom resources.
-     *
-     * @return set containing names of deployed syndesis custom resources.
-     */
-    private static Set<String> customResourceNames() {
-        final Set<String> names = new HashSet<>();
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace()
-            + "/" + TestConfiguration.customResourcePlural();
-        String responseBody = OpenShiftUtils.invokeApi(
-            HttpUtils.Method.GET,
-            url,
-            null,
-            Headers.of("Accept", "application/json")
-        ).getBody();
-        JSONArray items = new JSONArray();
-        try {
-            items = new JSONObject(responseBody).getJSONArray("items");
-        } catch (JSONException ex) {
-            // probably the CRD isn't present in the cluster
-        }
-        for (int i = 0; i < items.length(); i++) {
-            names.add(((JSONObject) items.get(i)).getJSONObject("metadata").getString("name"));
-        }
-
-        return names;
     }
 
     /**
@@ -132,10 +93,7 @@ public class CommonSteps {
      * @param name custom resource name
      */
     private static void undeployCustomResource(String name) {
-        log.info("Undeploying Syndesis custom resource \"" + name + "\"");
-        final String url = "/apis/syndesis.io/v1alpha1/namespaces/" + TestConfiguration.openShiftNamespace()
-            + "/" + TestConfiguration.customResourcePlural() + "/" + name;
-        OpenShiftUtils.invokeApi(HttpUtils.Method.DELETE, url, null, null);
+        SyndesisTemplate.deleteCr(TestConfiguration.openShiftNamespace(), name);
     }
 
     /**
@@ -205,7 +163,7 @@ public class CommonSteps {
 
     /**
      * Performs a simple reachability check in a loop.
-     *
+     * <p>
      * Waits up to 30 minutes for the cluster to be reachable. The check is done using a simple HTTP GET to the cluster api endpoint
      */
     private void waitUntilClusterIsReachable() {
