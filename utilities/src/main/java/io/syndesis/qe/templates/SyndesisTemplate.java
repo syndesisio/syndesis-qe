@@ -147,14 +147,28 @@ public class SyndesisTemplate {
 
     private static void deployOperator() {
 
-        log.info("Generating resources using operator image " + TestConfiguration.syndesisOperatorImage());
+        String operatorImage = TestConfiguration.syndesisOperatorImage();
 
-        ProcessBuilder pb = new ProcessBuilder("docker",
+        log.info("Pulling operator image {}", operatorImage);
+        ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
+            "pull",
+            operatorImage
+        );
+
+        try {
+            dockerPullPb.start().waitFor();
+        } catch (Exception e) {
+            log.error("Could not pull operator image", e);
+            fail("Failed to pull operator");
+        }
+
+        log.info("Generating resources using operator image {}", operatorImage);
+        ProcessBuilder dockerRunPb = new ProcessBuilder("docker",
             "run",
             "--rm",
             "--entrypoint",
             "operator",
-            TestConfiguration.syndesisOperatorImage(),
+            operatorImage,
             "install",
             "operator",
             "-e", "yaml"
@@ -162,7 +176,7 @@ public class SyndesisTemplate {
 
         List<HasMetadata> resourceList = null;
         try {
-            Process p = pb.start();
+            Process p = dockerRunPb.start();
             resourceList = OpenShiftUtils.getInstance().load(p.getInputStream()).get();
             p.waitFor();
         } catch (Exception e) {
