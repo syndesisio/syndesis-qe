@@ -1,5 +1,6 @@
 # @sustainer: avano@redhat.com
 
+@wip
 @syndesis-upgrade
 Feature: Syndesis Upgrade
 

@@ -4,6 +4,7 @@
 @syndesis-upgrade-operator
 @gh-4781
 @gh-6111
+@wip
 Feature: Syndesis Upgrade Using Operator
 
   Background:
