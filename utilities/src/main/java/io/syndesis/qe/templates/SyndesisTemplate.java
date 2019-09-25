@@ -119,8 +119,12 @@ public class SyndesisTemplate {
         return OpenShiftUtils.getInstance().customResource(makeSyndesisContext());
     }
 
+    public static CustomResourceDefinition getCrd() {
+        return OpenShiftUtils.getInstance().customResourceDefinitions().withName("syndesises.syndesis.io").get();
+    }
+
     private static CustomResourceDefinitionContext makeSyndesisContext() {
-        CustomResourceDefinition syndesisCrd = OpenShiftUtils.getInstance().customResourceDefinitions().withName("syndesises.syndesis.io").get();
+        CustomResourceDefinition syndesisCrd = getCrd();
         CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
             .withGroup(syndesisCrd.getSpec().getGroup())
             .withPlural(syndesisCrd.getSpec().getNames().getPlural())
