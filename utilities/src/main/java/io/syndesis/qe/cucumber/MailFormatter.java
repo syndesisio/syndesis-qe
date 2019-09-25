@@ -1,5 +1,8 @@
 package io.syndesis.qe.cucumber;
 
+import io.syndesis.qe.issue.IssueState;
+import io.syndesis.qe.issue.SimpleIssue;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,8 +33,6 @@ import gherkin.ParserException;
 import gherkin.ast.Comment;
 import gherkin.ast.Feature;
 import gherkin.ast.GherkinDocument;
-import io.syndesis.qe.issue.IssueState;
-import io.syndesis.qe.issue.SimpleIssue;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -173,10 +174,10 @@ public class MailFormatter implements EventListener {
                 for (SimpleIssue issue : issues) {
                     if (issue.getState() == IssueState.OPEN) {
                         sb
-                                .append("<a href=\"https://github.com/syndesisio/syndesis/issues/")
-                                .append(issue.getIssueNumber())
+                                .append("<a href=\"")
+                                .append(issue.getUrl())
                                 .append("\">")
-                                .append(issue.getIssueNumber())
+                                .append(issue.getIssue())
                                 .append("</a>&nbsp;");
                     }
                 }

@@ -23,6 +23,7 @@ public class Account {
         GITHUB("GitHub"),
         HTTP("http"),
         IRC("irc"),
+        JIRA("Jira"),
         KAFKA("kafka"),
         MQTT("QE MQTT"),
         SALESFORCE("QE Salesforce"),
