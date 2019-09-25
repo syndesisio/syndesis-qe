@@ -66,7 +66,7 @@ Feature: Integration - DB to DB
     And publish integration
     Then wait until integration "CRUD1-read-update E2E" gets into "Running" state
 
-    Then validate that all todos with task "Joe" have value completed "1", period in ms: "5000"
+    Then check that query "SELECT * FROM TODO WHERE completed = 1" has some output
 
 
 #
