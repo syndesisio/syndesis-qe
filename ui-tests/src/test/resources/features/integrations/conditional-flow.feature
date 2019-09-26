@@ -49,7 +49,7 @@ Feature: Conditional flows - content base routing
     Then validate condition content in condition flow step
       | 0 | first |
 
-    When click on the "+ Add another condition" button
+    When Add another condition
     Then validate that condition count is equal to 2
     And validate condition content in condition flow step
       | 1 |  |
@@ -68,7 +68,7 @@ Feature: Conditional flows - content base routing
     Then validate condition content in condition flow step
       | 0 | first |
 
-    When click on the "+ Add another condition" button
+    When Add another condition
     Then validate that condition count is equal to 2
 
     When click on the condition icon
@@ -86,8 +86,8 @@ Feature: Conditional flows - content base routing
     Then validate condition content in condition flow step
       | 0 | first |
 
-    When click on the "+ Add another condition" button
-    And click on the "+ Add another condition" button
+    When Add another condition
+    And Add another condition
     Then validate that condition count is equal to 3
     And validate condition content in condition flow step
       | 0 | first |
@@ -123,14 +123,15 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-functional-test
   Scenario: Conditional flows - functional test
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
       | flowconditions-1-condition | ${body.message} == 'Clone' |
     And fill in values by element data-testid
       | usedefaultflow | true |
 
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
 
     When configure condition on position 2
     And add integration step on position "0"
@@ -202,13 +203,14 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-add-delete-step
   Scenario: Conditional flows - delete step
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
       | flowconditions-1-condition | ${body.message} == 'Clone' |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
     Then check that conditional flow step contains 3 flows
     And check that conditional flow default step is enabled
 
@@ -223,20 +225,21 @@ Feature: Conditional flows - content base routing
 
     When fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
-    And click on the "Done" button
-    Then check that conditional flow step contains 2 flows
-    And check that conditional flow default step is disabled
+    And click on the "Next" button
+    And click on the "Next" button
+    Then check that conditional flow step contains 1 flows
 
 
   @integrations-conditional-flows-add-update-step
   Scenario: Conditional flows - edit and update step
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | first  |
       | flowconditions-1-condition | second |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
     Then check that conditional flow step contains 3 flows
     And check that conditional flow default step is enabled
 
@@ -252,9 +255,9 @@ Feature: Conditional flows - content base routing
     And validate condition content in condition flow step
       | 0 | changed |
       | 1 | second  |
-    And click on the "Done" button
-    Then check that conditional flow step contains 3 flows
-    And check that conditional flow default step is disabled
+    And click on the "Next" button
+    And click on the "Next" button
+    Then check that conditional flow step contains 2 flows
 
     When edit integration step on position 2
     Then validate that condition count is equal to 2
@@ -265,13 +268,14 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-multiple-flows
   Scenario: Conditional flows - multiple flows
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
       | flowconditions-1-condition | ${body.message} == 'Clone' |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
 
     When configure condition on position 2
     And add integration step on position "0"
@@ -300,13 +304,14 @@ Feature: Conditional flows - content base routing
     When add integration step on position "1"
     And select the "Conditional Flows" connection
 
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco'  |
       | flowconditions-1-condition | ${body.message} == 'Clone2' |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
 
     When configure condition on position 6
     And add integration step on position "0"
@@ -384,13 +389,14 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-dropdown-test
   Scenario: Conditional flows - dropdown test
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
       | flowconditions-1-condition | ${body.message} == 'Clone' |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
 
     When configure condition on position 2
     Then validate conditional flow dropdown content
@@ -401,13 +407,14 @@ Feature: Conditional flows - content base routing
     When return to primary flow from integration flow
     And add integration step on position "1"
     And select the "Conditional Flows" connection
-    And click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco2' |
       | flowconditions-1-condition | ${body.message} == 'Clone2' |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
 
     When configure condition on position 6
     Then validate conditional flow dropdown content
