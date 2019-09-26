@@ -352,7 +352,7 @@ You can use various parameters. From the previous command, parameter:
 * *syndesis.config.openshift.namespace.cleanup* - cleanup namespace before the tests
 * *syndesis.config.openshift.namespace.cleanup.after* - cleanup namespace after the tests (it can be useful to set this to false during debugging phase)
 
-You can use profile `-P deploy` that sets all 3 parameters to lock the namespace, clean the namespace and don't clean the namespace after tests.
+You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy -P ui) that sets all 3 parameters to lock the namespace, clean the namespace and don't clean the namespace after tests.
 
 To select syndesis version, add another maven parameter:
 
