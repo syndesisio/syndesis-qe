@@ -20,12 +20,10 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.concurrent.TimeoutException;
 
-import apicurito.tests.configuration.TestConfiguration;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
@@ -312,16 +310,5 @@ public class ApicurioSteps {
         log.info("searching for button {}", buttonTitle);
         return $(Elements.SYNDESIS_ROOT).shouldBe(visible).findAll(By.tagName("button"))
             .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
-    }
-
-    @When("switch context to apicurio")
-    public void switchContextOn() {
-        Selenide.switchTo().frame($(Elements.APICURIO_ROOT));
-        log.info("Apicurito app root: {}", TestConfiguration.getAppRoot());
-    }
-
-    @When("leave apicurio context")
-    public void switchContextOff() {
-        Selenide.switchTo().parentFrame();
     }
 }

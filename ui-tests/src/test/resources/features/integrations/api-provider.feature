@@ -79,7 +79,7 @@ Feature: API Provider Integration
     When create API Provider spec from scratch .
     And click on the "Next" button
 
-    When switch context to apicurio
+    When change frame to "apicurio"
     # add a simple operation
     And create a new path with link
      | syndesistestpath | false |
@@ -97,7 +97,7 @@ Feature: API Provider Integration
 
     #Then check all for errors
 
-    And leave apicurio context
+    And change frame to "syndesis"
     #When click on button "Save" while in apicurio studio page
     When click on the "Save" link
     Then check visibility of page "Review API Provider Actions"
@@ -111,7 +111,7 @@ Feature: API Provider Integration
     # And publish integration\
     And edit integration step on position 2
     And fill in values by element data-testid
-      | httpresponsecode | 200 OK |
+      | httpresponsecode | 200 Response description |
     And click on the "Next" button
     And click on the "Save" link
     And publish integration
@@ -146,9 +146,9 @@ Feature: API Provider Integration
         {"id":1}
         """
 
-  # Returns 200 and {"id": null, "completed": null, "task": null}
   @reproducer
   @api-provider-get-non-existent
+  @api-provider-error-handling
   @gh-3999
   Scenario: API Provider GET non-existent
     When create an API Provider integration "TODO Integration get non existent" from file swagger/connectors/todo.json
@@ -159,13 +159,14 @@ Feature: API Provider Integration
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "SELECT * FROM todo WHERE id = :#id" value
-    And click on the "Done" button
+    And fill in values by element data-testid
+      | raiseerroronnotfound | true |
+    And click on the "Next" button
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | id |
-    And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -177,15 +178,25 @@ Feature: API Provider Integration
       | id        | body.id        |
       | completed | body.completed |
       | task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
+
+    And edit integration step on position 5
+    And map Api Provider errors
+      | Server Error         | 418 |
+      | SQL Entity Not Found | 404 |
+    And fill in values by element data-testid
+      | returnbody | true |
+    And click on the "Next" button
 
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration get non existent" gets into "Running" state
     And verify that executing GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/14" returns status 404 and body
+        """
+        """
+    And verify that executing GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/e" returns status 418 and body
         """
         """
 
@@ -247,6 +258,7 @@ Feature: API Provider Integration
     And add integration step on position "1"
     And select "Data Mapper" integration step
     And open data mapper collection mappings
+    And open data mapper unnamed collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -285,7 +297,7 @@ Feature: API Provider Integration
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "INSERT INTO todo (id, completed, task) VALUES (:#id, :#completed, :#task)" value
-    And click on the "Done" button
+    And click on the "Next" button
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
@@ -366,11 +378,6 @@ Feature: API Provider Integration
     And validate that all todos with task "task1" have value completed "0", period in ms: "1000"
     And validate that number of all todos with task "task1" is "1"
 
-  # org.assertj.core.api.SoftAssertionError: 
-  #The following 2 assertions failed:
-  #1) expected:<[2]00> but was:<[5]00>
-  #at ApiProviderSteps.checkResponse(ApiProviderSteps.java:161) expected:<[2]00> but was:<[5]00>
-  #2) expected:<"[{"body":[{"id":2,"completed":1,"task":"task2"}]},{"body":[{"id":3,"completed":1,"task":"task3"}]}]"> but was:<"[]">
   @gh-6118
   @gh-5017
   @reproducer
@@ -492,15 +499,10 @@ Feature: API Provider Integration
     And validate that number of all todos with task "changedtask1" is "1"
     And validate that number of all todos with task "task7" is "1"
 
-#The following 2 assertions failed:
-#1) expected:<20[4]> but was:<20[0]>
-#at ApiProviderSteps.checkResponse(ApiProviderSteps.java:161) expected:<20[4]> but was:<20[0]>
-#2) expected:<"[]"> but was:<"[{"id":{"name":null,"sqlType":4,"typeName":null,"scale":null,"value":"1","resultsParameter":false,"inputValueProvided":true}}]">
-#at ApiProviderSteps.checkResponse(ApiProviderSteps.java:163) expected:<"[]"> but was:<"[{"id":{"name":null,"sqlType":4,"typeName":null,"scale":null,"value":"1","resultsParameter":false,"inputValueProvided":true}}]">
   @reproducer
   @api-provider-delete
-  @gh-4040
-  @gh-6122
+  @ENTSB-11402
+  @ENTESB-11455
   Scenario: API Provider DELETE
     When create an API Provider integration "TODO Integration delete" from file swagger/connectors/todo.json
     And select API Provider operation flow Delete task
@@ -592,11 +594,6 @@ Feature: API Provider Integration
     When click on the "Create Connection" link
     Then check that connections list does not contain "API Provider" connection
 
-#The following 2 assertions failed:
-#1) expected:<[200]> but was:<[501]>
-#at ApiProviderSteps.checkResponse(ApiProviderSteps.java:161) expected:<[200]> but was:<[501]>
-#2) expected:<"[{"id":1}]"> but was:<"[]">
-#at ApiProviderSteps.checkResponse(ApiProviderSteps.java:163) expected:<"[{"id":1}]"> but was:<"[]">
   @api-provider-openapi-modification
   @api-provider-openapi-add-operation
   Scenario: API Provider Edit OpenAPI - add operation
@@ -619,7 +616,7 @@ Feature: API Provider Integration
 
     # create new operation in apicurio
     And edit API Provider OpenAPI specification
-    And switch context to apicurio
+    And change frame to "apicurio"
     And create a new path with link
       | v2/{id} | false |
     And select path "/v2/{id}"
@@ -642,11 +639,10 @@ Feature: API Provider Integration
 
     #Then check all for errors
 
-    When leave apicurio context
+    When change frame to "syndesis"
     And click on the "Save" link
     And click on the "Next" button
-    #WORKAROUND: 
-    And click on the "New integration" link
+    And go to API Provider operation list
 
     And select API Provider operation flow v2 GET by id
     And add integration step on position "0"
@@ -681,7 +677,7 @@ Feature: API Provider Integration
     When create an API Provider integration "TODO Integration edit unimplemented" from file swagger/connectors/todo.json
 
     And edit API Provider OpenAPI specification
-    And switch context to apicurio
+    And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
 
@@ -692,8 +688,7 @@ Feature: API Provider Integration
     And set response type of "Task" for response 200
 
     # Then check all for errors
-    #WORKAROUND:
-    When leave apicurio context
+    When change frame to "syndesis"
     And click on the "Save" link
     And click on the "Next" button
     And click on the "New integration" link
@@ -738,7 +733,6 @@ Feature: API Provider Integration
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
         """
 
-  #REGRESSION
   @gh-5332
   @gh-6099
   @api-provider-openapi-modification
@@ -798,7 +792,7 @@ Feature: API Provider Integration
     And edit integration
 
     And edit API Provider OpenAPI specification
-    And switch context to apicurio
+    And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
 
@@ -808,7 +802,7 @@ Feature: API Provider Integration
     And set response type "Array" for response 200
     And set response type of "Task" for response 200
 
-    And leave apicurio context
+    And change frame to "syndesis"
 
     #Then check all for errors
     When click on the "Save" link
@@ -857,7 +851,6 @@ Feature: API Provider Integration
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
         """
 
-  #REGRESSION
   @gh-6099
   @gh-5332
   @api-provider-openapi-modification
@@ -921,16 +914,15 @@ Feature: API Provider Integration
     And edit integration
 
     And edit API Provider OpenAPI specification
-    And switch context to apicurio
+    And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
     And delete current operation
     #Then check all for errors
-    And leave apicurio context
+    And change frame to "syndesis"
     And click on the "Save" link
     And click on the "Next" button
-    #WORKAROUND:
-    And click on the "New integration" link
+    And go to API Provider operation list
     Then check visibility of page "Choose Operation"
 
     When click on the "Save" link
@@ -956,17 +948,16 @@ Feature: API Provider Integration
     When create an API Provider integration "TODO Integration delete unimplemented" from file swagger/connectors/todo.json
     And edit API Provider OpenAPI specification
 
-    And switch context to apicurio
+    And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
     And delete current operation
     #Then check all for errors
-    And leave apicurio context
+    And change frame to "syndesis"
     And click on the "Save" link
     And click on the "Next" button
 
-    #WORKAROUND:
-    And click on the "New integration" link
+    And go to API Provider operation list
 
     Then check Fetch task operation is not present in API Provider operation list
 
@@ -987,10 +978,10 @@ Feature: API Provider Integration
     When create API Provider spec from scratch .
     And click on the "Next" button
 
-    And switch context to apicurio
+    And change frame to "apicurio"
     And create a new path with link 
       | noop | true |
-    And leave apicurio context
+    And change frame to "syndesis"
     And click on the "Save" link
 
     Then check visibility of page "Review API Provider Actions"
@@ -998,7 +989,6 @@ Feature: API Provider Integration
     And check "Next" button is "disabled"
 
 
-  #REGRESSION
   @gh-6101
   @gh-4977
   @reproducer
@@ -1008,7 +998,7 @@ Feature: API Provider Integration
     When create an API Provider integration "Empty Integration" from file swagger/connectors/todo.json
     And edit API Provider OpenAPI specification
 
-    And switch context to apicurio
+    And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
     And delete current operation
@@ -1030,7 +1020,7 @@ Feature: API Provider Integration
     And delete current operation
 
     #Then check all for errors
-    And leave apicurio context
+    And change frame to "syndesis"
     And click on the "Save" link
     Then verify there are 1 errors for API Provider operations
 
