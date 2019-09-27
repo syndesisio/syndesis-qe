@@ -24,8 +24,10 @@ import com.box.sdk.BoxItem;
 import javax.annotation.PostConstruct;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.Getter;
@@ -44,7 +46,7 @@ public class BoxUtils {
     @Getter
     private BoxAPIConnection boxConnection;
     @Getter
-    private static String fileId;
+    private static List<String> fileIds = new ArrayList<>();
     private String folderId;
 
     @PostConstruct
@@ -68,13 +70,15 @@ public class BoxUtils {
             log.debug("Deleting file {} (id {})", itemInfo.getName(), itemInfo.getID());
             new BoxFile(this.boxConnection, itemInfo.getID()).delete();
         }
+        fileIds.clear();
     }
 
     public void uploadFile(String name, String content) {
         try {
             BoxFile.Info info = new BoxFolder(this.boxConnection, folderId).uploadFile(
                     IOUtils.toInputStream(content, "UTF-8"), name);
-            fileId = info.getID();
+            log.debug("Uploaded file id: " + info.getID());
+            fileIds.add(info.getID());
         } catch (Exception ex) {
             fail("Unable to upload file to Box: ", ex);
         }

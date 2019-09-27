@@ -42,14 +42,16 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^create Box download action step$")
-    public void createBoxDownload() {
+    @When("^create Box download action step (with|without) fileId$")
+    public void createBoxDownload(String withFileId) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.BOX.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.BOX.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:box-download");
-        super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-            "fileId", BoxUtils.getFileId()
-        ));
+        if ("with".equals(withFileId)) {
+            super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
+                "fileId", BoxUtils.getFileIds().get(0)
+            ));
+        }
         super.createStep();
     }
 
