@@ -256,7 +256,7 @@ public class TestConfiguration {
         if (System.getProperty(SYNDESIS_TEMPLATE_VERSION) != null) {
             syndesisVersion = System.getProperty(SYNDESIS_TEMPLATE_VERSION);
         } else {
-            syndesisVersion = "master";
+            syndesisVersion = "1.7.x";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
             if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !TestUtils.isProdBuild()) {
                 syndesisVersion = System.getProperty("syndesis.version");
