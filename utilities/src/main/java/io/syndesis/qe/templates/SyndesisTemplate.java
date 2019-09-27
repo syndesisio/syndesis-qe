@@ -223,18 +223,9 @@ public class SyndesisTemplate {
             // setup integration limit and state check interval
             Map<String, Object> integration =
                 (Map<String, Object>) spec.computeIfAbsent("integration", s -> new HashMap<String, Object>());
-            integration.put("limit", 5);
             if (TestUtils.isJenkins()) {
                 integration.put("stateCheckInterval", 150);
             }
-
-            // disable scheduled image update
-            Map<String, Object> components =
-                (Map<String, Object>) spec.computeIfAbsent("components", s -> new HashMap<String, Object>());
-            components.put("scheduled", false);
-
-            // enable test support
-            spec.put("testSupport", true);
 
             // set route hostname
             spec.put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
