@@ -101,7 +101,8 @@ public class CommonSteps {
         ZENHUB,
         AMQ,
         AMQP,
-        MQTT
+        MQTT,
+        AWS_DDB
     }
 
     private static class Element {
