@@ -9,6 +9,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -228,7 +229,11 @@ public class SyndesisTemplate {
             }
 
             // set route hostname
-            spec.put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
+            if (TestConfiguration.syndesisUrl() != null) {
+                spec.put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
+            } else {
+                spec.put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
+            }
 
             // set correct image stream namespace
             spec.put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
