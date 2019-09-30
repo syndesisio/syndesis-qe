@@ -123,12 +123,12 @@ public class MetricsSteps {
                 openshiftTime = pod.get().getStatus().getStartTime();
             }
 
-            Pattern pattern = Pattern.compile("^(\\d{1,2}) minutes$");
+            Pattern pattern = Pattern.compile("^(\\d{1,2}) (second|minute)(s)?$");
             Matcher matcher = pattern.matcher(uptime);
             if (!matcher.find()) {
                 fail("UI uptime " + uptime + " doesn't match pattern.");
             }
-            Long uiMinute = Long.valueOf(matcher.group(1));
+            Long uiMinute = (matcher.group(2).contains("second")) ? 1 : Long.parseLong(matcher.group(1));
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             format.setTimeZone(TimeZone.getTimeZone("UTC"));
