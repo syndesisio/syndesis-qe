@@ -99,7 +99,8 @@ public class CommonSteps {
         ZENHUB,
         AMQ,
         AMQP,
-        MQTT
+        MQTT,
+        AWS_DDB
     }
 
     private static class Element {
@@ -300,6 +301,7 @@ public class CommonSteps {
             try {
                 current = Credentials.valueOf(service.toUpperCase()
                     .replace(" ", "_")
+                    .replace("-", "_")
                     .replaceAll("[()]", ""));
             } catch (IllegalArgumentException ex) {
                 throw new IllegalArgumentException("Unable to find enum value for " + service + " account." +
