@@ -153,8 +153,8 @@ public class SyndesisTemplate {
     private static void deployOperator() {
 
         String operatorImage = TestConfiguration.syndesisOperatorImage();
-        String imageName = StringUtils.substringBefore(operatorImage, ":");
-        String imageTag = StringUtils.substringAfter(operatorImage, ":");
+        String imageName = StringUtils.substringBeforeLast(operatorImage, ":");
+        String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
 
         log.info("Pulling operator image {}", operatorImage);
         ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
