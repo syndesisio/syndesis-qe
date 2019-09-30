@@ -43,6 +43,7 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-icon-test-move-up
   Scenario: Conditional flows icon test - move up
+    And select "Advanced expression builder" integration action
     When validate that condition count is equal to 1
     And fill in values by element data-testid
       | flowconditions-0-condition | first |
@@ -62,6 +63,7 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-icon-test-delete
   Scenario: Conditional flows icon test - delete
+    And select "Advanced expression builder" integration action
     When validate that condition count is equal to 1
     And fill in values by element data-testid
       | flowconditions-0-condition | first |
@@ -80,6 +82,7 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-icon-test-multiple-moves
   Scenario: Conditional flows icon test multiple moves
+    And select "Advanced expression builder" integration action
     When validate that condition count is equal to 1
     And fill in values by element data-testid
       | flowconditions-0-condition | first |
@@ -123,6 +126,7 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-functional-test
   Scenario: Conditional flows - functional test
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
@@ -139,7 +143,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Shaco was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 3
     And add integration step on position "0"
@@ -147,7 +151,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Clone was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 4
     And add integration step on position "0"
@@ -155,7 +159,92 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Noone was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
+
+    When click on the "Save" link
+    And set integration name "Webhook_to_DB_with_CBR"
+    And click on the "Save and publish" button
+    And navigate to the "Integrations" page
+    Then wait until integration "Webhook_to_DB_with_CBR" gets into "Running" state
+
+    When select the "Webhook_to_DB_with_CBR" integration
+    And invoke post request to webhook
+      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+    Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
+    And checks that query "select * from contact where first_name='Shaco was here'" has 0 row output
+    And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
+
+    When invoke post request to webhook
+      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+    Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
+    And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
+    And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
+
+    When invoke post request to webhook
+      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+    Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
+    And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
+    And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
+
+    And invoke post request to webhook
+      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+    Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
+    And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
+    And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
+
+    When invoke post request to webhook
+      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+    Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
+    And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
+    And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
+
+    When invoke post request to webhook
+      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+    Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
+    And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
+    And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
+
+  @integrations-conditional-flows-functional-test2
+  Scenario: Conditional flows - functional test
+    And select "Basic expression builder" integration action
+    When Add another condition
+    And fill in values by element data-testid
+      | flowconditions-0-path  | message |
+      | flowconditions-0-op    | equals  |
+      | flowconditions-0-value | Shaco   |
+    And fill in values by element data-testid
+      | flowconditions-1-path  | message |
+      | flowconditions-1-op    | equals  |
+      | flowconditions-1-value | Clone   |
+    And fill in values by element data-testid
+      | usedefaultflow | true |
+
+    And click on the "Next" button
+    And click on the "Next" button
+
+    When configure condition on position 2
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert into contact(first_name) values ('Shaco was here')" value
+    And click on the "Next" button
+    Then return to primary flow from integration flow directly
+
+    When configure condition on position 3
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert into contact(first_name) values ('Clone was here')" value
+    And click on the "Next" button
+    Then return to primary flow from integration flow directly
+
+    When configure condition on position 4
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "insert into contact(first_name) values ('Noone was here')" value
+    And click on the "Next" button
+    Then return to primary flow from integration flow directly
 
     When click on the "Save" link
     And set integration name "Webhook_to_DB_with_CBR"
@@ -201,8 +290,10 @@ Feature: Conditional flows - content base routing
     And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
 
 
+
   @integrations-conditional-flows-add-delete-step
   Scenario: Conditional flows - delete step
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
@@ -219,6 +310,7 @@ Feature: Conditional flows - content base routing
 
     When add integration step on position "0"
     And select the "Conditional Flows" connection
+    And select "Advanced expression builder" integration action
     Then validate that condition count is equal to 1
     And validate condition content in condition flow step
       | 0 |  |
@@ -232,6 +324,7 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-add-update-step
   Scenario: Conditional flows - edit and update step
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | first  |
@@ -268,6 +361,7 @@ Feature: Conditional flows - content base routing
 
   @integrations-conditional-flows-multiple-flows
   Scenario: Conditional flows - multiple flows
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
@@ -283,7 +377,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Shaco was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 3
     And add integration step on position "0"
@@ -291,7 +385,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Clone was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 4
     And add integration step on position "0"
@@ -299,11 +393,12 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Noone was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When add integration step on position "1"
     And select the "Conditional Flows" connection
 
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco'  |
@@ -319,7 +414,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Shaco was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 7
     And add integration step on position "0"
@@ -327,7 +422,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Clone was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 8
     And add integration step on position "0"
@@ -335,7 +430,7 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Noone was here')" value
     And click on the "Next" button
-    Then return to primary flow from integration flow
+    Then return to primary flow from integration flow from dropdown
 
     When click on the "Save" link
     And set integration name "Webhook_to_DB_with_CBR"
@@ -386,9 +481,9 @@ Feature: Conditional flows - content base routing
     And checks that query "select * from contact where first_name='Shaco was here'" has 4 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 3 row output
 
-
   @integrations-conditional-flows-dropdown-test
   Scenario: Conditional flows - dropdown test
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
@@ -404,9 +499,10 @@ Feature: Conditional flows - content base routing
       | Conditional WHEN ${body.message} == 'Clone' |
       | Default OTHERWISE Use this as default       |
 
-    When return to primary flow from integration flow
+    When return to primary flow from integration flow from dropdown
     And add integration step on position "1"
     And select the "Conditional Flows" connection
+    And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco2' |
@@ -424,3 +520,36 @@ Feature: Conditional flows - content base routing
       | Conditional WHEN ${body.message} == 'Shaco2' |
       | Conditional WHEN ${body.message} == 'Clone2' |
       | Default OTHERWISE Use this as default        |
+
+  @integrations-conditional-flows-output-type
+  Scenario: Conditional flows - output type
+    And select "Advanced expression builder" integration action
+    And fill in values by element data-testid
+      | flowconditions-0-condition | ${body.message} == 'Shaco' |
+      | flowconditions-1-condition | ${body.message} == 'Clone' |
+    And fill in values by element data-testid
+      | usedefaultflow | false |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"greeting":"Hi"} |
+    And click on the "Next" button
+
+    When configure condition on position 2
+    Then add a data mapping step - open datamapper
+    Then create data mapper mappings
+      | message | greeting |
+    And click on the "Done" button
+    Then check that there is no warning inside of step number "2"
+    Then return to primary flow from integration flow from dropdown
+
+    Then add a default flow through warning link - open flows configuration
+    And fill in values by element data-testid
+      | usedefaultflow | true |
+    And click on the "Next" button
+    And click on the "Next" button
+    Then check that there is no warning inside of step number "2"
+
+
+

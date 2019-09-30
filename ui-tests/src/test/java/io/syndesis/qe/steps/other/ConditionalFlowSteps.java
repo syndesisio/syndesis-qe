@@ -33,7 +33,12 @@ public class ConditionalFlowSteps {
         private static By FLOW_DROPDOWN_CONTAINER = By.className("pf-c-dropdown");
         private static By FLOW_DROPDOWN = By.className("pf-c-dropdown__toggle-icon");
         private static By FLOW_DROPDOWN_ITEM = By.className("pf-c-dropdown__menu-item");
-        private static By FLOW_BACK_BUTTON = By.cssSelector("a[data-testid=\"editor-toolbar-dropdown-back-button-item-back-button\"]");
+        private static By FLOW_BACK_DROPDOWN_BUTTON = By.cssSelector("a[data-testid=\"editor-toolbar-dropdown-back-button-item-back-button\"]");
+        private static By FLOW_BACK_DIRECT_BUTTON = By.id("integration-editor-back-button");
+        private static By ADD_ANOTHER_CONDITION = By.cssSelector("button[data-testid=\"form-array-control-add-another-item-button\"]");
+        private static By WARNING_ICON = By.cssSelector("button[data-testid=\"integration-editor-steps-list-item-warning-button\"]");
+        private static By ADD_DATA_MAPPING_STEP_WARNING_LINK = By.cssSelector("a[data-testid=\"integration-editor-step-adder-add-step-before-connection-link\"]");
+        private static By ADD_DEFAULT_FLOW_WARNING_LINK = By.cssSelector("a[data-testid=\"integration-editor-step-adder-add-default-flow-link\"]");
 
         private static By getConditionOnPosition(String position) {
             return By.cssSelector("[data-testid=\"flowconditions-X-condition\"]".replace("X", position));
@@ -48,6 +53,22 @@ public class ConditionalFlowSteps {
         private static By CONDITIONAL_FLOW_STEP = By.cssSelector("[data-testid=\"integration-editor-steps-list-item-conditional-flows-list-item\"]");
         private static By CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM = By.className("list-group-item");
         private static By DEFAULT_DISABLED = By.className("fa-ban");
+    }
+
+    @Then("^add a data mapping step - open datamapper$")
+    public void addDataMappingStep() {
+        $(EditFlowStepElements.WARNING_ICON).shouldBe(visible).click();
+        $(EditFlowStepElements.ADD_DATA_MAPPING_STEP_WARNING_LINK).shouldBe(visible).click();
+    }
+    @Then("^add a default flow through warning link - open flows configuration$")
+    public void addDefaultFlowThroughWarningLink() {
+        $(EditFlowStepElements.WARNING_ICON).shouldBe(visible).click();
+        $(EditFlowStepElements.ADD_DEFAULT_FLOW_WARNING_LINK).shouldBe(visible).click();
+    }
+
+    @Then("^Add another condition$")
+    public void getAddAnotherConditionButton() {
+        $(EditFlowStepElements.ADD_ANOTHER_CONDITION).shouldBe(visible).click();
     }
 
     //data:     |position   |value  |
@@ -110,10 +131,15 @@ public class ConditionalFlowSteps {
             .$(By.tagName("a")).shouldBe(visible).click();
     }
 
-    @When("^return to primary flow from integration flow$")
-    public void goBackToPrimaryFlow() {
+    @When("^return to primary flow from integration flow from dropdown$")
+    public void goBackToPrimaryFlowFromDropdown() {
         openDropdownWithConditions();
-        $(EditFlowStepElements.FLOW_BACK_BUTTON).shouldBe(visible).click();
+        $(EditFlowStepElements.FLOW_BACK_DROPDOWN_BUTTON).shouldBe(visible).click();
+    }
+
+    @When("^return to primary flow from integration flow directly$")
+    public void goBackToPrimaryFlowDirectly() {
+        $(EditFlowStepElements.FLOW_BACK_DIRECT_BUTTON).shouldBe(visible).click();
     }
 
     @Then("^check that conditional flow step contains (\\d+) flows$")
