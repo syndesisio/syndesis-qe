@@ -16,6 +16,7 @@ Feature: Integration - Dropbox to Dropbox
 #
 #  1. Functionality test of upload and download
 #
+  @ENTESB-11791
   @dropbox-integration
   Scenario: Create
     # upload file
@@ -33,7 +34,7 @@ Feature: Integration - Dropbox to Dropbox
 
     Then fill in "remotepath" action configure component input with "/testInputFile.txt" value
     Then click on the "Next" button
-    Then click on the "Done" button
+    Then click on the "Next" button
 
 
     And check that position of connection to fill is "Finish"
@@ -42,8 +43,14 @@ Feature: Integration - Dropbox to Dropbox
     And select "Upload" integration action
 
     Then fill in "remotepath" action configure component input with "/testOutputFile.txt" value
+    #The select value seems unitialized at first so flipping through the options enables the Next button
+    And fill in values by element data-testid
+      | uploadmode | Force |
+    And fill in values by element data-testid
+      | uploadmode | Add |
+
     Then click on the "Next" button
-    Then click on the "Done" button
+    Then click on the "Next" button
 
     # publish integration
     Then click on the "Save" link
