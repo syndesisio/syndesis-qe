@@ -157,7 +157,7 @@ public class IssueHooksUtils {
     }
 
     private static String getJiraIssueUrl(com.atlassian.jira.rest.client.api.domain.Issue jiraIssue) {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.JIRA);
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.JIRA_HOOK);
         return account.get().getProperty("instanceUrl") + "/browse/" + jiraIssue.getKey();
     }
 
@@ -217,7 +217,7 @@ public class IssueHooksUtils {
         String instanceUrl = "";
         URI uri = null;
 
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.JIRA);
+        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.JIRA_HOOK);
         if (account.isPresent()) {
             if (!account.get().getProperties().keySet().containsAll(Arrays.asList("username", "password", "instanceUrl"))) {
                 logError(scenario,
