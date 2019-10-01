@@ -38,8 +38,6 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
 import io.fabric8.openshift.api.model.ImageStream;
-import io.fabric8.openshift.api.model.ImageStreamList;
-import io.fabric8.openshift.api.model.TagImportPolicy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,9 +78,7 @@ public class SyndesisTemplate {
 
         deployCrd();
         deployOperator();
-        importProdImages();
         deploySyndesisViaOperator();
-        patchImageStreams();
         // Prod template does have broker-amq deployment config defined for some reason, so delete it
         OpenShiftUtils.getInstance().deploymentConfigs().withName("broker-amq").delete();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
@@ -254,29 +250,6 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void patchImageStreams() {
-        ImageStreamList isl = OpenShiftUtils.getInstance().imageStreams()
-            .inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component").list();
-        final int maxRetries = 120;
-        int retries = 0;
-        while (isl.getItems().size() < IMAGE_STREAM_COUNT) {
-            TestUtils.sleepIgnoreInterrupt(5000L);
-            isl = OpenShiftUtils.getInstance().imageStreams().inNamespace(TestConfiguration.openShiftNamespace())
-                .withLabel("syndesis.io/component").list();
-            retries++;
-            if (retries == maxRetries) {
-                fail("Unable to find image streams after " + maxRetries + " tries.");
-            }
-        }
-        log.info("Patching imagestreams");
-        isl.getItems().forEach(is -> {
-            if (!is.getSpec().getTags().isEmpty()) {
-                is.getSpec().getTags().get(0).setImportPolicy(new TagImportPolicy(false, false));
-            }
-            OpenShiftUtils.getInstance().imageStreams().createOrReplace(is);
-        });
-    }
-
     private static void importProdImage(String imageStreamPartialName) {
         if (TestUtils.isProdBuild()) {
             int responseCode = -1;
@@ -310,30 +283,6 @@ public class SyndesisTemplate {
 
                 retries++;
             }
-        }
-    }
-
-    private static void importProdImages() {
-        if (TestUtils.isProdBuild()) {
-            final int maxRetries = 120;
-            int retries = 0;
-            ImageStreamList isl =
-                OpenShiftUtils.getInstance().imageStreams().inNamespace(TestConfiguration.openShiftNamespace()).withLabel("syndesis.io/component")
-                    .list();
-
-            while (isl.getItems().size() < IMAGE_STREAM_COUNT) {
-                TestUtils.sleepIgnoreInterrupt(5000L);
-                isl =
-                    OpenShiftUtils.getInstance().imageStreams().inNamespace(TestConfiguration.openShiftNamespace())
-                        .withLabel("syndesis.io/component")
-                        .list();
-                retries++;
-                if (retries == maxRetries) {
-                    fail("Unable to find image streams after " + maxRetries + " tries.");
-                }
-            }
-
-            isl.getItems().forEach(is -> importProdImage(is.getMetadata().getName()));
         }
     }
 
