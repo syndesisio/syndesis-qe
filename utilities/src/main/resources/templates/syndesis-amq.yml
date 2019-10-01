@@ -19,7 +19,7 @@ parameters:
     displayName: Application Name
     name: APPLICATION_NAME
     required: true
-    value: broker
+    value: syndesis
   - description: Queue names, separated by commas. These queues will be automatically
       created when the broker starts. If left empty, queues will be still created dynamically.
     displayName: Queues
@@ -70,7 +70,7 @@ objects:
     annotations:
       description: The broker's OpenWire port.
     labels:
-      application: ${APPLICATION_NAME}
+      application: ${APPLICATION_NAME}-amq
     name: ${APPLICATION_NAME}-amq-tcp
   spec:
     ports:
@@ -92,7 +92,7 @@ objects:
   kind: DeploymentConfig
   metadata:
     labels:
-      application: ${APPLICATION_NAME}
+      application: ${APPLICATION_NAME}-amq
       app: ${APPLICATION_NAME}-amq
       component: amq
     name: ${APPLICATION_NAME}-amq
@@ -107,7 +107,7 @@ objects:
     template:
       metadata:
         labels:
-          application: ${APPLICATION_NAME}
+          application: ${APPLICATION_NAME}-amq
           app: ${APPLICATION_NAME}-amq
           component: amq
           deploymentConfig: ${APPLICATION_NAME}-amq

@@ -79,8 +79,6 @@ public class SyndesisTemplate {
         deployCrd();
         deployOperator();
         deploySyndesisViaOperator();
-        // Prod template does have broker-amq deployment config defined for some reason, so delete it
-        OpenShiftUtils.getInstance().deploymentConfigs().withName("broker-amq").delete();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
     }
 
