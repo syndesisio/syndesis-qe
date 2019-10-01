@@ -174,7 +174,7 @@ public class SyndesisTemplate {
             "run",
             "--rm",
             "--entrypoint",
-            "operator",
+            "syndesis-operator",
             operatorImage,
             "install",
             "operator",
