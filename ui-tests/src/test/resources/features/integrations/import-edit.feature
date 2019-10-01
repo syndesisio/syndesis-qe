@@ -8,6 +8,7 @@ Feature: Integration - import-edit
     And reset content of "CONTACT" table
     And log into the Syndesis
 
+  @ENTESB-11787
   Scenario: Import, edit, publish, check integration
     When navigate to the "Integrations" page
     And click on the "Import" link
