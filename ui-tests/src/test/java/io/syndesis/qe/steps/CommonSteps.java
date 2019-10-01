@@ -99,6 +99,7 @@ public class CommonSteps {
         RECEIVE_EMAIL_IMAP_OR_POP3,
         GITHUB,
         ZENHUB,
+        JIRA_HOOK,
         AMQ,
         AMQP,
         MQTT,
