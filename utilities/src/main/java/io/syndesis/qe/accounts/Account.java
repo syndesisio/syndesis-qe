@@ -16,6 +16,7 @@ public class Account {
     public enum Name {
         ACTIVEMQ("AMQ"),
         AWS("AWS"),
+        AWS_DDB("AWS DDB"),
         BOX("Box"),
         CONCUR("QE Concur"),
         DROPBOX("QE Dropbox"),
