@@ -38,8 +38,7 @@ Feature: Slack Connector
 
     When select the "QE Slack" connection
     And select "Channel" integration action
-    And fill in values by element data-testid
-      | channel | slack_connector_test |
+    And select "slack_connector_test" from slack channel dropdown
     And click on the "Done" button
     And add integration step on position "0"
     And select "Data Mapper" integration step
