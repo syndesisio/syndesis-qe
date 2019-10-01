@@ -1,5 +1,7 @@
 package io.syndesis.qe.templates;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -18,9 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AmqTemplate {
 
     public static void deploy() {
-        if (!TestUtils.isDcDeployed("broker-amq")) {
-            // For some reason the productized operator creates broker-amq-tcp service, so delete it if it is present
-            OpenShiftUtils.getInstance().services().withName("broker-amq-tcp").delete();
+        if (!TestUtils.isDcDeployed("syndesis-amq")) {
 //            Template template;
 //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
 //                template = OpenShiftUtils.getInstance().templates().load(is).get();
@@ -46,9 +46,9 @@ public class AmqTemplate {
 //            OpenShiftUtils.getInstance().createResources(processedTemplate);
 
             try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "broker"));
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "syndesis-amq"));
             } catch (InterruptedException | TimeoutException e) {
-                log.error("Wait for broker failed ", e);
+                fail("Wait for broker failed ", e);
             }
         }
         //this is not part of deployment, but let's have it the same method:
@@ -56,7 +56,7 @@ public class AmqTemplate {
     }
 
     public static void cleanUp() {
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "broker-amq".equals(dc.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "syndesis-amq".equals(dc.getMetadata().getName())).findFirst()
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
                 .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
@@ -75,7 +75,7 @@ public class AmqTemplate {
         Map<String, String> openwireAccountParameters = new HashMap<>();
         openwireAccountParameters.put("username", "amq");
         openwireAccountParameters.put("password", "topSecret");
-        openwireAccountParameters.put("brokerUrl", "tcp://broker-amq-tcp:61616");
+        openwireAccountParameters.put("brokerUrl", "tcp://syndesis-amq-tcp:61616");
         openwireAccount.setService("amq");
         openwireAccount.setProperties(openwireAccountParameters);
 
@@ -83,7 +83,7 @@ public class AmqTemplate {
         Map<String, String> amqpAccountParameters = new HashMap<>();
         amqpAccountParameters.put("username", "amq");
         amqpAccountParameters.put("password", "topSecret");
-        amqpAccountParameters.put("connectionUri", "amqp://broker-amq-tcp:5672");
+        amqpAccountParameters.put("connectionUri", "amqp://syndesis-amq-tcp:5672");
         amqpAccountParameters.put("clientID", UUID.randomUUID().toString());
         amqpAccountParameters.put("skipCertificateCheck", "Disable");
         amqpAccountParameters.put("brokerCertificate", "");
@@ -95,7 +95,7 @@ public class AmqTemplate {
         Map<String, String> mqttAccountParameters = new HashMap<>();
         mqttAccountParameters.put("userName", "amq");
         mqttAccountParameters.put("password", "topSecret");
-        mqttAccountParameters.put("brokerUrl", "tcp://broker-amq-tcp:1883");
+        mqttAccountParameters.put("brokerUrl", "tcp://syndesis-amq-tcp:1883");
 
         mqttAccount.setService("MQTT");
         mqttAccount.setProperties(mqttAccountParameters);

@@ -3,6 +3,11 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.mqtt.MqttUtils;
+import io.syndesis.qe.utils.mqtt.Receiver;
+
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -12,10 +17,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.mqtt.MqttUtils;
-import io.syndesis.qe.utils.mqtt.Receiver;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -76,7 +77,7 @@ public class MqttValidationSteps {
     private void portForward() {
         if (mqttLocalPortForward == null || !mqttLocalPortForward.isAlive()) {
             //can be the same pod twice forwarded to different ports? YES
-            Pod pod = OpenShiftUtils.xtf().getAnyPod("app", "broker-amq");
+            Pod pod = OpenShiftUtils.xtf().getAnyPod("app", "syndesis-amq");
             log.info("POD NAME: *{}*", pod.getMetadata().getName());
             mqttLocalPortForward = OpenShiftUtils.portForward(pod, 1883, 1883);
             //give it time to get ready

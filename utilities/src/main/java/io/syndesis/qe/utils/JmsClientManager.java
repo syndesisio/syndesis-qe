@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JmsClientManager implements AutoCloseable {
     private String jmsUrl;
     private int jmsPort;
-    private String jmsPodName = "broker-amq";
+    private String jmsPodName = "syndesis-amq";
     private String jmsUser = "amq";
     private String jmsPass = "topSecret";
     private String protocol;
