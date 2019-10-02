@@ -1,4 +1,4 @@
-# @sustainer: asmigala@redhat.com
+# @sustainer: mmuzikar@redhat.com
 
 @ui
 @api-provider
@@ -735,6 +735,7 @@ Feature: API Provider Integration
 
   @gh-5332
   @gh-6099
+  @ENTESB-11787
   @api-provider-openapi-modification
   @api-provider-openapi-edit-implemented
   Scenario: API Provider Edit OpenAPI - edit implemented operation
