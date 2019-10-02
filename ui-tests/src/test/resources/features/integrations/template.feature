@@ -164,6 +164,7 @@ Feature: Templates
     Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
   @gh-6317
+  @ENTESB-11393
   @template-code-editor
   Scenario: Verify that the code editor for templates is working correctly
     # create integration
