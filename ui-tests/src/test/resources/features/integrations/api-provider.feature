@@ -501,7 +501,7 @@ Feature: API Provider Integration
 
   @reproducer
   @api-provider-delete
-  @ENTSB-11402
+  @ENTESB-11402
   @ENTESB-11455
   Scenario: API Provider DELETE
     When create an API Provider integration "TODO Integration delete" from file swagger/connectors/todo.json
