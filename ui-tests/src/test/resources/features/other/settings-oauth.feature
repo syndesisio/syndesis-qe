@@ -22,7 +22,7 @@ Feature: Settings OAuth
     And navigate to the "Settings" page
     Then check that given "Google Calendar" oauth settings are filled in
 #
-  @settings-oauth-remove
+  @settings-oauth-remove-immediately
   Scenario: Fill OAuth settings, remove and check immediately
     When fill "Google Calendar" oauth settings "QE Google Calendar"
     And navigate to the "Home" page
