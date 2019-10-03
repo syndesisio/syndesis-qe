@@ -12,7 +12,6 @@ Feature: Login logout
     And create connections using oauth
       | Twitter | Twitter Listener |
 
-
 #
 #  1. logout
 #
