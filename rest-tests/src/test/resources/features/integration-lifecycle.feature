@@ -1,6 +1,5 @@
 # @sustainer: tplevko@redhat.com
 
-@wip
 Feature: Integration - Lifecycle
 
   Background: Create sample integration
@@ -14,13 +13,15 @@ Feature: Integration - Lifecycle
     When create new integration with name: "DB to DB rest test draft" and desiredState: "Unpublished"
     Then verify there are no s2i builds running for integration: "DB to DB rest test draft"
 
-  @integrations-lifecycle @integrations-lifecycle-activate
+  @integrations-lifecycle
+  @integrations-lifecycle-activate
   Scenario: Active state
     When create new integration with name: "DB to DB rest test activate" and desiredState: "Unpublished"
     When set integration with name: "DB to DB rest test activate" to desiredState: "Published"
     Then wait for integration with name: "DB to DB rest test activate" to become active
 
-  @integrations-lifecycle @integrations-lifecycle-act-deact
+  @integrations-lifecycle
+  @integrations-lifecycle-act-deact
   Scenario: Activate-Deactivate switch
     When create new integration with name: "DB to DB rest test act-deact" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest test act-deact" to become active
@@ -29,7 +30,8 @@ Feature: Integration - Lifecycle
     When set integration with name: "DB to DB rest test act-deact" to desiredState: "Published"
     Then validate integration: "DB to DB rest test act-deact" pod scaled to 1
 
-  @integrations-lifecycle @integrations-lifecycle-try-with-same-name
+  @integrations-lifecycle
+  @integrations-lifecycle-try-with-same-name
   Scenario: Create with same name
     When create new integration with name: "DB to DB rest same name" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest same name" to become active
@@ -37,8 +39,9 @@ Feature: Integration - Lifecycle
     And create finish DB invoke stored procedure "add_lead" action step
     Then try to create new integration with the same name: "DB to DB rest same name" and state: "Unpublished"
 
-  @integrations-lifecycle @integrations-lifecycle-long
-  Scenario: Activate-Deactivate switch 5 times
+  @integrations-lifecycle
+  @integrations-lifecycle-long
+  Scenario: Activate-Deactivate switch 3 times
     When create new integration with name: "DB to DB rest test act-deact" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest test act-deact" to become active
-    Then switch Inactive and Active state on integration "DB to DB rest test act-deact" for 5 times and check pods up/down
+    Then switch Inactive and Active state on integration "DB to DB rest test act-deact" for 3 times and check pods up/down
