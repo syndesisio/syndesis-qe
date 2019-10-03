@@ -83,8 +83,13 @@ Feature: Integration - Twitter Direct Messages
       | user    | syndesis_talky |
     And click on the "Next" button
 
-    # data mapper maps sql result to twitter DM
+    # add Split step
     When add integration step on position "0"
+    And select "Split" integration step
+    And click on the "Next" button
+
+    # data mapper maps sql result to twitter DM
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
