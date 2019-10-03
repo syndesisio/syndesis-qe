@@ -243,6 +243,7 @@ Feature: Integration - DB to DB
 #
 #  5. builtin sql query checker
 #
+  @ENTESB-11787
   @db-connection-5-sqlquery-checker
   Scenario: Sql query checker
     Then inserts into "todo" table
