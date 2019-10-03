@@ -28,16 +28,9 @@ public class SQSValidationSteps {
     @Autowired
     private SQSUtils sqs;
 
-    @Given("^purge SQS queues$")
-    public void purge() {
-        sqs.purge(
-            "syndesis-in",
-            "syndesis-out",
-            "syndesis-in.fifo",
-            "syndesis-out.fifo",
-            "syndesis-out-content-based.fifo",
-            "syndesis-sns-out"
-        );
+    @Given("^purge SQS queues:$")
+    public void purge(DataTable queues) {
+        sqs.purge(queues.asList().toArray(new String[0]));
         // Purging a queue "may take up to 60 seconds"
         TestUtils.sleepIgnoreInterrupt(60000L);
     }

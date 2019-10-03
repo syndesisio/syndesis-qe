@@ -6,7 +6,8 @@
 Feature: Integration - SNS
   Background:
     Given clean application state
-      And purge SQS queues
+      And purge SQS queues:
+        | syndesis-sns-out |
       And remove all records from table "CONTACT"
       And create SNS connection
 
