@@ -43,7 +43,6 @@ public class SfValidationSteps {
         }
     }
 
-
     @Then("^create SF lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\" and company: \"([^\"]*)\"")
     public void createNewSalesforceLead(String firstName, String lastName, String email, String companyName) {
         final Lead lead = new Lead();
@@ -85,15 +84,15 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^.*checks? that contact from SF with last name: \"([^\"]*)\" has description \"([^\"]*)\"$")
-    public void checkSalesforceContactHasDescription(String name, String description) {
+    @Then("^.*checks? that contact from SF with email: \"([^\"]*)\" has description \"([^\"]*)\"$")
+    public void checkSalesforceContactHasDescription(String email, String description) {
         try {
-            OpenShiftWaitUtils.waitFor(() -> getSalesforceContactByLastName(name).isPresent(), DEFAULT_WAIT_TIMEOUT);
+            OpenShiftWaitUtils.waitFor(() -> getSalesforceContactByEmail(email).isPresent(), DEFAULT_WAIT_TIMEOUT);
         } catch (TimeoutException | InterruptedException e) {
-            fail("Salesforce contact with last name " + name + " was not found in " + DEFAULT_WAIT_TIMEOUT / 1000 + "seconds. ", e);
+            fail("Salesforce contact with email " + email + " was not found in " + DEFAULT_WAIT_TIMEOUT / 1000 + "seconds. ", e);
         }
 
-        final Optional<Contact> contact = getSalesforceContactByLastName(name);
+        final Optional<Contact> contact = getSalesforceContactByEmail(email);
         assertThat(contact).isPresent();
 
         assertThat(String.valueOf(contact.get().getDescription()))
@@ -117,7 +116,6 @@ public class SfValidationSteps {
         SalesforceAccount.getInstance().updateSObject("lead", leadId, lead);
     }
 
-
     /**
      * Check if salesforce contact exists or does not exist, based on parameter `contains`
      *
@@ -130,7 +128,7 @@ public class SfValidationSteps {
         } else {
             try {
                 OpenShiftWaitUtils.waitFor(() -> {
-                    log.info("Check that salesforce account with last name {} does not exist...", email);
+                    log.info("Check that salesforce account with email {} does not exist...", email);
                     return getSalesforceContactByEmail(email).isPresent();
                 }, 5 * 1000L, 30 * 1000L);
                 fail("Salesforce account with email {} should not exist!", email);
@@ -256,7 +254,7 @@ public class SfValidationSteps {
 
     private Optional<Contact> getSalesforceContactByEmail(String emailAddress) {
         final QueryResult<Contact> queryResult =
-            SalesforceAccount.getInstance().query("SELECT Id,FirstName,LastName,Email FROM contact where Email = '"
+            SalesforceAccount.getInstance().query("SELECT Id,FirstName,LastName,Email,Description FROM contact where Email = '"
                 + emailAddress + "'", Contact.class
             );
         return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();

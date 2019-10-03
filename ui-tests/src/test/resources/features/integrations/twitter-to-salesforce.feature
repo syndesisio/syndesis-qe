@@ -11,7 +11,7 @@ Feature: Integration - Twitter to Salesforce
 
   Background: Clean application state
     Given clean application state
-    And delete contact from SF with email: "integrations-twitter-to-salesforce-ui"
+    And delete contact from SF with email: "integrations@salesforce.com"
     And clean all tweets in twitter_talky account
     And log into the Syndesis
     And navigate to the "Settings" page
@@ -36,27 +36,22 @@ Feature: Integration - Twitter to Salesforce
     # select salesforce connection
     When select the "QE Salesforce" connection
     And select "Create or update record" integration action
-    And fill in values by element data-testid
-      | sobjectname      | Contact |
+    And select "Contact" from "sObjectName" dropdown
     And click on the "Next" button
-    And force fill in values by element data-testid
-      | sobjectidname    | TwitterScreenName__c |
+    And select "TwitterScreenName" from "sObjectIdName" dropdown
     And click on the "Done" button
 
     # add data mapper step
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-
-    When create data mapper mappings
-      | user.screenName | TwitterScreenName__c |
-      | text            | Description          |
-      | user.name       | FirstName; LastName  |
-
-    And define constant "integrations-twitter-to-salesforce" of type "String" in data mapper
+    And define constant "integrations@salesforce.com" of type "String" in data mapper
     And open data bucket "Constants"
-    And create data mapper mappings
-      | integrations-twitter-to-salesforce | Email |
+    When create data mapper mappings
+      | user.screenName             | TwitterScreenName__c |
+      | text                        | Description          |
+      | user.name                   | FirstName; LastName  |
+      | integrations@salesforce.com | Email                |
 
     And scroll "top" "right"
     And click on the "Done" button
@@ -84,14 +79,14 @@ Feature: Integration - Twitter to Salesforce
     And wait until integration "Twitter to Salesforce E2E" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #syndesis4ever"
-    Then check SF "does not contain" contact with a email: "integrations-twitter-to-salesforce"
+    Then check SF "does not contain" contact with a email: "integrations@salesforce.com"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e"
-    Then check SF "does not contain" contact with a email: "integrations-twitter-to-salesforce"
+    Then check SF "does not contain" contact with a email: "integrations@salesforce.com"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e #syndesis4ever"
-    Then check SF "contains" contact with a email: "integrations-twitter-to-salesforce"
-    And check that contact from SF with last name: "integrations-twitter-to-salesforce" has description "test #e2e #syndesis4ever @syndesis_listen"
+    Then check SF "contains" contact with a email: "integrations@salesforce.com"
+    And check that contact from SF with email: "integrations@salesforce.com" has description "test #e2e #syndesis4ever @syndesis_listen"
 
     # clean-up in salesforce
-    When delete contact from SF with last name: "integrations-twitter-to-salesforce-ui"
+    When delete contact from SF with email: "integrations@salesforce.com"
