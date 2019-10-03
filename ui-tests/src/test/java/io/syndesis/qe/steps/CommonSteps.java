@@ -194,9 +194,11 @@ public class CommonSteps {
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("rhcloud") || currentUrl.contains("crc")) {
-            $(By.partialLinkText("htpasswd")).click();
-            MinishiftLogin minishiftLogin = new MinishiftLogin();
-            minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+            if (!$(By.cssSelector("[data-testid=\"dashboard-create-integration-button\"]")).exists()) {
+                $(By.partialLinkText("htpasswd")).click();
+                MinishiftLogin minishiftLogin = new MinishiftLogin();
+                minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+            }
         }
 
         currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
