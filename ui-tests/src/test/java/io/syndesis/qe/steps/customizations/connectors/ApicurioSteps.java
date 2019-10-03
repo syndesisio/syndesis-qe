@@ -13,6 +13,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
 import static com.codeborne.selenide.Selenide.switchTo;
 
+import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
@@ -20,22 +21,31 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import apicurito.tests.configuration.TestConfiguration;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ApicurioSteps {
 
     private static class Elements {
-        public static final By SYNDESIS_ROOT = By.cssSelector("syndesis-root");
+        public static final By SYNDESIS_ROOT = By.id("root");
         public static final By APICURIO_ROOT = By.name("apicurio-frame");
+        //apicurio inner elements are not reachable from SYNDESYS_ROOT element (only APICURIO_ROOT is).
+        //APICURIO_INNER_ROOT is root element for all apicurio inner elements:
+        public static final By APICURIO_INNER_ROOT = By.className("api-editor");
 
         //apicurio gui elements
+        public static By CARD_PF = By.className("card-pf");
         public static By WARNING_ICON = By.className("validation-icon");
         public static By PROBLEMS_CONTAINER = By.className("editor-problem-drawer");
         public static By OPERATIONS_CONTAINER = By.className("editor-outline");
@@ -181,6 +191,7 @@ public class ApicurioSteps {
      */
     public void doAddOperation(boolean withError) {
         $(Elements.OPERATIONS_CONTAINER).shouldBe(visible).$(Elements.ADD_OPERATION).shouldBe(visible).click();
+
         SelenideElement pathInput = $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_PATH_INPUT).shouldBe(visible);
 
         try {
@@ -191,7 +202,6 @@ public class ApicurioSteps {
             $(Elements.MODAL_DIALOG).shouldBe(visible).$(Elements.MODAL_PATH_INPUT).shouldBe(visible)
                 .sendKeys("/syndesistestpath");
         }
-
         $(Elements.MODAL_FOOTER).shouldBe(visible).$(Elements.MODAL_SUBMIT_ADD).shouldBe(visible).click();
         clickOnButtonInApicurio("Add Operation");
 
@@ -286,14 +296,14 @@ public class ApicurioSteps {
 
     @Then("^check that api connector authentication section contains text \"([^\"]*)\"$")
     public void verifySelectedSecurity(String expectedText) {
-        assertThat($(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible).text())
-            .containsIgnoringCase(expectedText);
+        SelenideElement el = $(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible);
+        assertThat($(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible).text()).containsIgnoringCase(expectedText);
     }
 
     @When("^click on button \"([^\"]*)\" while in apicurio studio page$")
     public void clickOnButtonInApicurio(String buttonTitle) {
         TestUtils.sleepForJenkinsDelayIfHigher(2);
-        getButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+        getApicurioButton(buttonTitle).shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
         TestUtils.sleepForJenkinsDelayIfHigher(2);
     }
 
@@ -309,6 +319,40 @@ public class ApicurioSteps {
     public SelenideElement getButton(String buttonTitle) {
         log.info("searching for button {}", buttonTitle);
         return $(Elements.SYNDESIS_ROOT).shouldBe(visible).findAll(By.tagName("button"))
+            .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
+    }
+
+    @When("switch context to apicurio")
+    public void switchContextOn() {
+        Selenide.switchTo().frame($(Elements.APICURIO_ROOT));
+        log.info("Apicurito app root: {}", TestConfiguration.getAppRoot());
+    }
+
+    @When("leave apicurio context")
+    public void switchContextOff() {
+        Selenide.switchTo().parentFrame();
+    }
+
+    @When("^click on the \"([^\"]*)\" apicurio button*$")
+    public void clickOnApicurioButton(String buttonTitle) {
+        SelenideElement button = getApicurioButton(buttonTitle);
+        log.info("apicurio button found *{}*", button.toString());
+        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+    }
+
+    @Then("^check that apicurio connection authentication type contains only fields:$")
+    public void checkFieldsExistence(DataTable fields) {
+        List<List<String>> dataRows = fields.cells();
+        List<String> first = new ArrayList<String>();
+        for (List<String> row : dataRows) {
+            first.add(row.get(0));
+        }
+        new Form($(Elements.CARD_PF)).checkByTestId(first);
+    }
+
+    private SelenideElement getApicurioButton(String buttonTitle) {
+        log.info("searching for apicurio button *{}*", buttonTitle);
+        return $(Elements.APICURIO_INNER_ROOT).shouldBe(visible).findAll(By.tagName("button"))
             .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
     }
 }

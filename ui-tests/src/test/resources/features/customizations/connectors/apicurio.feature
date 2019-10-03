@@ -7,7 +7,7 @@ Feature: Customization - API Connector - ApicurIO GUI
 
   Background:
     Given log into the Syndesis
-    And clean application state
+    Given clean application state
 
     When click on the "Customizations" link
     Then check visibility of page "Customizations"
@@ -27,7 +27,6 @@ Feature: Customization - API Connector - ApicurIO GUI
 
     And clicks on the "Review/Edit" link
     And change frame to "apicurio"
-
 
   @gh-3459
   @apicurio-check-warnings-change
@@ -91,7 +90,10 @@ Feature: Customization - API Connector - ApicurIO GUI
     And navigate to the "Connections" page
     And click on the "Create Connection" link
     And select "Kie Server API" connection type
-    Then check that connection authentication type has 1 options and contains text "No Security"
+    Then check that apicurio connection authentication type contains only fields:
+      | host     |
+      | basepath |
+
 
   @gh-5429
   @apicurio-check-security-settings-basic
@@ -107,13 +109,18 @@ Feature: Customization - API Connector - ApicurIO GUI
     Then check that api connector authentication section contains text "HTTP Basic Authentication"
 
     When click on the "Next" button
-    And click on the "Create API Connector" button
+    And click on the "Save" button
     And navigate to the "Connections" page
-    And click on the "Create Connection" button
+    And click on the "Create Connection" link
     And select "Kie Server API" connection type
-    Then check that connection authentication type has 1 option and contains text "HTTP Basic Authentication"
+    Then check that apicurio connection authentication type contains only fields:
+      | username |
+      | password |
+      | host     |
+      | basepath |
 
-  #this feature is not supported yet and does not work, but test is ready :)
+
+#  this feature is not supported yet and does not work, but test is ready :)
   @disabled
   @gh-5429
   @apicurio-check-security-settings-api-key
@@ -135,10 +142,12 @@ Feature: Customization - API Connector - ApicurIO GUI
     And select "Kie Server API" connection type
     Then check that connection authentication type has 1 option and contains text "API Key Authentication"
 
+  @ENTESB-11841
   @gh-5429
   @gh-6123
   @apicurio-check-security-settings-oauth-2
   Scenario: Check apicurio security settings - OAuth 2
+
     When add security schema OAuth 2 via apicurio gui
     And change frame to "syndesis"
     And clicks on the "Save" link
@@ -146,8 +155,9 @@ Feature: Customization - API Connector - ApicurIO GUI
     # we need to give time to UI to fetch the changes
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
-
     When clicks on the "Next" link
+    And click on the "Next" button
+#    this part is broken, see: @ENTESB-11841
     Then check that api connector authentication section contains text "OAuth 2.0"
     And fill in values
       | Access Token URL  | https://hehe                            |
