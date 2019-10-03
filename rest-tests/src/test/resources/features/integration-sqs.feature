@@ -7,7 +7,12 @@
 Feature: Integration - SQS
   Background:
     Given clean application state
-      And purge SQS queues
+      And purge SQS queues:
+        | syndesis-in                     |
+        | syndesis-out                    |
+        | syndesis-in.fifo                |
+        | syndesis-out.fifo               |
+        | syndesis-out-content-based.fifo |
       And remove all records from table "CONTACT"
       And create SQS connection
 
