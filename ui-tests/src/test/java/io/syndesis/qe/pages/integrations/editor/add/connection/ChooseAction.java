@@ -1,17 +1,20 @@
 package io.syndesis.qe.pages.integrations.editor.add.connection;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-
-import java.util.concurrent.TimeoutException;
+import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static org.assertj.core.api.Assertions.fail;
+
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
+
+import java.util.concurrent.TimeoutException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ChooseAction extends SyndesisPageObject {
@@ -23,7 +26,6 @@ public class ChooseAction extends SyndesisPageObject {
         public static final By SELECT_BUTTON = By.cssSelector("[data-testid=\"select-action-page-select-button\"]");
 
         public static final String ACTION_SELECTOR = "div[data-testid=\"integration-editor-actions-list-item-%s-list-item\"]";
-
     }
 
     @Override

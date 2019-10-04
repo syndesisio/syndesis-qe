@@ -14,11 +14,16 @@ public class ConditionalFlows {
 
     private static final class Elements {
         public static final By ADD_ANOTHER_CONDITION = By.cssSelector("button[data-testid=\"form-array-control-add-another-item-button\"]");
+        public static final By EVALUATED_PROPERTY_DROPDOWN_0 = By.cssSelector("input[data-testid=\"flowconditions-0-path\"]");
     }
 
     public ConditionalFlows() { }
 
     public SelenideElement getAddAnotherConditionButton() {
         return $(Elements.ADD_ANOTHER_CONDITION).shouldBe(visible);
+    }
+
+    public SelenideElement getEvaluatedPropertyDropdown() {
+        return $(Elements.EVALUATED_PROPERTY_DROPDOWN_0).shouldBe(visible);
     }
 }
