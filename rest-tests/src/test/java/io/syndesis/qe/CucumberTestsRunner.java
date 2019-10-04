@@ -7,7 +7,7 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-    features = "classpath:features", tags = {"not @integrations-lifecycle", "not @integrations-lifecycle-long", "not @manual", "not @wip", "not @ignore"},
+    features = "classpath:features", tags = {"not @manual", "not @wip", "not @ignore"},
     plugin = {
             "pretty",
             "html:target/cucumber/cucumber-html",
