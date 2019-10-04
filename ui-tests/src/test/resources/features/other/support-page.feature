@@ -63,11 +63,9 @@ Feature: Support page
     # select salesforce connection
     When select the "QE Salesforce" connection
     And select "Create or update record" integration action
-    And fill in values by element data-testid
-      | sobjectname      | Contact |
+    And select "Contact" from "sObjectName" dropdown
     And click on the "Next" button
-    And force fill in values by element data-testid
-      | sobjectidname    | TwitterScreenName__c |
+    And select "TwitterScreenName" from "sObjectIdName" dropdown
     And click on the "Done" button
 
     # add data mapper step

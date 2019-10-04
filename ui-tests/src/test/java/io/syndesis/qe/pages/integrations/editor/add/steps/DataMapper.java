@@ -18,6 +18,7 @@ import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,14 +38,21 @@ public class DataMapper extends SyndesisPageObject {
         public static final By NAME = By.cssSelector("div.fieldDetail > div > label");
         public static final By PARENT = By.cssSelector("div.parentField");
         public static final By CHILDREN = By.cssSelector("div.childrenFields");
-        public static final By FIRST_SOURCE = By.cssSelector("div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
-        public static final By SECOND_SOURCE = By.cssSelector("div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
-        public static final By FIRST_TARGET = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-detail > div > div > input");
-        public static final By SECOND_TARGET = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-detail > div > div > input");
+        public static final By FIRST_SOURCE =
+            By.cssSelector("div:nth-child(1) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
+        public static final By SECOND_SOURCE =
+            By.cssSelector("div:nth-child(2) > mapping-field-detail > div > div > input.ng-untouched.ng-pristine.ng-valid");
+        public static final By FIRST_TARGET =
+            By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-detail > div > div > input");
+        public static final By SECOND_TARGET =
+            By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-detail > div > div > input");
         public static final By FIRST_SOURCE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[1]");
         public static final By SECOND_SOURCE_POSITION = By.xpath("(//mapping-field-action//label[text()='Index']/following-sibling::input)[2]");
-        public static final By FIRST_TARGET_POSITION = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-action > div > div.actionContainer > div.form-group.argument > input");
-        public static final By SECOND_TARGET_POSITION = By.cssSelector("simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-action > div > div > div.form-group.argument > input");
+        public static final By FIRST_TARGET_POSITION = By.cssSelector(
+            "simple-mapping:nth-child(6) > div > div:nth-child(1) > mapping-field-action > div > div.actionContainer > div.form-group.argument > " +
+                "input");
+        public static final By SECOND_TARGET_POSITION = By.cssSelector(
+            "simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-action > div > div > div.form-group.argument > input");
         public static final By ACTION_SELECT = By.xpath("//select[@id='selectAction']");
         public static final By SEPARATOR_SELECT = By.xpath("//select[@id='select-separator']");
         public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
@@ -105,7 +113,6 @@ public class DataMapper extends SyndesisPageObject {
         }
         return Integer.parseInt(found[0]);
     }
-
 
     /**
      * This method can create all types of data mapper mappings.
@@ -171,7 +178,6 @@ public class DataMapper extends SyndesisPageObject {
                 this.selectMapping(str.trim(), src);
             }
             this.selectMapping(target, dest);
-
         } else if (target.contains(";")) {
             this.selectMapping(source, src);
 
@@ -189,16 +195,23 @@ public class DataMapper extends SyndesisPageObject {
         $(Element.ADD_MAPPING_ICON).shouldBe(visible).click();
         createNewMapping(source, target);
         $(By.id("separator")).shouldBe(visible).selectOptionContainingText(separator);
-
     }
 
     /**
-     * @param mappingName      for instance "User.ScreenName"
+     * The dot in mappingName can indicate it's a nested element. But first we perform a check if the element does not exist.
+     *
+     * @param mappingName for instance "User.ScreenName"
      * @param containerElement start searching mapping fields from here
      */
     public void selectMapping(String mappingName, SelenideElement containerElement) {
         //split and trim in one step:
-        List<String> path = Arrays.asList(mappingName.trim().split("\\."));
+        List<String> path = new ArrayList<>();
+        if (containerElement.find(By.id(mappingName)).exists()) {
+            path.add(mappingName.trim());
+        } else {
+            path.addAll(Arrays.asList(mappingName.trim().split("\\.")));
+        }
+
         final String parent = path.get(0);
 
         path.forEach(s -> {
@@ -216,14 +229,12 @@ public class DataMapper extends SyndesisPageObject {
                 TestUtils.sleepIgnoreInterrupt(500);
 
                 new Actions(WebDriverRunner.getWebDriver())
-                        .moveToElement(el)
-                        .keyDown(Keys.META)
-                        .click()
-                        .keyUp(Keys.META)
-                        .perform();
-
+                    .moveToElement(el)
+                    .keyDown(Keys.META)
+                    .click()
+                    .keyUp(Keys.META)
+                    .perform();
             }
-
         });
     }
 
