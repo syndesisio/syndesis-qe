@@ -28,10 +28,10 @@ Feature: Integration - ServiceNow-amq/log
 
     When select the "ServiceNow" connection
     And select "Retrieve Record" integration action
-    And fill in values by element ID
+    And select "Incident" from "table" dropdown
+    And fill in values by element data-testid
       | limit | 1                |
       | query | number=QACUSTOM4 |
-      | table | incident         |
 
     And click on the "Next" button
     And sleep for jenkins delay or "10" seconds
@@ -77,8 +77,7 @@ Feature: Integration - ServiceNow-amq/log
 
     When select the "ServiceNow" connection
     And select "Add Record" integration action
-    And fill in values by element data-testid
-      | table | u_qa_create_incident |
+    And select "Qa Create Incident" from "table" dropdown
     Then click on the "Next" button
 
     When add integration step on position "0"
