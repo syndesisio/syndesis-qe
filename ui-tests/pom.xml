@@ -60,34 +60,48 @@
         </dependency>
 
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>download-drivers</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.webdriverextensions</groupId>
+                        <artifactId>webdriverextensions-maven-plugin</artifactId>
+                        <version>${webdriverextensions.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>install-drivers</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <drivers>
+                                <driver>
+                                    <name>chromedriver</name>
+                                    <version>${chrome.driver.version}</version>
+                                </driver>
+                                <driver>
+                                    <name>geckodriver</name>
+                                    <version>${firefox.driver.version}</version>
+                                </driver>
+                            </drivers>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>com.github.webdriverextensions</groupId>
-                <artifactId>webdriverextensions-maven-plugin</artifactId>
-                <version>${webdriverextensions.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>install-drivers</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <drivers>
-                        <driver>
-                            <name>chromedriver</name>
-                            <version>${chrome.driver.version}</version>
-                        </driver>
-                        <driver>
-                            <name>geckodriver</name>
-                            <version>${firefox.driver.version}</version>
-                        </driver>
-                    </drivers>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>${maven.clean.plugin.version}</version>

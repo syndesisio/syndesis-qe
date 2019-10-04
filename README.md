@@ -138,8 +138,9 @@ syndesis.config.ui.browser=firefox
 You can also use the `syndesis.config.test.properties` system property to specify a different location of the `test.properties` file, relative to the repo root. This can be useful in case you want to quickly switch between e.g. a local minishift instance and a remote openshift instance.
 
 #### Use correct webdriver version for selected browser
-By default the testsuite will download latest drivers which may not work with older browsers.
+By default the testsuite will not download any drivers when running tests. To download drivers, you need to use profile `download-drivers`, for example `mvn clean install -DskipTests -Pdownload-drivers`.
 
+By default the testsuite will download latest drivers which may not work with older browsers.
 To use older webdriver, find supported version for your browser and set following maven property:
 
 ##### Chrome
@@ -152,8 +153,6 @@ For Chrome version 75, the parameter would be `75.0.3770.8`
 For Chrome version 74, the parameter would be `74.0.3729.6`
 
 For Chrome version 73, the parameter would be `73.0.3683.68`
-
-The downloading of another driver has to be forced by `mvn webdriverextensions:install-drivers`
 
 ##### Firefox
 Find supported driver version for your firefox browser here: https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html
