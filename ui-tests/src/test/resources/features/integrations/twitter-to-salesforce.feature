@@ -86,7 +86,7 @@ Feature: Integration - Twitter to Salesforce
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e #syndesis4ever"
     Then check SF "contains" contact with a email: "integrations@salesforce.com"
-    And check that contact from SF with email: "integrations@salesforce.com" has description "test #e2e #syndesis4ever @syndesis_listen"
+    And check that contact from SF with email: "integrations@salesforce.com" has description "test #e2e #syndesis4ever"
 
     # clean-up in salesforce
     When delete contact from SF with email: "integrations@salesforce.com"

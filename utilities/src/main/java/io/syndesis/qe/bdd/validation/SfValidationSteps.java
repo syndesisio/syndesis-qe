@@ -97,7 +97,7 @@ public class SfValidationSteps {
 
         assertThat(String.valueOf(contact.get().getDescription()))
             .isNotEmpty()
-            .isEqualToIgnoringCase(description);
+            .containsIgnoringCase(description);
     }
 
     @Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)" +
