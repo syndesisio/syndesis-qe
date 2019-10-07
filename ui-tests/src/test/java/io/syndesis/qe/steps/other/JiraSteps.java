@@ -15,8 +15,7 @@ import com.atlassian.jira.rest.client.api.domain.SearchResult;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.StreamSupport;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -55,22 +54,12 @@ public class JiraSteps {
 
     private boolean commentExists(String issueKey, String text) {
         Issue issue = jiraRestClient.getIssueClient().getIssue(issueKey).claim();
-        boolean commentFound = false;
-        for (Comment comment : issue.getComments()) {
-            if (StringUtils.equalsIgnoreCase(comment.getBody().trim(), text.trim())) {
-                commentFound = true;
-            }
-        }
 
-        return commentFound;
+        return StreamSupport.stream(issue.getComments().spliterator(), false)
+            .anyMatch(comment -> StringUtils.equalsIgnoreCase(comment.getBody().trim(), text.trim()));
     }
 
-    @Then("delete previously created issue")
-    public void deleteIssue() {
-        jiraRestClient.getIssueClient().deleteIssue(sharedIssueKey, true).claim();
-    }
-
-    @Then("close previously created issue")
+    @When("close previously created issue")
     public void closePreviousIssue() {
         closeIssue(sharedIssueKey);
     }
@@ -83,11 +72,8 @@ public class JiraSteps {
 
     @When("fill in issuekey for previously created issue")
     public void fillIssueKey() {
-        Map<String, String> map = new HashMap<>();
-        map.put("issuekey", sharedIssueKey);
-
         Form.waitForInputs(20);
-        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(map);
+        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(TestUtils.map("issuekey", sharedIssueKey));
     }
 
     @Then("check that open issue with summary \"([^\"]*)\" and description \"([^\"]*)\" exists")
@@ -98,8 +84,7 @@ public class JiraSteps {
     }
 
     private boolean issueExists(String summary, String description) {
-        SearchResult searchResult = findIssues(summary, description);
-        return searchResult.getTotal() > 0;
+        return findIssues(summary, description).getTotal() > 0;
     }
 
     private SearchResult findIssues(String summary) {
@@ -118,16 +103,14 @@ public class JiraSteps {
 
     @When("close all issues with summary \"([^\"]*)\" and description \"([^\"]*)\"")
     public void closeAllIssuesWithSummaryAndDescription(String summary, String description) {
-        SearchResult searchResult = findIssues(summary, description);
-        for (Issue issue : searchResult.getIssues()) {
+        for (Issue issue : findIssues(summary, description).getIssues()) {
             closeIssue(issue.getKey());
         }
     }
 
     @When("close all issues with summary \"([^\"]*)\"")
     public void closeAllIssuesWithSummary(String summary) {
-        SearchResult searchResult = findIssues(summary);
-        for (Issue issue : searchResult.getIssues()) {
+        for (Issue issue : findIssues(summary).getIssues()) {
             closeIssue(issue.getKey());
         }
     }

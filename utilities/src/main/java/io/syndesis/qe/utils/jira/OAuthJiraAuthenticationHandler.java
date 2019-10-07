@@ -3,6 +3,8 @@ package io.syndesis.qe.utils.jira;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.utils.AccountUtils;
 
+import org.junit.Assert;
+
 import com.atlassian.httpclient.api.Request;
 import com.atlassian.jira.rest.client.api.AuthenticationHandler;
 import com.google.api.client.auth.oauth.AbstractOAuthGetToken;
@@ -30,7 +32,7 @@ public class OAuthJiraAuthenticationHandler implements AuthenticationHandler {
         try {
             parameters = createAccessToken().createParameters();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            log.error("Could not create OAuthParameters", e);
+            Assert.fail("Could not create OAuthParameters for use by jira client");
             return;
         }
 
@@ -44,7 +46,7 @@ public class OAuthJiraAuthenticationHandler implements AuthenticationHandler {
             i.setAccessible(true);
             method = ((Request.Method) i.get(builder)).name();
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            log.error("Could not get URI and http method from request", e);
+            Assert.fail("Could not get URI and http method from request by jira client");
             return;
         }
 
@@ -53,7 +55,7 @@ public class OAuthJiraAuthenticationHandler implements AuthenticationHandler {
         try {
             parameters.computeSignature(method, new GenericUrl(uri));
         } catch (GeneralSecurityException e) {
-            log.error("Could not compute signature", e);
+            Assert.fail("Could not compute OAuth signature for jira client");
             return;
         }
 

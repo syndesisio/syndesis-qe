@@ -1,4 +1,32 @@
-#@sustainer: alice.rum@redhat.com
+# @sustainer: alice.rum@redhat.com
+
+
+# In order to run these test, it is first necessary to setup a jira docker container.
+# This can be done using the following two commands:
+#   docker volume create --name jiraVolume
+#   docker run -v jiraVolume:/var/atlassian/application-data/jira --name="jira" -d -p 8081:8080 atlassian/jira-software
+#
+# After that jira will be available on the localhost:8081 and need to be configured manually. Project should be a simple
+# project, and it's key should be MTP (abbreviation for 'my test project' which i used initially). This key can be changed
+# later, but for now it's this, being part of the tests.
+#
+# After that jira users must be created and it's necessary to obtain the oauth credentials using jira java application as
+# shown in this article:
+# https://access.redhat.com/documentation/en-us/red_hat_fuse/7.4/html/connecting_fuse_online_to_applications_and_services/connecting-to-jira_connectors#registering-with-jira_jira
+#
+# Only thing remaining now is adding credentials to credentials.json, which should be populated with oauth creds
+# credentials example following:
+#
+# "Jira": {
+#   "service": "Jira",
+#   "properties": {
+#     "jiraurl": "http://192.168.122.1:8081/",
+#     "accesstoken": "OYAQSg3d3fG5v4NNEEwyhFShRqkattnr",
+#     "consumerkey": "SyndesisApp",
+#     "privatekey": "<...>",
+#     "verificationcode": "RPkPo5"
+#   }
+# }
 
 @ui
 @database
@@ -53,10 +81,12 @@ Feature: Jira Connector
     When click on the "Save" link
     And set integration name "jira-add-comment"
     And publish integration
+
     Then Integration "jira-add-comment" is present in integrations list
     And wait until integration "jira-add-comment" gets into "Running" state
     And check new comment exists in previously created jira issue with text "Red Hat"
-    And close previously created issue
+
+    When close previously created issue
 
   @jira-add-issue
   Scenario: Add a new jira issue
@@ -95,10 +125,12 @@ Feature: Jira Connector
     When click on the "Save" link
     And set integration name "jira-add-issue"
     And publish integration
+
     Then Integration "jira-add-issue" is present in integrations list
     And wait until integration "jira-add-issue" gets into "Running" state
     And check that open issue with summary "Test Jira Issue Created From Syndesis" and description "Red Hat" exists
-    And close all issues with summary "Test Jira Issue Created From Syndesis" and description "Red Hat"
+
+    When close all issues with summary "Test Jira Issue Created From Syndesis" and description "Red Hat"
 
   @jira-transition-issue
   Scenario: Comment on a Jira issue
@@ -128,6 +160,7 @@ Feature: Jira Connector
     When click on the "Save" link
     And set integration name "jira-transition-issue"
     And publish integration
+
     Then Integration "jira-transition-issue" is present in integrations list
     And wait until integration "jira-transition-issue" gets into "Running" state
     And check that previously created jira is in status "Done"
@@ -137,7 +170,6 @@ Feature: Jira Connector
 
     Given create a new jira issue in project "MTP"
 
-    # Create integration
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -172,7 +204,8 @@ Feature: Jira Connector
 
     When comment previously created jira issue with text "Red Hat"
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
-    And close previously created issue
+
+    When close previously created issue
 
   @jira-retrieve-new-issues
   Scenario: Retrieve New Issues
@@ -213,5 +246,6 @@ Feature: Jira Connector
 
     When create a new jira issue in project "MTP"
     Then check that query "select * from todo where task like '%this is the test issue%'" has some output
-    And close all issues with summary "test issue"
+
+    When close all issues with summary "test issue"
 
