@@ -30,6 +30,7 @@ import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.GoogleAccount;
@@ -943,9 +944,38 @@ public class CommonSteps {
         return result;
     }
 
-    @When("^set 3scale discovery variable to \"([^\"]*)\"")
-    public void set3scaleEnvVar(String value) {
-        OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-server", "CONTROLLERS_EXPOSE_VIA3SCALE", value);
+    @When("^enable 3scale discovery with url \\\"([^\\\"]*)\\\"")
+    public void enable3scaleEnvVar(String value) {
+        set3scaleEnvVar(value);
+    }
+
+    @When("^disable 3scale discovery")
+    public void disable3scaleEnvVar() {
+        set3scaleEnvVar(null);
+    }
+
+    /**
+     * Enable or disable 3scale discovery of an API provided by Syndesis
+     *
+     * @param url URL of 3scale user interface or NULL for turning discovery off
+     */
+    private void set3scaleEnvVar(String url) {
+
+        Map cr = SyndesisTemplate.getDeployedCr();
+        Map features = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) cr.get("spec")).get("components"))
+            .get("server")).get("features");
+
+        if (url != null) {
+            features.put("managementUrlFor3scale", url);
+        } else {
+            features.remove("managementUrlFor3scale");
+        }
+
+        try {
+            SyndesisTemplate.editCr(cr);
+        } catch (IOException e) {
+            fail("There was an error while updating the CR", e);
+        }
 
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded("server");

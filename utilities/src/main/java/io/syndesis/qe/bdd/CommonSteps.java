@@ -84,7 +84,7 @@ public class CommonSteps {
     public static void undeployCustomResources() {
         // if we don't have CRD, we can't have CRs
         if (SyndesisTemplate.getCrd() != null) {
-            for (String s : SyndesisTemplate.getCrNames(TestConfiguration.openShiftNamespace())) {
+            for (String s : SyndesisTemplate.getCrNames()) {
                 undeployCustomResource(s);
             }
         }
@@ -96,7 +96,7 @@ public class CommonSteps {
      * @param name custom resource name
      */
     private static void undeployCustomResource(String name) {
-        SyndesisTemplate.deleteCr(TestConfiguration.openShiftNamespace(), name);
+        SyndesisTemplate.deleteCr();
     }
 
     /**

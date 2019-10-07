@@ -68,7 +68,7 @@ public class CommonHooks {
 
     @After("@3scale")
     public void default3scaleAnnotation() {
-        log.info("Setting 3scale discovery to false");
-        cs.set3scaleEnvVar("false");
+        log.info("Removing 3scale discovery functionality");
+        cs.disable3scaleEnvVar();
     }
 }

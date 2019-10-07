@@ -7,7 +7,7 @@ Feature: 3scale integration
   Background: Clean application state
     Given log into the Syndesis
     And clean application state
-    And set 3scale discovery variable to "true"
+    And enable 3scale discovery with url "http://about:blank"
 
   @3scale-annotations
   Scenario: 3scale discovery annotations
