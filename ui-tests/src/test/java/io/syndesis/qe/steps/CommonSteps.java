@@ -876,10 +876,21 @@ public class CommonSteps {
         }
     }
 
+    /**
+     * This is a special method for this page https://accounts.google.com/accountchooser
+     * The last option leads to normal login window
+     */
+    private void selectGoogleAccountIfNeeded() {
+        if ($(By.cssSelector(".y77zqe")).exists()) {
+            $$(By.cssSelector(".OVnw0d")).last().click();
+        }
+    }
+
     private void fillAndValidateGoogleAccount(String googleAccount) {
         Optional<Account> account = AccountsDirectory.getInstance().getAccount(googleAccount);
 
         if (account.isPresent()) {
+            selectGoogleAccountIfNeeded();
 
             $(By.id("identifierId")).shouldBe(visible).sendKeys(account.get().getProperty("email"));
             $(By.id("identifierNext")).shouldBe(visible).click();
