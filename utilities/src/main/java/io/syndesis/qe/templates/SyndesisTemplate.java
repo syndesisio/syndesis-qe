@@ -44,6 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SyndesisTemplate {
     private static final int IMAGE_STREAM_COUNT = 8;
+    private static final String CR_NAME = "app";
 
     public static void deploy() {
         createPullSecret();
@@ -82,21 +83,21 @@ public class SyndesisTemplate {
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
     }
 
-    public static Map<String, Object> getDeployedCr(String namespace, String name) {
-        return getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), name);
+    public static Map<String, Object> getDeployedCr() {
+        return getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME);
     }
 
-    public static Map<String, Object> editCr(String namespace, String name, Map<String, Object> cr) throws IOException {
-        return SyndesisTemplate.getSyndesisCrClient().edit(namespace, name, cr);
+    public static Map<String, Object> editCr(Map<String, Object> cr) throws IOException {
+        return SyndesisTemplate.getSyndesisCrClient().edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
     }
 
-    public static void deleteCr(String namespace, String name) {
-        getSyndesisCrClient().delete(namespace, name);
+    public static void deleteCr() {
+        getSyndesisCrClient().delete(TestConfiguration.openShiftNamespace(), CR_NAME);
     }
 
-    public static Set<String> getCrNames(String namespace) {
+    public static Set<String> getCrNames() {
         final Set<String> names = new HashSet<>();
-        Map<String, Object> crs = getSyndesisCrClient().list(namespace);
+        Map<String, Object> crs = getSyndesisCrClient().list(TestConfiguration.openShiftNamespace());
         JSONArray items = new JSONArray();
         try {
             items = new JSONObject(crs).getJSONArray("items");
