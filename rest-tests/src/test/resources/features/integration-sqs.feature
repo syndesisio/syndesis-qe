@@ -126,7 +126,9 @@ Feature: Integration - SQS
     When send SQS messages to "syndesis-in" with content
       | Calibrate timeout |
     Then wait until the message appears in SQS queue "syndesis-out"
-    When purge SQS queues
+    When purge SQS queues:
+      | syndesis-in  |
+      | syndesis-out |
       And send SQS messages to "syndesis-in" with content
       | Message 1 |
       | Message 2 |
