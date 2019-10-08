@@ -89,4 +89,4 @@ Feature: Webhook extension
     And sleep for jenkins delay or "10" seconds
 
     Then check that webhook url for "webhook-test-5575" with token "test-webhook" in UI is same as in routes
-    And verify the displayed webhook URL matches regex ^https://i-.*-syndesis\..*/webhook/.*$
+    And verify the displayed webhook URL matches regex ^https://i-.*-syndesis.*/webhook/.*$
