@@ -1153,11 +1153,13 @@ Feature: API Provider Integration
     Then check flow title is "Create new task"
     When add integration step on position "0"
     And select "Conditional Flows" integration step
+    And select "Advanced expression builder" integration action
 
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.body.completed} == -1 |
       | usedefaultflow             | true                         |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
     
     When configure condition on position 2
     And add integration step on position "0"
@@ -1171,7 +1173,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | body.task | task |
     And click on the "Done" button
-    And return to primary flow from integration flow
+    And return to primary flow from integration flow from dropdown
 
     When configure condition on position 3
     And add integration step on position "0"
@@ -1186,7 +1188,7 @@ Feature: API Provider Integration
       | body.task      | task      |
       | body.completed | completed |
     And click on the "Done" button
-    And return to primary flow from integration flow
+    And return to primary flow from integration flow from dropdown
 
     #Adding a constant response for validating the requests later
     #The tests don't care about the response body, only the behavior of Conditional flows
