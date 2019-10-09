@@ -238,11 +238,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-rest-java-client-core</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>io.atlassian.fugue</groupId>
 			<artifactId>fugue</artifactId>
 		</dependency>
