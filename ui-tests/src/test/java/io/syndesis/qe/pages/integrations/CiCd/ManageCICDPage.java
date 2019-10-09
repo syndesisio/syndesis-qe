@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 
@@ -33,6 +34,8 @@ public class ManageCICDPage extends SyndesisPageObject {
 
     @Override
     public SelenideElement getRootElement() {
+        // the new tag is displayed with a small delay. The dynamic wait is not possible because the empty list is also a valid
+        TestUtils.sleepIgnoreInterrupt(1000);
         return $(ManageCICDPage.Element.ROOT).shouldBe(visible);
     }
 
