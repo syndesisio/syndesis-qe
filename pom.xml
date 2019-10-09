@@ -409,12 +409,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.atlassian.jira</groupId>
-				<artifactId>jira-rest-java-client-core</artifactId>
-				<version>${jira.client.version}</version>
-			</dependency>
-
-			<dependency>
 				<groupId>io.atlassian.fugue</groupId>
 				<artifactId>fugue</artifactId>
 				<version>${jira.fugue.version}</version>
@@ -454,6 +448,18 @@
 				<groupId>software.amazon.awssdk</groupId>
 				<artifactId>dynamodb</artifactId>
 				<version>${aws.dynamodb.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.atlassian.jira</groupId>
+				<artifactId>jira-rest-java-client-core</artifactId>
+				<version>${jira.client.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.atlassian.jira</groupId>
+				<artifactId>jira-rest-java-client-api</artifactId>
+				<version>${jira.client.version}</version>
 			</dependency>
 
 			<dependency>
