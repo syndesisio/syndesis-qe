@@ -158,7 +158,7 @@ Feature: OData Connector
 
   # Those bugs were very similar in reproducing - created one scenario outline for all of them
   @reproducer
-  @integrations-odata-read-update
+    @integrations-odata-read-update
   Scenario Outline: Read <name> from OData service tests
 
     # Create new integration
@@ -206,7 +206,7 @@ Feature: OData Connector
     When sleep for "5000" ms
     Then validate that OData service contains entity with "<key>":"<value>" property:value pair in "<resource_collection>" collection
 
-  @gh-5386
+    @gh-5386
     Examples:
       | name            | resource_collection | key_predicate | filter | split | key         | value      | mapping_one | mapping_two |
       | wrong_datashape | Products            | 2             | false  | false | Description | 1UMTS PDA  | Name        | Description |
@@ -214,12 +214,12 @@ Feature: OData Connector
       | calling_null    | Products            |               | false  | false | Description | Flat Basic | Name        | Description |
 
 
-  @gh-5533
+    @gh-5533
     Examples:
       | name | resource_collection | key_predicate | filter | split | key         | value     | mapping_one | mapping_two |
       | NPE  | Products            | 2             | true   | true  | Description | 1UMTS PDA | Name        | Description |
 
-  @gh-5241
+    @gh-5241
     Examples:
       | name                            | resource_collection | key_predicate | filter | split | key       | value    | mapping_one | mapping_two |
       | string predicate without quotes | Users               | coolBob       | true   | true  | FirstName | CoolName | LastName    | FirstName   |
@@ -278,12 +278,12 @@ Feature: OData Connector
     Then check that "whatever" entity in "Users" collection contains
       | Gender | MALE |
 
-    @gh-5559
-    @reproducer
-    @odata-server-certificate
-    Scenario: OData connector needs server certificate
-      When create OData https credentials
-      And log into the Syndesis
-      And created connections
-        | OData | odataHttps | ODataHttps | sample OData service |
-      Then check visibility of the "ODataHttps" connection
+  @gh-5559
+  @reproducer
+  @odata-server-certificate
+  Scenario: OData connector needs server certificate
+    When create OData https credentials
+    And log into the Syndesis
+    And created connections
+      | OData | odataHttps | ODataHttps | sample OData service |
+    Then check visibility of the "ODataHttps" connection

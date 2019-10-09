@@ -137,6 +137,7 @@ public class DataMapper extends SyndesisPageObject {
      * This method opens all collection mappings we can find on a data mapper
      */
     public void openDataMapperCollectionElement() {
+        TestUtils.waitFor(() -> $(Element.MAPPER_COLLECTION_ICON).is(visible), 1, 10, "No mapper collections found");
         $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
             SelenideElement arrow = e.find(Element.ARROW_POINTING_RIGHT);
             if (arrow.exists() && arrow.is(visible)) {
