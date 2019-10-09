@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 
@@ -48,6 +49,7 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
     }
 
     public int getNumberOfOperations() {
+        TestUtils.waitFor(() -> $(Element.OPERATIONS).is(visible), 1, 10, "No provider operations found");
         String operations = $(Element.OPERATIONS).shouldBe(visible).getText().trim().split(" ")[0];
         return Integer.parseInt(operations);
     }
