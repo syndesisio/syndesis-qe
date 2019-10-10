@@ -844,6 +844,19 @@ public class CommonSteps {
             $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.get().getProperty("login"));
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
             $(By.id("allow")).shouldBe(visible).click();
+            /**
+             * This is a workarround for the twitter phone number request page
+             */
+            try {
+                OpenShiftWaitUtils.waitFor(() -> $(By.id("challenge_response")).exists(), 3 * 1000L);
+                log.info("Filling the twitter phone number " + account.get().getProperty("phone"));
+                $(By.id("challenge_response")).shouldBe(visible).sendKeys(account.get().getProperty("phone"));
+                $(By.id("email_challenge_submit")).shouldBe(visible).click();
+            } catch (InterruptedException | TimeoutException e) {
+                log.info("No need to insert phone number");
+                $(By.id("allow")).click();
+                return;
+            }
         } else {
             fail("Credentials for Twitter were not found.");
         }
