@@ -81,6 +81,7 @@ public class ApiProviderSteps {
 
     @Then("^verify there are (\\d+) API Provider operations defined$")
     public void verifyThereAreOperationsDefined(int num) {
+
         int actual = reviewApiProviderActions.getNumberOfOperations();
         assertEquals("Wrong number of operations", num, actual);
     }

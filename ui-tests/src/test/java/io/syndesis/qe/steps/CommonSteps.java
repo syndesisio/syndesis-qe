@@ -43,6 +43,8 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -792,6 +794,17 @@ public class CommonSteps {
         driver.switchTo().window(winHandleBefore);
 
         waitForCallbackRedirect("review");
+
+        if (driver.getWindowHandles().size() > 1) {
+            log.error("There is more than one window opened!");
+            for (String winHandle : WebDriverRunner.getWebDriver().getWindowHandles()) {
+                if (winHandle.equalsIgnoreCase(winHandleBefore)) {
+                    continue;
+                }
+                WebDriverRunner.getWebDriver().switchTo().window(winHandle);
+                fail("The second window was supposed to be closed!.");
+            }
+        }
 
         // close hanging windows
         closeAdditionalBrowserWindows(winHandleBefore);
