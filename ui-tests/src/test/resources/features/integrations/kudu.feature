@@ -37,6 +37,7 @@ Feature: Kudu connector
     And navigate to the "Home" page
 
 
+  @ENTESB-11787
   @integrations-kudu-insert
   Scenario: Insert data into kudu table
     When inserts into "todo with id" table
