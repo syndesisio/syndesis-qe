@@ -35,7 +35,7 @@ Feature: Integration - Import Export
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
     And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
-    And fill in period input with "60" value
+    And fill in period input with "10" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button
 
@@ -57,7 +57,6 @@ Feature: Integration - Import Export
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data mapper collection mappings
     And create data mapper mappings
       | company | message |
     And click on the "Done" button
@@ -73,7 +72,7 @@ Feature: Integration - Import Export
 
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
-
+    And sleep for jenkins delay or "15" seconds
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
     # Add a new contact

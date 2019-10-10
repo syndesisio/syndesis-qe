@@ -31,7 +31,7 @@ Feature: Slack Connector
     Then check "Next" button is "Disabled"
 
     When fill in periodic query input with "SELECT company FROM CONTACT limit(1)" value
-    And fill in period input with "200" value
+    And fill in period input with "10" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button
     Then check that position of connection to fill is "Finish"
