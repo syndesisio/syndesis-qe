@@ -2,6 +2,7 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.servicenow.ServiceNow;
 import io.syndesis.qe.servicenow.model.Incident;
 import io.syndesis.qe.utils.JMSUtils;
@@ -17,11 +18,12 @@ import cucumber.api.java.en.When;
 
 public class ServiceNowValidationSteps {
     private static String incidentId;
+    private static final String BROWSER = TestConfiguration.syndesisBrowser();
 
     @When("^create incident with \"([^\"]*)\" number$")
     public void createIncidentWithNumber(String number) {
         Incident i = Incident.getSampleIncident();
-        i.setNumber(number);
+        i.setNumber(modifySNNumber(number));
         i.setDescription("Automated create incident test-updated");
         i.setSeverity(BigInteger.valueOf(2));
         incidentId = ServiceNow.createIncident(i).getSysId();
@@ -31,12 +33,13 @@ public class ServiceNowValidationSteps {
     public void verifyThatReceivedIncidentFromQueueContains(String queue, String contains) {
         String message = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queue);
         ServiceNow.deleteIncident(incidentId);
-        assertThat(message).contains(contains);
+        assertThat(message).contains(modifySNNumber(contains));
         assertThat(message).contains(incidentId);
     }
 
     @When("^send \"([^\"]*)\" incident to \"([^\"]*)\" queue and verify it was created in SN$")
     public void sendIncidentToQueueAndVerifyItWasCreatedInSN(String incidentNumber, String queue) {
+        incidentNumber = modifySNNumber(incidentNumber);
         final String description = "CRTDINC01" + UUID.randomUUID().toString().substring(0, 8);
         Incident i = Incident.getSampleIncident();
         i.setNumber(incidentNumber);
@@ -58,7 +61,18 @@ public class ServiceNowValidationSteps {
         final String[] incidentNumbers = numbers.split(",");
         List<Incident> incidents = new ArrayList<>();
 
-        Arrays.asList(incidentNumbers).forEach(number -> incidents.addAll(ServiceNow.getFilteredIncidents("number=" + number, 100)));
+        Arrays.asList(incidentNumbers).forEach(number -> incidents.addAll(ServiceNow.getFilteredIncidents("number=" + modifySNNumber(number), 100)));
         incidents.forEach(incident -> ServiceNow.deleteIncident(incident.getSysId()));
+    }
+
+    public static String modifySNNumber(String input) {
+        System.out.println(BROWSER);
+        if (input.contains("{number1}")) {
+            return input.replace("{number1}", "QA" + BROWSER.substring(0, 4).toUpperCase() + "1");
+        } else if (input.contains("{number2}")) {
+            return input.replace("{number2}", "QACR" + BROWSER.substring(0, 2).toUpperCase() + "1");
+        }
+
+        return input;
     }
 }
