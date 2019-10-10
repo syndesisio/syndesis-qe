@@ -57,7 +57,6 @@ Feature: Integration - Import Export
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data mapper collection mappings
     And create data mapper mappings
       | company | message |
     And click on the "Done" button

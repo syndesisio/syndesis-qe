@@ -94,7 +94,6 @@ Feature: OData Connector
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | last_name  | Description |
       | first_name | Name        |
@@ -260,7 +259,6 @@ Feature: OData Connector
     And select "Data Mapper" integration step
     When define constant "whatever" of type "String" in data mapper
     And open data bucket "Constants"
-    And open data mapper collection mappings
     And create data mapper mappings
       | Gender   | Gender       |
       | whatever | keyPredicate |
