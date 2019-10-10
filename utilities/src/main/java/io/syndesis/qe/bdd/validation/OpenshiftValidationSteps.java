@@ -3,6 +3,7 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.templates.AmqTemplate;
 import io.syndesis.qe.templates.FtpTemplate;
 import io.syndesis.qe.templates.HTTPEndpointsTemplate;
@@ -14,12 +15,18 @@ import io.syndesis.qe.templates.MysqlTemplate;
 import io.syndesis.qe.templates.PublicOauthProxyTemplate;
 import io.syndesis.qe.templates.WildFlyTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import java.util.Optional;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -112,5 +119,32 @@ public class OpenshiftValidationSteps {
         } catch (InterruptedException | TimeoutException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Then("^check that the pod \"([^\"]*)\" is not redeployed$")
+    public void checkThatPodIsNotRedeployed(String podName) {
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podName);
+        assertThat(pod).isPresent();
+        int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
+        // Wait for a state check so that server can figure out that something is not right + a bit more for spawning a new pod
+        TestUtils.sleepIgnoreInterrupt((TestConfiguration.stateCheckInterval() + 60) * 1000L);
+        // Check that there is no pod with higher number
+        assertThat(OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
+            p -> p.getMetadata().getName().contains(podName) && OpenShiftUtils.extractPodSequenceNr(p) > currentNr).collect(Collectors.toList()))
+            .size()
+            .as("There should be no pod with higher number")
+            .isZero();
+    }
+
+    @When("^edit replicas count for deployment config \"([^\"]*)\" to (\\d)$")
+    public void editReplicasCount(String dcName, int replicas) {
+        Optional<DeploymentConfig> dc = OpenShiftUtils.getInstance().deploymentConfigs().list().getItems().stream()
+            .filter(deploymentConfig -> deploymentConfig.getMetadata().getName().contains(dcName)).findFirst();
+        if (!dc.isPresent()) {
+            fail("Unable to find deployment config with name " + dcName);
+        }
+
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dc.get().getMetadata().getName()).edit()
+            .editSpec().withReplicas(replicas).endSpec().done();
     }
 }

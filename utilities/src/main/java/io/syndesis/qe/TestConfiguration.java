@@ -62,6 +62,8 @@ public class TestConfiguration {
 
     public static final String SKIP_TESTS_WITH_OPEN_ISSUES = "syndesis.skip.open.issues";
 
+    public static final String STATE_CHECK_INTERVAL = "syndesis.server.state.check.interval";
+
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
@@ -213,6 +215,10 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SKIP_TESTS_WITH_OPEN_ISSUES));
     }
 
+    public static int stateCheckInterval() {
+        return Integer.parseInt(get().readValue(STATE_CHECK_INTERVAL));
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -276,6 +282,8 @@ public class TestConfiguration {
         if (props.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
             props.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
         }
+
+        props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
         return props;
     }
 

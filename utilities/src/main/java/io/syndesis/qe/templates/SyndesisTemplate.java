@@ -226,7 +226,7 @@ public class SyndesisTemplate {
             Map<String, Object> integration =
                 (Map<String, Object>) spec.computeIfAbsent("integration", s -> new HashMap<String, Object>());
             if (TestUtils.isJenkins()) {
-                integration.put("stateCheckInterval", 150);
+                integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
             }
 
             // set route hostname

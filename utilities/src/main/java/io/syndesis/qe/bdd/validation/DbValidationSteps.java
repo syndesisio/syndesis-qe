@@ -3,7 +3,6 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
@@ -44,7 +43,6 @@ public class DbValidationSteps {
 
     @Given("^remove all records from table \"([^\"]*)\"$")
     public void cleanupDb(String tableName) {
-        TestSupport.getInstance().resetDB();
         dbUtils.deleteRecordsInTable(tableName);
     }
 
