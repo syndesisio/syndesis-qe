@@ -72,6 +72,7 @@ Feature: Integration - Databucket
 #
 #  2. check that data buckets are available
 #
+  @ENTESB-11787
   @gh-5042
   @data-buckets-usage
   Scenario: Create
@@ -133,6 +134,7 @@ Feature: Integration - Databucket
 #
 #  3. check that data buckets work with long integration
 #
+  @ENTESB-11787
   @gh-5042
   @data-buckets-usage-2
   Scenario: Create extended
