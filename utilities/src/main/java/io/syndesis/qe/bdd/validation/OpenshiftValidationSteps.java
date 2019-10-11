@@ -18,18 +18,15 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,16 +122,16 @@ public class OpenshiftValidationSteps {
         }
     }
 
-    @Then("^check that the pod \"([^\"]*)\" is not redeployed$")
+    @Then("^check that the pod \"([^\"]*)\" is not redeployed by server$")
     public void checkThatPodIsNotRedeployed(String podName) {
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podName);
         assertThat(pod).isPresent();
         int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
         waitForStateCheckInterval();
         // Check that there is no pod with higher number
-        assertThat(OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
-            p -> p.getMetadata().getName().contains(podName) && OpenShiftUtils.extractPodSequenceNr(p) > currentNr).collect(Collectors.toList()))
-            .size()
+        assertThat(OpenShiftUtils.getInstance().pods().list().getItems().stream()
+            .filter(p -> p.getMetadata().getName().contains(podName) && OpenShiftUtils.extractPodSequenceNr(p) > currentNr)
+            .count())
             .as("There should be no pod with higher number")
             .isZero();
     }
@@ -147,9 +144,7 @@ public class OpenshiftValidationSteps {
 
     @When("^edit replicas count for deployment config \"([^\"]*)\" to (\\d)$")
     public void editReplicasCount(String dcName, int replicas) {
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(OpenShiftUtils.getInstance().getDeploymentConfig(dcName).getMetadata().getName())
-            .edit()
-            .editSpec().withReplicas(replicas).endSpec().done();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().withReplicas(replicas).endSpec().done();
     }
 
     @When("^add following variables to the \"([^\"]*)\" deployment config:$")
@@ -162,14 +157,40 @@ public class OpenshiftValidationSteps {
 
     @Then("^check that the deployment config \"([^\"]*)\" contains variables:$")
     public void checkDcEnvVars(String dcName, DataTable vars) {
-        Map<String, String> content = vars.asMap(String.class, String.class);
-        List<EnvVar> envVars = OpenShiftUtils.getInstance().getDeploymentConfig(dcName)
-            .getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
-        List<EnvVar> testVars = new ArrayList<>();
-        for (Map.Entry<String, String> keyValue : content.entrySet()) {
-            testVars.add(new EnvVar(keyValue.getKey(), keyValue.getValue(), null));
-        }
+        assertThat(OpenShiftUtils.getInstance().getDeploymentConfigEnvVars(dcName)).containsAllEntriesOf(vars.asMap(String.class, String.class));
+    }
 
-        assertThat(envVars).containsAll(testVars);
+    @Then("^check that there (?:is|are) (\\d+) pods? for integration \"([^\"]*)\"$")
+    public void checkPodsForIntegration(int count, String integrationName) {
+        assertThat(OpenShiftUtils.getInstance().getPods("i-" + integrationName)).hasSize(count);
+    }
+
+    @When("^change deployment strategy for \"([^\"]*)\" deployment config to \"([^\"]*)\"$")
+    public void changeDeploymentStrategy(String dcName, String strategy) {
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().editStrategy().withType(strategy).endStrategy().endSpec()
+            .done();
+    }
+
+    @Then("^chech that the deployment strategy for \"([^\"]*)\" deployment config is \"([^\"]*)\"$")
+    public void checkDeploymentStrategy(String dcName, String strategy) {
+        assertThat(OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get().getSpec().getStrategy().getType()).isEqualTo(strategy);
+    }
+
+    @When("^create HPA for deployment config \"([^\"]*)\" with (\\d+) replicas$")
+    public void createHpaWithMinReplicas(String dcName, int replicas) {
+        OpenShiftUtils.getInstance().createHorizontalPodAutoscaler(
+            new HorizontalPodAutoscalerBuilder()
+                .withNewMetadata().withName("test-hpa").withNamespace(TestConfiguration.openShiftNamespace()).endMetadata()
+                .withNewSpec()
+                .withNewScaleTargetRef()
+                .withApiVersion("apps.openshift.io/v1")
+                .withKind("DeploymentConfig")
+                .withName(dcName)
+                .endScaleTargetRef()
+                .withMinReplicas(replicas)
+                .withMaxReplicas(replicas)
+                .endSpec()
+                .build()
+        );
     }
 }
