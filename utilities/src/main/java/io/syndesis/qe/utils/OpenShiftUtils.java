@@ -241,7 +241,8 @@ public final class OpenShiftUtils {
         if (var.isPresent()) {
             var.get().setValue(value);
         } else {
-            fail("variable " + key + " not found in deployment config of syndesis-server");
+            log.warn("Variable " + key + " not found in " + dcName + " deployment config, creating it.");
+            vars.add(new EnvVar(key, value, null));
         }
 
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);

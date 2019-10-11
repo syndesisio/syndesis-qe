@@ -18,6 +18,9 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -25,8 +28,9 @@ import java.util.stream.Collectors;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.cucumber.datatable.DataTable;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -126,8 +130,7 @@ public class OpenshiftValidationSteps {
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podName);
         assertThat(pod).isPresent();
         int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
-        // Wait for a state check so that server can figure out that something is not right + a bit more for spawning a new pod
-        TestUtils.sleepIgnoreInterrupt((TestConfiguration.stateCheckInterval() + 60) * 1000L);
+        waitForStateCheckInterval();
         // Check that there is no pod with higher number
         assertThat(OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
             p -> p.getMetadata().getName().contains(podName) && OpenShiftUtils.extractPodSequenceNr(p) > currentNr).collect(Collectors.toList()))
@@ -136,15 +139,37 @@ public class OpenshiftValidationSteps {
             .isZero();
     }
 
+    @When("^wait for state check interval$")
+    public void waitForStateCheckInterval() {
+        // Wait for a state check so that server can figure out that something is not right + a bit more for spawning a new pod
+        TestUtils.sleepIgnoreInterrupt((TestConfiguration.stateCheckInterval() + 60) * 1000L);
+    }
+
     @When("^edit replicas count for deployment config \"([^\"]*)\" to (\\d)$")
     public void editReplicasCount(String dcName, int replicas) {
-        Optional<DeploymentConfig> dc = OpenShiftUtils.getInstance().deploymentConfigs().list().getItems().stream()
-            .filter(deploymentConfig -> deploymentConfig.getMetadata().getName().contains(dcName)).findFirst();
-        if (!dc.isPresent()) {
-            fail("Unable to find deployment config with name " + dcName);
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(OpenShiftUtils.getInstance().getDeploymentConfig(dcName).getMetadata().getName())
+            .edit()
+            .editSpec().withReplicas(replicas).endSpec().done();
+    }
+
+    @When("^add following variables to the \"([^\"]*)\" deployment config:$")
+    public void addEnvVarsToDc(String dcName, DataTable vars) {
+        Map<String, String> content = vars.asMap(String.class, String.class);
+        for (Map.Entry<String, String> keyValue : content.entrySet()) {
+            OpenShiftUtils.updateEnvVarInDeploymentConfig(dcName, keyValue.getKey(), keyValue.getValue());
+        }
+    }
+
+    @Then("^check that the deployment config \"([^\"]*)\" contains variables:$")
+    public void checkDcEnvVars(String dcName, DataTable vars) {
+        Map<String, String> content = vars.asMap(String.class, String.class);
+        List<EnvVar> envVars = OpenShiftUtils.getInstance().getDeploymentConfig(dcName)
+            .getSpec().getTemplate().getSpec().getContainers().get(0).getEnv();
+        List<EnvVar> testVars = new ArrayList<>();
+        for (Map.Entry<String, String> keyValue : content.entrySet()) {
+            testVars.add(new EnvVar(keyValue.getKey(), keyValue.getValue(), null));
         }
 
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(dc.get().getMetadata().getName()).edit()
-            .editSpec().withReplicas(replicas).endSpec().done();
+        assertThat(envVars).containsAll(testVars);
     }
 }
