@@ -24,7 +24,11 @@ Feature: Google Sheets Connector
 
 
   @create-spreadsheet
+  @big-spreadsheet-copy
   @big-spreadsheet-db
+  @spreadsheet-append
+  @from-db-rows
+  @from-db-columns
   Scenario: create spreadsheet
     When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
@@ -86,11 +90,11 @@ Feature: Google Sheets Connector
     When select the "google-sheets" connection
     And select "Append values to a sheet" integration action
     And fill in values by element data-testid
-      | range | A1:E1 |
+      | range | A:E |
     And fill spreadsheet ID
     And click on the "Next" button
     And fill in values by element data-testid
-      | columnnames | E |
+      | columnnames | A,B,C,D,E |
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -140,6 +144,8 @@ Feature: Google Sheets Connector
       | majordimension | Rows                                         |
       | spreadsheetid  | 1RdaQ1sb90ugxAh1Z6oZD87XhgmmhKs6tDturft_wsAk |
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | A,B,C,D,E |
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -163,17 +169,17 @@ Feature: Google Sheets Connector
     And sleep for 10 seconds
     And Integration "from-db-to-sheets-update" is present in integrations list
     And wait until integration "from-db-to-sheets-update" gets into "Running" state
-    And sleep for "3000" ms
+    And sleep for "5000" ms
     Then verify that test sheet contains values on range "A2:D2"
       | New | Updated | Red Hat | db |
 
 
-  @gh-5110
+  @from-db-columns
   Scenario: Update messages from DB - Columns
     When inserts into "contact" table
-      | Matej | Foo    | Red Hat | db |
-      | Matej | Bar    | Red Hat | db |
-      | Fuse  | Online | Red Hat | db |
+      | Matej | Foo    | RedHat | db |
+      | Matej | Bar    | RedHat | db |
+      | Fuse  | Online | RedHat | db |
     Then click on the "Create Integration" link to create a new integration
 
     When select the "PostgresDB" connection
@@ -190,7 +196,7 @@ Feature: Google Sheets Connector
       | majordimension | Columns |
     And click on the "Next" button
     And fill in values by element data-testid
-      | columnnames | E |
+      | columnnames | #1,#2,#3,#4,#5 |
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -218,10 +224,10 @@ Feature: Google Sheets Connector
     And wait until integration "from-db-to-sheets-update-column" gets into "Running" state
     And sleep for "3000" ms
     Then verify that test sheet contains values on range "E1:E5"
-      | Fuse    |
-      | Online  |
-      | Red Hat |
-      | db      |
+      | Fuse   |
+      | Online |
+      | RedHat |
+      | db     |
 
   @pivot-tables
   Scenario: create pivottable from sample data
@@ -289,7 +295,6 @@ Feature: Google Sheets Connector
       | sourceGroupColumn  | rowGroups.sourceColumn   |
       | start              | start                    |
       | layout             | valueLayout              |
-    And sleep for 60 seconds
     Then click on the "Done" button
 
     When publish integration
@@ -297,6 +302,7 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "pivot-table" gets into "Running" state
+    And sleep for 10 seconds
     Then verify that data test sheet contains values on range "'pivot rows'!A1:B90"
       | LAFAYETTE COUNTY | 223   |
       | LAKE COUNTY      | 364   |
@@ -407,7 +413,7 @@ Feature: Google Sheets Connector
     And wait until integration "charts" gets into "Running" state
     Then verify that chart was created
 
-#
+
   @big-spreadsheet-copy
   Scenario: Copy big spreadsheet
     When clear test spreadsheet
@@ -416,16 +422,21 @@ Feature: Google Sheets Connector
     And select "Get sheet values" integration action
     And fill in values by element data-testid
       | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
-      | range         | A1:R25000                                    |
+      | range         | A:I                                          |
+      | maxresults    | 25000                                        |
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | A,B,C,D,E,F,G,H,I |
     Then click on the "Done" button
 
     When select the "google-sheets" connection
     And select "Append values to a sheet" integration action
     And fill spreadsheet ID
     And  fill in values by element data-testid
-      | range | A1:H25000 |
+      | range | A:H |
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | A,B,C,D,E,F,G,H |
     Then click on the "Done" button
 
     When add integration step on position "0"
@@ -451,7 +462,7 @@ Feature: Google Sheets Connector
     Then verify that data test sheet contains values on range "A25000:H25000"
       | 241178 | FL | PALM BEACH COUNTY | 0 | 1810826.38 | 0 | 0 | 1810826.38 |
 
-  @disabled
+
   @big-spreadsheet-db
   Scenario:Copy Big SS to DB and back using split/aggregate
     When clear test spreadsheet
@@ -466,6 +477,8 @@ Feature: Google Sheets Connector
     And fill in values by element ID
       | delay | 30000 |
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | A,B,C,D,E,F,G,H |
     Then click on the "Done" button
 
     When select the "PostgresDB" connection
@@ -501,9 +514,11 @@ Feature: Google Sheets Connector
     When select the "google-sheets" connection
     And select "Append values to a sheet" integration action
     And fill in values by element data-testid
-      | range | A1:H1 |
+      | range | A:H |
     And fill spreadsheet ID
     And click on the "Next" button
+    And fill in values by element data-testid
+      | columnnames | A,B,C,D,E,F,G,H |
     Then click on the "Next" button
 
     When add integration step on position "0"
@@ -529,6 +544,6 @@ Feature: Google Sheets Connector
     #it takes some time to copy that big amount of messages
     And sleep for jenkins delay or "150" seconds
     And verify that test sheet contains values on range "A1000:E1000"
-      | 308578 | FL | ST  JOHNS COUNTY | 1377 | 1377 |
+      | 121709 | FL | ST  JOHNS COUNTY | 243774 | 243774 |
     And verify that test sheet contains values on range "A4999:E4999"
       | 202669 | FL | LEON COUNTY | 0 | 9270000 |

@@ -1,17 +1,20 @@
 package io.syndesis.qe.bdd.validation;
 
-import com.google.api.services.sheets.v4.model.EmbeddedChart;
-import com.google.api.services.sheets.v4.model.Sheet;
-import cucumber.api.java.en.Then;
-import io.cucumber.datatable.DataTable;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.qe.utils.GoogleSheetsUtils;
 import io.syndesis.qe.utils.JMSUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.api.services.sheets.v4.model.EmbeddedChart;
+import com.google.api.services.sheets.v4.model.Sheet;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import cucumber.api.java.en.Then;
+import io.cucumber.datatable.DataTable;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class GoogleSheetsValidationSteps {
@@ -24,7 +27,7 @@ public class GoogleSheetsValidationSteps {
             sheetsUtils.setTestSheetId(JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, "sheets").split(":")[1].split("\"")[1]);
             log.info("Spreadsheet ID " + sheetsUtils.getTestSheetId());
         }
-        assertThat(sheetsUtils.getSpreadSheetValues("A1:E1")).isNotNull();
+        assertThat(sheetsUtils.spreadSheetExists());
     }
 
     @Then("^verify that test sheet contains values on range \"([^\"]*)\"$")
