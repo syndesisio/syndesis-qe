@@ -13,7 +13,7 @@ Feature: Integration - ServiceNow-amq/log
     Given clean application state
     Given log into the Syndesis
     Given clean destination type "queue" with name "incidents"
-    Given delete incidents with "QACUSTOM4,QACREATED1" number
+    Given delete incidents with "{number1},{number2}" number
     Given created connections
       | ServiceNow  | Servicenow | ServiceNow | Service-Now connection |
       | Red Hat AMQ | AMQ        | AMQ        | AMQ connection         |
@@ -29,10 +29,9 @@ Feature: Integration - ServiceNow-amq/log
     When select the "ServiceNow" connection
     And select "Retrieve Record" integration action
     And select "Incident" from "table" dropdown
-    And fill in values by element data-testid
+    And fill in and modify values by element ID
       | limit | 1                |
-      | query | number=QACUSTOM4 |
-
+      | query | number={number1} |
     And click on the "Next" button
     And sleep for jenkins delay or "10" seconds
     Then check that position of connection to fill is "Finish"
@@ -50,11 +49,11 @@ Feature: Integration - ServiceNow-amq/log
     When publish integration
     And set integration name "service-now-2-amq"
     And publish integration
-    And create incident with "QACUSTOM4" number
+    And create incident with "{number1}" number
 
     And navigate to the "Integrations" page
     And wait until integration "service-now-2-amq" gets into "Running" state
-    Then verify that received incident from "incidents" queue contains "QACUSTOM4"
+    Then verify that received incident from "incidents" queue contains "{number1}"
 
 
   Scenario: Create incident from syndesis integration
@@ -96,5 +95,5 @@ Feature: Integration - ServiceNow-amq/log
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "amq-2-snow" gets into "Running" state
-    Then send "QACREATED1" incident to "incidents-create" queue and verify it was created in SN
+    Then send "{number2}" incident to "incidents-create" queue and verify it was created in SN
 
