@@ -18,10 +18,7 @@ public class GoogleSheetsSteps {
 
     @When("^define spreadsheetID as property in data mapper$")
     public void defineSpreadaheetIDAsPropertyInDataMapper() {
-        DataMapper mapper = new DataMapper();
-        mapper.switchToDatamapperIframe();
-        mapper.addProperty("spreadsheetId", gcu.getTestSheetId(), "String");
-        mapper.switchIframeBack();
+        defineSpreadsheetIdInDatamapper(gcu.getTestSheetId());
     }
 
     @When("^fill spreadsheet ID$")
@@ -37,5 +34,17 @@ public class GoogleSheetsSteps {
     @When("^clear test spreadsheet$")
     public void clearTestSpreadsheet() {
         gcu.clearSpreadSheetValues("A1:Z500000");
+    }
+
+    @When("define test spreadsheetID as property in data mapper")
+    public void defineTestSpreadsheetIDAsPropertyInDataMapper() {
+        defineSpreadsheetIdInDatamapper(gcu.getTestDataSpreadSheet());
+    }
+
+    private void defineSpreadsheetIdInDatamapper(String id) {
+        DataMapper mapper = new DataMapper();
+        mapper.switchToDatamapperIframe();
+        mapper.addProperty("spreadsheetId", id, "String");
+        mapper.switchIframeBack();
     }
 }
