@@ -1,6 +1,7 @@
 # @sustainer: sveres@redhat.com
 
 @ui
+@oauth
 @logout-test
 Feature: Login logout
 
