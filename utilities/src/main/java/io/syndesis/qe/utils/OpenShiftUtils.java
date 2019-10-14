@@ -9,6 +9,8 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShiftBinary;
@@ -122,8 +124,14 @@ public final class OpenShiftUtils {
 
     public static int extractPodSequenceNr(Pod pod) {
         String podFullName = pod.getMetadata().getName();
-        String[] pole = podFullName.split("-");
-        return Integer.parseInt(pole[2]);
+        Pattern regex = Pattern.compile(".*-(\\d+)-[a-z0-9]{5}$");
+        Matcher m = regex.matcher(podFullName);
+        if (m.find()) {
+            return Integer.parseInt(m.group(1));
+        } else {
+            fail("Unable to parse number from " + podFullName);
+        }
+        return -1;
     }
 
     public static String getIntegrationLogs(String integrationName) {
@@ -233,7 +241,8 @@ public final class OpenShiftUtils {
         if (var.isPresent()) {
             var.get().setValue(value);
         } else {
-            fail("variable " + key + " not found in deployment config of syndesis-server");
+            log.warn("Variable " + key + " not found in " + dcName + " deployment config, creating it.");
+            vars.add(new EnvVar(key, value, null));
         }
 
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);

@@ -6,6 +6,8 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -236,9 +238,9 @@ public class OpenShiftWaitUtils {
         log.info("Current pod number: " + currentNr);
         int nextNr = currentNr + 1;
 
-        String podPartialNextName = podPartialName + "-" + nextNr;
+        String podPartialNextName = StringUtils.substringBefore(pod.get().getMetadata().getName(), "-" + nextNr);
         log.info("Waiting for {} pod is reloaded", podPartialNextName);
-        waitFor(() -> areExactlyNPods(podPartialNextName, 2).getAsBoolean(), 60 * 1000 * 10L);
+        waitFor(() -> isPodPresent(podPartialNextName), 60 * 1000 * 10L);
         waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialNextName).get()), 60 * 1000 * 10L);
 
         //There was an issue with meta pod not listening straight after deploying - waiting a bit here
