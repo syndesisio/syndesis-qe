@@ -152,7 +152,7 @@ Feature: OData Connector
     And publish integration
     Then Integration "OData_Delete" is present in integrations list
     And wait until integration "OData_Delete" gets into "Running" state
-    When sleep for "10000" ms
+    When sleep for "15000" ms
 
     Then check that entity "1" is not present in "Products" collection on OData service
 
@@ -203,15 +203,13 @@ Feature: OData Connector
     And wait until integration "<name>" gets into "Running" state
 
     #Validate logs output
-    When sleep for "5000" ms
+    When sleep for "10000" ms
     Then validate that OData service contains entity with "<key>":"<value>" property:value pair in "<resource_collection>" collection
 
     @gh-5386
     Examples:
       | name            | resource_collection | key_predicate | filter | split | key         | value      | mapping_one | mapping_two |
       | wrong_datashape | Products            | 2             | false  | false | Description | 1UMTS PDA  | Name        | Description |
-      # When sending an array to data mapper, only the last item is updated - checking that the description of last item is same as it's name
-      | calling_null    | Products            |               | false  | false | Description | Flat Basic | Name        | Description |
 
 
     @gh-5533
