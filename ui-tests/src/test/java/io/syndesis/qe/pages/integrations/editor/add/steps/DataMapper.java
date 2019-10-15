@@ -8,6 +8,7 @@ import static com.codeborne.selenide.Selenide.switchTo;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -21,6 +22,7 @@ import com.codeborne.selenide.WebDriverRunner;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -137,7 +139,11 @@ public class DataMapper extends SyndesisPageObject {
      * This method opens all collection mappings we can find on a data mapper
      */
     public void openDataMapperCollectionElement() {
-        TestUtils.waitFor(() -> $(Element.MAPPER_COLLECTION_ICON).is(visible), 1, 10, "No mapper collections found");
+        try {
+            OpenShiftWaitUtils.waitFor(() -> $(Element.MAPPER_COLLECTION_ICON).is(visible), 1000L, 10000L);
+        } catch (InterruptedException | TimeoutException e) {
+            log.info("No mapper collections found");
+        }
         $$(Element.MAPPER_COLLECTION_ICON).forEach(e -> {
             SelenideElement arrow = e.find(Element.ARROW_POINTING_RIGHT);
             if (arrow.exists() && arrow.is(visible)) {
