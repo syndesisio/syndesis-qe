@@ -186,6 +186,7 @@ Feature: Activity
     And publish integration
     And click on the "Save and publish" button
     And navigate to the "Integrations" page
+    And sleep for jenkins delay or "5" seconds
     And wait until integration "Webhook to DB" gets into "Running" state
 
     And select the "Webhook to DB" integration
