@@ -992,8 +992,6 @@ public class CommonSteps {
 
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded("server");
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodByPartialName("server").isPresent(), 300 * 1000L);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("server").get()), 60 * 1000 * 10L);
         } catch (InterruptedException | TimeoutException e) {
             fail("Server was not reloaded after deployment config change", e);
         }
