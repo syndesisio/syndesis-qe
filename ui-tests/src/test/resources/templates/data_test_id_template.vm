@@ -1,0 +1,91 @@
+<html>
+    <head>
+        <title>
+            Test Report
+        </title>
+        <style type="text/css">
+
+        .results {
+
+            border: 1px solid black;
+        }
+
+        .results-header {
+
+            border-bottom: 1px solid black;
+            background-color: silver;
+        }
+
+        .result-body {
+
+            border-bottom: 1px solid gray;
+        }
+
+        .result-attention {
+            background-color: red;
+        }
+
+        .result-body img {
+            max-width: 50%;
+        }
+
+        .result-url {
+            max-width: 15%;
+            max-height: 25px;
+            overflow: scroll;
+        }
+
+        .result-selector {
+            font-weight: bold;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>
+            Test Report
+        </h1>
+
+        <table class="results" cellspacing="0">
+            <thead>
+                <tr>
+                    <td class="results-header">
+                        Selector
+                    </td>
+                    <td class="results-header">
+                        Data-testid
+                    </td>
+                    <td class="results-header">
+                        Stacktrace
+                    </td>
+                    <td class="results-header">
+                        Screenshot
+                    </td>
+                    <td class="results-header">
+                        Affected scenarios
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach( $report in $reports )
+                    <tr>
+                        <td class="result-body result-selector">
+                            $report.selector
+                        </td>
+                        <td class="result-body result-url">
+                            $report.dataTestId
+                        </td>
+                        <td class="result-body">
+                            $report.stackTrace
+                        </td>
+                        <td class="result-body">
+                            <a href="screenshots/$report.imgPath"><img src="screenshots/$report.imgPath"></a>
+                        </td>
+                        <td class="result-body">
+                            $report.scenarios
+                        </td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+    </body>
+</html>

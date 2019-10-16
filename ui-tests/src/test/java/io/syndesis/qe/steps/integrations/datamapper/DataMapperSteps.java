@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static com.codeborne.selenide.Condition.visible;
 
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import com.codeborne.selenide.SelenideElement;
@@ -42,6 +43,7 @@ public class DataMapperSteps {
      *
      * @param table
      */
+    @ExcludeFromSelectorReports
     @When("^create data mapper mappings$")
     public void createMapping(DataTable table) {
         mapper.switchToDatamapperIframe();
@@ -60,6 +62,7 @@ public class DataMapperSteps {
         mapper.switchIframeBack();
     }
 
+    @ExcludeFromSelectorReports
     @When("^open data mapper collection mappings$")
     public void openCollectionMappings() {
         mapper.switchToDatamapperIframe();
@@ -67,11 +70,13 @@ public class DataMapperSteps {
         mapper.switchIframeBack();
     }
 
+    @ExcludeFromSelectorReports
     @When("^open data mapper unnamed collection mappings$")
     public void openUnnamedCollectionMappings() {
         mapper.openDataMapperUnnamedCollectionElement();
     }
 
+    @ExcludeFromSelectorReports
     @Then("^check visibility of data mapper ui$")
     public void dataMapperUIpresent() {
         log.info("data mapper ui must load and show fields count");
@@ -85,6 +90,7 @@ public class DataMapperSteps {
         mapper.switchIframeBack();
     }
 
+    @ExcludeFromSelectorReports
     @When("^select \"([^\"]*)\" from \"([^\"]*)\" selector-dropdown$")
     public void selectFromDropDownByElement(String option, String selectAlias) {
         mapper.switchToDatamapperIframe();
@@ -94,6 +100,7 @@ public class DataMapperSteps {
         mapper.switchIframeBack();
     }
 
+    @ExcludeFromSelectorReports
     @Then("^fill in \"([^\"]*)\" selector-input with \"([^\"]*)\" value$")
     public void fillActionConfigureField(String selectorAlias, String value) {
         mapper.switchToDatamapperIframe();
@@ -102,6 +109,7 @@ public class DataMapperSteps {
         mapper.switchIframeBack();
     }
 
+    @ExcludeFromSelectorReports
     @When("^define constant \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
     public void defineConstantOfTypeInDataMapper(String value, String type) {
         mapper.switchToDatamapperIframe();
@@ -109,6 +117,7 @@ public class DataMapperSteps {
         mapper.switchIframeBack();
     }
 
+    @ExcludeFromSelectorReports
     @When("^define property \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
     public void definePropertyWithValueOfTypeInDataMapper(String name, String value, String type) {
         mapper.switchToDatamapperIframe();
