@@ -1,15 +1,16 @@
 package io.syndesis.qe.steps.integrations.datamapper;
 
-import static org.junit.Assert.assertThat;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.greaterThan;
 
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
@@ -71,6 +72,14 @@ public class DataMapperSteps {
     }
 
     @ExcludeFromSelectorReports
+    @Then("^check element with id \"([^\"]*)\" is present (\\d+) times$")
+    public void sourceContainsElementsWithId(String id, int numberOfElements) {
+        mapper.switchToDatamapperIframe();
+        assertThat($$(By.id(id)).size()).isEqualTo(numberOfElements);
+        mapper.switchIframeBack();
+    }
+
+    @ExcludeFromSelectorReports
     @When("^open data mapper unnamed collection mappings$")
     public void openUnnamedCollectionMappings() {
         mapper.openDataMapperUnnamedCollectionElement();
@@ -86,7 +95,7 @@ public class DataMapperSteps {
             fail("Data mapper was not loaded in 30s!", e);
         }
         mapper.switchToDatamapperIframe();
-        assertThat(mapper.fieldsCount(), greaterThan(0));
+        assertThat(mapper.fieldsCount()).isGreaterThan(0);
         mapper.switchIframeBack();
     }
 
