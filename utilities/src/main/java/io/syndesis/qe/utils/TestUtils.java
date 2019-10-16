@@ -165,6 +165,21 @@ public final class TestUtils {
         }
     }
 
+    /**
+     * Same as {@link #waitFor(BooleanSupplier, int, int, String)}, but does not fail in case of timeout,
+     * instead it has return value that determines whether wait condition ended with success
+     * @return true if condition was satisfied, false otherwise
+     */
+    public static boolean waitForNoFail(BooleanSupplier condition, int checkIntervalInSeconds, int timeoutInSeconds) {
+        try {
+            OpenShiftWaitUtils.waitFor(condition, checkIntervalInSeconds * 1000L, timeoutInSeconds * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            return false;
+        }
+
+        return true;
+    }
+
     public static void sleepForJenkinsDelayIfHigher(int delayInSeconds) {
         log.debug("sleeping for " + delayInSeconds + " seconds");
         sleepIgnoreInterrupt(Math.max(TestConfiguration.getJenkinsDelay(), delayInSeconds) * 1000);
