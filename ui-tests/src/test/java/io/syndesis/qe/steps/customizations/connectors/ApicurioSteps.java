@@ -277,8 +277,9 @@ public class ApicurioSteps {
 
         if ("OAuth 2".equalsIgnoreCase(schemeType)) {
             $(By.id("flow")).shouldBe(visible).click();
-            $(By.id("flow")).shouldBe(visible).parent().$(By.xpath("//a[contains(text(), \"Password\")]")).shouldBe(visible).click();
-            $(By.id("tokenUrl")).sendKeys("https://hihi");
+            $(By.id("flow")).shouldBe(visible).parent().$(By.xpath("//a[contains(text(), \"Access Code\")]")).shouldBe(visible).click();
+            $(By.id("authorizationUrl")).sendKeys("http://syndesis.io");
+            $(By.id("tokenUrl")).sendKeys("https://hihi.com");
         }
 
         ElementsCollection saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);

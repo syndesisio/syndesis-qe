@@ -142,7 +142,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And select "Kie Server API" connection type
     Then check that connection authentication type has 1 option and contains text "API Key Authentication"
 
-  @ENTESB-11841
+  @ENTESB-12019
   @gh-5429
   @gh-6123
   @apicurio-check-security-settings-oauth-2
@@ -157,7 +157,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio shows 218 imported operations
     When clicks on the "Next" link
     And click on the "Next" button
-#    this part is broken, see: @ENTESB-11841
+#    this part is broken, see: @ENTESB-12019
     Then check that api connector authentication section contains text "OAuth 2.0"
     And fill in values
       | Access Token URL  | https://hehe                            |
