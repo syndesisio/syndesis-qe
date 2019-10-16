@@ -78,12 +78,11 @@ public class WildFlyTemplate {
     }
 
     public static void cleanUp(String appName) {
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(appName).delete();
-        OpenShiftUtils.getInstance().services().withName(appName).delete();
         OpenShiftUtils.getInstance().routes().withName(appName).delete();
+        OpenShiftUtils.getInstance().services().withName(appName).delete();
         OpenShiftUtils.getInstance().imageStreams().withName(appName).delete();
         OpenShiftUtils.getInstance().imageStreams().withName("wildfly-130-centos7").delete();
-        OpenShiftUtils.getInstance().buildConfigs().withName(appName).delete();
-        OpenShiftUtils.getInstance().pods().withLabel("deploymentconfig", "odata").delete();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(appName).cascading(true).delete();
+        OpenShiftUtils.getInstance().buildConfigs().withName(appName).cascading(true).delete();
     }
 }
