@@ -39,7 +39,6 @@ Feature: Integration - data shapes propagation
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    When open data mapper collection mappings
     And create data mapper mappings
       | first_name | TASK |
     Then click on the "Done" button

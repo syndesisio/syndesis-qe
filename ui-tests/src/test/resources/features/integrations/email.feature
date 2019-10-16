@@ -105,7 +105,6 @@ Feature: Email connector
     # Integration step: data mapper, which maps email content to 'task' field in TO-DO table
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | content | task |
     And scroll "top" "right"
@@ -159,7 +158,6 @@ Feature: Email connector
     # Integration step: data mapper, which maps email content to 'task' field in TO-DO table
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | content | task |
     And scroll "top" "right"

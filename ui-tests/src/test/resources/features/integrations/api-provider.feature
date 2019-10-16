@@ -404,7 +404,6 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | id        |
       | completed | completed |
