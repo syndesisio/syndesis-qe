@@ -19,6 +19,7 @@ import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
@@ -253,5 +254,20 @@ public class EditorSteps {
     public void validateInputDataShape(int stepPosition, String expectedDataShape) {
         Assertions.assertThat(flowViewComponent.getStepOnPosition(stepPosition).$(By.className("list-view-pf-additional-info")).text())
             .containsIgnoringCase("Data Type: " + expectedDataShape);
+    }
+
+    @Then("^check that alert dialog contains text \"([^\"]*)\"$")
+    public void checkAlertDialog(String expectedText) {
+        ElementsCollection spans = editor.getAlertElemet().findAll(By.tagName("span"));
+        Assertions.assertThat(spans.stream().anyMatch(span -> span.getText().contains(expectedText)))
+            .isTrue()
+            .as("In the alert dialog is not expected text.");
+    }
+
+    @Then("^check that alert dialog contains details \"([^\"]*)\"$")
+    public void checkAlertDialogDetails(String expectedDetailsText) {
+        SelenideElement alertElemet = editor.getAlertElemet();
+        alertElemet.find(By.tagName("button")).click();
+        Assertions.assertThat(alertElemet.find(By.tagName("pre")).getText()).isEqualTo(expectedDetailsText);
     }
 }
