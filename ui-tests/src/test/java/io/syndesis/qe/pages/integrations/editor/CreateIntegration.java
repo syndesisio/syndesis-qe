@@ -3,22 +3,23 @@ package io.syndesis.qe.pages.integrations.editor;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CreateIntegration extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".card-pf");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
     }
 
     private static final class Input {
-        public static final By NAME = By.cssSelector("input[name='name']");
+        public static final By NAME = By.xpath("//input[@data-testid='name']");
     }
 
     private static final class TextArea {
