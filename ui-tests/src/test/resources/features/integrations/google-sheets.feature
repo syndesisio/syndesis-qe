@@ -233,11 +233,11 @@ Feature: Google Sheets Connector
   Scenario: create pivottable from sample data
     When clear range "'pivot rows'" in data test spreadsheet
     And clear range "'pivot-columns'" in data test spreadsheet
-    And click on the "Create Integration" link to create a new integration.
-    When select the "google-sheets" connection
-    And select "Get spreadsheet properties" integration action
+    When click on the "Create Integration" link to create a new integration.
+    And select the "Timer" connection
+    And select "Simple" integration action
     And fill in values by element data-testid
-      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+      | period | 1000 |
     Then click on the "Done" button
 
     When select the "google-sheets" connection
@@ -251,7 +251,7 @@ Feature: Google Sheets Connector
 
     When add integration step on position "0"
     And select the "Data Mapper" connection
-    And check visibility of data mapper ui
+    And define test spreadsheetID as property in data mapper
     And define property "sheetId" with value "31438639" of type "String" in data mapper
     And define property "label" with value "countries" of type "String" in data mapper
     And define property "range" with value "A2:E36625" of type "String" in data mapper
@@ -259,7 +259,6 @@ Feature: Google Sheets Connector
     And define property "sourceGroupColumn" with value "C" of type "String" in data mapper
     And define property "sourceValuesColumn" with value "D" of type "String" in data mapper
     And open data bucket "Properties"
-   # And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId             |
       | sheetId            | sheetId                   |
@@ -283,8 +282,6 @@ Feature: Google Sheets Connector
     And define property "start" with value "A1" of type "String" in data mapper
 
     And open data bucket "Properties"
-    And open data bucket "1 - Spreadsheet"
-  #  And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId            |
       | sheetId            | sheetId                  |
@@ -415,7 +412,7 @@ Feature: Google Sheets Connector
 
 
   @big-spreadsheet-copy
-  Scenario: Copy big spreadsheet
+  Scenario: Copy big spreadsheet using split/aggregate
     When clear test spreadsheet
     And click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
@@ -440,9 +437,16 @@ Feature: Google Sheets Connector
     Then click on the "Done" button
 
     When add integration step on position "0"
+    And select the "Split" connection
+    Then click on the "Next" button
+
+    When add integration step on position "1"
+    And select the "Aggregate" connection
+    Then click on the "Next" button
+    When add integration step on position "1"
+
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And open data mapper collection mappings
     And create data mapper mappings
       | A | A |
       | B | B |
@@ -461,89 +465,3 @@ Feature: Google Sheets Connector
     And wait until integration "copy" gets into "Running" state
     Then verify that data test sheet contains values on range "A25000:H25000"
       | 241178 | FL | PALM BEACH COUNTY | 0 | 1810826.38 | 0 | 0 | 1810826.38 |
-
-
-  @big-spreadsheet-db
-  Scenario:Copy Big SS to DB and back using split/aggregate
-    When clear test spreadsheet
-    And click on the "Create Integration" link to create a new integration.
-    And select the "google-sheets" connection
-    And select "Get sheet values" integration action
-    And fill in values by element data-testid
-      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
-      | range         | A1:R5000                                     |
-      | delay         | 30000                                        |
-      | maxresults    | 4999                                         |
-    And fill in values by element ID
-      | delay | 30000 |
-    And click on the "Next" button
-    And fill in values by element data-testid
-      | columnnames | A,B,C,D,E,F,G,H |
-    Then click on the "Done" button
-
-    When select the "PostgresDB" connection
-    And select "Invoke SQL" integration action
-    And fill in invoke query input with "insert INTO todo (task) VALUES(:#task)" value
-    Then click on the "Done" button
-
-    When add integration step on position "0"
-    Then select the "Split" connection
-    Then click on the "Next" button
-
-    When add integration step on position "1"
-    And select the "Data Mapper" connection
-    And check visibility of data mapper ui
-    And create data mapper mappings
-      | A;B;C;D;E;F;G | task | Underscore [_] |
-    Then click on the "Done" button
-    When publish integration
-    And set integration name "to-db"
-    And publish integration
-    And navigate to the "Integrations" page
-    And wait until integration "to-db" gets into "Running" state
-    Then navigate to the "Home" page
-
-    When click on the "Create Integration" link to create a new integration
-    And select the "PostgresDB" connection
-    And select "Periodic SQL invocation" integration action
-    And fill in values by element data-testid
-      | query  | SELECT * FROM todo |
-      | period | 10000              |
-    Then click on the "Done" button
-
-    When select the "google-sheets" connection
-    And select "Append values to a sheet" integration action
-    And fill in values by element data-testid
-      | range | A:H |
-    And fill spreadsheet ID
-    And click on the "Next" button
-    And fill in values by element data-testid
-      | columnnames | A,B,C,D,E,F,G,H |
-    Then click on the "Next" button
-
-    When add integration step on position "0"
-    And select the "Split" connection
-    Then click on the "Next" button
-
-    When add integration step on position "1"
-    And select the "Aggregate" connection
-    Then click on the "Next" button
-
-    When add integration step on position "1"
-    And select the "Data Mapper" connection
-    And check visibility of data mapper ui
-    And create data mapper mappings
-      | task | A;B;C;D;E;F;G | Underscore [_] |
-    Then click on the "Done" button
-
-    When publish integration
-    And set integration name "from-db-to-sheets"
-    And publish integration
-    And navigate to the "Integrations" page
-    And wait until integration "from-db-to-sheets" gets into "Running" state
-    #it takes some time to copy that big amount of messages
-    And sleep for jenkins delay or "150" seconds
-    And verify that test sheet contains values on range "A1000:E1000"
-      | 121709 | FL | ST  JOHNS COUNTY | 243774 | 243774 |
-    And verify that test sheet contains values on range "A4999:E4999"
-      | 202669 | FL | LEON COUNTY | 0 | 9270000 |
