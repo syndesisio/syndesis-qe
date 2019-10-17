@@ -3,7 +3,7 @@
 @ui
 @database
 @integrations-check-starting-status
-Feature: Integration - DB to DB
+Feature: Integration - Status
 
   Background: Clean application state
     Given clean application state
@@ -25,8 +25,7 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
     And publish integration
-    And fill Name Integration form
-      |  name | ASD |
+    And set integration name "ASD"
     And publish integration
 
     Then check starting integration status on Integration Detail page
@@ -47,8 +46,7 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
     And publish integration
-    And fill Name Integration form
-      | name | ASD |
+    And set integration name "ASD"
     And publish integration
 
     When navigate to the "Integrations" page
@@ -71,8 +69,7 @@ Feature: Integration - DB to DB
     And click on the "Next" button
 
     And publish integration
-    And fill Name Integration form
-      | name | ASD |
+    And set integration name "ASD"
     And publish integration
 
     When navigate to the "Home" page
