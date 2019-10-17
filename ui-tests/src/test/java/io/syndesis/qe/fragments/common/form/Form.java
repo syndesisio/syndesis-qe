@@ -86,7 +86,7 @@ public class Form {
      */
     private Map<String, String> getInputMap(FillBy fillBy) {
         Map<String, String> inputsMap = new HashMap<>();
-        for (String tagName : Arrays.asList("input", "select", "textarea", "button")) {
+        for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div")) {
             for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
