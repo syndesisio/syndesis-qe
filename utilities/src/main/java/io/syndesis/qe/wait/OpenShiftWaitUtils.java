@@ -238,7 +238,7 @@ public class OpenShiftWaitUtils {
         log.info("Current pod number: " + currentNr);
         int nextNr = currentNr + 1;
 
-        String podPartialNextName = StringUtils.substringBefore(pod.get().getMetadata().getName(), "-" + nextNr);
+        String podPartialNextName = StringUtils.substringBefore(pod.get().getMetadata().getName(), "-" + currentNr) + "-" + nextNr;
         log.info("Waiting for {} pod is reloaded", podPartialNextName);
         waitFor(() -> isPodPresent(podPartialNextName), 60 * 1000 * 10L);
         waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialNextName).get()), 60 * 1000 * 10L);
