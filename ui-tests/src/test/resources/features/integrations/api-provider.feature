@@ -342,6 +342,8 @@ Feature: API Provider Integration
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "INSERT INTO todo (id, completed, task) VALUES (:#id, :#completed, :#task)" value
+    And fill in values by element data-testid
+      | raiseerroronnotfound | true |
     And click on the "Done" button
 
     And add integration step on position "0"
@@ -366,13 +368,18 @@ Feature: API Provider Integration
     And check "Done" button is "visible"
     And click on the "Done" button
 
+    And edit integration step on position 5
+    And map Api Provider errors
+      | Server Error         | 409 |
+    And click on the "Next" button
+
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
     And inserts into "todo" table
       | task1 |
     Then wait until integration "TODO Integration post existing" gets into "Running" state
-    And verify that executing POST on API Provider route i-todo-integration-post-existing endpoint "/api/" with request '{"id":1,"completed":1,"task":"task1"}' returns status 500 and body
+    And verify that executing POST on API Provider route i-todo-integration-post-existing endpoint "/api/" with request '{"id":1,"completed":1,"task":"task1"}' returns status 409 and body
         """
         """
     And validate that all todos with task "task1" have value completed "0", period in ms: "1000"
@@ -748,23 +755,23 @@ Feature: API Provider Integration
     And fill in invoke query input with "SELECT * FROM todo where id = :#id" value
     And click on the "Next" button
 
-    And add integration step on position "1"
-    And select "Data Mapper" integration step
-    And open data bucket "2 - SQL Result"
-    And open data mapper collection mappings
-    And create data mapper mappings
-      | id        | body.id        |
-      | completed | body.completed |
-      | task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
-    And check "Done" button is "visible"
-    And click on the "Done" button
-
     # add mapping for parameter
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | id |
+    And sleep for jenkins delay or "2" seconds
+    And check "Done" button is "visible"
+    And click on the "Done" button
+
+    And add integration step on position "2"
+    And select "Data Mapper" integration step
+    And open data bucket "3 - SQL Result"
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | id        | body.id        |
+#     | completed | body.completed |
+      | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
@@ -779,11 +786,11 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration edit implemented" gets into "Running" state
     And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1" returns status 200 and body
         """
-        {"id":1,"completed":null,"task":"task1"}
+        {"id":1,"task":"task1"}
         """
     And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/2" returns status 200 and body
         """
-        {"id":2,"completed":null,"task":"task2"}
+        {"id":2,"task":"task2"}
         """
 
     # go back to the integration and edit
@@ -828,7 +835,7 @@ Feature: API Provider Integration
     And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
-      | completed | body.completed |
+#     | completed | body.completed |
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
@@ -844,11 +851,11 @@ Feature: API Provider Integration
 
     And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1" returns status 200 and body
         """
-        [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
+        [{"id":1,"task":"task1"},{"id":2,"task":"task2"}]
         """
     And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/42" returns status 200 and body
         """
-        [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
+        [{"id":1,"task":"task1"},{"id":2,"task":"task2"}]
         """
 
   @gh-6099
