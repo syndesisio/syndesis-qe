@@ -384,8 +384,10 @@ oc project syndesis
 oc delete secret test-lock
 ```
 
-*  If tests failed at ***java.lang.IllegalArgumentException: bound must be positive***, 
+* If tests failed at ***java.lang.IllegalArgumentException: bound must be positive***,
 just add -Dsyndesis.config.openshift.namespace.lock=true parameter to the command.
+
+* When you start minishift, you might receive a 403 forbidden status from GitHub if your request exceeds the rate limit for your IP address. In this case, the command will fail and you will receive an error message. You need to create a personal API token from your GitHub account at https://github.com/settings/tokens. After you generate the API token, you need to set the MINISHIFT_GITHUB_API_TOKEN environment variable by running: `export MINISHIFT_GITHUB_API_TOKEN=<token_ID>` .
 
 #### Debugging
 
