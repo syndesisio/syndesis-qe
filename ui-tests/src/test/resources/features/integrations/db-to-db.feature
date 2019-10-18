@@ -353,6 +353,8 @@ Feature: Integration - DB to DB
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
     And fill in invoke query input with "INSERT INTO contact (first_name) VALUES (:#task)" value
+    And fill in values by element data-testid
+      | batch | true |
     And click on the "Done" button
 
     When add integration step on position "0"
