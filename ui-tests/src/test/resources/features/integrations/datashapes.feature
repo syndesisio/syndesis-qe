@@ -84,14 +84,16 @@ Feature: Integration - data shapes propagation
 
     When add integration step on position "0"
     And select the "Conditional Flows" connection
+    And select "Advanced expression builder" integration action
 
-    When click on the "+ Add another condition" button
+    When Add another condition
     And fill in values by element data-testid
       | flowconditions-0-condition | ${body.message} == 'Shaco' |
       | flowconditions-1-condition | ${body.message} == 'Clone' |
     And fill in values by element data-testid
       | usedefaultflow | true |
-    And click on the "Done" button
+    And click on the "Next" button
+    And click on the "Next" button
 
     Then validate that input datashape on step 1 contains "json-instance"
     And validate that input datashape on step 2 contains "json-instance"
