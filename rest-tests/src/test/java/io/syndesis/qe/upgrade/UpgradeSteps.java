@@ -169,9 +169,9 @@ public class UpgradeSteps {
         //        }
     }
 
-    @Then("^verify syndesis \"([^\"]*)\" version$")
-    public void verifyVersion(String version) {
-        assertThat(getSyndesisVersion()).startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
+    @Then("^verify syndesis version$")
+    public void verifyVersion() {
+        assertThat(getSyndesisVersion()).isEqualTo(System.getProperty("syndesis.version"));
     }
 
     @When("^perform test modifications$")
@@ -390,12 +390,9 @@ public class UpgradeSteps {
 
     @Then("^verify correct s2i tag for builds$")
     public void verifyImageStreams() {
-        final String expected = System.getProperty("syndesis.upgrade.rollback") != null
-            ? System.getProperty("syndesis.version")
-            : System.getProperty("syndesis.upgrade.version");
         OpenShiftUtils.getInstance().buildConfigs().list().getItems().stream()
             .filter(bc -> bc.getMetadata().getName().startsWith("i-"))
-            .forEach(bc -> assertThat(bc.getSpec().getStrategy().getSourceStrategy().getFrom().getName()).contains(expected));
+            .forEach(bc -> assertThat(bc.getSpec().getStrategy().getSourceStrategy().getFrom().getName()).contains(System.getProperty("TAG")));
     }
 
     @When("^delete buildconfig with name \"([^\"]*)\"$")

@@ -19,6 +19,7 @@ Feature: Syndesis Upgrade - Productized Version
     Then create integration with name: "upgrade"
       And wait for integration with name: "upgrade" to become active
       And verify upgrade integration with task "X"
+      And verify syndesis version
 
   # After the upgrade is done, create a new integration and verify that it is working + verify that the old one is still working as well
   @prod-upgrade-after
@@ -26,11 +27,13 @@ Feature: Syndesis Upgrade - Productized Version
     When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
       And verify upgrade integration with task "X"
-    Given add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+    When add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
       | timer-action | 1000   |
-    And create HTTP "GET" step
-    And create integration with name: "timer-to-http"
-    And wait for integration with name: "timer-to-http" to become active
+      And create HTTP "GET" step
+      And create integration with name: "timer-to-http"
+      And wait for integration with name: "timer-to-http" to become active
     Then verify that after "2.5" seconds there were "2" calls
       And verify upgrade integration with task "X"
+      And verify syndesis version
+      And verify correct s2i tag for builds
