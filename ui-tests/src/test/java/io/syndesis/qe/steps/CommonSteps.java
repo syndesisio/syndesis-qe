@@ -41,6 +41,7 @@ import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -195,7 +196,7 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if ((currentUrl.contains("rhcloud") || currentUrl.contains("crc"))
+        } else if (StringUtils.containsAny(currentUrl, "rhcloud", "crc", "rhocf")
             && currentUrl.contains("oauth/authorize")) {
             $(By.partialLinkText("htpasswd")).click();
             MinishiftLogin minishiftLogin = new MinishiftLogin();
