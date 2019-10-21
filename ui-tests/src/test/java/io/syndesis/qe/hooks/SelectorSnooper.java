@@ -77,6 +77,7 @@ public class SelectorSnooper {
      */
     public static void finish() {
         if (TestConfiguration.snoopSelectors()) {
+            log.info("Generating selector reports");
             reporter.generateReports();
             log.info("Logging selectors took {} ms from total test run", WebElementSelectorDetector.delta);
         }
