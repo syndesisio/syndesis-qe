@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,6 +52,19 @@ public final class TestSupport {
         int tries = 0;
         while (tries < 10) {
             if (resetDbWithResponse() == 204) {
+                log.info("Cleaning integration RCs and pods");
+                // Also delete dangling RCs
+                OpenShiftUtils.getInstance().replicationControllers().delete(
+                    OpenShiftUtils.getInstance().replicationControllers().list().getItems().stream()
+                        .filter(rc -> rc.getMetadata().getName().startsWith("i-"))
+                        .collect(Collectors.toList())
+                );
+                // In OCP 4.x the build and deploy pods stays there, so delete them
+                OpenShiftUtils.getInstance().pods().delete(
+                    OpenShiftUtils.getInstance().pods().list().getItems().stream()
+                        .filter(pod -> pod.getMetadata().getName().startsWith("i-"))
+                        .collect(Collectors.toList())
+                );
                 return;
             }
             TestUtils.sleepIgnoreInterrupt(5000L);
