@@ -7,10 +7,14 @@ import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShiftBinary;
@@ -230,6 +234,89 @@ public final class OpenShiftUtils {
                 "-f", resource
         );
         log.info(output);
+    }
+
+    /**
+     * Returns all pods that match the given predicates.
+     *
+     * @param predicates predicates to match
+     * @return list of pods that match the given predicates.
+     */
+    @SafeVarargs
+    public static List<Pod> findPodsByPredicates(Predicate<Pod>... predicates) {
+        Stream<Pod> podStream = OpenShiftUtils.getInstance().pods().list().getItems().stream();
+        for (Predicate<Pod> predicate : predicates) {
+            podStream = podStream.filter(predicate);
+        }
+        return podStream.collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the first pod that matches the predicates, or fails if none matches.
+     *
+     * @param predicates predicates to match
+     * @return first pod that matches the predicates
+     */
+    @SafeVarargs
+    public static Pod getPod(Predicate<Pod>... predicates) {
+        List<Pod> pods = findPodsByPredicates(predicates);
+        assertThat(pods).size().isGreaterThan(0);
+        if (pods.size() > 1) {
+            log.warn("There were multiple pods found with given predicate, returning the first one found");
+        }
+        return pods.get(0);
+    }
+
+    /**
+     * Gets the first integration pod that matches the given predicates.
+     *
+     * @param integrationName integration name
+     * @param predicates predicates to match
+     * @return first pod that matches the predicates
+     */
+    @SafeVarargs
+    public static Pod getIntegrationPod(String integrationName, Predicate<Pod>... predicates) {
+        return getPod(withIntegrationName(integrationName, predicates));
+    }
+
+    /**
+     * Checks if the pod with given predicates exist.
+     *
+     * @param predicates predicates to match
+     * @return true/false
+     */
+    @SafeVarargs
+    public static boolean podExists(Predicate<Pod>... predicates) {
+        Stream<Pod> podStream = OpenShiftUtils.getInstance().pods().list().getItems().stream();
+        for (Predicate<Pod> predicate : predicates) {
+            podStream = podStream.filter(predicate);
+        }
+        return podStream.findAny().isPresent();
+    }
+
+    /**
+     * Checks if integration pod with given predicates exist.
+     *
+     * @param integrationName integration name
+     * @param predicates predicates to match
+     * @return true/false
+     */
+    @SafeVarargs
+    public static boolean integrationPodExists(String integrationName, Predicate<Pod>... predicates) {
+        return podExists(withIntegrationName(integrationName, predicates));
+    }
+
+    /**
+     * Adds the filter for pod name to the array of predicates.
+     *
+     * @param integrationName integration name
+     * @param predicates array of predicates
+     * @return array of predicates with a predicate for integration pod
+     */
+    private static Predicate<Pod>[] withIntegrationName(String integrationName, Predicate[] predicates) {
+        Predicate[] preds = Arrays.copyOf(predicates, predicates.length + 1);
+        preds[preds.length - 1] = (Predicate<Pod>) p -> p.getMetadata().getName().contains(integrationName.replaceAll(" ", "-"));
+        return preds;
     }
 
     public static void updateEnvVarInDeploymentConfig(String dcName, String key, String value) {

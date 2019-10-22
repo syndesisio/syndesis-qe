@@ -4,7 +4,7 @@ import static org.assertj.core.api.Fail.fail;
 
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,16 +23,16 @@ public class IntegrationStateHandler {
             fail("Unable to find ID for flow " + name);
         }
 
+        final int currentNo = OpenShiftUtils.extractPodSequenceNr(
+            OpenShiftUtils.getIntegrationPod(name, p -> p.getMetadata().getName().endsWith("-build"))
+        );
         integrationsEndpoint.activateIntegration(integrationId.get());
-        final int maxRetries = 10;
-        int retries = 0;
-        boolean buildPodPresent = false;
-        while (!buildPodPresent && retries < maxRetries) {
-            buildPodPresent = OpenShiftUtils.getInstance().pods().list().getItems().stream().anyMatch(
-                p -> p.getMetadata().getName().contains(name.toLowerCase().replaceAll(" ", "-"))
-                    && p.getMetadata().getName().endsWith("-build"));
-            TestUtils.sleepIgnoreInterrupt(10000L);
-            retries++;
+
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.integrationPodExists(name, p -> p.getMetadata().getName().endsWith("build"),
+                p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNo), 10000L, 60000L);
+        } catch (Exception e) {
+            fail("Unable to find new build pod for integration " + name + "after 60 seconds");
         }
     }
 }

@@ -18,6 +18,8 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
@@ -129,11 +131,12 @@ public class OpenshiftValidationSteps {
         int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
         waitForStateCheckInterval();
         // Check that there is no pod with higher number
-        assertThat(OpenShiftUtils.getInstance().pods().list().getItems().stream()
-            .filter(p -> p.getMetadata().getName().contains(podName) && OpenShiftUtils.extractPodSequenceNr(p) > currentNr)
-            .count())
+        assertThat(OpenShiftUtils.podExists(
+            p -> p.getMetadata().getName().contains(podName),
+            p -> !StringUtils.containsAny(p.getMetadata().getName(), "build", "deploy"),
+            p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNr))
             .as("There should be no pod with higher number")
-            .isZero();
+            .isFalse();
     }
 
     @When("^wait for state check interval$")

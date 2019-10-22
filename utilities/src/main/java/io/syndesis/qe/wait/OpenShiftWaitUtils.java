@@ -235,13 +235,15 @@ public class OpenShiftWaitUtils {
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podPartialName);
         assertThat(pod.isPresent()).isTrue();
         int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
-        log.info("Current pod number: " + currentNr);
-        int nextNr = currentNr + 1;
 
-        String podPartialNextName = StringUtils.substringBefore(pod.get().getMetadata().getName(), "-" + currentNr) + "-" + nextNr;
-        log.info("Waiting for {} pod is reloaded", podPartialNextName);
-        waitFor(() -> isPodPresent(podPartialNextName), 60 * 1000 * 10L);
-        waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialNextName).get()), 60 * 1000 * 10L);
+        podPartialName = StringUtils.substringBefore(pod.get().getMetadata().getName(), "-" + currentNr);
+        // Var in lambda should be effectively final
+        String finalPodPartialName = podPartialName;
+        // Wait until there is a pod with higher number
+        waitFor(() -> OpenShiftUtils.getPodByPartialName(finalPodPartialName)
+                .filter(value -> OpenShiftUtils.extractPodSequenceNr(value) > currentNr).isPresent(),
+            10, 60 * 1000 * 10L);
+        waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(finalPodPartialName).get()), 60 * 1000 * 10L);
 
         //There was an issue with meta pod not listening straight after deploying - waiting a bit here
         // UI even gives 60s after integration gets into running state, lets go with 30 here
