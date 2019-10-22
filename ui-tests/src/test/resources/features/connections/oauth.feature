@@ -104,6 +104,7 @@ Feature: Connections - OAuth
 
   @ENTESB-11282
   @oauth-gcalendar
+  @disabled
   Scenario: Testing Google calendar OAuth connector
     Given renew access token for "QE Google Calendar" google account
     And create calendars
