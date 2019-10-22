@@ -326,6 +326,11 @@ public class ApicurioSteps {
         } else if ("syndesis".equals(frame)) {
             switchTo().parentFrame();
         }
+        log.info("FRAME CHANGED TO *{}*,", checkFrame());
+    }
+
+    private String checkFrame() {
+        return Selenide.executeJavaScript("return self.name");
     }
 
     public SelenideElement getButton(String buttonTitle) {

@@ -133,6 +133,7 @@ public class ApiProviderSteps {
         cs.clickOnLink("Save");
         new CreateIntegrationSteps().setIntegrationName(name);
         cs.clickOnButton("Save");
+        TestUtils.sleepIgnoreInterrupt(2000);
     }
 
     @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+) and body$")
@@ -142,8 +143,10 @@ public class ApiProviderSteps {
         checkResponse(response, status, body, null);
     }
 
-    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+), response type ([^\"]*) and body$")
-    public void verifyThatEndpointReturnsStatusResponseTypeAndBody(String method, String routeName, String endpoint, int status, String responseType, String body) {
+    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+), response type ([^\"]*) and " +
+        "body$")
+    public void verifyThatEndpointReturnsStatusResponseTypeAndBody(String method, String routeName, String endpoint, int status, String responseType,
+        String body) {
         String url = getUrl(routeName, endpoint);
         Response response = getInvocation(url).method(method);
         checkResponse(response, status, body, responseType);
@@ -151,7 +154,7 @@ public class ApiProviderSteps {
 
     @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" with request '(.+)' returns status (\\d+) and body$")
     public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName,
-                                                       String endpoint, String requestBody, int status, String body) {
+        String endpoint, String requestBody, int status, String body) {
         String url = getUrl(routeName, endpoint);
         Response response = getInvocation(url).method(method, Entity.entity(requestBody, MediaType.APPLICATION_JSON_TYPE));
         checkResponse(response, status, body, null);
