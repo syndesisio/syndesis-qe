@@ -108,7 +108,7 @@ Feature: Connections - OAuth
     Given renew access token for "QE Google Calendar" google account
     And create calendars
       | google_account     | calendar_summary | calendar_description                      |
-      | QE Google Calendar | syndesis-test1   | short-lived calendar for integration test |
+      | QE Google Calendar | syndesis-oauth-calendar   | short-lived calendar for integration test |
 
     When navigate to the "Settings" page
     And fill all oauth settings
@@ -125,7 +125,7 @@ Feature: Connections - OAuth
     And fill in values by element data-testid
       | consumefromnow     | false          |
       | considerlastupdate | false          |
-      | calendarid         | syndesis-test1 |
+      | calendarid         | syndesis-oauth-calendar |
 
     And click on the "Next" button
 
@@ -141,7 +141,7 @@ Feature: Connections - OAuth
 
     When navigate to the "Integrations" page
     Then Integration "OAuth-Gcalendar-test" is present in integrations list
-    And create following "all" events in calendar "syndesis-test1" with account "QE Google Calendar"
+    And create following "all" events in calendar "syndesis-oauth-calendar" with account "QE Google Calendar"
       | summary     | start_date | start_time | end_date   | end_time | description  | attendees              |
       | past_event1 | 2018-10-01 | 10:00:00   | 2018-10-01 | 11:00:00 | An old event | jbossqa.fuse@gmail.com |
     And wait until integration "OAuth-Gcalendar-test" gets into "Running" state
