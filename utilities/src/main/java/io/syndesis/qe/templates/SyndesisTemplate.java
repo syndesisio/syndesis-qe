@@ -8,6 +8,7 @@ import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
@@ -49,6 +50,7 @@ public class SyndesisTemplate {
     public static void deploy() {
         createPullSecret();
         deployUsingOperator();
+        checkRoute();
     }
 
     private static void createPullSecret() {
@@ -81,6 +83,23 @@ public class SyndesisTemplate {
         deployOperator();
         deploySyndesisViaOperator();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
+    }
+
+    /**
+     * In case of multiple uses of a static route, openshift will create the route anyway with a false condition, so rather fail fast.
+     */
+    private static void checkRoute() {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
+        } catch (Exception e) {
+            fail("Unable to find syndesis route in 120s");
+        }
+
+        if ("false".equalsIgnoreCase(
+            OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getStatus())) {
+            fail("Syndesis route failed to provision because of: " +
+                OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getMessage());
+        }
     }
 
     public static Map<String, Object> getDeployedCr() {
