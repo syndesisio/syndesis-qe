@@ -196,7 +196,7 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if (StringUtils.containsAny(currentUrl, "rhcloud", "crc", "rhocf")
+        } else if (StringUtils.containsAny(currentUrl, "rhcloud", "crc", "rhocf", "ocp4")
             && currentUrl.contains("oauth/authorize")) {
             $(By.partialLinkText("htpasswd")).click();
             MinishiftLogin minishiftLogin = new MinishiftLogin();
