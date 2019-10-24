@@ -50,7 +50,14 @@ public abstract class TestSuiteParent {
             // display log warning and continue with force break
             log.warn("Can't obtain lock gracefully");
         }
-        cleanNamespace();
+        try {
+            cleanNamespace();
+        } catch (Exception e) {
+            // When the test fails in @BeforeClass, the stacktrace is not printed and we get only this chain:
+            // CucumberTest>TestSuiteParent.lockNamespace:53->TestSuiteParent.cleanNamespace:92 » NullPointer
+            e.printStackTrace();
+            throw e;
+        }
         log.info("Creating namespace lock via secret `test-lock`");
         lockSecret = OpenShiftUtils.getInstance().secrets()
             .createOrReplaceWithNew()
