@@ -301,7 +301,7 @@ public class TestConfiguration {
 
         props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
         if (props.getProperty(SNOOP_SELECTORS) == null) {
-            props.setProperty(SNOOP_SELECTORS, "false");
+            props.setProperty(SNOOP_SELECTORS, "true");
         }
         return props;
     }
