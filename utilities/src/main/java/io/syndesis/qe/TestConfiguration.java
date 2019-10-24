@@ -72,20 +72,30 @@ public class TestConfiguration {
     private final Properties properties = new Properties();
 
     private TestConfiguration() {
-        // first let's try properties in module dir
-        copyValues(fromPath("test.properties"), true);
+        try {
+            // first let's try properties in module dir
+            copyValues(fromPath("test.properties"), true);
 
-        // then properties in repo root
-        copyValues(fromPath("../" + System.getProperty(TEST_PROPERTIES_FILE, "test.properties")));
+            // then properties in repo root
+            copyValues(fromPath("../" + System.getProperty(TEST_PROPERTIES_FILE, "test.properties")));
 
-        // then system variables
-        copyValues(System.getProperties());
+            // then system variables
+            copyValues(System.getProperties());
 
-        // then environment variables
-        // TODO: copyValues(fromEnvironment());
+            // then environment variables
+            // TODO: copyValues(fromEnvironment());
 
-        // then defaults
-        copyValues(defaultValues());
+            // then defaults
+            copyValues(defaultValues());
+        } catch (Exception e) {
+            // If it fails here, then the user doesn't get any meaningful error other than:
+            // java.lang.NoClassDefFoundError: Could not initialize class io.syndesis.qe.TestConfiguration
+            log.error(
+                "Error while creating TestConfiguration class! Please check if all mandatory properties are set" +
+                    " (either in test.properties or via the command line)");
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     public static TestConfiguration get() {
