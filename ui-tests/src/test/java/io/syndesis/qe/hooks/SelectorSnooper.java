@@ -44,7 +44,7 @@ public class SelectorSnooper {
 
     @Before
     public static void before(Scenario scenario) {
-        scenarioName = scenario.getUri() + ":" + scenario.getName();
+        scenarioName = scenario.getUri();
     }
 
     public static void pauseReporting() {
