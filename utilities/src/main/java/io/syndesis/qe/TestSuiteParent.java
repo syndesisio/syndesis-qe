@@ -3,6 +3,7 @@ package io.syndesis.qe;
 import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.templates.KuduRestAPITemplate;
 import io.syndesis.qe.templates.KuduTemplate;
+import io.syndesis.qe.templates.MongoDb36Template;
 import io.syndesis.qe.templates.WildFlyTemplate;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -77,6 +78,10 @@ public abstract class TestSuiteParent {
 
         if (TestUtils.isDcDeployed("odata")) {
             WildFlyTemplate.cleanUp("odata");
+        }
+
+        if (TestUtils.isDcDeployed(MongoDb36Template.APP_NAME)) {
+            MongoDb36Template.cleanUp();
         }
 
         if (lockSecret != null) {

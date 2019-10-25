@@ -26,6 +26,18 @@ public class InvokeHttpRequest {
         assertThat(this.invokeWebhookRequest(nameOfIntegration, token, body).getCode()).isEqualTo(204);
     }
 
+    /**
+     * A version of the invokeWebhookRequestCannotFail method which accepts docstring
+     *
+     * @param nameOfIntegration
+     * @param token
+     * @param body
+     */
+    @When("^invoke post request to webhook in integration (.*) with token (.*) and body:$")
+    public void invokeWebhookWithBody(String nameOfIntegration, String token, String body) {
+        invokeWebhookRequestCannotFail(nameOfIntegration, token, body.trim());
+    }
+
     // data table values:
     // |integrationName |webhook-token  |request body   |expected output code   |
     @When("^invoke post request to webhook$")
