@@ -91,6 +91,8 @@ public class SyndesisTemplate {
     private static void checkRoute() {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
+                .getStatus().getIngress() != null, 120000L);
         } catch (Exception e) {
             fail("Unable to find syndesis route in 120s");
         }
