@@ -237,6 +237,20 @@ public final class OpenShiftUtils {
     }
 
     /**
+     * Deletes the resource using binary oc client.
+     *
+     * @param resource resource to delete
+     */
+    public static void delete(String resource) {
+        final String output = binary().execute(
+            "delete",
+            "-n", TestConfiguration.openShiftNamespace(),
+            "-f", resource
+        );
+        log.info(output);
+    }
+
+    /**
      * Returns all pods that match the given predicates.
      *
      * @param predicates predicates to match

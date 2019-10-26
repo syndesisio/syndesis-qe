@@ -1,6 +1,7 @@
 package io.syndesis.qe;
 
 import io.syndesis.qe.bdd.CommonSteps;
+import io.syndesis.qe.templates.KafkaTemplate;
 import io.syndesis.qe.templates.KuduRestAPITemplate;
 import io.syndesis.qe.templates.KuduTemplate;
 import io.syndesis.qe.templates.MongoDb36Template;
@@ -82,6 +83,10 @@ public abstract class TestSuiteParent {
 
         if (TestUtils.isDcDeployed(MongoDb36Template.APP_NAME)) {
             MongoDb36Template.cleanUp();
+        }
+
+        if (OpenShiftUtils.getInstance().apps().deployments().withName("strimzi-cluster-operator") != null) {
+            KafkaTemplate.undeploy();
         }
 
         if (lockSecret != null) {
