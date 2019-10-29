@@ -7,16 +7,11 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 
-import org.apache.commons.io.FileUtils;
-
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -91,14 +86,7 @@ public final class TestSupport {
             responseCode = invocation.get().getStatus();
         } catch (ProcessingException e) {
             log.error("Error while invoking reset-db: ", e);
-            final String fileName = "error-" + new Date().getTime() + ".log";
-            final String content = TestUtils.printPods() + "\n" + OpenShiftUtils.getPodLogs("syndesis-server");
-            try {
-                FileUtils.writeStringToFile(new File("log/" + fileName), content, "UTF-8");
-                log.error("Wrote server debug stuff to " + fileName);
-            } catch (IOException ex) {
-                log.error("Unable to write string to file: ", ex);
-            }
+            TestUtils.saveDebugInfo();
         }
         log.info("syndesis-db has been reset, via url: *{}*, responseCode:*{}*", url, responseCode);
         log.debug("Reset endpoint reponse: {}", responseCode);
