@@ -38,7 +38,7 @@ Feature: Quickstart Hello World
     Then check that 1. step in the 1. activity contains Hello World!! in the output
 
   # https://youtu.be/Z81TyyvBxy0
-  @quickstart-video
+  @quickstart-video-2
   Scenario: Check process in the video
     When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -46,7 +46,7 @@ Feature: Quickstart Hello World
 
     When select the "Timer" connection
     And select "Simple Timer" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | period        | 1       |
       | select-period | Minutes |
     And click on the "Done" button

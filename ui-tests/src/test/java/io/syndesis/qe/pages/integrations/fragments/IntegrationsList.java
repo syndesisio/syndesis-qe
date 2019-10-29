@@ -10,6 +10,7 @@ import io.syndesis.qe.fragments.common.list.RowList;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
@@ -28,10 +29,10 @@ public class IntegrationsList extends RowList {
     }
 
     private static final class Element {
-        public static final By STATUS = By.cssSelector("span[data-testid=\"integration-status-status-label\"]");
-        public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
+        public static final By STATUS = ByUtils.dataTestId("span", "integration-status-status-label");
+        public static final By STARTING_STATUS = ByUtils.dataTestId("div", "integration-status-detail");
         public static final String INTEGRATION_SELECTOR = "div[data-testid=\"integrations-list-item-%s-list-item\"]";
-        public static final By VIEW_INTEGRATION = By.cssSelector("a[data-testid=\"integration-actions-view-button\"]");
+        public static final By VIEW_INTEGRATION = ByUtils.dataTestId("a", "integration-actions-view-button");
     }
 
     private static final class Button {

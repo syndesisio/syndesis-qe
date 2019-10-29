@@ -8,6 +8,6 @@ import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments
 public class GetSpecificEvent extends ConfigureAction {
     public void fillEventInput(String calendarId, String eventId) {
         this.selectFromDropDown("calendarid", calendarId);
-        this.fillInput("eventid", eventId);
+        this.fillInputById("eventid", eventId);
     }
 }

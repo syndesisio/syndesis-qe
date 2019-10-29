@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -70,7 +71,7 @@ public class Form {
      */
     public void forceFillByTestId(Map<String, String> data) {
         for (String testId : data.keySet()) {
-            TestUtils.waitFor(() -> $("[data-testid='" + testId + "']").exists(), 1, 15, "Fill in element " + testId + " was not found");
+            TestUtils.waitFor(() -> $(ByUtils.dataTestId(testId)).exists(), 1, 15, "Fill in element " + testId + " was not found");
         }
 
         fillBy(FillBy.TEST_ID, data);
@@ -86,7 +87,7 @@ public class Form {
      */
     private Map<String, String> getInputMap(FillBy fillBy) {
         Map<String, String> inputsMap = new HashMap<>();
-        for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div")) {
+        for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div", "checkbox")) {
             for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
@@ -111,7 +112,7 @@ public class Form {
             if (inputsMap.containsKey(key)) {
                 log.info("fill value in {} ", key);
                 SelenideElement input;
-
+                //1. finding input element:
                 if (fillBy.attribute.equalsIgnoreCase("id")) {
                     input = getRootElement().$(By.id(key)).shouldBe(visible);
                 } else {
@@ -119,6 +120,7 @@ public class Form {
                     input = getRootElement().$(cssSelector).shouldBe(visible);
                 }
 
+                //2.filling input element with value:
                 if (input.is(Condition.type("button")) && input.parent().has(Condition.cssClass("dropdown"))) {
                     input.click();
                     input.parent().$$(By.tagName("a")).find(Condition.exactText(data.get(key))).click();
@@ -137,6 +139,7 @@ public class Form {
                     //2. check if value is present in dropdown menu and select value:
                     assertThat(selectDivDropdownValue(input, data.get(key))).isTrue();
                 } else {
+                    //it means, input is "input" or "textarea" type
                     input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
                     input.sendKeys(Keys.BACK_SPACE);
                     input.clear();

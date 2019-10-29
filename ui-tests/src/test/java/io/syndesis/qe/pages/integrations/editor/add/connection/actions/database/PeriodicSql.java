@@ -4,6 +4,8 @@ import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.ByUtils;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -18,9 +20,10 @@ public class PeriodicSql extends Sql {
 
     private static final class Element {
         public static final By INPUT_QUERY = By.cssSelector("input[name='query']");
-        public static final By INPUT_PERIOD = By.cssSelector("input[data-testid='schedulerexpression']");
-        public static final By SELECT_PERIOD = By.cssSelector("[data-testid='schedulerexpression-duration']");
+        public static final By INPUT_PERIOD = ByUtils.dataTestId("input", "schedulerexpression");
+        public static final By SELECT_PERIOD = ByUtils.dataTestId("schedulerexpression-duration");
         public static final By TITLE = By.cssSelector("h3[innertext='Periodic SQL Invocation']");
+        public static final By DROPDOWN_MENU = By.className("pf-c-dropdown__menu");
     }
 
     @Override
@@ -46,8 +49,7 @@ public class PeriodicSql extends Sql {
         SelenideElement selectElement = $(Element.SELECT_PERIOD).shouldBe(visible);
         selectElement.click();
         log.info(selectElement.toString());
-        $(By.className("pf-c-dropdown__menu")).$$(By.tagName("li")).filter(exactText(timeUnits)).get(0).click();
-       // selectElement.selectOption(timeUnits);
+        $(Element.DROPDOWN_MENU).$$(By.tagName("li")).filter(exactText(timeUnits)).get(0).click();
     }
 
 }

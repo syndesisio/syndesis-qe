@@ -86,7 +86,7 @@ Feature: Google mail Connector
 
     When select the "My GMail Connector" connection
     And select "Receive Email" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | labels | syndesis-test |
     And click on the "Next" button
 

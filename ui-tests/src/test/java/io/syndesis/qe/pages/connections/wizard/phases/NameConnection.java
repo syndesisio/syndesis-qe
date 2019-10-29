@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisRootPage;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -20,8 +21,8 @@ public class NameConnection extends AbstractConnectionWizardStep {
     }
 
     private static final class Input {
-        public static final By DESCRIPTION = By.cssSelector("textarea[data-testid=\"description\"]");
-        public static final By NAME = By.cssSelector("input[data-testid=\"name\"]");
+        public static final By DESCRIPTION = ByUtils.dataTestId("textarea", "description");
+        public static final By NAME = ByUtils.dataTestId("input", "name");
     }
 
     private static final class Label {

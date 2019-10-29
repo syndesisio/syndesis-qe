@@ -57,7 +57,7 @@ Feature: Integration - Telegram to Telegram
     # telegram needs ID of chat, its not name but some hidden ID
     # to get ID, you have to get updates via curl with bot and find it in json response:
     # curl https://api.telegram.org/bot<insert-bot-token-here>/getUpdates
-    And fill in values by element ID
+    And fill in values by element data-testid
       | chatid | -211060990 |
 
     And click on the "Done" button
@@ -96,7 +96,7 @@ Feature: Integration - Telegram to Telegram
 
     When select the "Telegram test connection" connection
     And select "Send a Text Message" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | chatid | -368918764 |
 
 

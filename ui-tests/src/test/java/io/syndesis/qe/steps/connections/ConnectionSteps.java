@@ -17,6 +17,7 @@ import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -73,7 +74,7 @@ public class ConnectionSteps {
     public void checkAllVisibleKebabMenus(String action1, String action2, String action3) {
         List<String> actions = new ArrayList<>(Arrays.asList(action1, action2, action3));
         for (SelenideElement connection : connectionsPage.getAllConnections()) {
-            KebabMenu kebabMenu = new KebabMenu(connection.$(By.xpath(".//button")).shouldBe(visible));
+            KebabMenu kebabMenu = new KebabMenu(connection.$(ByUtils.dataTestId("button", "connection-card-kebab")).shouldBe(visible));
             try {
                 kebabMenu.open();
                 TestUtils.sleepIgnoreInterrupt(1000);

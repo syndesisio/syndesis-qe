@@ -60,7 +60,7 @@ Feature: Customization - API Connector CRUD
     And click on the "Next" link
     Then check visibility of page "Specify Security"
     And click on the "Next" button
-    And fill in values by element ID
+    And fill in values by element data-testid
       | name | Swagger Petstore |
     And click on the "Save" button
 
@@ -68,13 +68,13 @@ Feature: Customization - API Connector CRUD
     Then check visibility of page "Connector Details"
 
     When click on the "Edit" button
-    And fill in values by element ID
+    And fill in values by element data-testid
       | name        | Swagger Petstore-1           |
       | description | Description-1                |
       | host        | http://petstore.swagger.io-1 |
       | basepath    | /v2-1                        |
     And click on the "Save" button
-    Then validate connector detail values
+    Then validate connector detail values by "data-testid"
       | name        | Swagger Petstore-1           |
       | description | Description-1                |
       | host        | http://petstore.swagger.io-1 |
@@ -94,7 +94,7 @@ Feature: Customization - API Connector CRUD
     And click on the "Next" link
     Then check visibility of page "Specify Security"
     And click on the "Next" button
-    And fill in values by element ID
+    And fill in values by element data-testid
       | name | Swagger Petstore |
     And click on the "Save" button
 

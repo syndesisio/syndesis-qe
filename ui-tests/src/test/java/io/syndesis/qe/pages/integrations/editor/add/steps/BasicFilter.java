@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.integrations.editor.add.steps.basicfilter.BasicFilterRule;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -27,13 +28,13 @@ public class BasicFilter extends AbstractStep {
     }
 
     private static final class Input {
-        public static final By PATH = By.cssSelector("input[data-testid=\"rules-0-path\"]");
-        public static final By VALUE = By.cssSelector("input[data-testid=\"rules-0-value\"]");
+        public static final By PATH = ByUtils.dataTestId("input", "rules-0-path");
+        public static final By VALUE = ByUtils.dataTestId("input", "rules-0-value");
     }
 
     private static final class Select {
-        public static final By PREDICATE = By.cssSelector("select[data-testid=\"predicate\"]");
-        public static final By OP = By.cssSelector("select[data-testid=\"rules-0-op\"]");
+        public static final By PREDICATE = ByUtils.dataTestId("select", "predicate");
+        public static final By OP = ByUtils.dataTestId("select", "rules-0-op");
     }
 
     private static final class Link {

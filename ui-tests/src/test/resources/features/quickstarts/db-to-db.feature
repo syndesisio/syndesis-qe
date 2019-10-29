@@ -55,7 +55,7 @@ Feature: Quickstart db to db
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     And fill in periodic query input with "SELECT * FROM CONTACT" value
-    And fill in values by element ID
+    And fill in values by element data-testid
       | schedulerExpression        | 1       |
       | select-schedulerExpression | Minutes |
     And click on the "Done" button

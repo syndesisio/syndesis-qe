@@ -29,7 +29,7 @@ Feature: Integration - Webhook to API connector
     When set up api connector security
       | authType | HTTP Basic Authentication |
     And click on the "Next" button
-    And fill in values by element ID
+    And fill in values by element data-testid
       | name     | Todo connector |
       | basepath | /api           |
     And fill in TODO API host URL

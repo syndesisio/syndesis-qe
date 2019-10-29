@@ -332,7 +332,7 @@ Feature: Integration - DB to DB
     When set up api connector security
       | authType | HTTP Basic Authentication |
     And click on the "Next" button
-    And fill in values by element ID
+    And fill in values by element data-testid
       | name     | Todo connector |
       | basepath | /api           |
     And fill in TODO API host URL
@@ -388,7 +388,7 @@ Feature: Integration - DB to DB
 
     When select the "Timer" connection
     And select "Simple" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | period        | 1       |
       | select-period | Minutes |
     And click on the "Next" button

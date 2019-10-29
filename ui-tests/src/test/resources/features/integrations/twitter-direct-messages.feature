@@ -30,7 +30,7 @@ Feature: Integration - Twitter Direct Messages
 
     When select the "Twitter Listener" connection
     And select "Retrieve" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | delay | 10 |
     And click on the "Next" button
     Then check that position of connection to fill is "Finish"
@@ -78,7 +78,7 @@ Feature: Integration - Twitter Direct Messages
     # to is twitter send direct message
     When select the "Twitter Listener" connection
     And select "Send" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | message | temp message   |
       | user    | syndesis_talky |
     And click on the "Next" button

@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -26,10 +27,9 @@ public class ManageCICDPage extends SyndesisPageObject {
     }
 
     private static final class Button {
-        public static final By ADD_NEW =
-            By.cssSelector("[data-testid=\"cicd-list-empty-state-add-new-button\"],[data-testid=\"cicd-list-view-add-new-button\"]");
-        public static final By EDIT = By.cssSelector("[data-testid=\"cicd-list-item-create-button\"]");
-        public static final By REMOVE = By.cssSelector("[data-testid=\"cicd-list-item-remove-button\"]");
+        public static final By ADD_NEW = ByUtils.containsDataTestId("add-new-button");
+        public static final By EDIT = ByUtils.dataTestId("cicd-list-item-create-button");
+        public static final By REMOVE = ByUtils.dataTestId("cicd-list-item-remove-button");
     }
 
     @Override
@@ -77,5 +77,4 @@ public class ManageCICDPage extends SyndesisPageObject {
         }
         return Integer.parseInt(m.group(1));
     }
-
 }

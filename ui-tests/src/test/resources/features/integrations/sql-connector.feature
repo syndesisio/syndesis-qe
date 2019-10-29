@@ -34,7 +34,7 @@ Feature: SQL Connector
     # select Timer as 'from' point
     When select the "Timer" connection
     And select "Simple" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | period        | 1       |
       | select-period | Minutes |
     And click on the "Next" button
@@ -157,7 +157,7 @@ Feature: SQL Connector
     #Start step
     When select the "Timer" connection
     And select "Simple" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | period        | 1       |
       | select-period | Minutes |
     And click on the "Next" button

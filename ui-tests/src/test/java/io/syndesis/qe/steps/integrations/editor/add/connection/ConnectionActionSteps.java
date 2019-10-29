@@ -38,9 +38,9 @@ public class ConnectionActionSteps {
     }
 
     @Then("^fill in \"(\\w+)\" action configure component input with \"([^\"]*)\" value$")
-    public void fillActionConfigureField(String fieldId, String value) {
+    public void fillActionConfigureField(String fieldDataTestid, String value) {
         log.info("Input should be visible");
-        configureAction.fillInput(fieldId, value);
+        configureAction.fillInputByDataTestid(fieldDataTestid, value);
     }
 
     @Then("^fill in periodic query input with \"([^\"]*)\" value$")

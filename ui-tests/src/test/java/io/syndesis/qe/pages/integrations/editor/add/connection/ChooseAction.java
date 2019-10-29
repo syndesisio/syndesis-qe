@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
@@ -23,7 +24,7 @@ public class ChooseAction extends SyndesisPageObject {
 
         public static final By ROOT = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
         public static final By TITLE = By.className("list-group-item-heading");
-        public static final By SELECT_BUTTON = By.cssSelector("[data-testid=\"select-action-page-select-button\"]");
+        public static final By SELECT_BUTTON = ByUtils.dataTestId("select-action-page-select-button");
 
         public static final String ACTION_SELECTOR = "div[data-testid=\"integration-editor-actions-list-item-%s-list-item\"]";
     }

@@ -90,7 +90,7 @@ Feature: Email connector
     # First connection is email receive (imap or pop3), by default it only fetches unread emails
     When select the "Receive Email with <protocol> QE" connection
     Then select "Receive Email" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | delay      | 30   |
       | maxresults | 10   |
       | unseenonly | true |
@@ -143,10 +143,10 @@ Feature: Email connector
     # First connection is email receive (imap or pop3), by default it only fetches unread emails
     When select the "Receive Email from folder QE" connection
     And select "Receive Email" integration action
-    And fill in values by element ID
+    And fill in values by element data-testid
       | delay      | 30     |
       | maxresults | 10     |
-      | folder     | folder |
+      | foldername | folder |
       | unseenonly | true   |
     And click on the "Done" button
     Then check that position of connection to fill is "Finish"
