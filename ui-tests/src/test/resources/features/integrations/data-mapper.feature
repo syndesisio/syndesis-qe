@@ -37,3 +37,49 @@ Feature: Data Mapper
     And edit integration step on position 2
     And open data mapper collection mappings
     Then check element with id "task" is present 2 times
+
+  @reproducer
+  @ENTESB-11870
+  @map-collection-to-single
+  Scenario: Map values from collection to single entry
+
+    Given truncate "todo" table
+    When inserts into "todo" table
+      | task1 |
+      | task2 |
+      | task3 |
+
+    And click on the "Create Integration" link
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    # postgres start connection that provides a value
+    When select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in invoke query input with "SELECT * FROM todo" value
+    And click on the "Next" button
+    Then check visibility of page "Choose a Finish Connection"
+
+    # select Log as 'to' point
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO todo (task) VALUES (:#task)" value
+    And click on the "Next" button
+
+    And add integration step on position "0"
+    And select "Data Mapper" integration step
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | task | task |
+    And click on the "Done" button
+
+    # save the integration with new name and publish it
+    When click on the "Publish" link
+    And set integration name "11870"
+    And publish integration
+    Then Integration "11870" is present in integrations list
+    And wait until integration "11870" gets into "Running" state
+
+    # validate that all items from db are present
+    When sleep for "10000" ms
+    And validate that number of all todos with task "task1 task2 task3" is "1"
