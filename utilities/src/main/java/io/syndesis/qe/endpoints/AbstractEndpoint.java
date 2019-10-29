@@ -1,5 +1,11 @@
 package io.syndesis.qe.endpoints;
 
+import io.syndesis.common.model.ListResult;
+import io.syndesis.common.util.Json;
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import io.syndesis.common.util.Json;
-import io.syndesis.common.model.ListResult;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.utils.RestUtils;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,7 +41,7 @@ public abstract class AbstractEndpoint<T> {
     private Class<T> type;
     protected Client client;
 
-    protected MultivaluedMap<String,Object> COMMON_HEADERS = new MultivaluedHashMap<>();
+    protected MultivaluedMap<String, Object> commonHeaders = new MultivaluedHashMap<>();
 
     public AbstractEndpoint(Class<?> type, String endpointName) {
         this.type = (Class<T>) type;
@@ -47,24 +49,35 @@ public abstract class AbstractEndpoint<T> {
 
         client = RestUtils.getClient();
 
-        COMMON_HEADERS.add("X-Forwarded-User", "pista");
-        COMMON_HEADERS.add("X-Forwarded-Access-Token", "kral");
-        COMMON_HEADERS.add("SYNDESIS-XSRF-TOKEN", "awesome");
+        commonHeaders.add("X-Forwarded-User", "pista");
+        commonHeaders.add("X-Forwarded-Access-Token", "kral");
+        commonHeaders.add("SYNDESIS-XSRF-TOKEN", "awesome");
     }
 
     public T create(T obj) {
         log.debug("POST: {}", getEndpointUrl());
         final Invocation.Builder invocation = this.createInvocation();
-        final JsonNode response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
+        final JsonNode response;
+        try {
+            response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
+        } catch (Exception e) {
+            log.error("Error while invoking POST to " + getEndpointUrl(), e);
+            TestUtils.saveDebugInfo();
+            throw e;
+        }
 
         return transformJsonNode(response, type);
     }
 
     public void delete(String id) {
         log.debug("DELETE: {}", getEndpointUrl(Optional.ofNullable(id)));
-        final Invocation.Builder invocation = this.createInvocation(id);
-
-        invocation.delete();
+        try {
+            this.createInvocation(id).delete();
+        } catch (Exception e) {
+            log.error("Error while invoking DELETE to " + getEndpointUrl(), e);
+            TestUtils.saveDebugInfo();
+            throw e;
+        }
     }
 
     public T get(String id) {
@@ -77,15 +90,23 @@ public abstract class AbstractEndpoint<T> {
             log.error("Not found: " + id);
             log.error("Found:");
             list().forEach(t -> log.error("  " + t.toString()));
+        } catch (Exception e) {
+            log.error("Error while invoking GET to " + getEndpointUrl(), e);
+            TestUtils.saveDebugInfo();
+            throw e;
         }
         return transformJsonNode(response, type);
     }
 
     public void update(String id, T obj) {
         log.debug("PUT : {}", getEndpointUrl(Optional.ofNullable(id)));
-        final Invocation.Builder invocation = this.createInvocation(id);
-
-        invocation.put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
+        try {
+            this.createInvocation(id).put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
+        } catch (Exception e) {
+            log.error("Error while invoking PUT to " + getEndpointUrl(), e);
+            TestUtils.saveDebugInfo();
+            throw e;
+        }
     }
 
     public List<T> list() {
@@ -99,10 +120,15 @@ public abstract class AbstractEndpoint<T> {
         final Class<ListResult<T>> listtype = (Class) ListResult.class;
 
         log.debug("GET : {}", getEndpointUrl(Optional.ofNullable(id)));
-        final Invocation.Builder invocation = this.createInvocation(id);
 
-        final JsonNode response = invocation
-                .get(JsonNode.class);
+        JsonNode response = null;
+        try {
+            response = this.createInvocation(id).get(JsonNode.class);
+        } catch (Exception e) {
+            log.error("Error while invoking GET to " + getEndpointUrl(), e);
+            TestUtils.saveDebugInfo();
+            throw e;
+        }
 
         ListResult<T> result = null;
         try {
@@ -146,9 +172,9 @@ public abstract class AbstractEndpoint<T> {
 
     protected Invocation.Builder createInvocation(String id) {
         Invocation.Builder invocation = client
-                .target(getEndpointUrl(Optional.ofNullable(id)))
-                .request(MediaType.APPLICATION_JSON)
-                .headers(COMMON_HEADERS);
+            .target(getEndpointUrl(Optional.ofNullable(id)))
+            .request(MediaType.APPLICATION_JSON)
+            .headers(commonHeaders);
         return invocation;
     }
 

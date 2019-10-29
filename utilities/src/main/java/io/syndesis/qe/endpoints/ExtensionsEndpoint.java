@@ -2,8 +2,9 @@ package io.syndesis.qe.endpoints;
 
 import static org.assertj.core.api.Fail.fail;
 
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
+import io.syndesis.common.model.extension.Extension;
 
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,8 +19,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Optional;
-
-import io.syndesis.common.model.extension.Extension;
 
 @Component
 public class ExtensionsEndpoint extends AbstractEndpoint<Extension> {
@@ -39,7 +38,7 @@ public class ExtensionsEndpoint extends AbstractEndpoint<Extension> {
         final Invocation.Builder invocation = client
                 .target(getEndpointUrl())
                 .request(MediaType.MULTIPART_FORM_DATA_TYPE)
-                .headers(COMMON_HEADERS);
+            .headers(commonHeaders);
         final JsonNode response = invocation.post(Entity.entity(mpo, MediaType.MULTIPART_FORM_DATA), JsonNode.class);
 
         return transformJsonNode(response, Extension.class);
@@ -49,9 +48,9 @@ public class ExtensionsEndpoint extends AbstractEndpoint<Extension> {
         Optional<String> id = e.getId();
         Client client = ClientBuilder.newClient();
         final Invocation.Builder invocation = client
-                .target(getEndpointUrl() + "/" +id.get() + "/install")
-                .request(MediaType.APPLICATION_JSON)
-                .headers(COMMON_HEADERS);
+            .target(getEndpointUrl() + "/" + id.get() + "/install")
+            .request(MediaType.APPLICATION_JSON)
+            .headers(commonHeaders);
         invocation.post(Entity.entity(e.toString(), MediaType.APPLICATION_JSON), JsonNode.class);
     }
 }

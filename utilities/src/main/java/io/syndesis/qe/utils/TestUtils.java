@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -288,6 +289,20 @@ public final class TestUtils {
             FileUtils.write(f, content.replaceAll(regex, replacement), "UTF-8", false);
         } catch (IOException e) {
             fail("Unable to replace content in " + f.getAbsolutePath(), e);
+        }
+    }
+
+    /**
+     * Saves the useful info to a log file.
+     */
+    public static void saveDebugInfo() {
+        final String fileName = "error-" + new Date().getTime() + ".log";
+        final String content = TestUtils.printPods() + "\n" + OpenShiftUtils.getPodLogs("syndesis-server");
+        try {
+            FileUtils.writeStringToFile(new File("log/" + fileName), content, "UTF-8");
+            log.error("Wrote server debug stuff to " + fileName);
+        } catch (IOException ex) {
+            log.error("Unable to write string to file: ", ex);
         }
     }
 }
