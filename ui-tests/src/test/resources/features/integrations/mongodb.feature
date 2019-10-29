@@ -222,7 +222,7 @@ Feature: MongoDB
   Scenario: MongoDB count
     When create mongodb collection "count_collection"
     And insert the following documents into mongodb collection "count_collection"
-      | id  | value |
+      | _id | value |
       | id1 | v1    |
       | id2 | v2    |
       | id3 | v1    |
