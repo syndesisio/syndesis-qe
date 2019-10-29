@@ -34,6 +34,7 @@ public class PublicOauthProxyTemplate {
             "-p", "PUBLIC_API_ROUTE_HOSTNAME=" + PUBLIC_API_PROXY_ROUTE,
             "-p", "OPENSHIFT_PROJECT=" + TestConfiguration.openShiftNamespace(),
             "-p", "OPENSHIFT_OAUTH_CLIENT_SECRET=" + getOathToken(),
+            "-p", "OAUTH_PROXY_TAG=" + OpenShiftUtils.getInstance().getImageStream("oauth-proxy").getSpec().getTags().get(0).getName(),
             "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()
         );
         OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
