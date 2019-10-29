@@ -1,5 +1,6 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 
 import cucumber.api.event.EventListener;
@@ -20,12 +21,14 @@ import net.bytebuddy.utility.JavaModule;
 @Slf4j
 public class ClassTransformerHook implements EventListener {
 
+    private boolean shouldLoadAgent = true;
+
     public ClassTransformerHook() {
         transform();
     }
 
-    private void transform() {
-        ByteBuddyAgent.install();
+    private void transformSelectors() {
+        lazyAgentInstall();
         /*
          The resulting agent annotates all methods loaded from apicurito testsuite with @ExcludeFromSelectorReports
          */
@@ -38,7 +41,7 @@ public class ClassTransformerHook implements EventListener {
                     if (ElementMatchers
                         .isAnnotatedWith(new TypeDescription.ForPackageDescription(new PackageDescription.ForLoadedPackage(Given.class.getPackage())))
                         .matches(typeDescription)) {
-                        log.info("Transforming {}", typeDescription.getDeclaredMethods());
+                        log.debug("Transforming {}", typeDescription.getDeclaredMethods());
                     }
                     return builder
                         .method(ElementMatchers.isAnnotatedWith(
@@ -50,7 +53,8 @@ public class ClassTransformerHook implements EventListener {
         /*
         The resulting agent changes methods annotated with @ExcludeFromSelectorReports to call ReporterPauseInterceptor#onEnter()
         And to call ReporterPauseInterceptor#onExit()
-        TLDR: before the actual method is executed SelectorSnooper#pauseReporting() is called and SelectorSnooper#resumeReporting() is called after the method finishes
+        TLDR: before the actual method is executed SelectorSnooper#pauseReporting() is called and SelectorSnooper#resumeReporting() is called after
+         the method finishes
          */
         new AgentBuilder.Default()
             .with(AgentBuilder.PoolStrategy.Eager.EXTENDED)
@@ -62,13 +66,27 @@ public class ClassTransformerHook implements EventListener {
                     JavaModule module) {
                     if (typeDescription.getDeclaredMethods().stream()
                         .anyMatch(inDefinedShape -> inDefinedShape.getDeclaredAnnotations().isAnnotationPresent(ExcludeFromSelectorReports.class))) {
-                        log.info("Transforming {}", typeDescription);
+                        log.debug("Transforming {}", typeDescription);
                     }
                     return builder
                         .method(ElementMatchers.isAnnotatedWith(ExcludeFromSelectorReports.class))
                         .intercept(Advice.to(ReporterPauseInterceptor.class));
                 }
             }).installOnByteBuddyAgent();
+    }
+
+    private void transform() {
+        if (TestConfiguration.snoopSelectors()) {
+            transformSelectors();
+        }
+    }
+
+    ///Install Bytebuddy agent only once
+    private void lazyAgentInstall(){
+        if (shouldLoadAgent){
+            ByteBuddyAgent.install();
+            shouldLoadAgent = false;
+        }
     }
 
     public static class ReporterPauseInterceptor {

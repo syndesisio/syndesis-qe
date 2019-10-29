@@ -45,7 +45,6 @@ public class CucumberTest extends TestSuiteParent {
 
     @AfterClass
     public static void onTestsEnd() {
-        log.info("Tests ended, generating selector report");
         SelectorSnooper.finish();
     }
 }
