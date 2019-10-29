@@ -77,7 +77,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
 
-  @gh-5429
+  @ENTESB-11474
   @apicurio-check-security-settings-no-security
   Scenario: Check apicurio security settings - no security
     And change frame to "syndesis"
@@ -95,7 +95,7 @@ Feature: Customization - API Connector - ApicurIO GUI
       | basepath |
 
 
-  @gh-5429
+  @ENTESB-11474
   @apicurio-check-security-settings-basic
   Scenario: Check apicurio security settings - basic security
     When add security schema BASIC via apicurio gui
@@ -120,9 +120,7 @@ Feature: Customization - API Connector - ApicurIO GUI
       | basepath |
 
 
-#  this feature is not supported yet and does not work, but test is ready :)
-  @disabled
-  @gh-5429
+  @ENTESB-11474
   @apicurio-check-security-settings-api-key
   Scenario: Check apicurio security settings - API key
     When add security schema API Key via apicurio gui
@@ -136,13 +134,18 @@ Feature: Customization - API Connector - ApicurIO GUI
     Then check that api connector authentication section contains text "API Key"
 
     When click on the "Next" button
-    And click on the "Create API Connector" button
+    And click on the "Save" button
     And navigate to the "Connections" page
-    And click on the "Create Connection" button
+    And click on the "Create Connection" link
     And select "Kie Server API" connection type
-    Then check that connection authentication type has 1 option and contains text "API Key Authentication"
+    Then check that apicurio connection authentication type contains only fields:
+      | API key  |
+      | host     |
+      | basepath |
 
   @ENTESB-12019
+  @ENTESB-11841
+  @ENTESB-11474
   @gh-5429
   @gh-6123
   @apicurio-check-security-settings-oauth-2
@@ -164,8 +167,8 @@ Feature: Customization - API Connector - ApicurIO GUI
       | Authorization URL | http://petstore.swagger.io/oauth/dialog |
 
     When click on the "Next" button
-    And click on the "Create API Connector" button
+    And click on the "Save" button
     And navigate to the "Connections" page
-    And click on the "Create Connection" button
+    And click on the "Create Connection" link
     And select "Kie Server API" connection type
     Then check that connection authentication type has 1 option and contains text "OAuth 2.0"

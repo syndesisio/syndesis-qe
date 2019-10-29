@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$;
 import io.syndesis.qe.pages.SyndesisPageObject;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 
 import com.codeborne.selenide.SelenideElement;
 
@@ -39,7 +40,10 @@ public class CreateIntegration extends SyndesisPageObject {
 
     public void setName(String name) {
         log.debug("Setting integration name to {}", name);
-        this.getRootElement().find(Input.NAME).shouldBe(visible).sendKeys(name);
+        SelenideElement nameElement = this.getRootElement().find(Input.NAME).shouldBe(visible);
+        nameElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+        nameElement.sendKeys(Keys.BACK_SPACE);
+        nameElement.sendKeys(name);
     }
 
     public void setDescription(String description) {

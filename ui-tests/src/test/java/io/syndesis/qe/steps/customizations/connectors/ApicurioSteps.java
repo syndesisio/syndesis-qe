@@ -271,8 +271,9 @@ public class ApicurioSteps {
             .$(By.xpath("//a[contains(text(), \"" + schemeType + "\")]")).shouldBe(visible).click();
 
         if ("API Key".equalsIgnoreCase(schemeType)) {
+            $(By.className("apiKey-auth")).find(By.id("in20")).click();
+            $(By.className("apiKey-auth")).findAll("li").filter(text("HTTP header")).first().click();
             $(By.id("name20")).sendKeys("headerName");
-            //TODO: not supported from syndesis yet and needs more settings here
         }
 
         if ("OAuth 2".equalsIgnoreCase(schemeType)) {
