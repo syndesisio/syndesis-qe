@@ -126,3 +126,6 @@ Feature: soak deployment
       | true     |
     And create integration with name: "stats-guess"
     And wait for integration with name: "stats-guess" to become active
+
+  Scenario: start load
+    Given send "start" message to "first-number" queue on "amq-stability" broker
