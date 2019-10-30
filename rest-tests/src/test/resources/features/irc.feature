@@ -23,7 +23,7 @@ Feature: Integration - IRC
       And change "in" datashape of previous step to "XML_INSTANCE" type with specification '<?xml version="1.0" encoding="UTF-8"?><response><body>message</body></response>'
     When create integration with name: "AMQ-IRC"
     Then wait for integration with name: "AMQ-IRC" to become active
-    When connect IRC listener to channels "#spam1,#spam2"
+    When connect IRC controller to channels "#spam1,#spam2"
       And publish message with content '{"header":"messageHeader", "messageContent":"Hi there!"}' to queue "irc-input"
     Then verify that the message with content '<?xml version="1.0" encoding="UTF-8" standalone="no"?><response><body>Hi there!</body></response>' was posted to channels "#spam1,#spam2"
 
@@ -38,6 +38,6 @@ Feature: Integration - IRC
         | message.txt  | upload          | Override  | copyingprefix | copying_test_out |
     When create integration with name: "IRC-FTP"
     Then wait for integration with name: "IRC-FTP" to become active
-    When connect IRC listener to channels "#listen"
+    When connect IRC controller to channels "#listen"
       And send message to IRC user "listener" with content 'Hello Listener!'
       And verify that file "message.txt" was created in "upload" folder with content 'Hello Listener!'
