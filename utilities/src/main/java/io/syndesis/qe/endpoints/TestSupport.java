@@ -47,13 +47,7 @@ public final class TestSupport {
         int tries = 0;
         while (tries < 10) {
             if (resetDbWithResponse() == 204) {
-                log.info("Cleaning integration RCs and pods");
-                // Also delete dangling RCs
-                OpenShiftUtils.getInstance().replicationControllers().delete(
-                    OpenShiftUtils.getInstance().replicationControllers().list().getItems().stream()
-                        .filter(rc -> rc.getMetadata().getName().startsWith("i-"))
-                        .collect(Collectors.toList())
-                );
+                log.info("Cleaning integration pods");
                 // In OCP 4.x the build and deploy pods stays there, so delete them
                 OpenShiftUtils.getInstance().pods().delete(
                     OpenShiftUtils.getInstance().pods().list().getItems().stream()
