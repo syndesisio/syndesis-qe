@@ -3,8 +3,8 @@ package io.syndesis.qe.endpoints;
 import io.syndesis.common.model.ListResult;
 import io.syndesis.common.util.Json;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoints.util.RetryingInvocationBuilder;
 import io.syndesis.qe.utils.RestUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -57,27 +57,14 @@ public abstract class AbstractEndpoint<T> {
     public T create(T obj) {
         log.debug("POST: {}", getEndpointUrl());
         final Invocation.Builder invocation = this.createInvocation();
-        final JsonNode response;
-        try {
-            response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
-        } catch (Exception e) {
-            log.error("Error while invoking POST to " + getEndpointUrl(), e);
-            TestUtils.saveDebugInfo();
-            throw e;
-        }
+        final JsonNode response = invocation.post(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
 
         return transformJsonNode(response, type);
     }
 
     public void delete(String id) {
         log.debug("DELETE: {}", getEndpointUrl(Optional.ofNullable(id)));
-        try {
-            this.createInvocation(id).delete();
-        } catch (Exception e) {
-            log.error("Error while invoking DELETE to " + getEndpointUrl(), e);
-            TestUtils.saveDebugInfo();
-            throw e;
-        }
+        this.createInvocation(id).delete();
     }
 
     public T get(String id) {
@@ -90,23 +77,13 @@ public abstract class AbstractEndpoint<T> {
             log.error("Not found: " + id);
             log.error("Found:");
             list().forEach(t -> log.error("  " + t.toString()));
-        } catch (Exception e) {
-            log.error("Error while invoking GET to " + getEndpointUrl(), e);
-            TestUtils.saveDebugInfo();
-            throw e;
         }
         return transformJsonNode(response, type);
     }
 
     public void update(String id, T obj) {
         log.debug("PUT : {}", getEndpointUrl(Optional.ofNullable(id)));
-        try {
-            this.createInvocation(id).put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
-        } catch (Exception e) {
-            log.error("Error while invoking PUT to " + getEndpointUrl(), e);
-            TestUtils.saveDebugInfo();
-            throw e;
-        }
+        this.createInvocation(id).put(Entity.entity(obj, MediaType.APPLICATION_JSON), JsonNode.class);
     }
 
     public List<T> list() {
@@ -121,14 +98,7 @@ public abstract class AbstractEndpoint<T> {
 
         log.debug("GET : {}", getEndpointUrl(Optional.ofNullable(id)));
 
-        JsonNode response = null;
-        try {
-            response = this.createInvocation(id).get(JsonNode.class);
-        } catch (Exception e) {
-            log.error("Error while invoking GET to " + getEndpointUrl(), e);
-            TestUtils.saveDebugInfo();
-            throw e;
-        }
+        JsonNode response = this.createInvocation(id).get(JsonNode.class);
 
         ListResult<T> result = null;
         try {
@@ -171,11 +141,10 @@ public abstract class AbstractEndpoint<T> {
     }
 
     protected Invocation.Builder createInvocation(String id) {
-        Invocation.Builder invocation = client
+        return new RetryingInvocationBuilder(client
             .target(getEndpointUrl(Optional.ofNullable(id)))
             .request(MediaType.APPLICATION_JSON)
-            .headers(commonHeaders);
-        return invocation;
+            .headers(commonHeaders));
     }
 
     protected T transformJsonNode(JsonNode json, Class<T> t) {
