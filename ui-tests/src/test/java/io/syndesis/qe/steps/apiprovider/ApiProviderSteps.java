@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 
+import io.syndesis.qe.endpoints.util.RetryingInvocationBuilder;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ApiProviderWizard;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ReviewApiProviderActions;
@@ -186,13 +187,12 @@ public class ApiProviderSteps {
 
     private Invocation.Builder getInvocation(String url) {
         Client client = RestUtils.getClient();
-        Invocation.Builder invocation = client
+        return new RetryingInvocationBuilder(client
             .target(url)
             .request(MediaType.APPLICATION_JSON)
             .header("X-Forwarded-User", "pista")
             .header("X-Forwarded-Access-Token", "kral")
-            .header("SYNDESIS-XSRF-TOKEN", "awesome");
-        return invocation;
+            .header("SYNDESIS-XSRF-TOKEN", "awesome"));
     }
 
     @When("^go to API Provider operation list$")
