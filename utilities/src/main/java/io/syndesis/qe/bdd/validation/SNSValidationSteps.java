@@ -28,9 +28,9 @@ public class SNSValidationSteps {
         for (Map.Entry<String, String> entry : contentMap.entrySet()) {
             assertThat(messages.stream().filter(m -> {
                 JSONObject messageJson = new JSONObject(m.body());
-                return messageJson.getString("Subject").equals(entry.getValue())
-                    && messageJson.getString("Message").equals(entry.getKey());
-            }).findAny()).isPresent();
+                return messageJson.getString("Subject").equals(entry.getKey())
+                    && messageJson.getString("Message").equals(entry.getValue());
+            }).findAny()).as("Expected messages were not received").isPresent();
         }
     }
 }

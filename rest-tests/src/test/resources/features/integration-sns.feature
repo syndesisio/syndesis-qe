@@ -8,28 +8,30 @@ Feature: Integration - SNS
     Given clean application state
       And purge SQS queues:
         | syndesis-sns-out |
-      And remove all records from table "CONTACT"
       And create SNS connection
+      And deploy ActiveMQ broker
+      And create ActiveMQ connection
+      And clean destination type "queue" with name "amq-sns-in"
 
-  @database
+  @amqbroker
+  @activemq
   @datamapper
-  @integration-db-sns
-  Scenario Outline: DB to SNS <topicName>
-    Given inserts into "CONTACT" table
-      | John | Doe | Red Hat | db |
-      | Pete | Moe | IBM     | db |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "600000" ms
-      And add a split step
-      And start mapper definition with name: "db-sns"
-      And MAP using Step 2 and field "/company" to "/subject"
-      And MAP using Step 2 and field "/last_name" to "/message"
+  @integration-amq-sns
+  Scenario Outline: AMQ to SNS <topicName>
+    When create ActiveMQ "subscribe" action step with destination type "queue" and destination name "amq-sns-in"
+    And change "out" datashape of previous step to "JSON_INSTANCE" type with specification '{"header":"a", "text":"b"}'
+      And start mapper definition with name: "amq-sns"
+      And MAP using Step 1 and field "/header" to "/subject"
+      And MAP using Step 1 and field "/text" to "/message"
       And create SNS publish action step with topic "<topicName>"
-      And create integration with name: "DB-SNS"
-    Then wait for integration with name: "DB-SNS" to become active
-      And verify that the SQS queue "syndesis-sns-out" has 2 messages after 10 seconds
+      And create integration with name: "AMQ-SNS"
+    Then wait for integration with name: "AMQ-SNS" to become active
+    When publish message with content '{"header":"Hello", "text":"First message!"}' to queue "amq-sns-in"
+      And publish message with content '{"header":"Hi", "text":"Second message."}' to queue "amq-sns-in"
+    Then verify that the SQS queue "syndesis-sns-out" has 2 messages after 10 seconds
       And verify that the SQS queue "syndesis-sns-out" contains notifications related to
-        | Doe | Red Hat |
-        | Moe | IBM     |
+        | Hello | First message!  |
+        | Hi    | Second message. |
 
     Examples:
       | topicName        |
