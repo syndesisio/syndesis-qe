@@ -85,7 +85,7 @@ public abstract class TestSuiteParent {
             MongoDb36Template.cleanUp();
         }
 
-        if (OpenShiftUtils.getInstance().apps().deployments().withName("strimzi-cluster-operator") != null) {
+        if (OpenShiftUtils.podExists(p -> p.getMetadata().getName().contains("strimzi-cluster-operator"))) {
             KafkaTemplate.undeploy();
         }
 
