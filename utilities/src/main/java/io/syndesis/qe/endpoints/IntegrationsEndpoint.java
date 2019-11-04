@@ -1,5 +1,10 @@
 package io.syndesis.qe.endpoints;
 
+import io.syndesis.common.model.integration.Integration;
+import io.syndesis.common.model.integration.IntegrationDeployment;
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
+import io.syndesis.common.util.json.JsonUtils;
+
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,10 +17,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import io.syndesis.common.model.integration.Integration;
-import io.syndesis.common.model.integration.IntegrationDeployment;
-import io.syndesis.common.model.integration.IntegrationDeploymentState;
-import io.syndesis.common.util.Json;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +58,7 @@ public class IntegrationsEndpoint extends AbstractEndpoint<Integration> {
         final JsonNode response = invocation.get(JsonNode.class);
         IntegrationDeployment ts = null;
         try {
-            ts = Json.reader().forType(IntegrationDeployment.class).readValue(response.toString());
+            ts = JsonUtils.reader().forType(IntegrationDeployment.class).readValue(response.toString());
         } catch (IOException ex) {
             log.error("" + ex);
         }
