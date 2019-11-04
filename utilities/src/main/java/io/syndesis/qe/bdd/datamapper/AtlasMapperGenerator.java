@@ -9,7 +9,7 @@ import io.syndesis.common.model.action.StepAction;
 import io.syndesis.common.model.action.StepDescriptor;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.common.util.Json;
+import io.syndesis.common.util.json.JsonUtils;
 import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.endpoints.AtlasmapEndpoint;
@@ -511,7 +511,7 @@ public class AtlasMapperGenerator {
 
             json.getJSONObject("descriptor").put("inputDataShape", inputDataType);
             json.getJSONObject("descriptor").put("outputDataShape", outputDataType);
-            ts = Json.reader().forType(Action.class).readValue(json.toString());
+            ts = JsonUtils.reader().forType(Action.class).readValue(json.toString());
             log.debug(mapper.writeValueAsString(ts));
         } catch (IOException ex) {
             log.error("Error: " + ex);

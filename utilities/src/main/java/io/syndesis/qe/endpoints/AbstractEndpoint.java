@@ -1,7 +1,7 @@
 package io.syndesis.qe.endpoints;
 
 import io.syndesis.common.model.ListResult;
-import io.syndesis.common.util.Json;
+import io.syndesis.common.util.json.JsonUtils;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.util.RetryingInvocationBuilder;
 import io.syndesis.qe.utils.RestUtils;
@@ -102,7 +102,7 @@ public abstract class AbstractEndpoint<T> {
 
         ListResult<T> result = null;
         try {
-            result = Json.reader().forType(listtype).readValue(response.toString());
+            result = JsonUtils.reader().forType(listtype).readValue(response.toString());
         } catch (IOException ex) {
             log.error("" + ex);
         }
@@ -113,7 +113,7 @@ public abstract class AbstractEndpoint<T> {
             T con = null;
             try {
                 final String json = ow.writeValueAsString(result.getItems().get(i));
-                con = Json.reader().forType(type).readValue(json);
+                con = JsonUtils.reader().forType(type).readValue(json);
             } catch (IOException ex) {
                 log.error(ex.toString());
             }
@@ -150,7 +150,7 @@ public abstract class AbstractEndpoint<T> {
     protected T transformJsonNode(JsonNode json, Class<T> t) {
         T ts = null;
         try {
-            ts = Json.reader().forType(t).readValue(json.toString());
+            ts = JsonUtils.reader().forType(t).readValue(json.toString());
         } catch (IOException ex) {
             log.error("" + ex);
         }

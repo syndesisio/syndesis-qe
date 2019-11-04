@@ -2,6 +2,25 @@ package io.syndesis.qe.rest.tests.steps.flow;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.common.model.DataShape;
+import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.common.model.action.Action;
+import io.syndesis.common.model.action.ActionDescriptor;
+import io.syndesis.common.model.action.ConnectorAction;
+import io.syndesis.common.model.action.ConnectorDescriptor;
+import io.syndesis.common.model.connection.Connection;
+import io.syndesis.common.model.connection.Connector;
+import io.syndesis.common.model.extension.Extension;
+import io.syndesis.common.model.integration.Step;
+import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.common.util.json.JsonUtils;
+import io.syndesis.qe.bdd.entities.DataMapperDefinition;
+import io.syndesis.qe.bdd.entities.StepDefinition;
+import io.syndesis.qe.bdd.storage.StepsStorage;
+import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +34,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import io.syndesis.common.model.DataShape;
-import io.syndesis.common.model.DataShapeKinds;
-import io.syndesis.common.model.action.Action;
-import io.syndesis.common.model.action.ActionDescriptor;
-import io.syndesis.common.model.action.ConnectorAction;
-import io.syndesis.common.model.action.ConnectorDescriptor;
-import io.syndesis.common.model.connection.Connection;
-import io.syndesis.common.model.connection.Connector;
-import io.syndesis.common.model.extension.Extension;
-import io.syndesis.common.model.integration.Step;
-import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.common.util.Json;
-import io.syndesis.qe.bdd.entities.DataMapperDefinition;
-import io.syndesis.qe.bdd.entities.StepDefinition;
-import io.syndesis.qe.bdd.storage.StepsStorage;
-import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -131,9 +132,9 @@ public abstract class AbstractStep {
         return action.get();
     }
 
-    ConnectorDescriptor getConnectorDescriptor(Action action, Map properties, String connectionId) {
+    ConnectorDescriptor getConnectorDescriptor(Action action, Map configuredProperties, String connectionId) {
         ConnectionsActionsEndpoint conActEndpoint = new ConnectionsActionsEndpoint(connectionId);
-        return conActEndpoint.postParamsAction(action.getId().get(), properties);
+        return conActEndpoint.postParamsAction(action.getId().get(), configuredProperties);
     }
 
     //Small hack -> the Action doesn't provide setters for input/output data shape
@@ -150,7 +151,7 @@ public abstract class AbstractStep {
             json.getJSONObject("descriptor").put("outputDataShape", outputDataType);
             json.getJSONObject("descriptor").put("propertyDefinitionSteps", propertyDefinitionSteps);
 
-            ts = Json.reader().forType(Action.class).readValue(json.toString());
+            ts = JsonUtils.reader().forType(Action.class).readValue(json.toString());
         } catch (IOException ex) {
             log.error("Error: " + ex);
         }
@@ -181,7 +182,7 @@ public abstract class AbstractStep {
 
             json.getJSONObject("descriptor").put("in".equals(direction) ? "inputDataShape" : "outputDataShape", new JSONObject(mapper.writeValueAsString(ds)));
 
-            a = Json.reader().forType(Action.class).readValue(json.toString());
+            a = JsonUtils.reader().forType(Action.class).readValue(json.toString());
         } catch (IOException ex) {
             log.error("Error: " + ex);
         }
