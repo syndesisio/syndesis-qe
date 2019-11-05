@@ -7,6 +7,7 @@ Feature: Syndesis Upgrade - Productized Version
   # Before upgrading, create some integration and verify that it is working
   @prod-upgrade-before
   Scenario: Syndesis Prod Upgrade - Before upgrading
+    Then verify syndesis version
     Given deploy HTTP endpoints
       And create HTTP connection
     When inserts into "contact" table
@@ -23,6 +24,7 @@ Feature: Syndesis Upgrade - Productized Version
   # After the upgrade is done, create a new integration and verify that it is working + verify that the old one is still working as well
   @prod-upgrade-after
   Scenario: Syndesis Prod Upgrade - After upgrading
+    Then verify syndesis version
     When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
       And verify upgrade integration with task "X"

@@ -169,9 +169,9 @@ public class UpgradeSteps {
         //        }
     }
 
-    @Then("^verify syndesis \"([^\"]*)\" version$")
-    public void verifyVersion(String version) {
-        assertThat(getSyndesisVersion()).startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
+    @Then("^verify syndesis version$")
+    public void verifyVersion() {
+        assertThat(getSyndesisVersion()).isEqualTo(System.getProperty("syndesis.version"));
     }
 
     @When("^perform test modifications$")
