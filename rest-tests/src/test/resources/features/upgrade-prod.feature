@@ -7,6 +7,7 @@ Feature: Syndesis Upgrade - Productized Version
   # Before upgrading, create some integration and verify that it is working
   @prod-upgrade-before
   Scenario: Syndesis Prod Upgrade - Before upgrading
+    Then verify syndesis version
     Given deploy HTTP endpoints
       And create HTTP connection
     When inserts into "contact" table
@@ -27,6 +28,8 @@ Feature: Syndesis Upgrade - Productized Version
       And execute SQL command "ALTER TABLE contact SET SCHEMA sampledb;"
       And execute SQL command "ALTER TABLE todo SET SCHEMA sampledb;"
       And rebuild integration with name "upgrade"
+    Then verify syndesis version
+    When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
       And verify upgrade integration with task "X"
     Given add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
