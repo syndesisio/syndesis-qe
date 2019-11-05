@@ -46,7 +46,7 @@ public class ApicurioSteps {
         public static final By APICURIO_INNER_ROOT = By.className("api-editor");
 
         //apicurio gui elements
-        public static By CARD_PF = By.className("card-pf");
+        public static By CARD_PF = By.className("pf-c-card");
         public static By WARNING_ICON = By.className("validation-icon");
         public static By PROBLEMS_CONTAINER = By.className("editor-problem-drawer");
         public static By OPERATIONS_CONTAINER = By.className("editor-outline");
