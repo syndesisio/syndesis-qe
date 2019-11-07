@@ -63,6 +63,8 @@ Feature: Email connector
     When click on the "Save" link
     And set integration name "email-send-qe-integration"
     And publish integration
+    And inserts into "contact" table
+      | Joe | Jackson | Red Hat | db |
     Then Integration "email-send-qe-integration" is present in integrations list
     And wait until integration "email-send-qe-integration" gets into "Running" state
     And check that email from credenitals "Email SMTP With <security>" with subject "syndesis-tests" and text "Red Hat" exists

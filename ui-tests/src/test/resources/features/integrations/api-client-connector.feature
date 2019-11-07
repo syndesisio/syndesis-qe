@@ -44,7 +44,9 @@ Feature: Integration - DB to API
 
   @DB-custom-api-connector-integration
   Scenario: Create an integration with custom API connector as finish step
-    When click on the "Create Integration" link to create a new integration.
+    When inserts into "contact" table
+      | Joe | Jackson | Red Hat | db |
+    And click on the "Create Integration" link to create a new integration.
     And select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     And fill in periodic query input with "SELECT * FROM CONTACT" value

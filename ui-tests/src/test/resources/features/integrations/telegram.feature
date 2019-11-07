@@ -21,6 +21,7 @@ Feature: Integration - Telegram to Telegram
   Background: Clean application state and prepare what is needed
     Given clean application state
     And log into the Syndesis
+    And reset content of "CONTACT" table
     And created connections
       | Telegram | telegram | Telegram test connection | no validation |
 
@@ -105,6 +106,8 @@ Feature: Integration - Telegram to Telegram
     And publish integration
     And set integration name "telegram_integration_database_publish"
     And publish integration
+    And inserts into "contact" table
+      | Joe | Jackson | Red Hat | db |
 
 #
 #  3. Telegram receive a message - database

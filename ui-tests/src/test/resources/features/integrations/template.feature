@@ -15,6 +15,8 @@ Feature: Templates
     And create connections using oauth
       | Gmail | QE Google Mail |
     And reset content of "contact" table
+    And inserts into "contact" table
+      | Joe | Jackson | Red Hat | db |
 
   @db-template-send
   Scenario Outline: Send an Email with text formatted by <template_type> template

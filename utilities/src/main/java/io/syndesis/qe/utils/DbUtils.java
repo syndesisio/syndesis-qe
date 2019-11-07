@@ -2,13 +2,10 @@ package io.syndesis.qe.utils;
 
 import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
 
-import org.assertj.core.api.Assertions;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -76,6 +73,7 @@ public class DbUtils {
 
     /**
      * Get the row count of given table.
+     *
      * @param tableName table name
      * @return row count
      */
@@ -113,6 +111,7 @@ public class DbUtils {
 
     /**
      * Checks if the connection is still alive.
+     *
      * @return true/false
      */
     public boolean isConnectionValid() {
@@ -125,7 +124,6 @@ public class DbUtils {
         }
         return false;
     }
-
 
     /**
      * Removes all data from specified table.
@@ -148,23 +146,14 @@ public class DbUtils {
     }
 
     /**
-     * Resets the contact table to default (including the sample user).
-     */
-    public void resetContactTable() {
-        deleteRecordsInTable("contact");
-        Assertions.assertThat(executeSQLGetUpdateNumber
-                ("insert into CONTACT values " +
-                        "('Joe', 'Jackson', 'Red Hat', 'db', '" + LocalDateTime.now().toLocalDate() + "')"))
-                .isEqualTo(1);
-    }
-
-    /**
      * Creates an empty table schema in contact and todo tables.
      */
     public void createEmptyTableSchema() {
         final String sqlQuery1 = "DROP TABLE CONTACT";
         final String sqlQuery2 = "DROP TABLE TODO";
-        final String sqlQuery3 = "CREATE TABLE CONTACT ( first_name VARCHAR(250), last_name VARCHAR(250), company VARCHAR(250), lead_source VARCHAR(250), create_date DATE)";
+        final String sqlQuery3 =
+            "CREATE TABLE CONTACT ( first_name VARCHAR(250), last_name VARCHAR(250), company VARCHAR(250), lead_source VARCHAR(250), create_date " +
+                "DATE)";
         final String sqlQuery4 = "CREATE TABLE TODO ( id int, task VARCHAR(250), completed int)";
 
         if (this.executeSQLGetUpdateNumber(sqlQuery1) == -1 || this.executeSQLGetUpdateNumber(sqlQuery2) == -1) {

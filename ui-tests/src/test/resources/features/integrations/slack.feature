@@ -51,6 +51,8 @@ Feature: Slack Connector
     And click on the "Save" link
     And set integration name "Integration_with_slack"
     And publish integration
+    And inserts into "contact" table
+      | Joe | Jackson | Red Hat | db |
     Then Integration "Integration_with_slack" is present in integrations list
     And wait until integration "Integration_with_slack" gets into "Running" state
     And sleep for jenkins delay or "15" seconds

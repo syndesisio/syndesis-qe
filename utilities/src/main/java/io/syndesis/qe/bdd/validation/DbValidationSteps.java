@@ -211,12 +211,7 @@ public class DbValidationSteps {
 
     @Given("^.*reset content of \"([^\"]*)\" table$")
     public void resetTableContent(String tableName) {
-        if ("contact".equalsIgnoreCase(tableName)) {
-            dbUtils.resetContactTable();
-        } else {
-            //there is no default content in other tables
-            dbUtils.deleteRecordsInTable(tableName);
-        }
+        dbUtils.deleteRecordsInTable(tableName);
     }
 
     @Given("^.*truncate \"([^\"]*)\" table$")
