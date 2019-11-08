@@ -3,6 +3,7 @@ package io.syndesis.qe.publicapisteps;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.endpoints.publicendpoint.EnvironmentsPublicEndpoint;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,6 +40,7 @@ public class EnvironmentsPublicApiSteps {
 
     @Then("^check that tag (\\w+) is used in (\\d+) integrations$")
     public void checkAllTags(String tag, int numberOfUsag) {
+        TestUtils.sleepIgnoreInterrupt(2000); //when the UI is updated, the backend may not be updated immediately
         Optional<Map<String, String>> particularTag = environmentsEndpoint.getAllEnvironmentsWithUses().stream()
             .filter(map -> map.get("name").equalsIgnoreCase(tag)).findFirst();
         assertThat(particularTag.get()).containsEntry("uses", String.valueOf(numberOfUsag));

@@ -131,9 +131,8 @@ Feature: Public API - integrations point
     Then check that state of the integration integration1 is Published
 
     When stop integration integration1
-    Then check that state of the integration integration1 is Pending
+    Then check that state of the integration integration1 is Unpublished
     And validate integration: "integration1" pod scaled to 0
-    And check that state of the integration integration1 is Unpublished
 
   # POST /public​/integrations​/{id}​/deployments - start / redeploy
   # GET /public​/integrations​/{id}​/state
