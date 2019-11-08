@@ -9,6 +9,8 @@ Feature: Log Connector
   Background: Clean application state
     Given clean application state
     And reset content of "contact" table
+    And inserts into "contact" table
+      | Joe | Jackson | Red Hat | db |
     And log into the Syndesis
     And navigate to the "Home" page
 #

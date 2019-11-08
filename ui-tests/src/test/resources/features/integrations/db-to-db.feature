@@ -8,10 +8,12 @@ Feature: Integration - DB to DB
 
   Background: Clean application state
     Given clean application state
-    Given log into the Syndesis
+    And log into the Syndesis
+    And reset content of "todo" table
+    And reset content of "CONTACT" table
+    And inserts into "CONTACT" table
+      | Joe | Jackson | Red Hat | db |
 
-    Given reset content of "todo" table
-    Given reset content of "contact" table
 #
 #  1. select - update
 #
@@ -27,7 +29,6 @@ Feature: Integration - DB to DB
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-      # select salesforce connection as 'from' point
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     #Then check visibility of page "Periodic SQL Invocation"
