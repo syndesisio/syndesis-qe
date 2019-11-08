@@ -219,8 +219,8 @@ Feature: Metrics
     And check that number of valid messages is 0
     And check that number of error messages is 0
     And check that number of total messages is 0
-    And check that uptime for webhook-to-db pod is valid
-    And check that startdate for webhook-to-db pod is valid
+    And check that uptime for webhook-to-db-with-error pod is valid
+    And check that startdate for webhook-to-db-with-error pod is valid
 
     When save time before request
     And invoke post request to webhook in integration webhook-to-db-with-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
