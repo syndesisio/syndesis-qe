@@ -11,7 +11,7 @@ import java.util.Optional;
 public class AccountUtils {
     /**
      * Get a testing account with given name.
-     * @param accountName
+     * @param accountName account name
      * @return Account instance matching the name
      * @throws IllegalStateException when account with such name doesn't exist.
      */
@@ -24,8 +24,18 @@ public class AccountUtils {
     }
 
     /**
+     * Gets an account.
+     *
+     * @param name account name enum
+     * @return account
+     */
+    public static Account get(Account.Name name) {
+        return get(name.getId());
+    }
+
+    /**
      * Check if testing account with given name exists.
-     * @param accountName
+     * @param accountName account name
      * @return true if exists, false otherwise
      */
     public static boolean exists(String accountName) {

@@ -47,7 +47,7 @@ public class BoxValidationSteps {
         assertThat(count).isEqualTo(boxUtils.getFileCount());
     }
 
-    @Then("^verify that file \"([^\"]*)\" with content \"([^\"]*)\" is present in Box$")
+    @Then("^verify that file \"([^\"]*)\" with content '([^\']*)' is present in Box$")
     public void verifyFileWithContentIsPresent(String filename, String content) {
         BoxFile f = boxUtils.getFile(filename);
         assertThat(f).isNotNull();
