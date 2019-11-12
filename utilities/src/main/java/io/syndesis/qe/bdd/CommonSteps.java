@@ -3,11 +3,15 @@ package io.syndesis.qe.bdd;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.connection.Connection;
+import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.templates.CamelK;
+import io.syndesis.qe.templates.ExternalDatabase;
+import io.syndesis.qe.templates.Jaeger;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
@@ -16,6 +20,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -74,6 +79,39 @@ public class CommonSteps {
         waitFor(true);
     }
 
+    @When("^deploy Camel-K$")
+    public void deployCamelK() {
+        CamelK.deploy();
+    }
+
+    @Then("^wait for Camel-K to become ready$")
+    public void waitForCamelK() {
+        OpenShiftUtils.xtf().waiters()
+            .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
+            .interval(TimeUnit.SECONDS, 20)
+            .timeout(TimeUnit.MINUTES, 5)
+            .waitFor();
+    }
+
+    @Then("^wait for DV to become ready$")
+    public void waitForDv() {
+        OpenShiftUtils.xtf().waiters()
+            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
+            .interval(TimeUnit.SECONDS, 20)
+            .timeout(TimeUnit.MINUTES, 5)
+            .waitFor();
+    }
+
+    @When("^deploy Jaeger$")
+    public void deployJaeger() {
+        Jaeger.deploy();
+    }
+
+    @When("^deploy custom database$")
+    public void deployDb() {
+        ExternalDatabase.deploy();
+    }
+
     /**
      * Undeploys deployed syndesis resources.
      */
@@ -116,7 +154,18 @@ public class CommonSteps {
      */
     private static void waitFor(boolean deploy) {
         final int timeout = TestUtils.isJenkins() ? 20 : 12;
-        EnumSet<Component> components = EnumSet.allOf(Component.class);
+        EnumSet<Component> components = Component.getAllComponents();
+
+        if (deploy && SyndesisTemplate.isAddonEnabled(Addon.JAEGER)) {
+            // Jaeger pod doesn't have the required label, so add it manually
+            try {
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "jaeger"));
+            } catch (Exception e) {
+                fail("Unable to find jaeger pod after 5 minutes");
+            }
+            OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
+                .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+        }
 
         ExecutorService executorService = Executors.newFixedThreadPool(components.size());
         components.forEach(c -> {

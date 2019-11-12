@@ -72,6 +72,10 @@ public class TestConfiguration {
 
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
+    private static final String CAMEL_K_VERSION = "syndesis.camelk.version";
+
+    private static final String JAEGER_VERSION = "syndesis.jaeger.version";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -251,6 +255,14 @@ public class TestConfiguration {
         return get().readValue(image.name());
     }
 
+    public static String camelKVersion() {
+        return get().readValue(CAMEL_K_VERSION);
+    }
+
+    public static String jaegerVersion() {
+        return get().readValue(JAEGER_VERSION);
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -325,6 +337,14 @@ public class TestConfiguration {
         props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
         if (props.getProperty(SNOOP_SELECTORS) == null) {
             props.setProperty(SNOOP_SELECTORS, "false");
+        }
+
+        if (props.getProperty(CAMEL_K_VERSION) == null) {
+            props.setProperty(CAMEL_K_VERSION, "0.3.4");
+        }
+
+        if (props.getProperty(JAEGER_VERSION) == null) {
+            props.setProperty(JAEGER_VERSION, "v1.14.0");
         }
         return props;
     }
