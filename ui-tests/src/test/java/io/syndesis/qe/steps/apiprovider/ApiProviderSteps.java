@@ -197,6 +197,7 @@ public class ApiProviderSteps {
 
     @When("^go to API Provider operation list$")
     public void openAPIProviderOperationSwitcher() {
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
         toolbar.goToOperationList();
     }
 
