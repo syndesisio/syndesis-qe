@@ -20,6 +20,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.Message;
+import software.amazon.awssdk.services.sqs.model.PurgeQueueInProgressException;
 import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
 import software.amazon.awssdk.services.sqs.model.QueueDoesNotExistException;
 import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequestEntry;
@@ -149,6 +150,11 @@ public class SQSUtils {
                 client.purgeQueue(b -> b.queueUrl(getQueueUrl(queueName)).build());
             } catch (QueueDoesNotExistException e) {
                 // ignore
+            } catch (PurgeQueueInProgressException ex) {
+                // If for some reason some other purge queue is in progress, wait and retry
+                log.debug("Purging " + queueName + " threw PurgeQueueInProgressException, waiting and retrying");
+                TestUtils.sleepIgnoreInterrupt(90000L);
+                client.purgeQueue(b -> b.queueUrl(getQueueUrl(queueName)).build());
             }
         }
     }
