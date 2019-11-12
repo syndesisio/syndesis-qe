@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.camelk.CamelKTemplate;
+import io.syndesis.qe.camelk.CamelKTemplate.CamelKIntegration;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
 import io.syndesis.qe.pages.integrations.Integrations;
@@ -83,6 +86,17 @@ public class IntegrationSteps {
         commonSteps.navigateTo("Integrations");
         SelenideElement integration = integrations.getIntegration(integrationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
+        //Camel K integrations don't follow the standard lifecycle in UI - it's more reliable to look for status in the CLI
+        if (TestConfiguration.camelKEnabled()) {
+            TestUtils.waitForEvent(kIntegrations -> {
+                if (kIntegrations.isEmpty()) {
+                    return false;
+                }
+                log.info("Camel K Integrations: {}", kIntegrations);
+                return kIntegrations.values().stream().map(CamelKIntegration::getPhase).allMatch("running"::equalsIgnoreCase);
+            }, CamelKTemplate::getCamelKIntegrations, TimeUnit.MINUTES, 15, TimeUnit.SECONDS, 10);
+            return;
+        }
         assertThat(TestUtils.waitForEvent(
             status -> status.contains(integrationStatus),
             () -> integrations.getIntegrationItemStatus(integration),

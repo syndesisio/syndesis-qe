@@ -3,6 +3,7 @@ package io.syndesis.qe.templates;
 import static org.assertj.core.api.Fail.fail;
 
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.camelk.CamelKTemplate;
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -262,6 +263,11 @@ public class SyndesisTemplate {
 
             // add nexus
             addMavenRepo(spec);
+
+            if (TestConfiguration.camelKEnabled()) {
+                CamelKTemplate.editSpec(spec);
+                CamelKTemplate.deployCamelKOperator();
+            }
 
             getSyndesisCrClient()
                 .create(TestConfiguration.openShiftNamespace(), cr);

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.camelk.CamelKTemplate;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.templates.SyndesisTemplate;
@@ -157,6 +158,9 @@ public class CommonSteps {
             TestSupport.getInstance().resetDB();
             Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
             if (optConnection.isPresent()) {
+                if (TestConfiguration.camelKEnabled()) {
+                    CamelKTemplate.undeploy();
+                }
                 return;
             }
             i++;

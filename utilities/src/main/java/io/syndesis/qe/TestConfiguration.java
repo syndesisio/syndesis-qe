@@ -65,6 +65,9 @@ public class TestConfiguration {
     public static final String STATE_CHECK_INTERVAL = "syndesis.server.state.check.interval";
     public static final String SNOOP_SELECTORS = "syndesis.snoopselectors";
 
+    public static final String CAMEL_K_OPERATOR = "syndesis.camelk.operator.url";
+    public static final String CAMEL_K_ENABLED = "syndesis.camelk.enabled";
+
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
@@ -233,6 +236,14 @@ public class TestConfiguration {
 
     public static boolean snoopSelectors() {
         return Boolean.parseBoolean(get().readValue(SNOOP_SELECTORS));
+    }
+
+    public static boolean camelKEnabled() {
+        return Boolean.parseBoolean(get().readValue(CAMEL_K_ENABLED));
+    }
+
+    public static String getCamelKOperator() {
+        return get().readValue(CAMEL_K_OPERATOR);
     }
 
     private Properties defaultValues() {
