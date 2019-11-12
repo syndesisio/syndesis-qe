@@ -8,6 +8,7 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -51,7 +52,7 @@ public class UpgradeSteps {
             try {
                 response = new OkHttpClient.Builder().build().newCall(request).execute().body().string();
             } catch (IOException e) {
-                log.error("Unable to get version from " + VERSION_ENDPOINT);
+                log.error("Unable to get version from " + DOCKER_HUB_SYNDESIS_TAGS_URL);
                 e.printStackTrace();
             }
 
@@ -116,7 +117,8 @@ public class UpgradeSteps {
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
     public void verifyVersion(String version) {
-        assertThat(getSyndesisVersion()).startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
+        assertThat(TestUtils.getSyndesisVersion())
+            .startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
     }
 
     private String getSyndesisVersion() {

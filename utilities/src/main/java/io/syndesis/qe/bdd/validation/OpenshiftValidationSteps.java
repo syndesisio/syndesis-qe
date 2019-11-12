@@ -31,6 +31,8 @@ import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -185,5 +187,45 @@ public class OpenshiftValidationSteps {
                 .endSpec()
                 .build()
         );
+    }
+
+    @Then("^check that deployment config \"([^\"]*)\" (does|does not) exist$")
+    public void checkDeploymentConfig(String dcName, String shouldExist) {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig(dcName);
+        if ("does".equals(shouldExist)) {
+            assertThat(dc).isNotNull();
+        } else {
+            assertThat(dc).isNull();
+        }
+    }
+
+    @Then("^check that service \"([^\"]*)\" (does|does not) exist$")
+    public void checkService(String serviceName, String shouldExist) {
+        Service service = OpenShiftUtils.getInstance().getService(serviceName);
+        if ("does".equals(shouldExist)) {
+            assertThat(service).isNotNull();
+        } else {
+            assertThat(service).isNull();
+        }
+    }
+
+    @Then("check that SAR check is disabled")
+    public void checkSar() {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-oauthproxy");
+        Optional<String> sarArg = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getArgs().stream()
+            .filter(arg -> arg.contains("--openshift-sar")).findFirst();
+        assertThat(sarArg).isNotPresent();
+    }
+
+    @Then("check that SAR check is enabled for namespace {string}")
+    public void checkSar(String namespace) {
+        if (namespace.isEmpty()) {
+            namespace = TestConfiguration.openShiftNamespace();
+        }
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-oauthproxy");
+        Optional<String> sarArg = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getArgs().stream()
+            .filter(arg -> arg.contains("--openshift-sar")).findFirst();
+        assertThat(sarArg).isPresent();
+        assertThat(sarArg.get()).contains("\"namespace\":\"" + namespace + "\"");
     }
 }

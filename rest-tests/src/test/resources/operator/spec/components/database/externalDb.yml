@@ -1,0 +1,14 @@
+apiVersion: syndesis.io/v1alpha1
+kind: Syndesis
+metadata:
+  name: app
+  spec:
+  addons:
+    dv:
+      enabled: true
+  components:
+    database:
+      externalDbURL: postgresql://custom-postgres:5432
+      name: postgresql
+      user: testuser
+      database: testdb

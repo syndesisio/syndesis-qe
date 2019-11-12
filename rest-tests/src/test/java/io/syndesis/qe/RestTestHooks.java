@@ -4,8 +4,10 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import io.syndesis.qe.bdd.storage.StepsStorage;
+import io.syndesis.qe.bdd.validation.OperatorValidationSteps;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -63,6 +65,16 @@ public class RestTestHooks {
         }
         System.clearProperty("syndesis.upgrade.version");
         System.clearProperty("syndesis.upgrade.rollback");
+    }
+
+    @After("@operator")
+    public void reset() {
+        // Each operator deployment creates a new deployment, so it is needed to terminate the PF after each test
+        RestUtils.reset();
+        // Delete all test PVs
+        OpenShiftUtils.getInstance().persistentVolumes().list().getItems().stream()
+            .filter(pv -> pv.getMetadata().getName().startsWith(OperatorValidationSteps.TEST_PV_NAME))
+            .forEach(pv -> OpenShiftUtils.getInstance().persistentVolumes().withName(pv.getMetadata().getName()).cascading(true).delete());
     }
 
     @After

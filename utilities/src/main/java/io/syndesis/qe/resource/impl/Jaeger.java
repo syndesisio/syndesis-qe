@@ -29,7 +29,7 @@ public class Jaeger implements Resource {
         "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/operator.yaml"
     };
 
-    private static List<HasMetadata> processedResources = new ArrayList<>();
+    private List<HasMetadata> processedResources = new ArrayList<>();
 
     @Override
     public void deploy() {
@@ -61,7 +61,7 @@ public class Jaeger implements Resource {
         OpenShiftUtils.getInstance().deletePods("name", "jaeger-operator");
     }
 
-    private static void processResources() {
+    private void processResources() {
         for (String jaegerResource : JAEGER_RESOURCES) {
             jaegerResource = String.format(jaegerResource, TestConfiguration.jaegerVersion());
             log.info("Processing " + jaegerResource);

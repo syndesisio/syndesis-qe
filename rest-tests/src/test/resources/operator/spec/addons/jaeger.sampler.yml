@@ -1,0 +1,10 @@
+apiVersion: syndesis.io/v1alpha1
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  addons:
+    jaeger:
+      enabled: true
+      samplerType: "probabilistic"
+      samplerParam: "0.001"

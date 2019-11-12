@@ -6,7 +6,6 @@ import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
@@ -14,9 +13,7 @@ import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
-import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
-import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.RestUtils;
@@ -117,8 +114,7 @@ public class CommonSteps {
      * Undeploys deployed syndesis resources.
      */
     private static void undeploySyndesis() {
-        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        syndesis.undeployCustomResources();
+        ResourceFactory.get(Syndesis.class).undeployCustomResources();
         if (TestUtils.isDcDeployed("syndesis-operator")) {
             waitForUndeployment();
         }
@@ -268,14 +264,5 @@ public class CommonSteps {
     @When("^set up ServiceAccount for Public API$")
     public void setUpServiceAccountForPublicAPI() {
         PublicApiUtils.createServiceAccount();
-    }
-
-    @When("^send \"([^\"]*)\" message to \"([^\"]*)\" queue on \"([^\"]*)\" broker$")
-    public void sendMessageToQueueOnBroker(String message, String queue, String brokerAccount) {
-        Account brokerCredentials = AccountUtils.get(brokerAccount);
-        final String userName = brokerCredentials.getProperty("username");
-        final String password = brokerCredentials.getProperty("password");
-        final String brokerpod = brokerCredentials.getProperty("appname");
-        JMSUtils.sendMessage(brokerpod, "tcp", userName, password, JMSUtils.Destination.QUEUE, queue, message);
     }
 }

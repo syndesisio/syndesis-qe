@@ -29,12 +29,15 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * @author jknetl
  */
 @Slf4j
 public final class TestUtils {
+    private static final String VERSION_ENDPOINT = "/api/v1/version";
 
     /**
      * Waits until a predicate is true or timeout exceeds.
@@ -314,6 +317,26 @@ public final class TestUtils {
     }
 
     /**
+     * Gets the syndesis version using the version endpoint.
+     *
+     * @return syndesis version
+     */
+    public static String getSyndesisVersion() {
+        RestUtils.reset();
+        Request request = new Request.Builder()
+            .url(RestUtils.getRestUrl() + VERSION_ENDPOINT)
+            .header("Accept", "text/plain")
+            .build();
+        try {
+            return new OkHttpClient.Builder().build().newCall(request).execute().body().string();
+        } catch (IOException e) {
+            log.error("Unable to get version from " + VERSION_ENDPOINT);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Saves the useful info to a log file.
      */
     public static void saveDebugInfo() {
@@ -325,5 +348,15 @@ public final class TestUtils {
         } catch (IOException ex) {
             log.error("Unable to write string to file: ", ex);
         }
+    }
+
+    /**
+     * Checks if the OpenShift version is 3.x
+     *
+     * @return true/false
+     */
+    public static boolean isOpenshift3() {
+        // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
+        return OpenShiftUtils.getInstance().getVersion().getMinor().contains("11+");
     }
 }

@@ -12,18 +12,20 @@ import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.openshift.api.model.DeploymentTriggerPolicyBuilder;
 
 public class ExternalDatabase implements Resource {
+    private static final String NAME = "custom-postgres";
+
     @Override
     public void deploy() {
         OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
             .withNewMetadata()
-                .withName("custom-postgres")
-                .withLabels(TestUtils.map("app", "custom-postgres"))
+            .withName(NAME)
+            .withLabels(TestUtils.map("app", NAME))
             .endMetadata()
             .withNewSpec()
                 .withReplicas(1)
                 .withNewTemplate()
                     .withNewMetadata()
-                        .withLabels(TestUtils.map("app", "custom-postgres"))
+            .withLabels(TestUtils.map("app", NAME))
                     .endMetadata()
                     .withNewSpec()
                         .withContainers(
@@ -36,17 +38,17 @@ public class ExternalDatabase implements Resource {
                                 .withPorts(
                                     new ContainerPortBuilder().withContainerPort(5432).withProtocol("TCP").build()
                                 )
-                                .withName("custom-postgres")
+                                .withName(NAME)
                                 .withImage(" ")
                             .build()
                         )
                     .endSpec()
                 .endTemplate()
-                .withSelector(TestUtils.map("app", "custom-postgres"))
+            .withSelector(TestUtils.map("app", NAME))
                 .withTriggers(
                     new DeploymentTriggerPolicyBuilder()
                         .withNewImageChangeParams()
-                            .withContainerNames("custom-postgres")
+                        .withContainerNames(NAME)
                             .withFrom(new ObjectReferenceBuilder().withKind("ImageStreamTag").withName("postgresql:9.6").withNamespace("openshift").build())
                             .withAutomatic(true)
                         .endImageChangeParams()
@@ -57,12 +59,12 @@ public class ExternalDatabase implements Resource {
 
         OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
             .withNewMetadata()
-                .withName("custom-postgres")
-                .withLabels(TestUtils.map("app", "custom-postgres"))
+            .withName(NAME)
+            .withLabels(TestUtils.map("app", NAME))
             .endMetadata()
             .withNewSpec()
                 .addToPorts(new ServicePortBuilder().withNewName("5432-tcp").withNewTargetPort(5432).withNewProtocol("TCP").withPort(5432).build())
-                .addToSelector(TestUtils.map("app", "custom-postgres"))
+            .addToSelector(TestUtils.map("app", NAME))
             .endSpec().done();
 
         // create a needed secret with the password
@@ -75,6 +77,7 @@ public class ExternalDatabase implements Resource {
 
     @Override
     public void undeploy() {
-
+        OpenShiftUtils.getInstance().services().withName(NAME).cascading(true).delete();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(NAME).cascading(true).delete();
     }
 }

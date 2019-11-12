@@ -1,0 +1,15 @@
+apiVersion: syndesis.io/v1alpha1
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  components:
+    database:
+      resources:
+        volumeCapacity: "513Mi"
+    meta:
+      resources:
+        volumeCapacity: "215Mi"
+    prometheus:
+      resources:
+        volumeCapacity: "999Mi"

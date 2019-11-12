@@ -74,6 +74,14 @@ public class CommonValidationSteps {
         }
     }
 
+    @Then("^verify that the integration with name \"([^\"]*)\" is not started$")
+    public void verifyIntegrationNotStarted(String integrationName) {
+        String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
+        final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
+        assertThat(TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 9))
+            .as("No more integrations should be started").isFalse();
+    }
+
     @Then(value = "^verify there is s2i build running for integration: \"([^\"]*)\"$")
     public void verifyIntegrationBuildRunning(String integrationName) {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");

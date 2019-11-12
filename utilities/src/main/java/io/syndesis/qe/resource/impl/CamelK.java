@@ -46,7 +46,7 @@ public class CamelK implements Resource {
         removeViaBinary();
     }
 
-    private static void downloadArchive() {
+    private void downloadArchive() {
         try {
             FileUtils.copyURLToFile(new URL(CAMEL_K_ARCHIVE_PATH), new File(LOCAL_ARCHIVE_PATH));
         } catch (IOException e) {
@@ -54,7 +54,7 @@ public class CamelK implements Resource {
         }
     }
 
-    private static void extractArchive() {
+    private void extractArchive() {
         Path input = Paths.get(LOCAL_ARCHIVE_PATH);
         Path output = Paths.get(LOCAL_ARCHIVE_EXTRACT_DIRECTORY);
 
@@ -83,7 +83,7 @@ public class CamelK implements Resource {
         }
     }
 
-    private static void installViaBinary() {
+    private void installViaBinary() {
         try {
             new File(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel").setExecutable(true);
             Runtime.getRuntime().exec(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel install").waitFor();
@@ -92,7 +92,7 @@ public class CamelK implements Resource {
         }
     }
 
-    private static void removeViaBinary() {
+    private void removeViaBinary() {
         try {
             new File(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel").setExecutable(true);
             Runtime.getRuntime().exec(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel reset").waitFor();

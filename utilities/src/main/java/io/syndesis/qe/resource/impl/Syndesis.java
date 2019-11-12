@@ -110,7 +110,7 @@ public class Syndesis implements Resource {
     /**
      * Pulls the operator image via docker pull.
      */
-    private static void pullOperatorImage() {
+    public void pullOperatorImage() {
         log.info("Pulling operator image {}", OPERATOR_IMAGE);
         ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
             "pull",
@@ -128,7 +128,7 @@ public class Syndesis implements Resource {
     /**
      * Grants the permissions via the admin user to the regular user.
      */
-    private static void grantPermissions() {
+    public void grantPermissions() {
         log.info("Granting permissions to user {}", TestConfiguration.syndesisUsername());
         new File(OpenShiftUtils.binary().getOcConfigPath()).setReadable(true, false);
 
@@ -404,7 +404,7 @@ public class Syndesis implements Resource {
                 return Boolean.parseBoolean(spec.getJSONObject("addons").getJSONObject(addon.getValue()).getString("enabled"));
             }
         } catch (KubernetesClientException kce) {
-            if (!kce.getMessage().contains("\\\"" + CR_NAME + "\\\" not found")) {
+            if (!kce.getMessage().contains("404")) {
                 // If the error is something different than the CR wasn't found rethrow the exception
                 throw kce;
             }
