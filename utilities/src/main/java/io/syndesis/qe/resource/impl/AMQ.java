@@ -1,9 +1,10 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -17,34 +18,33 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AmqTemplate {
-
-    public static void deploy() {
+public class AMQ implements Resource {
+    @Override
+    public void deploy() {
         if (!TestUtils.isDcDeployed("syndesis-amq")) {
-            //            Template template;
-            //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
-            //                template = OpenShiftUtils.getInstance().templates().load(is).get();
-            //            } catch (IOException ex) {
-            //                throw new IllegalArgumentException("Unable to read template ", ex);
-            //            }
-            //
-            //            Map<String, String> templateParams = new HashMap<>();
-            //            templateParams.put("MQ_USERNAME", "amq");
-            //            templateParams.put("MQ_PASSWORD", "topSecret");
+//            Template template;
+//            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
+//                template = OpenShiftUtils.getInstance().templates().load(is).get();
+//            } catch (IOException ex) {
+//                throw new IllegalArgumentException("Unable to read template ", ex);
+//            }
+//
+//            Map<String, String> templateParams = new HashMap<>();
+//            templateParams.put("MQ_USERNAME", "amq");
+//            templateParams.put("MQ_PASSWORD", "topSecret");
 
             // try to delete previous broker
-            cleanUp();
-            //            OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
+            undeploy();
+//            OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
 
             //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
             OpenShiftUtils.binary().execute("delete", "template", "syndesis-amq");
-            OpenShiftUtils.binary()
-                .execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-amq.yml").toAbsolutePath().toString());
+            OpenShiftUtils.binary().execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-amq.yml").toAbsolutePath().toString());
             OpenShiftUtils.binary().execute("new-app", "syndesis-amq", "-p", "MQ_USERNAME=amq", "-p", "MQ_PASSWORD=topSecret");
 
-            //            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
+//            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
 
-            //            OpenShiftUtils.getInstance().createResources(processedTemplate);
+//            OpenShiftUtils.getInstance().createResources(processedTemplate);
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "syndesis-amq"));
@@ -57,10 +57,11 @@ public class AmqTemplate {
             }
         }
         //this is not part of deployment, but let's have it the same method:
-        AmqTemplate.addAccounts();
+        AMQ.addAccounts();
     }
 
-    public static void cleanUp() {
+    @Override
+    public void undeploy() {
         OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "syndesis-amq".equals(dc.getMetadata().getName())).findFirst()
             .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream()

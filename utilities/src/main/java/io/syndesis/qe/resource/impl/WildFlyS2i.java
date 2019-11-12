@@ -1,5 +1,6 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -7,12 +8,18 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeoutException;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class WildFlyTemplate {
+@Setter
+public class WildFlyS2i implements Resource {
+    private String gitURL;
+    private String appName;
+    private String branch;
 
-    public static void deploy(String gitURL, String appName, String branchName) {
+    @Override
+    public void deploy() {
         if (!TestUtils.isDcDeployed(appName)) {
             //            Template template;
             //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
@@ -55,7 +62,7 @@ public class WildFlyTemplate {
                 .execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-wildfly.yml").toAbsolutePath().toString());
             OpenShiftUtils.binary()
                 .execute("new-app", "wildfly-s2i-template", "-p", "GITHUB_REPO=" + gitURL, "-p", "APPLICATION_NAME=" + appName, "-p",
-                    "SOURCE_REF=" + (branchName != null ? branchName : "master"));
+                    "SOURCE_REF=" + (branch != null ? branch : "master"));
 
             //            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template,
             //            templateParams));
@@ -77,7 +84,8 @@ public class WildFlyTemplate {
         }
     }
 
-    public static void cleanUp(String appName) {
+    @Override
+    public void undeploy() {
         OpenShiftUtils.getInstance().routes().withName(appName).delete();
         OpenShiftUtils.getInstance().services().withName(appName).delete();
         OpenShiftUtils.getInstance().imageStreams().withName(appName).delete();

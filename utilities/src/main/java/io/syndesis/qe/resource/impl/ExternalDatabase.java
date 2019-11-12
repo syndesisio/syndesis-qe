@@ -1,5 +1,6 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -10,8 +11,9 @@ import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.openshift.api.model.DeploymentTriggerPolicyBuilder;
 
-public class ExternalDatabase {
-    public static void deploy() {
+public class ExternalDatabase implements Resource {
+    @Override
+    public void deploy() {
         OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
             .withNewMetadata()
                 .withName("custom-postgres")
@@ -63,6 +65,7 @@ public class ExternalDatabase {
                 .addToSelector(TestUtils.map("app", "custom-postgres"))
             .endSpec().done();
 
+        // create a needed secret with the password
         OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
             .withNewMetadata().withName("syndesis-global-config").endMetadata()
             .withStringData(TestUtils.map("POSTGRESQL_PASSWORD", "testpassword"))
@@ -70,7 +73,8 @@ public class ExternalDatabase {
             .done();
     }
 
-    public static void undeploy() {
+    @Override
+    public void undeploy() {
 
     }
 }

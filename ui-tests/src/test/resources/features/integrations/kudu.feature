@@ -26,8 +26,7 @@ Feature: Kudu connector
 
   Background: Clean application state
     Given clean application state
-    And deploy Kudu server
-    And deploy Kudu rest API
+    And deploy Kudu
     And create table in Kudu server
     And clean "todo" table
     And set Kudu credentials

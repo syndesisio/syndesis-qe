@@ -2,7 +2,7 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.templates.IrcTemplate;
+import io.syndesis.qe.resource.impl.IRC;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -23,7 +23,7 @@ public class IrcValidationSteps {
     @When("^connect IRC controller to channels \"([^\"]*)\"$")
     public void connectController(String channels) {
         controllerRoute = "http://" + OpenShiftUtils.getInstance().routes()
-            .withName(IrcTemplate.CONTROLLER_APP_NAME).get().getSpec().getHost() + "/irc";
+            .withName(IRC.CONTROLLER_APP_NAME).get().getSpec().getHost() + "/irc";
         HttpUtils.doPostRequest(
             controllerRoute + "/connect",
             "{\"channels\":\"" + channels + "\"}",

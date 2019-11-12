@@ -1,13 +1,7 @@
 package io.syndesis.qe;
 
 import io.syndesis.qe.bdd.CommonSteps;
-import io.syndesis.qe.templates.CamelK;
-import io.syndesis.qe.templates.Jaeger;
-import io.syndesis.qe.templates.KafkaTemplate;
-import io.syndesis.qe.templates.KuduRestAPITemplate;
-import io.syndesis.qe.templates.KuduTemplate;
-import io.syndesis.qe.templates.MongoDb36Template;
-import io.syndesis.qe.templates.WildFlyTemplate;
+import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -60,41 +54,7 @@ public abstract class TestSuiteParent {
 
     @AfterClass
     public static void tearDown() {
-        if (TestUtils.isDcDeployed("syndesis-kudu")) {
-            log.info("Cleaning Kudu instances");
-            KuduRestAPITemplate.cleanUp();
-            KuduTemplate.cleanUp();
-        }
-
-        if (TestUtils.isDcDeployed("odata")) {
-            WildFlyTemplate.cleanUp("odata");
-        }
-
-        if (TestUtils.isDcDeployed(MongoDb36Template.APP_NAME)) {
-            MongoDb36Template.cleanUp();
-        }
-
-        if (OpenShiftUtils.podExists(p -> p.getMetadata().getName().contains("strimzi-cluster-operator"))) {
-            KafkaTemplate.undeploy();
-        }
-
-        if (OpenShiftUtils.podExists(p -> p.getMetadata().getName().startsWith("camel-k-operator"))) {
-            CamelK.undeploy();
-        }
-
-        if (OpenShiftUtils.podExists(p -> p.getMetadata().getName().startsWith("jaeger-operator"))) {
-            Jaeger.undeploy();
-        }
-
-        if (lockSecret != null) {
-            if (TestConfiguration.namespaceCleanupAfter()) {
-                log.info("Cleaning namespace");
-                OpenShiftUtils.getInstance().clean();
-            } else {
-                log.info("Releasing namespace lock");
-                OpenShiftUtils.getInstance().deleteSecret(lockSecret);
-            }
-        }
+        ResourceFactory.cleanup();
     }
 
     private static void cleanNamespace() {

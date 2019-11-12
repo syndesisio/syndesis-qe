@@ -9,10 +9,11 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.templates.CamelK;
-import io.syndesis.qe.templates.ExternalDatabase;
-import io.syndesis.qe.templates.Jaeger;
-import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.CamelK;
+import io.syndesis.qe.resource.impl.ExternalDatabase;
+import io.syndesis.qe.resource.impl.Jaeger;
+import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.JMSUtils;
@@ -71,7 +72,7 @@ public class CommonSteps {
 
     @When("^deploy Syndesis$")
     public static void deploySyndesis() {
-        SyndesisTemplate.deploy();
+        ResourceFactory.create(Syndesis.class);
     }
 
     @Then("^wait for Syndesis to become ready")
@@ -81,12 +82,12 @@ public class CommonSteps {
 
     @When("^deploy Camel-K$")
     public void deployCamelK() {
-        CamelK.deploy();
+        ResourceFactory.create(CamelK.class);
     }
 
     @Then("^wait for Camel-K to become ready$")
     public void waitForCamelK() {
-        OpenShiftUtils.xtf().waiters()
+        OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 5)
@@ -95,7 +96,7 @@ public class CommonSteps {
 
     @Then("^wait for DV to become ready$")
     public void waitForDv() {
-        OpenShiftUtils.xtf().waiters()
+        OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 5)
@@ -104,40 +105,23 @@ public class CommonSteps {
 
     @When("^deploy Jaeger$")
     public void deployJaeger() {
-        Jaeger.deploy();
+        ResourceFactory.create(Jaeger.class);
     }
 
     @When("^deploy custom database$")
     public void deployDb() {
-        ExternalDatabase.deploy();
+        ResourceFactory.create(ExternalDatabase.class);
     }
 
     /**
      * Undeploys deployed syndesis resources.
      */
-    public static void undeploySyndesis() {
-        undeployCustomResources();
+    private static void undeploySyndesis() {
+        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+        syndesis.undeployCustomResources();
         if (TestUtils.isDcDeployed("syndesis-operator")) {
-            CommonSteps.waitForUndeployment();
+            waitForUndeployment();
         }
-    }
-
-    public static void undeployCustomResources() {
-        // if we don't have CRD, we can't have CRs
-        if (SyndesisTemplate.getCrd() != null) {
-            for (String s : SyndesisTemplate.getCrNames()) {
-                undeployCustomResource(s);
-            }
-        }
-    }
-
-    /**
-     * Undeploys syndesis custom resource using openshift API.
-     *
-     * @param name custom resource name
-     */
-    private static void undeployCustomResource(String name) {
-        SyndesisTemplate.deleteCr();
     }
 
     /**
@@ -156,7 +140,7 @@ public class CommonSteps {
         final int timeout = TestUtils.isJenkins() ? 20 : 12;
         EnumSet<Component> components = Component.getAllComponents();
 
-        if (deploy && SyndesisTemplate.isAddonEnabled(Addon.JAEGER)) {
+        if (deploy && ResourceFactory.get(Syndesis.class).isAddonEnabled(Addon.JAEGER)) {
             // Jaeger pod doesn't have the required label, so add it manually
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "jaeger"));

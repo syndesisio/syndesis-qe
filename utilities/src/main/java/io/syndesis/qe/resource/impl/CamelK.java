@@ -1,9 +1,10 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.resource.Resource;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -21,7 +22,7 @@ import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CamelK {
+public class CamelK implements Resource {
     private static final String CAMEL_K_ARCHIVE_PATH = String.format(
         "https://github.com/apache/camel-k/releases/download/%s/camel-k-client-%s-%s-64bit.tar.gz",
         TestConfiguration.camelKVersion(),
@@ -31,13 +32,15 @@ public class CamelK {
     private static final String LOCAL_ARCHIVE_PATH = "/tmp/camelk.tar.gz";
     private static final String LOCAL_ARCHIVE_EXTRACT_DIRECTORY = "/tmp/camelk";
 
-    public static void deploy() {
+    @Override
+    public void deploy() {
         downloadArchive();
         extractArchive();
         installViaBinary();
     }
 
-    public static void undeploy() {
+    @Override
+    public void undeploy() {
         // It is needed to reset-db first, otherwise server would create the integrations again
         TestSupport.getInstance().resetDB();
         removeViaBinary();

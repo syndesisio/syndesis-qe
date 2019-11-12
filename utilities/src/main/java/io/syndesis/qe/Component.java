@@ -1,6 +1,7 @@
 package io.syndesis.qe;
 
-import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.Syndesis;
 
 import java.util.EnumSet;
 
@@ -33,17 +34,18 @@ public enum Component {
      * @return enumset of all currently used components
      */
     public static EnumSet<Component> getAllComponents() {
+        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
         EnumSet<Component> ret = EnumSet.of(OAUTH, PROMETHEUS, SERVER, UI, META);
 
-        if (SyndesisTemplate.isAddonEnabled(Addon.DV)) {
+        if (syndesis.isAddonEnabled(Addon.DV)) {
             ret.add(DV);
         }
 
-        if (SyndesisTemplate.isAddonEnabled(Addon.JAEGER)) {
+        if (syndesis.isAddonEnabled(Addon.JAEGER)) {
             ret.add(JAEGER);
         }
 
-        if (!SyndesisTemplate.isAddonEnabled(Addon.EXTERNAL_DB)) {
+        if (!syndesis.isAddonEnabled(Addon.EXTERNAL_DB)) {
             ret.add(DB);
         }
         return ret;

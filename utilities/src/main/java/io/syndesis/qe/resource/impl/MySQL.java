@@ -1,9 +1,10 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -24,8 +25,7 @@ import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MysqlTemplate {
-
+public class MySQL implements Resource {
     private static final String APP_NAME = "mysql";
     private static final String LABEL_NAME = "app";
     private static final String DB_USER = "developer";
@@ -33,8 +33,8 @@ public class MysqlTemplate {
     private static final String DB_SCHEMA = "sampledb";
     private static final String DB_URL = "jdbc:mysql://mysql:3306/sampledb";
 
-    public static void deploy() {
-
+    @Override
+    public void deploy() {
         List<ContainerPort> ports = new LinkedList<>();
         ports.add(new ContainerPortBuilder()
                 .withName("mysql-cmd")
@@ -107,7 +107,8 @@ public class MysqlTemplate {
         AccountsDirectory.getInstance().addAccount("mysql", mysqlAccount);
     }
 
-    public static void cleanUp() {
+    @Override
+    public void undeploy() {
         try {
             OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
                     .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
@@ -119,7 +120,7 @@ public class MysqlTemplate {
         }
     }
 
-    public static void waitUntilMysqlIsReady() {
+    public void waitUntilMysqlIsReady() {
         try {
             OpenShiftWaitUtils.waitUntilPodAppears("mysql");
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 1000 * 300L);

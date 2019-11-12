@@ -1,9 +1,10 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.AMQ;
+import io.syndesis.qe.resource.impl.MySQL;
+import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.steps.CommonSteps;
-import io.syndesis.qe.templates.AmqTemplate;
-import io.syndesis.qe.templates.MysqlTemplate;
-import io.syndesis.qe.templates.PublicOauthProxyTemplate;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonHooks {
-
     @Autowired
     CommonSteps cs;
 
@@ -51,19 +51,19 @@ public class CommonHooks {
     @After("@integrations-mqtt,@integrations-amqp-to-amqp,@integrations-openwire-to-openwire")
     public void closeAMQBroker() {
         log.info("Deleting AMQ broker");
-        AmqTemplate.cleanUp();
+        ResourceFactory.destroy(AMQ.class);
     }
 
     @After("@publicapi")
     public void cleanPublicApi() {
         log.info("Deleting Public API");
-        PublicOauthProxyTemplate.cleanUp();
+        ResourceFactory.destroy(PublicOauthProxy.class);
     }
 
     @After("@integrations-db-to-db-mysql")
     public void cleanMYSQLserver() {
         log.info("Deleting MYSQL server");
-        MysqlTemplate.cleanUp();
+        ResourceFactory.destroy(MySQL.class);
     }
 
     @After("@3scale")

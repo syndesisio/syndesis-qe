@@ -1,25 +1,26 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
+
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import java.util.concurrent.TimeoutException;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class PublicOauthProxyTemplate {
-
+public class PublicOauthProxy implements Resource {
     private static final String TEMPLATE_NAME = "syndesis-public-oauthproxy";
-    public static final String PUBLIC_API_PROXY_ROUTE =
-        "public-" + TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix();
+    public static final String PUBLIC_API_PROXY_ROUTE = "public-" + TestConfiguration.openShiftNamespace()
+        + "." + TestConfiguration.openShiftRouteSuffix();
 
-    public static void deploy() throws TimeoutException, InterruptedException {
+    @Override
+    public void deploy() {
         if (OpenShiftUtils.getInstance().getTemplate(TEMPLATE_NAME) != null ||
             OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME).getAsBoolean()) {
-            cleanUp();
+            undeploy();
         }
         log.info("Creating {} template", TEMPLATE_NAME);
 
@@ -37,10 +38,15 @@ public class PublicOauthProxyTemplate {
             "-p", "OAUTH_PROXY_TAG=" + OpenShiftUtils.getInstance().getImageStream("oauth-proxy").getSpec().getTags().get(0).getName(),
             "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()
         );
-        OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
+        try {
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
+        } catch (Exception e) {
+            fail("Public OAuth proxy not deployed after 15 minutes");
+        }
     }
 
-    public static void cleanUp() {
+    @Override
+    public void undeploy() {
         log.info("Cleaning up everything for {} template", TEMPLATE_NAME);
         OpenShiftUtils.getInstance().deploymentConfigs().withName(TEMPLATE_NAME).delete();
         OpenShiftUtils.getInstance().services().withName(TEMPLATE_NAME).delete();

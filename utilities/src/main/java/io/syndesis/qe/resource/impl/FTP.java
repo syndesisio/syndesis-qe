@@ -1,7 +1,8 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -20,11 +21,12 @@ import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FtpTemplate {
+public class FTP implements Resource {
     private static final String APP_NAME = "ftpd";
     private static final String LABEL_NAME = "app";
 
-    public static void deploy() {
+    @Override
+    public void deploy() {
         if (!TestUtils.isDcDeployed(APP_NAME)) {
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
@@ -106,7 +108,8 @@ public class FtpTemplate {
         AccountsDirectory.getInstance().addAccount("FTP", ftpAccount);
     }
 
-    public static void cleanUp() {
+    @Override
+    public void undeploy() {
         OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
             .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
         OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()

@@ -1,7 +1,8 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -13,10 +14,11 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class HTTPEndpointsTemplate {
+public class HTTPEndpoints implements Resource {
     private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-qe-HTTPEndpoints/master/template.yml";
 
-    public static void deploy() {
+    @Override
+    public void deploy() {
         if (!TestUtils.isDcDeployed("httpendpoints")) {
             //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following lines can be removed later
             OpenShiftUtils.binary().execute("create", "-f", TEMPLATE_URL);
@@ -33,6 +35,15 @@ public class HTTPEndpointsTemplate {
             }
         }
         addAccounts();
+    }
+
+    @Override
+    public void undeploy() {
+        OpenShiftUtils.getInstance().deploymentConfigs().withName("httpendpoints").cascading(true).delete();
+        OpenShiftUtils.getInstance().imageStreams().withName("httpendpoints").delete();
+        OpenShiftUtils.getInstance().services().list().getItems().stream().filter(s -> s.getMetadata().getName().endsWith("-svc"))
+            .forEach(s -> OpenShiftUtils.getInstance().services().delete(s));
+        OpenShiftUtils.binary().execute("delete", "-f", TEMPLATE_URL);
     }
 
     private static void addAccounts() {
