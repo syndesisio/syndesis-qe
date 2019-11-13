@@ -374,9 +374,45 @@ Feature: Google Sheets Connector
     And wait until integration "properties" gets into "Running" state
     Then verify that message from "sheety" queue contains "Sheet1,sheet2,pivot-columns,pivot rows"
 
+  @add-chart-basic-chart-to-spreadsheet
+  Scenario: add basic chart
+    When click on the "Create Integration" link to create a new integration.
+    And select the "google-sheets" connection
+    And select "Get spreadsheet properties" integration action
+    And fill in values by element data-testid
+      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    Then click on the "Done" button
 
-  @add-chart-to-spreadsheet
-  Scenario: add chart
+    When select the "google-sheets" connection
+    And select "Add charts" integration action
+    Then click on the "Done" button
+
+    When add integration step on position "0"
+    And select the "Data Mapper" connection
+    Then check visibility of data mapper ui
+
+    When define property "sheetId" with value "789378340" of type "String" in data mapper
+    And define property "dataRange" with value "B1:B20" of type "String" in data mapper
+    And define property "domainRange" with value "A1:A20" of type "String" in data mapper
+    And open data bucket "Properties"
+    And open data mapper collection mappings
+    And create data mapper mappings
+      | spreadsheetId | spreadsheetId        |
+      | sheetId       | sourceSheetId        |
+      | dataRange     | basicChart.dataRange   |
+      | domainRange   | basicChart.domainRange |
+    Then click on the "Done" button
+
+    When publish integration
+    And set integration name "charts"
+    And publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "charts" gets into "Running" state
+    And verify that chart was created
+
+
+  @add-pie-chart-to-spreadsheet
+  Scenario: add pie chart
     When click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
