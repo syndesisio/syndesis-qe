@@ -9,12 +9,17 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.Verifier;
+import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.server.openshift.Exposure;
 
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
 
 import java.util.HashSet;
 import java.util.List;
@@ -116,7 +121,13 @@ public class IntegrationHandler {
         log.info("Creating integration {}", integration.getName());
         Assertions.assertThatExceptionOfType(BadRequestException.class)
             .isThrownBy(() -> {
-                integrationsEndpoint.create(integration);
+                RestUtils.getClient()
+                    .target(integrationsEndpoint.getEndpointUrl())
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("X-Forwarded-User", "pista")
+                    .header("X-Forwarded-Access-Token", "kral")
+                    .header("SYNDESIS-XSRF-TOKEN", "awesome")
+                    .post(Entity.entity(integration, MediaType.APPLICATION_JSON), JsonNode.class);
             })
             .withMessageContaining("HTTP 400 Bad Request")
             .withNoCause();
