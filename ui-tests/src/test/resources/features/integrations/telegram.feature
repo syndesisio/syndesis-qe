@@ -18,6 +18,9 @@ Feature: Integration - Telegram to Telegram
   #
   # TODO: WHEN TESTING MANUALY, THERE ARE 3 INTEGRATIONS TO TEST, READ COMMENTS IN THIS FILE
   #
+  # Use https://desktop.telegram.org/ for testing. On channel testBotSyndesis set a bot as an admin by
+  # right clicking on the bot.
+
   Background: Clean application state and prepare what is needed
     Given clean application state
     And log into the Syndesis
@@ -55,7 +58,8 @@ Feature: Integration - Telegram to Telegram
     # to get ID, you have to get updates via curl with bot and find it in json response:
     # curl https://api.telegram.org/bot<insert-bot-token-here>/getUpdates
     And fill in values by element ID
-      | chatid | 67507165 |
+      | chatid | -211060990 |
+
     And click on the "Done" button
 
     When add integration step on position "0"
@@ -93,10 +97,16 @@ Feature: Integration - Telegram to Telegram
     When select the "Telegram test connection" connection
     And select "Send a Text Message" integration action
     And fill in values by element ID
-      | chatid | 67507165 |
+      | chatid | -368918764 |
+
+
     And click on the "Done" button
 
     When add integration step on position "0"
+    And select "Split" integration step
+    And click on the "Next" button
+
+    When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
