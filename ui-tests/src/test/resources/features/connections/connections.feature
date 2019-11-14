@@ -2,7 +2,6 @@
 
 @ui
 @amq
-@smoke
 
 Feature: Connection - CRUD
 # Enter feature description here
@@ -17,7 +16,7 @@ Feature: Connection - CRUD
   Scenario: Validate all credentials
     And validate credentials
 
-
+  @smoke
   @connection-create-delete-test
   Scenario: Create and delete
     And navigate to the "Connections" page
@@ -48,7 +47,7 @@ Feature: Connection - CRUD
   # Then sleep for "2000" ms
     Then check that "amq sample" connection is not visible
 
-
+  @smoke
   @connection-kebab-menu-test
   Scenario: Kebab menu
     When navigate to the "Connections" page
@@ -79,7 +78,7 @@ Feature: Connection - CRUD
   # Then sleep for "2000" ms
     Then check that "amq-sample" connection is not visible
 
-
+  @smoke
   @connection-edit-view-test
   Scenario: Kebab menu edit and view
     And navigate to the "Connections" page
