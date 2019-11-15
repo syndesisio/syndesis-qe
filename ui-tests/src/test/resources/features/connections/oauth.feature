@@ -228,3 +228,32 @@ Feature: Connections - OAuth
     When sleep for "6000" ms
 
     Then validate that logs of integration "OAuth-gsheets-test" contains string "title=Test-Data"
+
+  @reproducer
+  @ENTESB-11447
+  Scenario: Testing Twitter OAuth error message
+    When navigate to the "Settings" page
+    And click on element with data-testid "o-auth-app-list-item-twitter-list-item"
+    And fill in values by element data-testid
+      | consumerkey    | invalidValue |
+      | consumersecret | invalidValue |
+    And click on the "Save" button
+    And navigate to the "Connections" page
+    And click on the "Create Connection" link
+    And select "Twitter" connection type
+    And click on the "Connect Twitter" button
+    Then check that main alert dialog contains text "Couldn't connect, check your credentials and try again."
+
+  @reproducer
+  @ENTESB-12005
+  Scenario: Testing oauth description
+    When navigate to the "Settings" page
+    And fill "Twitter" oauth settings "Twitter Listener"
+    And navigate to the "Connections" page
+    And create connections using oauth
+      | Twitter | Twitter-test |
+    And navigate to the "Connections" page
+    And select the "Twitter-test" connection
+    Then check that connection description "Trigger integrations based on tweet content."
+    And change connection description to "updatedDescription"
+    Then check that connection description "updatedDescription"

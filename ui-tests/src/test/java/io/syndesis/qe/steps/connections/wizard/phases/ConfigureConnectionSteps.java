@@ -2,6 +2,7 @@ package io.syndesis.qe.steps.connections.wizard.phases;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
@@ -9,6 +10,7 @@ import io.syndesis.qe.fragments.common.form.Form;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import java.util.Map;
@@ -48,5 +50,9 @@ public class ConfigureConnectionSteps {
             properties.entrySet().stream()
                 .collect(Collectors.toMap(entry -> entry.getKey().toLowerCase(), Map.Entry::getValue))
         );
+    }
+
+    public ElementsCollection getAllToolTips() {
+        return $$(By.cssSelector(".form-label-hint__text-button"));
     }
 }

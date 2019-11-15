@@ -162,4 +162,18 @@ public class ConnectionSteps {
         }
         assertThat(expectedTextIsPresent).isTrue();
     }
+
+    @Then("^check that page contains (\\d+) tooltips$")
+    public void checkNumberOfTooltips(int expectedSize) {
+        TestUtils.sleepForJenkinsDelayIfHigher(1);
+        assertThat(new ConfigureConnectionSteps().getAllToolTips()).hasSize(4);
+    }
+
+    @Then("^check that (\\d+). tooltip contains text \"([^\"]*)\"$")
+    public void checkTextOfTooltip(int tooltip, String expectedText) {
+        SelenideElement selenideElement = new ConfigureConnectionSteps().getAllToolTips().get(tooltip - 1);
+        selenideElement.click(); // open tooltip
+        TestUtils.sleepForJenkinsDelayIfHigher(2);
+        assertThat($(By.className("pf-c-popover__body")).text()).isEqualTo(expectedText);
+    }
 }

@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.utils.TestUtils;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -33,4 +34,7 @@ public class InvokeSql extends Sql {
         return this.getRootElement().find(Element.TITLE).is(visible);
     }
 
+    public String getSqlValue() {
+        return $(Element.INPUT_QUERY).getText();
+    }
 }

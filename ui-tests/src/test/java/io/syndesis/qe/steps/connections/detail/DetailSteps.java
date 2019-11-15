@@ -1,8 +1,6 @@
 package io.syndesis.qe.steps.connections.detail;
 
-import static org.junit.Assert.assertThat;
-
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Selenide.$;
@@ -16,6 +14,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.Condition;
 
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,7 +25,7 @@ public class DetailSteps {
     @Then("^check visibility of \"([^\"]*)\" connection details")
     public void verifyConnectionDetails(String connectionName) {
         log.info("Connection detail page must show connection name");
-        assertThat(detailPage.connectionName(), is(connectionName));
+        assertThat(detailPage.connectionName()).isEqualTo(connectionName);
     }
 
     @Then("^validate oauth connection \"([^\"]*)\" by clicking Validate button$")
@@ -36,5 +35,15 @@ public class DetailSteps {
 
         new CommonSteps().clickOnButton("Validate");
         $(By.className("alert-success")).should(exist);
+    }
+
+    @When("change connection description to \"([^\"]*)\"")
+    public void changeConnectionDescription(String connectionDescription) {
+        detailPage.setDescription(connectionDescription);
+    }
+
+    @Then("^check that connection description \"([^\"]*)\"")
+    public void verifyConnectionDescription(String description) {
+        assertThat(detailPage.getDescription()).isEqualTo(description);
     }
 }

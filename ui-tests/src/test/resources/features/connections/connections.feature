@@ -114,3 +114,15 @@ Feature: Connection - CRUD
   # delete was not fast enough some times so sleep is necessary
   # Then sleep for "2000" ms
     Then check that "amq-sample" connection is not visible
+
+  @reproducer
+  @ENTESB-11253
+  Scenario: Connection tooltips
+    And navigate to the "Connections" page
+    And click on the "Create Connection" link
+    And select "Database" connection type
+    Then check that page contains 4 tooltips
+    And check that 1. tooltip contains text "JDBC URL of the database."
+    And check that 2. tooltip contains text "Username for the database connection."
+    And check that 3. tooltip contains text "Password for the database connection."
+    And check that 4. tooltip contains text "Database schema."

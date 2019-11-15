@@ -1,14 +1,17 @@
 package io.syndesis.qe.steps.integrations.editor.add.connection;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import static com.codeborne.selenide.Condition.visible;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import io.syndesis.qe.pages.integrations.editor.add.connection.ChooseAction;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.InvokeSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.PeriodicSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
 import io.syndesis.qe.utils.TestUtils;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,5 +58,11 @@ public class ConnectionActionSteps {
         invokeSql.fillSqlInput(query);
         //verifying of the querry sometimes fails but there is no success notifier, it just jumps to the next page
         TestUtils.sleepForJenkinsDelayIfHigher(3);
+    }
+
+    @Then("^check that sql query is \"([^\"]*)\"")
+    public void checkQuery(String query) {
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
+        assertThat(invokeSql.getSqlValue()).isEqualTo(query);
     }
 }
