@@ -770,7 +770,7 @@ Feature: API Provider Integration
     And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
-#     | completed | body.completed |
+#     | completed | body.completed | completed can either be null or false
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
@@ -835,7 +835,7 @@ Feature: API Provider Integration
     And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
-#     | completed | body.completed |
+#     | completed | body.completed | completed can either be null or false
       | task      | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
@@ -847,6 +847,7 @@ Feature: API Provider Integration
     And set integration name "TODO Integration edit implemented"
     And publish integration
     And navigate to the "Integrations" page
+    And sleep for "20000" ms
     Then wait until integration "TODO Integration edit implemented" gets into "Running" state
 
     And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1" returns status 200 and body
@@ -936,6 +937,7 @@ Feature: API Provider Integration
     And set integration name "TODO Integration delete implemented"
     And publish integration
     And navigate to the "Integrations" page
+    And sleep for "20000" ms
     Then wait until integration "TODO Integration delete implemented" gets into "Running" state
 
     # verify the deleted operation returns 404, the kept one keeps working
