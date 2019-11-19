@@ -3,9 +3,11 @@ kind: Syndesis
 metadata:
   name: app
 spec:
+  addons:
+    todo:
+      enabled: true
   components:
     scheduled: false
   integration:
     limit: 5
   devSupport: false
-  testSupport: true

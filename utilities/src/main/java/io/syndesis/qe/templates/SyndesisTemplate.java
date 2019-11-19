@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
@@ -38,6 +40,7 @@ import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.ImageStream;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -167,7 +170,7 @@ public class SyndesisTemplate {
     }
 
     private static void deployOperator() {
-
+        final String operatorResourcesName = "syndesis-operator";
         String operatorImage = TestConfiguration.syndesisOperatorImage();
         String imageName = StringUtils.substringBeforeLast(operatorImage, ":");
         String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
@@ -211,10 +214,8 @@ public class SyndesisTemplate {
             fail("Failed to install using operator");
         }
 
-        final String operatorServiceAccountName = "syndesis-operator";
-
         Optional<HasMetadata> serviceAccount = resourceList.stream()
-            .filter(resource -> operatorServiceAccountName.equals(resource.getMetadata().getName()))
+            .filter(resource -> "ServiceAccount".equals(resource.getKind()) && operatorResourcesName.equals(resource.getMetadata().getName()))
             .findFirst();
 
         if (serviceAccount.isPresent()) {
@@ -223,6 +224,28 @@ public class SyndesisTemplate {
         } else {
             log.error("Service account not found in resources");
         }
+
+        DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
+            .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
+            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
+
+        List<EnvVar> envVarsToAdd = new ArrayList<>();
+        envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
+        if (TestConfiguration.syndesisUrl() != null) {
+            envVarsToAdd.add(new EnvVar(
+                "ROUTE_HOSTNAME",
+                StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"),
+                null)
+            );
+        } else {
+            envVarsToAdd.add(new EnvVar(
+                "ROUTE_HOSTNAME",
+                TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix(),
+                null)
+            );
+        }
+
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
         OpenShiftUtils.getInstance().createResources(resourceList);
 
@@ -248,13 +271,6 @@ public class SyndesisTemplate {
                 (Map<String, Object>) spec.computeIfAbsent("integration", s -> new HashMap<String, Object>());
             if (TestUtils.isJenkins()) {
                 integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
-            }
-
-            // set route hostname
-            if (TestConfiguration.syndesisUrl() != null) {
-                spec.put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
-            } else {
-                spec.put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             }
 
             // set correct image stream namespace
