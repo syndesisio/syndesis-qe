@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -228,7 +229,23 @@ public class SyndesisTemplate {
             .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
             .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
 
-        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().add(new EnvVar("TEST_SUPPORT", "true", null));
+        List<EnvVar> envVarsToAdd = new ArrayList<>();
+        envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
+        if (TestConfiguration.syndesisUrl() != null) {
+            envVarsToAdd.add(new EnvVar(
+                "ROUTE_HOSTNAME",
+                StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"),
+                null)
+            );
+        } else {
+            envVarsToAdd.add(new EnvVar(
+                "ROUTE_HOSTNAME",
+                TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix(),
+                null)
+            );
+        }
+
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
         OpenShiftUtils.getInstance().createResources(resourceList);
 
@@ -254,13 +271,6 @@ public class SyndesisTemplate {
                 (Map<String, Object>) spec.computeIfAbsent("integration", s -> new HashMap<String, Object>());
             if (TestUtils.isJenkins()) {
                 integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
-            }
-
-            // set route hostname
-            if (TestConfiguration.syndesisUrl() != null) {
-                spec.put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
-            } else {
-                spec.put("routeHostname", TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
             }
 
             // set correct image stream namespace
