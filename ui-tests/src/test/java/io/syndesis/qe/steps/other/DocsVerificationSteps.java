@@ -22,6 +22,7 @@ public class DocsVerificationSteps {
 
     public DocsVerificationSteps() {
         versions.put("1.9", "7.6");
+        versions.put("1.10", "7.7");
     }
 
     @Then("^check version in about page$")
@@ -29,7 +30,12 @@ public class DocsVerificationSteps {
         By syndesisVersion = By.cssSelector("[data-testid=\"about-modal-content-version-list-item\"]");
         assertThat($(syndesisVersion).shouldBe(visible).getText())
             .isNotEmpty();
-        versionOnAboutPage = $(syndesisVersion).getText().substring(0, 3);
+        assertThat($(syndesisVersion).getText()).isEqualTo(TestUtils.getSyndesisVersion());
+        if (Character.isDigit($(syndesisVersion).getText().charAt(3))) {
+            versionOnAboutPage = $(syndesisVersion).getText().substring(0, 4);
+        } else {
+            versionOnAboutPage = $(syndesisVersion).getText().substring(0, 3);
+        }
     }
 
     @Then("verify whether the docs has right version")
