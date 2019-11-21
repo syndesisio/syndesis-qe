@@ -63,7 +63,7 @@ public class TestConfiguration {
     public static final String SKIP_TESTS_WITH_OPEN_ISSUES = "syndesis.skip.open.issues";
 
     public static final String STATE_CHECK_INTERVAL = "syndesis.server.state.check.interval";
-    public static final String SNOOP_SELECTORS = "syndesis.snoopselectors";
+    public static final String SNOOP_SELECTORS = "syndesis.config.snoop.selectors";
 
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
