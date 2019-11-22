@@ -51,6 +51,9 @@ public class SyndesisTemplate {
     private static final String CR_NAME = "app";
 
     public static void deploy() {
+        log.info("Deploying Syndesis");
+        log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
+        log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
         createPullSecret();
         deployUsingOperator();
         checkRoute();
