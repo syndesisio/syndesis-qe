@@ -51,12 +51,12 @@ Feature: API Provider Integration
 
     #When finish API Provider wizard
     Then check visibility of page "Choose Operation"
-    # TODO: remove the status (no longer shown in UI)
-    And check API Provider operation "Create new task" implementing "POST" to "/" with status "501 Not Implemented"
-    And check API Provider operation "Delete task" implementing "DELETE" to "/{id}" with status "501 Not Implemented"
-    And check API Provider operation "Fetch task" implementing "GET" to "/{id}" with status "501 Not Implemented"
-    And check API Provider operation "List all tasks" implementing "GET" to "/" with status "501 Not Implemented"
-    And check API Provider operation "Update task" implementing "PUT" to "/{id}" with status "501 Not Implemented"
+
+    And check API Provider operation "Create new task" implementing "POST" to "/"
+    And check API Provider operation "Delete task" implementing "DELETE" to "/{id}"
+    And check API Provider operation "Fetch task" implementing "GET" to "/{id}"
+    And check API Provider operation "List all tasks" implementing "GET" to "/"
+    And check API Provider operation "Update task" implementing "PUT" to "/{id}"
 
     Examples:
       | source | location                             |
@@ -76,7 +76,7 @@ Feature: API Provider Integration
     Then check visibility of page "Upload API Provider Specification"
 
     # hacky way to reuse the existing step
-    When create API Provider spec from scratch .
+    When create API Provider spec from scratch v2
     And click on the "Next" button
 
     When change frame to "apicurio"
@@ -118,9 +118,8 @@ Feature: API Provider Integration
     #And click on the "Save and publish" button
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration from scratch" gets into "Running" state
-    And verify that executing GET on API Provider route i-todo-integration-from-scratch endpoint "/syndesistestpath" returns status 200 and body
-        """
-        """
+    When execute GET on API Provider route i-todo-integration-from-scratch endpoint "/syndesistestpath"
+    Then verify response has status 200
 
   
   @api-provider-get-single
@@ -141,7 +140,9 @@ Feature: API Provider Integration
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration get single" gets into "Running" state
-    And verify that executing GET on API Provider route i-todo-integration-get-single endpoint "/api/1" returns status 200 and body
+    When execute GET on API Provider route i-todo-integration-get-single endpoint "/api/1"
+    Then verify response has status 200
+    And verify response has body
         """
         {"id":1}
         """
@@ -193,13 +194,11 @@ Feature: API Provider Integration
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration get non existent" gets into "Running" state
-    And verify that executing GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/14" returns status 404 and body
-        """
-        """
-    And verify that executing GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/e" returns status 418 and body
-        """
-        """
+    When execute GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/14"
+    Then verify response has status 404
 
+    When execute GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/e"
+    Then verify response has status 418
   
   @reproducer
   @api-provider-get-collection
@@ -234,10 +233,12 @@ Feature: API Provider Integration
       | task1 |
       | task2 |
     Then wait until integration "TODO Integration get collection" gets into "Running" state
-    And verify that executing GET on API Provider route i-todo-integration-get-collection endpoint "/api/" returns status 200 and body
-        """
-        [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
-        """
+    When execute GET on API Provider route i-todo-integration-get-collection endpoint "/api/"
+    Then verify response has status 200
+    And verify response has body
+      """
+      [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
+      """
 
   
   @reproducer
@@ -275,16 +276,15 @@ Feature: API Provider Integration
       | task2 |
 
     Then wait until integration "TODO Integration get collection empty" gets into "Running" state
-    And verify that executing GET on API Provider route i-todo-integration-get-collection-empty endpoint "/api/" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-get-collection-empty endpoint "/api/"
+    Then verify response has body
+      """
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
-        """
+      """
 
     When clean "todo" table
-    And verify that executing GET on API Provider route i-todo-integration-get-collection-empty endpoint "/api/" returns status 200 and body
-        """
-        []
-        """
+    Then wait until integration "TODO Integration get collection empty" gets into "Running" state
+    Then verify response has status 200
 
   
   @api-provider-post-new
@@ -324,10 +324,12 @@ Feature: API Provider Integration
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration post new" gets into "Running" state
-    And verify that executing POST on API Provider route i-todo-integration-post-new endpoint "/api/" with request '{"id":1,"completed":1,"task":"task1"}' returns status 201 and body
-        """
+    When execute POST on API Provider route i-todo-integration-post-new endpoint "/api/" with body '{"id":1,"completed":1,"task":"task1"}'
+    Then verify response has status 201
+    And verify response has body
+      """
         {"id":1,"completed":1,"task":"task1"}
-        """
+      """
     And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
     And validate that number of all todos with task "task1" is "1"
 
@@ -379,9 +381,9 @@ Feature: API Provider Integration
     And inserts into "todo" table
       | task1 |
     Then wait until integration "TODO Integration post existing" gets into "Running" state
-    And verify that executing POST on API Provider route i-todo-integration-post-existing endpoint "/api/" with request '{"id":1,"completed":1,"task":"task1"}' returns status 409 and body
-        """
-        """
+    When execute POST on API Provider route i-todo-integration-post-existing endpoint "/api/" with body '{"id":1,"completed":1,"task":"task1"}'
+    Then verify response has status 409
+
     And validate that all todos with task "task1" have value completed "0", period in ms: "1000"
     And validate that number of all todos with task "task1" is "1"
 
@@ -436,10 +438,12 @@ Feature: API Provider Integration
     And inserts into "todo" table
       | task1 |
     Then wait until integration "TODO Integration post collection" gets into "Running" state
-    And verify that executing POST on API Provider route i-todo-integration-post-collection endpoint "/api/multi" with request '[{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]' returns status 200 and body
-        """
+    When execute POST on API Provider route i-todo-integration-post-collection endpoint "/api/multi" with body '[{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]'
+    Then verify response has status 200
+    And verify response has body
+      """
         [{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]
-        """
+      """
     And validate that number of all todos with task "task1" is "1"
     And validate that number of all todos with task "task2" is "1"
     And validate that number of all todos with task "task3" is "1"
@@ -487,19 +491,21 @@ Feature: API Provider Integration
       | task2 |
     Then wait until integration "TODO Integration put" gets into "Running" state
     # update existing
-    And verify that executing PUT on API Provider route i-todo-integration-put endpoint "/api/1" with request '{"completed":1,"task":"changedtask1"}' returns status 200 and body
-        """
+    When execute PUT on API Provider route i-todo-integration-put endpoint "/api/1" with body '{"completed":1,"task":"changedtask1"}'
+    Then verify response has body
+      """
         {"id":1,"completed":1,"task":"changedtask1"}
-        """
+      """
     And validate that all todos with task "changedtask1" have value completed "1", period in ms: "1000"
     And validate that number of all todos with task "task1" is "0"
     And validate that number of all todos with task "task2" is "1"
     And validate that number of all todos with task "changedtask1" is "1"
     # insert new
-    And verify that executing PUT on API Provider route i-todo-integration-put endpoint "/api/7" with request '{"completed":1,"task":"task7"}' returns status 200 and body
-        """
+    When execute PUT on API Provider route i-todo-integration-put endpoint "/api/7" with body '{"completed":1,"task":"task7"}'
+    Then verify response has body
+      """
         {"id":7,"completed":1,"task":"task7"}
-        """
+      """
     And validate that number of all todos with task "task1" is "0"
     And validate that number of all todos with task "task2" is "1"
     And validate that number of all todos with task "changedtask1" is "1"
@@ -537,9 +543,12 @@ Feature: API Provider Integration
       | task2 |
     Then wait until integration "TODO Integration delete" gets into "Running" state
     # update existing
-    And verify that executing DELETE on API Provider route i-todo-integration-delete endpoint "/api/1" returns status 204 and body
-      """
-      """
+    When execute DELETE on API Provider route i-todo-integration-delete endpoint "/api/1"
+    Then verify response has status 204
+    And verify response has body
+    """
+
+    """
     And validate that number of all todos with task "task1" is "0"
     And validate that number of all todos with task "task2" is "1"
 
@@ -585,13 +594,14 @@ Feature: API Provider Integration
     And sleep for jenkins delay or "3" seconds
     And start integration "TODO Integration import export"
     And navigate to the "Integrations" page
+    And sleep for 20 seconds
     Then wait until integration "TODO Integration import export" gets into "Running" state
 
-    And verify that executing GET on API Provider route i-todo-integration-import-export endpoint "/api/1" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-import-export endpoint "/api/1"
+    Then verify response has body
+      """
         {"id":1}
-        """
-
+      """
   
   @api-provider-not-visible-in-connections
   Scenario: API Provider not visible in connections
@@ -666,14 +676,16 @@ Feature: API Provider Integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration add operation" gets into "Running" state
 
-    And verify that executing GET on API Provider route i-todo-integration-add-operation endpoint "/api/1" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-add-operation endpoint "/api/1"
+    Then verify response has body
+      """
         {"id":1}
-        """
-    And verify that executing GET on API Provider route i-todo-integration-add-operation endpoint "/api/v2/42" returns status 200 and body
-        """
+      """
+    When execute GET on API Provider route i-todo-integration-add-operation endpoint "/api/v2/42"
+    Then verify response has body
+      """
         {"id":42,"task":"42"}
-        """
+      """
 
   
   @gh-5332
@@ -730,14 +742,16 @@ Feature: API Provider Integration
       | task2 |
     Then wait until integration "TODO Integration edit unimplemented" gets into "Running" state
 
-    And verify that executing GET on API Provider route i-todo-integration-edit-unimplemented endpoint "/api/1" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-edit-unimplemented endpoint "/api/1"
+    Then verify response has body
+      """
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
-        """
-    And verify that executing GET on API Provider route i-todo-integration-edit-unimplemented endpoint "/api/42" returns status 200 and body
-        """
+      """
+    When execute GET on API Provider route i-todo-integration-edit-unimplemented endpoint "/api/42"
+    Then verify response has body
+      """
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
-        """
+      """
 
   @gh-5332
   @gh-6099
@@ -784,15 +798,17 @@ Feature: API Provider Integration
     And navigate to the "Integrations" page
     # sanity check that the operation works as expected
     Then wait until integration "TODO Integration edit implemented" gets into "Running" state
-    And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1"
+    Then verify response has body
+      """
         {"id":1,"task":"task1"}
-        """
-    And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/2" returns status 200 and body
-        """
+      """
+    When execute GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/2"
+    Then verify response has body
+      """
         {"id":2,"task":"task2"}
-        """
-
+      """
+    
     # go back to the integration and edit
 
     When select the "TODO Integration edit implemented" integration
@@ -850,14 +866,17 @@ Feature: API Provider Integration
     And sleep for "20000" ms
     Then wait until integration "TODO Integration edit implemented" gets into "Running" state
 
-    And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/1"
+    Then verify response has body
+      """
         [{"id":1,"task":"task1"},{"id":2,"task":"task2"}]
-        """
-    And verify that executing GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/42" returns status 200 and body
-        """
+      """
+    When execute GET on API Provider route i-todo-integration-edit-implemented endpoint "/api/2"
+    Then verify response has body
+      """
         [{"id":1,"task":"task1"},{"id":2,"task":"task2"}]
-        """
+      """
+    
 
   @gh-6099
   @gh-5332
@@ -908,14 +927,16 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration delete implemented" gets into "Running" state
 
     # just a sanity check that it's really implemented
-    And verify that executing GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/1" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/1"
+    Then verify response has body
+      """
         {"id":1}
-        """
-    And verify that executing GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/" returns status 200 and body
-        """
+      """
+    When execute GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/"
+    Then verify response has body
+      """
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
-        """
+      """
 
     # now edit the api
     When select the "TODO Integration delete implemented" integration
@@ -941,13 +962,13 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration delete implemented" gets into "Running" state
 
     # verify the deleted operation returns 404, the kept one keeps working
-    And verify that executing GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/1" returns status 404 and body
-        """
-        """
-    And verify that executing GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/" returns status 200 and body
-        """
+    When execute GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/1"
+    Then verify response has status 404
+    When execute GET on API Provider route i-todo-integration-delete-implemented endpoint "/api/"
+    Then verify response has body
+      """
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
-        """
+      """
 
   
   @gh-5332
@@ -984,7 +1005,7 @@ Feature: API Provider Integration
     When select the "API Provider" connection
     Then check visibility of page "Upload API Provider Specification"
 
-    When create API Provider spec from scratch .
+    When create API Provider spec from scratch v2
     And click on the "Next" button
 
     And change frame to "apicurio"
@@ -1074,13 +1095,14 @@ Feature: API Provider Integration
     When select the "API Provider" connection
     Then check visibility of page "Upload API Provider Specification"
 
-    When create API Provider spec from scratch .
+    When create API Provider spec from scratch v2
     And click on the "Next" button
     And go back in browser history
     Then check visibility of page "Upload API Provider Specification"
 
   @reproducer
   @gh-4031
+  @ENTESB-12379
   @api-provider-simple-response-type
   Scenario: API Provider operation with simple return type
     When click on the "Create Integration" link to create a new integration.
@@ -1108,10 +1130,9 @@ Feature: API Provider Integration
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "Simple API Provider Integration" gets into "Running" state
-    And verify that executing GET on API Provider route i-simple-api-provider-integration endpoint "/api/1" returns status 200, response type text/plain and body
-        """
-        1
-        """
+    When execute GET on API Provider route i-simple-api-provider-integration endpoint "/api/1"
+    Then verify response has status 200
+    And verify response has body type "text/plain"
 
   
   @reproducer
@@ -1215,15 +1236,15 @@ Feature: API Provider Integration
     When select the "conditional-provider" integration
 
     #The body is checked only for the step to pass, more important checks are validating the number of TODOs in the table
-    Then verify that executing POST on API Provider route i-conditional-provider endpoint "/api" with request '{"completed":1,"task":"task7", "id": 1}' returns status 201 and body
+    When execute POST on API Provider route i-conditional-provider endpoint "/api" with body '{"completed":1,"task":"task7", "id": 1}'
+    Then verify response has status 201
+    And verify response has body
     """
-{"id":1}
+      {"id":1}
     """
     And validate that number of all todos with task "task7" is "1"
-    Then verify that executing POST on API Provider route i-conditional-provider endpoint "/api" with request '{"completed":-1,"task":"task7", "id": 1}' returns status 201 and body
-    """
-{"id":1}
-    """
+    When execute POST on API Provider route i-conditional-provider endpoint "/api" with body '{"completed":-1,"task":"task7", "id": 1}'
+    Then verify response has status 201
     And validate that number of all todos with task "task7" is "0"
 
   @reproducer

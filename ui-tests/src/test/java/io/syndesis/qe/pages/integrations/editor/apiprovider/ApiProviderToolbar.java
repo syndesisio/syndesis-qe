@@ -19,7 +19,7 @@ public class ApiProviderToolbar extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.cssSelector(".pf-c-page__main-breadcrumb");
         public static final By OPERATIONS_DROPDOWN = By.cssSelector(".operations-dropdown");
-        public static final By GO_TO_OPERATION_LIST_BUTTON = By.xpath("//button[normalize-space()='Go to Operation List']");
+        public static final By GO_TO_OPERATION_LIST_BUTTON = By.xpath("//button[normalize-space()='Back to Operation List']");
         public static final By EDIT_OPENAPI_DEFINITION = By.xpath("//a[normalize-space()='View/Edit API Definition']");
     }
 
@@ -38,8 +38,8 @@ public class ApiProviderToolbar extends SyndesisPageObject {
     }
 
     public void goToOperation(String operationName) {
-        getRootElement().$(Element.OPERATIONS_DROPDOWN).click();
-        getRootElement().$(Element.OPERATIONS_DROPDOWN)
+        getDropDown().click();
+        getDropDown()
             .$$(By.cssSelector("a strong"))
             .filter(Condition.text(operationName))
             .shouldHaveSize(1)
@@ -47,8 +47,12 @@ public class ApiProviderToolbar extends SyndesisPageObject {
             .click();
     }
 
+    private SelenideElement getDropDown() {
+        return getRootElement().$$(By.cssSelector(".pf-c-breadcrumb__item")).findBy(Condition.matchText("Operation.*"));
+    }
+
     public void goToOperationList() {
-        getRootElement().$(Element.OPERATIONS_DROPDOWN).click();
+        getDropDown().click();
         if ($(Element.GO_TO_OPERATION_LIST_BUTTON).exists()) {
             getRootElement().$(Element.GO_TO_OPERATION_LIST_BUTTON).shouldBe(visible).click();
         } else {

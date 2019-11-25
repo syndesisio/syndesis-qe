@@ -23,7 +23,6 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
 
 import javax.ws.rs.client.Client;
@@ -47,6 +46,7 @@ public class ApiProviderSteps {
     private ReviewApiProviderActions reviewApiProviderActions = new ReviewApiProviderActions();
     private ApiProviderToolbar toolbar = new ApiProviderToolbar();
     private OperationsList operationsList = new OperationsList(By.cssSelector(".list-view-pf-view"));
+    private Response lastResponse;
 
     @When("^select API Provider operation flow (.+)$")
     public void selectOperation(String operationName) {
@@ -104,8 +104,8 @@ public class ApiProviderSteps {
         assertEquals("Wrong number of warnings", num, actual);
     }
 
-    @Then("^check API Provider operation \"([^\"]*)\" implementing \"([^\"]*)\" to \"([^\"]*)\" with status \"([^\"]*)\"$")
-    public void checkOperationImplementingWithStatus(String operationName, String operationVerb, String operationPath, String operationStatus) {
+    @Then("^check API Provider operation \"([^\"]*)\" implementing \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void checkOperationImplementingWithStatus(String operationName, String operationVerb, String operationPath) {
         operationsList.validate();
 
         String verb = operationsList.getVerb(operationName);
@@ -137,45 +137,49 @@ public class ApiProviderSteps {
         TestUtils.sleepIgnoreInterrupt(2000);
     }
 
-    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+) and body$")
-    public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName, String endpoint, int status, String body) {
+    @When("^execute ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\"$")
+    public void executeRequest(String method, String routeName, String endpoint) {
         String url = getUrl(routeName, endpoint);
-        Response response = getInvocation(url).method(method);
-        checkResponse(response, status, body, null);
+        lastResponse = getInvocation(url).method(method);
     }
 
-    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+), response type ([^\"]*) and " +
-        "body$")
-    public void verifyThatEndpointReturnsStatusResponseTypeAndBody(String method, String routeName, String endpoint, int status, String responseType,
-        String body) {
+    @When("^execute ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" with body \'([^\']*)\'$")
+    public void executeRequest(String method, String routeName, String endpoint, String body) {
         String url = getUrl(routeName, endpoint);
-        Response response = getInvocation(url).method(method);
-        checkResponse(response, status, body, responseType);
+        lastResponse = getInvocation(url).method(method, Entity.entity(body, MediaType.APPLICATION_JSON_TYPE));
     }
 
-    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" with request '(.+)' returns status (\\d+) and body$")
-    public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName,
-        String endpoint, String requestBody, int status, String body) {
-        String url = getUrl(routeName, endpoint);
-        Response response = getInvocation(url).method(method, Entity.entity(requestBody, MediaType.APPLICATION_JSON_TYPE));
-        checkResponse(response, status, body, null);
+    @Then("^verify response has body$")
+    public void verifyRequestBody(String body) {
+        if (lastResponse == null) {
+            log.error("Add execute <operation> on API Provider route <route-name>... Before using this step");
+            throw new IllegalStateException("A request should be executed before using this step");
+        }
+        assertEquals(body.trim(), lastResponse.readEntity(String.class));
+    }
+
+    @Then("^verify response has status (\\d+)$")
+    public void verifyRequestStatus(int status) {
+        if (lastResponse == null) {
+            log.error("Add execute <operation> on API Provider route <route-name>... Before using this step");
+            throw new IllegalStateException("A request should be executed before using this step");
+        }
+        assertEquals(status, lastResponse.getStatus());
+    }
+
+    @Then("^verify response has body type \"([^\"]*)\"$")
+    public void verifyRequestBodyType(String type) {
+        if (lastResponse == null) {
+            log.error("Add execute <operation> on API Provider route <route-name>... Before using this step");
+            throw new IllegalStateException("A request should be executed before using this step");
+        }
+        assertEquals(type.trim(), lastResponse.getMediaType().getType());
     }
 
     @When("^publish API Provider integration$")
     public void publishIntegration() {
         log.info("Publishing integration");
         toolbar.publish();
-    }
-
-    private void checkResponse(Response response, int status, String body, String responseType) {
-        SoftAssertions sa = new SoftAssertions();
-        sa.assertThat(response.getStatus()).isEqualTo(status).describedAs("Wrong status");
-        String responseBody = response.readEntity(String.class);
-        sa.assertThat(responseBody).isEqualTo(body).describedAs("Wrong body");
-        if (responseType != null) {
-            sa.assertThat(response.getMediaType().toString()).isEqualTo(responseType).describedAs("Wrong response type");
-        }
-        sa.assertAll();
     }
 
     private String getUrl(String routeName, String endpoint) {
