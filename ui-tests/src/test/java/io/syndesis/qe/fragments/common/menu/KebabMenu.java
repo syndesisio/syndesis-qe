@@ -1,16 +1,20 @@
 package io.syndesis.qe.fragments.common.menu;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static com.codeborne.selenide.Condition.visible;
+
+import io.syndesis.qe.utils.Conditions;
+
+import org.openqa.selenium.By;
+
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.codeborne.selenide.Condition.visible;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class KebabMenu {
 
@@ -35,14 +39,16 @@ public class KebabMenu {
     }
 
     public SelenideElement getItemElement(String item) {
-        ElementsCollection found = menuButton.parent().$$(By.tagName("a")).filter(Condition.exactText(item));
+        ElementsCollection found = menuButton.parent().$$(By.cssSelector("a")).filter(Condition.exactText(item));
+        found.exclude(Conditions.NO_CHILDREN);
         assertThat(found)
-                .size().isEqualTo(1);
+            .size().isEqualTo(1);
         return found.first();
     }
 
     public boolean isItemElementVisible(String item) {
-        ElementsCollection found = menuButton.parent().$$(By.tagName("a")).filter(Condition.exactText(item));
+        ElementsCollection found = menuButton.parent().$$(By.cssSelector("a")).filter(Condition.exactText(item));
+        found.exclude(Conditions.NO_CHILDREN);
         return found.size() == 1;
     }
 
