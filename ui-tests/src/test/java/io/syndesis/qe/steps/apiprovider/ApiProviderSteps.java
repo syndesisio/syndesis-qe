@@ -149,6 +149,13 @@ public class ApiProviderSteps {
         lastResponse = getInvocation(url).method(method, Entity.entity(body, MediaType.APPLICATION_JSON_TYPE));
     }
 
+    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+) and body$")
+    @Deprecated
+    public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName, String endpoint, int status, String body) {
+        String url = getUrl(routeName, endpoint);
+        lastResponse = getInvocation(url).method(method);
+    }
+
     @Then("^verify response has body$")
     public void verifyRequestBody(String body) {
         if (lastResponse == null) {

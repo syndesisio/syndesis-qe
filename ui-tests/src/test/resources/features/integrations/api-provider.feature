@@ -140,7 +140,7 @@ Feature: API Provider Integration
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration get single" gets into "Running" state
-    When execute GET on API Provider route i-todo-integration-get-single endpoint "/api/1"
+    When execute GET on API Provider route i-todo-integartion-get-single endpoint "/api/1"
     Then verify response has status 200
     And verify response has body
         """
@@ -547,7 +547,10 @@ Feature: API Provider Integration
     Then verify response has status 204
     And verify response has body
     """
+<<<<<<< HEAD
 
+=======
+>>>>>>> [refactor] API Provider request steps
     """
     And validate that number of all todos with task "task1" is "0"
     And validate that number of all todos with task "task2" is "1"

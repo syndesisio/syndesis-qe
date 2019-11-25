@@ -19,8 +19,8 @@ public class ApiProviderToolbar extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.cssSelector(".pf-c-page__main-breadcrumb");
         public static final By OPERATIONS_DROPDOWN = By.cssSelector(".operations-dropdown");
-        public static final By GO_TO_OPERATION_LIST_BUTTON = By.xpath(".//button[normalize-space()='Back to Operation List']");
-        public static final By EDIT_OPENAPI_DEFINITION = By.xpath(".//a[normalize-space()='View/Edit API Definition']");
+        public static final By GO_TO_OPERATION_LIST_BUTTON = By.xpath("//button[normalize-space()='Back to Operation List']");
+        public static final By EDIT_OPENAPI_DEFINITION = By.xpath("//a[normalize-space()='View/Edit API Definition']");
     }
 
     private static final class Button {
