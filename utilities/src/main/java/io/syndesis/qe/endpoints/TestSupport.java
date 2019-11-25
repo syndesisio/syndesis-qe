@@ -48,6 +48,15 @@ public final class TestSupport {
         while (tries < 10) {
             if (resetDbWithResponse() == 204) {
                 log.info("Cleaning integration pods");
+                // wait till the integration pods are deleted
+                TestUtils.waitFor(() -> !OpenShiftUtils.getInstance().pods().list().getItems().stream().anyMatch(
+                    p -> p.getMetadata().getName().startsWith("i-")
+                        && !p.getMetadata().getName().contains("deploy")
+                        && !p.getMetadata().getName().contains("build")),
+                    1, 5 * 60,
+                    "Some integration was not deleted successfully in time. Integration name: " +
+                        OpenShiftUtils.getPodByPartialName("i-").get().getMetadata().getName());
+
                 // In OCP 4.x the build and deploy pods stays there, so delete them
                 OpenShiftUtils.getInstance().pods().delete(
                     OpenShiftUtils.getInstance().pods().list().getItems().stream()
@@ -62,7 +71,6 @@ public final class TestSupport {
         fail("Unable to successfully reset DB after 10 tries");
     }
 
-
     /**
      * Resets Syndesis database.
      *
@@ -71,10 +79,10 @@ public final class TestSupport {
     private int resetDbWithResponse() {
         String url = getEndpointUrl();
         final Invocation.Builder invocation = client
-                .target(url)
-                .request(MediaType.APPLICATION_JSON)
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral");
+            .target(url)
+            .request(MediaType.APPLICATION_JSON)
+            .header("X-Forwarded-User", "pista")
+            .header("X-Forwarded-Access-Token", "kral");
         int responseCode = -1;
         try {
             responseCode = invocation.get().getStatus();
