@@ -377,3 +377,32 @@ Feature: Integration - DB to DB
 
     And check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
     And check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output
+
+  @reproducer
+  @ENTESB-11415
+  Scenario: SQL statement doesn't contain text from the previous SQL step
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    When select the "Timer" connection
+    And select "Simple" integration action
+    And fill in values by element ID
+      | period        | 1       |
+      | select-period | Minutes |
+    And click on the "Next" button
+
+    Then check that position of connection to fill is "Finish"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO todo (task) VALUES ('buy milk')" value
+    And fill in values by element data-testid
+      | batch | true |
+    And click on the "Done" button
+
+    And add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+
+    Then check that sql query is ""

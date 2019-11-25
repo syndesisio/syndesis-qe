@@ -451,7 +451,11 @@ public class CommonSteps {
         new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();
     }
 
-    // e.g. clicks on the "1". "Add a step" link.
+    @When(".*click on element with data-testid \"([^\"]*)\"$")
+    public void clickOnElement(String element) {
+        $(By.cssSelector(String.format("[data-testid=\"%s\"]", element))).shouldBe(visible).click();
+    }
+
     @When(".*clicks? on the \"(\\d+)\". \"([^\"]*)\" link.*$")
     public void clickOnLink(int position, String linkTitle) {
         int index = position - 1; // e.g. first position is 0 index
@@ -1051,6 +1055,11 @@ public class CommonSteps {
     @When("^clean webdriver download folder$")
     public void cleanDownloadFolder() throws IOException {
         CustomWebDriverProvider.cleanDownloadFolder();
+    }
+
+    @Then("^check that main alert dialog contains text \"([^\"]*)\"$")
+    public void checkAlertDialog(String expectedText) {
+        assertThat(syndesisRootPage.getAlertElemet().getText()).isEqualTo(expectedText);
     }
 }
 
