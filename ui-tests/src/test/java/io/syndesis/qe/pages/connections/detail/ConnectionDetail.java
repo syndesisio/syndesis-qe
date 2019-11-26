@@ -22,6 +22,7 @@ public class ConnectionDetail extends SyndesisPageObject {
         public static final By ROOT = By.cssSelector("pf-c-page__main");
         public static final By CONNECTION_DETAIL = By.cssSelector(".pf-c-content");
         public static final By CONNECTION_NAME = By.cssSelector(".inline-text-readwidget.connection-details-header__connectionName");
+        public static final By CONNECTION_HEADER = By.cssSelector(".connection-details-header__row");
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ConnectionDetail extends SyndesisPageObject {
     }
 
     public String connectionName() {
-        return $(Element.CONNECTION_DETAIL).$(Element.CONNECTION_NAME).shouldBe(visible).getText();
+        return $(Element.CONNECTION_HEADER).$(Element.CONNECTION_NAME).shouldBe(visible).getText();
     }
 
     public String getDescription() {

@@ -40,7 +40,7 @@ public class KebabMenu {
 
     public SelenideElement getItemElement(String item) {
         ElementsCollection found = menuButton.parent().$$(By.cssSelector("a")).filter(Condition.exactText(item));
-        found.exclude(Conditions.NO_CHILDREN);
+        found = found.exclude(Conditions.NO_CHILDREN);
         assertThat(found)
             .size().isEqualTo(1);
         return found.first();
@@ -48,7 +48,7 @@ public class KebabMenu {
 
     public boolean isItemElementVisible(String item) {
         ElementsCollection found = menuButton.parent().$$(By.cssSelector("a")).filter(Condition.exactText(item));
-        found.exclude(Conditions.NO_CHILDREN);
+        found = found.exclude(Conditions.NO_CHILDREN);
         return found.size() == 1;
     }
 
