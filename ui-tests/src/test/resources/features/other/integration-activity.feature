@@ -93,17 +93,17 @@ Feature: Activity
     And click on the "Done" button
 
     And publish integration
-    And set integration name "Webhook to DB"
+    And set integration name "activity-test"
     And publish integration
 
     And navigate to the "Integrations" page
-    And wait until integration "Webhook to DB" gets into "Running" state
-    And select the "Webhook to DB" integration
+    And wait until integration "activity-test" gets into "Running" state
+    And select the "activity-test" integration
     And click on the "Activity" tab
     Then check that in the activity log are 0 activities
 
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"incorrect company"}
+    And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
     And save time after request
     And sleep for "3000" ms
     Then check that in the activity log are 1 activities
@@ -125,7 +125,7 @@ Feature: Activity
 
     # post next request
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
+    And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
     And save time after request
     And sleep for "3000" ms
     Then check that in the activity log are 2 activities
@@ -151,7 +151,7 @@ Feature: Activity
 
     # post next request
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
     Then check that in the activity log are 3 activities
@@ -187,13 +187,13 @@ Feature: Activity
     And click on the "Save and publish" button
     And navigate to the "Integrations" page
     And sleep for jenkins delay or "5" seconds
-    And wait until integration "Webhook to DB" gets into "Running" state
+    And wait until integration "activity-test" gets into "Running" state
 
-    And select the "Webhook to DB" integration
+    And select the "activity-test" integration
     And click on the "Activity" tab
 
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"incorrect company"}
+    And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
     And save time after request
     And sleep for "3000" ms
     Then check that in the activity log are 4 activities
@@ -239,18 +239,18 @@ Feature: Activity
     And click on the "Done" button
 
     And publish integration
-    And set integration name "Webhook to DB with error"
+    And set integration name "activity-error"
     And publish integration
 
     And navigate to the "Integrations" page
-    And wait until integration "Webhook to DB with error" gets into "Running" state
+    And wait until integration "activity-error" gets into "Running" state
 
-    And select the "Webhook to DB with error" integration
+    And select the "activity-error" integration
     And click on the "Activity" tab
     Then check that in the activity log are 0 activities
 
     When save time before request
-    And invoke post request which can fail to webhook in integration webhook-to-db-with-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And invoke post request which can fail to webhook in integration activity-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
 
@@ -271,11 +271,11 @@ Feature: Activity
 
     And check that 3. step in the 1. activity is Invoke SQL step
     And check that 3. step in the 1. activity has Error status
-    And check that 3. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; SQL []; ERROR: invalid input syntax for type date: "Red Hat" in the output
+    And check that 3. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; ERROR: invalid input syntax for type date: "Red Hat" in the output
 
   @reproducer
   @gh-4192
-  @error-data-mapper-before
+  @activity-error-data-mapper-before
   Scenario: Check whether shows error when data mapper is before
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
@@ -311,18 +311,18 @@ Feature: Activity
     And click on the "Done" button
 
     And publish integration
-    And set integration name "Webhook to DB with error in final"
+    And set integration name "activity-error-data-mapper-before"
     And publish integration
 
     And navigate to the "Integrations" page
-    And wait until integration "Webhook to DB with error in final" gets into "Running" state
+    And wait until integration "activity-error-data-mapper-before" gets into "Running" state
 
-    And select the "Webhook to DB with error in final" integration
+    And select the "activity-error-data-mapper-before" integration
     And click on the "Activity" tab
     Then check that in the activity log are 0 activities
 
     When save time before request
-    And invoke post request which can fail to webhook in integration webhook-to-db-with-error-in-final with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And invoke post request which can fail to webhook in integration activity-error-data-mapper-before with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
     # Test activity
@@ -342,4 +342,4 @@ Feature: Activity
     And check that 2. step in the 1. activity contains No output in the output
     And check that 3. step in the 1. activity is Invoke SQL step
     And check that 3. step in the 1. activity has Error status
-    And check that 3. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; SQL []; Bad value for type timestamp/date/time: {1}; nested exception is org.postgresql.util.PSQLException: Bad value for type timestamp/date/time: {1} in the output
+    And check that 3. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; Bad value for type timestamp/date/time: {1}; nested exception is org.postgresql.util.PSQLException: Bad value for type timestamp/date/time: {1} in the output

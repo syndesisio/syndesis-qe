@@ -79,11 +79,11 @@ Feature: Templates
 
     #finish and save integration
     When click on the "Save" link
-    And set integration name "DB to gmail-template"
+    And set integration name "db-template-send-<template_type>"
     And publish integration
 
     # wait for integration to get in active state
-    And wait until integration "DB to gmail-template" gets into "Running" state
+    And wait until integration "db-template-send-<template_type>" gets into "Running" state
 
     Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 

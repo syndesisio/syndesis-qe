@@ -46,7 +46,7 @@ Feature: API Provider Integration
     #When navigate to the next API Provider wizard step
     When click on the "Next" button
     And click on the "Save" link
-    And set integration name "Todo API Provider Integration"
+    And set integration name "api-provider-create-from-spec-<source>"
     And click on the "Save" button
 
     #When finish API Provider wizard

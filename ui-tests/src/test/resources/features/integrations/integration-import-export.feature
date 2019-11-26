@@ -63,15 +63,15 @@ Feature: Integration - Import Export
 
     # finish and save integration
     And click on the "Save" link
-    And set integration name "Integration_import_export_test"
+    And set integration name "integration-import-export-classic-input"
     And publish integration
-    Then Integration "Integration_import_export_test" is present in integrations list
+    Then Integration "integration-import-export-classic-input" is present in integrations list
 
     When inserts into "CONTACT" table
       | Lorem | Ipsum | Red Hat | e_db |
 
     # wait for integration to get in active state
-    And wait until integration "Integration_import_export_test" gets into "Running" state
+    And wait until integration "integration-import-export-classic-input" gets into "Running" state
     And sleep for jenkins delay or "15" seconds
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
@@ -80,8 +80,8 @@ Feature: Integration - Import Export
       | Fedora | 28 | RH | f_db |
 
     # export the integration for import tests
-    And select the "Integration_import_export_test" integration
-    Then check visibility of "Integration_import_export_test" integration details
+    And select the "integration-import-export-classic-input" integration
+    Then check visibility of "integration-import-export-classic-input" integration details
     When clean webdriver download folder
     And export the integraion
 
@@ -90,21 +90,21 @@ Feature: Integration - Import Export
     And log into the Syndesis
     And navigate to the "Integrations" page
     And click on the "Import" link
-    Then import integration "Integration_import_export_test"
+    Then import integration "integration-import-export-classic-input"
 
     When navigate to the "Integrations" page
-    Then Integration "Integration_import_export_test" is present in integrations list
-    Then wait until integration "Integration_import_export_test" gets into "Stopped" state
+    Then Integration "integration-import-export-classic-input" is present in integrations list
+    Then wait until integration "integration-import-export-classic-input" gets into "Stopped" state
 
     # check draft status after import
-    When select the "Integration_import_export_test" integration
+    When select the "integration-import-export-classic-input" integration
     And check visibility of "Stopped" integration status on Integration Detail page
     # start integration and wait for published state
     When click on the "Edit Integration" link
     And click on the "Save" link
     And publish integration
-    Then Integration "Integration_import_export_test" is present in integrations list
-    And wait until integration "Integration_import_export_test" gets into "Running" state
+    Then Integration "integration-import-export-classic-input" is present in integrations list
+    And wait until integration "integration-import-export-classic-input" gets into "Running" state
     And check that last slack message equals "RH" on channel "import_export_test"
 
 
@@ -152,15 +152,15 @@ Feature: Integration - Import Export
 
     # finish and save integration
     And click on the "Save" link
-    And set integration name "Integration_import_export_test"
+    And set integration name "integration-import-export-dnd"
     And publish integration
-    Then Integration "Integration_import_export_test" is present in integrations list
+    Then Integration "integration-import-export-dnd" is present in integrations list
 
     When inserts into "CONTACT" table
       | Lorem | Ipsum | Red Hat | e_db |
 
     # wait for integration to get in active state
-    And wait until integration "Integration_import_export_test" gets into "Running" state
+    And wait until integration "integration-import-export-dnd" gets into "Running" state
 
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
@@ -169,26 +169,26 @@ Feature: Integration - Import Export
       | Fedora | 28 | RH | f_db |
 
     # export the integration for import tests
-    And select the "Integration_import_export_test" integration
-    Then check visibility of "Integration_import_export_test" integration details
+    And select the "integration-import-export-dnd" integration
+    Then check visibility of "integration-import-export-dnd" integration details
     And export the integraion
     #Add a new contact
     When inserts into "CONTACT" table
       | RHEL | 7 | New RH | g_db |
 
-#    And delete the "Integration_import_export_test" integration
+#    And delete the "integration-import-export-dnd" integration
     #wait for pod to be deleted
 #    And sleep for "15000" ms
     And navigate to the "Integrations" page
     And click on the "Import" link
-    Then drag exported integration "Integration_import_export_test" file to drag and drop area
+    Then drag exported integration "integration-import-export-dnd" file to drag and drop area
 
     When navigate to the "Integrations" page
-    Then Integration "Integration_import_export_test" is present in integrations list
-    And wait until integration "Integration_import_export_test" gets into "Stopped" state
+    Then Integration "integration-import-export-dnd" is present in integrations list
+    And wait until integration "integration-import-export-dnd" gets into "Stopped" state
 
     # check draft status after import
-    When select the "Integration_import_export_test" integration
+    When select the "integration-import-export-dnd" integration
     And check visibility of "Stopped" integration status on Integration Detail page
     And sleep for jenkins delay or "3" seconds
     # start integration and wait for active state
@@ -196,8 +196,8 @@ Feature: Integration - Import Export
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    Then Integration "Integration_import_export_test" is present in integrations list
-    And wait until integration "Integration_import_export_test" gets into "Running" state
+    Then Integration "integration-import-export-dnd" is present in integrations list
+    And wait until integration "integration-import-export-dnd" gets into "Running" state
     And check that last slack message equals "New RH" on channel "import_export_test"
 
 #

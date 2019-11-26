@@ -77,11 +77,11 @@ Feature: Concur Connector
 
     # finish and save integration
     When click on the "Save" link
-    And set integration name "Integration_with_concur"
+    And set integration name "concur-list-get"
     And publish integration
-    Then Integration "Integration_with_concur" is present in integrations list
-    And wait until integration "Integration_with_concur" gets into "Running" state
-    And validate that logs of integration "Integration_with_concur" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
+    Then Integration "concur-list-get" is present in integrations list
+    And wait until integration "concur-list-get" gets into "Running" state
+    And validate that logs of integration "concur-list-get" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
 
     Then reset content of "contact" table
 
@@ -130,13 +130,13 @@ Feature: Concur Connector
 
     # finish and save integration
     When click on the "Save" link
-    And set integration name "Integration_with_concur"
+    And set integration name "concur-listitems-get"
     And publish integration
 
     When navigate to the "Integrations" page
-    Then Integration "Integration_with_concur" is present in integrations list
-    And wait until integration "Integration_with_concur" gets into "Running" state
-    And validate that logs of integration "Integration_with_concur" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
+    Then Integration "concur-listitems-get" is present in integrations list
+    And wait until integration "concur-listitems-get" gets into "Running" state
+    And validate that logs of integration "concur-listitems-get" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
 
     Then reset content of "contact" table
 
@@ -221,9 +221,9 @@ Feature: Concur Connector
 
     # finish and save integration
     When click on the "Save" link
-    And set integration name "Integration_with_concur"
+    And set integration name "concur-listitem-create-delete"
     And publish integration
-    Then Integration "Integration_with_concur" is present in integrations list
-    And wait until integration "Integration_with_concur" gets into "Running" state
+    Then Integration "concur-listitem-create-delete" is present in integrations list
+    And wait until integration "concur-listitem-create-delete" gets into "Running" state
 
     Then check that query "select * from contact where first_name = 'Zilean'" has some output

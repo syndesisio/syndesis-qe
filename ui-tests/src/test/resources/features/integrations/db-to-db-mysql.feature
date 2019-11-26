@@ -59,8 +59,8 @@ Feature: Integration - DB to DB mysql
 #    And scroll "top" "right"
     And click on the "Done" button
     And publish integration
-    And set integration name "CRUD2-read-create E2E"
+    And set integration name "db-connection-crud-2-read-create-mysql"
     And publish integration
-    Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
+    Then wait until integration "db-connection-crud-2-read-create-mysql" gets into "Running" state
 
     Then validate that all todos with task "Josef_mysql" have value completed "2", period in ms: "5000" on "mysql"

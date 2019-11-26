@@ -125,10 +125,10 @@ Feature: Integration - Databucket
     Then check that there is no warning inside of step number "3"
 
     When click on the "Save" link
-    And set integration name "Integration_with_buckets"
+    And set integration name "data-buckets-usage"
     And publish integration
-    Then Integration "Integration_with_buckets" is present in integrations list
-    And wait until integration "Integration_with_buckets" gets into "Running" state
+    Then Integration "data-buckets-usage" is present in integrations list
+    And wait until integration "data-buckets-usage" gets into "Running" state
     And check that email from "QE Google Mail" with subject "Red Hat" and text "Red Hat" exists
     And delete emails from "QE Google Mail" with subject "Red Hat"
 
@@ -304,10 +304,10 @@ Feature: Integration - Databucket
     ##################### start the integration ##################################
 
     When click on the "Save" link
-    And set integration name "Integration_with_buckets"
+    And set integration name "data-buckets-usage-2"
     And publish integration
-    Then Integration "Integration_with_buckets" is present in integrations list
-    And wait until integration "Integration_with_buckets" gets into "Running" state
+    Then Integration "data-buckets-usage-2" is present in integrations list
+    And wait until integration "data-buckets-usage-2" gets into "Running" state
 
     ##################### Verify database state ##################################
 
@@ -315,7 +315,7 @@ Feature: Integration - Databucket
     When sleep for jenkins delay or "10" seconds
     Then check that query "select * from contact where company = 'Joe' and first_name = 'Red Hat' and last_name = 'Jackson' and lead_source = 'db'" has some output
 
-    When delete the "Integration_with_buckets" integration
+    When delete the "data-buckets-usage-2" integration
     # waiting on pod does not work atm, it needs exact integration name but I don't know the hash, TODO
     # but it does not matter, we only need to delete it so there are no leftover entries in database after delete step
     Then Wait until there is no integration pod with name "i-integration-with-buckets"

@@ -162,44 +162,44 @@ Feature: Conditional flows - content base routing
     Then return to primary flow from integration flow from dropdown
 
     When click on the "Save" link
-    And set integration name "Webhook_to_DB_with_CBR"
+    And set integration name "integrations-conditional-flows-functional-test"
     And click on the "Save and publish" button
     And navigate to the "Integrations" page
-    Then wait until integration "Webhook_to_DB_with_CBR" gets into "Running" state
+    Then wait until integration "integrations-conditional-flows-functional-test" gets into "Running" state
 
-    When select the "Webhook_to_DB_with_CBR" integration
+    When select the "integrations-conditional-flows-functional-test" integration
     And invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"John"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 0 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Shaco"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Clone"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     And invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"John"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Shaco"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Clone"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
@@ -247,44 +247,44 @@ Feature: Conditional flows - content base routing
     And return to primary flow from integration flow directly
 
     When click on the "Save" link
-    And set integration name "Webhook_to_DB_with_CBR"
+    And set integration name "integrations-conditional-flows-functional-test2"
     And click on the "Save and publish" button
     And navigate to the "Integrations" page
-    And wait until integration "Webhook_to_DB_with_CBR" gets into "Running" state
+    And wait until integration "integrations-conditional-flows-functional-test2" gets into "Running" state
 
-    When select the "Webhook_to_DB_with_CBR" integration
+    When select the "integrations-conditional-flows-functional-test2" integration
     And invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"John"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 0 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Shaco"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Clone"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 1 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"John"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Shaco"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Clone"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
@@ -433,50 +433,50 @@ Feature: Conditional flows - content base routing
     Then return to primary flow from integration flow from dropdown
 
     When click on the "Save" link
-    And set integration name "Webhook_to_DB_with_CBR"
+    And set integration name "integrations-conditional-flows-add-delete-step"
     And click on the "Save and publish" button
     And navigate to the "Integrations" page
-    Then wait until integration "Webhook_to_DB_with_CBR" gets into "Running" state
+    Then wait until integration "integrations-conditional-flows-add-delete-step" gets into "Running" state
 
-    When select the "Webhook_to_DB_with_CBR" integration
+    When select the "integrations-conditional-flows-add-delete-step" integration
     And invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"John"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 0 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Shaco"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 2 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 3 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone2"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone2"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 4 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
 
     And invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"John"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 6 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Shaco"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 6 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 4 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 2 row output
 
     When invoke post request to webhook
-      | Webhook_to_DB_with_CBR | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone"} | 204 |
     Then checks that query "select * from contact where first_name='Noone was here'" has 7 row output
     And checks that query "select * from contact where first_name='Shaco was here'" has 4 row output
     And checks that query "select * from contact where first_name='Clone was here'" has 3 row output
