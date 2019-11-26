@@ -46,15 +46,15 @@ Feature: OData Connector
 
     # Save integration and publish it
     When click on the "Publish" link
-    And set integration name "OData_Read_2_Log"
+    And set integration name "OData_Read_2_Log_<name>"
     And publish integration
-    Then Integration "OData_Read_2_Log" is present in integrations list
-    And wait until integration "OData_Read_2_Log" gets into "Running" state
+    Then Integration "OData_Read_2_Log_<name>" is present in integrations list
+    And wait until integration "OData_Read_2_Log_<name>" gets into "Running" state
 
     #Validate logs output
     When sleep for "10000" ms
-    Then validate that logs of integration "OData_Read_2_Log" <does_contain_1> string "<validate_string_1>"
-    And validate that logs of integration "OData_Read_2_Log" <does_contain_2> string "<validate_string_2>"
+    Then validate that logs of integration "OData_Read_2_Log_<name>" <does_contain_1> string "<validate_string_1>"
+    And validate that logs of integration "OData_Read_2_Log_<name>" <does_contain_2> string "<validate_string_2>"
 
     Examples:
       | name               | key_predicate | query                                                       | does_contain_1 | validate_string_1                                       | does_contain_2  | validate_string_2        |

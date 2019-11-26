@@ -61,12 +61,12 @@ Feature: Email connector
 
     # Publish integration and check that there is something on gmail account sent from tested connector
     When click on the "Save" link
-    And set integration name "email-send-qe-integration"
+    And set integration name "email-send-qe-integration-<security>"
     And publish integration
     And inserts into "contact" table
       | Joe | Jackson | Red Hat | db |
-    Then Integration "email-send-qe-integration" is present in integrations list
-    And wait until integration "email-send-qe-integration" gets into "Running" state
+    Then Integration "email-send-qe-integration-<security>" is present in integrations list
+    And wait until integration "email-send-qe-integration-<security>" gets into "Running" state
     And check that email from credenitals "Email SMTP With <security>" with subject "syndesis-tests" and text "Red Hat" exists
     And delete emails from credentials "Email SMTP With <security>" with subject "syndesis-tests"
 
@@ -115,10 +115,10 @@ Feature: Email connector
 
     # Publish integration
     When click on the "Save" link
-    And set integration name "email-receive-qe-integration"
+    And set integration name "email-receive-qe-integration-<protocol>"
     And publish integration
-    Then Integration "email-receive-qe-integration" is present in integrations list
-    And wait until integration "email-receive-qe-integration" gets into "Running" state
+    Then Integration "email-receive-qe-integration-<protocol>" is present in integrations list
+    And wait until integration "email-receive-qe-integration-<protocol>" gets into "Running" state
 
     # Send email to connector, wait for it to be received and check that it's content got into database
     When send an e-mail to credentials "Email <protocol> With SSL"
@@ -167,10 +167,10 @@ Feature: Email connector
 
     # Publish integration
     When click on the "Save" link
-    And set integration name "email-receive-qe-integration"
+    And set integration name "email-receive-folder"
     And publish integration
-    Then Integration "email-receive-qe-integration" is present in integrations list
-    And wait until integration "email-receive-qe-integration" gets into "Running" state
+    Then Integration "email-receive-folder" is present in integrations list
+    And wait until integration "email-receive-folder" gets into "Running" state
 
     # Send email to connector, wait for it to be received and check that it's content got into database
     When send an e-mail to credentials "Email IMAP With SSL" with subject "syndesis-tests-folder"

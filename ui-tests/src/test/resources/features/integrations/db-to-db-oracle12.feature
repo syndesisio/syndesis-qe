@@ -59,9 +59,9 @@ Feature: Integration - DB to DB oracle12
 #    And scroll "top" "right"
     And click on the "Done" button
     And publish integration
-    And set integration name "CRUD2-read-create E2E"
+    And set integration name "db-connection-crud-2-read-create-oracle12"
     And publish integration
-    Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
+    Then wait until integration "db-connection-crud-2-read-create-oracle12" gets into "Running" state
 
     Then validate that all todos with task "Josef_oracle12" have value completed "2", period in ms: "5000" on "oracle12"
 

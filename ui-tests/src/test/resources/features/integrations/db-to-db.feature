@@ -115,9 +115,9 @@ Feature: Integration - DB to DB
 #    And scroll "top" "right"
     And click on the "Done" button
     And publish integration
-    And set integration name "CRUD2-read-create E2E"
+    And set integration name "db-connection-crud-2-read-create"
     And publish integration
-    Then wait until integration "CRUD2-read-create E2E" gets into "Running" state
+    Then wait until integration "db-connection-crud-2-read-create" gets into "Running" state
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
 
@@ -233,9 +233,9 @@ Feature: Integration - DB to DB
 #    And scroll "top" "right"
     And click on the "Done" button
     And publish integration
-    And set integration name "CRUD4-read-create-inbuilt E2E"
+    And set integration name "db-connection-crud-4-read-update-inbuilt"
     And publish integration
-    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
+    Then wait until integration "db-connection-crud-4-read-update-inbuilt" gets into "Running" state
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 
 
@@ -371,9 +371,9 @@ Feature: Integration - DB to DB
 
     And click on the "Done" button
     And publish integration
-    And set integration name "DB Insert multiple rows"
+    And set integration name "db-insert-multiple-rows"
     And publish integration
-    Then wait until integration "DB Insert multiple rows" gets into "Running" state
+    Then wait until integration "db-insert-multiple-rows" gets into "Running" state
 
     And check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
     And check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output

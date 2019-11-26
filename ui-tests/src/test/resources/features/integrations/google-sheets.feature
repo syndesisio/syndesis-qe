@@ -404,10 +404,10 @@ Feature: Google Sheets Connector
     Then click on the "Done" button
 
     When publish integration
-    And set integration name "charts"
+    And set integration name "add-chart-basic-chart-to-spreadsheet"
     And publish integration
     And navigate to the "Integrations" page
-    Then wait until integration "charts" gets into "Running" state
+    Then wait until integration "add-chart-basic-chart-to-spreadsheet" gets into "Running" state
     And verify that chart was created
 
 
@@ -440,10 +440,10 @@ Feature: Google Sheets Connector
     Then click on the "Done" button
 
     When publish integration
-    And set integration name "charts"
+    And set integration name "add-pie-chart-to-spreadsheet"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "charts" gets into "Running" state
+    And wait until integration "add-pie-chart-to-spreadsheet" gets into "Running" state
     Then verify that chart was created
 
 

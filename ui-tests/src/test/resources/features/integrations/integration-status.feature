@@ -25,7 +25,7 @@ Feature: Integration - Status
     And click on the "Next" button
 
     And publish integration
-    And set integration name "ASD"
+    And set integration name "integration-check-starting-status-on-detail-page"
     And publish integration
 
     Then check starting integration status on Integration Detail page
@@ -46,7 +46,7 @@ Feature: Integration - Status
     And click on the "Next" button
 
     And publish integration
-    And set integration name "ASD"
+    And set integration name "integration-check-starting-status-on-integration-list"
     And publish integration
 
     When navigate to the "Integrations" page
@@ -69,7 +69,7 @@ Feature: Integration - Status
     And click on the "Next" button
 
     And publish integration
-    And set integration name "ASD"
+    And set integration name "integration-check-starting-status-on-home-page"
     And publish integration
 
     When navigate to the "Home" page

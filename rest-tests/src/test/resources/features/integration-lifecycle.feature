@@ -42,6 +42,6 @@ Feature: Integration - Lifecycle
   @integrations-lifecycle
   @integrations-lifecycle-long
   Scenario: Activate-Deactivate switch 3 times
-    When create new integration with name: "DB to DB rest test act-deact" and desiredState: "Published"
-    Then wait for integration with name: "DB to DB rest test act-deact" to become active
-    Then switch Inactive and Active state on integration "DB to DB rest test act-deact" for 3 times and check pods up/down
+    When create new integration with name: "DB to DB rest test act-deact-long" and desiredState: "Published"
+    Then wait for integration with name: "DB to DB rest test act-deact-long" to become active
+    Then switch Inactive and Active state on integration "DB to DB rest test act-deact-long" for 3 times and check pods up/down

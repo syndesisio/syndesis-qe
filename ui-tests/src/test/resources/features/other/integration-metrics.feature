@@ -95,24 +95,24 @@ Feature: Metrics
     And click on the "Done" button
 
     And publish integration
-    And set integration name "Webhook to DB"
+    And set integration name "metrics-test"
     And publish integration
 
     And navigate to the "Integrations" page
-    And wait until integration "Webhook to DB" gets into "Running" state
+    And wait until integration "metrics-test" gets into "Running" state
 
-    And select the "Webhook to DB" integration
+    And select the "metrics-test" integration
     And click on the "Metrics" tab
     Then check that number of total error is 0
     And check that last processed date is valid
     And check that number of valid messages is 0
     And check that number of error messages is 0
     And check that number of total messages is 0
-    And check that uptime for webhook-to-db pod is valid
-    And check that startdate for webhook-to-db pod is valid
+    And check that uptime for metrics-test pod is valid
+    And check that startdate for metrics-test pod is valid
 
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"incorrect company"}
+    And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -120,11 +120,11 @@ Feature: Metrics
     And check that number of valid messages is 1
     And check that number of error messages is 0
     And check that number of total messages is 1
-    And check that uptime for webhook-to-db pod is valid
-    And check that startdate for webhook-to-db pod is valid
+    And check that uptime for metrics-test pod is valid
+    And check that startdate for metrics-test pod is valid
 
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
+    And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -132,11 +132,11 @@ Feature: Metrics
     And check that number of valid messages is 2
     And check that number of error messages is 0
     And check that number of total messages is 2
-    And check that uptime for webhook-to-db pod is valid
-    And check that startdate for webhook-to-db pod is valid
+    And check that uptime for metrics-test pod is valid
+    And check that startdate for metrics-test pod is valid
 
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -144,8 +144,8 @@ Feature: Metrics
     And check that number of valid messages is 3
     And check that number of error messages is 0
     And check that number of total messages is 3
-    And check that uptime for webhook-to-db pod is valid
-    And check that startdate for webhook-to-db pod is valid
+    And check that uptime for metrics-test pod is valid
+    And check that startdate for metrics-test pod is valid
 
   @metrics-error
   Scenario: Check error
@@ -207,23 +207,23 @@ Feature: Metrics
     And click on the "Done" button
 
     And publish integration
-    And set integration name "Webhook to DB with error"
+    And set integration name "metrics-error"
     And publish integration
 
     And navigate to the "Integrations" page
-    And wait until integration "Webhook to DB with error" gets into "Running" state
+    And wait until integration "metrics-error" gets into "Running" state
 
-    And select the "Webhook to DB with error" integration
+    And select the "metrics-error" integration
     And click on the "Metrics" tab
     Then check that number of total error is 0
     And check that number of valid messages is 0
     And check that number of error messages is 0
     And check that number of total messages is 0
-    And check that uptime for webhook-to-db-with-error pod is valid
-    And check that startdate for webhook-to-db-with-error pod is valid
+    And check that uptime for metrics-error pod is valid
+    And check that startdate for metrics-error pod is valid
 
     When save time before request
-    And invoke post request to webhook in integration webhook-to-db-with-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And invoke post request to webhook in integration metrics-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -231,5 +231,5 @@ Feature: Metrics
     And check that number of valid messages is 1
     And check that number of error messages is 0
     And check that number of total messages is 1
-    And check that uptime for webhook-to-db pod is valid
-    And check that startdate for webhook-to-db pod is valid
+    And check that uptime for metrics-error pod is valid
+    And check that startdate for metrics-error pod is valid

@@ -115,33 +115,33 @@ Feature: SQL Connector
     And click on the "Done" button
 
     And click on the "Publish" link
-    And set integration name "predicates"
+    And set integration name "predicates-<name>"
     And publish integration
-    Then Integration "predicates" is present in integrations list
-    And wait until integration "predicates" gets into "Running" state
+    Then Integration "predicates-<name>" is present in integrations list
+    And wait until integration "predicates-<name>" gets into "Running" state
 
-    Then validate that logs of integration "predicates" contains items with IDs "<result>"
+    Then validate that logs of integration "predicates-<name>" contains items with IDs "<result>"
 
     # TODO: we might want to add more predicates, also function calls on either side etc
     @gh-5016
     Examples:
-      | predicate             | value | result  |
-      | id < :#id             | 3     | 1,2     |
-      | id > :#id             | 3     | 4,5     |
-      | id <= :#id            | 3     | 1,2,3   |
-      | id >= :#id            | 3     | 3,4,5   |
-      | id != :#id            | 3     | 1,2,4,5 |
-      | id <= :#id AND id > 1 | 3     | 2,3     |
-      | id BETWEEN :#id AND 4 | 2     | 2,3,4   |
-      | id <= :#id OR id = 5  | 3     | 1,2,3,5 |
+      | name  | predicate             | value | result  |
+      | test1 | id < :#id             | 3     | 1,2     |
+      | test2 | id > :#id             | 3     | 4,5     |
+      | test3 | id <= :#id            | 3     | 1,2,3   |
+      | test4 | id >= :#id            | 3     | 3,4,5   |
+      | test5 | id != :#id            | 3     | 1,2,4,5 |
+      | test6 | id <= :#id AND id > 1 | 3     | 2,3     |
+      | test7 | id BETWEEN :#id AND 4 | 2     | 2,3,4   |
+      | test8 | id <= :#id OR id = 5  | 3     | 1,2,3,5 |
     @gh-5084
     @ENTESB-11487
     Examples:
-      | predicate        | value | result |
-      | :#id > id        | 3     | 1,2    |
-      | (id+1) < :#id    | 4     | 1,2    |
-      | id in (1, :#id)  | 4     | 1,4    |
-      | id = floor(:#id) | 4     | 4      |
+      | name   | predicate        | value | result |
+      | test9  | :#id > id        | 3     | 1,2    |
+      | test10 | (id+1) < :#id    | 4     | 1,2    |
+      | test11 | id in (1, :#id)  | 4     | 1,4    |
+      | test12 | id = floor(:#id) | 4     | 4      |
 
 
 

@@ -43,14 +43,14 @@ Feature: Log Connector
     Then click on the "Done" button
 
     When click on the "Save" link
-    And set integration name "Integration_with_log"
+    And set integration name "Integration_with_log_context_<context>_body_<body>"
     And publish integration
-    Then Integration "Integration_with_log" is present in integrations list
-    And wait until integration "Integration_with_log" gets into "Running" state
+    Then Integration "Integration_with_log_context_<context>_body_<body>" is present in integrations list
+    And wait until integration "Integration_with_log_context_<context>_body_<body>" gets into "Running" state
 
     When sleep for "10000" ms
-    Then validate that logs of integration "integration_with_log" contains string "<log_contains>"
-    And validate that logs of integration "integration_with_log" doesn't contain string "<log_not_contains>"
+    Then validate that logs of integration "Integration_with_log_context_<context>_body_<body>" contains string "<log_contains>"
+    And validate that logs of integration "Integration_with_log_context_<context>_body_<body>" doesn't contain string "<log_not_contains>"
 
     Examples:
       | context | body | log_contains                    | log_not_contains              |

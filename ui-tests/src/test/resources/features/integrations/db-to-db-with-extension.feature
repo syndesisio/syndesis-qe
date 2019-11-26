@@ -61,13 +61,13 @@ Feature: Integration - DB to DB with extension
 
     # finish and save integration
     When click on the "Save" link
-    And set integration name "CRUD4-read-create-inbuilt E2E"
+    And set integration name "tech-extension-create-integration-with-new-tech-extension"
     And publish integration
 
     # assert integration is present in list
-    Then Integration "CRUD4-read-create-inbuilt E2E" is present in integrations list
+    Then Integration "tech-extension-create-integration-with-new-tech-extension" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "CRUD4-read-create-inbuilt E2E" gets into "Running" state
+    Then wait until integration "tech-extension-create-integration-with-new-tech-extension" gets into "Running" state
 
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 

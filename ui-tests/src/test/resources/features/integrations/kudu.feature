@@ -72,9 +72,9 @@ Feature: Kudu connector
     And click on the "Done" button
 
     When click on the "Save" link
-    And set integration name "Integration_kudu_insert"
+    And set integration name "integrations-kudu-insert"
     And publish integration
-    And wait until integration "Integration_kudu_insert" gets into "Running" state
+    And wait until integration "integrations-kudu-insert" gets into "Running" state
 
     Then check that Kudu server table contains inserted data
     And delete table from Kudu server
@@ -150,9 +150,9 @@ Feature: Kudu connector
     And click on the "Done" button
 
     When click on the "Save" link
-    And set integration name "Integration_kudu_insert"
+    And set integration name "integrations-kudu-mqtt"
     And publish integration
-    And wait until integration "Integration_kudu_insert" gets into "Running" state
+    And wait until integration "integrations-kudu-mqtt" gets into "Running" state
 
     When send mqtt message to "news" topic
     Then check that Kudu server table contains inserted data
