@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.utils.JMSUtils;
-import io.syndesis.qe.utils.JmsClient;
-import io.syndesis.qe.utils.JmsClientManager;
 
 import org.assertj.core.api.Assertions;
 
@@ -28,14 +26,7 @@ public class JmsValidationSteps {
     @Then("^verify that JMS message using \"([^\"]*)\" protocol, published on \"([^\"]*)\" named \"([^\"]*)\" has arrived to \"([^\"]*)\" named \"" +
         "([^\"]*)\" consumer$")
     public void verifyJMSconnection(String protocol, String typeFrom, String destinationFrom, String typeTo, String destinationTo) {
-        try (JmsClientManager manager = new JmsClientManager(protocol)) {
-            JmsClient jmsClient = manager.getClient();
-            addDestination(jmsClient, destinationFrom, typeFrom);
-            jmsClient.sendMessage(messageText);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail(e.getMessage());
-        }
+        JMSUtils.sendMessage(protocol, JMSUtils.Destination.valueOf(typeFrom.toUpperCase()), destinationFrom, messageText);
 
         try {
             Thread.sleep(5000);
@@ -43,34 +34,19 @@ public class JmsValidationSteps {
             e.printStackTrace();
         }
 
-        try (JmsClientManager manager = new JmsClientManager(protocol)) {
-            JmsClient jmsClient = manager.getClient();
-            addDestination(jmsClient, destinationTo, typeTo);
-            String textMessage = JmsClient.getTextMessage(jmsClient.receiveMessage());
-            Assertions.assertThat(textMessage).isEqualTo(messageText);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assertions.fail(e.getMessage());
-        }
-    }
-
-    private void addDestination(JmsClient jmsClient, String destination, String typeFrom) {
-        if ("queue".equals(typeFrom)) {
-            jmsClient.addQueue(destination);
-        } else {
-            jmsClient.addTopic(destination);
-        }
+        String textMessage = JMSUtils.getMessageText(protocol, JMSUtils.Destination.valueOf(typeTo.toUpperCase()), destinationTo);
+        Assertions.assertThat(textMessage).isEqualTo(messageText);
     }
 
     @Then("^verify that JMS message with content \'([^\']*)\' was received from \"([^\"]*)\" \"([^\"]*)\"$")
     public void verifyThatJMSMessageWithContentWasReceivedFrom(String content, String type, String destination) {
-        final String message = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(type.toUpperCase()), destination);
+        final String message = JMSUtils.getMessageText("tcp", JMSUtils.Destination.valueOf(type.toUpperCase()), destination);
         assertThat(message).isEqualTo(content);
     }
 
     @When("^publish message with content \"([^\"]*)\" to \"([^\"]*)\" with name \"([^\"]*)\"")
     public void publishMessageToDestinationWithName(String content, String type, String name) {
-        JMSUtils.sendMessage(JMSUtils.Destination.valueOf(type.toUpperCase()), name, content);
+        JMSUtils.sendMessage("tcp", JMSUtils.Destination.valueOf(type.toUpperCase()), name, content);
     }
 
     @Given("^clean destination type \"([^\"]*)\" with name \"([^\"]*)\"")
@@ -96,7 +72,7 @@ public class JmsValidationSteps {
 
         File file = new File(fileUrl.getFile());
         String jmsMessage = new String(Files.readAllBytes(file.toPath()));
-        JMSUtils.sendMessage(JMSUtils.Destination.valueOf(type.toUpperCase()), name, jmsMessage);
+        JMSUtils.sendMessage("tcp", JMSUtils.Destination.valueOf(type.toUpperCase()), name, jmsMessage);
     }
 
     @Then("^verify that the JMS queue \"([^\"]*)\" is empty$")
@@ -115,6 +91,6 @@ public class JmsValidationSteps {
 
     @Then("^verify that JMS queue \"([^\"]*)\" received a message in (\\d+) seconds$")
     public void verifyEmptyQueue(String queue, int secondsTimeout) {
-        assertThat(JMSUtils.getMessage(JMSUtils.Destination.QUEUE, queue, secondsTimeout * 1000L)).isNotNull();
+        assertThat(JMSUtils.getMessage("tcp", JMSUtils.Destination.QUEUE, queue, secondsTimeout * 1000L)).isNotNull();
     }
 }

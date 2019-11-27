@@ -1,8 +1,5 @@
 package io.syndesis.qe.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
@@ -27,13 +24,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * [WIP] refactor of former JMSClient
  *
  * @author David Simansky | dsimansk@redhat.com
  */
-public class JmsClient implements AutoCloseable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JmsClient.class);
+@Slf4j
+public class JmsClient {
+
     private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     private final long RECEIVE_TIMEOUT = 5000L;
@@ -96,35 +96,43 @@ public class JmsClient implements AutoCloseable {
         return this;
     }
 
-    public MessageConsumer createTopicConsumer() throws JMSException {
+    public MessageConsumer createTopicConsumer() {
         return createTopicConsumer(null);
     }
 
-    public MessageConsumer createTopicConsumer(String selector) throws JMSException {
+    public MessageConsumer createTopicConsumer(String selector) {
         if (isQueue) {
             throw new IllegalArgumentException("Only for topic, not queue");
         }
         String consumerId = "consumer-" + UUID.randomUUID();
         topicConnection = startConnection(consumerId);
-        Session session = topicConnection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
-        Topic topic = session.createTopic(destinationName);
-        if (isDurable) {
-            if (selector != null) {
-                return session.createDurableSubscriber(topic, consumerId, selector, true);
+        Session session = null;
+        try {
+            session = topicConnection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
+            Topic topic = session.createTopic(destinationName);
+
+            if (isDurable) {
+                if (selector != null) {
+                    return session.createDurableSubscriber(topic, consumerId, selector, true);
+                } else {
+                    return session.createDurableSubscriber(topic, consumerId);
+                }
             } else {
-                return session.createDurableSubscriber(topic, consumerId);
+                if (selector != null) {
+                    return session.createConsumer(topic, selector);
+                } else {
+                    return session.createConsumer(topic);
+                }
             }
-        } else {
-            if (selector != null) {
-                return session.createConsumer(topic, selector);
-            } else {
-                return session.createConsumer(topic);
-            }
+        } catch (JMSException e) {
+            log.error("Error creating topic consumer", e);
+            e.printStackTrace();
         }
+        return null;
     }
 
     public JmsClient keepAlive() {
-        LOGGER.warn("When keepAlive is used, connection must be closed manually");
+        log.warn("When keepAlive is used, connection must be closed manually");
         this.keepAlive = true;
         return this;
     }
@@ -134,138 +142,154 @@ public class JmsClient implements AutoCloseable {
         return this;
     }
 
-    public Message createMessage() throws JMSException {
+    public Message createMessage() {
         return createMessage(null);
     }
 
-    public Message createMessage(Object messageObject) throws JMSException {
+    public Message createMessage(Object messageObject) {
         Connection connection = null;
         Message result = null;
+        Session session = null;
         try {
             connection = startConnection();
-            Session session = null;
-            try {
-                session = connection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
-                if (messageObject == null) {
-                    result = session.createMessage();
+            session = connection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
+            if (messageObject == null) {
+                result = session.createMessage();
+            } else {
+                if (messageObject instanceof String) {
+                    result = session.createTextMessage((String) messageObject);
                 } else {
-                    if (messageObject instanceof String) {
-                        result = session.createTextMessage((String) messageObject);
-                    } else {
-                        result = session.createObjectMessage((Serializable) messageObject);
-                    }
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
+                    result = session.createObjectMessage((Serializable) messageObject);
                 }
             }
+        } catch (JMSException e) {
+            log.error("Unable to create message", e);
         } finally {
-            safeCloseConnection(connection);
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (JMSException e) {
+                    log.error("error with closing the session", e);
+                    e.printStackTrace();
+                } finally {
+                    safeCloseConnection(connection);
+                }
+            }
         }
         return result;
     }
 
-    public void sendMessage() throws JMSException {
+    public void sendMessage() {
         sendMessage("Hello, world!");
     }
 
-    public void sendMessage(String messageText) throws JMSException {
+    public void sendMessage(String messageText) {
         sendMessage(createMessage(messageText));
     }
 
-    public void sendMessage(Message message) throws JMSException {
+    public void sendMessage(Message message) {
         Connection connection = null;
+        Session session = null;
         try {
             connection = startConnection(); //try to be smarter here and initiate start connection
-            Session session = null;
-            try {
-                session = connection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
-                Destination dest;
-                if (isQueue) {
-                    dest = session.createQueue(destinationName);
-                } else {
-                    dest = session.createTopic(destinationName);
-                }
-                MessageProducer producer = session.createProducer(dest);
-                try {
 
-                    if (isPersistant) {
-                        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-                    }
-                    if (timeToLive > 0) {
-                        producer.setTimeToLive(timeToLive);
-                    }
-
-                    producer.send(message);
-                } finally {
-                    if (producer != null) {
-                        producer.close();
-                    }
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
+            session = connection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
+            Destination dest;
+            if (isQueue) {
+                dest = session.createQueue(destinationName);
+            } else {
+                dest = session.createTopic(destinationName);
             }
+            MessageProducer producer = session.createProducer(dest);
+
+            if (isPersistant) {
+                producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+            }
+            if (timeToLive > 0) {
+                producer.setTimeToLive(timeToLive);
+            }
+
+            producer.send(message);
+
+            if (producer != null) {
+                producer.close();
+            }
+
+            if (session != null) {
+                session.close();
+            }
+        } catch (JMSException e) {
+            log.error("unable to send message", e);
         } finally {
             safeCloseConnection(connection);
         }
     }
 
-    public Message receiveMessage() throws JMSException {
+    public Message receiveMessage() {
         return receiveMessage(RECEIVE_TIMEOUT, null);
     }
 
-    public Message receiveMessage(String selector) throws JMSException {
+    public Message receiveMessage(String selector) {
         return receiveMessage(RECEIVE_TIMEOUT, selector);
     }
 
-    public Message receiveMessage(long timeout) throws JMSException {
+    public Message receiveMessage(long timeout) {
         return receiveMessage(timeout, null);
     }
 
-    public Message receiveMessage(long timeout, String selector) throws JMSException {
+    public Message receiveMessage(long timeout, String selector) {
         Connection connection = null;
         Message result = null;
+        Session session = null;
+        MessageConsumer consumer = null;
+
         try {
             connection = startConnection(); //try to be smarter here and start stable connection
-            Session session = null;
+            session = connection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
+            Destination dest;
+
+            if (isQueue) {
+                dest = session.createQueue(destinationName);
+            } else {
+                dest = session.createTopic(destinationName);
+            }
+
+            if (selector != null) {
+                consumer = session.createConsumer(dest, selector);
+            } else {
+                consumer = session.createConsumer(dest);
+            }
+
+            result = consumer.receive(timeout);
+        } catch (JMSException e) {
+            log.error("Unable to receive message", e);
+            e.printStackTrace();
+        } finally {
             try {
-                session = connection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
-                Destination dest;
-                if (isQueue) {
-                    dest = session.createQueue(destinationName);
-                } else {
-                    dest = session.createTopic(destinationName);
+                if (consumer != null) {
+                    consumer.close();
                 }
-                MessageConsumer consumer;
-                if (selector != null) {
-                    consumer = session.createConsumer(dest, selector);
-                } else {
-                    consumer = session.createConsumer(dest);
-                }
-                try {
-                    result = consumer.receive(timeout);
-                } finally {
-                    if (consumer != null) {
-                        consumer.close();
-                    }
-                }
-            } finally {
                 if (session != null) {
                     session.close();
                 }
+            } catch (JMSException e) {
+                log.error("Problem with closing resources", e);
+                e.printStackTrace();
+            } finally {
+                safeCloseConnection(connection);
             }
-        } finally {
-            safeCloseConnection(connection);
         }
         return result;
     }
 
-    public static String getTextMessage(Message message) throws JMSException {
+    public static String getTextMessage(Message message) {
         if (message != null && message instanceof TextMessage) {
-            return ((TextMessage) message).getText();
+            try {
+                return ((TextMessage) message).getText();
+            } catch (JMSException e) {
+                log.error("unable to get text message", e);
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -279,8 +303,7 @@ public class JmsClient implements AutoCloseable {
         }
     }
 
-    @Override
-    public void close() throws Exception {
+    public void close() {
         disconnect();
     }
 
@@ -311,15 +334,15 @@ public class JmsClient implements AutoCloseable {
                 }
             }
         } catch (JMSException e) {
-            LOGGER.debug("Error while disconnecting", e);
+            log.debug("Error while disconnecting", e);
         }
     }
 
-    private Connection startConnection() throws JMSException {
+    private Connection startConnection() {
         return startConnection(null);
     }
 
-    private Connection startConnection(String consumerId) throws JMSException {
+    private Connection startConnection(String consumerId) {
         Connection connection = null;
         int attempts = retries;
         while (connection == null && attempts > 0) {
@@ -334,40 +357,40 @@ public class JmsClient implements AutoCloseable {
                 Future<?> future = EXECUTOR.submit(new StartConnection(connection));
                 future.get(15, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
-                LOGGER.warn("Interrupted while starting connection", ex);
+                log.warn("Interrupted while starting connection", ex);
             } catch (ExecutionException ex) {
-                LOGGER.warn("Error during connection start, reattempt");
-                LOGGER.debug("Exception: ", ex);
+                log.warn("Error during connection start, reattempt");
+                log.debug("Exception: ", ex);
                 connection = null;
                 attempts--;
                 try {
                     Thread.sleep(10 * 1000);
                 } catch (InterruptedException e) {
-                    LOGGER.error("Failed to start connection, {} attempts remaining", attempts, e);
+                    log.error("Failed to start connection, {} attempts remaining", attempts, e);
                 }
             } catch (TimeoutException ex) {
                 attempts--;
                 safeCloseConnection(connection);
                 connection = null;
-                LOGGER.error("Failed to start connection, {} attempts remaining", attempts);
+                log.error("Failed to start connection, {} attempts remaining", attempts);
             } catch (JMSException ex) {
                 if (ex.getCause() instanceof SocketException || ex.getMessage().contains("Connection reset")) {
-                    LOGGER.warn("SocketException during connection start");
-                    LOGGER.debug("Exception: ", ex);
+                    log.warn("SocketException during connection start");
+                    log.debug("Exception: ", ex);
                     connection = null;
                     attempts--;
                     try {
                         Thread.sleep(10 * 1000);
                     } catch (InterruptedException e) {
-                        LOGGER.error("Failed to start connection, {} attempts remaining", attempts, e);
+                        log.error("Failed to start connection, {} attempts remaining", attempts, e);
                     }
                 } else {
-                    throw ex;
+                    log.error("Failed to start connection", ex);
                 }
             }
         }
         if (connection == null) {
-            throw new JMSException("Unable to start connection, see logs for errors.");
+            log.error("Unable to start connection, see logs for errors.");
         }
         return connection;
     }
@@ -394,10 +417,10 @@ public class JmsClient implements AutoCloseable {
 
         @Override
         public void onException(JMSException e) {
-            LOGGER.debug("ExceptionListener invoked");
+            log.debug("ExceptionListener invoked");
             try {
                 if (retries > 0) {
-                    LOGGER.debug("Attempting to reconnect, retries left {}", retries);
+                    log.debug("Attempting to reconnect, retries left {}", retries);
                     retries--;
                     if (topicConnection != null && !isQueue) {
                         topicConnection.start();
@@ -405,10 +428,10 @@ public class JmsClient implements AutoCloseable {
                         liveConnection.start();
                     }
                 } else {
-                    LOGGER.debug("Unable to reconnect", e);
+                    log.debug("Unable to reconnect", e);
                 }
             } catch (JMSException ex) {
-                LOGGER.debug("Exception thrown in ExceptionListener reconnect", ex);
+                log.debug("Exception thrown in ExceptionListener reconnect", ex);
             }
         }
     }
