@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    description: The broker's OpenWire port.
+  labels:
+    application: broker-amq
+  name: broker-amq-tcp
+spec:
+  ports:
+  - name: openwire
+    port: 61616
+    targetPort: 61616
+  - name: stomp
+    port: 61613
+    targetPort: 61613
+  - name: amqp
+    port: 5672
+    targetPort: 5672
+  - name: mqtt
+    port: 1883
+    targetPort: 1883
+  selector:
+    syndesis.io/example: broker-amq

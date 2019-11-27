@@ -21,34 +21,39 @@ public class AmqTemplate {
 
     public static void deploy() {
         if (!TestUtils.isDcDeployed("syndesis-amq")) {
-//            Template template;
-//            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
-//                template = OpenShiftUtils.getInstance().templates().load(is).get();
-//            } catch (IOException ex) {
-//                throw new IllegalArgumentException("Unable to read template ", ex);
-//            }
-//
-//            Map<String, String> templateParams = new HashMap<>();
-//            templateParams.put("MQ_USERNAME", "amq");
-//            templateParams.put("MQ_PASSWORD", "topSecret");
+            //            Template template;
+            //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
+            //                template = OpenShiftUtils.getInstance().templates().load(is).get();
+            //            } catch (IOException ex) {
+            //                throw new IllegalArgumentException("Unable to read template ", ex);
+            //            }
+            //
+            //            Map<String, String> templateParams = new HashMap<>();
+            //            templateParams.put("MQ_USERNAME", "amq");
+            //            templateParams.put("MQ_PASSWORD", "topSecret");
 
             // try to delete previous broker
             cleanUp();
-//            OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
+            //            OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
 
             //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
             OpenShiftUtils.binary().execute("delete", "template", "syndesis-amq");
-            OpenShiftUtils.binary().execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-amq.yml").toAbsolutePath().toString());
+            OpenShiftUtils.binary()
+                .execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-amq.yml").toAbsolutePath().toString());
             OpenShiftUtils.binary().execute("new-app", "syndesis-amq", "-p", "MQ_USERNAME=amq", "-p", "MQ_PASSWORD=topSecret");
 
-//            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
+            //            KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
 
-//            OpenShiftUtils.getInstance().createResources(processedTemplate);
+            //            OpenShiftUtils.getInstance().createResources(processedTemplate);
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("application", "syndesis-amq"));
             } catch (InterruptedException | TimeoutException e) {
                 fail("Wait for broker failed ", e);
+            }
+            if (OpenShiftUtils.getInstance().getServices().stream().noneMatch(service -> "broker-amq-tcp".equals(service.getMetadata().getName()))) {
+                OpenShiftUtils.binary().execute("create", "-f",
+                    Paths.get("../utilities/src/main/resources/templates/syndesis-default-amq-service.yml").toAbsolutePath().toString());
             }
         }
         //this is not part of deployment, but let's have it the same method:
@@ -57,11 +62,14 @@ public class AmqTemplate {
 
     public static void cleanUp() {
         OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> "syndesis-amq".equals(dc.getMetadata().getName())).findFirst()
-                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
-                .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
+            .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
+        OpenShiftUtils.getInstance().getServices().stream()
+            .filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
+            .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "jboss-amq-63".equals(is.getMetadata().getName())).findFirst()
-                .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
+            .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
+        OpenShiftUtils.getInstance().getServices().stream().filter(se -> "broker-amq-tcp".equals(se.getMetadata().getName())).findFirst()
+            .ifPresent(se -> OpenShiftUtils.getInstance().deleteService(se));
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {
