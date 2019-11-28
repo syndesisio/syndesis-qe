@@ -2,6 +2,13 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.HTTPResponse;
+import io.syndesis.qe.utils.HttpUtils;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import com.google.gson.Gson;
 
 import java.util.Map;
@@ -11,10 +18,6 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.syndesis.qe.utils.HTTPResponse;
-import io.syndesis.qe.utils.HttpUtils;
-import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -65,10 +68,15 @@ public class HTTPValidationSteps {
     @Then("^verify that after \"([^\"]*)\" seconds there were \"([^\"]*)\" calls$")
     public void verifyThatAfterSecondsWasCalls(double seconds, int calls) {
         clear();
-        TestUtils.sleepIgnoreInterrupt((long)seconds * 1000);
+        TestUtils.sleepIgnoreInterrupt((long) seconds * 1000);
         HTTPResponse r = HttpUtils.doGetRequest("http://localhost:28080/events");
         Map<Long, String> events = new Gson().fromJson(r.getBody(), Map.class);
         assertThat(events).size().isGreaterThanOrEqualTo(calls);
     }
 
+    @When("send get request using {string} and {string} path")
+    public void sendGetRequestUsingAndPath(String account, String path) {
+        final Account a = AccountUtils.get(account);
+        HttpUtils.doGetRequest(a.getProperty("baseUrl") + path);
+    }
 }

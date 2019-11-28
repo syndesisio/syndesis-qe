@@ -51,12 +51,11 @@ public class IntermediateSteps extends AbstractStep {
 
     @When("^add \"([^\"]*)\" extension step with \"([^\"]*)\" action with properties:$")
     public void addExtensionIdWith(String name, String actionId, DataTable properties) {
-        Optional<Extension> e = extensionsEndpoint.list().stream().filter(ex -> ex.getName().equals(name)).findFirst();
+        Optional<Extension> e = extensionsEndpoint.list().stream().filter(ex -> ex.getName().equalsIgnoreCase(name)).findFirst();
         assertThat(e).isPresent();
 
         final Optional<Action> action = e.get().getActions().stream().filter(act -> act.getId().get().equals(actionId)).findFirst();
         assertThat(action).isPresent();
-
         super.addProperty(StepProperty.KIND, StepKind.extension);
         super.addProperty(StepProperty.ACTION, action.get());
         super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));

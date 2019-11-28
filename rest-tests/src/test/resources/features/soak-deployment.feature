@@ -66,8 +66,8 @@ Feature: soak deployment
       | path    | httpMethod |
       | compare | POST       |
     And add "delay" extension step with "delay" action with properties:
-      | delay |
-      | 1000  |
+      | delay | 1000 |
+
     And add "fuseqe-activemq" endpoint with connector id "activemq" and "publish" action and with properties:
       | destinationType | destinationName | persistent |
       | queue           | have-number     | true       |
@@ -128,4 +128,6 @@ Feature: soak deployment
     And wait for integration with name: "stats-guess" to become active
 
   Scenario: start load
+    When send get request using "number-creator" and "/reset" path
+    When send get request using "number-guesser" and "/reset" path
     Given send "start" message to "first-number" queue on "amq-stability" broker
