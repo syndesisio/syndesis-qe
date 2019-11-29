@@ -71,7 +71,7 @@ public class HTTPValidationSteps {
         TestUtils.sleepIgnoreInterrupt((long) seconds * 1000);
         HTTPResponse r = HttpUtils.doGetRequest("http://localhost:28080/events");
         Map<Long, String> events = new Gson().fromJson(r.getBody(), Map.class);
-        assertThat(events).size().isGreaterThanOrEqualTo(calls);
+        assertThat(events).size().isEqualTo(calls);
     }
 
     @When("send get request using {string} and {string} path")
