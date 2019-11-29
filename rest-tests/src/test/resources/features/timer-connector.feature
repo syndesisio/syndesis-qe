@@ -4,6 +4,7 @@
 @timer-connector
 @timer
 @http
+@gh-7156
 Feature: Integration - Timer
 
   Background:
@@ -17,8 +18,8 @@ Feature: Integration - Timer
       | timer-action | 1000   |
 
     And create HTTP "GET" step
-    And create integration with name: "timer-to-http"
-    And wait for integration with name: "timer-to-http" to become active
+    And create integration with name: "timer-to-http-1"
+    And wait for integration with name: "timer-to-http-1" to become active
 
     Then verify that after "2.5" seconds there were "2" calls
 
