@@ -344,4 +344,21 @@ public class TestConfiguration {
     public static Optional<String> browserBinary() {
         return Optional.ofNullable(get().readValue(BROWSER_BINARY_PATH));
     }
+
+    /**
+     * Used in upgrade test to specify different operator image to use.
+     *
+     * @param img image to use
+     */
+    public void overrideSyndesisOperatorImage(String img) {
+        properties.setProperty(SYNDESIS_OPERATOR_IMAGE, img);
+    }
+
+    /**
+     * Temporary override for the CR URL used in upgrade tests, needed because of the change from
+     * enabled: "true" to enabled: true in the operator.
+     */
+    public void overrideSyndesisCrUrl() {
+        properties.setProperty(SYNDESIS_CR_URL, getClass().getClassLoader().getResource("syndesis-minimal-1.8.x.yaml").toString());
+    }
 }

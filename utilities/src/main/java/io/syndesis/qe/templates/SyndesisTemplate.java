@@ -10,6 +10,7 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -172,8 +174,7 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void deployOperator() {
-        final String operatorResourcesName = "syndesis-operator";
+    public static List<HasMetadata> getOperatorResources() {
         String operatorImage = TestConfiguration.syndesisOperatorImage();
         String imageName = StringUtils.substringBeforeLast(operatorImage, ":");
         String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
@@ -210,13 +211,22 @@ public class SyndesisTemplate {
         List<HasMetadata> resourceList = null;
         try {
             Process p = dockerRunPb.start();
-            resourceList = OpenShiftUtils.getInstance().load(p.getInputStream()).get();
+            final String resources = IOUtils.toString(p.getInputStream(), StandardCharsets.UTF_8);
+            log.debug("Resources generated from the operator image");
+            log.debug(resources);
+            resourceList = OpenShiftUtils.getInstance().load(IOUtils.toInputStream(resources, StandardCharsets.UTF_8)).get();
             p.waitFor();
         } catch (Exception e) {
-            log.error("Could not load resources from operator image", e);
+            log.error("Could not load resources from operator image, check debug logs", e);
             fail("Failed to install using operator");
         }
 
+        return resourceList;
+    }
+
+    private static void deployOperator() {
+        List<HasMetadata> resourceList = getOperatorResources();
+        final String operatorResourcesName = "syndesis-operator";
         Optional<HasMetadata> serviceAccount = resourceList.stream()
             .filter(resource -> "ServiceAccount".equals(resource.getKind()) && operatorResourcesName.equals(resource.getMetadata().getName()))
             .findFirst();
@@ -282,8 +292,7 @@ public class SyndesisTemplate {
             // add nexus
             addMavenRepo(spec);
 
-            getSyndesisCrClient()
-                .create(TestConfiguration.openShiftNamespace(), cr);
+            getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), cr);
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }

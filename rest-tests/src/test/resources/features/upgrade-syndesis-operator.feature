@@ -1,16 +1,11 @@
 # @sustainer: avano@redhat.com
 
 @syndesis-upgrade
-@syndesis-upgrade-operator
-@gh-4781
-@gh-6111
-@wip
+@ENTESB-12355
 Feature: Syndesis Upgrade Using Operator
-
   Background:
     Given clean default namespace
       And get upgrade versions
-      And clean upgrade modifications
       And deploy Syndesis
       And wait for Syndesis to become ready
       And verify syndesis "given" version
@@ -20,7 +15,7 @@ Feature: Syndesis Upgrade Using Operator
       And add a split step
       And create basic filter step for "last_name" with word "Y" and operation "contains"
       And start mapper definition with name: "mapping 1"
-      And MAP using Step 2 and field "/first_name" to "/task"
+      And MAP using Step 2 and field "/first_name" to "/<>/task"
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 0)"
     Then create integration with name: "upgrade"
       And wait for integration with name: "upgrade" to become active
@@ -28,7 +23,16 @@ Feature: Syndesis Upgrade Using Operator
 
   Scenario: Syndesis Upgrade Using Operator
     When perform syndesis upgrade to newer version using operator
-    Then wait until upgrade pod is finished
-      And wait for Syndesis to become ready
+      # Give the operator some time to start creating new resources
+      And sleep for jenkins delay or "60" seconds
+    Then wait for Syndesis to become ready
       And verify syndesis "upgraded" version
+      And verify upgrade integration with task "X"
+    When add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
+      | action       | period |
+      | timer-action | 1000   |
+      And create HTTP "GET" step
+      And create integration with name: "timer-to-http"
+      And wait for integration with name: "timer-to-http" to become active
+    Then verify that after "2.5" seconds there were "2" calls
       And verify upgrade integration with task "X"
