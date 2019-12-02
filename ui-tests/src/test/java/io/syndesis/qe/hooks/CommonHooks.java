@@ -26,7 +26,7 @@ public class CommonHooks {
 
     @AfterStep
     public void afterScreenshot(Scenario scenario) {
-        if (scenario.isFailed()) {
+        if (scenario.isFailed() && WebDriverRunner.hasWebDriverStarted()) {
             byte[] screenshotAsBytes = ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);
             scenario.embed(screenshotAsBytes, "image/png");
         }

@@ -1,10 +1,8 @@
 package io.syndesis.qe.steps.apiprovider;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.endpoints.util.RetryingInvocationBuilder;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
@@ -22,7 +20,6 @@ import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import javax.ws.rs.client.Client;
@@ -57,12 +54,12 @@ public class ApiProviderSteps {
     @Then("check ([\\w ]+) operation is not present in API Provider operation list")
     public void checkOperationNotPresent(String operationName) {
         List<String> operations = operationsList.getOperations();
-        assertThat(operations, not(hasItem(operationName)));
+        assertThat(operations).doesNotContain(operationName);
     }
 
     @When("^create API Provider spec from ([\\w]+) (.+)$")
     public void createApiProviderSpec(String source, String path) {
-        if ("url".equals(source)) {
+        if ("url".equals(source) && "todo-app".equals(path)) {
             TodoUtils.createDefaultRouteForTodo(path, "/");
             path = "http://" + OpenShiftUtils.getInstance().getRoute(path).getSpec().getHost() + "/swagger.json";
         }
@@ -102,6 +99,11 @@ public class ApiProviderSteps {
     public void verifyThereAreWarnings(int num) {
         int actual = reviewApiProviderActions.getNumberOfWarnings();
         assertEquals("Wrong number of warnings", num, actual);
+    }
+
+    @Then("^verify API spec warnings contain \"([^\"]*)\"$")
+    public void verifyWarningsContain(String warning) {
+        assertThat(reviewApiProviderActions.getErrors()).anyMatch(s -> s.contains(warning));
     }
 
     @Then("^check API Provider operation \"([^\"]*)\" implementing \"([^\"]*)\" to \"([^\"]*)\"$")
@@ -149,13 +151,6 @@ public class ApiProviderSteps {
         lastResponse = getInvocation(url).method(method, Entity.entity(body, MediaType.APPLICATION_JSON_TYPE));
     }
 
-    @Then("^verify that executing ([A-Z]+) on API Provider route ([\\w-]+) endpoint \"([^\"]*)\" returns status (\\d+) and body$")
-    @Deprecated
-    public void verifyThatEndpointReturnsStatusAndBody(String method, String routeName, String endpoint, int status, String body) {
-        String url = getUrl(routeName, endpoint);
-        lastResponse = getInvocation(url).method(method);
-    }
-
     @Then("^verify response has body$")
     public void verifyRequestBody(String body) {
         if (lastResponse == null) {
@@ -163,6 +158,15 @@ public class ApiProviderSteps {
             throw new IllegalStateException("A request should be executed before using this step");
         }
         assertEquals(body.trim(), lastResponse.readEntity(String.class));
+    }
+
+    @Then("^verify response body contains$")
+    public void verifyRequestBodyContains(String bodyPart) {
+        if (lastResponse == null) {
+            log.error("Add execute <operation> on API Provider route <route-name>... Before using this step");
+            throw new IllegalStateException("A request should be executed before using this step");
+        }
+        assertThat(lastResponse.readEntity(String.class)).contains(bodyPart.trim());
     }
 
     @Then("^verify response has status (\\d+)$")
@@ -180,13 +184,7 @@ public class ApiProviderSteps {
             log.error("Add execute <operation> on API Provider route <route-name>... Before using this step");
             throw new IllegalStateException("A request should be executed before using this step");
         }
-        assertEquals(type.trim(), lastResponse.getMediaType().getType());
-    }
-
-    @When("^publish API Provider integration$")
-    public void publishIntegration() {
-        log.info("Publishing integration");
-        toolbar.publish();
+        assertEquals(type.trim(), lastResponse.getMediaType().toString());
     }
 
     private String getUrl(String routeName, String endpoint) {
@@ -225,6 +223,6 @@ public class ApiProviderSteps {
     @Then("^verify the displayed API Provider URL matches regex (.*)$")
     public void verifyTheDisplayedURLMatchesHttpITodoIntegrationApi$(String regex) {
         String apiUrl = new Details().getApiUrl();
-        Assertions.assertThat(apiUrl).matches(regex);
+        assertThat(apiUrl).matches(regex);
     }
 }
