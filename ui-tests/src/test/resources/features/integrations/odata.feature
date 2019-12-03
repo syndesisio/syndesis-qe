@@ -63,6 +63,10 @@ Feature: OData Connector
       | property of entity | 2/Description |                                                             | contains       | Ultrafast 3G UMTS/HSDPA Pocket PC, supports GSM network | doesn't contain | 1UMTS PDA                |
       | with $expand query |               | $filter=Name eq 'Notebook Professional 17'&$expand=Category | contains       | Notebooks                                               | doesn't contain | 1UMTS PDA                |
 
+    @gh-5067
+    Examples:
+      | name             | key_predicate   | query | does_contain_1 | validate_string_1 | does_contain_2  | validate_string_2 |
+      | complex property | 2/Configuration |       | contains       | MX150             | doesn't contain | 1UMTS PDA         |
 
   #
   # 2. Parametrized tests for Create and Update operations
