@@ -7,10 +7,10 @@ import com.codeborne.selenide.Condition;
 
 public class Conditions {
 
-    public static final Condition NO_CHILDREN = new Condition("No children") {
+    public static final Condition HAS_CHILDREN = new Condition("Has children") {
         @Override
         public boolean apply(WebElement element) {
-            return element.findElements(By.cssSelector("*")).isEmpty();
+            return !(element.findElements(By.cssSelector("*")).isEmpty());
         }
     };
 }
