@@ -29,6 +29,7 @@ Feature: Support page
 #
 #  2. download all diagnostic info
 #
+  @ENTESB-12366
   @support-page-download-diagnostic
   Scenario: Export diagnostic of all
     And download diagnostics for all integrations
@@ -38,6 +39,7 @@ Feature: Support page
 #
 #    works OK on local computer, seems to be some unstability issue with jenkins job.
   @oauth
+  @ENTESB-12366
   @support-page-download-specific-diagnostic
   Scenario: Export diagnostic of single integration
     Given remove file "syndesis.zip" if it exists
