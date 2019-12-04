@@ -244,19 +244,6 @@ public class SyndesisTemplate {
 
         List<EnvVar> envVarsToAdd = new ArrayList<>();
         envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
-        if (TestConfiguration.syndesisUrl() != null) {
-            envVarsToAdd.add(new EnvVar(
-                "ROUTE_HOSTNAME",
-                StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"),
-                null)
-            );
-        } else {
-            envVarsToAdd.add(new EnvVar(
-                "ROUTE_HOSTNAME",
-                TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix(),
-                null)
-            );
-        }
 
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
@@ -288,6 +275,11 @@ public class SyndesisTemplate {
 
             // set correct image stream namespace
             spec.put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
+
+            // set the route
+            spec.put("routeHostname", TestConfiguration.syndesisUrl() != null
+                ? StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://")
+                : TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
 
             // add nexus
             addMavenRepo(spec);
