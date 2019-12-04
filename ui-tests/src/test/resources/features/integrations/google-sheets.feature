@@ -1,4 +1,4 @@
-# @sustainer: mmelko@redhat.com
+# @sustainer: tplevko@redhat.com
 @ui
 @google-sheets
 @oauth
