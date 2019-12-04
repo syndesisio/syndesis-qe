@@ -40,7 +40,7 @@ public class CommonSteps {
     private static boolean isClusterReachable = true;
 
     @Given("^clean default namespace")
-    public void cleanNamespace() {
+    public static void cleanNamespace() {
         undeploySyndesis();
         //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
         OpenShiftUtils.binary().execute("delete", "template", "--all");
@@ -65,7 +65,7 @@ public class CommonSteps {
     }
 
     @When("^deploy Syndesis$")
-    public void deploySyndesis() {
+    public static void deploySyndesis() {
         SyndesisTemplate.deploy();
     }
 

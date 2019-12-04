@@ -39,7 +39,7 @@ Test actions are mainly UI driven with additional 3rd party validation like Sale
 ### Prepare minishift instance
 
 #### Prerequisites:
-- Installed [Minishift](https://www.openshift.org/minishift/)
+- Installed [Minishift](https://www.openshift.org/minishift/) with at least 1 admin and 1 regular user
 
 - Cloned [Syndesis](https://github.com/syndesisio/syndesis)
 
@@ -80,8 +80,18 @@ Following lines in /etc/hosts file, insert your minishift ip:
 Due to --route option when installing syndesis and updated /etc/hosts file we don't
 have to update all third party applications and their callbacks for every minishift/openshift IP.
 
-#### Add admin rights to developer user
-    oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer
+#### Adding users to openshift clusters
+If you are using minishift, you can use following commands to create an admin user:
+```
+oc create --as system:admin user admin
+oc create --as system:admin identity anypassword:admin
+oc create --as system:admin useridentitymapping anypassword:admin admin
+oc adm policy --as system:admin add-cluster-role-to-user cluster-admin admin
+```
+
+If you have some dedicated 3.11 cluster, you can add a new htpasswd entry to the `/etc/origin/master/htpasswd` file and then add the cluster-admin role to the user
+
+If you have 4.x cluster, you can follow the docs for [configuring htpasswd](https://docs.openshift.com/container-platform/4.1/authentication/identity_providers/configuring-htpasswd-identity-provider.html)
 
 ### Scenarios
 Test scenarios are provided in Gherkin language in a BDD fashion. Located in `./resources`
@@ -130,6 +140,8 @@ syndesis.config.timeout=300
 jenkins.delay=7
 
 syndesis.config.ui.url=https://syndesis.my-minishift.syndesis.io
+syndesis.config.admin.username=admin
+syndesis.config.admin.password=admin
 syndesis.config.ui.username=developer
 syndesis.config.ui.password=developer
 syndesis.config.ui.browser=firefox

@@ -12,61 +12,48 @@ import io.syndesis.qe.utils.TestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
-import java.util.concurrent.TimeUnit;
-
-import io.fabric8.kubernetes.api.model.Secret;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TestSuiteParent {
-
-    private static Secret lockSecret;
-
     @BeforeClass
-    public static void lockNamespace() throws InterruptedException {
+    public static void beforeTests() {
+        // Do this check only if installing syndesis
+        if (TestConfiguration.namespaceCleanup() && !TestUtils.isUserAdmin(TestConfiguration.adminUsername())) {
+            throw new IllegalArgumentException("Admin user " + TestUtils.getCurrentUser()
+                + " specified in test properties doesn't have admin priviledges");
+        }
+
+        if (TestUtils.isUserAdmin(TestConfiguration.syndesisUsername())) {
+            throw new IllegalArgumentException("Syndesis user " + TestConfiguration.syndesisUsername() + " shouldn't have admin priviledges");
+        }
+
         if (TestConfiguration.enableTestSupport()) {
-            log.info("enabling test support");
+            log.info("Enabling test support");
             OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED", "true");
-            log.info("waiting for syndesis");
-            Thread.sleep(10 * 1000);
+            log.info("Waiting for syndesis");
+            TestUtils.sleepIgnoreInterrupt(10 * 1000L);
             CommonSteps.waitForSyndesis();
         }
 
-        if (!TestConfiguration.namespaceLock()) {
-            return; //skip when syndesis.config.openshift.namespace.lock is false
+        if (!TestConfiguration.namespaceCleanup()) {
+            return;
         }
-        if (OpenShiftUtils.xtf().getProject(TestConfiguration.openShiftNamespace()) == null) {
-            OpenShiftUtils.xtf().createProjectRequest(TestConfiguration.openShiftNamespace());
-            Thread.sleep(10 * 1000);
-        }
-        log.info("Waiting to obtain namespace lock");
-        boolean isReady = TestUtils.waitForEvent(s -> !s.isPresent(),
-            () -> OpenShiftUtils.getInstance().getSecrets().stream().filter(s -> "test-lock".equals(s.getMetadata().getName())).findFirst(),
-            TimeUnit.MINUTES, 60,
-            TimeUnit.SECONDS, 15);
 
-        if (isReady) {
-            log.info("No lock present, namespace is ready");
-        } else {
-            // there's probably staled lock after 60 min timeout,
-            // display log warning and continue with force break
-            log.warn("Can't obtain lock gracefully");
+        if (OpenShiftUtils.getInstance().getProject(TestConfiguration.openShiftNamespace()) == null) {
+            OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().createProjectRequest(TestConfiguration.openShiftNamespace()));
+            TestUtils.sleepIgnoreInterrupt(10 * 1000L);
         }
+
         try {
             cleanNamespace();
+            deploySyndesis();
         } catch (Exception e) {
             // When the test fails in @BeforeClass, the stacktrace is not printed and we get only this chain:
             // CucumberTest>TestSuiteParent.lockNamespace:53->TestSuiteParent.cleanNamespace:92 » NullPointer
             e.printStackTrace();
             throw e;
         }
-        log.info("Creating namespace lock via secret `test-lock`");
-        lockSecret = OpenShiftUtils.getInstance().secrets()
-            .createOrReplaceWithNew()
-            .withNewMetadata()
-            .withName("test-lock")
-            .endMetadata()
-            .done();
     }
 
     @AfterClass
@@ -89,26 +76,23 @@ public abstract class TestSuiteParent {
             KafkaTemplate.undeploy();
         }
 
-        if (lockSecret != null) {
-            if (TestConfiguration.namespaceCleanupAfter()) {
-                log.info("Cleaning namespace");
-                OpenShiftUtils.getInstance().clean();
-            } else {
-                log.info("Releasing namespace lock");
-                OpenShiftUtils.getInstance().deleteSecret(lockSecret);
-            }
+        if (TestConfiguration.namespaceCleanupAfter()) {
+            log.info("Cleaning namespace");
+            OpenShiftUtils.getInstance().clean();
         }
     }
 
     private static void cleanNamespace() {
+        log.info("Cleaning namespace");
+        CommonSteps.cleanNamespace();
+    }
+
+    private static void deploySyndesis() {
         if (TestConfiguration.namespaceCleanup()) {
-            CommonSteps commonSteps = new CommonSteps();
-            log.info("Cleaning namespace");
-            commonSteps.cleanNamespace();
             log.info("Deploying Syndesis to namespace");
-            commonSteps.deploySyndesis();
+            CommonSteps.deploySyndesis();
             log.info("Waiting for Syndesis to get ready");
-            commonSteps.waitForSyndesis();
+            CommonSteps.waitForSyndesis();
         }
     }
 }
