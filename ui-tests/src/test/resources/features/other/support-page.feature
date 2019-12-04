@@ -17,6 +17,7 @@ Feature: Support page
 #
 #  this is trivial issue: syndesis.version in syndesis-qe pom.xml does not match version of syndesis installed on openshift
   @gh-5960
+  @ENTESB-12367
   @support-page-version-check
   Scenario: Version
     When navigates to the "About" page in help menu
