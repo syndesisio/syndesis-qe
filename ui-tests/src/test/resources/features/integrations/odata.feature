@@ -61,7 +61,7 @@ Feature: OData Connector
       | entity collection  |               |                                                             | contains       | 1UMTS PDA                                               | contains        | Notebook Professional 17 |
       | single entity      | 2             |                                                             | contains       | 1UMTS PDA                                               | doesn't contain | Notebook Professional 17 |
       | property of entity | 2/Description |                                                             | contains       | Ultrafast 3G UMTS/HSDPA Pocket PC, supports GSM network | doesn't contain | 1UMTS PDA                |
-      | with $expand query |               | $filter=Name eq 'Notebook Professional 17'&$expand=Category | contains       | Notebooks                                               | doesn't contain | 1UMTS PDA                |
+      | with expand query |               | $filter=Name eq 'Notebook Professional 17'&$expand=Category | contains       | Notebooks                                               | doesn't contain | 1UMTS PDA                |
 
     @gh-5067
     Examples:
