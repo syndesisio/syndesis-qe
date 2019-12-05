@@ -61,7 +61,7 @@
                         Screenshot
                     </td>
                     <td class="results-header">
-                        Affected scenarios
+                        Affected files
                     </td>
                 </tr>
             </thead>
@@ -81,7 +81,7 @@
                             <a href="screenshots/$report.imgPath"><img src="screenshots/$report.imgPath"></a>
                         </td>
                         <td class="result-body">
-                            $report.scenarios
+                            $utils.shortenScenarios($report.scenarios)
                         </td>
                     </tr>
                 #end

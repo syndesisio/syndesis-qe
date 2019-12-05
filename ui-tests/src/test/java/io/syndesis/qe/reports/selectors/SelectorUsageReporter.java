@@ -15,8 +15,6 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,14 +48,14 @@ public class SelectorUsageReporter {
      * @param templatePath template source on classpath
      * @param outputPath output path of the generated template
      */
-    protected void generateReport(Map properties, String templatePath, String outputPath) {
+    protected void generateReport(Map<String, Object> properties, String templatePath, String outputPath) {
         VelocityEngine engine = new VelocityEngine();
         engine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath");
         engine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
         engine.init();
         Template template = engine.getTemplate(templatePath);
+        properties.put("utils", new ReportUtils());
         VelocityContext context = new VelocityContext(properties);
-        context.put("utils", ReportUtils.class);
         StringWriter writer = new StringWriter();
         template.merge(context, writer);
         try (FileWriter file = new FileWriter(outputPath)) {
@@ -99,23 +97,6 @@ public class SelectorUsageReporter {
             Map<String, Object> reps = new HashMap<>();
             reps.put("reports", info);
             generateReport(reps, "/templates/data_test_id_template.vm", "target/cucumber/testid_rewrite.html");
-        }
-    }
-
-    /**
-     * Contains various helper methods to use in templates
-     */
-    private static final class ReportUtils {
-
-        private static final Pattern GH_URL = Pattern.compile("(.*)\\.\\w+\\.[\\w$]+\\((\\w+.\\w+):(\\d+)\\)");
-
-        public static String getGithubURL(String sTrace) {
-            Matcher m = GH_URL.matcher(sTrace);
-            if (m.matches()) {
-                log.info("{} matched with groups {} {} {}", sTrace, m.group(1), m.group(2), m.group(3));
-                return String.format("%s/%s#L%s", m.group(1).replace('.', '/'), m.group(2), m.group(3));
-            }
-            return sTrace;
         }
     }
 }
