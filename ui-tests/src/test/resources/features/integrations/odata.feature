@@ -212,8 +212,8 @@ Feature: OData Connector
 
     @gh-5386
     Examples:
-      | name            | resource_collection | key_predicate | filter | split | key         | value      | mapping_one | mapping_two |
-      | wrong_datashape | Products            | 2             | false  | false | Description | 1UMTS PDA  | Name        | Description |
+      | name            | resource_collection | key_predicate | filter | split | key         | value     | mapping_one | mapping_two |
+      | wrong_datashape | Products            | 2             | false  | false | Description | 1UMTS PDA | Name        | Description |
 
 
     @gh-5533
@@ -225,6 +225,12 @@ Feature: OData Connector
     Examples:
       | name                            | resource_collection | key_predicate | filter | split | key       | value    | mapping_one | mapping_two |
       | string predicate without quotes | Users               | coolBob       | true   | true  | FirstName | CoolName | LastName    | FirstName   |
+
+    @gh-5151
+    Examples:
+      | name                   | resource_collection | key_predicate | filter | split | key | value | mapping_one       | mapping_two       |
+      | entity w complex param | Products            | 2             | true   | true  | CPU | MX150 | Configuration.GPU | Configuration.CPU |
+
 
   @gh-5060
   @reproducer
