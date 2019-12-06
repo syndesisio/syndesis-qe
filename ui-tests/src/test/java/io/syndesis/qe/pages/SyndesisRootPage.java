@@ -3,6 +3,8 @@ package io.syndesis.qe.pages;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.Alert;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
@@ -16,7 +18,6 @@ public class SyndesisRootPage extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.id("root");
-        public static final By ALERT = By.cssSelector(".alert-danger");
     }
 
     public SelenideElement getRootElement() {
@@ -31,7 +32,7 @@ public class SyndesisRootPage extends SyndesisPageObject {
         this.getRootElement().find(Link.HOME).shouldBe(visible).click();
     }
 
-    public SelenideElement getAlertElemet() {
-        return getRootElement().find(SyndesisRootPage.Element.ALERT);
+    public SelenideElement getDangerAlertElemet() {
+        return getRootElement().find(Alert.DANGER.getBy());
     }
 }

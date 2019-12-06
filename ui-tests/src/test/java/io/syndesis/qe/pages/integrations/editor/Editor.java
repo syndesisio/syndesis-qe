@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.Alert;
 
 import org.openqa.selenium.By;
 
@@ -16,7 +17,6 @@ public class Editor extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector(".integration-editor-layout");
-        public static final By ALERT = By.cssSelector(".alert-danger");
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Editor extends SyndesisPageObject {
         return getRootElement().is(visible);
     }
 
-    public SelenideElement getAlertElemet() {
-        return getRootElement().find(Element.ALERT);
+    public SelenideElement getDangerAlertElemet() {
+        return getRootElement().find(Alert.DANGER.getBy());
     }
 }

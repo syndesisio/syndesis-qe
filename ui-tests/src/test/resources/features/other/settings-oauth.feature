@@ -56,6 +56,7 @@ Feature: Settings OAuth
     When fill "<type>" oauth settings "<account>"
     And navigate to the "Connections" page
     And create connection "<type>" with name "My <type> connection" using oauth
+    And remove all "all" alerts
     Then validate oauth connection "My <type> connection" by clicking Validate button
     Examples:
       | type            | account            |

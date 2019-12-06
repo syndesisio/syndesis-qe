@@ -261,7 +261,7 @@ public class EditorSteps {
 
     @Then("^check that alert dialog contains text \"([^\"]*)\"$")
     public void checkAlertDialog(String expectedText) {
-        ElementsCollection spans = editor.getAlertElemet().findAll(By.tagName("span"));
+        ElementsCollection spans = editor.getDangerAlertElemet().findAll(By.tagName("span"));
         Assertions.assertThat(spans.stream().anyMatch(span -> span.getText().contains(expectedText)))
             .isTrue()
             .as("In the alert dialog is not expected text.");
@@ -269,7 +269,7 @@ public class EditorSteps {
 
     @Then("^check that alert dialog contains details \"([^\"]*)\"$")
     public void checkAlertDialogDetails(String expectedDetailsText) {
-        SelenideElement alertElemet = editor.getAlertElemet();
+        SelenideElement alertElemet = editor.getDangerAlertElemet();
         alertElemet.find(By.tagName("button")).click();
         Assertions.assertThat(alertElemet.find(By.tagName("pre")).getText()).isEqualTo(expectedDetailsText);
     }
