@@ -231,10 +231,10 @@ mvn clean test -P rest
 
 #### Particular test execution
 
-When you want to run only the particular tests or scenarios, just use their **tags**. The following example runs @integration-ftp-ftp scenario from the rest suite
+When you want to run only the particular tests or scenarios, just use their **tags**. The following example runs `@integration-ftp-ftp` and `@integration-s3-ftp` scenarios from the rest suite
 
 ```
-mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp"
+mvn clean test -P rest -Dtags="@integration-ftp-ftp or @integration-s3-ftp"
 ```
 
 #### Additional parameters

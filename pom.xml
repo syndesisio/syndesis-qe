@@ -78,6 +78,9 @@
 			https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html -->
 		<firefox.driver.version></firefox.driver.version>
 
+		<!-- Placeholder for user defined cucumber tags that should be run -->
+		<tags></tags>
+
 	</properties>
 
 	<description>Test suite for syndesis project</description>
@@ -540,7 +543,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<version>${surefire.version}</version>
-						<configuration combine.self="override">
+						<configuration combine.self="append">
 							<systemPropertyVariables>
 								<syndesis.config.openshift.namespace.cleanup>true</syndesis.config.openshift.namespace.cleanup>
 							</systemPropertyVariables>
@@ -566,6 +569,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${surefire.version}</version>
+				<configuration combine.self="append">
+					<systemPropertyVariables>
+						<cucumber.options>--tags '${tags}'</cucumber.options>
+					</systemPropertyVariables>
+				</configuration>
 			</plugin>
 		</plugins>
 
