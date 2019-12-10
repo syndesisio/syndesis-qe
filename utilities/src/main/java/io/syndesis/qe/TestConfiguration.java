@@ -22,7 +22,6 @@ public class TestConfiguration {
     public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
     public static final String OPENSHIFT_SAR_NAMESPACE = "syndesis.config.openshift.sar_namespace";
     public static final String OPENSHIFT_NAMESPACE_CLEANUP = "syndesis.config.openshift.namespace.cleanup";
-    public static final String OPENSHIFT_NAMESPACE_CLEANUP_AFTER = "syndesis.config.openshift.namespace.cleanup.after";
     public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
 
     public static final String SYNDESIS_SINGLE_USER = "syndesis.config.single.user";
@@ -197,10 +196,6 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP));
     }
 
-    public static boolean namespaceCleanupAfter() {
-        return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP_AFTER));
-    }
-
     public static boolean useServerRoute() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE));
     }
@@ -255,7 +250,6 @@ public class TestConfiguration {
         props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
 
         props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
-        props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP_AFTER, props.getProperty(OPENSHIFT_NAMESPACE_CLEANUP));
 
         // to keep backward compatibility
         if (props.getProperty(SYNDESIS_URL_SUFFIX) != null && props.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {

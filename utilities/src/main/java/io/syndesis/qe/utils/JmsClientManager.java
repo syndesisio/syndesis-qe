@@ -74,7 +74,7 @@ public class JmsClientManager {
     private JmsClient getClient() {
         if (jmsLocalPortForward == null || !jmsLocalPortForward.isAlive()) {
             //can be the same pod twice forwarded to different ports? YES
-            Pod pod = OpenShiftUtils.xtf().getAnyPod("app", jmsAppName);
+            Pod pod = OpenShiftUtils.getInstance().getAnyPod("app", jmsAppName);
             jmsLocalPortForward = OpenShiftUtils.portForward(pod, jmsPort, jmsPort);
         }
         return this.initClient();

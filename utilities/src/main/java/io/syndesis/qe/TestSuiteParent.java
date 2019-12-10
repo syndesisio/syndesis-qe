@@ -75,11 +75,6 @@ public abstract class TestSuiteParent {
         if (OpenShiftUtils.podExists(p -> p.getMetadata().getName().contains("strimzi-cluster-operator"))) {
             KafkaTemplate.undeploy();
         }
-
-        if (TestConfiguration.namespaceCleanupAfter()) {
-            log.info("Cleaning namespace");
-            OpenShiftUtils.getInstance().clean();
-        }
     }
 
     private static void cleanNamespace() {

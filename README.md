@@ -240,7 +240,7 @@ mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp"
 #### Additional parameters
 
 ##### Deploying Syndesis via the testsuite
-You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy,ui) that sets the required parameters to clean the namespace and don't clean the namespace after tests.
+You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy,ui) that sets the required parameters to clean the namespace and deploy Syndesis.
 
 ```
 mvn clean test -P deploy,rest -Dcucumber.options="--tags @integration-ftp-ftp"
@@ -249,13 +249,8 @@ mvn clean test -P deploy,rest -Dcucumber.options="--tags @integration-ftp-ftp"
 is the same as
 
 ```
-mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp" \
-        -Dsyndesis.config.openshift.namespace.cleanup=true \
-        -Dsyndesis.config.openshift.namespace.cleanup.after=false
+mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp" -Dsyndesis.config.openshift.namespace.cleanup=true
 ```
-You can use various parameters. From the previous command, parameter:
-* *syndesis.config.openshift.namespace.cleanup* - cleanup namespace before the tests
-* *syndesis.config.openshift.namespace.cleanup.after* - cleanup namespace after the tests (it can be useful to set this to false during debugging phase)
 
 To select syndesis version, add another maven parameter:
 
@@ -296,9 +291,7 @@ E.g. for debugging slack tests:
 ```
 mvn "-Dmaven.surefire.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE" \
         clean test -P ui "-Dcucumber.options=--tags @slack" \
-        -Dsyndesis.config.openshift.namespace.lock=false \
         -Dsyndesis.config.openshift.namespace.cleanup=true \
-        -Dsyndesis.config.openshift.namespace.cleanup.after=false
 ```
 
 After that, the project will be waiting for a connection. After that, you can connect to remote debug in IDE. For more information [look here](http://jtuts.com/2016/07/29/how-to-set-up-remote-debugging-in-intellij-idea-for-a-webapp-that-is-run-by-tomcat-maven-plugin/).
@@ -375,9 +368,7 @@ The following steps show how to debug and use it in the IntelliJ Idea.
     ```
     -ea
     "-Dcucumber.options=--tags @slack-to-db"
-    -Dsyndesis.config.openshift.namespace.lock=true
     -Dsyndesis.config.openshift.namespace.cleanup=true
-    -Dsyndesis.config.openshift.namespace.cleanup.after=false
     -Dsyndesis.version=master
     ```
     As you can see, the running scenario is specified in the cucumber.options tag.

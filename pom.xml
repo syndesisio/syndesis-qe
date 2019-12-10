@@ -543,7 +543,6 @@
 						<configuration combine.self="override">
 							<systemPropertyVariables>
 								<syndesis.config.openshift.namespace.cleanup>true</syndesis.config.openshift.namespace.cleanup>
-								<syndesis.config.openshift.namespace.cleanup.after>false</syndesis.config.openshift.namespace.cleanup.after>
 							</systemPropertyVariables>
 						</configuration>
 					</plugin>

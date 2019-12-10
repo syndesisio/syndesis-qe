@@ -283,7 +283,7 @@ public class SyndesisTemplate {
         importProdImage("operator");
 
         log.info("Waiting for syndesis-operator to be ready");
-        OpenShiftUtils.xtf().waiters()
+        OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-operator")
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 10)

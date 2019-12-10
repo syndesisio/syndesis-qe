@@ -31,10 +31,10 @@ public class FtpClientManager {
 
     public static FTPClient getClient() {
         if (localPortForward == null || !localPortForward.isAlive()) {
-            localPortForward = OpenShiftUtils.portForward(OpenShiftUtils.xtf().getAnyPod("app", ftpPodName), ftpPort, ftpPort);
+            localPortForward = OpenShiftUtils.portForward(OpenShiftUtils.getInstance().getAnyPod("app", ftpPodName), ftpPort, ftpPort);
             //since we use passive FTP connection, we need to forward data ports also
             for (int i = 0; i < 10; i++) {
-                OpenShiftUtils.portForward(OpenShiftUtils.xtf().getAnyPod("app", ftpPodName), 2300+i, 2300+i);
+                OpenShiftUtils.portForward(OpenShiftUtils.getInstance().getAnyPod("app", ftpPodName), 2300 + i, 2300 + i);
             }
 
         }

@@ -77,7 +77,7 @@ public class MqttValidationSteps {
     private void portForward() {
         if (mqttLocalPortForward == null || !mqttLocalPortForward.isAlive()) {
             //can be the same pod twice forwarded to different ports? YES
-            Pod pod = OpenShiftUtils.xtf().getAnyPod("app", "syndesis-amq");
+            Pod pod = OpenShiftUtils.getInstance().getAnyPod("app", "syndesis-amq");
             log.info("POD NAME: *{}*", pod.getMetadata().getName());
             mqttLocalPortForward = OpenShiftUtils.portForward(pod, 1883, 1883);
             //give it time to get ready

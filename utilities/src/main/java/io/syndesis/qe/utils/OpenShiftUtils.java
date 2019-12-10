@@ -40,19 +40,14 @@ import okhttp3.Headers;
  */
 @Slf4j
 public final class OpenShiftUtils {
-
     private static OpenShift xtfUtils = null;
     private static OpenShiftBinary binary = null;
 
     public static OpenShift getInstance() {
         if (xtfUtils == null) {
-            new OpenShiftUtils();
+            xtfUtils = useAdminUser();
         }
         return xtfUtils;
-    }
-
-    public static OpenShift xtf() {
-        return getInstance();
     }
 
     public static OpenShiftBinary binary() {
@@ -62,28 +57,22 @@ public final class OpenShiftUtils {
         return binary;
     }
 
-    private OpenShiftUtils() {
-        if (xtfUtils == null) {
-            useAdminUser();
-        }
-    }
-
     /**
      * Runs the given code with the permissions of a regular user(without admin rights, specified by the syndesis ui username property)
      *
      * @param r code to run
      */
     public static void asRegularUser(Runnable r) {
-        useRegularUser();
+        xtfUtils = useRegularUser();
         r.run();
-        useAdminUser();
+        xtfUtils = useAdminUser();
     }
 
     /**
      * Creates a new client with the regular user.
      */
-    private static void useRegularUser() {
-        xtfUtils = OpenShift.get(
+    private static OpenShift useRegularUser() {
+        return OpenShift.get(
             TestConfiguration.openShiftUrl(),
             TestConfiguration.openShiftNamespace(),
             TestConfiguration.syndesisUsername(),
@@ -94,8 +83,8 @@ public final class OpenShiftUtils {
     /**
      * Creates a new client with the admin user.
      */
-    private static void useAdminUser() {
-        xtfUtils = OpenShift.get(
+    private static OpenShift useAdminUser() {
+        return OpenShift.get(
             TestConfiguration.openShiftUrl(),
             TestConfiguration.openShiftNamespace(),
             TestConfiguration.adminUsername(),
