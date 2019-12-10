@@ -3,12 +3,11 @@
 ##### Table of Contents
 
 * [Structure](#structure)
-* [Prepare minishift instance](#prepare-minishift-instance)
+* [Prerequisites](#prerequisites)
 * [Scenarios](#scenarios)
 * [Configuration](#configuration)
 * [Execution](#execution)
   * [Most common problems](#most-common-problems)
-* [Running on remote OpenShift instance](#running-on-remote-openshift-instance)
 * [Contributing](#contributing)
   * [Checkstyle](#checkstyle)
   * [Creating a Pull Request](#creating-a-pull-request)
@@ -36,46 +35,36 @@ Test actions are executed directly to `syndesis-server` backend.
 Java based tests that use Selenide and Cucumber BDD scenarios.
 Test actions are mainly UI driven with additional 3rd party validation like Salesforce, Twitter etc.
 
-### Prepare minishift instance
-
-#### Prerequisites:
-- Installed [Minishift](https://www.openshift.org/minishift/) with at least 1 admin and 1 regular user
+### Prerequisites:
+- OpenShift cluster with at least 1 admin and 1 regular user
 
 - Cloned [Syndesis](https://github.com/syndesisio/syndesis)
 
 - Cloned this repo with [syndesis-extension](https://github.com/syndesisio/syndesis) submodule (*git clone --recurse-submodules*)
 
-- Correctly set test.properties and credentials.json (described later)
+- Correctly set test.properties and credentials.json (described later) 
 
-- Added Fuse repositories to maven due to dependencies
+- Syndesis with test support endpoint enabled or sudoless docker access (either by being in the `docker` group or using `podman` instead) to install Syndesis with `deploy` profile
 
-- sudoless docker access (either by being in the `docker` group or using `podman` instead)
+There are some dependencies that are not publicly available and require a special maven repository in maven settings. These are disabled by default and will cause some tests to fail. You can enable them with `-DallDeps` system property.
 
-Before you import maven project to the IDE, you have to install 
-**Lombok** and 
-**Cucumber** plugins to your IDE. 
+Before you import maven project to the IDE, you have to install
+**Lombok** and
+**Cucumber** plugins to your IDE.
 
 For IntelliJ Idea you can use these plugins:
 
 - [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin)
 - [Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
- 
+
 For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
-#### Create a minishift instance
-For minishift version 23+
-    
-    minishift start 
-    
-For version 22 and below 
-
-    minishift start --memory 4912 --cpus 2 --disk-size 20GB --openshift-version v3.9.0
-
-#### Add minishift ip to the hosts
-Following lines in /etc/hosts file, insert your minishift ip:
-
-	${minishift_ip} syndesis.my-minishift.syndesis.io
-	${minishift_ip} todo-syndesis.my-minishift.syndesis.io
+#### Make static route available
+If you wish to run OAuth tests, we are using a static route for all oauth callbacks, so you will need to make it accessible, for example adding following entries to your /etc/hosts file:
+```
+<OpenShift cluster IP> syndesis.my-minishift.syndesis.io
+<OpenShift cluster IP> todo-syndesis.my-minishift.syndesis.io
+```
 
 Due to --route option when installing syndesis and updated /etc/hosts file we don't
 have to update all third party applications and their callbacks for every minishift/openshift IP.
@@ -92,6 +81,8 @@ oc adm policy --as system:admin add-cluster-role-to-user cluster-admin admin
 If you have some dedicated 3.11 cluster, you can add a new htpasswd entry to the `/etc/origin/master/htpasswd` file and then add the cluster-admin role to the user
 
 If you have 4.x cluster, you can follow the docs for [configuring htpasswd](https://docs.openshift.com/container-platform/4.1/authentication/identity_providers/configuring-htpasswd-identity-provider.html)
+
+If you for some reason can't have 2 users (1 admin, 1 regular) - for example on eval clusters when the Syndesis is installed for you, you can use property `syndesis.config.one.user=true` to use only the regular user (specified by the config property `syndesis.config.ui.username`)
 
 ### Scenarios
 Test scenarios are provided in Gherkin language in a BDD fashion. Located in `./resources`
@@ -123,22 +114,10 @@ Working example can be found in jenkins nightly build run logs.
 
 For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
-test.properties (update *syndesis.config.openshift.url* property according to your minishift ip)
+Minimal test.properties file (will work with most of the tests, some require more configuration)
 ```
 syndesis.config.openshift.url=https://192.168.64.2:8443
 syndesis.config.openshift.namespace=syndesis
-syndesis.config.openshift.route.suffix=my-minishift.syndesis.io
-# namespace for the subject access review (if not specified, will use the same namespace as for the deployment)
-syndesis.config.openshift.sar_namespace=syndesis
-
-syndesis.dballocator.url=<dballocator url> 
-
-#timeout in seconds, if not set default is 300
-syndesis.config.timeout=300
-
-#delay in seconds, if not set default is 1
-jenkins.delay=7
-
 syndesis.config.ui.url=https://syndesis.my-minishift.syndesis.io
 syndesis.config.admin.username=admin
 syndesis.config.admin.password=admin
@@ -153,7 +132,7 @@ You can also use the `syndesis.config.test.properties` system property to specif
 By default the testsuite will not download any drivers when running tests. To download drivers, you need to use profile `download-drivers`, for example `mvn clean install -DskipTests -Pdownload-drivers`.
 
 By default the testsuite will download latest drivers which may not work with older browsers.
-To use older webdriver, find supported version for your browser and set following maven property:
+To use older webdriver, find supported version for your browser and set the system property `chrome.driver.version` or `firefox.driver.version` depending the browser of your choice.
 
 ##### Chrome
 Find supported driver version for chrome browser here: http://chromedriver.chromium.org/downloads
@@ -217,101 +196,9 @@ credentials.json
       "password": "****"
     }
   },
-  "QE Salesforce": {
-    "service": "salesforce",
-    "properties": {
-      "instanceUrl": "https://developer.salesforce.com",
-      "loginUrl": "https://login.salesforce.com",
-      "clientId": "****",
-      "clientSecret": "****",
-      "userName": "****",
-      "password": "****"
-    }
-  },
-  "Twitter Listener": {
-    "service": "twitter",
-    "properties": {
-      "screenName": "****",
-      "accessToken": "****",
-      "accessTokenSecret": "****",
-      "consumerKey": "****",
-      "consumerSecret": "****"
-    }
-  },
-  "s3": {
-    "service": "s3",
-    "properties": {
-      "region": "****",
-      "accessKey": "****",
-      "secretKey": "****"
-    }
-  },
-  "syndesis": {
-    "service": "syndesis",
-    "properties": {
-      "instanceUrl": "****",
-      "login": "****",
-      "password": "****"
-    }
-  },
-  "QE Dropbox": {
-    "service": "dropbox",
-    "properties": {
-      "accessToken": "****",
-      "clientIdentifier": "****"
-    }
-  },
-  "ftp": {
-    "service": "ftp",
-    "properties": {
-      "binary": "Yes",
-      "connectTimeout": "10000",
-      "disconnect": "No",
-      "host": "ftpd",
-      "maximumReconnectAttempts": "3",
-      "passiveMode": "Yes",
-      "password": "****",
-      "port": "****",
-      "reconnectDelay": "1000",
-      "timeout": "30000",
-      "username": "****"
-    }
-  },
-  "QE Slack": {
-    "service": "slack",
-    "properties": {
-      "webhookUrl": "****",
-      "Token": "****"
-    }
-  },
-  "QE Google Mail": {
-    "service": "Google Mail",
-    "properties": {
-      "clientId": "****",
-      "clientSecret": "****",
-      "applicationName": "****",
-      "refreshToken": "****",
-      "userId": "****",
-      "email": "****",
-      "password": "****"
-    }
-  },
-  "telegram": {
-    "service": "telegram",
-    "properties": {
-      "authorizationToken": "****"
-    }
-  },
-  "GitHub": {
-    "service": "GitHub",
-    "properties": {
-      "PersonalAccessToken": "****"
-    }
-  }
+  ...
 }
 ```
-for ftp connection credentials:
-All values are just examples / proposals. Need to be updated in accordance with 
 
 ### Execution
 
@@ -320,10 +207,10 @@ For the test execution at least `io.syndesis.common:common-model` and `io.syndes
 
 ```
 cd <syndesis-project-dir>
-./syndesis/tools/bin/syndesis build --init --batch-mode --backend --flash
+mvn clean install -f app/pom.xml -P flash --projects :common-model,:server-endpoint
 ```
 
-Working with extensions requires syndesis-extensions submodule compiled. 
+Working with extensions requires syndesis-extensions submodule compiled.
 **NOTE** If you didn't clone syndesis-qe repository with *--recurse-submodules* option as mentioned before, you have run following commands:
 ```
 cd <syndesis-qe-project-dir>
@@ -352,18 +239,23 @@ mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp"
 
 #### Additional parameters
 
+##### Deploying Syndesis via the testsuite
+You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy,ui) that sets the required parameters to clean the namespace and don't clean the namespace after tests.
+
+```
+mvn clean test -P deploy,rest -Dcucumber.options="--tags @integration-ftp-ftp"
+```
+
+is the same as
+
 ```
 mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp" \
-        -Dsyndesis.config.openshift.namespace.lock=true \
         -Dsyndesis.config.openshift.namespace.cleanup=true \
         -Dsyndesis.config.openshift.namespace.cleanup.after=false
 ```
 You can use various parameters. From the previous command, parameter:
-* *syndesis.config.openshift.namespace.lock* - lock the namespace
 * *syndesis.config.openshift.namespace.cleanup* - cleanup namespace before the tests
 * *syndesis.config.openshift.namespace.cleanup.after* - cleanup namespace after the tests (it can be useful to set this to false during debugging phase)
-
-You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy -P ui) that sets all 3 parameters to lock the namespace, clean the namespace and don't clean the namespace after tests.
 
 To select syndesis version, add another maven parameter:
 
@@ -388,18 +280,7 @@ This secret will be linked to *syndesis-operator* service account automatically.
 
 
 ##### Most common problems
-* If you set *syndesis.config.openshift.namespace.lock* parameter to true and you stop tests during running, the lock will not be released! 
-It causes that the next tests stuck for the 60 minutes on ***Waiting to obtain namespace lock***. If you don't want to
-wait, open terminal and just delete *test-lock* secret from *syndesis* project. At the moment, tests should continue.
-
-```
-oc login -u developer -p developer
-oc project syndesis
-oc delete secret test-lock
-```
-
-* If tests failed at ***java.lang.IllegalArgumentException: bound must be positive***,
-just add -Dsyndesis.config.openshift.namespace.lock=true parameter to the command.
+* If tests failed at ***java.lang.IllegalArgumentException: bound must be positive***, probably the Syndesis isn't deployed in your namespace, so try again with `deploy` profile.
 
 * When you start minishift, you might receive a 403 forbidden status from GitHub if your request exceeds the rate limit for your IP address. In this case, the command will fail and you will receive an error message. You need to create a personal API token from your GitHub account at https://github.com/settings/tokens. After you generate the API token, you need to set the MINISHIFT_GITHUB_API_TOKEN environment variable by running: `export MINISHIFT_GITHUB_API_TOKEN=<token_ID>` .
 
@@ -422,50 +303,6 @@ mvn "-Dmaven.surefire.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspe
 
 After that, the project will be waiting for a connection. After that, you can connect to remote debug in IDE. For more information [look here](http://jtuts.com/2016/07/29/how-to-set-up-remote-debugging-in-intellij-idea-for-a-webapp-that-is-run-by-tomcat-maven-plugin/).
 
-### Running on remote OpenShift instance
-In some cases, you want to run the tests on the remote OpenShift instance instead of the local Minishift instance.
-
-Lets say, you have a OpenShift instance on *https://myFancyOpenshiftInstance.mydomain.com* and you have user 
-**remoteuser** with password **RemoteUserPassword**.
-
-If you want to run the tests on the existing remote OpenShift instance, follow this steps.
-
-* Connect to OpenShift instance. E.g.
-  ```
-  oc login https://myFancyOpenshiftInstance.mydomain.com:8443 -u remoteuser -p RemoteUserPassword
-  ```
-* First, create a new namespace for testing. E.g. **testingnamespace**
-  ```
-  oc new-project testingnamespace
-  ```
-* After that, update *test.properties* according to the remote instance. E.g.
-    ```
-    syndesis.config.openshift.url=https://myFancyOpenshiftInstance.mydomain.com:8443
-    syndesis.config.openshift.namespace=testingnamespace
-    syndesis.config.openshift.route.suffix=my-minishift.syndesis.io
-    # namespace for the subject access review (if not specified, will use the same namespace as for the deployment)
-    syndesis.config.openshift.sar_namespace=testingnamespace
-
-    syndesis.dballocator.url=http://dballocator.mw.lab.eng.bos.redhat.com:8080
-    
-    #timeout in seconds, if not set default is 30
-    syndesis.config.timeout=15
-    
-    #delay in seconds, if not set default is 1
-    jenkins.delay=7
-    
-    syndesis.config.ui.url=https://testingnamespace.my-minishift.syndesis.io
-    syndesis.config.ui.username=remoteuser
-    syndesis.config.ui.password=RemoteUserPassword
-    syndesis.config.ui.browser=firefox
-    ```
-* You have to also update */etc/hosts* according to the remote instance. E.g.
-    ```
-	${remote_openshift_ip} testingnamespace.my-minishift.syndesis.io
-	${remote_openshift_ip} todo-testingnamespace.my-minishift.syndesis.io
-	```
-After that, you can run the tests on the remote OpenShift instances. 
-Remember to delete project after testing.
 ### Contributing
 
 #### Checkstyle
@@ -491,9 +328,9 @@ Please note that **CTRL+ALT+L** only reformat the code but it doesn't change the
 You can also use *Reformat Code* checkbox in *Commit Changes*
 dialog before you commit changes.
 
-**Commit changes** dialog provides a useful view of your changes before commit. There, you can see the diff between 
-original and changed file. So you can make sure that you commit only changes which you want. Also, you can set commit message 
-and commit changes via this dialog. 
+**Commit changes** dialog provides a useful view of your changes before commit. There, you can see the diff between
+original and changed file. So you can make sure that you commit only changes which you want. Also, you can set commit message
+and commit changes via this dialog.
 
 ![Commit changes](docs/readme_images/idea_commit_changes.png)
 
@@ -546,20 +383,20 @@ The following steps show how to debug and use it in the IntelliJ Idea.
     As you can see, the running scenario is specified in the cucumber.options tag.
 * Add breakpoint where you want and run debug (Shift-F9).
 * When you change something, you have to recompile the particular class. *(Build -> Recompile Ctrl+Shift+F9)*
-* After that, you have to drop frame. In the Debugger view, right-click on the top frame and select *Drop Frame*. 
+* After that, you have to drop frame. In the Debugger view, right-click on the top frame and select *Drop Frame*.
     It causes that last frame (e.g. function) will be running again with the changed code.
-    
+
 [Video with example](https://drive.google.com/file/d/16G-UDrRGLE-YvuRJUMlVpGi1z5vkjc4r/view?usp=sharing)
 
-* In some cases, after step to the next line, the code throws exception and you lose the frame stack. When you want to 
-ignore exception, in the debugger view click on *View Breakpoints* (Ctrl+Shift+F8) and select that you want to stop program 
+* In some cases, after step to the next line, the code throws exception and you lose the frame stack. When you want to
+ignore exception, in the debugger view click on *View Breakpoints* (Ctrl+Shift+F8) and select that you want to stop program
 on Java Exception Breakpoints and specify particular exception. After that, program stop before
 throwing an exception and you just drop frames which are on the frame with your method.
 
-* In some cases, you want to try find UI label with **Trial and Error** method. 
-It means that you are changing the name unless you find the correct one. But, of course, you don't want to 
-throw exception every time when you set incorrect name. For this, just stop debugger in code, open debugger 
-and in the variables view you can add and edit any variables you want. 
+* In some cases, you want to try find UI label with **Trial and Error** method.
+It means that you are changing the name unless you find the correct one. But, of course, you don't want to
+throw exception every time when you set incorrect name. For this, just stop debugger in code, open debugger
+and in the variables view you can add and edit any variables you want.
 When variables throws exception, it will not affect tests (main) executions.
 
 [Video with example of *Exception Breakpoints* and *Trial and Error*](https://drive.google.com/open?id=1baPJx7YncTn36B6N-VFy85lZciskC1NE)
