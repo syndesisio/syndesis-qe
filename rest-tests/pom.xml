@@ -25,11 +25,6 @@
 			<artifactId>common-model</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>io.syndesis.server</groupId>
-			<artifactId>syndesis-cli</artifactId>
-		</dependency>
-
 		<!-- test dependencies -->
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>

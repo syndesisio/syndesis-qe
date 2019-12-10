@@ -207,7 +207,7 @@ For the test execution at least `io.syndesis.common:common-model` and `io.syndes
 
 ```
 cd <syndesis-project-dir>
-mvn clean install -f app/pom.xml -P flash --projects :common-model,:server-endpoint
+mvn clean install -f app/pom.xml -P flash --projects :common-model,:server-endpoint -am
 ```
 
 Working with extensions requires syndesis-extensions submodule compiled.
