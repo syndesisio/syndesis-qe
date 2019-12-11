@@ -40,7 +40,7 @@ public class CommonSteps {
     private static boolean isClusterReachable = true;
 
     @Given("^clean default namespace")
-    public void cleanNamespace() {
+    public static void cleanNamespace() {
         undeploySyndesis();
         //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
         OpenShiftUtils.binary().execute("delete", "template", "--all");
@@ -55,7 +55,7 @@ public class CommonSteps {
             OpenShiftUtils.getInstance().clean();
             OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor();
         }
-        OpenShiftUtils.xtf().getTemplates().forEach(OpenShiftUtils.xtf()::deleteTemplate);
+        OpenShiftUtils.getInstance().getTemplates().forEach(OpenShiftUtils.getInstance()::deleteTemplate);
     }
 
     @Given("^clean all builds")
@@ -65,7 +65,7 @@ public class CommonSteps {
     }
 
     @When("^deploy Syndesis$")
-    public void deploySyndesis() {
+    public static void deploySyndesis() {
         SyndesisTemplate.deploy();
     }
 
@@ -122,13 +122,13 @@ public class CommonSteps {
         components.forEach(c -> {
             Runnable runnable = () -> {
                 if (deploy) {
-                    OpenShiftUtils.xtf().waiters()
+                    OpenShiftUtils.getInstance().waiters()
                         .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
                         .interval(TimeUnit.SECONDS, 20)
                         .timeout(TimeUnit.MINUTES, timeout)
                         .waitFor();
                 } else {
-                    OpenShiftUtils.xtf().waiters()
+                    OpenShiftUtils.getInstance().waiters()
                         .areExactlyNPodsRunning(0, "syndesis.io/component", c.getName())
                         .interval(TimeUnit.SECONDS, 20)
                         .timeout(TimeUnit.MINUTES, timeout)
@@ -214,7 +214,7 @@ public class CommonSteps {
         log.info("Waiting for Todo to get ready");
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         Runnable runnable = () ->
-            OpenShiftUtils.xtf().waiters()
+            OpenShiftUtils.getInstance().waiters()
                 .areExactlyNPodsReady(1, "syndesis.io/app", "todo")
                 .interval(TimeUnit.SECONDS, 20)
                 .timeout(TimeUnit.MINUTES, 12)

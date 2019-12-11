@@ -22,10 +22,11 @@ public class TestConfiguration {
     public static final String OPENSHIFT_NAMESPACE = "syndesis.config.openshift.namespace";
     public static final String OPENSHIFT_SAR_NAMESPACE = "syndesis.config.openshift.sar_namespace";
     public static final String OPENSHIFT_NAMESPACE_CLEANUP = "syndesis.config.openshift.namespace.cleanup";
-    public static final String OPENSHIFT_NAMESPACE_CLEANUP_AFTER = "syndesis.config.openshift.namespace.cleanup.after";
     public static final String OPENSHIFT_ROUTE_SUFFIX = "syndesis.config.openshift.route.suffix";
-    public static final String OPENSHIFT_NAMESPACE_LOCK = "syndesis.config.openshift.namespace.lock";
 
+    public static final String SYNDESIS_SINGLE_USER = "syndesis.config.single.user";
+    public static final String SYNDESIS_ADMIN_USERNAME = "syndesis.config.admin.username";
+    public static final String SYNDESIS_ADMIN_PASSWORD = "syndesis.config.admin.password";
     public static final String SYNDESIS_UI_USERNAME = "syndesis.config.ui.username";
     public static final String SYNDESIS_UI_PASSWORD = "syndesis.config.ui.password";
     public static final String SYNDESIS_UI_URL = "syndesis.config.ui.url";
@@ -131,6 +132,14 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_UI_PASSWORD);
     }
 
+    public static String adminUsername() {
+        return get().readValue(SYNDESIS_ADMIN_USERNAME);
+    }
+
+    public static String adminPassword() {
+        return get().readValue(SYNDESIS_ADMIN_PASSWORD);
+    }
+
     public static String syndesisUrl() {
         return get().readValue(SYNDESIS_UI_URL);
     }
@@ -187,14 +196,6 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP));
     }
 
-    public static boolean namespaceCleanupAfter() {
-        return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP_AFTER));
-    }
-
-    public static boolean namespaceLock() {
-        return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_LOCK));
-    }
-
     public static boolean useServerRoute() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE));
     }
@@ -249,8 +250,6 @@ public class TestConfiguration {
         props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
 
         props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
-        props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP_AFTER, props.getProperty(OPENSHIFT_NAMESPACE_CLEANUP));
-        props.setProperty(OPENSHIFT_NAMESPACE_LOCK, "false");
 
         // to keep backward compatibility
         if (props.getProperty(SYNDESIS_URL_SUFFIX) != null && props.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {
@@ -286,10 +285,19 @@ public class TestConfiguration {
 
         props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
 
+        // When the single user property is set (for the env where the syndesis is already deployed and you are not an admin)
+        // Make the user "admin" anyway, as that user is used in all k8s client invocations by default
+        if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
+            props.setProperty(SYNDESIS_ADMIN_USERNAME, properties.getProperty(SYNDESIS_UI_USERNAME));
+        }
+        if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
+            props.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
+        }
+
         // Copy syndesis properties to their xtf counterparts - used by binary oc client
         System.setProperty("xtf.openshift.url", properties.getProperty(OPENSHIFT_URL));
-        System.setProperty("xtf.openshift.master.username", properties.getProperty(SYNDESIS_UI_USERNAME));
-        System.setProperty("xtf.openshift.master.password", properties.getProperty(SYNDESIS_UI_PASSWORD));
+        System.setProperty("xtf.openshift.master.username", properties.getProperty(SYNDESIS_ADMIN_USERNAME));
+        System.setProperty("xtf.openshift.master.password", properties.getProperty(SYNDESIS_ADMIN_PASSWORD));
         System.setProperty("xtf.openshift.namespace", properties.getProperty(OPENSHIFT_NAMESPACE));
 
         // Set oc version - this version of the client will be used as the binary client

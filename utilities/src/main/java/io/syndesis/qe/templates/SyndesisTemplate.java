@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -57,8 +58,12 @@ public class SyndesisTemplate {
         log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
         log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
         createPullSecret();
+        deployCrd();
+        pullOperatorImage();
+        grantPermissions();
         deployUsingOperator();
         checkRoute();
+        TodoUtils.createDefaultRouteForTodo("todo2", "/");
     }
 
     private static void createPullSecret() {
@@ -74,23 +79,61 @@ public class SyndesisTemplate {
         }
     }
 
+    /**
+     * Deploys the operator and the custom resource.
+     */
     private static void deployUsingOperator() {
         log.info("Deploying using Operator");
-        if (!TestUtils.isUserAdmin()) {
-            StringBuilder sb = new StringBuilder("\n");
-            sb.append("****************************************************\n");
-            sb.append("* Operator deployment needs user with admin rights *\n");
-            sb.append("****************************************************\n");
-            sb.append(
-                "If you are using minishift, you can use \"oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer\"\n");
-            log.error(sb.toString());
-            throw new RuntimeException(sb.toString());
-        }
-
-        deployCrd();
         deployOperator();
         deploySyndesisViaOperator();
-        TodoUtils.createDefaultRouteForTodo("todo2", "/");
+    }
+
+    /**
+     * Pulls the operator image via docker pull.
+     */
+    private static void pullOperatorImage() {
+        log.info("Pulling operator image {}", TestConfiguration.syndesisOperatorImage());
+        ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
+            "pull",
+            TestConfiguration.syndesisOperatorImage()
+        );
+
+        try {
+            dockerPullPb.start().waitFor();
+        } catch (Exception e) {
+            log.error("Could not pull operator image", e);
+            fail("Failed to pull operator");
+        }
+    }
+
+    /**
+     * Grants the permissions via the admin user to the regular user.
+     */
+    private static void grantPermissions() {
+        log.info("Granting permissions to user {}", TestConfiguration.syndesisUsername());
+        new File(OpenShiftUtils.binary().getOcConfigPath()).setReadable(true, false);
+
+        try {
+            new ProcessBuilder("docker",
+                "run",
+                "--rm",
+                "-v",
+                OpenShiftUtils.binary().getOcConfigPath() + ":/tmp/kube/config:z",
+                "--entrypoint",
+                "syndesis-operator",
+                TestConfiguration.syndesisOperatorImage(),
+                "grant",
+                "-u",
+                TestConfiguration.syndesisUsername(),
+                "--namespace",
+                TestConfiguration.openShiftNamespace(),
+                "--config",
+                "/tmp/kube/config"
+            ).start().waitFor();
+        } catch (Exception e) {
+            log.error("Unable to grant permissions", e);
+            fail("Unable to grant permissions from docker run");
+        }
     }
 
     /**
@@ -179,19 +222,6 @@ public class SyndesisTemplate {
         String imageName = StringUtils.substringBeforeLast(operatorImage, ":");
         String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
 
-        log.info("Pulling operator image {}", operatorImage);
-        ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
-            "pull",
-            operatorImage
-        );
-
-        try {
-            dockerPullPb.start().waitFor();
-        } catch (Exception e) {
-            log.error("Could not pull operator image", e);
-            fail("Failed to pull operator");
-        }
-
         log.info("Generating resources using operator image {}", operatorImage);
         ProcessBuilder dockerRunPb = new ProcessBuilder("docker",
             "run",
@@ -247,12 +277,13 @@ public class SyndesisTemplate {
 
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
-        OpenShiftUtils.getInstance().createResources(resourceList);
+        List<HasMetadata> finalResourceList = resourceList;
+        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().createResources(finalResourceList));
 
         importProdImage("operator");
 
         log.info("Waiting for syndesis-operator to be ready");
-        OpenShiftUtils.xtf().waiters()
+        OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-operator")
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 10)

@@ -22,14 +22,6 @@ public class KafkaTemplate {
     private static final String KAFKA_CR = Paths.get("../utilities/src/main/resources/kafka/kafka-ephemeral.yaml").toAbsolutePath().toString();
 
     public static void deploy() {
-        if (!TestUtils.isUserAdmin()) {
-            log.error("*************************************************");
-            log.error("* Kafka deployment needs user with admin rights *");
-            log.error("*************************************************");
-            log.error("If you are using minishift, you can use \"oc adm policy --as system:admin add-cluster-role-to-user cluster-admin developer\"");
-            throw new RuntimeException("Kafka deployment needs user with admin rights!");
-        }
-
         // Replace namespace in the resources
         TestUtils.replaceInFile(Paths.get(KAFKA_RESOURCES).toFile(), "\\$NAMESPACE\\$", TestConfiguration.openShiftNamespace());
 

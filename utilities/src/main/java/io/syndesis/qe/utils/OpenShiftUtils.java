@@ -28,7 +28,6 @@ import io.fabric8.openshift.api.model.DeploymentConfig;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
-import io.fabric8.openshift.client.OpenShiftConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 
@@ -41,19 +40,14 @@ import okhttp3.Headers;
  */
 @Slf4j
 public final class OpenShiftUtils {
-
     private static OpenShift xtfUtils = null;
     private static OpenShiftBinary binary = null;
 
     public static OpenShift getInstance() {
         if (xtfUtils == null) {
-            new OpenShiftUtils();
+            xtfUtils = useAdminUser();
         }
         return xtfUtils;
-    }
-
-    public static OpenShift xtf() {
-        return getInstance();
     }
 
     public static OpenShiftBinary binary() {
@@ -63,20 +57,39 @@ public final class OpenShiftUtils {
         return binary;
     }
 
-    private OpenShiftUtils() {
-        if (xtfUtils == null) {
-            final OpenShiftConfigBuilder openShiftConfigBuilder = new OpenShiftConfigBuilder()
-                    .withMasterUrl(TestConfiguration.openShiftUrl())
-                    .withTrustCerts(true)
-                    .withRequestTimeout(120_000)
-                    .withNamespace(TestConfiguration.openShiftNamespace());
-            if (!TestConfiguration.openShiftToken().isEmpty()) {
-                //if token is provided, lets use it
-                //otherwise f8 client should be able to leverage ~/.kube/config or mounted secrets
-                openShiftConfigBuilder.withOauthToken(TestConfiguration.openShiftToken());
-            }
-            xtfUtils = new OpenShift(openShiftConfigBuilder.build());
-        }
+    /**
+     * Runs the given code with the permissions of a regular user(without admin rights, specified by the syndesis ui username property)
+     *
+     * @param r code to run
+     */
+    public static void asRegularUser(Runnable r) {
+        xtfUtils = useRegularUser();
+        r.run();
+        xtfUtils = useAdminUser();
+    }
+
+    /**
+     * Creates a new client with the regular user.
+     */
+    private static OpenShift useRegularUser() {
+        return OpenShift.get(
+            TestConfiguration.openShiftUrl(),
+            TestConfiguration.openShiftNamespace(),
+            TestConfiguration.syndesisUsername(),
+            TestConfiguration.syndesisPassword()
+        );
+    }
+
+    /**
+     * Creates a new client with the admin user.
+     */
+    private static OpenShift useAdminUser() {
+        return OpenShift.get(
+            TestConfiguration.openShiftUrl(),
+            TestConfiguration.openShiftNamespace(),
+            TestConfiguration.adminUsername(),
+            TestConfiguration.adminPassword()
+        );
     }
 
     /**

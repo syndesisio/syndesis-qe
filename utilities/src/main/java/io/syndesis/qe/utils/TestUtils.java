@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -231,17 +230,39 @@ public final class TestUtils {
     }
 
     /**
-     * Checks if the user is cluster admin.
+     * Checks if the currently logged in user is a cluster admin.
      *
      * @return true/false
      */
     public static boolean isUserAdmin() {
+        return isUserAdmin(getCurrentUser());
+    }
+
+    /**
+     * Checks if the given user has admin rights.
+     *
+     * @param user user
+     * @return true/false
+     */
+    public static boolean isUserAdmin(String user) {
         try {
-            OpenShiftUtils.getInstance().users().list();
-            return true;
-        } catch (KubernetesClientException ex) {
+            return OpenShiftUtils.getInstance().clusterRoleBindings().inAnyNamespace().list().getItems().stream()
+                .filter(crb -> crb.getMetadata().getName().startsWith("cluster-admin") && crb.getUserNames() != null)
+                .anyMatch(
+                    crb -> crb.getUserNames().contains(user)
+                );
+        } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Gets the currently logged in user in the binary client.
+     *
+     * @return username for the current user
+     */
+    public static String getCurrentUser() {
+        return OpenShiftUtils.binary().execute("whoami").trim();
     }
 
     /**

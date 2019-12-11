@@ -29,7 +29,7 @@ public class PublicApiUtils {
                     .withName(SERVICE_ACCOUNT_NAME)
                     .endMetadata()
                     .done();
-            OpenShiftUtils.xtf().addRoleToUser("edit", "system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":syndesis-cd-client");
+            OpenShiftUtils.getInstance().addRoleToUser("edit", "system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":syndesis-cd-client");
         }
         publicApiToken = OpenShiftUtils.binary().execute("sa", "get-token", SERVICE_ACCOUNT_NAME);
     }
