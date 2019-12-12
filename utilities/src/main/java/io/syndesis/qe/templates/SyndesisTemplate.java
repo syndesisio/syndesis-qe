@@ -293,29 +293,27 @@ public class SyndesisTemplate {
     private static void deploySyndesisViaOperator() {
         log.info("Deploying syndesis resource from " + TestConfiguration.syndesisCrUrl());
         try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
-            Map<String, Object> cr = getSyndesisCrClient().load(is);
+            JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
 
-            Map<String, Object> spec = (Map<String, Object>) cr.get("spec");
-
-            // setup integration limit and state check interval
-            Map<String, Object> integration =
-                (Map<String, Object>) spec.computeIfAbsent("integration", s -> new HashMap<String, Object>());
+            JSONObject serverFeatures = crJson.getJSONObject("spec").getJSONObject("components")
+                .getJSONObject("server").getJSONObject("features");
             if (TestUtils.isJenkins()) {
-                integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
+                serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
             }
+            serverFeatures.put("integrationLimit", 5);
 
             // set correct image stream namespace
-            spec.put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
+            crJson.getJSONObject("spec").put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
 
             // set the route
-            spec.put("routeHostname", TestConfiguration.syndesisUrl() != null
+            crJson.getJSONObject("spec").put("routeHostname", TestConfiguration.syndesisUrl() != null
                 ? StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://")
                 : TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
 
             // add nexus
-            addMavenRepo(spec);
+            addMavenRepo(serverFeatures);
 
-            getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), cr);
+            getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), crJson.toMap());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -357,7 +355,7 @@ public class SyndesisTemplate {
         }
     }
 
-    private static void addMavenRepo(Map<String, Object> spec) {
+    private static void addMavenRepo(JSONObject serverFeatures) {
         String replacementRepo = null;
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
@@ -376,9 +374,7 @@ public class SyndesisTemplate {
         }
         log.info("Adding maven repo {}", replacementRepo);
 
-        Map<String, Object> mavenRepositories = (Map<String, Object>) spec
-            .computeIfAbsent("mavenRepositories", s -> new HashMap<String, Object>());
-        mavenRepositories.put("fuseqe_nexus", replacementRepo);
+        serverFeatures.put("mavenRepositories", TestUtils.map("fuseqe_nexus", replacementRepo));
     }
 
     /**

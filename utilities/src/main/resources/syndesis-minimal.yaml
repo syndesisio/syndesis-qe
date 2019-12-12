@@ -8,6 +8,8 @@ spec:
       enabled: true
   components:
     scheduled: false
-  integration:
-    limit: 5
+    server:
+      features:
+        integrationStateCheckInterval: 60
+        integrationLimit: 1
   devSupport: false
