@@ -126,6 +126,7 @@ syndesis.config.ui.password=developer
 syndesis.config.ui.browser=firefox
 ```
 
+
 You can also use the `syndesis.config.test.properties` system property to specify a different location of the `test.properties` file, relative to the repo root. This can be useful in case you want to quickly switch between e.g. a local minishift instance and a remote openshift instance.
 
 #### Use correct webdriver version for selected browser
