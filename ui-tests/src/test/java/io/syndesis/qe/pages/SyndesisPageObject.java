@@ -14,6 +14,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.junit.Assert;
@@ -174,12 +175,25 @@ public abstract class SyndesisPageObject {
         return this.getRootElement().find(By.id(inputId));
     }
 
+    private SelenideElement getElementByDataTestid(String inputDataTestid) {
+        return this.getRootElement().find(ByUtils.dataTestId("cicd-edit-dialog-tag-name"));
+    }
+
     public SelenideElement getInputBySelector(String selector) {
         return this.getRootElement().find(By.cssSelector(selector));
     }
 
-    public void fillInput(String inputId, String value) {
+    public void fillInputById(String inputId, String value) {
         SelenideElement input = this.getElementById(inputId);
+        this.doFillInput(input, value);
+    }
+
+    public void fillInputByDataTestid(String dataTestid, String value) {
+        SelenideElement input = this.getElementByDataTestid(dataTestid);
+        this.doFillInput(input, value);
+    }
+
+    private void doFillInput(SelenideElement input, String value) {
         assertThat(input.getTagName(), is("input"));
         if (input.getAttribute("type").equals("checkbox")) {
             input.setSelected(Boolean.valueOf(value));

@@ -32,6 +32,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.utils.GoogleAccount;
@@ -112,10 +113,13 @@ public class CommonSteps {
     private static class Element {
         public static final By LOGIN_BUTTON = By.className("btn");
         public static final By NAVIGATION_PANEL = By.className("pf-c-nav");
-        public static final By NAVIGATION_USER_DROPDOWN = By.cssSelector("[data-testid=app-top-menu-user-dropdown]");
+        public static final By NAVIGATION_USER_DROPDOWN = ByUtils.dataTestId("app-top-menu-user-dropdown");
+        public static final By HELP_DROPDOWN_BUTTON = ByUtils.dataTestId("helpDropdownButton");
+        public static final By DROPDOWN_MENU = By.className("pf-c-dropdown__menu");
 
         public static final By navigationLink(String title) {
-            return By.cssSelector(String.format("a[data-testid=\"ui-%s\"]", title.toLowerCase().replaceAll("[\\s_]", "-")));
+            final String dataTestid = String.format("ui-%s", title.toLowerCase().replaceAll("[\\s_]", "-"));
+            return ByUtils.dataTestId("a", dataTestid);
         }
     }
 
@@ -376,14 +380,14 @@ public class CommonSteps {
 
     @When("^.*navigates? to the \"([^\"]*)\" page in help menu$")
     public void navigateToHelp(String title) {
-        SelenideElement helpDropdownMenu = $(By.id("helpDropdownButton")).shouldBe(visible);
+        SelenideElement helpDropdownMenu = $(Element.HELP_DROPDOWN_BUTTON).shouldBe(visible);
 
         //open the help menu
-        if (helpDropdownMenu.parent().$$(By.className("pf-c-dropdown__menu")).size() < 1) {
+        if (helpDropdownMenu.parent().$$(Element.DROPDOWN_MENU).size() < 1) {
             helpDropdownMenu.click();
         }
 
-        SelenideElement dropdownElementsTable = $(By.className("pf-c-dropdown__menu")).shouldBe(visible);
+        SelenideElement dropdownElementsTable = $(Element.DROPDOWN_MENU).shouldBe(visible);
         ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"))
             .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
 
@@ -392,7 +396,7 @@ public class CommonSteps {
         //TODO: following if statement can be removed after
         //TODO: this issue gets fixed: https://github.com/syndesisio/syndesis/issues/4655
         //close the help menu
-        if (helpDropdownMenu.parent().$$(By.className("pf-c-dropdown__menu")).size() >= 1) {
+        if (helpDropdownMenu.parent().$$(Element.DROPDOWN_MENU).size() >= 1) {
             helpDropdownMenu.click();
         }
     }
@@ -444,7 +448,7 @@ public class CommonSteps {
     @When(".*clicks? on the \"([^\"]*)\" link.*$")
     public void clickOnLink(String linkTitle) {
         if ("Customizations".equals(linkTitle) &&
-            $(By.cssSelector("[data-testid=\"ui-api-client-connectors\"]")).isDisplayed()) {
+            $(ByUtils.dataTestId("ui-api-client-connectors")).isDisplayed()) {
             //do not click when customizations menu is already visible
             return;
         }
@@ -453,7 +457,7 @@ public class CommonSteps {
 
     @When(".*click on element with data-testid \"([^\"]*)\"$")
     public void clickOnElement(String element) {
-        $(By.cssSelector(String.format("[data-testid=\"%s\"]", element))).shouldBe(visible).click();
+        $(ByUtils.dataTestId(element)).shouldBe(visible).click();
     }
 
     @When(".*clicks? on the \"(\\d+)\". \"([^\"]*)\" link.*$")
@@ -559,9 +563,9 @@ public class CommonSteps {
     }
 
     @When("^select \"([^\"]*)\" from \"([^\"]*)\" dropdown$")
-    public void selectsFromDropdown(String option, String selectId) {
-        //search by name or by id because some dropdowns have only id
-        SelenideElement selectElement = $(String.format("select[name=\"%s\"], select[id=\"%s\"]", selectId, selectId))
+    public void selectsFromDropdown(String option, String selectDataTestid) {
+        //search by name or by data-testid because some dropdowns have only id
+        SelenideElement selectElement = $(ByUtils.dataTestId("select", selectDataTestid))
             .shouldBe(visible);
         selectElement.selectOption(option);
     }
@@ -1062,4 +1066,3 @@ public class CommonSteps {
         assertThat(syndesisRootPage.getAlertElemet().getText()).isEqualTo(expectedText);
     }
 }
-

@@ -22,7 +22,7 @@ public class ManageCiCdPageSteps {
         ciCdPage.clickOnAddNewTagButton();
         ModalDialogPage addDialog = new ModalDialogPage();
         assertThat(addDialog.getTitleText()).isEqualTo("Add Tag Name");
-        addDialog.fillInput("tagNameInput", tagName);
+        addDialog.fillInputByDataTestid("cicd-edit-dialog-tag-name", tagName);
         new ModalDialogPage().getButton("Save").click();
     }
 
@@ -31,7 +31,7 @@ public class ManageCiCdPageSteps {
         ciCdPage.clickOnEditButton(tagName);
         ModalDialogPage editDialog = new ModalDialogPage();
         assertThat(editDialog.getTitleText()).isEqualTo("Edit Tag");
-        editDialog.fillInput("tagNameInput", newName);
+        editDialog.fillInputByDataTestid("cicd-edit-dialog-tag-name", tagName);
         new ModalDialogPage().getButton("Save").click();
     }
 
@@ -68,7 +68,7 @@ public class ManageCiCdPageSteps {
         ciCdPage.clickOnAddNewTagButton();
         ModalDialogPage addDialog = new ModalDialogPage();
         assertThat(addDialog.getTitleText()).isEqualTo("Add Tag Name");
-        addDialog.fillInput("tagNameInput", tagName);
+        addDialog.fillInputByDataTestid("cicd-edit-dialog-tag-name", tagName);
         addDialog.getElementByClassName("help-block").shouldBe(Condition.visible)
             .shouldHave(Condition.text("That tag name is already in use."));
         addDialog.getButton("Save").shouldBe(Condition.disabled);
@@ -80,7 +80,7 @@ public class ManageCiCdPageSteps {
         ciCdPage.clickOnEditButton(tagName);
         ModalDialogPage editDialog = new ModalDialogPage();
         assertThat(editDialog.getTitleText()).isEqualTo("Edit Tag");
-        editDialog.fillInput("tagNameInput", tagName);
+        editDialog.fillInputByDataTestid("cicd-edit-dialog-tag-name", tagName);
         editDialog.getElementByClassName("help-block").shouldBe(Condition.visible)
             .shouldHave(Condition.text("That tag name is already in use."));
         editDialog.getButton("Save").shouldBe(Condition.disabled);

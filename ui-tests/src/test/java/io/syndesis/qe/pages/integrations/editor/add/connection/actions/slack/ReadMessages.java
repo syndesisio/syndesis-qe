@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.SyndesisRootPage;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -21,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReadMessages {
 
     private static final class Element {
-        public static final By SELECT_DELAY = By.cssSelector("[data-testid='delay-duration']");
+        public static final By SELECT_DELAY = ByUtils.dataTestId("delay-duration");
     }
 
     public void selectChannel(String channel) {
@@ -32,7 +33,6 @@ public class ReadMessages {
         Map<String, String> mymap = new HashMap<String, String>();
         mymap.put("channel", channel);
         new Form(new SyndesisRootPage().getRootElement()).fillByTestId(mymap);
-
     }
 
     public void selectDelayTimeUnits(String timeUnits) {

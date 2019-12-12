@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.CustomWebDriverProvider;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -25,9 +26,9 @@ public class SupportPage extends SyndesisPageObject {
         public static final By ROOT = By.id("root");
 
         public static final By SPECIFIC_LOGS = By.id("specificlogs");
-        public static final By ALL_LOGS = By.id("alllogs");
+        public static final By ALL_LOGS = ByUtils.dataTestId("support-page-all-logs-input");
 
-        public static final By CHECKBOX = By.cssSelector("[data-testid='selective-integration-list-integrations-input']");
+        public static final By CHECKBOX = ByUtils.dataTestId("selective-integration-list-integrations-input");
     }
 
     @Override

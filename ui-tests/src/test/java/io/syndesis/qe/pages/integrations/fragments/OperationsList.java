@@ -8,6 +8,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.fragments.common.list.RowList;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
@@ -57,7 +58,7 @@ public class OperationsList extends RowList {
             fail("API provider operation in list was not found in 15s.", e);
         }
 
-        $(getItem(title)).$("[data-testid=\"api-provider-operations-create-flow\"]").click();
+        $(getItem(title)).$(ByUtils.dataTestId("api-provider-operations-create-flow")).shouldBe(visible).click();
     }
 
     public List<String> getOperations() {

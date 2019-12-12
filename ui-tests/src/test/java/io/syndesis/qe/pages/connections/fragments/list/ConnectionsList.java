@@ -7,6 +7,7 @@ import io.syndesis.qe.fragments.common.list.CardList;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -18,7 +19,7 @@ public class ConnectionsList extends CardList {
     private static final class Element {
         public static final By TECH_PREVIEW = By.xpath("syndesis-card-tech-preview");
         public static final String CONNECTION_CARD = "*[data-testid=\"connection-card-%s-card\"]";
-        public static final String CONNECTION_TITLE = "*[data-testid=\"connection-card-title\"]";
+        public static final By CONNECTION_CARD_TITLE = ByUtils.dataTestId("connection-card-title");
         public static String KEBAB_MENU_SELECTOR = "[id=\"connection-%s-menu\"]";
     }
 
@@ -39,7 +40,7 @@ public class ConnectionsList extends CardList {
                 break;
             case CLICK:
                 getItem(title)
-                    .find(By.cssSelector(Element.CONNECTION_TITLE))
+                    .find(Element.CONNECTION_CARD_TITLE)
                     .shouldBe(visible)
                     .click();
                 break;
@@ -58,7 +59,7 @@ public class ConnectionsList extends CardList {
 
     @Override
     public SelenideElement getTitle(String title) {
-        return getItem(title).$(By.cssSelector("data-testid=\"connection-card-title\"")).shouldBe(visible);
+        return getItem(title).$(Element.CONNECTION_CARD_TITLE).shouldBe(visible);
     }
 
     public boolean isConnectionTechPreview(String title) {

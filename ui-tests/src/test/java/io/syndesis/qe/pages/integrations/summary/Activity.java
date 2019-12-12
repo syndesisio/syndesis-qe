@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -31,7 +32,7 @@ public class Activity extends SyndesisPageObject {
     }
 
     private static final class Button {
-        public static final By REFRESH = By.cssSelector("button[data-testid=\"integration-detail-activity-refresh-button\"]");
+        public static final By REFRESH = ByUtils.dataTestId("button", "integration-detail-activity-refresh-button");
     }
 
     public enum COLUMN {

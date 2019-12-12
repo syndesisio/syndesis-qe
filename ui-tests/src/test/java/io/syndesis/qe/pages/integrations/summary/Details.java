@@ -10,6 +10,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -30,8 +31,8 @@ public class Details extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
-        public static final By STATUS = By.cssSelector("div[data-testid=\"syndesis-integration-status\"]");
-        public static final By STARTING_STATUS = By.cssSelector("div[data-testid=\"integration-status-detail\"]");
+        public static final By STATUS = ByUtils.dataTestId("div", "syndesis-integration-status");
+        public static final By STARTING_STATUS = ByUtils.dataTestId("div", "integration-status-detail");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
 
         public static final By TITLE = By.className("integration-detail-editable-name");

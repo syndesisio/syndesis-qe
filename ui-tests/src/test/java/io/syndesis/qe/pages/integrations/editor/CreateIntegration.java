@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -16,11 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 public class CreateIntegration extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
+        public static final By ROOT = By.className("integration-editor-layout__contentOuter");
     }
 
     private static final class Input {
-        public static final By NAME = By.xpath("//input[@data-testid='name']");
+        public static final By NAME = ByUtils.dataTestId("input", "name");
     }
 
     private static final class TextArea {

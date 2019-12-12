@@ -64,7 +64,7 @@ public class GoogleCalendarSteps {
         fillInUpdateEventForm(aliasedCalendarName, e.getId(), summary, description);
     }
 
-    @When("^fill in aliased calendar values$")
+    @When("^fill in aliased calendar values by data-testid$")
     public void fillInAliasedCalendarValues(DataTable data) throws Throwable {
         // we need to find the calendar name in the table and alias it before passing on to fillForm
         // we also need to create a copy of the raw DataTable lists, because the returned lists are unmodifiable

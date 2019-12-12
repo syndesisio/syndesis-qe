@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
@@ -24,8 +25,8 @@ public class CardList extends AbstractUiElementsList {
     private static final class Element {
         //Each card has different data-testid, so this selector looks up all elements that contain connection-card and restricts it to articles
         //which are used for the connection cards
-        public static final By CARD = By.cssSelector("article[data-testid*=\"connection-card\"]");
-        public static final By TITLE = By.cssSelector("h1[data-testid=\"connection-card-title\"]");
+        public static final By CARD = ByUtils.containsDataTestId("article", "connection-card");
+        public static final By TITLE = ByUtils.dataTestId("h1", "connection-card-title");
     }
 
     public CardList(By rootElement) {

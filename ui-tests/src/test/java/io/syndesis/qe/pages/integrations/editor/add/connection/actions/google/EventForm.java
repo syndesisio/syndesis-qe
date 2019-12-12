@@ -1,6 +1,7 @@
 package io.syndesis.qe.pages.integrations.editor.add.connection.actions.google;
 
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -15,12 +16,32 @@ public class EventForm extends ConfigureAction {
     private Map<By, String> values = new HashMap<>();
 
     public EventForm setTitle(String title) {
-        values.put(By.id("summary"), title);
+        values.put(ByUtils.dataTestId("summary"), title);
         return this;
     }
 
     public EventForm setCalendarName(String calendarName) {
-        values.put(By.id("calendarid"), calendarName);
+        values.put(ByUtils.dataTestId("calendarid"), calendarName);
+        return this;
+    }
+
+    public EventForm setStartDate(String startDate) {
+        values.put(ByUtils.dataTestId("startdate"), startDate);
+        return this;
+    }
+
+    public EventForm setStartTime(String startTime) {
+        values.put(ByUtils.dataTestId("starttime"), startTime);
+        return this;
+    }
+
+    public EventForm setEndDate(String endDate) {
+        values.put(ByUtils.dataTestId("enddate"), endDate);
+        return this;
+    }
+
+    public EventForm setEndTime(String endTime) {
+        values.put(ByUtils.dataTestId("endtime"), endTime);
         return this;
     }
 
@@ -30,17 +51,17 @@ public class EventForm extends ConfigureAction {
     }
 
     public EventForm setDescription(String description) {
-        values.put(By.id("description"), description);
+        values.put(ByUtils.dataTestId("description"), description);
         return this;
     }
 
     public EventForm setLocation(String location) {
-        values.put(By.id("location"), location);
+        values.put(ByUtils.dataTestId("location"), location);
         return this;
     }
 
     public EventForm setAttendees(String... attendees) {
-        values.put(By.id("attendees"), String.join(",", attendees));
+        values.put(ByUtils.dataTestId("attendees"), String.join(",", attendees));
         return this;
     }
 

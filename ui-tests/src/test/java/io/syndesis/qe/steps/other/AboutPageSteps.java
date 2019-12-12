@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.ByUtils;
+
 import org.openqa.selenium.By;
 
 import cucumber.api.java.en.Then;
@@ -14,9 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 public class AboutPageSteps {
     private static final class Element {
         public static final By ROOT = By.id("root");
-        public static final By SYNDESIS_VERSION = By.cssSelector("[data-testid=\"about-modal-content-version-list-item\"]");
-        public static final By BUILD_ID = By.cssSelector("[data-testid=\"about-modal-content-build-id-list-item\"]");
-        public static final By COMMIT_ID = By.cssSelector("[data-testid=\"about-modal-content-commit-id-list-item\"]");
+        public static final By SYNDESIS_VERSION = ByUtils.dataTestId("about-modal-content-version-list-item");
+        public static final By BUILD_ID = ByUtils.dataTestId("about-modal-content-build-id-list-item");
+        public static final By COMMIT_ID = ByUtils.dataTestId("about-modal-content-commit-id-list-item");
     }
 
     @Then("^check version string in about page$")

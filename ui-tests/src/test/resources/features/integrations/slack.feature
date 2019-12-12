@@ -119,7 +119,7 @@ Feature: Slack Connector
     When select the "QE Slack" connection
     And select "Read Messages" integration action
     And select "slack_connector_test" from slack channel dropdown
-    And fill in values by element ID
+    And fill in values by element data-testid
       | maxresults | 2  |
       | delay      | 60 |
     And select "Seconds" from slack delay time units dropdown

@@ -2,6 +2,7 @@ package io.syndesis.qe.steps.other;
 
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.GoogleSheetsUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class GoogleSheetsSteps {
 
     @When("^fill spreadsheet ID$")
     public void fillSpreadsheetID() {
-        new SyndesisRootPage().getElementByCssSelector("*[data-testid=\"spreadsheetid\"").sendKeys(gcu.getTestSheetId());
+        new SyndesisRootPage().getElementByLocator(ByUtils.dataTestId("spreadsheetid")).sendKeys(gcu.getTestSheetId());
     }
 
     @Given("^clear range \"([^\"]*)\" in data test spreadsheet$")

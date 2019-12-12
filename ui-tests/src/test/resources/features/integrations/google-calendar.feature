@@ -187,7 +187,7 @@ Feature: Google Calendar Connector
 
     When select the "My Google Calendar Connector" connection
     And select "Get Events" integration action
-    And fill in aliased calendar values
+    And fill in aliased calendar values by data-testid
       | delay              | 30                        |
       | calendarid         | syndesis-test1            |
       | maxresults         | <max_results>             |
@@ -260,7 +260,7 @@ Feature: Google Calendar Connector
 
     When select the "My Google Calendar Connector" connection
     And select "Get Events" integration action
-    And fill in aliased calendar values
+    And fill in aliased calendar values by data-testid
       | delay              | 30             |
       | calendarid         | syndesis-test1 |
       | maxresults         | 10             |

@@ -7,6 +7,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
@@ -19,8 +20,8 @@ public class ApiClientConnectors extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("list-group");
         public static By CONNECTOR_TITLE = By.className("list-group-item-heading");
-        public static By CONNECTORS_LIST_ITEM = By.className("list-group-item");
-        public static By DETAIL_BUTTON = By.cssSelector("a[data-testid=\"api-connector-list-item-details-button\"]");
+        public static By CONNECTORS_LIST_ITEM = ByUtils.dataTestId("api-connector-list-item-swagger-petstore-list-item");
+        public static By DETAIL_BUTTON = ByUtils.dataTestId("a", "api-connector-list-item-details-button");
     }
 
     private static class Button {
@@ -37,9 +38,8 @@ public class ApiClientConnectors extends SyndesisPageObject {
     }
 
     public SelenideElement getConnectorItem(String connectorName) {
-        return $(By.cssSelector(("div[data-testid=\"api-connector-list-item-" + connectorName.trim() + "-list-item\"]")
-            .replaceAll("[\\s_]", "-").toLowerCase()))
-            .should(exist);
+        final String dataTestid = ("api-connector-list-item-" + connectorName.trim() + "-list-item").replaceAll("[\\s_]", "-").toLowerCase();
+        return $(ByUtils.dataTestId("div", dataTestid)).should(exist);
     }
 
     @Override
@@ -67,9 +67,8 @@ public class ApiClientConnectors extends SyndesisPageObject {
     }
 
     public void clickConnectorByTitle(String connectorName) {
-        $(By.cssSelector(("div[data-testid=\"api-connector-list-item-" + connectorName.trim() + "-list-item\"]")
-            .replaceAll("[\\s_]", "-").toLowerCase()))
-            .should(exist).$(Element.DETAIL_BUTTON).shouldBe(visible).click();
+        final String dataTestid = ("api-connector-list-item-" + connectorName.trim() + "-list-item").replaceAll("[\\s_]", "-").toLowerCase();
+        $(ByUtils.dataTestId("div", dataTestid)).should(exist).$(Element.DETAIL_BUTTON).shouldBe(visible).click();
     }
 
     public SelenideElement getDeleteButton(String connectorName) {

@@ -3,6 +3,7 @@ package io.syndesis.qe.pages.integrations.CiCd;
 import static com.codeborne.selenide.Condition.appears;
 
 import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -22,8 +23,8 @@ public class ManageCiCdDialog extends ModalDialogPage {
     }
 
     private static final class Button {
-        static final By SAVE_DIALOG = By.xpath(".//button[@class='btn btn-primary' and contains(.,'Save')]");
-        static final By CANCEL_DIALOG = By.xpath(".//button[@class='btn btn-default' and contains(.,'Cancel')]");
+        static final By SAVE_DIALOG = ByUtils.dataTestId("button", "tag-integration-dialog-save-button");
+        static final By CANCEL_DIALOG = ByUtils.dataTestId("button", "tag-integration-dialog-cancel-button");
     }
 
     public void checkTag(String tagName) {

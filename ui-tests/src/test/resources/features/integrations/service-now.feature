@@ -18,7 +18,7 @@ Feature: Integration - ServiceNow-amq/log
       | ServiceNow  | Servicenow | ServiceNow | Service-Now connection |
       | Red Hat AMQ | AMQ        | AMQ        | AMQ connection         |
 
-
+  @integrations-servicenow-1
   Scenario: Get incident from service now
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
@@ -29,7 +29,7 @@ Feature: Integration - ServiceNow-amq/log
     When select the "ServiceNow" connection
     And select "Retrieve Record" integration action
     And select "Incident" from "table" dropdown
-    And fill in and modify values by element ID
+    And fill in values by element data-testid
       | limit | 1                |
       | query | number={number1} |
     And click on the "Next" button
@@ -55,7 +55,7 @@ Feature: Integration - ServiceNow-amq/log
     And wait until integration "service-now-2-amq" gets into "Running" state
     Then verify that received incident from "incidents" queue contains "{number1}"
 
-
+  @integrations-servicenow-2
   Scenario: Create incident from syndesis integration
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.

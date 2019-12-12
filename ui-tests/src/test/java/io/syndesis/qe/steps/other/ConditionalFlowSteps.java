@@ -7,6 +7,7 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
 
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -28,20 +29,21 @@ public class ConditionalFlowSteps {
         private static By ICON_DOWN = By.className("fa-arrow-circle-o-down");
         private static By ICON_UP = By.className("fa-arrow-circle-o-up");
         private static By ICON_DELETE = By.className("fa-trash-o");
-        private static By CONDITION_LIST_ITEM = By.cssSelector("input[data-testid$=\"-condition\"]");
+        private static By CONDITION_LIST_ITEM = ByUtils.containsDataTestId("input", "-condition");
         private static By OPEN_FLOW_CONDITION_BUTTON_PARENT = By.className("list-view-pf-actions");
         private static By FLOW_DROPDOWN_CONTAINER = By.className("pf-c-dropdown");
         private static By FLOW_DROPDOWN = By.className("pf-c-dropdown__toggle-icon");
         private static By FLOW_DROPDOWN_ITEM = By.className("pf-c-dropdown__menu-item");
-        private static By FLOW_BACK_DROPDOWN_BUTTON = By.cssSelector("a[data-testid=\"editor-toolbar-dropdown-back-button-item-back-button\"]");
+        private static By FLOW_BACK_DROPDOWN_BUTTON = ByUtils.dataTestId("a", "editor-toolbar-dropdown-back-button-item-back-button");
         private static By FLOW_BACK_DIRECT_BUTTON = By.id("integration-editor-back-button");
-        private static By ADD_ANOTHER_CONDITION = By.cssSelector("button[data-testid=\"form-array-control-add-another-item-button\"]");
-        private static By WARNING_ICON = By.cssSelector("button[data-testid=\"integration-editor-steps-list-item-warning-button\"]");
-        private static By ADD_DATA_MAPPING_STEP_WARNING_LINK = By.cssSelector("a[data-testid=\"integration-editor-step-adder-add-step-before-connection-link\"]");
-        private static By ADD_DEFAULT_FLOW_WARNING_LINK = By.cssSelector("a[data-testid=\"integration-editor-step-adder-add-default-flow-link\"]");
+        private static By ADD_ANOTHER_CONDITION = ByUtils.dataTestId("button", "form-array-control-add-another-item-button");
+        private static By WARNING_ICON = ByUtils.dataTestId("button", "integration-editor-steps-list-item-warning-button");
+        private static By ADD_DATA_MAPPING_STEP_WARNING_LINK = ByUtils.dataTestId("a", "integration-editor-step-adder-add-step-before-connection-link");
+        private static By ADD_DEFAULT_FLOW_WARNING_LINK = ByUtils.dataTestId("a", "integration-editor-step-adder-add-default-flow-link");
 
         private static By getConditionOnPosition(String position) {
-            return By.cssSelector("[data-testid=\"flowconditions-X-condition\"]".replace("X", position));
+            final String dataTestid = String.format("flowconditions-%s-condition", position);
+            return ByUtils.dataTestId(dataTestid);
         }
 
         private static By getConditionIconsOnPosition(String position) {
@@ -50,7 +52,7 @@ public class ConditionalFlowSteps {
     }
 
     private static class EditIntegrationElements {
-        private static By CONDITIONAL_FLOW_STEP = By.cssSelector("[data-testid=\"integration-editor-steps-list-item-conditional-flows-list-item\"]");
+        private static By CONDITIONAL_FLOW_STEP = ByUtils.dataTestId("integration-editor-steps-list-item-conditional-flows-list-item");
         private static By CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM = By.className("list-group-item");
         private static By DEFAULT_DISABLED = By.className("fa-ban");
     }

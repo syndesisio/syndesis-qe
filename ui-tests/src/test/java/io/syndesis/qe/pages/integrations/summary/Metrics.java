@@ -4,6 +4,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -16,11 +17,11 @@ public class Metrics extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("integration-detail-metrics");
-        public static final By ROOT_TOTAL_ERROR = By.cssSelector("[data-testid=\"integration-detail-metrics-total-errors-card\"]");
-        public static final By ROOT_LAST_POCESSED = By.cssSelector("[data-testid=\"integration-detail-metrics-last-processed-card\"]");
-        public static final By ROOT_TOTAL_MESSAGES = By.cssSelector("[data-testid=\"integration-detail-metrics-total-messages-card\"]");
+        public static final By ROOT_TOTAL_ERROR = ByUtils.dataTestId("integration-detail-metrics-total-errors-card");
+        public static final By ROOT_LAST_POCESSED = ByUtils.dataTestId("integration-detail-metrics-last-processed-card");
+        public static final By ROOT_TOTAL_MESSAGES = ByUtils.dataTestId("integration-detail-metrics-total-messages-card");
         //div has two h3 elements but contains method wants only one as first argument so the class have to be specified
-        public static final By ROOT_UPTIME = By.cssSelector("[data-testid=\"integration-detail-metrics-uptime-card\"]");
+        public static final By ROOT_UPTIME = ByUtils.dataTestId("integration-detail-metrics-uptime-card");
     }
 
     @Override

@@ -8,6 +8,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.settings.SettingsPage;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
@@ -64,7 +65,7 @@ public class SettingsSteps {
         item.shouldBe(visible).click();
         String title = item.$(By.className("list-group-item-heading")).getText();
         SelenideElement expansion = item.$(By.cssSelector(".list-group-item-container.container-fluid"));
-        By textOrPassword = By.xpath(".//input[@type='text' or @type='password']");
+        By textOrPassword = ByUtils.dataTestId("clientid");
         ElementsCollection textFields = expansion.$$(textOrPassword).filterBy(Condition.visible);
         for (int i = 0; i < textFields.size(); i++) {
             SelenideElement text = expansion.$$(textOrPassword).filterBy(Condition.visible).get(i);

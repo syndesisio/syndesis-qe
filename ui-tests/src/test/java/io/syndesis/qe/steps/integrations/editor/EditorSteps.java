@@ -12,6 +12,7 @@ import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.editor.Editor;
 import io.syndesis.qe.pages.integrations.editor.add.ChooseConnection;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationFlowView;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
@@ -42,12 +43,14 @@ public class EditorSteps {
         public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
         public static final By INTEGRATION_EDITOR_STEPS_LIST = By.className("integration-editor-steps-list");
         public static final By INTEGRATION_EDITOR_STEPS_LIST_ITEM = By.className("list-group-item");
+        public static final By ADDITIONAL_INFO = By.className("list-view-pf-additional-info");
     }
 
     private static final class Button {
         public static final By PUBLISH = By.id("integration-editor-publish-button");
         public static final By SAVE_AS_DRAFT = By.id("integration-editor-save-button");
         public static final By CANCEL = By.id("integration-editor-cancel-button");
+        public static final By CONFIGURE = ByUtils.dataTestId("integration-editor-step-adder-configure-button");
     }
 
     @When("^add data mapper step before \"([^\"]*)\" action$")
@@ -225,7 +228,7 @@ public class EditorSteps {
     public void editIntegrationStep(int oneBasedStepPosition) {
         log.info("Editing integration step #" + oneBasedStepPosition);
         flowViewComponent.getStepOnPosition(oneBasedStepPosition)
-            .$(By.cssSelector("[data-testid=\"integration-editor-step-adder-configure-button\"]")).shouldBe(visible).click();
+            .$(Button.CONFIGURE).shouldBe(visible).click();
     }
 
     @When("^delete step on position (\\d+)$")
@@ -252,7 +255,7 @@ public class EditorSteps {
 
     @Then("^validate that input datashape on step (\\d+) contains \"([^\"]*)\"$")
     public void validateInputDataShape(int stepPosition, String expectedDataShape) {
-        Assertions.assertThat(flowViewComponent.getStepOnPosition(stepPosition).$(By.className("list-view-pf-additional-info")).text())
+        Assertions.assertThat(flowViewComponent.getStepOnPosition(stepPosition).$(Element.ADDITIONAL_INFO).text())
             .containsIgnoringCase("Data Type: " + expectedDataShape);
     }
 

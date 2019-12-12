@@ -8,6 +8,7 @@ import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -30,17 +31,15 @@ public class IntegrationFlowView extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.cssSelector(".integration-vertical-flow__body");
 
-
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
         public static final By DELETE = By.className("delete-icon");
-        public static final By STEP_INSERT = By.cssSelector("*[data-testid=\"integration-flow-add-step-add-step-link\"]");
+        public static final By STEP_INSERT = ByUtils.dataTestId("integration-flow-add-step-add-step-link");
 
         public static final By POPOVER_CLASS = By.className("popover-content");
         public static final By STEP_DETAILS = By.className("list-view-pf-body");
-        public static final By DATA_WARNING_BUTTON =
-            By.cssSelector("button[data-testid=\"integration-editor-steps-list-item-warning-button\"]");
+        public static final By DATA_WARNING_BUTTON = ByUtils.dataTestId("integration-editor-steps-list-item-warning-button");
 
         public static final By FLOW_TITLE = By.cssSelector(".step.start .step-name");
 
@@ -49,7 +48,6 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-primary");
 
         public static final By STEP = By.cssSelector(".integration-editor-steps-list-item__list-item");
-
     }
 
     private static final class Button {
@@ -115,14 +113,14 @@ public class IntegrationFlowView extends SyndesisPageObject {
     public void clickAddStepLink(int pos) {
 
         List<SelenideElement> allStepInserts = $$(Element.STEP_INSERT)
-                .shouldHave(sizeGreaterThanOrEqual(pos));
+            .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
         stepElement.shouldBe(visible).click();
     }
 
     public void clickAddConnectionLink(int pos) {
         List<SelenideElement> allStepInserts = getRootElement().$$(Element.STEP_INSERT)
-                .shouldHave(sizeGreaterThanOrEqual(pos));
+            .shouldHave(sizeGreaterThanOrEqual(pos));
         SelenideElement stepElement = allStepInserts.get(pos);
 
         stepElement.scrollIntoView(true).hover();
@@ -145,7 +143,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
             // Explanation: we have 3 steps and between them 2 elements with insert step option --> 5 total
             // with class "step" and we want the third element
             $$(By.className("step")).shouldHaveSize(5).get(2)
-                    .shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
+                .shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
             text = $(By.className("popover")).shouldBe(visible).getText();
         } else {
             $(By.className(stepPosition)).shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
@@ -176,7 +174,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
     public SelenideElement getStepOnPosition(int position) {
         return $$(Element.STEP).shouldBe(sizeGreaterThanOrEqual(position))
-                .get(position - 1).shouldBe(visible);
+            .get(position - 1).shouldBe(visible);
     }
 
     public void deleteStepOnPostion(int stepPosition) {
@@ -196,11 +194,10 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public void addDatamapperStep(String action) {
-        String cssselector = String.format("button[data-testid=\"integration-editor-steps-list-item-%s-warning-button\"]", action.toLowerCase().replaceAll(" ", "-"));
-        $(By.cssSelector(cssselector)).shouldBe(visible).click();
-        $(By.cssSelector("a[data-testid=\"integration-editor=step-adder-add-step-before-connection-link\"]")).shouldBe(visible).click();
-
-
+        final String buttonDataTestid =
+            String.format("integration-editor-steps-list-item-%s-warning-button", action.toLowerCase().replaceAll(" ", "-"));
+        $(ByUtils.dataTestId("button", buttonDataTestid)).shouldBe(visible).click();
+        $(ByUtils.dataTestId("a", "integration-editor-step-adder-add-step-before-connection-link")).shouldBe(visible).click();
     }
 
     public String getFlowTitle() {
