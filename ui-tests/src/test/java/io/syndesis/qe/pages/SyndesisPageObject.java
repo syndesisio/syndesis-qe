@@ -176,7 +176,7 @@ public abstract class SyndesisPageObject {
     }
 
     private SelenideElement getElementByDataTestid(String inputDataTestid) {
-        return this.getRootElement().find(ByUtils.dataTestId("cicd-edit-dialog-tag-name"));
+        return this.getRootElement().find(ByUtils.dataTestId(inputDataTestid));
     }
 
     public SelenideElement getInputBySelector(String selector) {
