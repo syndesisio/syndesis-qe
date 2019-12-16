@@ -169,7 +169,7 @@ Feature: Connections - OAuth
     When select the "Salesforce-test" connection
     And select "On create" integration action
 #    test fails on this line, which is ENTESB-11822 issue (field is input, but should be select)
-    And select "Lead" from "sObjectName" dropdown
+    And select "Lead" from "sobjectname" dropdown
     And click on the "Next" button
 
     Then check that position of connection to fill is "Finish"
