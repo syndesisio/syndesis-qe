@@ -32,6 +32,7 @@ import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
 import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
@@ -509,23 +510,23 @@ public class CommonSteps {
 
     @Then("^check visibility of success notification$")
     public void successNotificationIsPresent() {
-        SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-success");
+        SelenideElement allertSucces = new SyndesisRootPage().getElementByLocator(Alert.SUCCESS.getBy());
         allertSucces.shouldBe(visible);
     }
 
     @Then("^check visibility of \"([^\"]*)\" in alert-success notification$")
     public void successNotificationIsPresentWithError(String textMessage) {
-        TestUtils.waitFor(() -> $$(By.className("alert-success")).filterBy(Condition.exactText(textMessage)).size() == 1,
+        TestUtils.waitFor(() -> $$(Alert.SUCCESS.getBy()).filterBy(Condition.exactText(textMessage)).size() == 1,
             2, 20, "Success notification not found!");
 
-        ElementsCollection successList = $$(By.className("alert-success")).filterBy(Condition.exactText(textMessage));
+        ElementsCollection successList = $$(Alert.SUCCESS.getBy()).filterBy(Condition.exactText(textMessage));
         assertThat(successList).hasSize(1);
         log.info("Text message {} was found.", textMessage);
     }
 
     @Then("^check visibility of alert notification$")
     public void checkSqlWarning() {
-        SelenideElement allertSucces = new SyndesisRootPage().getElementByClassName("alert-warning");
+        SelenideElement allertSucces = new SyndesisRootPage().getElementByLocator(Alert.WARNING.getBy());
         allertSucces.shouldBe(visible);
     }
 
@@ -830,7 +831,7 @@ public class CommonSteps {
         log.info("Current url: {}", WebDriverRunner.getWebDriver().getCurrentUrl().toLowerCase());
 
         if (isStringInUrl("Successfully%20authorized%20Syndesis's%20access", 5)
-            || $(By.className("alert-success")).is(visible)) {
+            || $(Alert.SUCCESS.getBy()).is(visible)) {
 
             log.info("User is already logged");
             return;
@@ -1063,6 +1064,6 @@ public class CommonSteps {
 
     @Then("^check that main alert dialog contains text \"([^\"]*)\"$")
     public void checkAlertDialog(String expectedText) {
-        assertThat(syndesisRootPage.getAlertElemet().getText()).isEqualTo(expectedText);
+        assertThat(syndesisRootPage.getDangerAlertElemet().getText()).isEqualTo(expectedText);
     }
 }

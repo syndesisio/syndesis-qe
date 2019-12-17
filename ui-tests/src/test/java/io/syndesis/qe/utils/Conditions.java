@@ -13,4 +13,10 @@ public class Conditions {
             return !(element.findElements(By.cssSelector("*")).isEmpty());
         }
     };
+    public static final Condition WO_CLOSE_BUTTONS = new Condition("With out close buttons") {
+        @Override
+        public boolean apply(WebElement element) {
+            return element.findElements(By.cssSelector("button.close")).isEmpty();
+        }
+    };
 }
