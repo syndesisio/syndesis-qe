@@ -167,7 +167,7 @@ public abstract class SyndesisPageObject {
     }
 
     public void selectOption(SelenideElement selectElement, String option) {
-        SelenideElement optionElement = getElementContainingText(By.tagName("option"), option);
+        SelenideElement optionElement = getElementContainingText(By.tagName("option"), option, selectElement);
         optionElement.shouldBe(visible).click();
     }
 
