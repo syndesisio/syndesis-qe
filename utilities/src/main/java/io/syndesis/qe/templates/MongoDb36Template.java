@@ -1,5 +1,7 @@
 package io.syndesis.qe.templates;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -31,8 +33,11 @@ public class MongoDb36Template {
     private static final String MONGODB_USER = "user";
     private static final String MONGODB_PASSWORD = "user";
     private static final String MONGODB_DATABASE = "sampledb";
-    private static final String MONGODB_IMAGE = "docker.io/centos/mongodb-36-centos7:latest";
+    private static final String MONGODB_IMAGE = "docker.io/bitnami/mongodb:3.6.16";
     private static final String MONGDB_URL = "mongodb://user:user@mongodb/sampledb";
+    private static final String MONGODB_REPLICA_SET_NAME = "rs0";
+    private static final String MONGODB_REPLICA_SET_MODE = "primary";
+    private static final String MONGODB_REPLICA_SET_KEY = "replica";
 
     public static void deploy() {
 
@@ -61,9 +66,13 @@ public class MongoDb36Template {
 
         List<EnvVar> templateParams = new ArrayList<>();
         templateParams.add(new EnvVar("MONGODB_ADMIN_PASSWORD", ADMIN_PASSWORD, null));
-        templateParams.add(new EnvVar("MONGODB_USER", MONGODB_USER, null));
+        templateParams.add(new EnvVar("MONGODB_USERNAME", MONGODB_USER, null));
         templateParams.add(new EnvVar("MONGODB_PASSWORD", MONGODB_PASSWORD, null));
         templateParams.add(new EnvVar("MONGODB_DATABASE", MONGODB_DATABASE, null));
+        templateParams.add(new EnvVar("MONGODB_REPLICA_SET_NAME", MONGODB_REPLICA_SET_NAME, null));
+        templateParams.add(new EnvVar("MONGODB_REPLICA_SET_MODE", MONGODB_REPLICA_SET_MODE, null));
+        templateParams.add(new EnvVar("MONGODB_REPLICA_SET_KEY", MONGODB_REPLICA_SET_KEY, null));
+        templateParams.add(new EnvVar("MONGODB_ROOT_PASSWORD", MONGODB_REPLICA_SET_KEY, null));
 
         OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
             .editOrNewMetadata()
@@ -115,6 +124,7 @@ public class MongoDb36Template {
         } catch (InterruptedException | TimeoutException e) {
             log.error("Wait for {} deployment failed ", APP_NAME, e);
         }
+        waitUntilMongoIsReady();
     }
 
     public static void cleanUp() {
@@ -126,6 +136,17 @@ public class MongoDb36Template {
             TestUtils.sleepIgnoreInterrupt(5000);
         } catch (Exception e) {
             log.error("Error thrown while trying to delete mongodb database. It is just deletion, it should not affect following tests.", e);
+        }
+    }
+
+    public static void waitUntilMongoIsReady() {
+        log.info("Waiting for Mongo to get ready");
+        try {
+            OpenShiftWaitUtils.waitUntilPodAppears(APP_NAME);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted"), 1000 * 60L);
+        } catch (TimeoutException | InterruptedException e) {
+            log.error(OpenShiftUtils.getPodLogs(APP_NAME));
+            fail("MongoDB has not successfully started in time limit", e);
         }
     }
 }
