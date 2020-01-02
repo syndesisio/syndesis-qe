@@ -1,17 +1,12 @@
 package io.syndesis.qe.resource.impl;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -91,34 +86,13 @@ public class FTP implements Resource {
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
                 .done();
-
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, APP_NAME, 1));
-                Thread.sleep(20 * 1000);
-            } catch (InterruptedException | TimeoutException e) {
-                log.error("Wait for {} deployment failed ", APP_NAME, e);
-            }
         }
-        Account ftpAccount = new Account();
-        ftpAccount.setService("ftp");
-        Map<String, String> accountParameters = new HashMap<>();
-        accountParameters.put("host", "ftpd");
-        accountParameters.put("port", "2121");
-        ftpAccount.setProperties(accountParameters);
-        AccountsDirectory.getInstance().addAccount("FTP", ftpAccount);
     }
 
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
-            .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
-            .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        try {
-            Thread.sleep(5 * 1000);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-        }
+        OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(APP_NAME), true);
+        OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(APP_NAME));
     }
 
     @Override

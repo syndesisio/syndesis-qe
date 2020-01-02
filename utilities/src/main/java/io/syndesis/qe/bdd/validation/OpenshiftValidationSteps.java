@@ -14,6 +14,7 @@ import io.syndesis.qe.resource.impl.Kudu;
 import io.syndesis.qe.resource.impl.MongoDb36;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
+import io.syndesis.qe.resource.impl.SFTP;
 import io.syndesis.qe.resource.impl.WildFlyS2i;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -46,6 +47,11 @@ public class OpenshiftValidationSteps {
     @Given("^deploy FTP server$")
     public void deployFTPServer() {
         ResourceFactory.create(FTP.class);
+    }
+
+    @Given("^deploy SFTP server$")
+    public void deploySFTPServer() {
+        ResourceFactory.create(SFTP.class);
     }
 
     @Given("^deploy Kudu$")

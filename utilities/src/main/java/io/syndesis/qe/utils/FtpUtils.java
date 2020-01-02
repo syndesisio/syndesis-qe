@@ -12,10 +12,11 @@ import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FtpUtils {
+public class FtpUtils implements FileTansferUtils {
     private FTPClient ftpClient = FtpClientManager.getClient();
 
-    public void delete(String path) {
+    @Override
+    public void deleteFile(String path) {
         checkConnection();
         log.info("Deleting " + path + " from FTP server");
         try {
@@ -25,6 +26,7 @@ public class FtpUtils {
         }
     }
 
+    @Override
     public boolean isFileThere(String directory, String fileName) {
         checkConnection();
         try {
@@ -35,6 +37,7 @@ public class FtpUtils {
         return false;
     }
 
+    @Override
     public void uploadTestFile(String testFileName, String text, String remoteDirectory) {
         checkConnection();
         log.info("Uploading file " + testFileName + " with content " + text + " to directory " + remoteDirectory + ". This may take some time");
@@ -45,6 +48,7 @@ public class FtpUtils {
         }
     }
 
+    @Override
     public String getFileContent(String directory, String fileName) {
         try {
             return IOUtils.toString(ftpClient.retrieveFileStream(directory + "/" + fileName), "utf-8");
