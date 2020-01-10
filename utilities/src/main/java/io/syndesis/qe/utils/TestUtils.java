@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
+import io.fabric8.kubernetes.client.VersionInfo;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
@@ -357,6 +358,7 @@ public final class TestUtils {
      */
     public static boolean isOpenshift3() {
         // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
-        return OpenShiftUtils.getInstance().getVersion().getMinor().contains("11+");
+        VersionInfo version = OpenShiftUtils.getInstance().getVersion();
+        return version != null && version.getMinor().contains("11+");
     }
 }

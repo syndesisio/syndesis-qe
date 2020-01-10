@@ -74,7 +74,16 @@ public class CommonSteps {
 
     @Then("^wait for Syndesis to become ready")
     public static void waitForSyndesis() {
-        waitFor(true);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
+        } catch (Exception e) {
+            log.error("Was waiting for following syndesis components:");
+            Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
+            log.error("Found following component pods:");
+            Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
+                + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
+            fail("Wait for Syndesis failed, check error logs for details.", e);
+        }
     }
 
     @When("^deploy Camel-K$")
@@ -115,16 +124,14 @@ public class CommonSteps {
      */
     private static void undeploySyndesis() {
         ResourceFactory.get(Syndesis.class).undeployCustomResources();
-        if (TestUtils.isDcDeployed("syndesis-operator")) {
-            waitForUndeployment();
+        try {
+            OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isUndeployed(), 10 * 60000L);
+        } catch (Exception e) {
+            log.error("Was waiting until there is only operator pod or no pods");
+            log.error("Found following component pods:");
+            Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
+            fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
         }
-    }
-
-    /**
-     * Waits for syndesis to be undeployed.
-     */
-    public static void waitForUndeployment() {
-        waitFor(false);
     }
 
     /**

@@ -62,7 +62,7 @@ public class CommonHooks {
 
     @After("@integrations-db-to-db-mysql")
     public void cleanMYSQLserver() {
-        log.info("Deleting MYSQL server");
+        log.info("Deleting MySQL server");
         ResourceFactory.destroy(MySQL.class);
     }
 

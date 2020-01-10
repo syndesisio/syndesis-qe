@@ -1,7 +1,5 @@
 package io.syndesis.qe.resource.impl;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -38,11 +36,6 @@ public class PublicOauthProxy implements Resource {
             "-p", "OAUTH_PROXY_TAG=" + OpenShiftUtils.getInstance().getImageStream("oauth-proxy").getSpec().getTags().get(0).getName(),
             "-p", "SAR_PROJECT=" + TestConfiguration.openShiftSARNamespace()
         );
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("syndesis.io/component", TEMPLATE_NAME), 15 * 60 * 1000L);
-        } catch (Exception e) {
-            fail("Public OAuth proxy not deployed after 15 minutes");
-        }
     }
 
     @Override
@@ -60,6 +53,11 @@ public class PublicOauthProxy implements Resource {
             .findFirst()
             .ifPresent(pod -> OpenShiftUtils.getInstance().deletePod(pod));
         TestUtils.sleepIgnoreInterrupt(10 * 1000);
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("syndesis.io/component", TEMPLATE_NAME));
     }
 
     private static String getOathToken() {

@@ -9,30 +9,25 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HTTPEndpoints implements Resource {
     private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-qe-HTTPEndpoints/master/template.yml";
+    private static final String NAME = "httpendpoints";
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed("httpendpoints")) {
+        if (!TestUtils.isDcDeployed(NAME)) {
             //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following lines can be removed later
             OpenShiftUtils.binary().execute("create", "-f", TEMPLATE_URL);
             OpenShiftUtils.binary().execute("new-app", "http-endpoints");
-//            try {
-//                OpenShiftUtils.getInstance().load(new URL(TEMPLATE_URL).openStream()).createOrReplace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "httpendpoints"));
-            } catch (InterruptedException | TimeoutException e) {
-                log.error("Wait for http endpoints failed ", e);
-            }
+            //            try {
+            //                OpenShiftUtils.getInstance().load(new URL(TEMPLATE_URL).openStream()).createOrReplace();
+            //            } catch (IOException e) {
+            //                e.printStackTrace();
+            //            }
         }
         addAccounts();
     }
@@ -44,6 +39,11 @@ public class HTTPEndpoints implements Resource {
         OpenShiftUtils.getInstance().services().list().getItems().stream().filter(s -> s.getMetadata().getName().endsWith("-svc"))
             .forEach(s -> OpenShiftUtils.getInstance().services().delete(s));
         OpenShiftUtils.binary().execute("delete", "-f", TEMPLATE_URL);
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", NAME));
     }
 
     private static void addAccounts() {

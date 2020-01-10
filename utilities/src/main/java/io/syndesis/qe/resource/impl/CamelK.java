@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.Resource;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -44,6 +46,11 @@ public class CamelK implements Resource {
         // It is needed to reset-db first, otherwise server would create the integrations again
         TestSupport.getInstance().resetDB();
         removeViaBinary();
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("name", "camel-k-operator"));
     }
 
     private void downloadArchive() {

@@ -133,10 +133,10 @@ public final class OpenShiftUtils {
 
     public static Optional<Pod> getPodByPartialName(String partialName) {
         return OpenShiftUtils.getInstance().getPods().stream()
-                .filter(p -> p.getMetadata().getName().contains(partialName))
-                .filter(p -> !p.getMetadata().getName().contains("deploy"))
-                .filter(p -> !p.getMetadata().getName().contains("build"))
-                .findFirst();
+            .filter(p -> p.getMetadata().getName().contains(partialName))
+            .filter(p -> !p.getMetadata().getName().contains("deploy"))
+            .filter(p -> !p.getMetadata().getName().contains("build"))
+            .findFirst();
     }
 
     public static int extractPodSequenceNr(Pod pod) {
@@ -344,6 +344,22 @@ public final class OpenShiftUtils {
         Predicate[] preds = Arrays.copyOf(predicates, predicates.length + 1);
         preds[preds.length - 1] = (Predicate<Pod>) p -> p.getMetadata().getName().contains(integrationName.replaceAll(" ", "-"));
         return preds;
+    }
+
+    /**
+     * Gets the pod, or returns an empty optional if the pod is not present
+     *
+     * @param labelName pod label name
+     * @param labelValue pod label value
+     * @return optional
+     */
+    public static Optional<Pod> getAnyPod(String labelName, String labelValue) {
+        try {
+            return Optional.of(OpenShiftUtils.getInstance().getAnyPod(labelName, labelValue));
+        } catch (IllegalArgumentException ex) {
+            // When the pod is not there yet, the getAnyPod throws IllegalArgumentException, so ignore it
+            return Optional.empty();
+        }
     }
 
     public static void updateEnvVarInDeploymentConfig(String dcName, String key, String value) {

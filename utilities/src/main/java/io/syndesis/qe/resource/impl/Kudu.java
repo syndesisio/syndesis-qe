@@ -1,7 +1,5 @@
 package io.syndesis.qe.resource.impl;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -10,7 +8,6 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -26,7 +23,7 @@ public class Kudu implements Resource {
     private static final String APP_NAME = "syndesis-kudu";
     private static final String API_APP_NAME = "kudu-rest-api";
     private static final String ROUTE_NAME = "kudu";
-    private static final String LABEL_NAME = "syndesis.io/component";
+    private static final String LABEL_NAME = "app";
 
     @Override
     public void deploy() {
@@ -39,19 +36,6 @@ public class Kudu implements Resource {
             //            } catch (IOException e) {
             //                fail("Template processing failed", e);
             //            }
-
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady(LABEL_NAME, APP_NAME), 15 * 60 * 1000L);
-            } catch (InterruptedException | TimeoutException e) {
-                fail("Wait for " + APP_NAME + " deployment failed!", e);
-            }
-
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(APP_NAME).contains("Flush successful"), 5 * 60 * 1000L);
-            } catch (TimeoutException | InterruptedException e) {
-                log.error(APP_NAME + " pod logs did not contain expected message. Pod logs:");
-                log.error(OpenShiftUtils.getPodLogs(APP_NAME));
-            }
 
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
@@ -120,15 +104,6 @@ public class Kudu implements Resource {
 
             log.info("Creating route {} with path {}", API_APP_NAME, "/");
             OpenShiftUtils.getInstance().routes().createOrReplace(route);
-
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, API_APP_NAME, 1), 15 * 60 * 1000L);
-                log.info("Checking pod logs if the app is ready");
-                OpenShiftWaitUtils.waitFor(() -> !OpenShiftUtils.arePodLogsEmpty(API_APP_NAME), 5 * 60 * 1000L);
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(API_APP_NAME).contains("Started App in"), 5 * 60 * 1000L);
-            } catch (InterruptedException | TimeoutException e) {
-                fail("Wait for " + API_APP_NAME + " deployment failed ", e);
-            }
         }
     }
 
@@ -150,5 +125,13 @@ public class Kudu implements Resource {
             .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         OpenShiftUtils.getInstance().getRoutes().stream().filter(route -> API_APP_NAME.equals(route.getMetadata().getName())).findFirst()
             .ifPresent(route -> OpenShiftUtils.getInstance().deleteRoute(route));
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME))
+            && OpenShiftUtils.getPodLogs(APP_NAME).contains("Flush successful")
+            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, API_APP_NAME))
+            && OpenShiftUtils.getPodLogs(API_APP_NAME).contains("Started App in");
     }
 }

@@ -1,7 +1,5 @@
 package io.syndesis.qe.resource.impl;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
@@ -111,34 +109,18 @@ public class MySQL implements Resource {
     public void undeploy() {
         try {
             OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
-                    .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
+                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
             OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
-                    .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
+                .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
             TestUtils.sleepIgnoreInterrupt(5000);
         } catch (Exception e) {
             log.error("Error thrown while trying to delete mysql database. It is just deletion, it should not affect following tests.", e);
         }
     }
 
-    public void waitUntilMysqlIsReady() {
-        try {
-            OpenShiftWaitUtils.waitUntilPodAppears("mysql");
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 1000 * 300L);
-            int i = 1;
-            String firstLogs = "";
-            String secondLogs = "a";
-            while (i < 10 && firstLogs.length() < secondLogs.length()) {
-                log.info("Checking for additional mysql pod logs...");
-                firstLogs = OpenShiftUtils.getPodLogs("mysql");
-                TestUtils.sleepIgnoreInterrupt(1000 * 20L);
-                secondLogs = OpenShiftUtils.getPodLogs("mysql");
-                i++;
-            }
-            //sometimes database pod is ready but not yet listening for connections, lets wait here a minute
-            TestUtils.sleepIgnoreInterrupt(1000 * 60L);
-        } catch (TimeoutException | InterruptedException e) {
-            log.error(OpenShiftUtils.getPodLogs("mysql"));
-            fail("MySQL database never started in pod.", e);
-        }
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME))
+            && OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully");
     }
 }

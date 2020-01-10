@@ -57,6 +57,8 @@ public class TestConfiguration {
 
     public static final String SYNDESIS_CUSTOM_RESOURCE_PLURAL = "syndesis.config.custom.resource.plural";
 
+    public static final String SYNDESIS_NIGHTLY_VERSION = "syndesis.nightly.version";
+
     public static final String JENKINS_DELAY = "jenkins.delay";
     public static final String TESTSUITE_TIMEOUT = "syndesis.config.timeout";
 
@@ -263,6 +265,14 @@ public class TestConfiguration {
         return get().readValue(JAEGER_VERSION);
     }
 
+    public static String syndesisInstallVersion() {
+        return get().readValue(SYNDESIS_INSTALL_VERSION);
+    }
+
+    public static String syndesisNightlyVersion() {
+        return get().readValue(SYNDESIS_NIGHTLY_VERSION);
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -344,7 +354,7 @@ public class TestConfiguration {
         }
 
         if (props.getProperty(JAEGER_VERSION) == null) {
-            props.setProperty(JAEGER_VERSION, "v1.14.0");
+            props.setProperty(JAEGER_VERSION, "v1.15.1");
         }
         return props;
     }

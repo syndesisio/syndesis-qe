@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,15 +31,6 @@ public class Kafka implements Resource {
             OpenShiftUtils.create(resource);
         }
 
-        try {
-            OpenShiftWaitUtils.waitFor(
-                OpenShiftWaitUtils.isAPodReady("statefulset.kubernetes.io/pod-name", "my-cluster-kafka-0"),
-                12 * 60 * 1000L
-            );
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for kafka failed ", e);
-        }
-
         addAccount();
     }
 
@@ -50,6 +40,11 @@ public class Kafka implements Resource {
             log.info("Deleting " + resource);
             OpenShiftUtils.delete(resource);
         }
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-kafka-0"));
     }
 
     private static void addAccount() {

@@ -93,4 +93,9 @@ public class WildFlyS2i implements Resource {
         OpenShiftUtils.getInstance().deploymentConfigs().withName(appName).cascading(true).delete();
         OpenShiftUtils.getInstance().buildConfigs().withName(appName).cascading(true).delete();
     }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", appName));
+    }
 }

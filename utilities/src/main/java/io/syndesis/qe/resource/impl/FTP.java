@@ -120,4 +120,9 @@ public class FTP implements Resource {
             log.error(e.getMessage());
         }
     }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME));
+    }
 }

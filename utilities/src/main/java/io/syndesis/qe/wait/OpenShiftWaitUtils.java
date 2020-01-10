@@ -36,6 +36,10 @@ public class OpenShiftWaitUtils {
         return false;
     }
 
+    public static boolean isPodReady(Optional<Pod> oPod) {
+        return oPod.filter(OpenShiftWaitUtils::isPodReady).isPresent();
+    }
+
     public static boolean isPodRunning(Pod pod) {
         return "Running".equals(pod.getStatus().getPhase());
     }

@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
@@ -34,11 +33,11 @@ public class IRC implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed("irc-server")) {
+        if (!TestUtils.isDcDeployed(SERVER_APP_NAME)) {
             deployIrcServer();
         }
 
-        if (!TestUtils.isDcDeployed("irc-controller")) {
+        if (!TestUtils.isDcDeployed(CONTROLLER_APP_NAME)) {
             deployIrcController();
         }
 
@@ -59,6 +58,12 @@ public class IRC implements Resource {
         );
 
         OpenShiftUtils.getInstance().routes().withName(CONTROLLER_APP_NAME).delete();
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, SERVER_APP_NAME))
+            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, CONTROLLER_APP_NAME));
     }
 
     private static void deployIrcServer() {
@@ -109,13 +114,6 @@ public class IRC implements Resource {
             .withNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
             .done();
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, SERVER_APP_NAME, 1));
-            Thread.sleep(20 * 1000);
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for {} deployment failed ", SERVER_APP_NAME, e);
-        }
     }
 
     private static void deployIrcController() {
@@ -186,13 +184,6 @@ public class IRC implements Resource {
             .endTo()
             .endSpec()
             .done();
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, CONTROLLER_APP_NAME, 1));
-            Thread.sleep(20 * 1000);
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for {} deployment failed ", CONTROLLER_APP_NAME, e);
-        }
     }
 
     private static void addAccounts() {

@@ -12,7 +12,6 @@ Feature: Integration - DB to DB mysql
     Given log into the Syndesis
     Given clean MySQL server
     Given deploy MySQL server
-    And wait until mysql database starts
     Given create standard table schema on "mysql" driver
 
     When inserts into "contact" table on "mysql"

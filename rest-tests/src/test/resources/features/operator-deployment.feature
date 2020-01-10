@@ -39,7 +39,8 @@ Feature: Operator Deployment
 
   @ENTESB-12106
   @operator-deploy-integrations
-  Scenario: Syndesis Operator - Components - Server - Deploy integrations
+  @operator-server
+  Scenario: Syndesis Operator - Components - Server - Don't deploy integrations
     When deploy Syndesis CR from file "spec/components/server/deployIntegrations.yml"
       And wait for Syndesis to become ready
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
@@ -48,6 +49,7 @@ Feature: Operator Deployment
     Then verify that the integration with name "deploy-integrations-check" is not started
 
   @operator-integration-limit
+  @operator-server
   Scenario: Syndesis Operator - Components - Server - Integration Limit
     When deploy Syndesis CR from file "spec/components/server/integrationLimit.yml"
       And wait for Syndesis to become ready
@@ -68,6 +70,7 @@ Feature: Operator Deployment
       And verify that the integration with name "my-int-3" is not started
 
   @operator-integration-state-check-interval
+  @operator-server
   Scenario: Syndesis Operator - Components - Server - Integration State Check Interval
     When deploy Syndesis CR from file "spec/components/server/integrationStateCheckInterval.yml"
       And wait for Syndesis to become ready
@@ -75,6 +78,7 @@ Feature: Operator Deployment
       | application.yml |  integrationStateCheckInterval: '111' |
 
   @operator-addons-todo
+  @operator-addons
   Scenario: Syndesis Operator - Addons - Todo
     When deploy Syndesis CR from file "spec/addons/todo.yml"
       And wait for Syndesis to become ready
@@ -83,6 +87,7 @@ Feature: Operator Deployment
   @ENTESB-12177
   @ENTESB-12421
   @operator-addons-camelk
+  @operator-addons
   Scenario: Syndesis Operator - Addons - Camel K
     When deploy Camel-K
     Then wait for Camel-K to become ready
@@ -97,6 +102,7 @@ Feature: Operator Deployment
       And check that pod "i-sql-to-log" logs contain string "Jackson"
 
   @operator-maven-repositories
+  @operator-server
   Scenario: Syndesis Operator - Components - Server - Maven Repositories
     When deploy Syndesis CR from file "spec/components/server/mavenRepositories.yml"
     Then wait for Syndesis to become ready
@@ -106,6 +112,7 @@ Feature: Operator Deployment
 
   @ENTESB-12418
   @operator-addons-dv
+  @operator-addons
   Scenario: Syndesis Operator - Addons - Data Virtualization
     When deploy Syndesis CR from file "spec/addons/dv.yml"
     Then wait for Syndesis to become ready
@@ -115,11 +122,14 @@ Feature: Operator Deployment
       And wait for DV to become ready
 
   @operator-addons-ops
+  @operator-addons
   Scenario: Syndesis Operator - Addons - Ops
     When deploy Syndesis CR from file "spec/addons/ops.yml"
     Then wait for Syndesis to become ready
       And check that service "syndesis-integrations" does exist
 
+  @operator-addons-jaeger-integration
+  @operator-addons
   @operator-addons-jaeger
   Scenario: Syndesis Operator - Addons - Jaeger
     When deploy Jaeger
@@ -135,6 +145,8 @@ Feature: Operator Deployment
       And check that jaeger is collecting metrics for integration "sql-sql-jaeger"
 
   @operator-addons-jaeger-sampler
+  @operator-addons
+  @operator-addons-jaeger
   Scenario: Syndesis Operator - Addons - Jaeger - Sampler
     When deploy Jaeger
       And deploy Syndesis CR from file "spec/addons/jaeger.sampler.yml"
@@ -155,57 +167,76 @@ Feature: Operator Deployment
       And check that jaeger is collecting metrics for integration "sql-sql-jaeger"
 
   @operator-addons-knative
+  @operator-addons
   Scenario: Syndesis Operator - Addons - Knative
     When todo
 
   @ENTESB-12418
+  @ENTESB-12618
   @operator-components-limits-memory
+  @operator-addons-dv
+  @operator-db
+  @operator-meta
+  @operator-server
+  @operator-prometheus
   Scenario: Syndesis Operator - Components - Memory limits
     When deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
     Then wait for Syndesis to become ready
       And check correct memory limits
 
   @operator-components-volume-capacity
+  @operator-meta
+  @operator-prometheus
   Scenario: Syndesis Operator - Components - Volume Capacity
     When deploy Syndesis CR from file "spec/components/resources.volumeCapacity.yml"
     Then wait for Syndesis to become ready
       And check correct volume capacity
 
+  @operator-components-database-volumes
   @operator-components-database-volume-capacity
-  Scenario: Syndesis Operator - Components - Database - Volume capacity
-    When create test persistent volumes with "standard" storage class name
+  @operator-db
+  Scenario: Syndesis Operator - Components - Database - Volume Capacity
+    When create test persistent volumes with "" storage class name
       And deploy Syndesis CR from file "spec/components/database/volumeCapacity.yml"
     Then check that database persistent volume capacity is greater or equals to "3Gi"
 
+  @operator-components-database-volumes
   @operator-components-database-volume-name
-  Scenario: Syndesis Operator - Components - Database - Volume name
-    When create test persistent volumes with "standard" storage class name
+  @operator-db
+  Scenario: Syndesis Operator - Components - Database - Volume Name
+    When create test persistent volumes with "" storage class name
       And deploy Syndesis CR from file "spec/components/database/volumeName.yml"
     Then check that test persistent volume is claimed by syndesis-db
 
   @ENTESB-12533
+  @operator-components-database-volumes
   @operator-components-database-volume-access-modes
-  Scenario: Syndesis Operator - Components - Database - Volume access modes
-    When create test persistent volumes with "standard" storage class name
+  @operator-db
+  Scenario: Syndesis Operator - Components - Database - Volume Access Modes
+    When create test persistent volumes with "" storage class name
       And deploy Syndesis CR from file "spec/components/database/volumeAccessModes.yml"
     Then check that test persistent volume is claimed by syndesis-db
 
   @ENTESB-12533
+  @operator-components-database-volumes
   @operator-components-database-volume-labels
-  Scenario: Syndesis Operator - Components - Database - Volume labels
-    When create test persistent volumes with "standard" storage class name
+  @operator-db
+  Scenario: Syndesis Operator - Components - Database - Volume Labels
+    When create test persistent volumes with "" storage class name
       And deploy Syndesis CR from file "spec/components/database/volumeLabels.yml"
     Then check that test persistent volume is claimed by syndesis-db
 
-  @ENTESB-12533
   @operator-components-database-volume-storage-class
-  Scenario: Syndesis Operator - Components - Database - Volume storage class
+  @operator-components-database-volumes
+  @operator-db
+  Scenario: Syndesis Operator - Components - Database - Volume Storage Class
     When create test persistent volumes with "filesystem" storage class name
       And deploy Syndesis CR from file "spec/components/database/volumeStorageClass.yml"
     Then check that test persistent volume is claimed by syndesis-db
 
   @ENTESB-12424
   @operator-components-external-db
+  @operator-db
   Scenario: Syndesis Operator - Components - Database - External Database
     When deploy custom database
       And deploy Syndesis CR from file "spec/components/database/externalDb.yml"
@@ -220,7 +251,7 @@ Feature: Operator Deployment
       And check that pod "i-http-to-log" logs contain string "[[options]]"
 
   @operator-components-oauth-disableSarCheck
-    Scenario: Syndesis Operator - Components - OAuth - Disable SAR check
+    Scenario: Syndesis Operator - Components - OAuth - Disable SAR Check
       When deploy Syndesis CR from file "spec/components/oauth/disableSarCheck.yml"
       Then wait for Syndesis to become ready
         And check that SAR check is disabled
@@ -232,6 +263,7 @@ Feature: Operator Deployment
       And check that SAR check is enabled for namespace "testNamespace"
 
   @operator-components-prometheus-rules
+  @operator-prometheus
   Scenario: Syndesis Operator - Components - Prometheus - Rules
     When todo
 

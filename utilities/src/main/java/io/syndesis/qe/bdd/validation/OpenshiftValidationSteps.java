@@ -37,11 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OpenshiftValidationSteps {
-    @Then("^wait until mysql database starts$")
-    public void waitUntilDatabaseStarts() {
-        ResourceFactory.get(MySQL.class).waitUntilMysqlIsReady();
-    }
-
     @Then("^check that pod \"([^\"]*)\" logs contain string \"([^\"]*)\"$")
     public void checkPodHasInLog(String podPartialName, String expectedText) {
         assertThat(OpenShiftUtils.getPodLogs(podPartialName))

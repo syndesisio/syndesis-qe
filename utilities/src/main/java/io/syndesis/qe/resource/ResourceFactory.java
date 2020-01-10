@@ -2,6 +2,8 @@ package io.syndesis.qe.resource;
 
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,12 @@ public class ResourceFactory {
      */
     public static <T extends Resource> void create(Class<T> clazz) {
         get(clazz).deploy();
+        try {
+            log.info("Waiting until " + clazz.getSimpleName() + " is ready");
+            OpenShiftWaitUtils.waitFor(() -> get(clazz).isReady(), 10 * 60000L);
+        } catch (Exception e) {
+            fail("Wait for " + clazz.getSimpleName() + " failed", e);
+        }
     }
 
     public static <T extends Resource> void destroy(Class<T> clazz) {
@@ -34,17 +42,17 @@ public class ResourceFactory {
     public static <T extends Resource> T get(Class<T> clazz) {
         Optional<Resource> oExtRes = createdResources.stream().filter(clazz::isInstance).findAny();
         if (oExtRes.isPresent()) {
-            log.debug("Returning previously created instance of " + clazz.getName());
+            log.debug("Returning previously created instance of " + clazz.getSimpleName());
             return (T) oExtRes.get();
         } else {
-            log.info("Creating a new instance of " + clazz.getName());
+            log.info("Creating a new instance of " + clazz.getSimpleName());
             T instance = null;
             try {
                 instance = clazz.newInstance();
                 createdResources.add(instance);
                 return instance;
             } catch (Exception e) {
-                fail("Unable to create instance of " + clazz.getName());
+                fail("Unable to create instance of " + clazz.getSimpleName());
             }
             return instance;
         }
@@ -55,7 +63,7 @@ public class ResourceFactory {
      */
     public static void cleanup() {
         createdResources.forEach(created -> {
-            log.info("Undeploying resource " + created.getClass().getName());
+            log.info("Undeploying resource " + created.getClass().getSimpleName());
             created.undeploy();
         });
     }

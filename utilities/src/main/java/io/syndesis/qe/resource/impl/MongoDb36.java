@@ -1,7 +1,5 @@
 package io.syndesis.qe.resource.impl;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
@@ -14,7 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -118,13 +115,6 @@ public class MongoDb36 implements Resource {
             .editOrNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
             .done();
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, APP_NAME, 1));
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for {} deployment failed ", APP_NAME, e);
-        }
-        waitUntilMongoIsReady();
     }
 
     @Override
@@ -140,14 +130,8 @@ public class MongoDb36 implements Resource {
         }
     }
 
-    public static void waitUntilMongoIsReady() {
-        log.info("Waiting for Mongo to get ready");
-        try {
-            OpenShiftWaitUtils.waitUntilPodAppears(APP_NAME);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted"), 1000 * 60L);
-        } catch (TimeoutException | InterruptedException e) {
-            log.error(OpenShiftUtils.getPodLogs(APP_NAME));
-            fail("MongoDB has not successfully started in time limit", e);
-        }
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME)) && OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted");
     }
 }

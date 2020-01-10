@@ -12,7 +12,7 @@ public enum Addon {
     OPS("ops"),
     TODO("todo"),
     // Technically not an addon
-    EXTERNAL_DB("db");
+    EXTERNAL_DB("database");
 
     @Getter
     private String value;

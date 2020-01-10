@@ -4,9 +4,6 @@ metadata:
   name: app
 spec:
   components:
-    database:
-      resources:
-        volumeCapacity: "513Mi"
     meta:
       resources:
         volumeCapacity: "215Mi"

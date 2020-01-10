@@ -69,7 +69,7 @@ public class RestTestHooks {
 
     @After("@operator")
     public void reset() {
-        // Each operator deployment creates a new deployment, so it is needed to terminate the PF after each test
+        // Each operator deployment creates a new deployment, so it is needed to terminate the port forward after each test
         RestUtils.reset();
         // Delete all test PVs
         OpenShiftUtils.getInstance().persistentVolumes().list().getItems().stream()

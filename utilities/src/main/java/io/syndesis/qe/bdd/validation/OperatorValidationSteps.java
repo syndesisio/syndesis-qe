@@ -78,9 +78,14 @@ public class OperatorValidationSteps {
 
     @Then("^check deployed syndesis version$")
     public void checkVersion() {
-        assertThat(TestUtils.getSyndesisVersion()).isEqualTo(System.getProperty("syndesis.version") == null ?
-            System.getProperty(TestConfiguration.SYNDESIS_INSTALL_VERSION)
-            : System.getProperty("syndesis.version"));
+        final String deployedVersion = TestUtils.getSyndesisVersion();
+        if (TestConfiguration.syndesisInstallVersion() != null) {
+            assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisInstallVersion());
+        } else if (TestConfiguration.syndesisNightlyVersion() != null) {
+            assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisNightlyVersion());
+        } else {
+            assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisVersion());
+        }
     }
 
     @Then("^check that there are no errors in operator$")
@@ -153,12 +158,13 @@ public class OperatorValidationSteps {
         components.keySet().forEach(component -> {
             String memoryLimit = components.getJSONObject(component).getJSONObject("resources").getJSONObject("limits").getString("memory");
             List<DeploymentConfig> dcList = OpenShiftUtils.getInstance().deploymentConfigs()
-                .withLabel("syndesis.io/component", "syndesis-" + component).list().getItems();
+                .withLabel("syndesis.io/component", "syndesis-" + ("database".equals(component) ? "db" : component)).list().getItems();
             softAssertions.assertThat(dcList).hasSize(1);
             softAssertions.assertThat(dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0)
                 .getResources().getLimits().get("memory").getAmount())
                 .as(component).isEqualTo(memoryLimit);
         });
+        softAssertions.assertAll();
     }
 
     @Then("check correct volume capacity")
@@ -216,7 +222,13 @@ public class OperatorValidationSteps {
         // These volumes won't work, but they will be available to bind
         Map<String, Quantity> capacity = new HashMap<>();
         capacity.put("storage", new Quantity("3Gi"));
-
+        if (!"".equals(className) && OpenShiftUtils.getInstance().storage().storageClasses().withName(className).get() == null) {
+            log.info("Creating storage class " + className);
+            OpenShiftUtils.getInstance().storage().storageClasses().createOrReplaceWithNew()
+                .withNewMetadata().withName(className).endMetadata()
+                .withProvisioner("kubernetes.io/cinder")
+                .done();
+        }
         PersistentVolumeFluent.SpecNested<DoneablePersistentVolume> pv = OpenShiftUtils.getInstance().persistentVolumes()
             .createOrReplaceWithNew()
             .withNewMetadata()
@@ -231,9 +243,15 @@ public class OperatorValidationSteps {
             .withNewPath("/testPath")
             .endNfs();
 
-        if (!TestUtils.isOpenshift3()) {
+        // The default storage class for OCP3 is empty, for OCP4 is "standard", so if the className is empty, we should use the default one
+        if ("".equals(className)) {
+            if (!TestUtils.isOpenshift3()) {
+                pv.withStorageClassName("standard");
+            }
+        } else {
             pv.withStorageClassName(className);
         }
+
         pv.endSpec().done();
 
         capacity.put("storage", new Quantity("5Gi"));
@@ -251,7 +269,7 @@ public class OperatorValidationSteps {
                 .endNfs();
 
             if (!TestUtils.isOpenshift3()) {
-                // This should always be "standard" despite the actual value of className - that is used only in "test-pv" intentionally
+                // This should always be the default value despite the actual value of className - that is used only in "test-pv" intentionally
                 pv.withStorageClassName("standard");
             }
             pv.endSpec().done();
