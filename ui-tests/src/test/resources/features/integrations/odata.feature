@@ -139,7 +139,7 @@ Feature: OData Connector
 
     When selects the "OData" connection
     And select "Delete" integration action
-    When select "Products" from "resourcePath" dropdown
+    When select "Products" from "resourcepath" dropdown
     And click on the "Next" button
 
     When add integration step on position "0"
@@ -187,7 +187,7 @@ Feature: OData Connector
     # Add OData update as finish step
     When select the "OData" connection
     And select "Update" integration action
-    When select "<resource_collection>" from "resourcePath" dropdown
+    When select "<resource_collection>" from "resourcepath" dropdown
     And click on the "Next" button
 
     # Add Data mapper (checks output datashape of OData read action is correct)
@@ -260,7 +260,7 @@ Feature: OData Connector
     # Add OData update as finish step
     When select the "OData" connection
     And select "Update" integration action
-    When select "Users" from "resourcePath" dropdown
+    When select "Users" from "resourcepath" dropdown
     And click on the "Next" button
 
     # Add Data mapper (checks output datashape of OData read action is correct)
