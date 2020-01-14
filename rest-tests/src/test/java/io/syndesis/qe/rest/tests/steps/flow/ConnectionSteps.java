@@ -1,6 +1,8 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
+import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
+import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.BoxUtils;
 import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
@@ -47,11 +49,24 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.BOX.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.BOX.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:box-download");
+        Map<String, String> properties = new HashMap<>();
         if ("with".equals(withFileId)) {
-            super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
-                "fileId", BoxUtils.getFileIds().get(0)
-            ));
+            properties.put("fileId", BoxUtils.getFileIds().get(0));
         }
+        super.addProperty(StepProperty.PROPERTIES, properties);
+        super.createStep();
+    }
+
+    @When("create Box upload action step with file name {string}")
+    public void createBoxUpload(String fileName) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.BOX.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.BOX.getId());
+        super.addProperty(StepProperty.ACTION, "io.syndesis:box-upload");
+        Map<String, String> properties = TestUtils.map("parentFolderId", AccountUtils.get(Account.Name.BOX).getProperty("folderId"));
+        if (!fileName.isEmpty()) {
+            properties.put("fileName", fileName);
+        }
+        super.addProperty(StepProperty.PROPERTIES, properties);
         super.createStep();
     }
 
