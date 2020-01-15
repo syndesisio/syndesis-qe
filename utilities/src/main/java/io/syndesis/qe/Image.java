@@ -7,5 +7,6 @@ public enum Image {
     SERVER,
     UI,
     META,
-    S2I
+    S2I,
+    PSQL_EXPORTER
 }
