@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
@@ -26,7 +27,7 @@ public class AboutPageSteps {
         String nightlyVersion = System.getProperty("syndesis.nightly.version");
         assertThat($(Element.SYNDESIS_VERSION).shouldBe(visible).getText())
             .isNotEmpty()
-            .containsIgnoringCase(nightlyVersion == null ? System.getProperty("syndesis.version") : nightlyVersion);
+            .containsIgnoringCase(nightlyVersion == null ? TestConfiguration.syndesisVersion() : nightlyVersion);
     }
 
     @Then("^check that build id exists in about page$")

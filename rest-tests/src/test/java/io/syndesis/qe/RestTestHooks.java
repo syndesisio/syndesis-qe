@@ -34,13 +34,13 @@ public class RestTestHooks {
     @Before("@syndesis-upgrade")
     public void skipProdUpgrade() {
         // Prod upgrade is tested differently, so skip these tests with prod version
-        assumeFalse(System.getProperty("syndesis.version").contains("redhat"));
+        assumeFalse(TestConfiguration.syndesisVersion().contains("redhat"));
     }
 
     @Before("@prod")
     public void skipProdForNightly() {
         // Skip prod tests when not running with productized build
-        assumeTrue(System.getProperty("syndesis.version").contains("redhat"));
+        assumeTrue(TestConfiguration.syndesisVersion().contains("redhat"));
     }
 
     @After("@sqs")

@@ -260,6 +260,7 @@ To install syndesis using a particular operator image, use the following paramet
 
 	-Dsyndesis.config.operator.image="[registry/]<namespace>/<syndesis|fuse-online>-operator:<version>"
 
+You can also use the property `syndesis.config.build.properties.url` to specify a URL to a properties file, that will be sourced, so if you prefer, you can "hide" all command-line properties into one file and use only one parameter for the configuration.
 
 ##### Using maven central proxy
 Maven central is used when building integrations in minishift. That can occasionally fail, because a request limit is reached.

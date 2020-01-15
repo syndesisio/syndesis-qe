@@ -4,6 +4,7 @@ import io.syndesis.qe.utils.TestUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 public class TestConfiguration {
 
     private static final String TEST_PROPERTIES_FILE = "syndesis.config.test.properties";
+
+    public static final String SYNDESIS_VERSION = "syndesis.version";
 
     public static final String OPENSHIFT_URL = "syndesis.config.openshift.url";
     public static final String OPENSHIFT_TOKEN = "syndesis.config.openshift.token";
@@ -45,6 +48,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_CRD_URL = "syndesis.config.crd.url";
     public static final String SYNDESIS_OPERATOR_IMAGE = "syndesis.config.operator.image";
     public static final String SYNDESIS_CR_URL = "syndesis.config.cr.url";
+    public static final String SYNDESIS_BUILD_PROPERTIES_URL = "syndesis.config.build.properties.url";
 
     public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
     public static final String SYNDESIS_PULL_SECRET_NAME = "syndesis.config.pull.secret.name";
@@ -80,6 +84,9 @@ public class TestConfiguration {
             // then properties in repo root
             copyValues(fromPath("../" + System.getProperty(TEST_PROPERTIES_FILE, "test.properties")));
 
+            // build properties file
+            copyValues(fromPath(System.getProperty(SYNDESIS_BUILD_PROPERTIES_URL)));
+
             // then system variables
             copyValues(System.getProperties());
 
@@ -101,6 +108,10 @@ public class TestConfiguration {
 
     public static TestConfiguration get() {
         return INSTANCE;
+    }
+
+    public static String syndesisVersion() {
+        return get().readValue(SYNDESIS_VERSION);
     }
 
     public static String openShiftUrl() {
@@ -236,6 +247,10 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SNOOP_SELECTORS));
     }
 
+    public static String image(Image image) {
+        return get().readValue(image.name());
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -262,8 +277,8 @@ public class TestConfiguration {
         } else {
             syndesisVersion = "master";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
-            if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !TestUtils.isProdBuild()) {
-                syndesisVersion = System.getProperty("syndesis.version");
+            if (!properties.getProperty(SYNDESIS_VERSION).endsWith("SNAPSHOT") && !properties.getProperty(SYNDESIS_VERSION).contains("redhat")) {
+                syndesisVersion = System.getProperty(SYNDESIS_VERSION);
             }
         }
 
@@ -325,15 +340,26 @@ public class TestConfiguration {
     private Properties fromPath(final String path) {
         final Properties props = new Properties();
 
-        final Path propsPath = Paths.get(path)
-            .toAbsolutePath();
-        if (Files.isReadable(propsPath)) {
-            try (InputStream is = Files.newInputStream(propsPath)) {
-                props.load(is);
-            } catch (final IOException ex) {
-                log.warn("Unable to read properties from '{}'", propsPath);
-                log.debug("Exception", ex);
+        if (path == null) {
+            return props;
+        }
+
+        final Path propsPath = Paths.get(path).toAbsolutePath();
+        InputStream is = null;
+        try {
+            if (path.startsWith("http")) {
+                is = new URL(path).openStream();
+            } else if (Files.isReadable(propsPath)) {
+                is = Files.newInputStream(propsPath);
             }
+
+            if (is != null) {
+                log.debug("Loading properties from " + path);
+                props.load(is);
+                is.close();
+            }
+        } catch (IOException e) {
+            log.warn("Unable to read properties from " + propsPath, e);
         }
 
         return props;
