@@ -2,6 +2,7 @@ package io.syndesis.qe.templates;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.qe.Image;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
@@ -27,6 +28,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -50,8 +52,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SyndesisTemplate {
-    private static final int IMAGE_STREAM_COUNT = 8;
     private static final String CR_NAME = "app";
+    private static final String OPERATOR_IMAGE = TestConfiguration.syndesisOperatorImage();
 
     public static void deploy() {
         log.info("Deploying Syndesis");
@@ -92,10 +94,10 @@ public class SyndesisTemplate {
      * Pulls the operator image via docker pull.
      */
     private static void pullOperatorImage() {
-        log.info("Pulling operator image {}", TestConfiguration.syndesisOperatorImage());
+        log.info("Pulling operator image {}", OPERATOR_IMAGE);
         ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
             "pull",
-            TestConfiguration.syndesisOperatorImage()
+            OPERATOR_IMAGE
         );
 
         try {
@@ -218,17 +220,16 @@ public class SyndesisTemplate {
     }
 
     public static List<HasMetadata> getOperatorResources() {
-        String operatorImage = TestConfiguration.syndesisOperatorImage();
-        String imageName = StringUtils.substringBeforeLast(operatorImage, ":");
-        String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
+        String imageName = StringUtils.substringBeforeLast(OPERATOR_IMAGE, ":");
+        String imageTag = StringUtils.substringAfterLast(OPERATOR_IMAGE, ":");
 
-        log.info("Generating resources using operator image {}", operatorImage);
+        log.info("Generating resources using operator image {}", OPERATOR_IMAGE);
         ProcessBuilder dockerRunPb = new ProcessBuilder("docker",
             "run",
             "--rm",
             "--entrypoint",
             "syndesis-operator",
-            operatorImage,
+            OPERATOR_IMAGE,
             "install",
             "operator",
             "--image",
@@ -282,9 +283,32 @@ public class SyndesisTemplate {
 
         importProdImage("operator");
 
+        Set<Image> images = EnumSet.allOf(Image.class);
+        Map<String, String> imagesEnvVars = new HashMap<>();
+        for (Image image : images) {
+            if (TestConfiguration.image(image) != null) {
+                log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
+                imagesEnvVars.put(image.name() + "_IMAGE", TestConfiguration.image(image));
+            }
+        }
+
+        if (!imagesEnvVars.isEmpty()) {
+            log.info("Overriding images to be deployed");
+            try {
+                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getDeploymentConfig(operatorResourcesName) != null);
+                OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
+            OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
+        }
+
         log.info("Waiting for syndesis-operator to be ready");
         OpenShiftUtils.getInstance().waiters()
-            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-operator")
+            .areExactlyNPodsReady(1, "syndesis.io/component", operatorResourcesName)
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 10)
             .waitFor();
