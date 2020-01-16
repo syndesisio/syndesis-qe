@@ -8,6 +8,7 @@ Feature: Operator Deployment
     Given clean default namespace
       And deploy Syndesis CRD
       And grant permissions to user
+      And create pull secret
       And deploy Syndesis operator
 
   @operator-deploy-default

@@ -58,6 +58,11 @@ public class OperatorValidationSteps {
         syndesis.grantPermissions();
     }
 
+    @Given("^create pull secret$")
+    public void createPullSecret() {
+        ResourceFactory.get(Syndesis.class).createPullSecret();
+    }
+
     @Given("^deploy Syndesis operator$")
     public void deployOperator() {
         ResourceFactory.get(Syndesis.class).deployOperator();

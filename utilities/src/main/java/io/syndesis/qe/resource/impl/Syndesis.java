@@ -104,7 +104,7 @@ public class Syndesis implements Resource {
         deleteCr(name);
     }
 
-    private void createPullSecret() {
+    public void createPullSecret() {
         if (TestConfiguration.syndesisPullSecret() != null) {
             log.info("Creating a pull secret with name " + TestConfiguration.syndesisPullSecretName());
             OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
