@@ -27,10 +27,11 @@ import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.login.GitHubLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
-import io.syndesis.qe.templates.SyndesisTemplate;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
@@ -983,8 +984,8 @@ public class CommonSteps {
      * @param url URL of 3scale user interface or NULL for turning discovery off
      */
     private void set3scaleEnvVar(String url) {
-
-        Map cr = SyndesisTemplate.getDeployedCr();
+        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+        Map cr = syndesis.getDeployedCr();
         Map features = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) cr.get("spec")).get("components"))
             .get("server")).get("features");
 
@@ -995,7 +996,7 @@ public class CommonSteps {
         }
 
         try {
-            SyndesisTemplate.editCr(cr);
+            syndesis.editCr(cr);
         } catch (IOException e) {
             fail("There was an error while updating the CR", e);
         }

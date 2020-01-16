@@ -1,9 +1,8 @@
-package io.syndesis.qe.templates;
-
-import static org.assertj.core.api.Assertions.fail;
+package io.syndesis.qe.resource.impl;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -24,8 +23,7 @@ import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MysqlTemplate {
-
+public class MySQL implements Resource {
     private static final String APP_NAME = "mysql";
     private static final String LABEL_NAME = "app";
     private static final String DB_USER = "developer";
@@ -33,8 +31,8 @@ public class MysqlTemplate {
     private static final String DB_SCHEMA = "sampledb";
     private static final String DB_URL = "jdbc:mysql://mysql:3306/sampledb";
 
-    public static void deploy() {
-
+    @Override
+    public void deploy() {
         List<ContainerPort> ports = new LinkedList<>();
         ports.add(new ContainerPortBuilder()
                 .withName("mysql-cmd")
@@ -107,37 +105,22 @@ public class MysqlTemplate {
         AccountsDirectory.getInstance().addAccount("mysql", mysqlAccount);
     }
 
-    public static void cleanUp() {
+    @Override
+    public void undeploy() {
         try {
             OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
-                    .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
+                .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
             OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
-                    .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
+                .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
             TestUtils.sleepIgnoreInterrupt(5000);
         } catch (Exception e) {
             log.error("Error thrown while trying to delete mysql database. It is just deletion, it should not affect following tests.", e);
         }
     }
 
-    public static void waitUntilMysqlIsReady() {
-        try {
-            OpenShiftWaitUtils.waitUntilPodAppears("mysql");
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully"), 1000 * 300L);
-            int i = 1;
-            String firstLogs = "";
-            String secondLogs = "a";
-            while (i < 10 && firstLogs.length() < secondLogs.length()) {
-                log.info("Checking for additional mysql pod logs...");
-                firstLogs = OpenShiftUtils.getPodLogs("mysql");
-                TestUtils.sleepIgnoreInterrupt(1000 * 20L);
-                secondLogs = OpenShiftUtils.getPodLogs("mysql");
-                i++;
-            }
-            //sometimes database pod is ready but not yet listening for connections, lets wait here a minute
-            TestUtils.sleepIgnoreInterrupt(1000 * 60L);
-        } catch (TimeoutException | InterruptedException e) {
-            log.error(OpenShiftUtils.getPodLogs("mysql"));
-            fail("MySQL database never started in pod.", e);
-        }
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME))
+            && OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully");
     }
 }

@@ -24,10 +24,11 @@ public class AboutPageSteps {
 
     @Then("^check version string in about page$")
     public void checkVersionString() {
-        String nightlyVersion = System.getProperty("syndesis.nightly.version");
         assertThat($(Element.SYNDESIS_VERSION).shouldBe(visible).getText())
             .isNotEmpty()
-            .containsIgnoringCase(nightlyVersion == null ? TestConfiguration.syndesisVersion() : nightlyVersion);
+            .containsIgnoringCase(TestConfiguration.syndesisNightlyVersion() == null
+                ? TestConfiguration.syndesisVersion()
+                : TestConfiguration.syndesisNightlyVersion());
     }
 
     @Then("^check that build id exists in about page$")

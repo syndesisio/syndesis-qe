@@ -2,7 +2,7 @@ package io.syndesis.qe.steps.other;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.templates.MongoDb36Template;
+import io.syndesis.qe.resource.impl.MongoDb36;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -52,7 +52,7 @@ public class MongoDBSteps {
     private void createPortForward() {
         try {
             Pod mongoPod = OpenShiftUtils.getInstance().getAnyPod("app", mongoAccount.getService());
-            portForward = TestUtils.createLocalPortForward(mongoPod, MongoDb36Template.MONGODB_PORT, MongoDb36Template.MONGODB_PORT);
+            portForward = TestUtils.createLocalPortForward(mongoPod, MongoDb36.MONGODB_PORT, MongoDb36.MONGODB_PORT);
         } catch (Exception e) {
             // we don't fail here because we might be running the port forward locally when debugging
             log.error("could not port forward, mongo connections probably won't work", e);

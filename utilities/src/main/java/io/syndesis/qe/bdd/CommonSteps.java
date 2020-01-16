@@ -3,19 +3,22 @@ package io.syndesis.qe.bdd;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.connection.Connection;
+import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
-import io.syndesis.qe.templates.SyndesisTemplate;
-import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.CamelK;
+import io.syndesis.qe.resource.impl.ExternalDatabase;
+import io.syndesis.qe.resource.impl.Jaeger;
+import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.HttpUtils;
-import io.syndesis.qe.utils.JMSUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -66,47 +69,69 @@ public class CommonSteps {
 
     @When("^deploy Syndesis$")
     public static void deploySyndesis() {
-        SyndesisTemplate.deploy();
+        ResourceFactory.create(Syndesis.class);
     }
 
     @Then("^wait for Syndesis to become ready")
     public static void waitForSyndesis() {
-        waitFor(true);
+        try {
+            OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
+        } catch (Exception e) {
+            log.error("Was waiting for following syndesis components:");
+            Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
+            log.error("Found following component pods:");
+            Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
+                + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
+            fail("Wait for Syndesis failed, check error logs for details.", e);
+        }
+    }
+
+    @When("^deploy Camel-K$")
+    public void deployCamelK() {
+        ResourceFactory.create(CamelK.class);
+    }
+
+    @Then("^wait for Camel-K to become ready$")
+    public void waitForCamelK() {
+        OpenShiftUtils.getInstance().waiters()
+            .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
+            .interval(TimeUnit.SECONDS, 20)
+            .timeout(TimeUnit.MINUTES, 5)
+            .waitFor();
+    }
+
+    @Then("^wait for DV to become ready$")
+    public void waitForDv() {
+        OpenShiftUtils.getInstance().waiters()
+            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
+            .interval(TimeUnit.SECONDS, 20)
+            .timeout(TimeUnit.MINUTES, 5)
+            .waitFor();
+    }
+
+    @When("^deploy Jaeger$")
+    public void deployJaeger() {
+        ResourceFactory.create(Jaeger.class);
+    }
+
+    @When("^deploy custom database$")
+    public void deployDb() {
+        ResourceFactory.create(ExternalDatabase.class);
     }
 
     /**
      * Undeploys deployed syndesis resources.
      */
-    public static void undeploySyndesis() {
-        undeployCustomResources();
-        if (TestUtils.isDcDeployed("syndesis-operator")) {
-            CommonSteps.waitForUndeployment();
+    private static void undeploySyndesis() {
+        ResourceFactory.get(Syndesis.class).undeployCustomResources();
+        try {
+            OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isUndeployed(), 10 * 60000L);
+        } catch (Exception e) {
+            log.error("Was waiting until there is only operator pod or no pods");
+            log.error("Found following component pods:");
+            Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
+            fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
         }
-    }
-
-    public static void undeployCustomResources() {
-        // if we don't have CRD, we can't have CRs
-        if (SyndesisTemplate.getCrd() != null) {
-            for (String s : SyndesisTemplate.getCrNames()) {
-                undeployCustomResource(s);
-            }
-        }
-    }
-
-    /**
-     * Undeploys syndesis custom resource using openshift API.
-     *
-     * @param name custom resource name
-     */
-    private static void undeployCustomResource(String name) {
-        SyndesisTemplate.deleteCr();
-    }
-
-    /**
-     * Waits for syndesis to be undeployed.
-     */
-    public static void waitForUndeployment() {
-        waitFor(false);
     }
 
     /**
@@ -116,7 +141,18 @@ public class CommonSteps {
      */
     private static void waitFor(boolean deploy) {
         final int timeout = TestUtils.isJenkins() ? 20 : 12;
-        EnumSet<Component> components = EnumSet.allOf(Component.class);
+        EnumSet<Component> components = Component.getAllComponents();
+
+        if (deploy && ResourceFactory.get(Syndesis.class).isAddonEnabled(Addon.JAEGER)) {
+            // Jaeger pod doesn't have the required label, so add it manually
+            try {
+                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "jaeger"));
+            } catch (Exception e) {
+                fail("Unable to find jaeger pod after 5 minutes");
+            }
+            OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
+                .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+        }
 
         ExecutorService executorService = Executors.newFixedThreadPool(components.size());
         components.forEach(c -> {
@@ -235,14 +271,5 @@ public class CommonSteps {
     @When("^set up ServiceAccount for Public API$")
     public void setUpServiceAccountForPublicAPI() {
         PublicApiUtils.createServiceAccount();
-    }
-
-    @When("^send \"([^\"]*)\" message to \"([^\"]*)\" queue on \"([^\"]*)\" broker$")
-    public void sendMessageToQueueOnBroker(String message, String queue, String brokerAccount) {
-        Account brokerCredentials = AccountUtils.get(brokerAccount);
-        final String userName = brokerCredentials.getProperty("username");
-        final String password = brokerCredentials.getProperty("password");
-        final String brokerpod = brokerCredentials.getProperty("appname");
-        JMSUtils.sendMessage(brokerpod, "tcp", userName, password, JMSUtils.Destination.QUEUE, queue, message);
     }
 }

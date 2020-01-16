@@ -57,6 +57,8 @@ public class TestConfiguration {
 
     public static final String SYNDESIS_CUSTOM_RESOURCE_PLURAL = "syndesis.config.custom.resource.plural";
 
+    public static final String SYNDESIS_NIGHTLY_VERSION = "syndesis.nightly.version";
+
     public static final String JENKINS_DELAY = "jenkins.delay";
     public static final String TESTSUITE_TIMEOUT = "syndesis.config.timeout";
 
@@ -71,6 +73,10 @@ public class TestConfiguration {
     public static final String SNOOP_SELECTORS = "syndesis.config.snoop.selectors";
 
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
+
+    private static final String CAMEL_K_VERSION = "syndesis.camelk.version";
+
+    private static final String JAEGER_VERSION = "syndesis.jaeger.version";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -251,6 +257,22 @@ public class TestConfiguration {
         return get().readValue(image.name());
     }
 
+    public static String camelKVersion() {
+        return get().readValue(CAMEL_K_VERSION);
+    }
+
+    public static String jaegerVersion() {
+        return get().readValue(JAEGER_VERSION);
+    }
+
+    public static String syndesisInstallVersion() {
+        return get().readValue(SYNDESIS_INSTALL_VERSION);
+    }
+
+    public static String syndesisNightlyVersion() {
+        return get().readValue(SYNDESIS_NIGHTLY_VERSION);
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -325,6 +347,14 @@ public class TestConfiguration {
         props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
         if (props.getProperty(SNOOP_SELECTORS) == null) {
             props.setProperty(SNOOP_SELECTORS, "false");
+        }
+
+        if (props.getProperty(CAMEL_K_VERSION) == null) {
+            props.setProperty(CAMEL_K_VERSION, "0.3.4");
+        }
+
+        if (props.getProperty(JAEGER_VERSION) == null) {
+            props.setProperty(JAEGER_VERSION, "v1.15.1");
         }
         return props;
     }

@@ -4,17 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.templates.AmqTemplate;
-import io.syndesis.qe.templates.FtpTemplate;
-import io.syndesis.qe.templates.HTTPEndpointsTemplate;
-import io.syndesis.qe.templates.IrcTemplate;
-import io.syndesis.qe.templates.KafkaTemplate;
-import io.syndesis.qe.templates.KuduRestAPITemplate;
-import io.syndesis.qe.templates.KuduTemplate;
-import io.syndesis.qe.templates.MongoDb36Template;
-import io.syndesis.qe.templates.MysqlTemplate;
-import io.syndesis.qe.templates.PublicOauthProxyTemplate;
-import io.syndesis.qe.templates.WildFlyTemplate;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.AMQ;
+import io.syndesis.qe.resource.impl.FTP;
+import io.syndesis.qe.resource.impl.HTTPEndpoints;
+import io.syndesis.qe.resource.impl.IRC;
+import io.syndesis.qe.resource.impl.Kafka;
+import io.syndesis.qe.resource.impl.Kudu;
+import io.syndesis.qe.resource.impl.MongoDb36;
+import io.syndesis.qe.resource.impl.MySQL;
+import io.syndesis.qe.resource.impl.PublicOauthProxy;
+import io.syndesis.qe.resource.impl.WildFlyS2i;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -31,15 +31,12 @@ import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OpenshiftValidationSteps {
-    @Then("^wait until mysql database starts$")
-    public void waitUntilDatabaseStarts() {
-        MysqlTemplate.waitUntilMysqlIsReady();
-    }
-
     @Then("^check that pod \"([^\"]*)\" logs contain string \"([^\"]*)\"$")
     public void checkPodHasInLog(String podPartialName, String expectedText) {
         assertThat(OpenShiftUtils.getPodLogs(podPartialName))
@@ -48,77 +45,61 @@ public class OpenshiftValidationSteps {
 
     @Given("^deploy FTP server$")
     public void deployFTPServer() {
-        FtpTemplate.deploy();
+        ResourceFactory.create(FTP.class);
     }
 
-    @Given("^deploy Kudu rest API$")
-    public void deployKuduRestAPI() {
-        KuduRestAPITemplate.deploy();
-    }
-
-    @Given("^deploy Kudu server$")
-    public void deployKuduServer() {
-        KuduTemplate.deploy();
-    }
-
-    @Given("^clean Kudu rest API$")
-    public void cleanKuduRestAPI() {
-        KuduRestAPITemplate.cleanUp();
-    }
-
-    @Given("^clean Kudu server$")
-    public void cleanKuduServer() {
-        KuduTemplate.cleanUp();
-    }
-
-    @Given("^clean FTP server$")
-    public void cleanFTPServer() {
-        FtpTemplate.cleanUp();
+    @Given("^deploy Kudu$")
+    public void deployKudu() {
+        ResourceFactory.create(Kudu.class);
     }
 
     @Given("^clean MySQL server$")
     public void cleanMySQLServer() {
-        MysqlTemplate.cleanUp();
+        ResourceFactory.destroy(MySQL.class);
     }
 
     @Given("^deploy MySQL server$")
     public void deployMySQLServer() {
-        MysqlTemplate.deploy();
+        ResourceFactory.create(MySQL.class);
     }
 
     @Given("^deploy ActiveMQ broker$")
     public void deployAMQBroker() {
-        AmqTemplate.deploy();
+        ResourceFactory.create(AMQ.class);
     }
 
     @Given("^deploy Kafka broker and add account$")
     public void deployKafka() {
-        KafkaTemplate.deploy();
+        ResourceFactory.create(Kafka.class);
     }
 
     @Given("^deploy HTTP endpoints")
     public void deployHTTPEndpoints() {
-        HTTPEndpointsTemplate.deploy();
+        ResourceFactory.create(HTTPEndpoints.class);
     }
 
     @Given("^deploy IRC server")
     public void deployIRCServer() {
-        IrcTemplate.deploy();
+        ResourceFactory.create(IRC.class);
     }
 
     @Given("^deploy public oauth proxy$")
-    public void deployApiOauthProxy() throws TimeoutException, InterruptedException {
-        PublicOauthProxyTemplate.deploy();
+    public void deployApiOauthProxy() {
+        ResourceFactory.create(PublicOauthProxy.class);
     }
 
     @Given("^deploy OData server$")
     public void deployODataServer() {
-        WildFlyTemplate.deploy("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git", "odata", null);
+        WildFlyS2i wildFlyS2i = ResourceFactory.get(WildFlyS2i.class);
+        wildFlyS2i.setAppName("odata");
+        wildFlyS2i.setGitURL("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git");
+        wildFlyS2i.setBranch(null);
+        wildFlyS2i.deploy();
     }
 
     @Given("^deploy MongoDB 3.6 database$")
     public void deployMongoDB36() {
-        MongoDb36Template.deploy();
+        ResourceFactory.create(MongoDb36.class);
     }
 
     @Given("^wait until \"([^\"]*)\" pod is reloaded$")
@@ -201,5 +182,45 @@ public class OpenshiftValidationSteps {
                 .endSpec()
                 .build()
         );
+    }
+
+    @Then("^check that deployment config \"([^\"]*)\" (does|does not) exist$")
+    public void checkDeploymentConfig(String dcName, String shouldExist) {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig(dcName);
+        if ("does".equals(shouldExist)) {
+            assertThat(dc).isNotNull();
+        } else {
+            assertThat(dc).isNull();
+        }
+    }
+
+    @Then("^check that service \"([^\"]*)\" (does|does not) exist$")
+    public void checkService(String serviceName, String shouldExist) {
+        Service service = OpenShiftUtils.getInstance().getService(serviceName);
+        if ("does".equals(shouldExist)) {
+            assertThat(service).isNotNull();
+        } else {
+            assertThat(service).isNull();
+        }
+    }
+
+    @Then("check that SAR check is disabled")
+    public void checkSar() {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-oauthproxy");
+        Optional<String> sarArg = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getArgs().stream()
+            .filter(arg -> arg.contains("--openshift-sar")).findFirst();
+        assertThat(sarArg).isNotPresent();
+    }
+
+    @Then("check that SAR check is enabled for namespace {string}")
+    public void checkSar(String namespace) {
+        if (namespace.isEmpty()) {
+            namespace = TestConfiguration.openShiftNamespace();
+        }
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-oauthproxy");
+        Optional<String> sarArg = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getArgs().stream()
+            .filter(arg -> arg.contains("--openshift-sar")).findFirst();
+        assertThat(sarArg).isPresent();
+        assertThat(sarArg.get()).contains("\"namespace\":\"" + namespace + "\"");
     }
 }

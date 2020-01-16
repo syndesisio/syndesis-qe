@@ -3,6 +3,8 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.JMSUtils;
 
 import org.assertj.core.api.Assertions;
@@ -92,5 +94,14 @@ public class JmsValidationSteps {
     @Then("^verify that JMS queue \"([^\"]*)\" received a message in (\\d+) seconds$")
     public void verifyEmptyQueue(String queue, int secondsTimeout) {
         assertThat(JMSUtils.getMessage("tcp", JMSUtils.Destination.QUEUE, queue, secondsTimeout * 1000L)).isNotNull();
+    }
+
+    @When("^send \"([^\"]*)\" message to \"([^\"]*)\" queue on \"([^\"]*)\" broker$")
+    public void sendMessageToQueueOnBroker(String message, String queue, String brokerAccount) {
+        Account brokerCredentials = AccountUtils.get(brokerAccount);
+        final String userName = brokerCredentials.getProperty("username");
+        final String password = brokerCredentials.getProperty("password");
+        final String brokerpod = brokerCredentials.getProperty("appname");
+        JMSUtils.sendMessage(brokerpod, "tcp", userName, password, JMSUtils.Destination.QUEUE, queue, message);
     }
 }

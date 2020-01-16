@@ -4,9 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.templates.SyndesisTemplate;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -21,6 +23,7 @@ import java.util.Optional;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -49,7 +52,7 @@ public class UpgradeSteps {
             try {
                 response = new OkHttpClient.Builder().build().newCall(request).execute().body().string();
             } catch (IOException e) {
-                log.error("Unable to get version from " + VERSION_ENDPOINT);
+                log.error("Unable to get version from " + DOCKER_HUB_SYNDESIS_TAGS_URL);
                 e.printStackTrace();
             }
 
@@ -107,13 +110,15 @@ public class UpgradeSteps {
     @When("^perform syndesis upgrade to newer version using operator$")
     public void upgradeUsingOperator() {
         TestConfiguration.get().overrideSyndesisOperatorImage(OPERATOR_IMAGE + System.getProperty("syndesis.upgrade.version"));
-        OpenShiftUtils.getInstance().resourceList(SyndesisTemplate.getOperatorResources()).delete();
-        OpenShiftUtils.getInstance().resourceList(SyndesisTemplate.getOperatorResources()).createOrReplace();
+        final List<HasMetadata> operatorResources = ResourceFactory.get(Syndesis.class).getOperatorResources();
+        OpenShiftUtils.getInstance().resourceList(operatorResources).delete();
+        OpenShiftUtils.getInstance().resourceList(operatorResources).createOrReplace();
     }
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
     public void verifyVersion(String version) {
-        assertThat(getSyndesisVersion()).startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
+        assertThat(TestUtils.getSyndesisVersion())
+            .startsWith(System.getProperty("given".equals(version) ? "syndesis.version" : "syndesis.upgrade.version"));
     }
 
     private String getSyndesisVersion() {

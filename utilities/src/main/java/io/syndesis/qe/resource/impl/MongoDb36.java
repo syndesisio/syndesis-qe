@@ -1,9 +1,8 @@
-package io.syndesis.qe.templates;
-
-import static org.assertj.core.api.Assertions.fail;
+package io.syndesis.qe.resource.impl;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -13,7 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -24,8 +22,7 @@ import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MongoDb36Template {
-
+public class MongoDb36 implements Resource {
     public static final int MONGODB_PORT = 27017;
     public static final String APP_NAME = "mongodb36";
     private static final String LABEL_NAME = "app";
@@ -39,8 +36,8 @@ public class MongoDb36Template {
     private static final String MONGODB_REPLICA_SET_MODE = "primary";
     private static final String MONGODB_REPLICA_SET_KEY = "replica";
 
-    public static void deploy() {
-
+    @Override
+    public void deploy() {
         Account mongodbAccount = new Account();
         mongodbAccount.setService("mongodb36");
         Map<String, String> accountParameters = new HashMap<>();
@@ -118,16 +115,10 @@ public class MongoDb36Template {
             .editOrNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
             .done();
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, APP_NAME, 1));
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for {} deployment failed ", APP_NAME, e);
-        }
-        waitUntilMongoIsReady();
     }
 
-    public static void cleanUp() {
+    @Override
+    public void undeploy() {
         try {
             OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
                 .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
@@ -139,14 +130,8 @@ public class MongoDb36Template {
         }
     }
 
-    public static void waitUntilMongoIsReady() {
-        log.info("Waiting for Mongo to get ready");
-        try {
-            OpenShiftWaitUtils.waitUntilPodAppears(APP_NAME);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted"), 1000 * 60L);
-        } catch (TimeoutException | InterruptedException e) {
-            log.error(OpenShiftUtils.getPodLogs(APP_NAME));
-            fail("MongoDB has not successfully started in time limit", e);
-        }
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME)) && OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted");
     }
 }

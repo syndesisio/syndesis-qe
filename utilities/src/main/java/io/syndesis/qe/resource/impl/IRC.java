@@ -1,7 +1,8 @@
-package io.syndesis.qe.templates;
+package io.syndesis.qe.resource.impl;
 
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -22,7 +23,7 @@ import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class IrcTemplate {
+public class IRC implements Resource {
     private static final String LABEL_NAME = "app";
     private static final String SERVER_APP_NAME = "irc-server";
     public static final String CONTROLLER_APP_NAME = "irc-controller";
@@ -30,16 +31,39 @@ public class IrcTemplate {
     private static final int IRC_PORT = 6667;
     private static final int CONTROLLER_PORT = 8080;
 
-    public static void deploy() {
-        if (!TestUtils.isDcDeployed("irc-server")) {
+    @Override
+    public void deploy() {
+        if (!TestUtils.isDcDeployed(SERVER_APP_NAME)) {
             deployIrcServer();
         }
 
-        if (!TestUtils.isDcDeployed("irc-controller")) {
+        if (!TestUtils.isDcDeployed(CONTROLLER_APP_NAME)) {
             deployIrcController();
         }
 
         addAccounts();
+    }
+
+    @Override
+    public void undeploy() {
+        OpenShiftUtils.getInstance().deploymentConfigs().list().getItems().stream().filter(
+            dc -> dc.getMetadata().getName().startsWith("irc-")
+        ).forEach(
+            dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true)
+        );
+
+        OpenShiftUtils.getInstance().services().delete(
+            OpenShiftUtils.getInstance().services().list().getItems().stream().filter(
+                s -> s.getMetadata().getName().startsWith("irc-")).collect(Collectors.toList())
+        );
+
+        OpenShiftUtils.getInstance().routes().withName(CONTROLLER_APP_NAME).delete();
+    }
+
+    @Override
+    public boolean isReady() {
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, SERVER_APP_NAME))
+            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, CONTROLLER_APP_NAME));
     }
 
     private static void deployIrcServer() {
@@ -58,8 +82,8 @@ public class IrcTemplate {
             .editOrNewSpec()
             .addToSelector(LABEL_NAME, SERVER_APP_NAME)
             .withReplicas(1)
-            .editOrNewTemplate()
-            .editOrNewMetadata()
+            .withNewTemplate()
+            .withNewMetadata()
             .addToLabels(LABEL_NAME, SERVER_APP_NAME)
             .endMetadata()
             .editOrNewSpec()
@@ -83,20 +107,13 @@ public class IrcTemplate {
             .build());
 
         OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
-            .editOrNewMetadata()
+            .withNewMetadata()
             .withName(SERVER_APP_NAME)
             .addToLabels(LABEL_NAME, SERVER_APP_NAME)
             .endMetadata()
-            .editOrNewSpecLike(serviceSpecBuilder.build())
+            .withNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
             .done();
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, SERVER_APP_NAME, 1));
-            Thread.sleep(20 * 1000);
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for {} deployment failed ", SERVER_APP_NAME, e);
-        }
     }
 
     private static void deployIrcController() {
@@ -167,13 +184,6 @@ public class IrcTemplate {
             .endTo()
             .endSpec()
             .done();
-
-        try {
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, CONTROLLER_APP_NAME, 1));
-            Thread.sleep(20 * 1000);
-        } catch (InterruptedException | TimeoutException e) {
-            log.error("Wait for {} deployment failed ", CONTROLLER_APP_NAME, e);
-        }
     }
 
     private static void addAccounts() {
