@@ -15,6 +15,8 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.CreateCollectionOptions;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.ValidationOptions;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -60,7 +62,18 @@ public class MongoDBSteps {
     @When("create mongodb collection {string}")
     public void createCollection(String collectionName) {
         database.getCollection(collectionName).drop();
-        database.createCollection(collectionName);
+        //json schema is needed when we want to use output from the mongo middle-steps in the data mapper
+        Document jsonSchema = Document.parse("{ \n"
+            + "      bsonType: \"object\", \n"
+            + "      required: [ \"value\"], \n"
+            + "      properties: { \n"
+            + "         value: { \n"
+            + "            bsonType: \"string\", \n"
+            + "            description: \"required and must be a string\" } \n"
+            + "      }}");
+        ValidationOptions collOptions = new ValidationOptions().validator(Filters.eq("$jsonSchema", jsonSchema));
+        database.createCollection(collectionName,
+            new CreateCollectionOptions().validationOptions(collOptions));
     }
 
     @Given("create mongodb capped collection {string} with size {int} and max {int}")
