@@ -303,7 +303,15 @@ public class SyndesisTemplate {
             }
 
             OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
-            OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
+            try {
+                OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
+            } catch (KubernetesClientException ex) {
+                // retry one more time after a slight delay
+                log.warn("Caught KubernetesClientException: " + ex);
+                log.warn("Will retry in 30 seconds");
+                TestUtils.sleepIgnoreInterrupt(30000L);
+                OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
+            }
         }
 
         log.info("Waiting for syndesis-operator to be ready");
