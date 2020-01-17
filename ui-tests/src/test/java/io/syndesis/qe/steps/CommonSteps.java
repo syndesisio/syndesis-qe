@@ -311,8 +311,7 @@ public class CommonSteps {
                     .replace("-", "_")
                     .replaceAll("[()]", ""));
             } catch (IllegalArgumentException ex) {
-                throw new IllegalArgumentException("Unable to find enum value for " + service + " account." +
-                    " New account should be included in smoke tests");
+                log.info("No enum value for {}, skipping", service);
             }
 
             switch (current) {
