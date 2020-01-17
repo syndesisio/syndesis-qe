@@ -48,7 +48,7 @@ public class CommonSteps {
         //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
         OpenShiftUtils.binary().execute("delete", "template", "--all");
         OpenShiftUtils.getInstance().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
-        OpenShiftUtils.getInstance().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
+        OpenShiftUtils.getInstance().apps().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.getInstance().serviceAccounts().withName("syndesis-oauth-client").delete();
         try {
             OpenShiftUtils.getInstance().clean();

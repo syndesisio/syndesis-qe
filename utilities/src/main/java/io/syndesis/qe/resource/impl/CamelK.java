@@ -1,11 +1,14 @@
 package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
+import io.syndesis.qe.Image;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -21,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import io.fabric8.kubernetes.api.model.LocalObjectReference;
+import io.fabric8.kubernetes.api.model.ServiceAccount;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -36,6 +41,9 @@ public class CamelK implements Resource {
 
     @Override
     public void deploy() {
+        if (TestUtils.isProdBuild()) {
+            assumeThat(TestConfiguration.image(Image.CAMELK)).as("No Camel-K image was specified when running productized build").isNotNull();
+        }
         downloadArchive();
         extractArchive();
         installViaBinary();
@@ -43,9 +51,13 @@ public class CamelK implements Resource {
 
     @Override
     public void undeploy() {
-        // It is needed to reset-db first, otherwise server would create the integrations again
-        TestSupport.getInstance().resetDB();
-        removeViaBinary();
+        // The server pod will not be present if the camel-k wasn't deployed
+        if (OpenShiftUtils.getAnyPod("syndesis.io/component", "syndesis-server").isPresent()) {
+            // It is needed to reset-db first, otherwise server would create the integrations again
+            TestSupport.getInstance().resetDB();
+            removeViaBinary();
+            OpenShiftUtils.getInstance().apps().deployments().withName("camel-k-operator").delete();
+        }
     }
 
     @Override
@@ -93,10 +105,32 @@ public class CamelK implements Resource {
     private void installViaBinary() {
         try {
             new File(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel").setExecutable(true);
-            Runtime.getRuntime().exec(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel install").waitFor();
+            StringBuilder arguments = new StringBuilder();
+            if (TestUtils.isProdBuild()) {
+                arguments.append(" --maven-repository ").append(TestConfiguration.prodRepository());
+                arguments.append(" --operator-image ").append(TestConfiguration.image(Image.CAMELK));
+            } else {
+                arguments.append(" --maven-repository ").append(TestConfiguration.upstreamRepository());
+            }
+
+            final String command = LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel install" + arguments.toString();
+            log.info("Invoking " + command);
+            Runtime.getRuntime().exec(command).waitFor();
         } catch (Exception e) {
             fail("Unable to invoke kamel binary", e);
         }
+
+        // We need to link syndesis-pull-secret to camel-k-operator SA
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator") != null);
+        } catch (Exception e) {
+            fail("Unable to get camel-k-operator service account", e);
+        }
+        ServiceAccount sa = OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator");
+        sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
+        OpenShiftUtils.getInstance().serviceAccounts().createOrReplace(sa);
+        // It is very likely that the operator pod already tried to spawn and failed because of the missing secret
+        OpenShiftUtils.getInstance().deletePods("name", "camel-k-operator");
     }
 
     private void removeViaBinary() {
