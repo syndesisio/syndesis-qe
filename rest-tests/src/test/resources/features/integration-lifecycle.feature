@@ -45,3 +45,11 @@ Feature: Integration - Lifecycle
     When create new integration with name: "DB to DB rest test act-deact-long" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest test act-deact-long" to become active
     Then switch Inactive and Active state on integration "DB to DB rest test act-deact-long" for 3 times and check pods up/down
+
+  @ENTESB-12493
+  Scenario: Recreate integration with the same name
+    When create new integration with name: "ENTESB-12493" and desiredState: "Published"
+    Then wait for integration with name: "ENTESB-12493" to become active
+    When delete integration with name "ENTESB-12493"
+      And create new integration with name: "ENTESB-12493" and desiredState: "Published"
+    Then wait for integration with name: "ENTESB-12493" to become active

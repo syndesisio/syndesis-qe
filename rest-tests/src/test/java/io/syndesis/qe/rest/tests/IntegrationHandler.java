@@ -99,6 +99,11 @@ public class IntegrationHandler {
         }
     }
 
+    @When("delete integration with name {string}")
+    public void deleteIntegration(String integrationName) {
+        integrationsEndpoint.delete(integrationsEndpoint.getIntegrationId(integrationName).get());
+    }
+
     @Then("^try to create new integration with the same name: \"([^\"]*)\" and state: \"([^\"]*)\"$")
     public void sameNameIntegrationValidation(String integrationName, String desiredState) {
 
