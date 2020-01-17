@@ -6,7 +6,7 @@ Feature: Integration - Lifecycle
     Given clean application state
     And clean all builds
     And create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period "4000" ms
-    And create finish DB invoke stored procedure "add_lead" action step
+    And add log step
 
   @integrations-lifecycle
   Scenario: Draft state
@@ -36,7 +36,7 @@ Feature: Integration - Lifecycle
     When create new integration with name: "DB to DB rest same name" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest same name" to become active
     Given create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period "4000" ms
-    And create finish DB invoke stored procedure "add_lead" action step
+    And add log step
     Then try to create new integration with the same name: "DB to DB rest same name" and state: "Unpublished"
 
   @integrations-lifecycle
