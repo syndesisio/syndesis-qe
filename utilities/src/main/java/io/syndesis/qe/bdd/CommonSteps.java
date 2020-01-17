@@ -10,6 +10,7 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
+import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
@@ -117,6 +118,11 @@ public class CommonSteps {
     @When("^deploy custom database$")
     public void deployDb() {
         ResourceFactory.create(ExternalDatabase.class);
+    }
+
+    @When("^deploy DV$")
+    public void deployDv() {
+        ResourceFactory.create(DV.class);
     }
 
     /**
