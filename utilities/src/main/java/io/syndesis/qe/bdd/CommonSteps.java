@@ -10,6 +10,7 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
+import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
@@ -48,7 +49,7 @@ public class CommonSteps {
         //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
         OpenShiftUtils.binary().execute("delete", "template", "--all");
         OpenShiftUtils.getInstance().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
-        OpenShiftUtils.getInstance().extensions().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
+        OpenShiftUtils.getInstance().apps().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.getInstance().serviceAccounts().withName("syndesis-oauth-client").delete();
         try {
             OpenShiftUtils.getInstance().clean();
@@ -117,6 +118,11 @@ public class CommonSteps {
     @When("^deploy custom database$")
     public void deployDb() {
         ResourceFactory.create(ExternalDatabase.class);
+    }
+
+    @When("^deploy DV$")
+    public void deployDv() {
+        ResourceFactory.create(DV.class);
     }
 
     /**
