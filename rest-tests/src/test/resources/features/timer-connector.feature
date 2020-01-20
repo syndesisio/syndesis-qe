@@ -12,7 +12,9 @@ Feature: Integration - Timer
     And deploy HTTP endpoints
     And create HTTP connection
 
+  @simple-timer
   Scenario: Simple Timer to GET
+    And sleep for jenkins delay or "10" seconds
     When add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
       | timer-action | 1000   |
@@ -23,11 +25,12 @@ Feature: Integration - Timer
 
     Then verify that after "2.5" seconds there were "2" calls
 
-
+  @cron-timer
   Scenario: Cron Timer to GET
+    And sleep for jenkins delay or "10" seconds
     When add "timer" endpoint with connector id "timer" and "timer-chron" action and with properties:
       | action     | cron          |
-      | timer-cron | 0/1 * * * * ? |
+      | timer-cron | 0 0/1 * * * ? |
     And create HTTP "GET" step
     And create integration with name: "cron-timer-to-http-1"
     And wait for integration with name: "cron-timer-to-http-1" to become active
