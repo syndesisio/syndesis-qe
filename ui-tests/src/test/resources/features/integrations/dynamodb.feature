@@ -12,7 +12,7 @@ Feature: Dynamodb connector
     And delete dynamoDb DB table
     And create new dynamoDb table with primary key "email" and sort key "company"
     And created connections
-      | AWS-DDB | AWS DDB | AWS-DDB-test | AWS-DDB test |
+      | Amazon DynamoDB | AWS DDB | AWS-DDB-test | AWS-DDB test |
     And navigate to the "Home" page
 
   @dynamodb-put
@@ -65,8 +65,6 @@ Feature: Dynamodb connector
       | name       | test person     |
       | department | CEE             |
 
-  #blocked by ENTESB-11767
-  @ENTESB-11767
   @dynamodb-query
   Scenario: Webhook to dynamoDb - query item
     Given reset content of "contact" table
@@ -107,11 +105,18 @@ Feature: Dynamodb connector
       | element    | {"email":":#email","company":":#company"} |
     And click on the "Done" button
 
-    When add integration step on position "1"
+    When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data bucket "2 - Result"
+    When create data mapper mappings
+      | email   | :#email   |
+      | company | :#company |
+    And click on the "Done" button
 
+    When add integration step on position "2"
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    And open data bucket "3 - Result"
     When create data mapper mappings
       | name    | first_name  |
       | company | company     |
