@@ -25,7 +25,7 @@ public class KebabMenu {
     }
 
     public void open() {
-        if (menuButton.$(By.xpath("/ul")).is(visible)) {
+        if (menuButton.$(By.xpath("./ul")).is(visible)) {
             return;
         } else {
             menuButton.shouldBe(visible).click();
@@ -33,7 +33,7 @@ public class KebabMenu {
     }
 
     public void close() {
-        if (menuButton.$(By.xpath("/ul")).is(visible)) {
+        if (menuButton.$(By.xpath("./ul")).is(visible)) {
             menuButton.shouldBe(visible).click();
         }
     }
@@ -58,7 +58,7 @@ public class KebabMenu {
 
     private List<String> getItemsStrings() {
         List<String> strings = new ArrayList<String>();
-        for (SelenideElement item : menuButton.$$(By.xpath("//a"))) {
+        for (SelenideElement item : menuButton.$$(By.xpath(".//a"))) {
             strings.add(item.getText());
         }
 

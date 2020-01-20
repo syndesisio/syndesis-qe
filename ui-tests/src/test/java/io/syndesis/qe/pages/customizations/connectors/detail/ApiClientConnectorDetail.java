@@ -32,7 +32,7 @@ public class ApiClientConnectorDetail extends SyndesisPageObject {
     }
 
     public SelenideElement getEditablePropertyLabel(String propertyName) {
-        return $(By.xpath("//label[text()='" + propertyName + "']")).shouldBe(visible);
+        return $(By.xpath(".//label[text()='" + propertyName + "']")).shouldBe(visible);
     }
 
     public SelenideElement getTextToEditElement(String propertyName) {

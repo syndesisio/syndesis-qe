@@ -14,12 +14,12 @@ import com.codeborne.selenide.SelenideElement;
 public class ReviewActions extends SyndesisPageObject implements WizardPhase {
 
     private static class Button {
-        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
+        public static By NEXT = By.xpath(".//button[contains(.,'Next')]");
     }
 
     private static class Element {
         public static By ROOT = By.className("open-api-review-actions");
-        public static By VALIDATION_ERROR_BOX = By.xpath("//*[@class='syn-validation-error']");
+        public static By VALIDATION_ERROR_BOX = By.xpath(".//*[@class='syn-validation-error']");
     }
 
     @Override
