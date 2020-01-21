@@ -62,6 +62,8 @@ Feature: Integration - File transfer
   @datamapper
   @integration-sql-box
   Scenario: SQL to Box upload
+    Given reset content of "CONTACT" table
+      And execute SQL command "INSERT INTO contact VALUES ('Joe', 'Jackson', 'Red Hat', 'db', current_timestamp)"
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "60000" ms
       And start mapper definition with name: "sql-box"
       And MAP using Step 1 and field "/<>/last_name" to "/text"
