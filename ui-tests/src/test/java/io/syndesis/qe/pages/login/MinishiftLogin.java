@@ -10,7 +10,7 @@ import com.codeborne.selenide.Condition;
 
 public class MinishiftLogin implements Login {
     private static final class Button {
-        public static final By SIGNIN = By.xpath("//button[@type='submit']");
+        public static final By SIGNIN = By.xpath(".//button[@type='submit']");
     }
 
     private static final class Input {

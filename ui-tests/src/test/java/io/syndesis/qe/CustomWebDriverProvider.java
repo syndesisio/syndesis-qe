@@ -95,6 +95,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", preferences);
         options.addArguments("--no-sandbox");
+        options.setCapability("acceptInsecureCerts", true);
 
         TestConfiguration.browserBinary().map(options::setBinary);
 

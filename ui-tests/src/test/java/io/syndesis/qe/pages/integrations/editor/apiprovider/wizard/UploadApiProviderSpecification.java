@@ -20,7 +20,7 @@ public class UploadApiProviderSpecification extends SyndesisPageObject implement
     }
 
     private static class Button {
-        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
+        public static By NEXT = By.xpath(".//button[contains(.,'Next')]");
     }
 
     @Override

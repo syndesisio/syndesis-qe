@@ -8,7 +8,7 @@ import com.codeborne.selenide.Condition;
 
 public class GitHubLogin implements Login {
     private static final class Button {
-        public static final By SIGNIN = By.xpath("//input[@type='submit']");
+        public static final By SIGNIN = By.xpath(".//input[@type='submit']");
         public static final By REAUTH = By.id("js-oauth-authorize-btn");
     }
 

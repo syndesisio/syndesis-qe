@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
 
     private static class Button {
-        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
+        public static By NEXT = By.xpath(".//button[contains(.,'Next')]");
     }
 
     private static class Element {
@@ -33,11 +33,11 @@ public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
     }
 
     private static class Input {
-        public static By OAUTH_2_0 = By.xpath("//label[text()[contains(.,'OAuth 2.0')]]/input[@name='authenticationType']");
+        public static By OAUTH_2_0 = By.xpath(".//label[text()[contains(.,'OAuth 2.0')]]/input[@name='authenticationType']");
         public static By HTTP_BASIC_AUTHENTICATION =
-            By.xpath("//label[text()[contains(.,'HTTP Basic Authentication')]]/input[@name='authenticationType']");
-        public static By AUTHORIZATION_URL = By.xpath("//input[@formcontrolname='authorizationEndpoint']");
-        public static By ACCESS_TOKEN_URL = By.xpath("//input[@formcontrolname='tokenEndpoint']");
+            By.xpath(".//label[text()[contains(.,'HTTP Basic Authentication')]]/input[@name='authenticationType']");
+        public static By AUTHORIZATION_URL = By.xpath(".//input[@formcontrolname='authorizationEndpoint']");
+        public static By ACCESS_TOKEN_URL = By.xpath(".//input[@formcontrolname='tokenEndpoint']");
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.codeborne.selenide.Driver;
 import com.codeborne.selenide.Screenshots;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
@@ -147,13 +148,13 @@ public class SelectorSnooper {
         public static long delta = 0;
 
         @Override
-        public List<WebElement> findElements(SearchContext context, By selector) {
+        public List<WebElement> findElements(Driver driver, SearchContext context, By selector) {
             //Ignore all currently logged selectors, if this condition wasn't here everything would burn in recursive hell
             if (pauseReporting || currentSelectors.contains(selector)) {
-                return super.findElements(context, selector);
+                return super.findElements(driver, context, selector);
             }
             currentSelectors.add(selector);
-            List<WebElement> elements = super.findElements(context, selector);
+            List<WebElement> elements = super.findElements(driver, context, selector);
             if (elements.size() > 0) {
                 long startTime = Instant.now().toEpochMilli();
                 WebElement el = elements.get(0);
@@ -173,12 +174,12 @@ public class SelectorSnooper {
         }
 
         @Override
-        public WebElement findElement(SearchContext context, By selector) {
+        public WebElement findElement(Driver driver, SearchContext context, By selector) {
             if (pauseReporting || currentSelectors.contains(selector)) {
-                return super.findElement(context, selector);
+                return super.findElement(driver, context, selector);
             }
             currentSelectors.add(selector);
-            WebElement el = super.findElement(context, selector);
+            WebElement el = super.findElement(driver, context, selector);
             if (el != null) {
                 long start = Instant.now().toEpochMilli();
                 if (selector.getClass() == By.ByCssSelector.class) {

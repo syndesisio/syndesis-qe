@@ -58,7 +58,7 @@ public class ApicurioSteps {
         public static By OPERATION_KEBAB = By.id("dropdownKebab");
         public static By OPERATION = By.className("api-path");
         public static By OPERATION_KEBAB_MENU = By.className("detail-actions");
-        public static By OPERATION_KEBAB_MENU_DELETE = By.xpath("//span[contains(text(), \"Delete Path\")]");
+        public static By OPERATION_KEBAB_MENU_DELETE = By.xpath(".//span[contains(text(), \"Delete Path\")]");
 
         public static By RESPONSE_SECTION = By.className("responses-section");
         public static By MARKDOWN_EDITOR = By.className("inline-markdown-editor-label");
@@ -71,7 +71,7 @@ public class ApicurioSteps {
         //modal dialog elements
         public static By MODAL_DIALOG = By.className("modal-dialog");
         public static By MODAL_FOOTER = By.className("modal-footer");
-        public static By MODAL_SUBMIT_ADD = By.xpath("//button[contains(text(), \"Add\")]");
+        public static By MODAL_SUBMIT_ADD = By.xpath(".//button[contains(text(), \"Add\")]");
         public static By MODAL_PATH_INPUT = By.id("path");
 
         //syndesis apicurio-review page elements
@@ -92,14 +92,14 @@ public class ApicurioSteps {
 
     private static class SecurityPageElements {
         public static By NAME = By.id("securitySchemeName");
-        public static By SAVE = By.xpath("//button[contains(text(), 'Save')]");
+        public static By SAVE = By.xpath(".//button[contains(text(), 'Save')]");
         public static By EDITOR = By.tagName("security-scheme-editor");
         public static By SECURITY_TYPE_DROPDOWN = By.className("dropdown-toggle");
         public static By SECURITY_DROPDOWN_MENU = By.className("dropdown-menu");
         public static By ACTION_HEADER = By.className("action-header");
 
         //security requirements page
-        public static By SECURITY_REQUIREMENT = By.xpath("//*[contains(.,'ImmovableName')]");
+        public static By SECURITY_REQUIREMENT = By.xpath(".//*[contains(.,'ImmovableName')]");
         public static By SECURITY_REQUIREMENT_ITEMS = By.className("list-group-item-heading");
     }
 
@@ -268,7 +268,7 @@ public class ApicurioSteps {
         //select security option
         $(SecurityPageElements.EDITOR).shouldBe(visible).$(SecurityPageElements.SECURITY_TYPE_DROPDOWN).shouldBe(visible).click();
         $(SecurityPageElements.EDITOR).shouldBe(visible).$(SecurityPageElements.SECURITY_DROPDOWN_MENU).shouldBe(visible)
-            .$(By.xpath("//a[contains(text(), \"" + schemeType + "\")]")).shouldBe(visible).click();
+            .$(By.xpath(".//a[contains(text(), \"" + schemeType + "\")]")).shouldBe(visible).click();
 
         if ("API Key".equalsIgnoreCase(schemeType)) {
             $(By.className("apiKey-auth")).find(By.id("in20")).click();
@@ -278,7 +278,7 @@ public class ApicurioSteps {
 
         if ("OAuth 2".equalsIgnoreCase(schemeType)) {
             $(By.id("flow")).shouldBe(visible).click();
-            $(By.id("flow")).shouldBe(visible).parent().$(By.xpath("//a[contains(text(), \"Access Code\")]")).shouldBe(visible).click();
+            $(By.id("flow")).shouldBe(visible).parent().$(By.xpath(".//a[contains(text(), \"Access Code\")]")).shouldBe(visible).click();
             $(By.id("authorizationUrl")).sendKeys("http://syndesis.io");
             $(By.id("tokenUrl")).sendKeys("https://hihi.com");
         }

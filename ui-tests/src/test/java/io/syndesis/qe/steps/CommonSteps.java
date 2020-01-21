@@ -927,10 +927,10 @@ public class CommonSteps {
                         e.getAttribute("value").equalsIgnoreCase("username"))
                 .findFirst().get().click();
             $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
-            $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
+            $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
             TestUtils.sleepForJenkinsDelayIfHigher(3);
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
-            $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
+            $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
         } else {
             fail("Credentials for QE Concur were not found.");
         }

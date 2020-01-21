@@ -25,7 +25,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
     }
 
     private static class Button {
-        public static By CREATE_API_CONNECTOR_RIGHT = By.xpath("//a[text()[contains(.,'Create API Connector')]]");
+        public static By CREATE_API_CONNECTOR_RIGHT = By.xpath(".//a[text()[contains(.,'Create API Connector')]]");
     }
 
     public void startWizard() {
