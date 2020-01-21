@@ -114,11 +114,11 @@ public class IntegrationHandler {
             .build();
 
         log.info("Creating integration {}", integration.getName());
-        Assertions.assertThatExceptionOfType(BadRequestException.class)
+        Assertions.assertThatExceptionOfType(AssertionError.class)
             .isThrownBy(() -> {
                 integrationsEndpoint.create(integration);
             })
-            .withMessageContaining("HTTP 400 Bad Request")
+            .withMessageContaining("Unable to invoke endpoint, see logs")
             .withNoCause();
         log.debug("Flushing used steps");
         steps.flushStepDefinitions();
