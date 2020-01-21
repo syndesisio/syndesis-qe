@@ -10,6 +10,7 @@ import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.Verifier;
 import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.server.openshift.Exposure;
 
 import org.assertj.core.api.Assertions;
@@ -213,11 +214,12 @@ public class IntegrationHandler {
     private void verifyConnections() {
         for (Step step : steps.getSteps()) {
             if (step.getStepKind() == StepKind.endpoint && step.getConnection().get().getConnector().get().getTags().contains("verifier")) {
-                String response = Verifier.verify(step.getConnection().get().getConnectorId(), step.getConnection().get().getConfiguredProperties());
-                log.debug(response);
-                if (response.contains("ERROR") || response.contains("UNSUPPORTED")) {
-                    throw new RuntimeException(String.format("Connection %s failed validation: %s", step.getConnection().get().getName(), response));
-                }
+                TestUtils.withRetry(() -> {
+                    String response = Verifier.verify(step.getConnection().get().getConnectorId(),
+                        step.getConnection().get().getConfiguredProperties());
+                    log.debug(response);
+                    return !response.contains("ERROR") && !response.contains("UNSUPPORTED");
+                }, 1, 60000L, "Connection " + step.getConnection().get().getName() + " failed validation, check debug logs");
             }
         }
     }

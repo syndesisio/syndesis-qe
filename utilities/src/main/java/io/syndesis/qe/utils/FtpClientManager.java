@@ -1,7 +1,5 @@
 package io.syndesis.qe.utils;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -58,24 +56,19 @@ public class FtpClientManager {
     }
 
     private static FTPClient initClient() {
-        int i = 0;
-        while (i < 3) {
-            FTPClient ftpClient = new FTPClient();
+        FTPClient ftpClient = new FTPClient();
+        TestUtils.withRetry(() -> {
             try {
                 ftpClient.connect(ftpServer, ftpPort);
                 ftpClient.login(ftpUser, ftpPass);
                 ftpClient.enterLocalPassiveMode();
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                log.info("Connected: {}", ftpClient.isConnected());
-                return ftpClient;
+                return true;
             } catch (IOException e) {
-                log.error(e.getMessage());
-                log.info("Retrying in 30 seconds");
-                i++;
-                TestUtils.sleepIgnoreInterrupt(30000L);
+                log.error("Unable to connect FTP client: " + e.getMessage());
+                return false;
             }
-        }
-        fail("Unable to create FTP client after 3 retries");
-        return null;
+        }, 3, 30000L, "Unable to create FTP client after 3 retries");
+        return ftpClient;
     }
 }

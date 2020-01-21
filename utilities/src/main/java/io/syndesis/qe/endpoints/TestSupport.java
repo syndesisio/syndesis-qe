@@ -1,7 +1,5 @@
 package io.syndesis.qe.endpoints;
 
-import static org.junit.Assert.fail;
-
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
@@ -45,17 +43,15 @@ public final class TestSupport {
      */
     public void resetDB() {
         int tries = 0;
-        while (tries < 10) {
+        TestUtils.withRetry(() -> {
             if (resetDbWithResponse() == 204) {
                 log.info("Cleaning integration pods");
                 // wait till the integration pods are deleted
-                TestUtils.waitFor(() -> !OpenShiftUtils.getInstance().pods().list().getItems().stream().anyMatch(
-                    p -> p.getMetadata().getName().startsWith("i-")
-                        && !p.getMetadata().getName().contains("deploy")
-                        && !p.getMetadata().getName().contains("build")),
-                    1, 5 * 60,
-                    "Some integration was not deleted successfully in time. Integration name: " +
-                        OpenShiftUtils.getPodByPartialName("i-").get().getMetadata().getName());
+                TestUtils
+                    .waitFor(() -> OpenShiftUtils.getInstance().pods().withLabel("syndesis.io/component", "integration").list().getItems().isEmpty(),
+                        1, 5 * 60,
+                        "Some integration was not deleted successfully in time. Integration name: " +
+                            OpenShiftUtils.getPodByPartialName("i-").get().getMetadata().getName());
 
                 // In OCP 4.x the build and deploy pods stays there, so delete them
                 OpenShiftUtils.getInstance().pods().delete(
@@ -63,12 +59,11 @@ public final class TestSupport {
                         .filter(pod -> pod.getMetadata().getName().startsWith("i-"))
                         .collect(Collectors.toList())
                 );
-                return;
+                return true;
+            } else {
+                return false;
             }
-            TestUtils.sleepIgnoreInterrupt(5000L);
-            tries++;
-        }
-        fail("Unable to successfully reset DB after 10 tries");
+        }, 10, 5000L, "Unable to reset DB after 10 tries");
     }
 
     /**

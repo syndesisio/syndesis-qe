@@ -1,7 +1,5 @@
 package io.syndesis.qe.utils;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 
@@ -17,9 +15,7 @@ public class SalesforceAccount {
     public static ForceApi getInstance() {
         if (salesforce == null) {
             final Account salesforceAccount = AccountsDirectory.getInstance().getAccount(Account.Name.SALESFORCE).get();
-            int retries = 0;
-            int timeoutInMinutes;
-            while (retries < 4) {
+            TestUtils.withRetry(() -> {
                 try {
                     salesforce = new ForceApi(new ApiConfig()
                         .setClientId(salesforceAccount.getProperty("clientId"))
@@ -27,15 +23,12 @@ public class SalesforceAccount {
                         .setUsername(salesforceAccount.getProperty("userName"))
                         .setPassword(salesforceAccount.getProperty("password"))
                         .setForceURL(salesforceAccount.getProperty("loginUrl")));
-                    return salesforce;
+                    return true;
                 } catch (Exception ex) {
-                    ex.printStackTrace();
-                    timeoutInMinutes = ++retries;
-                    log.error("Unable to connect to salesforce, will retry in {} minutes.", timeoutInMinutes);
-                    TestUtils.sleepIgnoreInterrupt(timeoutInMinutes * 60000L);
+                    log.error("Unable to connect to salesforce, will retry in 5 minutes");
+                    return false;
                 }
-            }
-            fail("Unable to connect to SalesForce");
+            }, 3, 300000L, "Unable to connect to SalesForce");
         }
         return salesforce;
     }
