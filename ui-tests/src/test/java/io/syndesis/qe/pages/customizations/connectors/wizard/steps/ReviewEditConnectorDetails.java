@@ -4,18 +4,18 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.logic.common.wizard.WizardPhase;
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
-
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.logic.common.wizard.WizardPhase;
 
 public class ReviewEditConnectorDetails extends SyndesisPageObject implements WizardPhase {
 
     private static class Button {
 
-        public static By CREATE_CONNECTOR = By.xpath("//button[contains(.,'Create API Connector')]");
+        public static By CREATE_CONNECTOR = By.xpath(".//button[contains(.,'Create API Connector')]");
     }
 
     private static class Element {
@@ -54,6 +54,7 @@ public class ReviewEditConnectorDetails extends SyndesisPageObject implements Wi
     public void setConnectorName(String name) {
         $(Input.CONNECTOR_NAME).shouldBe(visible).setValue(name);
     }
+
     public void setDescription(String description) {
         $(TextArea.DESCRIPTION).shouldBe(visible).setValue(description);
     }

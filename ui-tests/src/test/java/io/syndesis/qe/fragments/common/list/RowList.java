@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 public class RowList extends AbstractUiElementsList {
 
     private static final class Element {
-        public static final By ROW = By.xpath("//*[contains(@class,'list-group-item')]");
-        public static final By TITLE = By.xpath("//*[contains(@class,'list-group-item-heading')]");
+        public static final By ROW = By.xpath(".//*[contains(@class,'list-group-item')]");
+        public static final By TITLE = By.xpath(".//*[contains(@class,'list-group-item-heading')]");
     }
 
     public RowList(By rootElement) {

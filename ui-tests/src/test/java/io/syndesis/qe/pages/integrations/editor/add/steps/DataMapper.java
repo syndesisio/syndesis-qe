@@ -53,9 +53,9 @@ public class DataMapper extends SyndesisPageObject {
                 "input");
         public static final By SECOND_TARGET_POSITION = By.cssSelector(
             "simple-mapping:nth-child(6) > div > div:nth-child(2) > mapping-field-action > div > div > div.form-group.argument > input");
-        public static final By ACTION_SELECT = By.xpath("//select[@id='selectAction']");
-        public static final By SEPARATOR_SELECT = By.xpath("//select[@id='select-separator']");
-        public static final By TRANSFORMATION_SELECT = By.xpath("//label[text() = 'Transformation']/following-sibling::select");
+        public static final By ACTION_SELECT = By.xpath(".//select[@id='selectAction']");
+        public static final By SEPARATOR_SELECT = By.xpath(".//select[@id='select-separator']");
+        public static final By TRANSFORMATION_SELECT = By.xpath(".//label[text() = 'Transformation']/following-sibling::select");
         public static final By BUCKET_IS_IN_OPEN_STATE = By.className("panel-collapse");
         public static final By CONSTANTS_BUCKET = By.id("Constants");
         public static final By PROPERTIES_BUCKET = By.id("Properties");

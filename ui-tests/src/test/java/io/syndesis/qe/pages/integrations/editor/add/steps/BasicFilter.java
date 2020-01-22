@@ -37,7 +37,7 @@ public class BasicFilter extends AbstractStep {
     }
 
     private static final class Link {
-        public static final By ADD_RULE = By.xpath("//button[contains(.,'+ Add another rule')]");
+        public static final By ADD_RULE = By.xpath(".//button[contains(.,'+ Add another rule')]");
     }
 
     private static final class DataList {

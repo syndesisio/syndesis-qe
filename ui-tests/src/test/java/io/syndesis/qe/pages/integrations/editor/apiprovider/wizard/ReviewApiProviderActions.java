@@ -19,15 +19,15 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
 
     private static final class Element {
         public static final By ROOT = By.cssSelector(".open-api-review-actions");
-        public static final By OPERATIONS = By.xpath("//*[text()=\"IMPORTED\"]/following-sibling::*");
+        public static final By OPERATIONS = By.xpath(".//*[text()=\"IMPORTED\"]/following-sibling::*");
         public static final By TAGGED_OPERATIONS = By.cssSelector("div.openapi-review-actions" +
                 " ol.openapi-review-actions__operations ol.openapi-review-actions__operations");
-        public static final By WARNINGS = By.xpath("//*[text()=\"WARNINGS\"]");
-        public static final By ERRORS = By.xpath("//*[text()=\"ERRORS\"]");
+        public static final By WARNINGS = By.xpath(".//*[text()=\"WARNINGS\"]");
+        public static final By ERRORS = By.xpath(".//*[text()=\"ERRORS\"]");
     }
 
     private static class Button {
-        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
+        public static By NEXT = By.xpath(".//button[contains(.,'Next')]");
     }
 
     private static final Pattern TAGGED_PATTERN = Pattern.compile("(\\d+) tagged (\\w+)");

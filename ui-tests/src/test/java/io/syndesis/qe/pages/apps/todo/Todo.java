@@ -1,14 +1,16 @@
 package io.syndesis.qe.pages.apps.todo;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
+
+import org.openqa.selenium.By;
+
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
-
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class Todo {
 
@@ -21,7 +23,7 @@ public class Todo {
     }
 
     public ElementsCollection getListItems() {
-        return $$(By.xpath("//li[@class='list-group-item']//input[@name='task' and @value!='']"));
+        return $$(By.xpath(".//li[@class='list-group-item']//input[@name='task' and @value!='']"));
     }
 
     public void setJmsForm(String text) {
@@ -35,7 +37,7 @@ public class Todo {
         showJmsForm();
         SelenideElement button = $(By.name("amq")).shouldBe(Condition.visible);
         button.click();
-        assertThat($(By.xpath("//*[@id=\"jmsToggle\"]/div/ul/li/div/span")).text()).contains("Message sent successfully");
+        assertThat($(By.xpath(".//*[@id=\"jmsToggle\"]/div/ul/li/div/span")).text()).contains("Message sent successfully");
     }
 
     public String getMessageFromTodo(int index) {

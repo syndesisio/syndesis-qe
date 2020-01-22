@@ -1,16 +1,18 @@
 package io.syndesis.qe.fragments.common.menu;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static com.codeborne.selenide.Condition.visible;
+
+import org.openqa.selenium.By;
+
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.codeborne.selenide.Condition.visible;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class KebabMenu {
 
@@ -21,7 +23,7 @@ public class KebabMenu {
     }
 
     public void open() {
-        if (menuButton.$(By.xpath("/ul")).is(visible)) {
+        if (menuButton.$(By.xpath("./ul")).is(visible)) {
             return;
         } else {
             menuButton.shouldBe(visible).click();
@@ -29,7 +31,7 @@ public class KebabMenu {
     }
 
     public void close() {
-        if (menuButton.$(By.xpath("/ul")).is(visible)) {
+        if (menuButton.$(By.xpath("./ul")).is(visible)) {
             menuButton.shouldBe(visible).click();
         }
     }
@@ -37,7 +39,7 @@ public class KebabMenu {
     public SelenideElement getItemElement(String item) {
         ElementsCollection found = menuButton.parent().$$(By.tagName("a")).filter(Condition.exactText(item));
         assertThat(found)
-                .size().isEqualTo(1);
+            .size().isEqualTo(1);
         return found.first();
     }
 
@@ -52,7 +54,7 @@ public class KebabMenu {
 
     private List<String> getItemsStrings() {
         List<String> strings = new ArrayList<String>();
-        for (SelenideElement item : menuButton.$$(By.xpath("//a"))) {
+        for (SelenideElement item : menuButton.$$(By.xpath(".//a"))) {
             strings.add(item.getText());
         }
 
