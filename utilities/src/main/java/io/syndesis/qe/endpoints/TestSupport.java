@@ -1,6 +1,9 @@
 package io.syndesis.qe.endpoints;
 
+import io.syndesis.qe.Addon;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -47,12 +50,14 @@ public final class TestSupport {
             if (resetDbWithResponse() == 204) {
                 log.info("Cleaning integration pods");
                 // wait till the integration pods are deleted
-                TestUtils
-                    .waitFor(() -> OpenShiftUtils.getInstance().pods().withLabel("syndesis.io/component", "integration").list().getItems().isEmpty(),
+                // When using camel-k, the reset DB is not enough to clear the integrations
+                if (!ResourceFactory.get(Syndesis.class).isAddonEnabled(Addon.CAMELK)) {
+                    TestUtils.waitFor(
+                        () -> OpenShiftUtils.getInstance().pods().withLabel("syndesis.io/component", "integration").list().getItems().isEmpty(),
                         1, 5 * 60,
                         "Some integration was not deleted successfully in time. Integration name: " +
                             OpenShiftUtils.getPodByPartialName("i-").get().getMetadata().getName());
-
+                }
                 // In OCP 4.x the build and deploy pods stays there, so delete them
                 OpenShiftUtils.getInstance().pods().delete(
                     OpenShiftUtils.getInstance().pods().list().getItems().stream()

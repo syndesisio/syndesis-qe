@@ -71,13 +71,15 @@ public class OperatorValidationSteps {
     @When("^deploy Syndesis CR from file \"([^\"]*)\"")
     public void deployCrFromFile(String file) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        try (FileInputStream fis = FileUtils.openInputStream(new File("src/test/resources/operator/" + file))) {
-            syndesis.getSyndesisCrClient().create(
-                TestConfiguration.openShiftNamespace(),
-                syndesis.getSyndesisCrClient().load(fis)
-            );
+        try {
+            String content = FileUtils.readFileToString(new File("src/test/resources/operator/" + file), "UTF-8");
+            if (content.contains("REPLACE_REPO")) {
+                content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
+                    : TestConfiguration.upstreamRepository());
+            }
+            syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
         } catch (IOException e) {
-            fail("Unable to create file src/test/resources/operator/" + file, e);
+            fail("Unable to open file " + file, e);
         }
     }
 

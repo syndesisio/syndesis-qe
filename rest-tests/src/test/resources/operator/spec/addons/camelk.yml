@@ -6,3 +6,8 @@ spec:
   addons:
     camelk:
       enabled: true
+  components:
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"

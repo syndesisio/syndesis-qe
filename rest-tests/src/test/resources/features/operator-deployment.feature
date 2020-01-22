@@ -99,7 +99,9 @@ Feature: Operator Deployment
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
       And add log step
       And create integration with name: "sql-to-log"
-    Then wait for integration with name: "sql-to-log" to become active
+    # Camel-K operator initially needs to download all dependencies and it takes time with combination with our nexus
+    # Especially when the artifacts are not cached on nexus yet
+    Then wait max 30 minutes for integration with name: "sql-to-log" to become active
       And check that pod "i-sql-to-log" logs contain string "Jackson"
 
   @operator-maven-repositories
