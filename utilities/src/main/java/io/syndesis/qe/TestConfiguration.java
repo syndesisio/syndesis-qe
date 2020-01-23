@@ -261,7 +261,7 @@ public class TestConfiguration {
         if (System.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
             syndesisVersion = System.getProperty(SYNDESIS_INSTALL_VERSION);
         } else {
-            syndesisVersion = "master";
+            syndesisVersion = "1.8.13";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
             if (!System.getProperty("syndesis.version").endsWith("SNAPSHOT") && !TestUtils.isProdBuild()) {
                 syndesisVersion = System.getProperty("syndesis.version");
@@ -279,7 +279,7 @@ public class TestConfiguration {
         if (this.properties.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
             operatorVersion = this.properties.getProperty(SYNDESIS_INSTALL_VERSION);
         } else {
-            operatorVersion = "latest";
+            operatorVersion = "1.8.13";
         }
         props.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
         props.setProperty(SYNDESIS_CR_URL, getClass().getClassLoader().getResource("syndesis-minimal.yaml").toString());
