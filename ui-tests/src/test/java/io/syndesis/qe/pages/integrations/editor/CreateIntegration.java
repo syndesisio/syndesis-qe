@@ -4,6 +4,8 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -16,11 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 public class CreateIntegration extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
+        public static final By ROOT = By.className("integration-editor-layout__contentOuter");
     }
 
     private static final class Input {
-        public static final By NAME = By.xpath("//input[@data-testid='name']");
+        public static final By NAME = ByUtils.dataTestId("input", "name");
     }
 
     private static final class TextArea {
@@ -40,6 +42,8 @@ public class CreateIntegration extends SyndesisPageObject {
 
     public void setName(String name) {
         log.debug("Setting integration name to {}", name);
+        TestUtils.waitFor(() -> this.getRootElement().find(Input.NAME).exists(),
+            2, 60, "Input field for name of integration did not load.");
         SelenideElement nameElement = this.getRootElement().find(Input.NAME).shouldBe(visible);
         nameElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
         nameElement.sendKeys(Keys.BACK_SPACE);

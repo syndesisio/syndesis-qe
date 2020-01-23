@@ -38,7 +38,7 @@ public class EditorSteps {
     private ChooseConnection chooseConnection = new ChooseConnection();
 
     private static final class Element {
-        public static final By EXPANDER = By.xpath("//button[contains(@class, 'toggle-collapsed')]");
+        public static final By EXPANDER = By.xpath(".//button[contains(@class, 'toggle-collapsed')]");
         public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
         public static final By INTEGRATION_EDITOR_STEPS_LIST = By.className("integration-editor-steps-list");
         public static final By INTEGRATION_EDITOR_STEPS_LIST_ITEM = By.className("list-group-item");
@@ -246,7 +246,7 @@ public class EditorSteps {
         TestUtils.sleepIgnoreInterrupt(2000);
         editor.getRootElement().$(Button.CANCEL).shouldBe(visible).click();
         SelenideElement dialog = new ModalDialogPage().getRootElement();
-        dialog.find(By.xpath("//button[text()[contains(.,'Confirm')]]")).waitUntil(Condition.appears, 10000).click();
+        dialog.find(By.xpath(".//button[text()[contains(.,'Confirm')]]")).waitUntil(Condition.appears, 10000).click();
         dialog.waitUntil(Condition.not(visible), 10 * 1000);
     }
 

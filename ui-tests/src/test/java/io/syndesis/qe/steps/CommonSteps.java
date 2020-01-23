@@ -106,7 +106,8 @@ public class CommonSteps {
         AMQ,
         AMQP,
         MQTT,
-        AWS_DDB
+        AWS_DDB,
+        NONE
     }
 
     private static class Element {
@@ -311,6 +312,7 @@ public class CommonSteps {
                     .replace("-", "_")
                     .replaceAll("[()]", ""));
             } catch (IllegalArgumentException ex) {
+                current = Credentials.NONE;
                 log.info("No enum value for {}, skipping", service);
             }
 
@@ -916,10 +918,10 @@ public class CommonSteps {
                         e.getAttribute("value").equalsIgnoreCase("username"))
                 .findFirst().get().click();
             $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
-            $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
+            $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
             TestUtils.sleepForJenkinsDelayIfHigher(3);
             $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
-            $(By.xpath("//*[@type='submit']")).shouldBe(visible).click();
+            $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
         } else {
             fail("Credentials for QE Concur were not found.");
         }

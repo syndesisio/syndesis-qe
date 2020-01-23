@@ -25,7 +25,7 @@ public class OperationsList extends RowList {
     }
 
     private static final class Element {
-        public static final By TITLE = By.xpath("//*[contains(@class,'list-pf-title')]");
+        public static final By TITLE = By.xpath(".//*[contains(@class,'list-pf-title')]");
         public static final By STATUS = By.cssSelector(".list-pf-additional-content div");
         public static final By DESCRIPTION = By.cssSelector(".list-group-item-heading");
         public static final By PATH = By.cssSelector(".item__operation-path");

@@ -1,15 +1,18 @@
 package io.syndesis.qe.pages.customizations.connectors.wizard.steps;
 
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.fragments.common.form.ApiSpecificationForm;
-import io.syndesis.qe.logic.common.wizard.WizardPhase;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+
+import io.syndesis.qe.fragments.common.form.ApiSpecificationForm;
+import io.syndesis.qe.logic.common.wizard.WizardPhase;
+import io.syndesis.qe.pages.SyndesisPageObject;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UploadSwaggerSpecification extends SyndesisPageObject implements WizardPhase {
@@ -17,7 +20,7 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     private ApiSpecificationForm apiSpecificationForm = new ApiSpecificationForm();
 
     private static class Button {
-        public static By NEXT = By.xpath("//button[contains(.,'Next')]");
+        public static By NEXT = By.xpath(".//button[contains(.,'Next')]");
     }
 
     private static class Element {
@@ -42,5 +45,4 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     public void upload(String source, String url) {
         apiSpecificationForm.upload(source, url);
     }
-
 }
