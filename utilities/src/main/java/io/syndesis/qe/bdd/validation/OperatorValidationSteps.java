@@ -163,7 +163,7 @@ public class OperatorValidationSteps {
         SoftAssertions softAssertions = new SoftAssertions();
         JSONObject components = new JSONObject((Map) data).getJSONObject("spec").getJSONObject("components");
         components.keySet().forEach(component -> {
-            String memoryLimit = components.getJSONObject(component).getJSONObject("resources").getJSONObject("limits").getString("memory");
+            String memoryLimit = components.getJSONObject(component).getJSONObject("resources").getString("memory");
             List<DeploymentConfig> dcList = OpenShiftUtils.getInstance().deploymentConfigs()
                 .withLabel("syndesis.io/component", "syndesis-" + ("database".equals(component) ? "db" : component)).list().getItems();
             softAssertions.assertThat(dcList).hasSize(1);

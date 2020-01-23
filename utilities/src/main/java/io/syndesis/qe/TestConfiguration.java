@@ -310,8 +310,7 @@ public class TestConfiguration {
                 .format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/syndesis-public-oauth-proxy.yml", syndesisVersion));
         }
 
-        props.setProperty(SYNDESIS_CRD_URL,
-            String.format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/operator/deploy/syndesis-crd.yml", syndesisVersion));
+        props.setProperty(SYNDESIS_CRD_URL, getClass().getClassLoader().getResource("syndesis-crd.yaml").toString());
         String operatorVersion;
         if (this.properties.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
             operatorVersion = this.properties.getProperty(SYNDESIS_INSTALL_VERSION);

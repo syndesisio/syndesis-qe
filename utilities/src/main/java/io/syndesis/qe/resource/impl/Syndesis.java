@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +50,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
     private static final String OPERATOR_IMAGE = TestConfiguration.syndesisOperatorImage();
+
+    private String crdApiVersion;
 
     @Override
     public void deploy() {
@@ -222,11 +225,18 @@ public class Syndesis implements Resource {
 
     private CustomResourceDefinitionContext makeSyndesisContext() {
         CustomResourceDefinition syndesisCrd = getCrd();
+        if (crdApiVersion == null) {
+            try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
+                crdApiVersion = StringUtils.substringAfter(((Map<String, String>) new Yaml().load(is)).get("apiVersion"), "/");
+            } catch (IOException e) {
+                fail("Unable to read syndesis CR", e);
+            }
+        }
         CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
             .withGroup(syndesisCrd.getSpec().getGroup())
             .withPlural(syndesisCrd.getSpec().getNames().getPlural())
             .withScope(syndesisCrd.getSpec().getScope())
-            .withVersion(syndesisCrd.getSpec().getVersion());
+            .withVersion(crdApiVersion);
         return builder.build();
     }
 
