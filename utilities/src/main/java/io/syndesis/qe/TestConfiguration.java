@@ -4,6 +4,7 @@ import io.syndesis.qe.utils.TestUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -374,8 +375,15 @@ public class TestConfiguration {
             return props;
         }
 
-        final Path propsPath = Paths.get(path).toAbsolutePath();
+        final Path propsPath;
+        if (path.startsWith("file:")) {
+            propsPath = Paths.get(URI.create(path));
+        } else {
+            propsPath = Paths.get(path).toAbsolutePath();
+        }
+
         InputStream is = null;
+
         try {
             if (path.startsWith("http")) {
                 is = new URL(path).openStream();
