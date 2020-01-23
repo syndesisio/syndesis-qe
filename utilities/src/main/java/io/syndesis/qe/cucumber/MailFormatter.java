@@ -93,9 +93,9 @@ public class MailFormatter implements EventListener {
     private void onTestCaseFinished(TestCaseFinished t) {
         String uri = t.getTestCase().getUri();
         results.add(
-                new ScenarioResult(
-                        features.get(uri), t.getTestCase(), t.result.getStatus(),
-                        sustainers.getOrDefault(uri, "NO SUSTAINER"), scenarioIssues.get(t.getTestCase().getScenarioDesignation()))
+            new ScenarioResult(
+                features.get(uri), t.getTestCase(), t.result.getStatus(),
+                sustainers.getOrDefault(uri, "NO SUSTAINER"), scenarioIssues.get(t.getTestCase().getScenarioDesignation()))
         );
         if (!t.result.getStatus().equals(Result.Type.PASSED) && sustainers.get(uri) != null) {
             recipients.add(sustainers.get(uri));
@@ -105,11 +105,9 @@ public class MailFormatter implements EventListener {
     private void onTestRunFinished(TestRunFinished t) {
         new File(path).mkdirs();
         try (FileWriter out = new FileWriter(new File(path, "report.html"))) {
-            out.write(String.join(
-                    "<br/>\n",
-                    results.stream().map(ScenarioResult::toString).collect(Collectors.toList())
-                    )
-            );
+            for (String line : results.stream().map(ScenarioResult::toString).collect(Collectors.toList())) {
+                out.write(line + "<br/>\n");
+            }
         } catch (IOException e) {
             log.error("Error writing mail report file", e);
         }
@@ -139,46 +137,46 @@ public class MailFormatter implements EventListener {
         private final String sustainer;
         private final List<SimpleIssue> issues;
 
+        @Override
         public String toString() {
             // TODO: consider using a templating engine for this
             StringBuilder sb = new StringBuilder();
             sb
-                    .append(feature.getName())
-                    .append(" | ")
-                    .append(testCase.getName())
-                    .append(" | ");
+                .append(feature.getName())
+                .append(" | ")
+                .append(testCase.getName())
+                .append(" | ");
 
             if (result.equals(Result.Type.PASSED)) {
                 sb
-                        .append("<font color=\"green\">")
-                        .append(result)
-                        .append("</font>");
+                    .append("<font color=\"green\">")
+                    .append(result)
+                    .append("</font>");
             } else if (result.equals(Result.Type.SKIPPED)) {
                 sb
-                        .append("<font color=\"yellow\">")
-                        .append(result)
-                        .append("</font>");
+                    .append("<font color=\"yellow\">")
+                    .append(result)
+                    .append("</font>");
             } else {
                 sb
-                        .append("<font color=\"red\"><b>")
-                        .append(result)
-                        .append("</b></font>");
+                    .append("<font color=\"red\"><b>")
+                    .append(result)
+                    .append("</b></font>");
             }
 
             sb
-                    .append(" | ")
-                    .append(sustainer)
-                    .append(" | ");
+                .append(" | ")
+                .append(sustainer);
 
             if (issues != null) {
                 for (SimpleIssue issue : issues) {
                     if (issue.getState() == IssueState.OPEN) {
                         sb
-                                .append("<a href=\"")
-                                .append(issue.getUrl())
-                                .append("\">")
-                                .append(issue.getIssue())
-                                .append("</a>&nbsp;");
+                            .append("<a href=\"")
+                            .append(issue.getUrl())
+                            .append("\">")
+                            .append(issue.getIssue())
+                            .append("</a>&nbsp;");
                     }
                 }
             }
