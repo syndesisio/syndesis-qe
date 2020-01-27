@@ -51,7 +51,7 @@ public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
     private static final String OPERATOR_IMAGE = TestConfiguration.syndesisOperatorImage();
 
-    private String crdApiVersion;
+    private String crApiVersion;
 
     @Override
     public void deploy() {
@@ -91,7 +91,8 @@ public class Syndesis implements Resource {
 
     public void undeployCustomResources() {
         // if we don't have CRD, we can't have CRs
-        if (getCrd() != null) {
+        CustomResourceDefinition crd = getCrd();
+        if (crd != null && crd.getApiVersion().equals(getCrApiVersion())) {
             for (String s : getCrNames()) {
                 undeployCustomResource(s);
             }
@@ -225,18 +226,11 @@ public class Syndesis implements Resource {
 
     private CustomResourceDefinitionContext makeSyndesisContext() {
         CustomResourceDefinition syndesisCrd = getCrd();
-        if (crdApiVersion == null) {
-            try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
-                crdApiVersion = StringUtils.substringAfter(((Map<String, String>) new Yaml().load(is)).get("apiVersion"), "/");
-            } catch (IOException e) {
-                fail("Unable to read syndesis CR", e);
-            }
-        }
         CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
             .withGroup(syndesisCrd.getSpec().getGroup())
             .withPlural(syndesisCrd.getSpec().getNames().getPlural())
             .withScope(syndesisCrd.getSpec().getScope())
-            .withVersion(crdApiVersion);
+            .withVersion(getCrApiVersion());
         return builder.build();
     }
 
@@ -433,5 +427,21 @@ public class Syndesis implements Resource {
             // ignore exception as some of the object wasn't present
             return false;
         }
+    }
+
+    /**
+     * Gets the API version from the CR.
+     *
+     * @return api version string
+     */
+    private String getCrApiVersion() {
+        if (crApiVersion == null) {
+            try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
+                crApiVersion = StringUtils.substringAfter(((Map<String, String>) new Yaml().load(is)).get("apiVersion"), "/");
+            } catch (IOException e) {
+                fail("Unable to read syndesis CR", e);
+            }
+        }
+        return crApiVersion;
     }
 }
