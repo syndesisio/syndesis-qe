@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,6 +47,8 @@ import lombok.extern.slf4j.Slf4j;
 public class SyndesisTemplate {
     private static final int IMAGE_STREAM_COUNT = 8;
     private static final String CR_NAME = "app";
+
+    private static String crdApiVersion;
 
     public static void deploy() {
         createPullSecret();
@@ -142,11 +145,18 @@ public class SyndesisTemplate {
 
     private static CustomResourceDefinitionContext makeSyndesisContext() {
         CustomResourceDefinition syndesisCrd = getCrd();
+        if (crdApiVersion == null) {
+            try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
+                crdApiVersion = StringUtils.substringAfter(((Map<String, String>) new Yaml().load(is)).get("apiVersion"), "/");
+            } catch (IOException e) {
+                fail("Unable to read syndesis CR", e);
+            }
+        }
         CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
             .withGroup(syndesisCrd.getSpec().getGroup())
             .withPlural(syndesisCrd.getSpec().getNames().getPlural())
             .withScope(syndesisCrd.getSpec().getScope())
-            .withVersion(syndesisCrd.getSpec().getVersion());
+            .withVersion(crdApiVersion);
         CustomResourceDefinitionContext context = builder.build();
 
         return context;
