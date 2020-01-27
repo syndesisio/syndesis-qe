@@ -36,9 +36,9 @@ Feature: Integration - Twitter to Salesforce
     # select salesforce connection
     When select the "QE Salesforce" connection
     And select "Create or update record" integration action
-    And select "Contact" from "sObjectName" dropdown
+    And select "Contact" from "sobjectname" dropdown
     And click on the "Next" button
-    And select "TwitterScreenName" from "sObjectIdName" dropdown
+    And select "TwitterScreenName" from "sobjectidname" dropdown
     And click on the "Done" button
 
     # add data mapper step
