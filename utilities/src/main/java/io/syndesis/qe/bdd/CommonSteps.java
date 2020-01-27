@@ -2,7 +2,6 @@ package io.syndesis.qe.bdd;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.common.model.connection.Connection;
 import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
@@ -24,7 +23,6 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.EnumSet;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -196,17 +194,10 @@ public class CommonSteps {
     @Given("^clean application state")
     public void resetState() {
         waitUntilClusterIsReachable();
-        //check that postgreSQl connection has been created
-        int i = 0;
-        while (i < 10) {
+        TestUtils.withRetry(() -> {
             TestSupport.getInstance().resetDB();
-            Optional<Connection> optConnection = connectionsEndpoint.list().stream().filter(s -> s.getName().equals("PostgresDB")).findFirst();
-            if (optConnection.isPresent()) {
-                return;
-            }
-            i++;
-        }
-        fail("Default PostgresDB connection has not been created, please contact engineering!");
+            return connectionsEndpoint.list().stream().anyMatch(s -> s.getName().equals("PostgresDB"));
+        }, 10, 1000L, "Default PostgresDB connection has not been created");
     }
 
     /**

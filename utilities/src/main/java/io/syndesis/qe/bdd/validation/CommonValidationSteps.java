@@ -44,6 +44,11 @@ public class CommonValidationSteps {
 
     @Then("^wait for integration with name: \"([^\"]*)\" to become active$")
     public void waitForIntegrationToBeActive(String integrationName) {
+        waitForIntegrationToBeActive(9, integrationName);
+    }
+
+    @Then("wait max (\\d+) minutes for integration with name: \"([^\"]*)\" to become active$")
+    public void waitForIntegrationToBeActive(int waitTime, String integrationName) {
         final long start = System.currentTimeMillis();
         //wait for activation
         log.info("Waiting until integration \"{}\" becomes active. This may take a while...", integrationName);
@@ -51,9 +56,9 @@ public class CommonValidationSteps {
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
         final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
 
-        final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, 9);
+        final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, waitTime);
         if (!activated) {
-            log.error("Integration was not active after 9 minutes");
+            log.error("Integration was not active after {} minutes", waitTime);
             log.error("Pod list: ");
             for (Pod pod : OpenShiftUtils.getInstance().pods().list().getItems()) {
                 log.error(pod.getMetadata().getName());

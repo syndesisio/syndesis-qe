@@ -1,4 +1,4 @@
-apiVersion: syndesis.io/v1alpha1
+apiVersion: syndesis.io/v1beta1
 kind: Syndesis
 metadata:
   name: app
@@ -6,3 +6,8 @@ spec:
   addons:
     camelk:
       enabled: true
+  components:
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"

@@ -75,12 +75,10 @@ public class SQSValidationSteps {
         List<String> messages = new ArrayList<>();
         String m = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(destinationType.toUpperCase()), name);
         messages.add(m);
-        while (true) {
+        while (m != null) {
             m = JMSUtils.getMessageText(JMSUtils.Destination.valueOf(destinationType.toUpperCase()), name);
             if (m != null) {
                 messages.add(m);
-            } else {
-                break;
             }
         }
 

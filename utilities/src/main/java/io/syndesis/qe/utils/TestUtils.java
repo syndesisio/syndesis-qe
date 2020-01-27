@@ -361,4 +361,27 @@ public final class TestUtils {
         VersionInfo version = OpenShiftUtils.getInstance().getVersion();
         return version != null && version.getMinor().contains("11+");
     }
+
+    /**
+     * Retries the given boolean supplier until it is true, or until it was tried maximum amount times.
+     *
+     * @param supplier boolean supplier to evaluate
+     * @param maxRetries max retries to try
+     * @param delay delay between retries
+     * @param failMessage fail message
+     */
+    public static void withRetry(BooleanSupplier supplier, int maxRetries, long delay, String failMessage) {
+        int retries = 0;
+        while (retries <= maxRetries) {
+            if (supplier.getAsBoolean()) {
+                break;
+            }
+            if (retries == maxRetries) {
+                fail(failMessage);
+            } else {
+                sleepIgnoreInterrupt(delay);
+            }
+            retries++;
+        }
+    }
 }
