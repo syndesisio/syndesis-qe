@@ -55,6 +55,10 @@ public class ConditionalFlowSteps {
         private static By CONDITIONAL_FLOW_STEP = ByUtils.dataTestId("integration-editor-steps-list-item-conditional-flows-list-item");
         private static By CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM = By.className("list-group-item");
         private static By DEFAULT_DISABLED = By.className("fa-ban");
+
+        private static By getNthConditionalFlowStep(int nthConditionalFlowElement) {
+            return ByUtils.dataTestIdContainsSubstring("-conditional-flows-list-item", nthConditionalFlowElement);
+        }
     }
 
     @When("^add a data mapping step - open datamapper$")
@@ -146,7 +150,14 @@ public class ConditionalFlowSteps {
 
     @Then("^check that conditional flow step contains (\\d+) flows$")
     public void validateNumberOfFlowsInIntegrationEditView(int expectedNumberOfFlows) {
-        int size = $(EditIntegrationElements.CONDITIONAL_FLOW_STEP).shouldBe(visible)
+        int size = $(EditIntegrationElements.getNthConditionalFlowStep(1)).shouldBe(visible)
+            .$$(EditIntegrationElements.CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM).size();
+        assertThat(size).isEqualTo(expectedNumberOfFlows);
+    }
+
+    @Then("^check that conditional number (\\d+) flow step contains (\\d+) flows$")
+    public void validateNthNumberOfFlowsInIntegrationEditView(int nthConditionalFlowconnection, int expectedNumberOfFlows) {
+        int size = $(EditIntegrationElements.getNthConditionalFlowStep(nthConditionalFlowconnection)).shouldBe(visible)
             .$$(EditIntegrationElements.CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM).size();
         assertThat(size).isEqualTo(expectedNumberOfFlows);
     }
