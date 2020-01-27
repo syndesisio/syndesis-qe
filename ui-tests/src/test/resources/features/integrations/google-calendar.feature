@@ -28,6 +28,7 @@ Feature: Google Calendar Connector
   # Test Create Event action by creating an event existing in one calendar
   # in another one. This is to bypass setting date/time values in the form
   # which was not clear how to achieve in selenium.
+  @ENTESB-12856
   @google-calendar-copy-event
   Scenario: Test Copy Event
     Given navigate to the "Home" page
@@ -127,6 +128,7 @@ Feature: Google Calendar Connector
   # Partial update not yet possible due to #3814 and #3887. Mitigating by
   # using data mapper with partial mapping of fields, plus mapping constants
   # for the fields that are being actually updated.
+  @ENTESB-12856
   @google-calendar-update-event-coming-in
   Scenario: Test Update event coming in
     Given navigate to the "Home" page
