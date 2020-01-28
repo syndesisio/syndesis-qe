@@ -22,11 +22,11 @@ public class DetailSteps {
     private ApiClientConnectorDetail connectorDetailPage = new ApiClientConnectorDetail();
 
     @Then("^validate connector detail values by \"([^\"]*)\"$")
-    public void validateByDataTestid(DataTable dataTable, String selector) {
-        this.validateConnectorDetail(dataTable, selector);
+    public void validateByDataTestid(String selector, DataTable dataTable) {
+        this.validateConnectorDetail(selector, dataTable);
     }
 
-    private void validateConnectorDetail(DataTable dataTable, String selector) {
+    private void validateConnectorDetail(String selector, DataTable dataTable) {
         for (List<String> dataRow : dataTable.cells()) {
             String selectorValue = dataRow.get(0);
             String expectedText = dataRow.get(1);
