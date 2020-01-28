@@ -40,6 +40,7 @@ import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionVersion;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
@@ -91,11 +92,10 @@ public class Syndesis implements Resource {
 
     public void undeployCustomResources() {
         // if we don't have CRD, we can't have CRs
-        CustomResourceDefinition crd = getCrd();
-        if (crd != null && crd.getApiVersion().equals(getCrApiVersion())) {
-            for (String s : getCrNames()) {
-                undeployCustomResource(s);
-            }
+        if (getCrd() != null) {
+            getCrNames().forEach((version, names) -> {
+                names.forEach(name -> undeployCustomResource(name, version));
+            });
         }
     }
 
@@ -104,8 +104,8 @@ public class Syndesis implements Resource {
      *
      * @param name custom resource name
      */
-    private void undeployCustomResource(String name) {
-        deleteCr(name);
+    private void undeployCustomResource(String name, String version) {
+        deleteCr(name, version);
     }
 
     public void createPullSecret() {
@@ -196,13 +196,26 @@ public class Syndesis implements Resource {
         return getSyndesisCrClient().edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
     }
 
-    private void deleteCr(String name) {
-        getSyndesisCrClient().delete(TestConfiguration.openShiftNamespace(), name);
+    private void deleteCr(String name, String version) {
+        log.info("Undeploying custom resource \"{}\" in version \"{}\"", name, version);
+        getSyndesisCrClient(version).delete(TestConfiguration.openShiftNamespace(), name);
     }
 
-    private Set<String> getCrNames() {
-        final Set<String> names = new HashSet<>();
-        Map<String, Object> crs = getSyndesisCrClient().list(TestConfiguration.openShiftNamespace());
+    private Map<String, Set<String>> getCrNames() {
+        final Map<String, Set<String>> versionAndNames = new HashMap<>();
+        Map<String, Object> crs = new HashMap<>();
+        // CustomResourceDefinition can have multiple versions, so loop over all versions and gather all custom resources in this namespace
+        // (There should be always only one, but to be bullet-proof)
+        for (CustomResourceDefinitionVersion version : getCrd().getSpec().getVersions()) {
+            try {
+                crs.putAll(getSyndesisCrClient(version.getName()).list(TestConfiguration.openShiftNamespace()));
+            } catch (KubernetesClientException kce) {
+                // If there are no custom resources with this version, ignore
+                if (!kce.getMessage().contains("404")) {
+                    throw kce;
+                }
+            }
+        }
         JSONArray items = new JSONArray();
         try {
             items = new JSONObject(crs).getJSONArray("items");
@@ -210,14 +223,20 @@ public class Syndesis implements Resource {
             // probably the CRD isn't present in the cluster
         }
         for (int i = 0; i < items.length(); i++) {
-            names.add(items.getJSONObject(i).getJSONObject("metadata").getString("name"));
+            final String version = StringUtils.substringAfter(items.getJSONObject(i).getString("apiVersion"), "/");
+            versionAndNames.computeIfAbsent(version, v -> new HashSet<>());
+            versionAndNames.get(version).add(items.getJSONObject(i).getJSONObject("metadata").getString("name"));
         }
 
-        return names;
+        return versionAndNames;
     }
 
     public RawCustomResourceOperationsImpl getSyndesisCrClient() {
         return OpenShiftUtils.getInstance().customResource(makeSyndesisContext());
+    }
+
+    public RawCustomResourceOperationsImpl getSyndesisCrClient(String version) {
+        return OpenShiftUtils.getInstance().customResource(makeSyndesisContext(version));
     }
 
     public CustomResourceDefinition getCrd() {
@@ -225,25 +244,57 @@ public class Syndesis implements Resource {
     }
 
     private CustomResourceDefinitionContext makeSyndesisContext() {
+        return makeSyndesisContext(getCrApiVersion());
+    }
+
+    private CustomResourceDefinitionContext makeSyndesisContext(String version) {
         CustomResourceDefinition syndesisCrd = getCrd();
         CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
             .withGroup(syndesisCrd.getSpec().getGroup())
             .withPlural(syndesisCrd.getSpec().getNames().getPlural())
             .withScope(syndesisCrd.getSpec().getScope())
-            .withVersion(getCrApiVersion());
+            .withVersion(version);
         return builder.build();
     }
 
     public void deployCrd() {
         log.info("Creating custom resource definition from " + TestConfiguration.syndesisCrdUrl());
+        CustomResourceDefinition newCrd;
         try (InputStream is = new URL(TestConfiguration.syndesisCrdUrl()).openStream()) {
-            CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().load(is).get();
-            OpenShiftUtils.getInstance().customResourceDefinitions().create(crd);
+            newCrd = OpenShiftUtils.getInstance().customResourceDefinitions().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load CRD", ex);
-        } catch (KubernetesClientException kce) {
-            if (!kce.getMessage().contains("already exists")) {
-                throw kce;
+        }
+
+        CustomResourceDefinition existingCrd = OpenShiftUtils.getInstance().customResourceDefinitions()
+            .withName(newCrd.getMetadata().getName()).get();
+        if (existingCrd == null) {
+            // Just create a new CRD
+            OpenShiftUtils.getInstance().customResourceDefinitions().create(newCrd);
+        } else {
+            // Edit the existing CRD, if it doesn't contain the version we want to deploy now
+            // else do nothing, as the existing crd and new crd are probably the same
+            if (!existingCrd.getStatus().getStoredVersions().contains(newCrd.getSpec().getVersion())) {
+                OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
+                    .edit()
+                    .editSpec()
+                    // Add a new version
+                    .addNewVersion()
+                    .withName(newCrd.getSpec().getVersion())
+                    .withServed(true)
+                    .withStorage(true)
+                    .endVersion()
+                    // Edit the other version (Let's hope that there will be max 2 versions concurrently)
+                    .editMatchingVersion(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
+                    .withServed(false)
+                    .withStorage(false)
+                    .endVersion()
+                    .endSpec()
+                    .editStatus()
+                    // Also add it to stored versions
+                    .addToStoredVersions(newCrd.getSpec().getVersion())
+                    .endStatus()
+                    .done();
             }
         }
     }
