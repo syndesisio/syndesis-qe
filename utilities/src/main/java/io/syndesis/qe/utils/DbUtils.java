@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import static org.junit.Assert.fail;
+
 import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
 
 import java.sql.Connection;
@@ -12,12 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DbUtils {
     private Connection dbConnection;
+    private String databaseType;
 
     public DbUtils(String dbType) {
+        this.databaseType = dbType;
         this.dbConnection = SampleDbConnectionManager.getConnection(dbType);
     }
 
     public void setConnection(String dbType) {
+        this.databaseType = dbType;
         this.dbConnection = SampleDbConnectionManager.getConnection(dbType);
     }
 
@@ -34,6 +39,7 @@ public class DbUtils {
      * @return a ResultSet object that contains the data produced by the query; never null
      */
     public ResultSet executeSQLGetResultSet(String sqlCommand) {
+        reopenConnectionIfIsClosed();
         ResultSet resultSet = null;
         final PreparedStatement preparedStatement;
         try {
@@ -42,6 +48,7 @@ public class DbUtils {
             resultSet = preparedStatement.executeQuery();
         } catch (SQLException ex) {
             log.error("Error: " + ex);
+            //            fail("SQLException occurred");
         }
         return resultSet;
     }
@@ -53,6 +60,7 @@ public class DbUtils {
      * @return either the row count for sqlCommand statements or 0 for sqlCommand statements that return nothing
      */
     public int executeSQLGetUpdateNumber(String sqlCommand) {
+        reopenConnectionIfIsClosed();
         final PreparedStatement preparedStatement;
         int result = -1;
         try {
@@ -104,6 +112,7 @@ public class DbUtils {
             }
         } catch (SQLException ex) {
             log.error("Error: " + ex);
+            fail("SQLException occurred");
         }
         log.debug("Number of records: " + records);
         return records;
@@ -165,5 +174,16 @@ public class DbUtils {
 
     public static String getStoredProcedureTemplate(String connectionId, String storedProcedureName, boolean start) {
         return new ConnectionsActionsEndpoint(connectionId).getStoredProcedureTemplate(storedProcedureName, start);
+    }
+
+    public void reopenConnectionIfIsClosed() {
+        try {
+            if (dbConnection.isClosed()) {
+                dbConnection = SampleDbConnectionManager.getConnection(databaseType);
+            }
+        } catch (SQLException ex) {
+            log.error("Error: " + ex);
+            fail("SQLException occurred");
+        }
     }
 }
