@@ -1,8 +1,10 @@
 package io.syndesis.qe.endpoints;
 
-import org.springframework.stereotype.Component;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.connection.Connection;
+
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
@@ -19,7 +21,10 @@ public class ConnectionsEndpoint extends AbstractEndpoint<Connection> {
     }
 
     public Connection getConnectionByName(String connectionName) {
-        Optional<String> connectionId = list().stream().filter(i -> i.getName().contentEquals(connectionName)).findFirst().get().getId();
-        return get(connectionId.get());
+        Optional<Connection> connection = list().stream().filter(c -> c.getName().equals(connectionName)).findFirst();
+        if (!connection.isPresent()) {
+            fail("Connection " + connectionName + " doesn't exist");
+        }
+        return connection.get();
     }
 }

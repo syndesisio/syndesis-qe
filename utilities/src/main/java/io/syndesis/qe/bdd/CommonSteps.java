@@ -123,10 +123,8 @@ public class CommonSteps {
         ResourceFactory.create(DV.class);
     }
 
-    /**
-     * Undeploys deployed syndesis resources.
-     */
-    private static void undeploySyndesis() {
+    @When("^undeploy Syndesis$")
+    public static void undeploySyndesis() {
         ResourceFactory.get(Syndesis.class).undeployCustomResources();
         try {
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isUndeployed(), 10 * 60000L);

@@ -53,4 +53,12 @@ public class ExtensionsEndpoint extends AbstractEndpoint<Extension> {
             .headers(commonHeaders);
         invocation.post(Entity.entity(e.toString(), MediaType.APPLICATION_JSON), JsonNode.class);
     }
+
+    public Extension getExtensionByName(String name) {
+        Optional<Extension> extension = list().stream().filter(e -> e.getName().equals(name)).findFirst();
+        if (!extension.isPresent()) {
+            fail("Extension " + name + " doesn't exist");
+        }
+        return extension.get();
+    }
 }

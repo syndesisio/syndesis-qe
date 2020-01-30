@@ -4,29 +4,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.Syndesis;
+import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.S3BucketNameBuilder;
+import io.syndesis.qe.utils.S3Utils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -35,6 +54,7 @@ import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.DoneablePersistentVolume;
 import io.fabric8.kubernetes.api.model.PersistentVolumeFluent;
 import io.fabric8.kubernetes.api.model.Quantity;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +63,27 @@ import lombok.extern.slf4j.Slf4j;
 public class OperatorValidationSteps {
     public static final String TEST_PV_NAME = "test-pv";
 
+    private static final String SYNDESIS_BACKUP_BUCKET_PREFIX = "syndesis-backup";
+    private static final String SYNDESIS_BACKUP_SECRET_NAME = "syndesis-backup-s3";
+
+    private Path backupTempDir;
+    private Path backupTempFile;
+
     @Autowired
-    private IntegrationsEndpoint integrationsEndpoint;
+    @Lazy
+    private IntegrationsEndpoint integrations;
+
+    @Autowired
+    @Lazy
+    private ConnectionsEndpoint connections;
+
+    @Autowired
+    @Lazy
+    private ExtensionsEndpoint extensions;
+
+    @Autowired
+    @Lazy
+    private S3Utils s3;
 
     @Given("^deploy Syndesis CRD$")
     public void deployCRD() {
@@ -138,7 +177,7 @@ public class OperatorValidationSteps {
         TestUtils.sleepIgnoreInterrupt(30000L);
         LocalPortForward lpf = TestUtils.createLocalPortForward(
             OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith("syndesis-jaeger")), 16686, 16686);
-        final String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
+        final String integrationId = integrations.getIntegrationId(integrationName).get();
         JSONArray jsonData = new JSONObject(HttpUtils.doGetRequest("http://localhost:16686/api/traces?service=" + integrationId).getBody())
             .getJSONArray("data");
         TestUtils.terminateLocalPortForward(lpf);
@@ -281,5 +320,121 @@ public class OperatorValidationSteps {
             }
             pv.endSpec().done();
         }
+    }
+
+    @When("create pull secret for backup")
+    public void createPullSecretForBackup() {
+        Account aws = AccountUtils.get(Account.Name.AWS);
+        OpenShiftUtils.getInstance().createSecret(
+            new SecretBuilder()
+                .withNewMetadata()
+                .withName(SYNDESIS_BACKUP_SECRET_NAME)
+                .endMetadata()
+                .withStringData(TestUtils.map(
+                    "secret-key-id", aws.getProperty("accessKey"),
+                    "secret-access-key", aws.getProperty("secretKey"),
+                    "region", aws.getProperty("region").toLowerCase().replaceAll("_", "-"),
+                    "bucket-name", S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX)
+                ))
+                .build()
+        );
+    }
+
+    @Then("wait for backup")
+    public void waitForBackup() {
+        log.info("Waiting until the operator does the backup...");
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator").contains("backup for syndesis done"),
+                30000L, 10 * 60000L);
+            log.info("Backup done");
+        } catch (Exception e) {
+            fail("Exception thrown while waiting for backup log", e);
+        }
+    }
+
+    @When("download the backup file")
+    public void downloadBackup() {
+        final String prefix = OpenShiftUtils.getInstance().getImageStream("syndesis-operator").getSpec().getTags().get(0).getName();
+        final String fullFileName = s3.getFileNameWithPrefix(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX), prefix);
+        try {
+            backupTempFile = Files.createTempFile("syndesis", "backup");
+        } catch (IOException e) {
+            fail("Unable to create local backup file: ", e);
+        }
+        s3.downloadFile(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX), fullFileName, backupTempFile);
+    }
+
+    @When("prepare backup folder")
+    public void prepareBackupFolder() {
+        try {
+            // There is some mess with access rights in docker when using createTempDirectory, so create temp directory manually
+            backupTempDir = Files.createDirectory(Paths.get("/tmp", "syndesis-backup-" + new Random(new Date().getTime()).nextInt()));
+            backupTempDir.toFile().setReadable(true, false);
+            log.info("Created backup dir: " + backupTempDir.toString());
+        } catch (IOException e) {
+            fail("Unable to create local backup folder: ", e);
+        }
+
+        ZipFile zipFile = null;
+        try {
+            zipFile = new ZipFile(backupTempFile.toFile());
+        } catch (IOException e) {
+            fail("Unable to open zip file: ", e);
+        }
+        Enumeration<? extends ZipEntry> entries = zipFile.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            File entryDestination = new File(backupTempDir.toFile(), entry.getName());
+            if (entry.isDirectory()) {
+                entryDestination.mkdirs();
+            } else {
+                entryDestination.getParentFile().mkdirs();
+                try (InputStream in = zipFile.getInputStream(entry)) {
+                    try (OutputStream out = new FileOutputStream(entryDestination)) {
+                        IOUtils.copy(in, out);
+                    }
+                } catch (IOException e) {
+                    fail("Unable to unzip backup file: ", e);
+                }
+            }
+        }
+    }
+
+    @When("perform restore from backup")
+    public void performRestore() {
+        try {
+            new ProcessBuilder("docker",
+                "run",
+                "--rm",
+                "-v",
+                OpenShiftUtils.binary().getOcConfigPath() + ":/tmp/kube/config:z",
+                "-v",
+                backupTempDir.toAbsolutePath().toString() + ":/tmp/syndesis-backup:z",
+                "--entrypoint",
+                "syndesis-operator",
+                TestConfiguration.syndesisOperatorImage(),
+                "restore",
+                "--backup",
+                "/tmp/syndesis-backup",
+                "--namespace",
+                TestConfiguration.openShiftNamespace(),
+                "--config",
+                "/tmp/kube/config"
+            ).start().waitFor();
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Then("check that connection {string} exists")
+    public void checkConnection(String connection) {
+        // This fails when it is not present, so we don't need the value
+        connections.getConnectionByName(connection);
+    }
+
+    @Then("check that extension {string} exists")
+    public void checkExtension(String extension) {
+        // This fails when it is not present, so we don't need the value
+        extensions.getExtensionByName(extension);
     }
 }
