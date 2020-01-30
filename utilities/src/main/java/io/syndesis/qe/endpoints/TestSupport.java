@@ -3,6 +3,7 @@ package io.syndesis.qe.endpoints;
 import io.syndesis.qe.Addon;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
@@ -57,6 +58,11 @@ public final class TestSupport {
                         1, 5 * 60,
                         "Some integration was not deleted successfully in time. Integration name: " +
                             OpenShiftUtils.getPodByPartialName("i-").get().getMetadata().getName());
+                } else {
+                    ResourceFactory.get(CamelK.class).resetState();
+                    if (!OpenShiftUtils.getPodByPartialName("camel-k-operator").isPresent()) {
+                        ResourceFactory.get(CamelK.class).deploy();
+                    }
                 }
                 // In OCP 4.x the build and deploy pods stays there, so delete them
                 OpenShiftUtils.getInstance().pods().delete(

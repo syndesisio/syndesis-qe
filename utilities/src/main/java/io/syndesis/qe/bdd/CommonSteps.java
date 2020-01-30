@@ -87,17 +87,22 @@ public class CommonSteps {
     }
 
     @When("^deploy Camel-K$")
-    public void deployCamelK() {
+    public static void deployCamelK() {
         ResourceFactory.create(CamelK.class);
     }
 
     @Then("^wait for Camel-K to become ready$")
-    public void waitForCamelK() {
+    public static void waitForCamelK() {
         OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
             .interval(TimeUnit.SECONDS, 20)
             .timeout(TimeUnit.MINUTES, 5)
             .waitFor();
+    }
+
+    @When("^change runtime to (springboot|camelk)$")
+    public static void changeRuntime(String runtime) {
+        ResourceFactory.get(Syndesis.class).changeRuntime(runtime);
     }
 
     @Then("^wait for DV to become ready$")

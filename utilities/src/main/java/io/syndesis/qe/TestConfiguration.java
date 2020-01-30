@@ -88,6 +88,7 @@ public class TestConfiguration {
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
     private static final String CAMEL_K_VERSION = "syndesis.camelk.version";
+    private static final String SYNDESIS_RUNTIME = "syndesis.config.runtime";
 
     private static final String JAEGER_VERSION = "syndesis.jaeger.version";
 
@@ -331,6 +332,10 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_UPGRADE_PREVIOUS_CR);
     }
 
+    public static String syndesisRuntime() {
+        return get().readValue(SYNDESIS_RUNTIME);
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -397,6 +402,9 @@ public class TestConfiguration {
         // Set oc version - this version of the client will be used as the binary client
         System.setProperty("xtf.openshift.version", "4.3");
 
+        if (props.getProperty(SYNDESIS_RUNTIME) == null) {
+            props.setProperty(SYNDESIS_RUNTIME, "springboot");
+        }
         if (props.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
             props.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
         }

@@ -6,8 +6,11 @@ import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.Image;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.resource.Resource;
+import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -34,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -89,6 +93,7 @@ public class Syndesis implements Resource {
         grantPermissions();
         deployOperator();
         deploySyndesisViaOperator();
+        changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
     }
@@ -557,6 +562,46 @@ public class Syndesis implements Resource {
             this.editCr(cr.toMap());
         } catch (IOException e) {
             fail("IO Exception during editing CR", e);
+        }
+    }
+
+    public void changeRuntime(String runtime) {
+        boolean needsReload = false;
+        if ("camelk".equalsIgnoreCase(runtime)) {
+            if (!ResourceFactory.get(CamelK.class).isReady()) {
+                CommonSteps.deployCamelK();
+                CommonSteps.waitForCamelK();
+            }
+            Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+            if (!syndesis.isAddonEnabled(Addon.CAMELK)) {
+                syndesis.updateAddon(Addon.CAMELK, true);
+                needsReload = true;
+            }
+        } else {
+            if (ResourceFactory.get(CamelK.class).isReady()) {
+                ResourceFactory.get(CamelK.class).undeploy();
+            }
+
+            Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+            if (syndesis.isAddonEnabled(Addon.CAMELK)) {
+                syndesis.updateAddon(Addon.CAMELK, false);
+                needsReload = true;
+            }
+        }
+        if (needsReload) {
+            log.info("Waiting for syndesis-server to reload");
+            try {
+                OpenShiftWaitUtils.waitForPodIsReloaded("server");
+            } catch (InterruptedException | TimeoutException e) {
+                fail("Server was not reloaded after deployment config change", e);
+            }
+            // even though server is in ready state, inside app is still starting so we have to wait a lot just to be sure
+            try {
+                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("server").contains("Started Application in"), 1000 * 300L);
+            } catch (TimeoutException | InterruptedException e) {
+                fail("Syndesis server did not start in 300s with new variable", e);
+            }
+            RestUtils.reset();
         }
     }
 
