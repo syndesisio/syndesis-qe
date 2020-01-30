@@ -29,7 +29,7 @@ Feature: Integration - ServiceNow-amq/log
     When select the "ServiceNow" connection
     And select "Retrieve Record" integration action
     And select "Incident" from "table" dropdown
-    And fill in values by element data-testid
+    And fill in and modify values by element ID
       | limit | 1                |
       | query | number={number1} |
     And click on the "Next" button
