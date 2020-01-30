@@ -106,7 +106,7 @@ public class MailFormatter implements EventListener {
         new File(path).mkdirs();
         try (FileWriter out = new FileWriter(new File(path, "report.html"))) {
             for (String line : results.stream().map(ScenarioResult::toString).collect(Collectors.toList())) {
-                out.write(line + "<br/>\n");
+                out.write(line + " <br/>\n");
             }
         } catch (IOException e) {
             log.error("Error writing mail report file", e);
@@ -172,7 +172,7 @@ public class MailFormatter implements EventListener {
                 for (SimpleIssue issue : issues) {
                     if (issue.getState() == IssueState.OPEN) {
                         sb
-                            .append("<a href=\"")
+                            .append("| <a href=\"")
                             .append(issue.getUrl())
                             .append("\">")
                             .append(issue.getIssue())
