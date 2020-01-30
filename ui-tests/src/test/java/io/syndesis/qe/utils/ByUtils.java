@@ -19,4 +19,8 @@ public class ByUtils {
     public static By containsDataTestId(String tag, String dataTestId) {
         return By.cssSelector(String.format("%s[data-testid*=\"%s\"]", tag, dataTestId));
     }
+
+    public static By dataTestIdContainsSubstring(String substring, int nthElement) {
+        return By.xpath(String.format("(//*[contains(@data-testid,\"%s\")])[%d]", substring, nthElement));
+    }
 }
