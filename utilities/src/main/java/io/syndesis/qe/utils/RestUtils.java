@@ -37,6 +37,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.Route;
@@ -62,7 +63,11 @@ public final class RestUtils {
     }
 
     public static Client getInsecureClient() throws RestClientException {
-        final Client client = ClientBuilder.newClient();
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        clientBuilder.connectTimeout(120, TimeUnit.SECONDS);
+        clientBuilder.readTimeout(120, TimeUnit.SECONDS);
+
+        final Client client = clientBuilder.build();
         client.register(new ErrorLogger());
         return client;
     }
