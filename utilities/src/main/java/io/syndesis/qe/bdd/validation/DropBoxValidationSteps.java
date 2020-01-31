@@ -2,17 +2,19 @@ package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.utils.DropBoxUtils;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.DeleteErrorException;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import cucumber.api.java.en.When;
-import io.syndesis.qe.utils.DropBoxUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 public class DropBoxValidationSteps {
     @Lazy
@@ -33,7 +35,13 @@ public class DropBoxValidationSteps {
 
     @When("^delete file with path \"([^\"]*)\" from Dropbox$")
     public void deleteFile(String filePath) throws DbxException {
-        dropBoxUtils.deleteFile(filePath);
+        try {
+            dropBoxUtils.deleteFile(filePath);
+        } catch (DeleteErrorException e) {
+            if (!e.getMessage().contains("not_found")) {
+                throw e;
+            }
+        }
         assertThat(dropBoxUtils.checkIfFileExists(filePath)).isFalse();
     }
 }
