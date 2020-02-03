@@ -54,5 +54,5 @@ Feature: Integration - FTP to FTP
     And publish integration
     Then Integration "ftp-to-ftp E2E" is present in integrations list
     And wait until integration "ftp-to-ftp E2E" gets into "Running" state
-    When put "ui-ftp-ftp.txt" file with content "Hello" in the FTP directory: "download"
-    Then validate that file "ui-ftp-ftp.txt" has been transfered from "/download" to "/upload" FTP directory
+    When put "ui-ftp-ftp.txt" file with content "Hello" in the directory: "download" using FTP
+    Then validate that file "ui-ftp-ftp.txt" has been transfered from "/download" to "/upload" directory using FTP

@@ -281,6 +281,12 @@
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.hierynomus</groupId>
+			<artifactId>sshj</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -21,7 +21,7 @@ Feature: Integration - File transfer
       And create Dropbox "upload" action step with file path: "/test.txt"
       And create integration with name: "FTP to Dropbox rest test"
     Then wait for integration with name: "FTP to Dropbox rest test" to become active
-    When put "test_dropbox.txt" file with content "Hello from FTP!" in the FTP directory: "download"
+    When put "test_dropbox.txt" file with content "Hello from FTP!" in the directory: "download" using FTP
     Then check that file with path "/test.txt" exists on Dropbox
       And delete file with path "/test.txt" from Dropbox
 
@@ -41,7 +41,7 @@ Feature: Integration - File transfer
       And create integration with name: "S3 to FTP rest test"
     Then wait for integration with name: "S3 to FTP rest test" to become active
     When create a new text file in bucket "syndesis-server-bucket-from" with name "test_aws.txt" and text "Hello from AWS!"
-    Then validate that file "test_aws.txt" has been transfered to "/upload" FTP directory
+    Then validate that file "test_aws.txt" has been transfered to "/upload" directory using FTP
 
   @integration-dropbox-s3
   @dropbox
@@ -73,5 +73,5 @@ Feature: Integration - File transfer
       | test-ftp.txt  | upload        | Override  | copyingprefix | copying_test_out    |
     When create integration with name: "FTP to FTP rest test"
     Then wait for integration with name: "FTP to FTP rest test" to become active
-    When put "test-ftp.txt" file with content "Hello FTP" in the FTP directory: "/download"
-    And validate that file "test-ftp.txt" has been transfered from "/download" to "/upload" FTP directory
+    When put "test-ftp.txt" file with content "Hello FTP" in the directory: "/download" using FTP
+    Then validate that file "test-ftp.txt" has been transfered from "/download" to "/upload" directory using FTP

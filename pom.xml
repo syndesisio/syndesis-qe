@@ -69,6 +69,8 @@
 		<velocity.version>1.7</velocity.version>
 		<bytebuddy.version>1.10.1</bytebuddy.version>
 		<mongodb.driver.version>3.10.2</mongodb.driver.version>
+		<sshj.version>0.27.0</sshj.version>
+
 
 		<!-- leave driver versions empty to use latest driver -->
 		<!-- Find supported webdriver version for your chrome browser here:
@@ -497,6 +499,12 @@
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongodb-driver-sync</artifactId>
 				<version>${mongodb.driver.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.hierynomus</groupId>
+				<artifactId>sshj</artifactId>
+				<version>${sshj.version}</version>
 			</dependency>
 
 		</dependencies>

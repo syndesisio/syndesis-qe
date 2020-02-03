@@ -40,4 +40,4 @@ Feature: Integration - IRC
     Then wait for integration with name: "IRC-FTP" to become active
     When connect IRC controller to channels "#listen"
       And send message to IRC user "listener" with content 'Hello Listener!'
-      And verify that file "message.txt" was created in "upload" folder with content 'Hello Listener!'
+    Then verify that file "message.txt" was created in "upload" folder with content 'Hello Listener!' using FTP

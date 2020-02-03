@@ -21,6 +21,7 @@ public class Account {
         CONCUR("QE Concur"),
         DROPBOX("QE Dropbox"),
         FTP("ftp"),
+        SFTP("sftp"),
         GITHUB("GitHub"),
         HTTP("http"),
         IRC("irc"),
