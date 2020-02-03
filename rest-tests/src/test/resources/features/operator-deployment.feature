@@ -279,3 +279,49 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
     Then check that the deployment config "syndesis-server" contains variables:
       | OPENSHIFT_MANAGEMENT_URL_FOR3SCALE | asdf |
+
+  @ENTESB-12114
+  @operator-backup-restore
+  Scenario: Syndesis Operator - Backup and Restore
+    Given deploy ActiveMQ broker
+      And clean destination type "queue" with name "backup-in"
+      And clean destination type "queue" with name "backup-out"
+      And create sample bucket on S3 with name "syndesis-backup"
+    When create pull secret for backup
+      And deploy Syndesis CR from file "spec/backup.yml"
+      And wait for Syndesis to become ready
+      And create ActiveMQ connection
+      # Not needed for the integration, just to check if it is present after restoring the backup
+      And import extension from path "./src/test/resources/extensions/set-sqs-group-id-extension-1.0-SNAPSHOT.jar"
+      And create ActiveMQ "subscribe" action step with destination type "queue" and destination name "backup-in"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "backup-out"
+      And create integration with name: "amq-amq-backup"
+    Then wait for integration with name: "amq-amq-backup" to become active
+    When publish message with content "Hello backup" to "queue" with name "backup-in"
+    Then verify that JMS message with content 'Hello backup' was received from "queue" "backup-out"
+
+    When wait for backup
+      And download the backup file
+      And prepare backup folder
+
+      # Deploy new instance of syndesis
+      And clean application state
+      And undeploy Syndesis
+      And clean destination type "queue" with name "backup-in"
+      And clean destination type "queue" with name "backup-out"
+      And deploy Syndesis CR from file "minimal.yml"
+      And wait for Syndesis to become ready
+
+      # Restore backup
+      And perform restore from backup
+
+      And sleep for jenkins delay or "5" seconds
+      And refresh server port-forward
+
+    # Ideally the connection should be updated so that the password is encrypted with the current key
+    # And then the integration should be rebuilt to pick up the changed connection, but the integration should be rebuilt almost from scratch using rest
+    # And the update connections / rebuild is covered by export-import scenario, so just verify that the connection/extension/integration is there
+    Then check that connection "Fuse QE ACTIVEMQ" exists
+      And check that extension "set-sqs-group-id-extension" exists
+      And verify that integration with name "amq-amq-backup" exists
+

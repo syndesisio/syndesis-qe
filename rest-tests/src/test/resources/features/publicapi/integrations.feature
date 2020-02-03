@@ -167,9 +167,9 @@ Feature: Public API - integrations point
     And delete integration with name integration1
     And delete integration with name integration2
 
-    Then verify that integration with name integration1 doesn't exist
-    And verify that integration with name integration2 doesn't exist
-    And verify that integration with name integrationWithoutTags exist
+    Then verify that integration with name "integration1" doesn't exist
+    And verify that integration with name "integration2" doesn't exist
+    And verify that integration with name "integrationWithoutTags" exists
     And check that integration integrationWithoutTags contains exactly tags
       | anotherTag1 | anotherTag2 |
     And check that Syndesis contains exactly tags

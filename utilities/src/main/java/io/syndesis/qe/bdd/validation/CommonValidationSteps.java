@@ -104,12 +104,12 @@ public class CommonValidationSteps {
         log.info("There is no builds with name {} running", sanitizedName);
     }
 
-    @Then("^verify that integration with name (\\w+) exist$")
+    @Then("verify that integration with name {string} exists")
     public void integrationExist(String integrationName) {
         assertThat(integrationsEndpoint.getIntegrationId(integrationName)).isPresent();
     }
 
-    @Then("^verify that integration with name (\\w+) doesn't exist$")
+    @Then("verify that integration with name {string} doesn't exist")
     public void integrationNotExist(String integrationName) {
         assertThatExceptionOfType(NoSuchElementException.class)
             .isThrownBy(() -> integrationsEndpoint.getIntegrationId(integrationName));

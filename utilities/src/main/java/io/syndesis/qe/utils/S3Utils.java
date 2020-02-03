@@ -1,7 +1,11 @@
 package io.syndesis.qe.utils;
 
-import org.apache.commons.io.IOUtils;
+import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+
+import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +18,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 
 import javax.annotation.PreDestroy;
@@ -24,15 +26,19 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,23 +55,22 @@ public class S3Utils {
 
     private final AccountsDirectory accountsDirectory;
     private final AmazonS3 s3client;
-    /**
-     *   holder for buckets created by this instance
-     */
+    // holder for buckets created by this instance
+    @Getter
     private Map<String, Bucket> bucketsCreated;
 
     public S3Utils() {
         accountsDirectory = AccountsDirectory.getInstance();
         final Account s3Account = accountsDirectory.getAccount(Account.Name.AWS).get();
         final AWSCredentials credentials = new BasicAWSCredentials(
-                s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
+            s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
         );
 
         s3client = AmazonS3ClientBuilder
-                .standard()
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(Regions.US_WEST_1)
-                .build();
+            .standard()
+            .withCredentials(new AWSStaticCredentialsProvider(credentials))
+            .withRegion(Regions.valueOf(s3Account.getProperty("region")))
+            .build();
         bucketsCreated = new HashMap<>();
     }
 
@@ -160,17 +165,34 @@ public class S3Utils {
      * @return
      */
     public String readTextFileContentFromBucket(String bucketName, String fileName) {
-
-        final S3Object s3object = s3client.getObject(bucketName, fileName);
-        final S3ObjectInputStream inputStream = s3object.getObjectContent();
-
         final StringWriter writer = new StringWriter();
-        try {
-            IOUtils.copy(inputStream, writer, "UTF-8");
+        try (InputStream is = getObjectInputStream(bucketName, fileName)) {
+            IOUtils.copy(is, writer, "UTF-8");
         } catch (IOException ex) {
             log.error("Error copying file from s3: " + ex);
         }
         return writer.toString();
+    }
+
+    public void downloadFile(String bucketName, String fileName, Path localFile) {
+        try (InputStream is = getObjectInputStream(bucketName, fileName)) {
+            Files.copy(is, localFile, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            fail("Error copying file from s3: " + ex);
+        }
+    }
+
+    private InputStream getObjectInputStream(String bucketName, String fileName) {
+        return s3client.getObject(bucketName, fileName).getObjectContent();
+    }
+
+    public String getFileNameWithPrefix(String bucketName, String prefix) {
+        Optional<S3ObjectSummary> s3Object = s3client.listObjects(bucketName).getObjectSummaries().stream()
+            .filter(os -> os.getKey().startsWith(prefix)).findFirst();
+        if (!s3Object.isPresent()) {
+            fail("Unable to find file with " + prefix + " prefix");
+        }
+        return s3Object.get().getKey();
     }
 
     /**
@@ -179,7 +201,7 @@ public class S3Utils {
     @PreDestroy
     public void deleteAllBuckets() {
         Set<String> bucketNames = new HashSet<>(bucketsCreated.keySet());
-        for (String bucketName:bucketNames) {
+        for (String bucketName : bucketNames) {
             deleteS3Bucket(bucketName);
         }
     }
