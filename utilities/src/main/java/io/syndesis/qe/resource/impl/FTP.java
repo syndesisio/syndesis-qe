@@ -1,12 +1,19 @@
 package io.syndesis.qe.resource.impl;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.junit.Assert;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -17,22 +24,30 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FTP implements Resource {
-    private static final String APP_NAME = "ftpd";
-    private static final String LABEL_NAME = "app";
+
+    public static final int FTP_DATA_PORT = 2300;
+
+    private final String labelName = "app";
+    private String appName;
+    public int ftpCommandPort; //on OCP
+
+    public FTP() {
+        this.initProperties();
+    }
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(APP_NAME)) {
+        if (!TestUtils.isDcDeployed(appName)) {
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
                 .withName("ftp-cmd")
-                .withContainerPort(2121)
+                .withContainerPort(ftpCommandPort)
                 .withProtocol("TCP").build());
 
             for (int i = 0; i < 10; i++) {
                 ContainerPort dataPort = new ContainerPortBuilder()
                     .withName("ftp-data-" + i)
-                    .withContainerPort(2300 + i)
+                    .withContainerPort(FTP_DATA_PORT + i)
                     .withProtocol("TCP")
                     .build();
                 ports.add(dataPort);
@@ -40,19 +55,19 @@ public class FTP implements Resource {
 
             OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
                 .editOrNewMetadata()
-                .withName(APP_NAME)
-                .addToLabels(LABEL_NAME, APP_NAME)
+                .withName(appName)
+                .addToLabels(labelName, appName)
                 .endMetadata()
 
                 .editOrNewSpec()
-                .addToSelector(LABEL_NAME, APP_NAME)
+                .addToSelector(labelName, appName)
                 .withReplicas(1)
                 .editOrNewTemplate()
                 .editOrNewMetadata()
-                .addToLabels(LABEL_NAME, APP_NAME)
+                .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(APP_NAME).withImage("syndesisqe/ftpd:latest").addAllToPorts(ports)
+                .addNewContainer().withName(appName).withImage("syndesisqe/ftpd:latest").addAllToPorts(ports)
                 .endContainer()
                 .endSpec()
                 .endTemplate()
@@ -62,26 +77,26 @@ public class FTP implements Resource {
                 .endSpec()
                 .done();
 
-            ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, APP_NAME);
+            ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(labelName, appName);
 
             serviceSpecBuilder.addToPorts(new ServicePortBuilder()
                 .withName("ftp-cmd")
-                .withPort(2121)
-                .withTargetPort(new IntOrString(2121))
+                .withPort(ftpCommandPort)
+                .withTargetPort(new IntOrString(ftpCommandPort))
                 .build());
 
             for (int i = 0; i < 10; i++) {
                 serviceSpecBuilder.addToPorts(new ServicePortBuilder()
                     .withName("ftp-data-" + i)
-                    .withPort(2300 + i)
-                    .withTargetPort(new IntOrString(2300 + i))
+                    .withPort(FTP_DATA_PORT + i)
+                    .withTargetPort(new IntOrString(FTP_DATA_PORT + i))
                     .build());
             }
 
             OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
                 .editOrNewMetadata()
-                .withName(APP_NAME)
-                .addToLabels(LABEL_NAME, APP_NAME)
+                .withName(appName)
+                .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
@@ -91,12 +106,26 @@ public class FTP implements Resource {
 
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(APP_NAME), true);
-        OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(APP_NAME));
+        OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(appName), true);
+        OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(appName));
     }
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName));
+    }
+
+    private void initProperties() {
+        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FTP);
+        if (optional.isPresent()) {
+            Map<String, String> properties = new HashMap<>();
+            optional.get().getProperties().forEach((key, value) ->
+                properties.put(key.toLowerCase(), value)
+            );
+            appName = properties.get("host");
+            ftpCommandPort = Integer.parseInt(properties.get("port"));
+        } else {
+            Assert.fail("Credentials for " + Account.Name.FTP + " were not found!");
+        }
     }
 }

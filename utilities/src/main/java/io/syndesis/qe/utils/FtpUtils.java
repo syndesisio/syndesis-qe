@@ -13,7 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FtpUtils implements FileTansferUtils {
-    private FTPClient ftpClient = FtpClientManager.getClient();
+    private FtpClientManager manager = new FtpClientManager();
+    private FTPClient ftpClient = manager.getClient();
 
     @Override
     public void deleteFile(String path) {
@@ -65,7 +66,7 @@ public class FtpUtils implements FileTansferUtils {
         try {
             ftpClient.listFiles();
         } catch (IOException ex) {
-            ftpClient = FtpClientManager.getClient();
+            ftpClient = manager.getClient();
         }
     }
 }
