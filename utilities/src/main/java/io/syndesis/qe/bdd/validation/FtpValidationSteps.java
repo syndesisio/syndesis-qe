@@ -44,8 +44,8 @@ public class FtpValidationSteps {
         assertThat(ftpUtils.isFileThere(remoteFromDirectory, filename)).isFalse();
     }
 
-    @Then("^verify that file \"([^\"]*)\" was created in \"([^\"]*)\" folder with content \'([^\']*)\' using FTP$")
-    public void validateThatFileWasCreatedWithContent(String filename, String directory, String content, String ft) {
+    @Then("^verify that file \"([^\"]*)\" was created in \"([^\"]*)\" folder with content '([^']*)' using FTP$")
+    public void validateThatFileWasCreatedWithContent(String filename, String directory, String content) {
         assertThat(TestUtils.waitForEvent(r -> r, () -> ftpUtils.isFileThere(directory, filename),
             TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isTrue();
         assertThat(ftpUtils.isFileThere(directory, filename)).isTrue();
