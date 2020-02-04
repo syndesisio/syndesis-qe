@@ -84,9 +84,9 @@ public class CommonSteps {
     public static void undeployCustomResources() {
         // if we don't have CRD, we can't have CRs
         if (SyndesisTemplate.getCrd() != null) {
-            for (String s : SyndesisTemplate.getCrNames()) {
-                undeployCustomResource(s);
-            }
+            SyndesisTemplate.getCrNames().forEach((version, names) -> {
+                names.forEach(name -> undeployCustomResource(name, version));
+            });
         }
     }
 
@@ -95,8 +95,8 @@ public class CommonSteps {
      *
      * @param name custom resource name
      */
-    private static void undeployCustomResource(String name) {
-        SyndesisTemplate.deleteCr();
+    private static void undeployCustomResource(String name, String version) {
+        SyndesisTemplate.deleteCr(name, version);
     }
 
     /**
