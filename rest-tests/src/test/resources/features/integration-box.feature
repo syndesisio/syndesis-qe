@@ -73,7 +73,7 @@ Feature: Integration - File transfer
     Then wait for integration with name: "SQL-BOX" to become active
       And verify that file "box-upload.json" with content '{"text":"Jackson"}' is present in Box
     When execute SQL command "UPDATE CONTACT SET LAST_NAME='Doe' WHERE LAST_NAME='Jackson'"
-      And sleep for jenkins delay or "60" seconds
+      And sleep for jenkins delay or "120" seconds
     Then verify that file "box-upload.json" with content '{"text":"Doe"}' is present in Box
 
   @ENTESB-12553
@@ -107,7 +107,7 @@ Feature: Integration - File transfer
   Scenario: FTP to Box
     Given deploy FTP server
       And delete file "/download/test_box.txt" from FTP
-      And put "test_box.txt" file with content "Hello from FTP!" in the FTP directory: "download"
+      And put "test_box.txt" file with content "Hello from FTP!" in the directory: "download" using FTP
     When create FTP connection
       And create FTP "download" action with values
         | fileName     | directoryName | initialDelay | delay | delete |
