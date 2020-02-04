@@ -93,6 +93,7 @@ public class CommonSteps {
         SLACK,
         S3,
         FTP,
+        SFTP,
         GOOGLE_MAIL,
         GOOGLE_SHEETS,
         GOOGLE_CALENDAR,
