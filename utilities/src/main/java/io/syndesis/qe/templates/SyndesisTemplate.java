@@ -222,7 +222,28 @@ public class SyndesisTemplate {
                     .endVersion()
                     // Edit the other version (Let's hope that there will be max 2 versions concurrently)
                     .editMatchingVersion(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
-                    .withServed(false)
+                    .withServed(true)
+                    .withStorage(false)
+                    .endVersion()
+                    .endSpec()
+                    .editStatus()
+                    // Also add it to stored versions
+                    .addToStoredVersions(newCrd.getSpec().getVersion())
+                    .endStatus()
+                    .done();
+            } else {
+                // We need to make "current" CRD version "served" and with "storage"
+                OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
+                    .edit()
+                    .editSpec()
+                    // Edit the version we want to deploy now
+                    .editMatchingVersion(v -> v.getName().equals(newCrd.getSpec().getVersion()))
+                    .withServed(true)
+                    .withStorage(true)
+                    .endVersion()
+                    // Edit the other version (Let's hope that there will be max 2 versions concurrently)
+                    .editMatchingVersion(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
+                    .withServed(true)
                     .withStorage(false)
                     .endVersion()
                     .endSpec()
