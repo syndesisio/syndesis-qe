@@ -40,7 +40,9 @@ import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionFluent;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionVersion;
+import io.fabric8.kubernetes.api.model.apiextensions.DoneableCustomResourceDefinition;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
@@ -274,22 +276,22 @@ public class Syndesis implements Resource {
         } else {
             // Edit the existing CRD, if it doesn't contain the version we want to deploy now
             // else do nothing, as the existing crd and new crd are probably the same
+            List<CustomResourceDefinitionVersion> versions = OpenShiftUtils.getInstance().customResourceDefinitions()
+                .withName(existingCrd.getMetadata().getName()).get().getSpec().getVersions();
             if (!existingCrd.getStatus().getStoredVersions().contains(newCrd.getSpec().getVersion())) {
-                OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
-                    .edit()
-                    .editSpec()
-                    // Add a new version
-                    .addNewVersion()
-                    .withName(newCrd.getSpec().getVersion())
-                    .withServed(true)
-                    .withStorage(true)
-                    .endVersion()
-                    // Edit the other version (Let's hope that there will be max 2 versions concurrently)
-                    .editMatchingVersion(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
-                    .withServed(true)
-                    .withStorage(false)
-                    .endVersion()
-                    .endSpec()
+                CustomResourceDefinitionFluent.SpecNested<DoneableCustomResourceDefinition> crd =
+                    OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
+                        .edit()
+                        .editSpec()
+                        // Add a new version
+                        .addNewVersion()
+                        .withName(newCrd.getSpec().getVersion())
+                        .withServed(true)
+                        .withStorage(true)
+                        .endVersion();
+                versions.stream().filter(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
+                    .forEach(v -> crd.editMatchingVersion(mv -> mv.getName().equals(v.getName())).withServed(true).withStorage(false).endVersion());
+                crd.endSpec()
                     .editStatus()
                     // Also add it to stored versions
                     .addToStoredVersions(newCrd.getSpec().getVersion())
@@ -297,25 +299,18 @@ public class Syndesis implements Resource {
                     .done();
             } else {
                 // We need to make "current" CRD version "served" and with "storage"
-                OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
-                    .edit()
-                    .editSpec()
-                    // Edit the version we want to deploy now
-                    .editMatchingVersion(v -> v.getName().equals(newCrd.getSpec().getVersion()))
-                    .withServed(true)
-                    .withStorage(true)
-                    .endVersion()
-                    // Edit the other version (Let's hope that there will be max 2 versions concurrently)
-                    .editMatchingVersion(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
-                    .withServed(true)
-                    .withStorage(false)
-                    .endVersion()
-                    .endSpec()
-                    .editStatus()
-                    // Also add it to stored versions
-                    .addToStoredVersions(newCrd.getSpec().getVersion())
-                    .endStatus()
-                    .done();
+                CustomResourceDefinitionFluent.SpecNested<DoneableCustomResourceDefinition> crd =
+                    OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
+                        .edit()
+                        .editSpec()
+                        // Edit the version we want to deploy now
+                        .editMatchingVersion(v -> v.getName().equals(newCrd.getSpec().getVersion()))
+                        .withServed(true)
+                        .withStorage(true)
+                        .endVersion();
+                versions.stream().filter(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
+                    .forEach(v -> crd.editMatchingVersion(mv -> mv.getName().equals(v.getName())).withServed(true).withStorage(false).endVersion());
+                crd.endSpec().done();
             }
         }
     }
