@@ -1,6 +1,6 @@
 package io.syndesis.qe.resource.impl;
 
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
@@ -47,14 +47,27 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
-    private static final String OPERATOR_IMAGE = TestConfiguration.syndesisOperatorImage();
+
+    @Setter
+    private String crdUrl;
+    @Setter
+    private String operatorImage;
+    @Setter
+    private String crUrl;
 
     private String crApiVersion;
+
+    public Syndesis() {
+        crdUrl = TestConfiguration.syndesisCrdUrl();
+        operatorImage = TestConfiguration.syndesisOperatorImage();
+        crUrl = TestConfiguration.syndesisCrUrl();
+    }
 
     @Override
     public void deploy() {
@@ -127,10 +140,10 @@ public class Syndesis implements Resource {
      * Pulls the operator image via docker pull.
      */
     public void pullOperatorImage() {
-        log.info("Pulling operator image {}", OPERATOR_IMAGE);
+        log.info("Pulling operator image {}", operatorImage);
         ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
             "pull",
-            OPERATOR_IMAGE
+            operatorImage
         );
 
         try {
@@ -156,7 +169,7 @@ public class Syndesis implements Resource {
                 OpenShiftUtils.binary().getOcConfigPath() + ":/tmp/kube/config:z",
                 "--entrypoint",
                 "syndesis-operator",
-                TestConfiguration.syndesisOperatorImage(),
+                operatorImage,
                 "grant",
                 "-u",
                 TestConfiguration.syndesisUsername(),
@@ -260,9 +273,9 @@ public class Syndesis implements Resource {
     }
 
     public void deployCrd() {
-        log.info("Creating custom resource definition from " + TestConfiguration.syndesisCrdUrl());
+        log.info("Creating custom resource definition from " + crdUrl);
         CustomResourceDefinition newCrd;
-        try (InputStream is = new URL(TestConfiguration.syndesisCrdUrl()).openStream()) {
+        try (InputStream is = new URL(crdUrl).openStream()) {
             newCrd = OpenShiftUtils.getInstance().customResourceDefinitions().load(is).get();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load CRD", ex);
@@ -316,16 +329,16 @@ public class Syndesis implements Resource {
     }
 
     public List<HasMetadata> getOperatorResources() {
-        String imageName = StringUtils.substringBeforeLast(OPERATOR_IMAGE, ":");
-        String imageTag = StringUtils.substringAfterLast(OPERATOR_IMAGE, ":");
+        String imageName = StringUtils.substringBeforeLast(operatorImage, ":");
+        String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
 
-        log.info("Generating resources using operator image {}", OPERATOR_IMAGE);
+        log.info("Generating resources using operator image {}", operatorImage);
         ProcessBuilder dockerRunPb = new ProcessBuilder("docker",
             "run",
             "--rm",
             "--entrypoint",
             "syndesis-operator",
-            OPERATOR_IMAGE,
+            operatorImage,
             "install",
             "operator",
             "--image",
@@ -375,14 +388,17 @@ public class Syndesis implements Resource {
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
         List<HasMetadata> finalResourceList = resourceList;
-        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().createResources(finalResourceList));
+        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(finalResourceList).createOrReplace());
 
-        Set<Image> images = EnumSet.allOf(Image.class);
         Map<String, String> imagesEnvVars = new HashMap<>();
-        for (Image image : images) {
-            if (TestConfiguration.image(image) != null) {
-                log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
-                imagesEnvVars.put(image.name() + "_IMAGE", TestConfiguration.image(image));
+        // For upgrade, we want to override images only for "current" version
+        if (operatorImage.equals(TestConfiguration.syndesisOperatorImage())) {
+            Set<Image> images = EnumSet.allOf(Image.class);
+            for (Image image : images) {
+                if (TestConfiguration.image(image) != null) {
+                    log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
+                    imagesEnvVars.put(image.name() + "_IMAGE", TestConfiguration.image(image));
+                }
             }
         }
 
@@ -417,16 +433,30 @@ public class Syndesis implements Resource {
     }
 
     private void deploySyndesisViaOperator() {
-        log.info("Deploying syndesis resource from " + TestConfiguration.syndesisCrUrl());
-        try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
+        log.info("Deploying syndesis resource from " + crUrl);
+        try (InputStream is = new URL(crUrl).openStream()) {
             JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
 
-            JSONObject serverFeatures = crJson.getJSONObject("spec").getJSONObject("components")
-                .getJSONObject("server").getJSONObject("features");
-            if (TestUtils.isJenkins()) {
-                serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
+            // For upgrade tests, we need to support CR versions for current and also a previous version
+            if (operatorImage.split(":")[1].startsWith(TestConfiguration.syndesisVersion().substring(0, 3))) {
+                // current version
+                JSONObject serverFeatures = crJson.getJSONObject("spec").getJSONObject("components")
+                    .getJSONObject("server").getJSONObject("features");
+                if (TestUtils.isJenkins()) {
+                    serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
+                }
+                serverFeatures.put("integrationLimit", 5);
+
+                // add nexus
+                addMavenRepo(serverFeatures);
+            } else {
+                // previous version
+                JSONObject integration = crJson.getJSONObject("spec").getJSONObject("integration");
+                integration.put("limit", 5);
+                integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
+
+                addMavenRepo(crJson.getJSONObject("spec"));
             }
-            serverFeatures.put("integrationLimit", 5);
 
             // set correct image stream namespace
             crJson.getJSONObject("spec").put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
@@ -435,9 +465,6 @@ public class Syndesis implements Resource {
             crJson.getJSONObject("spec").put("routeHostname", TestConfiguration.syndesisUrl() != null
                 ? StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://")
                 : TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
-
-            // add nexus
-            addMavenRepo(serverFeatures);
 
             getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), crJson.toMap());
         } catch (IOException ex) {
@@ -503,7 +530,7 @@ public class Syndesis implements Resource {
      */
     private String getCrApiVersion() {
         if (crApiVersion == null) {
-            try (InputStream is = new URL(TestConfiguration.syndesisCrUrl()).openStream()) {
+            try (InputStream is = new URL(crUrl).openStream()) {
                 crApiVersion = StringUtils.substringAfter(((Map<String, String>) new Yaml().load(is)).get("apiVersion"), "/");
             } catch (IOException e) {
                 fail("Unable to read syndesis CR", e);

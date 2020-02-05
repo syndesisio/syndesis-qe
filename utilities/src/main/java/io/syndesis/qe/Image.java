@@ -8,6 +8,7 @@ public enum Image {
     UI,
     META,
     S2I,
+    UPGRADE,
     PSQL_EXPORTER,
     DV,
     CAMELK
