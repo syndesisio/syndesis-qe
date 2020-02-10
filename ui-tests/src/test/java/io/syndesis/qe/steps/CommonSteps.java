@@ -51,6 +51,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
@@ -133,6 +134,7 @@ public class CommonSteps {
     private GoogleAccounts googleAccounts;
 
     @Autowired
+    @Lazy
     private CalendarUtils calendarUtils;
 
     @When("^log out from Syndesis")
