@@ -436,6 +436,11 @@ public class CommonSteps {
         button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
     }
 
+    public void clickOnButtonByCssClassName(String buttonCssClass) {
+        SelenideElement button = syndesisRootPage.getButtonByCssClassName(buttonCssClass);
+        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+    }
+
     @When(".*clicks? on the modal dialog \"([^\"]*)\" button.*$")
     public void clickOnModalDialogButton(String buttonTitle) {
         modalDialogPage.getButton(buttonTitle).shouldBe(visible).click();
