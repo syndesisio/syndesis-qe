@@ -42,15 +42,16 @@ public class SFTP implements Resource {
 
     @Override
     public void deploy() {
-        //preparation for our specific SFTP image to fit Openshift requirements:
+        //        preparation for our specific SFTP image to fit Openshift requirements:
         OpenShiftUtils.getInstance().serviceAccounts()
             .createNew()
             .withNewMetadata()
             .withName(serviceAccountName)
             .endMetadata()
             .done();
-        OpenShiftUtils.getInstance()
-            .addRoleToUser("anyuid", "system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName);
+        OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
+            .addNewUser("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
+            .done();
 
         if (!TestUtils.isDcDeployed(appName)) {
             List<ContainerPort> ports = new LinkedList<>();
@@ -75,13 +76,11 @@ public class SFTP implements Resource {
                 .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(appName).withImage("syndesisqe/sftpd:latest")
+                .addNewContainer().withName(appName).withImage("syndesisqe/sftpd-alp:latest")
                 .addAllToPorts(ports)
                 .addAllToEnv(templateParams)
-
-                .withNewSecurityContext()
-                .endSecurityContext()
                 .endContainer()
+                .withServiceAccount(serviceAccountName)
                 .endSpec()
                 .endTemplate()
                 .addNewTrigger()
@@ -111,9 +110,10 @@ public class SFTP implements Resource {
 
     @Override
     public void undeploy() {
-        //deleting service account:
         OpenShiftUtils.getInstance().deleteServiceAccount(OpenShiftUtils.getInstance().getServiceAccount(serviceAccountName));
-
+        OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
+            .removeFromUsers("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
+            .done();
         OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(appName), true);
         OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(appName));
     }
