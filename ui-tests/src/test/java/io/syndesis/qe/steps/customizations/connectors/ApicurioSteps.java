@@ -284,8 +284,8 @@ public class ApicurioSteps {
         }
 
         ElementsCollection saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);
-        assertThat(saveButtons.size()).isGreaterThan(1);
-        saveButtons.get(1).shouldBe(visible).click();
+        assertThat(saveButtons.size()).isEqualTo(1);
+        saveButtons.get(0).shouldBe(visible).click();
 
         $(Elements.BUTTON_ADD_REQUIREMENT).shouldBe(visible).click();
 
@@ -301,8 +301,8 @@ public class ApicurioSteps {
         items.first().click();
 
         saveButtons = $(SecurityPageElements.ACTION_HEADER).shouldBe(visible).$$(SecurityPageElements.SAVE);
-        assertThat(saveButtons.size()).isGreaterThan(1);
-        saveButtons.get(1).shouldBe(visible).click();
+        assertThat(saveButtons.size()).isEqualTo(1);
+        saveButtons.get(0).shouldBe(visible).click();
     }
 
     @ExcludeFromSelectorReports
