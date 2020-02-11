@@ -39,7 +39,6 @@ import io.atlasmap.java.v2.JavaField;
 import io.atlasmap.json.v2.JsonComplexType;
 import io.atlasmap.json.v2.JsonDataSource;
 import io.atlasmap.json.v2.JsonInspectionResponse;
-import io.atlasmap.v2.Actions;
 import io.atlasmap.v2.AtlasMapping;
 import io.atlasmap.v2.BaseMapping;
 import io.atlasmap.v2.DataSource;
@@ -424,16 +423,16 @@ public class AtlasMapperGenerator {
     private void addTransformations(DataMapperStepDefinition mappingDef, List<Field> in, List<Field> out) {
         if (mappingDef.getTransformations().get("source") != null && !mappingDef.getTransformations().get("source").isEmpty()) {
             mappingDef.getTransformations().get("source").forEach((id, transformations) -> {
-                Actions actions = new Actions();
-                transformations.forEach(t -> actions.getActions().add((io.atlasmap.v2.Action) t));
+                ArrayList<io.atlasmap.v2.Action> actions = new ArrayList<>();
+                transformations.forEach(t -> actions.add((io.atlasmap.v2.Action) t));
                 getField(in, id).setActions(actions);
             });
         }
 
         if (mappingDef.getTransformations().get("target") != null && !mappingDef.getTransformations().get("target").isEmpty()) {
             mappingDef.getTransformations().get("target").forEach((id, transformations) -> {
-                Actions actions = new Actions();
-                transformations.forEach(t -> actions.getActions().add((io.atlasmap.v2.Action) t));
+                ArrayList<io.atlasmap.v2.Action> actions = new ArrayList<>();
+                transformations.forEach(t -> actions.add((io.atlasmap.v2.Action) t));
                 getField(out, id).setActions(actions);
             });
         }
