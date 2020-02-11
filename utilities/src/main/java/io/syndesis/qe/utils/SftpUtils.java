@@ -24,7 +24,6 @@ public class SftpUtils implements FileTansferUtils {
     private SSHClient sshClient = manager.getSshClient();
     private SFTPClient sftpClient = manager.getSftpClient(sshClient);
 
-
     public void prepareServerForTest() {
         checkConnection();
         log.info("Preparing SFTP server for tests");

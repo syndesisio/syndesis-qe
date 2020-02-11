@@ -10,6 +10,8 @@ Feature: Integration - SFTP to SFTP
     And log into the Syndesis
     And deploy SFTP server
     And prepare SFTP server
+    And put "ui-sftp-sftp.txt" file with content "Hello-SFTP" in the directory: "/test/download" using SFTP
+    And check "ui-sftp-sftp.txt" is in "/test/download" directory with content "Hello-SFTP" using SFTP
     And created connections
       | SFTP | SFTP | SFTP | SFTP on OpenShift |
 #
@@ -54,5 +56,4 @@ Feature: Integration - SFTP to SFTP
     And publish integration
     Then Integration "sftp-to-sftp E2E" is present in integrations list
     And wait until integration "sftp-to-sftp E2E" gets into "Running" state
-    When put "ui-sftp-sftp.txt" file with content "Hello-SFTP" in the directory: "/test/download" using SFTP
     Then validate that file "ui-sftp-sftp.txt" has been transfered from "/test/download" to "/test/upload" directory using SFTP

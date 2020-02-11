@@ -29,6 +29,11 @@ public class SftpValidationSteps {
         assertThat(sftpUtils.isFileThere(serverFromDirectory, filename)).isFalse();
     }
 
+    @Then("^check \"([^\"]*)\" is in \"([^\"]*)\" directory with content \"([^\"]*)\" using SFTP$")
+    public void getFileContent(String fileName, String directory, String text) {
+        assertThat(text).isEqualTo(sftpUtils.getFileContent(directory, fileName));
+    }
+
     @Given("^prepare SFTP server$")
     public void prepareSftpServerForTest() {
         sftpUtils.prepareServerForTest();
