@@ -26,8 +26,6 @@ Feature: Integration - Webhook to API connector
     When click on the "Next" link
     Then check visibility of page "Specify Security"
 
-    When set up api connector security
-      | authType | HTTP Basic Authentication |
     And click on the "Next" button
     And fill in values by element data-testid
       | name     | Todo connector |
