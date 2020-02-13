@@ -58,7 +58,7 @@ public class MySQL implements Resource {
                 .addToLabels(LABEL_NAME, APP_NAME)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(APP_NAME).withImage("centos/mysql-57-centos7").addAllToPorts(ports).addAllToEnv(templateParams)
+                .addNewContainer().withName(APP_NAME).withImage("syndesisqe/mysql-57-centos7").addAllToPorts(ports).addAllToEnv(templateParams)
 
                 .endContainer()
                 .endSpec()
