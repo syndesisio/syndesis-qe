@@ -9,6 +9,7 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
@@ -53,6 +54,7 @@ import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.DoneablePersistentVolume;
 import io.fabric8.kubernetes.api.model.PersistentVolumeFluent;
+import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.client.LocalPortForward;
@@ -364,6 +366,8 @@ public class OperatorValidationSteps {
         } catch (IOException e) {
             fail("Unable to create local backup file: ", e);
         }
+        log.debug("Downloading backup file from S3 bucket " + S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX)
+            + "to: " + backupTempFile.toString());
         s3.downloadFile(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX), fullFileName, backupTempFile);
     }
 
@@ -403,8 +407,16 @@ public class OperatorValidationSteps {
         }
     }
 
-    @When("perform restore from backup")
-    public void performRestore() {
+    @When("perform {string} {string} restore from backup")
+    public void performRestore(String method, String type) {
+        if ("manual".equals(method)) {
+            performManualRestore(type);
+        } else {
+            performOperatorRestore();
+        }
+    }
+
+    public void performOperatorRestore() {
         try {
             new ProcessBuilder("docker",
                 "run",
@@ -425,8 +437,39 @@ public class OperatorValidationSteps {
                 "/tmp/kube/config"
             ).start().waitFor();
         } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
+            fail("Unable to invoke restore using operator", e);
         }
+    }
+
+    public void performManualRestore(String type) {
+        final String dbName;
+        final String containerName;
+        Pod dbPod;
+        if ("standard".equals(type)) {
+            dbPod = OpenShiftUtils.getAnyPod("syndesis.io/component", "syndesis-db").get();
+            dbName = "syndesis";
+            containerName = "postgresql";
+        } else {
+            dbPod = OpenShiftUtils.getPodByPartialName("custom-postgres").get();
+            dbName = "testdb";
+            containerName = null;
+        }
+
+        // Copy the dump into the db pod
+        OpenShiftUtils.binary().execute(
+            "cp",
+            backupTempDir.toAbsolutePath() + "/syndesis-db.dump",
+            dbPod.getMetadata().getName() + ":/tmp/syndesis-db.dump");
+
+        // Also copy the manual restore script
+        OpenShiftUtils.binary().execute(
+            "cp",
+            new File("src/test/resources/operator/manual_restore.sh").getAbsolutePath(),
+            dbPod.getMetadata().getName() + ":/tmp/manual_restore.sh");
+
+        // Invoke manual restore script
+        log.debug(OpenShiftUtils.getInstance().podShell(dbPod, containerName)
+            .executeWithBash("/tmp/manual_restore.sh " + dbName).getOutput());
     }
 
     @Then("check that connection {string} exists")
@@ -439,5 +482,21 @@ public class OperatorValidationSteps {
     public void checkExtension(String extension) {
         // This fails when it is not present, so we don't need the value
         extensions.getExtensionByName(extension);
+    }
+
+    @When("redeploy custom database")
+    public void redeployDb() {
+        ResourceFactory.destroy(ExternalDatabase.class);
+        ResourceFactory.create(ExternalDatabase.class);
+    }
+
+    @When("clean backup S3 bucket")
+    public void cleanS3() {
+        s3.cleanS3Bucket(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX));
+    }
+
+    @Then("verify that there are {int} backups in S3")
+    public void verifyBackups(int count) {
+        assertThat(s3.getFileCount(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX))).isEqualTo(count);
     }
 }

@@ -195,6 +195,14 @@ public class S3Utils {
         return s3Object.get().getKey();
     }
 
+    public int getFileCount(String bucketName) {
+        return s3client.listObjects(bucketName).getObjectSummaries().size();
+    }
+
+    public void cleanS3Bucket(String bucketName) {
+        s3client.listObjects(bucketName).getObjectSummaries().forEach(os -> s3client.deleteObject(bucketName, os.getKey()));
+    }
+
     /**
      * Method to delete all the buckets created by this instance of S3Utils.
      */
