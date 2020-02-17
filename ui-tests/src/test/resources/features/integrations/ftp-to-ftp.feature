@@ -7,9 +7,10 @@ Feature: Integration - FTP to FTP
 
   Background: Clean application state
     Given clean application state
-    Given log into the Syndesis
-    Given deploy FTP server
-    Given created connections
+    And deploy FTP server
+    And put "ui-ftp-ftp.txt" file with content "Hello-FTP" in the directory: "download" using FTP
+    And log into the Syndesis
+    And created connections
       | FTP | FTP | FTP | FTP on OpenShift |
 #
 #  1. download - upload
@@ -54,5 +55,6 @@ Feature: Integration - FTP to FTP
     And publish integration
     Then Integration "ftp-to-ftp E2E" is present in integrations list
     And wait until integration "ftp-to-ftp E2E" gets into "Running" state
-    When put "ui-ftp-ftp.txt" file with content "Hello" in the directory: "download" using FTP
+
     Then validate that file "ui-ftp-ftp.txt" has been transfered from "/download" to "/upload" directory using FTP
+    And check that "ui-ftp-ftp.txt" file in "/upload" directory has content "Hello-FTP" using FTP

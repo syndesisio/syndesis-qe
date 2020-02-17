@@ -26,8 +26,8 @@ import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 @Slf4j
 public class SftpClientManager {
 
-    private String sftpServer = "127.0.0.1";
-    private int sftpLocalPort = 2222;
+    private final String sftpServer = "127.0.0.1";
+    private final int sftpLocalPort = 2222;
     private int sftpRemotePort;
     private String sftpPodName;
     private String sftpUser;

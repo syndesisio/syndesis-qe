@@ -11,7 +11,7 @@ Feature: Integration - SFTP to SFTP
     And deploy SFTP server
     And prepare SFTP server
     And put "ui-sftp-sftp.txt" file with content "Hello-SFTP" in the directory: "/test/download" using SFTP
-    And check "ui-sftp-sftp.txt" is in "/test/download" directory with content "Hello-SFTP" using SFTP
+    And check that "ui-sftp-sftp.txt" file in "/test/download" directory has content "Hello-SFTP" using SFTP
     And created connections
       | SFTP | SFTP | SFTP | SFTP on OpenShift |
 #
