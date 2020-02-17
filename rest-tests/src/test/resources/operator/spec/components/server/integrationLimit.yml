@@ -7,3 +7,5 @@ spec:
     server:
       features:
         integrationLimit: 2
+        mavenRepositories:
+          nexus: "REPLACE_REPO"
