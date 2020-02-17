@@ -281,6 +281,7 @@ Feature: Operator Deployment
       | OPENSHIFT_MANAGEMENT_URL_FOR3SCALE | asdf |
 
   @ENTESB-12114
+  @ENTESB-12846
   @operator-backup-restore
   Scenario: Syndesis Operator - Backup and Restore
     Given deploy ActiveMQ broker

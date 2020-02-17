@@ -5,3 +5,8 @@ metadata:
 spec:
   backup:
     schedule: "every 10m"
+  components:
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"
