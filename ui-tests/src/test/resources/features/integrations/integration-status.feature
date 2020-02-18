@@ -53,7 +53,7 @@ Feature: Integration - Status
 
     When navigate to the "Integrations" page
 
-    Then check starting integration ASD status on Integrations page
+    Then check starting integration integration-check-starting-status-on-integration-list status on Integrations page
 
   @ENTESB-12415
   @integration-check-starting-status-on-home-page
@@ -77,4 +77,4 @@ Feature: Integration - Status
 
     When navigate to the "Home" page
 
-    Then check starting integration ASD status on Home page
+    Then check starting integration integration-check-starting-status-on-home-page status on Home page
