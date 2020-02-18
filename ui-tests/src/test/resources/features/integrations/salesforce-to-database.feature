@@ -38,7 +38,7 @@ Feature: Integration - Salesforce to DB
     Then check visibility of page "Choose a Finish Connection"
     When select the "PostgresDB" connection
     And select "Invoke Stored Procedure" integration action
-    And select "add_lead" from "procedureName" dropdown
+    And select "add_lead" from "procedurename" dropdown
     And click on the "Done" button
 
       # add data mapper step
