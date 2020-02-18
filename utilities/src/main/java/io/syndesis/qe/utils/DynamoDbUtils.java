@@ -126,6 +126,13 @@ public class DynamoDbUtils {
         return tableContainsItem;
     }
 
+    public int getNrOfRecordsPresentInTable() {
+
+        ScanRequest scanRequest = ScanRequest.builder().tableName(tableName).build();
+        ScanResponse result = dynamoDb.scan(scanRequest);
+        return result.items().size();
+    }
+
     public void purgeTable() {
 
         ScanRequest scanRequest = ScanRequest.builder().tableName(tableName).build();

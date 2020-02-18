@@ -43,6 +43,11 @@ public class DynamoDbValidationSteps {
         assertThat(dynamoDb.verifyRecordIsPresent(data.asMap(String.class, String.class))).isEqualTo(true);
     }
 
+    @Given("verify the dynamoDB table contains single record")
+    public void verifyTableContainsSingleRecord() {
+        assertThat(dynamoDb.getNrOfRecordsPresentInTable() == 1);
+    }
+
     @Given("verify the dynamoDB table doesn't contain record")
     public void verifyTableDoesntContainRecord(DataTable data) {
         assertThat(dynamoDb.verifyRecordIsPresent(data.asMap(String.class, String.class))).isEqualTo(false);
