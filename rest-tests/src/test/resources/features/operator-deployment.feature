@@ -24,13 +24,6 @@ Feature: Operator Deployment
     When deploy Syndesis CR from file "spec/routeHostname.yml"
       And check the deployed route
 
-  @ENTESB-12099
-  @operator-is-namespace
-  Scenario: Syndesis Operator - ImageStreams namespace
-    When deploy Syndesis CR from file "spec/imagestreamsNamespace.yml"
-      And wait for Syndesis to become ready
-      # TODO once ENTESB-12099 is figured out
-
   @ENTESB-12104
   @operator-demodata
   Scenario: Syndesis Operator - Demo data
