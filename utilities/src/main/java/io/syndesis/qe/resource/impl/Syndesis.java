@@ -47,6 +47,7 @@ import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,15 +56,22 @@ public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
 
     @Setter
+    @Getter
     private String crdUrl;
     @Setter
+    @Getter
     private String operatorImage;
     @Setter
+    @Getter
     private String crUrl;
 
     private String crApiVersion;
 
     public Syndesis() {
+        defaultValues();
+    }
+
+    public void defaultValues() {
         crdUrl = TestConfiguration.syndesisCrdUrl();
         operatorImage = TestConfiguration.syndesisOperatorImage();
         crUrl = TestConfiguration.syndesisCrUrl();
@@ -187,7 +195,7 @@ public class Syndesis implements Resource {
     /**
      * In case of multiple uses of a static route, openshift will create the route anyway with a false condition, so rather fail fast.
      */
-    private void checkRoute() {
+    public void checkRoute() {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
@@ -437,26 +445,15 @@ public class Syndesis implements Resource {
         try (InputStream is = new URL(crUrl).openStream()) {
             JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
 
-            // For upgrade tests, we need to support CR versions for current and also a previous version
-            if (operatorImage.split(":")[1].startsWith(TestConfiguration.syndesisVersion().substring(0, 3))) {
-                // current version
-                JSONObject serverFeatures = crJson.getJSONObject("spec").getJSONObject("components")
-                    .getJSONObject("server").getJSONObject("features");
-                if (TestUtils.isJenkins()) {
-                    serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
-                }
-                serverFeatures.put("integrationLimit", 5);
-
-                // add nexus
-                addMavenRepo(serverFeatures);
-            } else {
-                // previous version
-                JSONObject integration = crJson.getJSONObject("spec").getJSONObject("integration");
-                integration.put("limit", 5);
-                integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
-
-                addMavenRepo(crJson.getJSONObject("spec"));
+            JSONObject serverFeatures = crJson.getJSONObject("spec").getJSONObject("components")
+                .getJSONObject("server").getJSONObject("features");
+            if (TestUtils.isJenkins()) {
+                serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
             }
+            serverFeatures.put("integrationLimit", 5);
+
+            // add nexus
+            addMavenRepo(serverFeatures);
 
             // set correct image stream namespace
             crJson.getJSONObject("spec").put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
@@ -472,7 +469,7 @@ public class Syndesis implements Resource {
         }
     }
 
-    private void addMavenRepo(JSONObject serverFeatures) {
+    protected void addMavenRepo(JSONObject serverFeatures) {
         String replacementRepo = null;
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {

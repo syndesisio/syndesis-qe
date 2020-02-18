@@ -7,9 +7,6 @@
 #   - (standard for prod build) syndesis.version - maven version of "current" version
 #   - (standard for prod build) syndesis.config.build.properties.url - for deploying "current" operator when doing an upgrade
 
-
--Dsyndesis.config.build.properties.url=/tmp/raw.txt -Dsyndesis.upgrade.previous.version=1.8.6.fuse-750001-redhat-00002 -Dsyndesis.version=1.9.0.fuse-760016-redhat-00001
-
 @ENTESB-12355
 Feature: Syndesis Upgrade Using Operator
   @syndesis-upgrade

@@ -8,6 +8,7 @@ import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.PreviousSyndesis;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -37,11 +38,14 @@ public class UpgradeSteps {
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
 
-    private String integrationId;
+    @When("^deploy previous Syndesis$")
+    public static void deploySyndesis() {
+        ResourceFactory.create(PreviousSyndesis.class);
+    }
 
     @When("^prepare upgrade$")
     public void getUpgradeVersions() {
-        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+        Syndesis syndesis = ResourceFactory.get(PreviousSyndesis.class);
         // If it is a prod build, we can use released images from registry.redhat.io
         if (TestUtils.isProdBuild()) {
             final String floatingTag = TestConfiguration.syndesisOperatorImage().split(":")[1].split("-")[0];
@@ -52,7 +56,6 @@ public class UpgradeSteps {
         } else {
             assumeThat(TestConfiguration.syndesisInstallVersion()).as("Upgrade tests need to have "
                 + TestConfiguration.SYNDESIS_INSTALL_VERSION + " property set!").isNotNull();
-            System.setProperty(TestConfiguration.SYNDESIS_UPGRADE_CURRENT_VERSION, TestConfiguration.syndesisInstallVersion());
 
             // List all the tags from docker hub
             JSONArray jsonArray = new JSONObject(HttpUtils.doGetRequest(DOCKER_HUB_SYNDESIS_TAGS_URL).getBody()).getJSONArray("results");
@@ -67,8 +70,8 @@ public class UpgradeSteps {
             ).findFirst();
 
             if (previousTag.isPresent()) {
-                TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_PREVIOUS_VERSION, "1.8.13");
-                syndesis.setOperatorImage(UPSTREAM_OPERATOR_IMAGE + ":" + "1.8.13");
+                TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_PREVIOUS_VERSION, previousTag.get());
+                syndesis.setOperatorImage(UPSTREAM_OPERATOR_IMAGE + ":" + previousTag.get());
             } else {
                 fail("Unable to find tagged version for " + previousVersion);
             }
@@ -88,9 +91,7 @@ public class UpgradeSteps {
     @When("^perform syndesis upgrade to newer version using operator$")
     public void upgradeUsingOperator() {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        syndesis.setCrdUrl(TestConfiguration.syndesisCrdUrl());
-        syndesis.setOperatorImage(TestConfiguration.syndesisOperatorImage());
-        syndesis.deployCrd();
+        syndesis.defaultValues();
         syndesis.pullOperatorImage();
         syndesis.grantPermissions();
         syndesis.deployOperator();
