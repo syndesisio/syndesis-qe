@@ -5,12 +5,13 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
+import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
@@ -21,26 +22,74 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Kudu implements Resource {
     private static final String APP_NAME = "syndesis-kudu";
-    private static final String API_APP_NAME = "kudu-rest-api";
-    private static final String ROUTE_NAME = "kudu";
     private static final String LABEL_NAME = "app";
+    private static final String ROUTE_NAME = "kudu";
+    private static final String API_APP_NAME = "kudu-rest-api";
+    public static final int KUDU_PORT = 7051;
+    public static final int REST_PORT = 8080;
 
     @Override
     public void deploy() {
         if (!TestUtils.isDcDeployed(APP_NAME)) {
-            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
-            OpenShiftUtils.binary()
-                .execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-kudu.yml").toAbsolutePath().toString());
-            //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-kudu.yml")) {
-            //                OpenShiftUtils.getInstance().load(is).createOrReplace();
-            //            } catch (IOException e) {
-            //                fail("Template processing failed", e);
-            //            }
-
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
-                .withName("kudu-rest-api")
-                .withContainerPort(8080)
+                .withName(APP_NAME)
+                .withContainerPort(KUDU_PORT)
+                .withProtocol("TCP").build());
+
+            List<EnvVar> templateParams = new ArrayList<>();
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+                .editOrNewMetadata()
+                .withName(APP_NAME)
+                .addToLabels(LABEL_NAME, APP_NAME)
+                .endMetadata()
+
+                .editOrNewSpec()
+                .addToSelector(LABEL_NAME, APP_NAME)
+                .withReplicas(1)
+                .editOrNewTemplate()
+                .editOrNewMetadata()
+                .addToLabels(LABEL_NAME, APP_NAME)
+                .endMetadata()
+                .editOrNewSpec()
+                .addNewContainer().withName(APP_NAME).withImage("syndesisqe/kudu-2in1:latest")
+
+                .addAllToPorts(ports)
+                .addAllToEnv(templateParams)
+
+                .endContainer()
+                .endSpec()
+                .endTemplate()
+
+                .addNewTrigger()
+                .withType("ConfigChange")
+                .endTrigger()
+                .endSpec()
+                .done();
+
+            ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, APP_NAME);
+
+            serviceSpecBuilder.addToPorts(new ServicePortBuilder()
+                .withName(APP_NAME)
+                .withPort(KUDU_PORT)
+                .withTargetPort(new IntOrString(KUDU_PORT))
+                .build());
+
+            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+                .editOrNewMetadata()
+                .withName(APP_NAME)
+                .addToLabels(LABEL_NAME, APP_NAME)
+                .endMetadata()
+                .editOrNewSpecLike(serviceSpecBuilder.build())
+                .endSpec()
+                .done();
+        }
+
+        if (!TestUtils.isDcDeployed(API_APP_NAME)) {
+            List<ContainerPort> ports = new LinkedList<>();
+            ports.add(new ContainerPortBuilder()
+                .withName(API_APP_NAME)
+                .withContainerPort(REST_PORT)
                 .build());
 
             OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
@@ -57,8 +106,7 @@ public class Kudu implements Resource {
                 .addToLabels(LABEL_NAME, API_APP_NAME)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(API_APP_NAME).withImage("mcada/syndesis-kudu-rest-api:latest").addAllToPorts(ports)
-
+                .addNewContainer().withName(API_APP_NAME).withImage("syndesisqe/kudu-rest-api:latest").addAllToPorts(ports)
                 .endContainer()
                 .endSpec()
                 .endTemplate()
@@ -72,8 +120,8 @@ public class Kudu implements Resource {
 
             serviceSpecBuilder.addToPorts(new ServicePortBuilder()
                 .withName("kudu-rest-api-service")
-                .withPort(8080)
-                .withTargetPort(new IntOrString(8080))
+                .withPort(REST_PORT)
+                .withTargetPort(new IntOrString(REST_PORT))
                 .build());
 
             OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
