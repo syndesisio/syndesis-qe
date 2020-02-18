@@ -65,6 +65,7 @@ public class ApicurioSteps {
 
         //security elements
         public static By SECURITY_SECTION = By.className("security-section");
+        public static By SECURITY_SCHEMA_ROW = By.cssSelector(".security-scheme");
         public static By BUTTON_ADD_SCHEME = By.cssSelector("button[title*='Add a security scheme']");
         public static By BUTTON_ADD_REQUIREMENT = By.cssSelector("button[title*='Add a security requirement']");
 
@@ -372,5 +373,16 @@ public class ApicurioSteps {
         log.info("searching for apicurio button *{}*", buttonTitle);
         return $(Elements.APICURIO_INNER_ROOT).shouldBe(visible).findAll(By.tagName("button"))
             .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
+    }
+
+    @When("configure the \"([^\"]*)\" security schema")
+    public void configureSecuritySchema(String name) {
+        SelenideElement securityRow = $(Elements.SECURITY_SECTION).$$(Elements.SECURITY_SCHEMA_ROW).find(Condition.text(name));
+        if (securityRow == null) {
+            fail("Couldn't locate security schema {}, double check the spelling. Make sure you are using only the schema name, not also the type",
+                name);
+        }
+        securityRow.$(".dropdown-toggle").click();
+        securityRow.$(".dropdown-menu").$$("li").find(Condition.text("Edit")).click();
     }
 }
