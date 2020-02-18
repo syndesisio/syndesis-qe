@@ -65,6 +65,64 @@ Feature: Dynamodb connector
       | name       | test person     |
       | department | CEE             |
 
+  @dynamodb-update
+  Scenario: Webhook to dynamoDb - update item
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    When select the "Webhook" connection
+    And select "Incoming Webhook" integration action
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"email":"test","company":"test","name":"test","department":"test"} |
+    And click on the "Done" button
+
+    # finish point
+    Then check visibility of page "Choose a Finish Connection"
+    When selects the "AWS-DDB-test" connection
+    And select "Put Item" integration action
+    And fill in values by element data-testid
+      | element | {"email":":#email","company":":#company","name":":#name","department":":#department"} |
+    And click on the "Done" button
+
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    When create data mapper mappings
+      | email      | :#email      |
+      | company    | :#company    |
+      | name       | :#name       |
+      | department | :#department |
+    And click on the "Done" button
+
+    And publish integration
+    And set integration name "Webhook to dynamoDb"
+    And publish integration
+
+    And navigate to the "Integrations" page
+    And wait until integration "Webhook to dynamoDb" gets into "Running" state
+    And select the "Webhook to dynamoDb" integration
+    And invoke post request to webhook in integration webhook-to-dynamodb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"test person","department":"CEE"}
+    And verify the dynamoDB table contains record
+      | email      | test@redhat.com |
+      | company    | Red Hat         |
+      | name       | test person     |
+      | department | CEE             |
+
+    And invoke post request to webhook in integration webhook-to-dynamodb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"other person","department":"ACME"}
+    And verify the dynamoDB table contains single record
+    And verify the dynamoDB table contains record
+      | email      | test@redhat.com |
+      | company    | Red Hat         |
+      | name       | other person    |
+      | department | ACME            |
+
   @dynamodb-query
   Scenario: Webhook to dynamoDb - query item
     Given reset content of "contact" table
