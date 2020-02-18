@@ -100,7 +100,7 @@ public class OpenshiftValidationSteps {
         wildFlyS2i.setAppName("odata");
         wildFlyS2i.setGitURL("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git");
         wildFlyS2i.setBranch(null);
-        wildFlyS2i.deploy();
+        ResourceFactory.create(WildFlyS2i.class);
     }
 
     @Given("^deploy MongoDB 3.6 database$")
