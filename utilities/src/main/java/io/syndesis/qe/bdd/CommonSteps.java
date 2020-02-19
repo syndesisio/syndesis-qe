@@ -2,7 +2,6 @@ package io.syndesis.qe.bdd;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Addon;
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
@@ -22,7 +21,6 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -132,59 +130,6 @@ public class CommonSteps {
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
             fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
-        }
-    }
-
-    /**
-     * Waits for syndesis deployment / undeployment.
-     *
-     * @param deploy true if waiting for deploy, false otherwise
-     */
-    private static void waitFor(boolean deploy) {
-        final int timeout = TestUtils.isJenkins() ? 20 : 12;
-        EnumSet<Component> components = Component.getAllComponents();
-
-        if (deploy && ResourceFactory.get(Syndesis.class).isAddonEnabled(Addon.JAEGER)) {
-            // Jaeger pod doesn't have the required label, so add it manually
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.isAPodReady("app", "jaeger"));
-            } catch (Exception e) {
-                fail("Unable to find jaeger pod after 5 minutes");
-            }
-            OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
-                .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
-        }
-
-        ExecutorService executorService = Executors.newFixedThreadPool(components.size());
-        components.forEach(c -> {
-            Runnable runnable = () -> {
-                if (deploy) {
-                    OpenShiftUtils.getInstance().waiters()
-                        .areExactlyNPodsReady(1, "syndesis.io/component", c.getName())
-                        .interval(TimeUnit.SECONDS, 20)
-                        .timeout(TimeUnit.MINUTES, timeout)
-                        .waitFor();
-                } else {
-                    OpenShiftUtils.getInstance().waiters()
-                        .areExactlyNPodsRunning(0, "syndesis.io/component", c.getName())
-                        .interval(TimeUnit.SECONDS, 20)
-                        .timeout(TimeUnit.MINUTES, timeout)
-                        .waitFor();
-                }
-            };
-            executorService.submit(runnable);
-        });
-
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(timeout, TimeUnit.MINUTES)) {
-                executorService.shutdownNow();
-                TestUtils.printPods();
-                fail(deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time");
-            }
-        } catch (InterruptedException e) {
-            TestUtils.printPods();
-            fail(deploy ? "Syndesis wasn't initialized in time" : "Syndesis wasn't undeployed in time");
         }
     }
 

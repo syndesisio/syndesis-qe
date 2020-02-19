@@ -161,14 +161,13 @@ public final class OpenShiftUtils {
         Optional<Pod> integrationPod = getPodByPartialName(podPartialName);
         if (integrationPod.isPresent()) {
             String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
-            assertThat(logText)
-                    .isNotEmpty();
+            assertThat(logText).isNotEmpty();
             return logText;
         } else {
             fail("No pod found for pod name: " + podPartialName);
         }
-        //this can not happen due to assert
-        return null;
+        // this can not happen due to assert - make idea happy that it can't be null
+        return "";
     }
 
     public static boolean arePodLogsEmpty(String podPartialName) {

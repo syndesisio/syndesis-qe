@@ -73,6 +73,16 @@ public class TestConfiguration {
     public static final String STATE_CHECK_INTERVAL = "syndesis.server.state.check.interval";
     public static final String SNOOP_SELECTORS = "syndesis.config.snoop.selectors";
 
+    public static final String SYNDESIS_UPGRADE_PREVIOUS_VERSION = "syndesis.upgrade.previous.version";
+
+    public static final String SYNDESIS_UPGRADE_CURRENT_VERSION = "syndesis.upgrade.current.version";
+
+    public static final String SYNDESIS_UPGRADE_PREVIOUS_OPERATOR_IMAGE = "syndesis.upgrade.previous.operator";
+
+    public static final String SYNDESIS_UPGRADE_PREVIOUS_CRD = "syndesis.upgrade.previous.crd";
+
+    public static final String SYNDESIS_UPGRADE_PREVIOUS_CR = "syndesis.upgrade.previous.cr";
+
     private static final String BROWSER_BINARY_PATH = "syndesis.config.browser.path";
 
     private static final String CAMEL_K_VERSION = "syndesis.camelk.version";
@@ -274,6 +284,26 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_NIGHTLY_VERSION);
     }
 
+    public static String upgradePreviousVersion() {
+        return get().readValue(SYNDESIS_UPGRADE_PREVIOUS_VERSION);
+    }
+
+    public static String upgradeCurrentVersion() {
+        return get().readValue(SYNDESIS_UPGRADE_CURRENT_VERSION);
+    }
+
+    public static String upgradePreviousOperatorImage() {
+        return get().readValue(SYNDESIS_UPGRADE_PREVIOUS_OPERATOR_IMAGE);
+    }
+
+    public static String upgradePreviousCrd() {
+        return get().readValue(SYNDESIS_UPGRADE_PREVIOUS_CRD);
+    }
+
+    public static String upgradePreviousCr() {
+        return get().readValue(SYNDESIS_UPGRADE_PREVIOUS_CR);
+    }
+
     private Properties defaultValues() {
         final Properties props = new Properties();
 
@@ -417,19 +447,17 @@ public class TestConfiguration {
     }
 
     /**
-     * Used in upgrade test to specify different operator image to use.
-     *
-     * @param img image to use
+     * @param key
+     * @param value
      */
-    public void overrideSyndesisOperatorImage(String img) {
-        properties.setProperty(SYNDESIS_OPERATOR_IMAGE, img);
+    public void overrideProperty(String key, String value) {
+        properties.put(key, value);
     }
 
     /**
-     * Temporary override for the CR URL used in upgrade tests, needed because of the change from
-     * enabled: "true" to enabled: true in the operator.
+     * @param key
      */
-    public void overrideSyndesisCrUrl() {
-        properties.setProperty(SYNDESIS_CR_URL, getClass().getClassLoader().getResource("syndesis-minimal-1.8.x.yaml").toString());
+    public void clearProperty(String key) {
+        properties.remove(key);
     }
 }

@@ -1,6 +1,5 @@
 package io.syndesis.qe;
 
-import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import io.syndesis.qe.bdd.storage.StepsStorage;
@@ -33,12 +32,6 @@ public class RestTestHooks {
     @Autowired
     private StepsStorage stepStorage;
 
-    @Before("@syndesis-upgrade")
-    public void skipProdUpgrade() {
-        // Prod upgrade is tested differently, so skip these tests with prod version
-        assumeFalse(TestConfiguration.syndesisVersion().contains("redhat"));
-    }
-
     @Before("@prod")
     public void skipProdForNightly() {
         // Skip prod tests when not running with productized build
@@ -55,16 +48,6 @@ public class RestTestHooks {
         stepStorage.flushStepDefinitions();
         log.debug("Flushed steps from steps storage");
         SampleDbConnectionManager.closeConnections();
-    }
-
-    @After("@syndesis-upgrade")
-    public void clearUpgrade() {
-        // Restore syndesis version if it was changed by previous upgrade test
-        if (System.getProperty("syndesis.upgrade.backup.version") != null) {
-            System.setProperty("syndesis.version", System.getProperty("syndesis.upgrade.backup.version"));
-        }
-        System.clearProperty("syndesis.upgrade.version");
-        System.clearProperty("syndesis.upgrade.rollback");
     }
 
     @After("@operator")

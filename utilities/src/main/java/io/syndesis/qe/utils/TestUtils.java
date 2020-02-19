@@ -30,8 +30,7 @@ import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.VersionInfo;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.Headers;
 
 /**
  * @author jknetl
@@ -324,17 +323,7 @@ public final class TestUtils {
      */
     public static String getSyndesisVersion() {
         RestUtils.reset();
-        Request request = new Request.Builder()
-            .url(RestUtils.getRestUrl() + VERSION_ENDPOINT)
-            .header("Accept", "text/plain")
-            .build();
-        try {
-            return new OkHttpClient.Builder().build().newCall(request).execute().body().string();
-        } catch (IOException e) {
-            log.error("Unable to get version from " + VERSION_ENDPOINT);
-            e.printStackTrace();
-        }
-        return null;
+        return HttpUtils.doGetRequest(RestUtils.getRestUrl() + VERSION_ENDPOINT, Headers.of("Accept", "text/plain")).getBody();
     }
 
     /**

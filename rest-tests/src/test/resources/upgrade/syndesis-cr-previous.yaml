@@ -9,5 +9,5 @@ spec:
   components:
     scheduled: false
   integration:
-    limit: 5
+    limit: 1
   devSupport: false
