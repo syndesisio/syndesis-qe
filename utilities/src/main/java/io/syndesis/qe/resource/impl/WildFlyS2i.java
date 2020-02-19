@@ -5,9 +5,12 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import java.nio.file.Paths;
-import java.util.concurrent.TimeoutException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
+import io.fabric8.openshift.api.model.Template;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,18 +24,19 @@ public class WildFlyS2i implements Resource {
     @Override
     public void deploy() {
         if (!TestUtils.isDcDeployed(appName)) {
-            //            Template template;
-            //            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
-            //                template = OpenShiftUtils.getInstance().templates().load(is).get();
-            //            } catch (IOException ex) {
-            //                throw new IllegalArgumentException("Unable to read template ", ex);
-            //            }
-            //
-            //            Map<String, String> templateParams = new HashMap<>();
-            //            templateParams.put("GITHUB_REPO", gitURL);
-            //            templateParams.put("APPLICATION_NAME", appName);
-            //
-            //            OpenShiftUtils.getInstance().templates().withName(appName).delete();
+            Template template;
+            try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
+                template = OpenShiftUtils.getInstance().templates().load(is).get();
+            } catch (IOException ex) {
+                throw new IllegalArgumentException("Unable to read template ", ex);
+            }
+
+            Map<String, String> templateParams = new HashMap<>();
+            templateParams.put("GITHUB_REPO", gitURL);
+            templateParams.put("APPLICATION_NAME", appName);
+            templateParams.put("SOURCE_REF", branch == null ? "master" : branch);
+
+            OpenShiftUtils.getInstance().templates().withName(appName).delete();
 
             OpenShiftUtils.getInstance().imageStreams().createOrReplaceWithNew()
                 .editOrNewMetadata()
@@ -57,30 +61,8 @@ public class WildFlyS2i implements Resource {
                 .endSpec()
                 .done();
 
-            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
-            OpenShiftUtils.binary()
-                .execute("create", "-f", Paths.get("../utilities/src/main/resources/templates/syndesis-wildfly.yml").toAbsolutePath().toString());
-            OpenShiftUtils.binary()
-                .execute("new-app", "wildfly-s2i-template", "-p", "GITHUB_REPO=" + gitURL, "-p", "APPLICATION_NAME=" + appName, "-p",
-                    "SOURCE_REF=" + (branch != null ? branch : "master"));
-
-            //            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template,
-            //            templateParams));
-
-            try {
-                log.info("Waiting for " + appName + " to be ready");
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning("deploymentconfig", appName, 1));
-            } catch (InterruptedException | TimeoutException e) {
-                log.error("Wait for " + appName + " failed ", e);
-            }
-
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs(appName).contains("OData service has started"), 5 * 60 * 1000L);
-            } catch (TimeoutException | InterruptedException e) {
-                log.error(appName + " pod logs did not contain expected message. Pod logs:");
-                log.error(OpenShiftUtils.getPodLogs(appName));
-            }
-
+            OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template,
+                templateParams));
         }
     }
 
@@ -96,6 +78,7 @@ public class WildFlyS2i implements Resource {
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", appName));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", appName))
+            && OpenShiftUtils.getPodLogs(appName).contains("OData service has started");
     }
 }

@@ -7,43 +7,98 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerPort;
+import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServicePort;
+import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HTTPEndpoints implements Resource {
-    private static final String TEMPLATE_URL = "https://raw.githubusercontent.com/syndesisio/syndesis-qe-HTTPEndpoints/master/template.yml";
-    private static final String NAME = "httpendpoints";
+    private static final String LABEL_NAME = "app";
+    private static final String APP_NAME = "httpendpoints";
+    private static final String IMAGE = "syndesisqe/httpendpoints";
+    private static final String HTTP_SERVICE_NAME = "http-svc";
+    private static final String HTTPS_SERVICE_NAME = "https-svc";
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(NAME)) {
-            //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following lines can be removed later
-            OpenShiftUtils.binary().execute("create", "-f", TEMPLATE_URL);
-            OpenShiftUtils.binary().execute("new-app", "http-endpoints");
-            //            try {
-            //                OpenShiftUtils.getInstance().load(new URL(TEMPLATE_URL).openStream()).createOrReplace();
-            //            } catch (IOException e) {
-            //                e.printStackTrace();
-            //            }
+        if (!TestUtils.isDcDeployed(APP_NAME)) {
+            Map<String, String> labels = TestUtils.map(LABEL_NAME, APP_NAME);
+            List<ContainerPort> ports = new ArrayList<>();
+            ports.add(new ContainerPortBuilder().withName("http").withContainerPort(8080).build());
+            ports.add(new ContainerPortBuilder().withName("https").withContainerPort(8443).build());
+            //@formatter:off
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+                .withNewMetadata()
+                    .withName(APP_NAME)
+                    .withLabels(labels)
+                .endMetadata()
+                .withNewSpec()
+                    .withReplicas(1)
+                    .withSelector(labels)
+                    .withNewTemplate()
+                        .withNewMetadata()
+                            .withLabels(labels)
+                        .endMetadata()
+                        .withNewSpec()
+                            .withContainers(new ContainerBuilder().withName(APP_NAME).withPorts(ports).withImage(IMAGE).build())
+                        .endSpec()
+                    .endTemplate()
+                    .addNewTrigger()
+                        .withType("ConfigChange")
+                    .endTrigger()
+                .endSpec()
+            .done();
+
+            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+                .withNewMetadata()
+                    .withName(HTTP_SERVICE_NAME)
+                    .withLabels(labels)
+                .endMetadata()
+                .withNewSpec()
+                    .withPorts(getServicePort(HTTP_SERVICE_NAME, 8080))
+                    .withSelector(labels)
+                .endSpec()
+            .done();
+
+            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+                .withNewMetadata()
+                .withName(HTTPS_SERVICE_NAME)
+                .withLabels(labels)
+                .endMetadata()
+                .withNewSpec()
+                .withPorts(getServicePort(HTTPS_SERVICE_NAME, 8443))
+                .withSelector(labels)
+                .endSpec()
+                .done();
+            //@formatter:on
         }
         addAccounts();
     }
 
+    private ServicePort getServicePort(String name, int port) {
+        return new ServicePortBuilder().withName(name).withPort(port).withProtocol("TCP").withTargetPort(new IntOrString(port)).build();
+    }
+
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().deploymentConfigs().withName("httpendpoints").cascading(true).delete();
-        OpenShiftUtils.getInstance().imageStreams().withName("httpendpoints").delete();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(APP_NAME).cascading(true).delete();
+        OpenShiftUtils.getInstance().imageStreams().withName(APP_NAME).delete();
         OpenShiftUtils.getInstance().services().list().getItems().stream().filter(s -> s.getMetadata().getName().endsWith("-svc"))
             .forEach(s -> OpenShiftUtils.getInstance().services().delete(s));
-        OpenShiftUtils.binary().execute("delete", "-f", TEMPLATE_URL);
     }
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", NAME));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME));
     }
 
     private static void addAccounts() {

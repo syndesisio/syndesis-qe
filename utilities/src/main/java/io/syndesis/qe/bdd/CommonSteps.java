@@ -44,8 +44,7 @@ public class CommonSteps {
     @Given("^clean default namespace")
     public static void cleanNamespace() {
         undeploySyndesis();
-        //OCP4HACK - openshift-client 4.3.0 isn't supported with OCP4 and can't create/delete templates, following line can be removed later
-        OpenShiftUtils.binary().execute("delete", "template", "--all");
+        OpenShiftUtils.getInstance().templates().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.getInstance().apps().statefulSets().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.getInstance().apps().deployments().inNamespace(TestConfiguration.openShiftNamespace()).delete();
         OpenShiftUtils.getInstance().serviceAccounts().withName("syndesis-oauth-client").delete();
