@@ -8,6 +8,8 @@ import io.syndesis.qe.utils.TestUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,6 +42,17 @@ public abstract class TestSuiteParent {
             OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().createProjectRequest(TestConfiguration.openShiftNamespace()));
             TestUtils.sleepIgnoreInterrupt(10 * 1000L);
         }
+
+        // You can't create project with annotations/labels - https://github.com/openshift/origin/issues/3819
+        // So add them after the project is created
+        // @formatter:off
+        Map<String, String> labels = TestUtils.map("syndesis-qe/lastUsedBy", System.getProperty("user.name"));
+        OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit()
+            .editMetadata()
+                .addToLabels(labels)
+            .endMetadata()
+        .done();
+        // @formatter:on
 
         try {
             cleanNamespace();
