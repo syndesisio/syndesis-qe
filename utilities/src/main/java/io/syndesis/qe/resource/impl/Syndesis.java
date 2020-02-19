@@ -116,9 +116,7 @@ public class Syndesis implements Resource {
     public void undeployCustomResources() {
         // if we don't have CRD, we can't have CRs
         if (getCrd() != null) {
-            getCrNames().forEach((version, names) -> {
-                names.forEach(name -> undeployCustomResource(name, version));
-            });
+            getCrNames().forEach((version, names) -> names.forEach(name -> undeployCustomResource(name, version)));
         }
     }
 
@@ -459,9 +457,7 @@ public class Syndesis implements Resource {
             crJson.getJSONObject("spec").put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
 
             // set the route
-            crJson.getJSONObject("spec").put("routeHostname", TestConfiguration.syndesisUrl() != null
-                ? StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://")
-                : TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
+            crJson.getJSONObject("spec").put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
 
             getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), crJson.toMap());
         } catch (IOException ex) {

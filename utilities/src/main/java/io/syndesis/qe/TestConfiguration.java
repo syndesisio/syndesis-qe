@@ -2,6 +2,8 @@ package io.syndesis.qe;
 
 import io.syndesis.qe.utils.TestUtils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -169,6 +171,16 @@ public class TestConfiguration {
     }
 
     public static String syndesisUrl() {
+        if (get().readValue(SYNDESIS_UI_URL) == null) {
+            // If the UI URL isn't set, use the same style as the default route created by the operator
+            // "https://syndesis-<namespace>.apps.<cluster>"
+            final String prefix = "https://syndesis-" + openShiftNamespace() + ".apps.";
+            if (openShiftUrl().endsWith("6443")) {
+                get().overrideProperty(SYNDESIS_UI_URL, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
+            } else {
+                get().overrideProperty(SYNDESIS_UI_URL, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":8443"));
+            }
+        }
         return get().readValue(SYNDESIS_UI_URL);
     }
 
