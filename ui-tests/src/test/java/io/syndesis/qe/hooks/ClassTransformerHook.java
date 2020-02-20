@@ -1,6 +1,5 @@
 package io.syndesis.qe.hooks;
 
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 
 import cucumber.api.event.EventListener;
@@ -76,14 +75,14 @@ public class ClassTransformerHook implements EventListener {
     }
 
     private void transform() {
-        if (TestConfiguration.snoopSelectors()) {
+        if (true) {
             transformSelectors();
         }
     }
 
     ///Install Bytebuddy agent only once
-    private void lazyAgentInstall(){
-        if (shouldLoadAgent){
+    private void lazyAgentInstall() {
+        if (shouldLoadAgent) {
             ByteBuddyAgent.install();
             shouldLoadAgent = false;
         }

@@ -1,6 +1,5 @@
 package io.syndesis.qe.hooks;
 
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.reports.selectors.SelectorUsageInfo;
 import io.syndesis.qe.reports.selectors.SelectorUsageReporter;
 
@@ -45,7 +44,7 @@ public class SelectorSnooper {
 
     @Before
     public static void before(Scenario scenario) {
-        scenarioName = scenario.getUri() + ":" + scenario.getName();
+        scenarioName = scenario.getUri();
     }
 
     public static void pauseReporting() {
@@ -60,7 +59,7 @@ public class SelectorSnooper {
      * Setup everything required for logging the selectors, also prepares the final destination of the files
      */
     public static void init() {
-        if (TestConfiguration.snoopSelectors()) {
+        if (true) {
             log.info("Overriding WebElementSelector to report selectors");
             WebElementSelector.instance = new WebElementSelectorDetector();
             log.info("Creating folder {} for storing screenshots", SCREEN_SHOT_FOLDER.toAbsolutePath());
@@ -77,7 +76,7 @@ public class SelectorSnooper {
      * Delegates the message to create reports
      */
     public static void finish() {
-        if (TestConfiguration.snoopSelectors()) {
+        if (true) {
             log.info("Generating selector reports");
             reporter.generateReports();
             log.info("Logging selectors took {} ms from total test run", WebElementSelectorDetector.delta);

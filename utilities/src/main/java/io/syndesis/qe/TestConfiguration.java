@@ -345,9 +345,7 @@ public class TestConfiguration {
         }
 
         props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
-        if (props.getProperty(SNOOP_SELECTORS) == null) {
-            props.setProperty(SNOOP_SELECTORS, "false");
-        }
+        props.setProperty(SNOOP_SELECTORS, "true");
 
         if (props.getProperty(CAMEL_K_VERSION) == null) {
             props.setProperty(CAMEL_K_VERSION, "0.3.4");
