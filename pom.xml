@@ -65,7 +65,7 @@
 		<jsoup.version>1.11.3</jsoup.version>
 		<aws.sqs.version>2.8.4</aws.sqs.version>
 		<aws.dynamodb.version>2.8.4</aws.dynamodb.version>
-		<openshift.client.version>4.8.0</openshift.client.version>
+		<openshift.client.version>4.7.1</openshift.client.version>
 		<velocity.version>1.7</velocity.version>
 		<bytebuddy.version>1.10.1</bytebuddy.version>
 		<mongodb.driver.version>3.10.2</mongodb.driver.version>

@@ -9,7 +9,7 @@
 
 @ENTESB-12355
 Feature: Syndesis Upgrade Using Operator
-  @syndesis-upgrade
+  @syndesis-upgrade-basic
   Scenario: Syndesis Upgrade - basic
     Given prepare upgrade
       And clean default namespace
@@ -27,6 +27,7 @@ Feature: Syndesis Upgrade Using Operator
       And verify syndesis "upgraded" version
       And check that pull secret is linked in the service accounts
 
+  @syndesis-upgrade
   Scenario: Syndesis Upgrade - with integrations
     Given prepare upgrade
       And clean default namespace
@@ -58,6 +59,9 @@ Feature: Syndesis Upgrade Using Operator
       And verify upgrade integration with task "X"
       And verify that integration with name "upgrade" exists
       And check that extension "set-sqs-group-id-extension" exists
+    When rebuild integration with name "upgrade"
+    Then wait for integration with name: "upgrade" to become active
+      And verify upgrade integration with task "X"
     When deploy ActiveMQ broker
       And create ActiveMQ connection
       And clean destination type "queue" with name "upgrade-after-in"

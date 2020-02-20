@@ -202,13 +202,14 @@ public class OperatorValidationSteps {
         SoftAssertions softAssertions = new SoftAssertions();
         JSONObject components = new JSONObject((Map) data).getJSONObject("spec").getJSONObject("components");
         components.keySet().forEach(component -> {
-            String memoryLimit = components.getJSONObject(component).getJSONObject("resources").getString("memory");
+            String expectedLimit = components.getJSONObject(component).getJSONObject("resources").getString("memory");
             List<DeploymentConfig> dcList = OpenShiftUtils.getInstance().deploymentConfigs()
                 .withLabel("syndesis.io/component", "syndesis-" + ("database".equals(component) ? "db" : component)).list().getItems();
             softAssertions.assertThat(dcList).hasSize(1);
-            softAssertions.assertThat(dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0)
-                .getResources().getLimits().get("memory").getAmount())
-                .as(component).isEqualTo(memoryLimit);
+            final Quantity currentLimit = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0)
+                .getResources().getLimits().get("memory");
+            softAssertions.assertThat(currentLimit.getAmount() + currentLimit.getFormat())
+                .as(component).isEqualTo(expectedLimit);
         });
         softAssertions.assertAll();
     }
@@ -227,9 +228,10 @@ public class OperatorValidationSteps {
         JSONObject components = new JSONObject((Map) data).getJSONObject("spec").getJSONObject("components");
         components.keySet().forEach(component -> {
             final String pvcName = "syndesis-" + ("database".equals(component) ? "db" : component);
-            final String volumeCapacity = components.getJSONObject(component).getJSONObject("resources").getString("volumeCapacity");
-            assertThat(OpenShiftUtils.getInstance().persistentVolumeClaims().withName(pvcName).get()
-                .getSpec().getResources().getRequests().get("storage").getAmount()).as(component).isEqualTo(volumeCapacity);
+            final String expectedCapacity = components.getJSONObject(component).getJSONObject("resources").getString("volumeCapacity");
+            final Quantity currentCapacity = OpenShiftUtils.getInstance().persistentVolumeClaims().withName(pvcName).get()
+                .getSpec().getResources().getRequests().get("storage");
+            assertThat(currentCapacity.getAmount() + currentCapacity.getFormat()).as(component).isEqualTo(expectedCapacity);
         });
     }
 
@@ -242,11 +244,11 @@ public class OperatorValidationSteps {
         } catch (Exception e) {
             fail("Unable to get syndesis-db pvc: ", e);
         }
-        final String storageAmount = OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
-            .getStatus().getCapacity().get("storage").getAmount();
-        assertThat(storageAmount).endsWith("Gi");
-        assertThat(Integer.parseInt(storageAmount.replace("Gi", "")))
-            .isGreaterThanOrEqualTo(Integer.parseInt(expected.replace("Gi", "")));
+
+        final Quantity capacity = OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db").getStatus().getCapacity().get("storage");
+        assertThat(capacity.getFormat()).isEqualTo("Gi");
+        assertThat(Integer.parseInt(capacity.getAmount()))
+            .isGreaterThanOrEqualTo(Integer.parseInt(expected.replaceAll("[a-zA-Z]", "")));
     }
 
     @Then("check that test persistent volume is claimed by syndesis-db")
@@ -354,7 +356,8 @@ public class OperatorValidationSteps {
 
     @When("download the backup file")
     public void downloadBackup() {
-        final String prefix = OpenShiftUtils.getInstance().getImageStream("syndesis-operator").getSpec().getTags().get(0).getName();
+        final String prefix = OpenShiftUtils.getInstance().getImageStream("syndesis-operator")
+            .getSpec().getTags().get(0).getName().split("-")[0];
         final String fullFileName = s3.getFileNameWithPrefix(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX), prefix);
         try {
             backupTempFile = Files.createTempFile("syndesis", "backup");

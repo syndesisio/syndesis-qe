@@ -52,7 +52,7 @@ objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    name: jboss-amq-63
+    name: syndesis-amq-63
     labels:
       app: syndesis
       component: amq
@@ -127,7 +127,7 @@ objects:
             value: ${MQ_QUEUES}
           - name: AMQ_TOPICS
             value: ${MQ_TOPICS}
-          image: jboss-amq-63
+          image: syndesis-amq-63
           imagePullPolicy: Always
           name: ${APPLICATION_NAME}-amq
           ports:
@@ -160,6 +160,6 @@ objects:
         - ${APPLICATION_NAME}-amq
         from:
           kind: ImageStreamTag
-          name: jboss-amq-63:1.3
+          name: syndesis-amq-63:1.3
       type: ImageChange
     - type: ConfigChange
