@@ -125,6 +125,8 @@ syndesis.config.ui.username=developer
 syndesis.config.ui.password=developer
 syndesis.config.ui.browser=firefox
 ```
+If you want to use the default route for your tests, the only thing you need to specify is the `syndesis.config.openshift.url`.
+If you want to use your custom route, you need to specify `syndesis.config.openshift.url` and `syndesis.config.ui.url`. 
 
 You can also use the `syndesis.config.test.properties` system property to specify a different location of the `test.properties` file, relative to the repo root. This can be useful in case you want to quickly switch between e.g. a local minishift instance and a remote openshift instance.
 
