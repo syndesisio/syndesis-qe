@@ -151,6 +151,25 @@ public class TestConfiguration {
     }
 
     public static String openShiftRouteSuffix() {
+        if (get().readValue(OPENSHIFT_ROUTE_SUFFIX) == null) {
+            final String prefix = "apps.";
+            if (get().readValue(SYNDESIS_UI_URL) != null && get().readValue(SYNDESIS_UI_URL).contains("syndesis.my-minishift.syndesis.io")) {
+                //for jenkins
+                get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, "my-minishift.syndesis.io");
+            } else if (openShiftUrl().endsWith("8443")) {
+                //OCP 3.11
+                if (openShiftUrl().matches("https:\\/\\/(\\d{1,4}\\.){3}\\d{1,4}:8443")) {
+                    //minishift
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":8443") + ".nip.io");
+                } else {
+                    //remote instance
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":8443"));
+                }
+            } else {
+                //OCP 4.x
+                get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
+            }
+        }
         return get().readValue(OPENSHIFT_ROUTE_SUFFIX);
     }
 
@@ -174,12 +193,8 @@ public class TestConfiguration {
         if (get().readValue(SYNDESIS_UI_URL) == null) {
             // If the UI URL isn't set, use the same style as the default route created by the operator
             // "https://syndesis-<namespace>.apps.<cluster>"
-            final String prefix = "https://syndesis-" + openShiftNamespace() + ".apps.";
-            if (openShiftUrl().endsWith("6443")) {
-                get().overrideProperty(SYNDESIS_UI_URL, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
-            } else {
-                get().overrideProperty(SYNDESIS_UI_URL, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":8443"));
-            }
+            final String prefix = "https://syndesis-" + openShiftNamespace() + ".";
+            get().overrideProperty(SYNDESIS_UI_URL, prefix + openShiftRouteSuffix());
         }
         return get().readValue(SYNDESIS_UI_URL);
     }

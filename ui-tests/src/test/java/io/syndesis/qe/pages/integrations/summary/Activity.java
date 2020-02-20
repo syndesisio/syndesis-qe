@@ -5,6 +5,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 
@@ -120,5 +121,6 @@ public class Activity extends SyndesisPageObject {
 
     private void refresh() {
         getRootElement().find(Button.REFRESH).shouldBe(visible).click();
+        TestUtils.sleepIgnoreInterrupt(1000);
     }
 }

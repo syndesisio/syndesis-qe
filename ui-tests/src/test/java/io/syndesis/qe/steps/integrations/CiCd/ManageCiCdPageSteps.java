@@ -31,7 +31,7 @@ public class ManageCiCdPageSteps {
         ciCdPage.clickOnEditButton(tagName);
         ModalDialogPage editDialog = new ModalDialogPage();
         assertThat(editDialog.getTitleText()).isEqualTo("Edit Tag");
-        editDialog.fillInputByDataTestid("cicd-edit-dialog-tag-name", tagName);
+        editDialog.fillInputByDataTestid("cicd-edit-dialog-tag-name", newName);
         new ModalDialogPage().getButton("Save").click();
     }
 

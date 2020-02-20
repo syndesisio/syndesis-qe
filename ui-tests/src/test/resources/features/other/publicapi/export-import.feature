@@ -173,9 +173,9 @@ Feature: Import and export integration test
     And navigate to the "Integrations" page
     And delete integration with name integration1
     And delete integration with name integration2
-    Then verify that integration with name integration1 doesn't exist
-    And verify that integration with name integration2 doesn't exist
-    And verify that integration with name integration3 exist
+    Then verify that integration with name "integration1" doesn't exist
+    And verify that integration with name "integration2" doesn't exist
+    And verify that integration with name "integration3" exists
 
     # Check that tag12 was added to integration3
     When navigate to the "Integrations" page
