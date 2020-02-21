@@ -59,15 +59,10 @@ public class AMQ implements Resource {
         OpenShiftUtils.getInstance().getServices().stream()
             .filter(service -> "syndesis-amq".equals(service.getMetadata().getLabels().get("template"))).findFirst()
             .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "jboss-amq-63".equals(is.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getImageStreams().stream().filter(is -> "syndesis-amq-63".equals(is.getMetadata().getName())).findFirst()
             .ifPresent(is -> OpenShiftUtils.getInstance().deleteImageStream(is));
         OpenShiftUtils.getInstance().getServices().stream().filter(se -> "broker-amq-tcp".equals(se.getMetadata().getName())).findFirst()
             .ifPresent(se -> OpenShiftUtils.getInstance().deleteService(se));
-        try {
-            Thread.sleep(10 * 1000);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-        }
     }
 
     @Override
