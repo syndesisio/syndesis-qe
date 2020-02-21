@@ -13,7 +13,6 @@ import io.syndesis.qe.resource.impl.Kafka;
 import io.syndesis.qe.resource.impl.Kudu;
 import io.syndesis.qe.resource.impl.MongoDb36;
 import io.syndesis.qe.resource.impl.MySQL;
-import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.SFTP;
 import io.syndesis.qe.resource.impl.WildFlyS2i;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -87,11 +86,6 @@ public class OpenshiftValidationSteps {
     @Given("^deploy IRC server")
     public void deployIRCServer() {
         ResourceFactory.create(IRC.class);
-    }
-
-    @Given("^deploy public oauth proxy$")
-    public void deployApiOauthProxy() {
-        ResourceFactory.create(PublicOauthProxy.class);
     }
 
     @Given("^deploy OData server$")

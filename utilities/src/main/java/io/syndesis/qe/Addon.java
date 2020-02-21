@@ -9,6 +9,7 @@ public enum Addon {
     CAMELK("camelk"),
     DV("dv"),
     JAEGER("jaeger"),
+    PUBLIC_API("publicApi"),
     OPS("ops"),
     TODO("todo"),
     // Technically not an addon

@@ -278,6 +278,14 @@ public class OpenShiftWaitUtils {
         }
     }
 
+    public static void waitUntilPodIsDeleted(String podPartialName) {
+        try {
+            waitFor(() -> !isPodPresent(podPartialName), 5 * 60 * 1000);
+        } catch (TimeoutException | InterruptedException e) {
+            fail("Error thrown while checking if pod is not exist", e);
+        }
+    }
+
     private static boolean isPodPresent(String podPartialName) {
         return OpenShiftUtils.getPodByPartialName(podPartialName).isPresent();
     }

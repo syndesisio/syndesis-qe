@@ -13,6 +13,7 @@ import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -165,29 +166,49 @@ public class Syndesis implements Resource {
      */
     public void grantPermissions() {
         log.info("Granting permissions to user {}", TestConfiguration.syndesisUsername());
-        new File(OpenShiftUtils.binary().getOcConfigPath()).setReadable(true, false);
+        executeOperatorCommandAndWait(
+            "grant",
+            "-u",
+            TestConfiguration.syndesisUsername()
+        );
+    }
 
+    public void executeOperatorCommandAndWait(String... param) {
         try {
-            new ProcessBuilder("docker",
-                "run",
-                "--rm",
-                "-v",
-                OpenShiftUtils.binary().getOcConfigPath() + ":/tmp/kube/config:z",
-                "--entrypoint",
-                "syndesis-operator",
-                operatorImage,
-                "grant",
-                "-u",
-                TestConfiguration.syndesisUsername(),
-                "--namespace",
-                TestConfiguration.openShiftNamespace(),
-                "--config",
-                "/tmp/kube/config"
-            ).start().waitFor();
-        } catch (Exception e) {
-            log.error("Unable to grant permissions", e);
-            fail("Unable to grant permissions from docker run");
+            this.executeOperatorCommand(param).waitFor();
+        } catch (InterruptedException e) {
+            log.error("Something interrupted the docker command", e);
+            fail("Something interrupted the docker command");
         }
+    }
+
+    public Process executeOperatorCommand(String... param) {
+        Process result = null;
+        final String[] dockerCommand = {"docker",
+            "run",
+            "--rm",
+            "-v",
+            OpenShiftUtils.binary().getOcConfigPath() + ":/tmp/kube/config:z",
+            "--entrypoint",
+            "syndesis-operator",
+            operatorImage
+        };
+
+        final String[] staticParam = {"--namespace",
+            TestConfiguration.openShiftNamespace(),
+            "--config",
+            "/tmp/kube/config"
+        };
+
+        String[] finalMergedCommand = (String[]) ArrayUtils.addAll(ArrayUtils.addAll(dockerCommand, param), staticParam);
+        new File(OpenShiftUtils.binary().getOcConfigPath()).setReadable(true, false);
+        try {
+            result = new ProcessBuilder(finalMergedCommand).start();
+        } catch (IOException e) {
+            log.error("Unable to perform docker command", e);
+            fail("Unable to perform docker command");
+        }
+        return result;
     }
 
     /**
@@ -339,24 +360,17 @@ public class Syndesis implements Resource {
         String imageTag = StringUtils.substringAfterLast(operatorImage, ":");
 
         log.info("Generating resources using operator image {}", operatorImage);
-        ProcessBuilder dockerRunPb = new ProcessBuilder("docker",
-            "run",
-            "--rm",
-            "--entrypoint",
-            "syndesis-operator",
-            operatorImage,
-            "install",
-            "operator",
-            "--image",
-            imageName,
-            "--tag",
-            imageTag,
-            "-e", "yaml"
-        );
-
         List<HasMetadata> resourceList = null;
         try {
-            Process p = dockerRunPb.start();
+            Process p = this.executeOperatorCommand(
+                "install",
+                "operator",
+                "--image",
+                imageName,
+                "--tag",
+                imageTag,
+                "-e", "yaml");
+
             final String resources = IOUtils.toString(p.getInputStream(), StandardCharsets.UTF_8);
             log.debug("Resources generated from the operator image");
             log.debug(resources);
@@ -513,6 +527,36 @@ public class Syndesis implements Resource {
         } catch (JSONException e) {
             // ignore exception as some of the object wasn't present
             return false;
+        }
+    }
+
+    public void updateAddon(Addon addon, boolean enabled) {
+        updateAddon(addon, enabled, null);
+    }
+
+    /**
+     * Enable or disable the addon
+     *
+     * @param addon - which type of addon
+     * @param enabled - enable or disable?
+     * @param properties - additional properties for the specific addon
+     */
+    public void updateAddon(Addon addon, boolean enabled, Map<String, String> properties) {
+        log.info((enabled ? "Enabling " : "Disabling ") + addon + " addon.");
+
+        JSONObject cr = new JSONObject(getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME));
+        JSONObject specAddon = cr.getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue());
+        specAddon.put("enabled", enabled);
+        if (properties != null) {
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                log.info("Adding property '" + entry.getKey() + ": " + entry.getValue() + " for addon " + addon.getValue() + "' to the CR");
+                specAddon.put(entry.getKey(), entry.getValue());
+            }
+        }
+        try {
+            this.editCr(cr.toMap());
+        } catch (IOException e) {
+            fail("IO Exception during editing CR", e);
         }
     }
 
