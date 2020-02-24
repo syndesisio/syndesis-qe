@@ -27,6 +27,10 @@ public class Kudu implements Resource {
     private static final String API_APP_NAME = "kudu-rest-api";
     public static final int KUDU_PORT = 7051;
     public static final int REST_PORT = 8080;
+    public static final String MOUNT_NAME_MASTER = "syndesis-kudu-master";
+    public static final String MOUNT_NAME_TSERVER = "syndesis-kudu-tserver";
+    public static final String MOUNT_PATH_MASTER = "/var/lib/kudu/master";
+    public static final String MOUNT_PATH_TSERVER = "/var/lib/kudu/tserver";
 
     @Override
     public void deploy() {
@@ -43,7 +47,6 @@ public class Kudu implements Resource {
                 .withName(APP_NAME)
                 .addToLabels(LABEL_NAME, APP_NAME)
                 .endMetadata()
-
                 .editOrNewSpec()
                 .addToSelector(LABEL_NAME, APP_NAME)
                 .withReplicas(1)
@@ -53,14 +56,25 @@ public class Kudu implements Resource {
                 .endMetadata()
                 .editOrNewSpec()
                 .addNewContainer().withName(APP_NAME).withImage("syndesisqe/kudu-2in1:latest")
-
                 .addAllToPorts(ports)
                 .addAllToEnv(templateParams)
-
+                .addNewVolumeMount().withName(MOUNT_NAME_MASTER)
+                .withMountPath(MOUNT_PATH_MASTER).withReadOnly(false)
+                .endVolumeMount()
+                .addNewVolumeMount().withName(MOUNT_NAME_TSERVER)
+                .withMountPath(MOUNT_PATH_TSERVER).withReadOnly(false)
+                .endVolumeMount()
                 .endContainer()
+                .addNewVolume()
+                .withName(MOUNT_NAME_MASTER)
+                .withNewEmptyDir().endEmptyDir()
+                .endVolume()
+                .addNewVolume()
+                .withName(MOUNT_NAME_TSERVER)
+                .withNewEmptyDir().endEmptyDir()
+                .endVolume()
                 .endSpec()
                 .endTemplate()
-
                 .addNewTrigger()
                 .withType("ConfigChange")
                 .endTrigger()
@@ -167,9 +181,11 @@ public class Kudu implements Resource {
             .filter(volume -> (volume.getMetadata().getName()).contains(APP_NAME))
             .forEach(volume -> OpenShiftUtils.getInstance().deletePersistentVolumeClaim(volume));
 
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(API_APP_NAME)).findFirst()
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(API_APP_NAME))
+            .findFirst()
             .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> API_APP_NAME.equals(service.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getServices().stream().filter(service -> API_APP_NAME.equals(service.getMetadata().getName()))
+            .findFirst()
             .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
         OpenShiftUtils.getInstance().getRoutes().stream().filter(route -> API_APP_NAME.equals(route.getMetadata().getName())).findFirst()
             .ifPresent(route -> OpenShiftUtils.getInstance().deleteRoute(route));
