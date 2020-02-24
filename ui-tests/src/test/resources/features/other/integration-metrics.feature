@@ -113,6 +113,7 @@ Feature: Metrics
 
     When save time before request
     And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
+    And validate that logs of integration "metrics-test" contains string "Body: [[{"first_name":"John","company":"incorrect company"}]]"
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -125,6 +126,7 @@ Feature: Metrics
 
     When save time before request
     And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
+    And validate that logs of integration "metrics-test" contains string "Body: [[{"first_name":"John","company":"Red Hat still incorrect"}]]"
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -137,6 +139,7 @@ Feature: Metrics
 
     When save time before request
     And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And validate that logs of integration "metrics-test" contains string "Body: [[{"first_name":"John","company":"Red Hat"}]]"
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0
@@ -224,6 +227,7 @@ Feature: Metrics
 
     When save time before request
     And invoke post request to webhook in integration metrics-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And validate that logs of integration "metrics-error" contains string "Body: [[{"first_name":"John","company":"Red Hat"}]]"
     And save time after request
     And sleep for "3000" ms
     Then check that number of total error is 0

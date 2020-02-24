@@ -70,8 +70,10 @@ public class MetricsSteps {
         beforeRequest.clear(Calendar.MILLISECOND);
         Calendar afterRequest = calendarUtils.getAfterRequest();
         afterRequest.clear(Calendar.MILLISECOND);
-
-        SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        // 5sec accuracy
+        beforeRequest.add(Calendar.SECOND, -5);
+        afterRequest.add(Calendar.SECOND, +5);
+        SimpleDateFormat outFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         if (!processedCalendar.equals(beforeRequest)) { //if not same then it tests whether it was after
             assertThat(processedCalendar.after(beforeRequest))

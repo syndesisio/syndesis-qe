@@ -57,8 +57,11 @@ public class CalendarUtils {
 
     //correct time, sync with the OCP time
     private void syncTimeWithOcpInstance(Calendar calendar) {
+        log.info("Time before sync: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+        log.info(String.format("Sync info: HOUR:'%s' MINUTE:'%s' SECOND:'%s'", diffHours, diffMinutes, diffSeconds));
         calendar.add(Calendar.SECOND, diffSeconds);
         calendar.add(Calendar.MINUTE, diffMinutes);
         calendar.add(Calendar.HOUR, diffHours);
+        log.info("Time after sync: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
     }
 }
