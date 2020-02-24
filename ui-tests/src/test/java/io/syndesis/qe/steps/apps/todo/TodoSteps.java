@@ -50,7 +50,7 @@ public class TodoSteps {
 
     @Then("^navigate to Todo app$")
     public void openTodoApp() {
-        String url = "http://" + OpenShiftUtils.getInstance().getRoute("todo").getSpec().getHost();
+        String url = "http://" + OpenShiftUtils.getInstance().getRoute("todo2").getSpec().getHost();
         log.info("Opening Todo app on url: " + url);
         getWebDriver().navigate().to(url);
     }
