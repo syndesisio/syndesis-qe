@@ -273,16 +273,34 @@ Feature: Operator Deployment
     Then check that the deployment config "syndesis-server" contains variables:
       | OPENSHIFT_MANAGEMENT_URL_FOR3SCALE | asdf |
 
+  @operator-backup-restore
+  @operator-backup-multiple
+  Scenario: Syndesis Operator - Multiple backups
+    Given create sample bucket on S3 with name "syndesis-backup"
+      And clean backup S3 bucket
+    When create pull secret for backup
+      And deploy Syndesis CR from file "spec/backup-multiple.yml"
+      And wait for Syndesis to become ready
+      And wait for backup
+    When clean backup S3 bucket
+    Then sleep for jenkins delay or "200" seconds
+      And verify that there are 3 backups in S3
+
   @ENTESB-12114
   @ENTESB-12846
+  @ENTESB-13046
   @operator-backup-restore
-  Scenario: Syndesis Operator - Backup and Restore
-    Given deploy ActiveMQ broker
+  @operator-backup-restore-procedure
+  Scenario Outline: Backup and Restore - db <type>, method <method>
+    # We can always deploy the custom db even it's not used in that combination
+    Given deploy custom database
+      And deploy ActiveMQ broker
       And clean destination type "queue" with name "backup-in"
       And clean destination type "queue" with name "backup-out"
       And create sample bucket on S3 with name "syndesis-backup"
+      And clean backup S3 bucket
     When create pull secret for backup
-      And deploy Syndesis CR from file "spec/backup.yml"
+      And deploy Syndesis CR from file "<customResource>"
       And wait for Syndesis to become ready
       And create ActiveMQ connection
       # Not needed for the integration, just to check if it is present after restoring the backup
@@ -301,13 +319,14 @@ Feature: Operator Deployment
       # Deploy new instance of syndesis
       And clean application state
       And undeploy Syndesis
+      And redeploy custom database
       And clean destination type "queue" with name "backup-in"
       And clean destination type "queue" with name "backup-out"
-      And deploy Syndesis CR from file "minimal.yml"
-      And wait for Syndesis to become ready
+      And deploy Syndesis CR from file "<customResourceAfter>"
+    Then wait for Syndesis to become ready
 
-      # Restore backup
-      And perform restore from backup
+    # Restore backup
+    When perform "<method>" "<type>" restore from backup
 
       And sleep for jenkins delay or "5" seconds
       And refresh server port-forward
@@ -319,3 +338,9 @@ Feature: Operator Deployment
       And check that extension "set-sqs-group-id-extension" exists
       And verify that integration with name "amq-amq-backup" exists
 
+    Examples:
+      | customResource              | method   | type     | customResourceAfter                    |
+      | spec/backup.yml             | operator | standard | minimal.yml                            |
+      | spec/backup.yml             | manual   | standard | minimal.yml                            |
+      | spec/backup-external-db.yml | operator | external |spec/components/database/externalDb.yml |
+      | spec/backup-external-db.yml | manual   | external |spec/components/database/externalDb.yml |

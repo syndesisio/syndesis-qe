@@ -1,0 +1,12 @@
+apiVersion: syndesis.io/v1beta1
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  backup:
+    schedule: "every 10m"
+  components:
+    database:
+      externalDbURL: postgresql://custom-postgres:5432
+      user: "testuser"
+      name: "testdb"
