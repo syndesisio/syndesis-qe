@@ -41,3 +41,14 @@ Feature: Integration - IRC
     When connect IRC controller to channels "#listen"
       And send message to IRC user "listener" with content 'Hello Listener!'
     Then verify that file "message.txt" was created in "upload" folder with content 'Hello Listener!' using FTP
+
+  @ENTESB-9985
+  @integration-irc-irc
+  Scenario: Private message to Send message
+    And create IRC "privmsg" step with nickname "listener" and channels "#listen"
+    And create IRC "sendmsg" step with nickname "syndesis-publish" and channels "#spam1,#spam2"
+    When create integration with name: "IRC-IRC"
+    Then wait for integration with name: "IRC-IRC" to become active
+    When connect IRC controller to channels "#spam1,#spam2"
+    And send message to IRC user "listener" with content 'Hello!'
+    Then verify that the message with content 'Hello!' was posted to channels "#spam1,#spam2"
