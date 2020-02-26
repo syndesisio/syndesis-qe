@@ -1,6 +1,10 @@
-<html>
-    <head>
-        <title>
+<!DOCTYPE html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+</head>
+<body>
+    <script>
+        var src = `<title>
             Test Report
         </title>
         <style type="text/css">
@@ -17,7 +21,8 @@
         }
 
         .result-body {
-
+            max-width: 25vw;
+            word-wrap: break-word;
             border-bottom: 1px solid gray;
         }
 
@@ -38,12 +43,10 @@
         .result-selector {
             font-weight: bold;
         }
+        .result-warning {
+            background-color: orange;
+        }
         </style>
-    </head>
-    <body>
-        <h1>
-            Test Report
-        </h1>
 
         <table class="results" cellspacing="0">
             <thead>
@@ -52,7 +55,10 @@
                         Selector
                     </td>
                     <td class="results-header">
-                        Data-testid
+                        URL
+                    </td>
+                    <td class="results-header">
+                        Scenario
                     </td>
                     <td class="results-header">
                         Stacktrace
@@ -60,32 +66,45 @@
                     <td class="results-header">
                         Screenshot
                     </td>
-                    <td class="results-header">
-                        Affected files
-                    </td>
                 </tr>
             </thead>
             <tbody>
-                #foreach( $report in $reports )
-                    <tr>
+                {{#each reports}}
+                    {{#if this.dataTestId}}
+                       <tr class="result-warning">
+                    {{else}}
+                        <tr>
+                    {{/if}}
                         <td class="result-body result-selector">
-                            $report.selector
+                            {{this.selector}}
                         </td>
                         <td class="result-body result-url">
-                            $report.dataTestId
+                            {{this.url}}
                         </td>
                         <td class="result-body">
-                            $report.stackTrace
+                            {{this.scenarios}}
                         </td>
                         <td class="result-body">
-                            <a href="screenshots/$report.imgPath"><img src="screenshots/$report.imgPath"></a>
+                            {{this.stackTrace}}
                         </td>
                         <td class="result-body">
-                            $utils.shortenScenarios($report.scenarios)
+                            <a href="screenshots/{{this.imgPath}}" target="_blank"><img src="screenshots/{{this.imgPath}}"></a>
                         </td>
                     </tr>
-                #end
+                    {{#if this.dataTestId}}
+                    <tr class="result-attention">
+                        <td colspan="5">Webelement has data-testid defined: {{this.dataTestId}}</td>
+                    </tr>
+                    {{/if}}
+                    {{/each}}                    
             </tbody>
-        </table>
-    </body>
-</html>
+`;
+        var template = Handlebars.compile(src);
+        var data = fetch('./data.json').then((resp) => resp.json()).then((data) => {
+            var htmlEl = document.createElement("div");
+            htmlEl.innerHTML = template({reports: data});
+            document.body.appendChild(htmlEl);
+        
+        });
+    </script>
+</body>

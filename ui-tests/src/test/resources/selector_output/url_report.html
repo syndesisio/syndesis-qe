@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+</head>
+<body>
+    <script>
+        var src = `<title>
+            Test Report
+        </title>
+        <style type="text/css">
+            .results {
+
+                border: 1px solid black;
+            }
+
+            .results-header {
+
+                border-bottom: 1px solid black;
+                background-color: silver;
+            }
+
+            .result-body {
+
+                border-bottom: 1px solid gray;
+            }
+
+            .result-attention {
+                background-color: red;
+            }
+
+            .result-body img {
+                max-width: 50%;
+            }
+
+            .result-url {
+                max-width: 15%;
+                max-height: 25px;
+                overflow: scroll;
+            }
+
+            .result-selector {
+                font-weight: bold;
+            }
+
+            .url-spacer {
+                border: 3px solid black;
+            }
+            .result-warning {
+                background-color: orange;
+            }
+        </style>
+        <h1>Selector report merged by URL</h1>
+        <table class="results" cellspacing="0">
+            <thead>
+                <tr>
+                    <td class="results-header">
+                        Selector
+                    </td>
+                    <td class="results-header">
+                        Scenario
+                    </td>
+                    <td class="results-header">
+                        Screenshot
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each reports}}
+                    <tr>
+                        <td colspan="3" align="center" class="url-spacer">
+                        <b>URL: {{@key}}</b> 
+                        </td>
+                    </tr>
+                    {{#each this}}
+                    {{#if this.dataTestId}}
+                    <tr class="result-warning">
+                    {{else}}
+                    <tr>
+                    {{/if}}
+                        <td class="result-body result-selector">
+                            {{this.selector}}
+                        </td>
+                        <td class="result-body">
+                            {{this.scenarios}}
+                        </td>
+                        <td class="result-body">
+                            <a target="_blank" href="screenshots/{{this.imgPath}}"><img src="screenshots/{{this.imgPath}}"></a>
+                        </td>
+                    </tr>
+                    {{#if this.dataTestId}}
+                    <tr class="result-attention">
+                        <td colspan="3">Webelement has data-testid defined: {{this.dataTestId}}</td>
+                    </tr>
+                    {{/if}}
+                    {{/each}}
+                {{/each}}                    
+            </tbody>
+`;
+        var template = Handlebars.compile(src);
+        var data = fetch('./data.json').then((resp) => resp.json()).then((data) => {
+            var htmlEl = document.createElement("div");
+            var urlMap = {}; 
+            data.forEach(report => {
+                if (!urlMap[report.url]){
+                    urlMap[report.url] = [report];
+                } else {
+                    urlMap[report.url].push(report);
+                }
+            });
+            console.log(urlMap);
+            htmlEl.innerHTML = template({reports: urlMap});
+            document.body.appendChild(htmlEl);
+        
+        });
+    </script>
+</body>

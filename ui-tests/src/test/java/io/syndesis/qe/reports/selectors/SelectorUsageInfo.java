@@ -11,6 +11,7 @@ public class SelectorUsageInfo {
 
     private static final Pattern URL_REPLACE_PATTERN = Pattern.compile("\\?\\w+=?[^/]*(\\/|$)");
     private static final Pattern URL_REPLACE_POD_ID = Pattern.compile("/-[^/]+/");
+    private static final Pattern URL_REPLACE_INTEGRATION_ID = Pattern.compile("/i-[^/]+/");
 
     public final String selector;
     public String url;
@@ -30,7 +31,8 @@ public class SelectorUsageInfo {
     protected String deparametrizeURL(String str) {
         Matcher m = URL_REPLACE_PATTERN.matcher(str);
         Matcher m1 = URL_REPLACE_POD_ID.matcher(m.replaceAll("/"));
-        return m1.replaceAll("/-rAnd0mP0D1D/");
+        Matcher m2 = URL_REPLACE_INTEGRATION_ID.matcher(m1.replaceAll("/-rAnd0mP0D1D/"));
+        return m2.replaceAll("/i-rAndOm1nteGraTionID/");
     }
 
     public boolean hasDataTestId() {

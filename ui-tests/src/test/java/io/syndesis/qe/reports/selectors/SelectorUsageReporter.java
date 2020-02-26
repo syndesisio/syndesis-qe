@@ -9,13 +9,13 @@ import org.openqa.selenium.By;
 
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 
 import java.io.FileWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +30,7 @@ public class SelectorUsageReporter {
 
     public void report(SelectorUsageInfo info) {
         reports.put(info.selector, info);
-        log.info("Registering {}", info);
+        log.debug("Registering {}", info);
     }
 
     public boolean wasSelectorReported(By selector) {
@@ -65,16 +65,18 @@ public class SelectorUsageReporter {
         }
     }
 
-    public void generateReports() {
-        reportSimple();
-        reportBasedOnURL();
-        reportDataTestIdSelectors();
+    private void dumpJSON() {
+        String json = new Gson().toJson(reports.values());
+        try (FileWriter file = new FileWriter("target/cucumber/data.json")) {
+            file.write(json);
+        } catch (Exception e) {
+            log.error("Something went wrong with dumping selector report data ", e);
+        }
     }
 
-    private void reportSimple() {
-        Map<String, Object> reps = new HashMap<>();
-        reps.put("reports", reports.values());
-        generateReport(reps, "/templates/selector_report_template.vm", "target/cucumber/selector_report.html");
+    public void generateReports() {
+        reportBasedOnURL();
+        dumpJSON();
     }
 
     private void reportBasedOnURL() {
@@ -89,14 +91,5 @@ public class SelectorUsageReporter {
         Map<String, Object> reps = new HashMap<>();
         reps.put("reports", reportsByUrl);
         generateReport(reps, "/templates/url_report_template.vm", "target/cucumber/url_report.html");
-    }
-
-    private void reportDataTestIdSelectors() {
-        List<SelectorUsageInfo> info = reports.values().stream().filter(SelectorUsageInfo::hasDataTestId).collect(Collectors.toList());
-        if (info.size() > 0) {
-            Map<String, Object> reps = new HashMap<>();
-            reps.put("reports", info);
-            generateReport(reps, "/templates/data_test_id_template.vm", "target/cucumber/testid_rewrite.html");
-        }
     }
 }
