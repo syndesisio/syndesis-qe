@@ -15,4 +15,8 @@ public class SimpleIssue {
     private String url;
     private String issueSummary;
     private IssueState state;
+
+    public String toLink() {
+        return "<a href=\"" + getUrl() + "\">" + getIssue() + "</a>";
+    }
 }
