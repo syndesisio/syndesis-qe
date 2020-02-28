@@ -7,7 +7,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
+import io.fabric8.kubernetes.api.model.Pod;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,12 +29,11 @@ public class CalendarUtils {
     private int diffHours = 0;
 
     public CalendarUtils() throws ParseException {
+        Optional<Pod> podByPartialName = OpenShiftUtils.getPodByPartialName("syndesis-server");
         String ocpTime = OpenShiftUtils.binary().execute(
-            "run", "--serviceaccount", "builder", "--image", "okansahiner/kube-diag",
-            "kube-diag", "-it", "--restart=Never", "--attach", "--rm", "--command", "--", "bash", "-c", "\"date\"");
-
-        Date ocpDate = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy").parse(ocpTime);
+            "exec", podByPartialName.get().getMetadata().getName(), "date");
         Date testDate = new Date();
+        Date ocpDate = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy").parse(ocpTime);
         int diff = Math.toIntExact(ocpDate.getTime() - testDate.getTime());
         diffSeconds = diff / 1000 % 60;
         diffMinutes = diff / (60 * 1000) % 60;

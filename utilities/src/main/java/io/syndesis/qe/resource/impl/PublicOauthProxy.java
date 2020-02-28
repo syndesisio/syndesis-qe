@@ -20,14 +20,6 @@ public class PublicOauthProxy implements Resource {
 
     @Override
     public void deploy() {
-        log.info("Creating cluster-wide resources for Public Api");
-        ResourceFactory.get(Syndesis.class).executeOperatorCommandAndWait(
-            "grant",
-            "--publicApi",
-            "true",
-            "-u",
-            TestConfiguration.syndesisUsername()
-        );
         Map<String, String> properties = new HashMap<String, String>();
         properties.put("routeHostname", PUBLIC_API_PROXY_ROUTE);
         ResourceFactory.get(Syndesis.class).updateAddon(Addon.PUBLIC_API, true, properties);
