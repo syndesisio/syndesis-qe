@@ -1,4 +1,4 @@
-# @sustainer: mcada@redhat.com
+# @sustainer: mkralik@redhat.com
 
 ##################################################
 # This is disabled as second import always failed due to openshift resource not being properly deleted on time
