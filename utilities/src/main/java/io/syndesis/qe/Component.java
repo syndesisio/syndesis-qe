@@ -60,9 +60,6 @@ public enum Component {
         if (!syndesis.isAddonEnabled(Addon.EXTERNAL_DB)) {
             components.add(DB);
         }
-        if (!syndesis.isAddonEnabled(Addon.TODO)) {
-            components.add(TODO);
-        }
         return components;
     }
 

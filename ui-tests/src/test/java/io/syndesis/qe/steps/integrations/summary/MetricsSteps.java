@@ -66,9 +66,9 @@ public class MetricsSteps {
         processedCalendar.setTime(dateWhenProcessed);
 
         /*clear milliseconds because UI last processed label contains only minutes and seconds*/
-        Calendar beforeRequest = calendarUtils.getBeforeRequest();
+        Calendar beforeRequest = calendarUtils.getLastBeforeRequest();
         beforeRequest.clear(Calendar.MILLISECOND);
-        Calendar afterRequest = calendarUtils.getAfterRequest();
+        Calendar afterRequest = calendarUtils.getLastAfterRequest();
         afterRequest.clear(Calendar.MILLISECOND);
         // 5sec accuracy
         beforeRequest.add(Calendar.SECOND, -5);

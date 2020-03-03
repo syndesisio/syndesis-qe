@@ -97,6 +97,8 @@ public class Syndesis implements Resource {
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
+
+        // the syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
         new Thread(() -> {
             try {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(

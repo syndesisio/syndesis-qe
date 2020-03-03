@@ -102,9 +102,9 @@ Feature: Activity
     And click on the "Activity" tab
     Then check that in the activity log are 0 activities
 
-    When save time before request
+    When save time before request for integration activity-test
     And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
-    And save time after request
+    And save time after request for integration activity-test
     And sleep for "3000" ms
     Then check that in the activity log are 1 activities
     # Test activity
@@ -124,9 +124,9 @@ Feature: Activity
     And check that 3. step in the 1. activity contains No output in the output
 
     # post next request
-    When save time before request
+    When save time before request for integration activity-test
     And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
-    And save time after request
+    And save time after request for integration activity-test
     And sleep for "3000" ms
     Then check that in the activity log are 2 activities
     # Test activity
@@ -150,9 +150,9 @@ Feature: Activity
     And check that 5. step in the 1. activity contains No output in the output
 
     # post next request
-    When save time before request
+    When save time before request for integration activity-test
     And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"Red Hat"}
-    And save time after request
+    And save time after request for integration activity-test
     And sleep for "3000" ms
     Then check that in the activity log are 3 activities
     # Test activity
@@ -192,9 +192,9 @@ Feature: Activity
     And select the "activity-test" integration
     And click on the "Activity" tab
 
-    When save time before request
+    When save time before request for integration activity-test
     And invoke post request to webhook in integration activity-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
-    And save time after request
+    And save time after request for integration activity-test
     And sleep for "3000" ms
     Then check that in the activity log are 4 activities
     And check that 1. activity version contains Version 2
@@ -249,9 +249,9 @@ Feature: Activity
     And click on the "Activity" tab
     Then check that in the activity log are 0 activities
 
-    When save time before request
+    When save time before request for integration activity-error
     And invoke post request which can fail to webhook in integration activity-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
-    And save time after request
+    And save time after request for integration activity-error
     And sleep for "3000" ms
 
     # Test activity
@@ -321,9 +321,9 @@ Feature: Activity
     And click on the "Activity" tab
     Then check that in the activity log are 0 activities
 
-    When save time before request
+    When save time before request for integration activity-error-data-mapper-before
     And invoke post request which can fail to webhook in integration activity-error-data-mapper-before with token test-webhook and body {"first_name":"John","company":"Red Hat"}
-    And save time after request
+    And save time after request for integration activity-error-data-mapper-before
     And sleep for "3000" ms
     # Test activity
     Then check that in the activity log are 1 activities

@@ -111,10 +111,10 @@ Feature: Metrics
     And check that uptime for metrics-test pod is valid
     And check that startdate for metrics-test pod is valid
 
-    When save time before request
+    When save time before request for integration metrics-test
     And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"incorrect company"}
     And validate that logs of integration "metrics-test" contains string "Body: [[{"first_name":"John","company":"incorrect company"}]]"
-    And save time after request
+    And save time after request for integration metrics-test
     And sleep for "3000" ms
     Then check that number of total error is 0
     And check that last processed date is valid
@@ -124,10 +124,10 @@ Feature: Metrics
     And check that uptime for metrics-test pod is valid
     And check that startdate for metrics-test pod is valid
 
-    When save time before request
+    When save time before request for integration metrics-test
     And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"Red Hat still incorrect"}
     And validate that logs of integration "metrics-test" contains string "Body: [[{"first_name":"John","company":"Red Hat still incorrect"}]]"
-    And save time after request
+    And save time after request for integration metrics-test
     And sleep for "3000" ms
     Then check that number of total error is 0
     And check that last processed date is valid
@@ -137,10 +137,10 @@ Feature: Metrics
     And check that uptime for metrics-test pod is valid
     And check that startdate for metrics-test pod is valid
 
-    When save time before request
+    When save time before request for integration metrics-test
     And invoke post request to webhook in integration metrics-test with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And validate that logs of integration "metrics-test" contains string "Body: [[{"first_name":"John","company":"Red Hat"}]]"
-    And save time after request
+    And save time after request for integration metrics-test
     And sleep for "3000" ms
     Then check that number of total error is 0
     And check that last processed date is valid
@@ -225,10 +225,10 @@ Feature: Metrics
     And check that uptime for metrics-error pod is valid
     And check that startdate for metrics-error pod is valid
 
-    When save time before request
+    When save time before request for integration metrics-error
     And invoke post request to webhook in integration metrics-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
     And validate that logs of integration "metrics-error" contains string "Body: [[{"first_name":"John","company":"Red Hat"}]]"
-    And save time after request
+    And save time after request for integration metrics-error
     And sleep for "3000" ms
     Then check that number of total error is 0
     And check that last processed date is valid

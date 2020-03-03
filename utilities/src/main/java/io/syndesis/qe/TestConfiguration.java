@@ -414,7 +414,6 @@ public class TestConfiguration {
         if (properties.getProperty(SYNDESIS_RUNTIME) == null) {
             defaultProps.setProperty(SYNDESIS_RUNTIME, "springboot");
         }
-        
         if (properties.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
             defaultProps.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
         }

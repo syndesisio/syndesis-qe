@@ -46,6 +46,7 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -999,9 +1000,8 @@ public class CommonSteps {
      */
     private void set3scaleEnvVar(String url) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        Map cr = syndesis.getDeployedCr();
-        Map features = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) cr.get("spec")).get("components"))
-            .get("server")).get("features");
+        JSONObject cr = new JSONObject(syndesis.getDeployedCr());
+        JSONObject features = cr.getJSONObject("spec").getJSONObject("components").getJSONObject("server").getJSONObject("features");
 
         if (url != null) {
             features.put("managementUrlFor3scale", url);
@@ -1010,7 +1010,7 @@ public class CommonSteps {
         }
 
         try {
-            syndesis.editCr(cr);
+            syndesis.editCr(cr.toMap());
         } catch (IOException e) {
             fail("There was an error while updating the CR", e);
         }
@@ -1053,23 +1053,23 @@ public class CommonSteps {
     /**
      * Save current time to the singleton class
      */
-    @Then("^save time before request$")
-    public void saveBeforeTime() {
-        calendarUtils.setBeforeRequest(Calendar.getInstance());
+    @Then("^save time before request for integration ([^\"]*)$")
+    public void saveBeforeTime(String integrationName) {
+        calendarUtils.setBeforeRequest(Calendar.getInstance(), integrationName);
         log.info("Time before request was saved: "
-            + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getBeforeRequest().getTime()));
+            + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getLastBeforeRequest().getTime()));
         TestUtils.sleepIgnoreInterrupt(3000); // due to border values
     }
 
     /**
      * Save current time to the singleton class
      */
-    @When("^save time after request$")
-    public void saveAfterTime() {
+    @When("^save time after request for integration ([^\"]*)$")
+    public void saveAfterTime(String integrationName) {
         TestUtils.sleepIgnoreInterrupt(3000); // due to border values
-        calendarUtils.setAfterRequest(Calendar.getInstance());
+        calendarUtils.setAfterRequest(Calendar.getInstance(), integrationName);
         log.info("Time after request was saved: "
-            + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getAfterRequest().getTime()));
+            + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendarUtils.getLastAfterRequest().getTime()));
     }
 
     @When("^clean webdriver download folder$")

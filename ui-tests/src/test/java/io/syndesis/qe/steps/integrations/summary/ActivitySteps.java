@@ -162,9 +162,9 @@ public class ActivitySteps {
         middleCalendar.setTime(middle);
 
         /*clear milliseconds because UI last processed label contains only minutes*/
-        Calendar beforeRequest = calendarUtils.getBeforeRequest();
+        Calendar beforeRequest = calendarUtils.getLastBeforeRequest();
         beforeRequest.clear(Calendar.MILLISECOND);
-        Calendar afterRequest = calendarUtils.getAfterRequest();
+        Calendar afterRequest = calendarUtils.getLastAfterRequest();
         afterRequest.clear(Calendar.MILLISECOND);
         afterRequest.add(Calendar.SECOND, accuracy);
 

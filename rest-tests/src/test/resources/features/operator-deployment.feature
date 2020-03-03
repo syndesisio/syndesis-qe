@@ -7,7 +7,7 @@ Feature: Operator Deployment
   Background:
     Given clean default namespace
       And deploy Syndesis CRD
-    And install cluster resources
+      And install cluster resources
       And grant permissions to user
       And create pull secret
       And deploy Syndesis operator
