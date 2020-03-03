@@ -31,6 +31,8 @@ Feature: Settings OAuth
 #    And check button "Remove" of item "Google Calendar"
     When click button "Remove" of item "Google Calendar"
     And confirm settings removal
+#    this delay is necessary due to different net delays, to stabilize test
+    And sleep for "3000" ms
   #  Then check visibility of "Delete Successful Settings successfully deleted." in alert-success notification
     And check that given "Google Calendar" oauth settings are not filled in
 
