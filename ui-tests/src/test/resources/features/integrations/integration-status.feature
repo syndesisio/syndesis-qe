@@ -1,4 +1,4 @@
-# @sustainer: mastepan@redhat.com
+# @sustainer: mmuzikar@redhat.com
 @stage-smoke
 @ui
 @database

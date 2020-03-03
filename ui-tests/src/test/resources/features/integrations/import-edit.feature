@@ -1,4 +1,4 @@
-# @sustainer: mastepan@redhat.com
+# @sustainer: sveres@redhat.com
 
 @import-edit-integration
 Feature: Integration - import-edit
