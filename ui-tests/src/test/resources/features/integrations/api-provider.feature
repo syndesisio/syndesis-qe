@@ -19,6 +19,7 @@ Feature: API Provider Integration
 
 
   @api-provider-create-from-spec
+  @openapi
   Scenario Outline: Create API provider from <source> spec <location>
 
     # create integration
@@ -63,6 +64,7 @@ Feature: API Provider Integration
       | url    | todo-app                             |
       | file   | swagger/connectors/todo.json         |
       | file   | swagger/connectors/todo.swagger.yaml |
+      | file   | openapi/connectors/todo.yaml         |
 
   @gh-6109
   @api-provider-create-from-scratch
@@ -82,7 +84,7 @@ Feature: API Provider Integration
     When change frame to "apicurio"
     # add a simple operation
     And create a new path with link
-     | syndesistestpath | false |
+      | syndesistestpath | false |
     And select path "/syndesistestpath"
 
     And create new "GET" operation
@@ -90,10 +92,12 @@ Feature: API Provider Integration
 
     And set operation summary "Operation created from scratch"
     And set operation description "Operation description"
-    And set response 200 with plus sign
+    And set response with plus sign
+      | 200 |  | true |
 
-    And set response description "Response description" for response 200
-    And set response type "String" for response 200
+    And set response description "Response description" for response "200"
+    And set parameters types
+      | type | String  | operations | response | true | 200 |
 
     #Then check all for errors
 
@@ -121,7 +125,7 @@ Feature: API Provider Integration
     When execute GET on API Provider route i-todo-integration-from-scratch endpoint "/syndesistestpath"
     Then verify response has status 200
 
-  
+
   @api-provider-get-single
   Scenario: API Provider GET single
     When create an API Provider integration "TODO Integration get single" from file swagger/connectors/todo.json
@@ -136,7 +140,7 @@ Feature: API Provider Integration
     And check "Done" button is "visible"
     And click on the "Done" button
 
-    And click on the "Save" link 
+    And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration get single" gets into "Running" state
@@ -199,7 +203,7 @@ Feature: API Provider Integration
 
     When execute GET on API Provider route i-todo-integration-get-non-existent endpoint "/api/e"
     Then verify response has status 418
-  
+
   @reproducer
   @api-provider-get-collection
   @gh-3788
@@ -240,7 +244,7 @@ Feature: API Provider Integration
       [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
       """
 
-  
+
   @reproducer
   @api-provider-get-collection-empty
   @gh-3788
@@ -286,7 +290,7 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration get collection empty" gets into "Running" state
     Then verify response has status 200
 
-  
+
   @api-provider-post-new
   Scenario: API Provider POST new
     When create an API Provider integration "TODO Integration post new" from file swagger/connectors/todo.json
@@ -372,7 +376,7 @@ Feature: API Provider Integration
 
     And edit integration step on position 5
     And map Api Provider errors
-      | Server Error         | 409 |
+      | Server Error | 409 |
     And click on the "Next" button
 
     And click on the "Save" link
@@ -448,7 +452,7 @@ Feature: API Provider Integration
     And validate that number of all todos with task "task2" is "1"
     And validate that number of all todos with task "task3" is "1"
 
-  
+
   @api-provider-put
   Scenario: API Provider PUT
     When create an API Provider integration "TODO Integration put" from file swagger/connectors/todo.json
@@ -552,7 +556,7 @@ Feature: API Provider Integration
     And validate that number of all todos with task "task1" is "0"
     And validate that number of all todos with task "task2" is "1"
 
-  
+
   @api-provider-export-roundtrip
   Scenario: API Provider export roundtrip
     When create an API Provider integration "TODO Integration import export" from file swagger/connectors/todo.json
@@ -567,8 +571,8 @@ Feature: API Provider Integration
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
-  
-    And click on the "Save" link  
+
+    And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration import export" gets into "Running" state
@@ -602,7 +606,7 @@ Feature: API Provider Integration
       """
         {"id":1}
       """
-  
+
   @api-provider-not-visible-in-connections
   Scenario: API Provider not visible in connections
     When navigate to the "Connections" page
@@ -648,10 +652,12 @@ Feature: API Provider Integration
 
     And set operation summary "v2 GET by id"
     And set operation description "Operation added by editing OpenAPI"
-    And set response 200 with clickable link
+    And set response with plus sign
+      | 200 |  | true |
 
-    And set response description "Returning task" for response 200
-    And set response type "Task" for response 200
+    And set response description "Returning task" for response "200"
+    And set parameters types
+      | type | Task  | operations | response | true | 200 |
 
     #Then check all for errors
 
@@ -687,7 +693,7 @@ Feature: API Provider Integration
         {"id":42,"task":"42"}
       """
 
-  
+
   @gh-5332
   @api-provider-openapi-modification
   @api-provider-openapi-edit-unimplemented
@@ -702,8 +708,9 @@ Feature: API Provider Integration
     And set operation summary "Fetch task edited"
     And set operation description "Fetch task edited"
 
-    And set response type "Array" for response 200
-    And set response type of "Task" for response 200
+    And set parameters types
+      | type | Array  | operations | response | true | 200 |
+      | of | Task  | operations | response | true | 200 |
 
     # Then check all for errors
     When change frame to "syndesis"
@@ -783,9 +790,9 @@ Feature: API Provider Integration
     And open data bucket "3 - SQL Result"
     And open data mapper collection mappings
     And create data mapper mappings
-      | id        | body.id        |
+      | id   | body.id   |
 #     | completed | body.completed | completed can either be null or false
-      | task      | body.task      |
+      | task | body.task |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
@@ -822,8 +829,9 @@ Feature: API Provider Integration
     And set operation summary "Fetch task edited"
     And set operation description "Fetch task edited"
 
-    And set response type "Array" for response 200
-    And set response type of "Task" for response 200
+    And set parameters types
+      | type | Array  | operations | response | true | 200 |
+      | of   | Task   | operations | response | true | 200 |
 
     And change frame to "syndesis"
 
@@ -850,9 +858,9 @@ Feature: API Provider Integration
     And open data bucket "3 - SQL Result"
     And open data mapper collection mappings
     And create data mapper mappings
-      | id        | body.id        |
+      | id   | body.id   |
 #     | completed | body.completed | completed can either be null or false
-      | task      | body.task      |
+      | task | body.task |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
@@ -876,7 +884,7 @@ Feature: API Provider Integration
       """
         [{"id":1,"task":"task1"},{"id":2,"task":"task2"}]
       """
-    
+
 
   @gh-6099
   @gh-5332
@@ -946,7 +954,7 @@ Feature: API Provider Integration
     And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
-    And delete current operation
+    And delete "GET" operation
     #Then check all for errors
     And change frame to "syndesis"
     And click on the "Save" link
@@ -970,7 +978,7 @@ Feature: API Provider Integration
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
       """
 
-  
+
   @gh-5332
   @api-provider-openapi-modification
   @api-provider-openapi-delete-unimplemented
@@ -981,7 +989,7 @@ Feature: API Provider Integration
     And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
-    And delete current operation
+    And delete "GET" operation
     #Then check all for errors
     And change frame to "syndesis"
     And click on the "Save" link
@@ -992,7 +1000,6 @@ Feature: API Provider Integration
     Then check Fetch task operation is not present in API Provider operation list
 
 
-  
   @gh-4976
   @reproducer
   @api-provider-empty-integration
@@ -1009,7 +1016,7 @@ Feature: API Provider Integration
     And click on the "Next" button
 
     And change frame to "apicurio"
-    And create a new path with link 
+    And create a new path with link
       | noop | true |
     And change frame to "syndesis"
     And click on the "Save" link
@@ -1031,23 +1038,23 @@ Feature: API Provider Integration
     And change frame to "apicurio"
     And select path "/{id}"
     And select operation "GET"
-    And delete current operation
+    And delete "GET" operation
 
     And select path "/{id}"
     And select operation "PUT"
-    And delete current operation
+    And delete "PUT" operation
 
     And select path "/{id}"
     And select operation "DELETE"
-    And delete current operation
+    And delete "DELETE" operation
 
     And select path "/"
     And select operation "GET"
-    And delete current operation
+    And delete "GET" operation
 
     And select path "/"
     And select operation "POST"
-    And delete current operation
+    And delete "POST" operation
 
     #Then check all for errors
     And change frame to "syndesis"
@@ -1061,7 +1068,7 @@ Feature: API Provider Integration
   ###
   # ad-hoc tests for randomly found issues
   ###
-  
+
   @api-provider-save-progress
   Scenario: Clicking Go To Operation List does not discard progress in API Provider
     When create an API Provider integration "TODO Integration save progress" from file swagger/connectors/todo.json
@@ -1079,12 +1086,12 @@ Feature: API Provider Integration
     And click on the "Done" button
 
     And go to API Provider operation list
-    Then check API Provider operation "Fetch task" implementing "GET" to "/{id}" with status "200 OK"
+    Then check API Provider operation "Fetch task" implementing "GET" to "/{id}"
 
     When select API Provider operation flow Fetch task
     Then check there are 3 integration steps
 
-  
+
   @api-provider-back-button-from-scratch
   Scenario: Clicking back button from Apicurio should work consistently in API Provider
     When click on the "Create Integration" link to create a new integration.
@@ -1126,7 +1133,7 @@ Feature: API Provider Integration
     And click on the "Done" button
 
     And click on the "Save" link
-    And set integration name "Simple API Provider Integration"    
+    And set integration name "Simple API Provider Integration"
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "Simple API Provider Integration" gets into "Running" state
@@ -1134,7 +1141,7 @@ Feature: API Provider Integration
     Then verify response has status 200
     And verify response has body type "text/plain"
 
-  
+
   @reproducer
   @gh-4615
   @api-provider-step-not-deletable
@@ -1154,7 +1161,7 @@ Feature: API Provider Integration
     And verify delete button on step 2 is visible
     And verify delete button on step 3 is not visible
 
-  
+
   @reproducer
   @gh-4471
   @api-provider-base-path-in-url
@@ -1189,7 +1196,7 @@ Feature: API Provider Integration
       | usedefaultflow             | true                         |
     And click on the "Next" button
     And click on the "Next" button
-    
+
     When configure condition on position 2
     And add integration step on position "0"
     And select the "PostgresDB" connection

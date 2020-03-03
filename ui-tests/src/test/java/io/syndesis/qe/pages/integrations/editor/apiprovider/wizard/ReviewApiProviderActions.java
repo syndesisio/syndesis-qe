@@ -12,6 +12,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,8 +22,9 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
         public static final By ROOT = By.cssSelector(".open-api-review-actions");
         public static final By OPERATIONS = By.xpath(".//*[text()=\"IMPORTED\"]/following-sibling::*");
         public static final By TAGGED_OPERATIONS = By.cssSelector("div.openapi-review-actions" +
-                " ol.openapi-review-actions__operations ol.openapi-review-actions__operations");
+            " ol.openapi-review-actions__operations ol.openapi-review-actions__operations");
         public static final By WARNINGS = By.xpath(".//*[text()=\"WARNINGS\"]");
+        public static final By WARNINGS_CONTENT = By.cssSelector(".review-actions__warnings");
         public static final By ERRORS = By.xpath(".//*[text()=\"ERRORS\"]");
     }
 
@@ -63,6 +65,10 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
             }
         }
         return 0;
+    }
+
+    public List<String> getErrors() {
+        return $(Element.WARNINGS_CONTENT).$$("p").texts();
     }
 
     public int getNumberOfWarnings() {
