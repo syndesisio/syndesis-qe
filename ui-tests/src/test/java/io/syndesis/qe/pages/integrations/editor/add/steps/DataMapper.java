@@ -160,7 +160,7 @@ public class DataMapper extends SyndesisPageObject {
             // if there is label on the collection, which is empty
             // or if label does not exist, collection is unnamed
             SelenideElement label = e.find("label");
-            if (!label.exists() || label.text().isEmpty()) {
+            if (!label.exists() || label.text().isEmpty() || label.text().contains("Document Root")) {
                 SelenideElement arrow = e.find(Element.ARROW_POINTING_RIGHT);
                 if (arrow.exists() && arrow.is(visible)) {
                     arrow.click();

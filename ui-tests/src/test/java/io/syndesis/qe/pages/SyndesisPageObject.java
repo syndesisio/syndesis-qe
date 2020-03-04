@@ -42,22 +42,23 @@ public abstract class SyndesisPageObject {
         return getButton(buttonTitle, getRootElement());
     }
 
-    public SelenideElement getButton(String buttonTitle, SelenideElement differentRoot) {
-        log.info("searching for button {}", buttonTitle);
+    public SelenideElement getButtonByCssClassName(String buttonClassName) {
+        return getButtonByCssClassName(buttonClassName, getRootElement());
+    }
 
-        try {
-            //ugly but necessary due to syndesis page refreshing periodically
-            try {
-                OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.exactText(buttonTitle)).size() >= 1, (long) (60 * 1000.0));
-            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
-                log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
-                OpenShiftWaitUtils.waitFor(() -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(Condition.exactText(buttonTitle)).size() >= 1, (long) (60 * 1000.0));
-            }
-        } catch (TimeoutException | InterruptedException e1) {
-            fail(buttonTitle + " not found", e1);
-        }
+    public SelenideElement getButtonByCssClassName(String buttonClassName, SelenideElement differentRoot) {
+        log.info("searching for button *{}*", buttonClassName);
+
+        waitForButtons(Condition.cssClass(buttonClassName), differentRoot);
+
+        ElementsCollection foundButtons = differentRoot.shouldBe(visible).findAll(By.className(buttonClassName)).filter(visible);
+        return foundButtons.get(0);
+    }
+
+    public SelenideElement getButton(String buttonTitle, SelenideElement differentRoot) {
+        log.info("searching for button *{}*", buttonTitle);
+
+        waitForButtons(Condition.exactText(buttonTitle), differentRoot);
 
         ElementsCollection foundButtons = differentRoot.shouldBe(visible).findAll(By.tagName("button"))
             .filter(Condition.exactText(buttonTitle)).shouldHave(sizeGreaterThanOrEqual(1));
@@ -68,6 +69,22 @@ public abstract class SyndesisPageObject {
         log.info("Button found! ");
 
         return foundButtons.first();
+    }
+
+    private void waitForButtons(Condition condition, SelenideElement differentRoot) {
+        try {
+            //ugly but necessary due to syndesis page refreshing periodically
+            try {
+                OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
+                    .filter(condition).size() >= 1, (long) (60 * 1000.0));
+            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
+                OpenShiftWaitUtils.waitFor(() -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button"))
+                    .filter(condition).size() >= 1, (long) (60 * 1000.0));
+            }
+        } catch (TimeoutException | InterruptedException e1) {
+            fail("button not found", e1);
+        }
     }
 
     public SelenideElement getFirstVisibleButton(String buttonTitle) {
