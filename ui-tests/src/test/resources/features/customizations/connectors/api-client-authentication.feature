@@ -1,4 +1,4 @@
-#maintainer: mmuzikar@redhat.com
+# @sustainer: mmuzikar@redhat.com
 
 @ui
 @apicurio
