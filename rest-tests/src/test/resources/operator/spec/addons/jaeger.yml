@@ -6,3 +6,8 @@ spec:
   addons:
     jaeger:
       enabled: true
+  components:
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"

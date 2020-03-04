@@ -10,3 +10,7 @@ spec:
       externalDbURL: postgresql://custom-postgres:5432
       user: "testuser"
       name: "testdb"
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"
