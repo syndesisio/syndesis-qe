@@ -43,8 +43,30 @@ public class DetailSteps {
 
     @Then("remove all \"([^\"]*)\" alerts")
     public void removeAllAlerts(String alertType) {
-        Alert alert = Alert.getALERTS().get(alertType);
-        removeCloseableAllerts(alert);
+        Alert alertOption = Alert.getALERTS().get(alertType);
+        ElementsCollection alerts = getCloseableAllerts(alertOption);
+        try {
+            while (!alerts.isEmpty()) {
+                for (SelenideElement alert : alerts) {
+                    alert.$(By.cssSelector("button.close")).shouldBe(Condition.visible).click();
+                }
+                alerts = getCloseableAllerts(alertOption);
+            }
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            //            repeat everything again:
+            alertOption = Alert.getALERTS().get(alertType);
+            alerts = getCloseableAllerts(alertOption);
+            while (!alerts.isEmpty()) {
+                for (SelenideElement alert : alerts) {
+                    alert.$(By.cssSelector("button.close")).shouldBe(Condition.visible).click();
+                }
+                alerts = getCloseableAllerts(alertOption);
+            }
+        }
+    }
+
+    private ElementsCollection getCloseableAllerts(Alert alert) {
+        return $$(alert.getBy()).exclude(Conditions.WO_CLOSE_BUTTONS);
     }
 
     @When("change connection description to \"([^\"]*)\"")
@@ -55,19 +77,5 @@ public class DetailSteps {
     @Then("^check that connection description \"([^\"]*)\"")
     public void verifyConnectionDescription(String description) {
         assertThat(detailPage.getDescription()).isEqualTo(description);
-    }
-
-    private void removeCloseableAllerts(Alert alertOption) {
-        ElementsCollection alerts = getCloseableAllerts(alertOption);
-        while (!alerts.isEmpty()) {
-            for (SelenideElement alert : alerts) {
-                alert.$(By.cssSelector("button.close")).shouldBe(Condition.visible).click();
-            }
-            alerts = getCloseableAllerts(alertOption);
-        }
-    }
-
-    private ElementsCollection getCloseableAllerts(Alert alert) {
-        return $$(alert.getBy()).exclude(Conditions.WO_CLOSE_BUTTONS);
     }
 }
