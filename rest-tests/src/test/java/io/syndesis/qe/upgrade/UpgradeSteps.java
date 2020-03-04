@@ -48,6 +48,9 @@ public class UpgradeSteps {
         Syndesis syndesis = ResourceFactory.get(PreviousSyndesis.class);
         // If it is a prod build, we can use released images from registry.redhat.io
         if (TestUtils.isProdBuild()) {
+            // If it is a prod build and the version is null, it means it was started by test-runner, so skip it as for prod upgrade there is a
+            // separate job
+            assumeThat(TestConfiguration.upgradePreviousVersion()).isNotNull();
             final String floatingTag = TestConfiguration.syndesisOperatorImage().split(":")[1].split("-")[0];
             final BigDecimal currentVersion = new BigDecimal(floatingTag).setScale(1, BigDecimal.ROUND_HALF_UP);
             syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + currentVersion.subtract(new BigDecimal("0.1")));
