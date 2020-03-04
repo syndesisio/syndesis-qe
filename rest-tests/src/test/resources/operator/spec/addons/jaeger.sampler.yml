@@ -8,3 +8,8 @@ spec:
       enabled: true
       samplerType: "probabilistic"
       samplerParam: "0.001"
+  components:
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"

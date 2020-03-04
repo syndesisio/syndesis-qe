@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.utils.DbUtils;
-import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 
@@ -158,18 +157,6 @@ public class DbValidationSteps {
         TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo", "task", task) > val,
             5, 30,
             "Not enough entries in the todo table in 30s");
-    }
-
-    @Then("^verify upgrade integration with task \"([^\"]*)\"$")
-    public void verifyIntegrationWithTask(String task) {
-        if (!dbUtils.isConnectionValid()) {
-            SampleDbConnectionManager.closeConnections();
-            dbUtils = new DbUtils("postgresql");
-        }
-        int oldTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        TestUtils.sleepIgnoreInterrupt(20000L);
-        int newTaskCount = dbUtils.getNumberOfRecordsInTable("todo", "task", task);
-        assertThat(newTaskCount).isGreaterThan(oldTaskCount);
     }
 
     @Then("^.*checks? that query \"([^\"]*)\" has \"(\\w+)\" output$")

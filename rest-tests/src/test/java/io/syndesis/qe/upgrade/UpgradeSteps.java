@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -48,6 +47,9 @@ public class UpgradeSteps {
         Syndesis syndesis = ResourceFactory.get(PreviousSyndesis.class);
         // If it is a prod build, we can use released images from registry.redhat.io
         if (TestUtils.isProdBuild()) {
+            // If it is a prod build and the version is null, it means it was started by test-runner, so skip it as for prod upgrade there is a
+            // separate job
+            assumeThat(TestConfiguration.upgradePreviousVersion()).isNotNull();
             final String floatingTag = TestConfiguration.syndesisOperatorImage().split(":")[1].split("-")[0];
             final BigDecimal currentVersion = new BigDecimal(floatingTag).setScale(1, BigDecimal.ROUND_HALF_UP);
             syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + currentVersion.subtract(new BigDecimal("0.1")));
@@ -65,13 +67,14 @@ public class UpgradeSteps {
             // Get penultimate version - not daily
             BigDecimal previousVersion = new BigDecimal(TestConfiguration.syndesisInstallVersion().substring(0, 3))
                 .setScale(1, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("0.1"));
-            Optional<String> previousTag = tags.stream().filter(
+            // Find the last (== highest) tag
+            String previousTag = tags.stream().filter(
                 t -> t.matches("^" + (previousVersion.doubleValue() + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$")
-            ).findFirst();
+            ).reduce((first, second) -> second).orElse(null);
 
-            if (previousTag.isPresent()) {
-                TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_PREVIOUS_VERSION, previousTag.get());
-                syndesis.setOperatorImage(UPSTREAM_OPERATOR_IMAGE + ":" + previousTag.get());
+            if (previousTag != null) {
+                TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_PREVIOUS_VERSION, previousTag);
+                syndesis.setOperatorImage(UPSTREAM_OPERATOR_IMAGE + ":" + previousTag);
             } else {
                 fail("Unable to find tagged version for " + previousVersion);
             }
@@ -129,9 +132,10 @@ public class UpgradeSteps {
     @Then("wait until upgrade is done")
     public void waitForUpgrade() {
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator").contains("Syndesis resource upgraded"), 30000L, 600000L);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator")
+                .contains("Syndesis resource installed after upgrading"), 30000L, 600000L);
         } catch (Exception e) {
-            fail("\"Syndesis resource upgraded\" wasn't found in operator log after 10 minutes");
+            fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
         }
     }
 
@@ -152,5 +156,14 @@ public class UpgradeSteps {
             }
         }
         assertThat(found).as("The pull secret should be linked to service account, but wasn't").isTrue();
+    }
+
+    @Then("verify upgrade integration {string}")
+    public void checkIntegration(String name) {
+        String[] lines = OpenShiftUtils.getIntegrationLogs(name).split("\n");
+        final String lastLine = lines[lines.length - 1];
+        TestUtils.sleepIgnoreInterrupt(10000L);
+        String logsAfter = OpenShiftUtils.getIntegrationLogs(name);
+        assertThat(logsAfter.substring(logsAfter.indexOf(lastLine))).contains("[[options]]");
     }
 }
