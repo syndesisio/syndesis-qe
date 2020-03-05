@@ -66,7 +66,9 @@ public class CommonSteps {
 
     @When("^deploy Syndesis$")
     public static void deploySyndesis() {
-        ResourceFactory.create(Syndesis.class);
+        ResourceFactory.get(Syndesis.class).deploy();
+        // Use this method instead of ResourceFactory#create() to get the info what went wrong
+        waitForSyndesis();
     }
 
     @Then("^wait for Syndesis to become ready")
@@ -74,6 +76,7 @@ public class CommonSteps {
         try {
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
         } catch (Exception e) {
+            TestUtils.printPods();
             log.error("Was waiting for following syndesis components:");
             Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
             log.error("Found following component pods:");
