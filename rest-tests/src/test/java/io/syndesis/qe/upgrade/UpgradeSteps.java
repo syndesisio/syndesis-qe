@@ -141,7 +141,7 @@ public class UpgradeSteps {
 
     @When("rollout")
     public void rollout() {
-        Component.getAllComponents().stream().filter(c -> c != Component.DB).forEach(
+        Component.getAllComponents().stream().filter(c -> c != Component.DB && c != Component.OPERATOR).forEach(
             component -> OpenShiftUtils.getInstance().deploymentConfigs().withName(component.getName()).deployLatest());
     }
 
