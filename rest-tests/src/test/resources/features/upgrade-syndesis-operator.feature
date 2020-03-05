@@ -15,7 +15,7 @@ Feature: Syndesis Upgrade Using Operator
   Scenario: Syndesis Upgrade - basic
     Given prepare upgrade
       And clean default namespace
-      And deploy Syndesis
+      And deploy previous Syndesis
       And wait for Syndesis to become ready
       And verify syndesis "previous" version
     When perform syndesis upgrade to newer version using operator
@@ -33,7 +33,7 @@ Feature: Syndesis Upgrade Using Operator
   Scenario: Syndesis Upgrade - with integrations
     Given prepare upgrade
       And clean default namespace
-      And deploy Syndesis
+      And deploy previous Syndesis
       And wait for Syndesis to become ready
       And verify syndesis "previous" version
     Given deploy HTTP endpoints

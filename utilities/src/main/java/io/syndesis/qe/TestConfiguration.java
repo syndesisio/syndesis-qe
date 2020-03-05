@@ -395,7 +395,7 @@ public class TestConfiguration {
         System.setProperty("xtf.openshift.namespace", properties.getProperty(OPENSHIFT_NAMESPACE));
 
         // Set oc version - this version of the client will be used as the binary client
-        System.setProperty("xtf.openshift.version", "3.10.70");
+        System.setProperty("xtf.openshift.version", "4.3");
 
         if (props.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
             props.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
