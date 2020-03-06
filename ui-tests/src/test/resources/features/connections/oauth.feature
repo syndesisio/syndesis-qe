@@ -104,7 +104,6 @@ Feature: Connections - OAuth
 
   @ENTESB-11282
   @oauth-gcalendar
-  @disabled
   Scenario: Testing Google calendar OAuth connector
     Given renew access token for "QE Google Calendar" google account
     And create calendars
@@ -231,6 +230,7 @@ Feature: Connections - OAuth
 
   @reproducer
   @ENTESB-11447
+  @twitter-oauth-error-msg
   Scenario: Testing Twitter OAuth error message
     When navigate to the "Settings" page
     And click on element with data-testid "o-auth-app-list-item-twitter-list-item"
@@ -246,6 +246,7 @@ Feature: Connections - OAuth
 
   @reproducer
   @ENTESB-12005
+  @oauth-description
   Scenario: Testing oauth description
     When navigate to the "Settings" page
     And fill "Twitter" oauth settings "Twitter Listener"
