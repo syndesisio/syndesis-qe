@@ -5,12 +5,15 @@ import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.visible;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
 import io.syndesis.qe.pages.integrations.Integrations;
 import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
 import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
 import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -83,6 +86,9 @@ public class IntegrationSteps {
         commonSteps.navigateTo("Integrations");
         SelenideElement integration = integrations.getIntegration(integrationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
+        if ("camelk".equalsIgnoreCase(TestConfiguration.syndesisRuntime())) {
+            ResourceFactory.get(CamelK.class).waitForContextToBuild(integrationName);
+        }
         assertThat(TestUtils.waitForEvent(
             status -> status.contains(integrationStatus),
             () -> integrations.getIntegrationItemStatus(integration),

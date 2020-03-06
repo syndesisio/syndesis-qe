@@ -23,9 +23,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import cz.xtf.core.openshift.OpenShift;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.fabric8.openshift.api.model.ImageStream;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,8 +62,10 @@ public class CamelK implements Resource {
         if (OpenShiftUtils.getAnyPod("syndesis.io/component", "syndesis-server").isPresent()) {
             // It is needed to reset-db first, otherwise server would create the integrations again
             TestSupport.getInstance().resetDB();
-            removeViaBinary();
-            OpenShiftUtils.getInstance().apps().deployments().withName("camel-k-operator").delete();
+            resetState();
+            OpenShift oc = OpenShiftUtils.getInstance();
+            oc.apps().deployments().withName("camel-k-operator").delete();
+            oc.getLabeledPods("camel.apache.org/component", "operator").forEach(oc::deletePod);
         }
     }
 
@@ -102,16 +111,37 @@ public class CamelK implements Resource {
         }
     }
 
+    private CustomResourceDefinitionContext getCamelKCRD() {
+        CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().withName("integrations.camel.apache.org").get();
+        CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
+            .withGroup(crd.getSpec().getGroup())
+            .withPlural(crd.getSpec().getNames().getPlural())
+            .withScope(crd.getSpec().getScope())
+            .withVersion(crd.getSpec().getVersion());
+        return builder.build();
+    }
+
+    public void waitForContextToBuild(String integrationName) {
+        final String resourceName = "i-" + integrationName.toLowerCase()
+            .replaceAll(" ", "-")
+            .replaceAll("/", "-")
+            .replaceAll("_", "-");
+        TestUtils.waitFor(() -> {
+            Map<String, Object>
+                integration = OpenShiftUtils.getInstance().customResource(getCamelKCRD()).get(TestConfiguration.openShiftNamespace(), resourceName);
+            String phase = ((String) ((Map<String, Object>) integration.get("status")).get("phase"));
+            return "running".equalsIgnoreCase(phase);
+        }, 20, 10 * 60, "Context was not build in 10 minutes for integration " + integrationName);
+    }
+
     private void installViaBinary() {
         try {
             new File(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel").setExecutable(true);
             StringBuilder arguments = new StringBuilder();
             if (TestUtils.isProdBuild()) {
-                arguments.append(" --maven-repository ").append(TestConfiguration.prodRepository());
                 arguments.append(" --operator-image ").append(TestConfiguration.image(Image.CAMELK));
-            } else {
-                arguments.append(" --maven-repository ").append(TestConfiguration.upstreamRepository());
             }
+            arguments.append(" -n ").append(TestConfiguration.openShiftNamespace());
 
             final String command = LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel install" + arguments.toString();
             log.info("Invoking " + command);
@@ -133,10 +163,25 @@ public class CamelK implements Resource {
         OpenShiftUtils.getInstance().deletePods("name", "camel-k-operator");
     }
 
-    private void removeViaBinary() {
+    public void resetState() {
         try {
             new File(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel").setExecutable(true);
             Runtime.getRuntime().exec(LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel reset").waitFor();
+            List<ImageStream> iss = OpenShiftUtils
+                .getInstance()
+                .imageStreams()
+                .inNamespace(TestConfiguration.openShiftNamespace())
+                .list()
+                .getItems()
+                .stream()
+                .filter(imageStream -> imageStream.getMetadata().getName().contains("camel-k-ctx"))
+                .collect(Collectors.toList());
+            OpenShiftUtils.getInstance().pods().delete(
+                OpenShiftUtils.getInstance().pods().list().getItems().stream()
+                    .filter(pod -> pod.getMetadata().getName().startsWith("camel-k-ctx"))
+                    .collect(Collectors.toList())
+            );
+            OpenShiftUtils.getInstance().imageStreams().delete(iss);
         } catch (Exception e) {
             fail("Unable to invoke kamel binary", e);
         }

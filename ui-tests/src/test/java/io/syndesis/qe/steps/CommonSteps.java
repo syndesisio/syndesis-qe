@@ -9,6 +9,7 @@ import static org.assertj.core.data.MapEntry.entry;
 import static com.codeborne.selenide.Condition.attribute;
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.exactText;
+import static com.codeborne.selenide.Condition.hidden;
 import static com.codeborne.selenide.Condition.matchText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -415,9 +416,10 @@ public class CommonSteps {
         syndesisRootPage.getRootElement().shouldBe(visible);
     }
 
-    @Then("^check visibility of the \"([^\"]*)\" link$")
-    public void validateLink(String linkTitle) {
-        new SyndesisRootPage().getLink(linkTitle).shouldBe(visible);
+    @Then("^check \"([^\"]*)\" link is (not |)visible$")
+    public void validateLink(String linkTitle, String visibility) {
+        Condition condition = "not".equalsIgnoreCase(visibility.trim()) ? hidden : visible;
+        new SyndesisRootPage().getLink(linkTitle).shouldBe(condition);
     }
 
     @When("^click? on the \"([^\"]*)\" button.*$")
