@@ -7,6 +7,7 @@ Feature: Operator Deployment
   Background:
     Given clean default namespace
       And deploy Syndesis CRD
+      And install cluster resources
       And grant permissions to user
       And create pull secret
       And deploy Syndesis operator
@@ -129,8 +130,7 @@ Feature: Operator Deployment
   @operator-addons
   @operator-addons-jaeger
   Scenario: Syndesis Operator - Addons - Jaeger
-    When deploy Jaeger
-      And deploy Syndesis CR from file "spec/addons/jaeger.yml"
+    When deploy Syndesis CR from file "spec/addons/jaeger.yml"
     Then wait for Syndesis to become ready
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
       And add a split step
@@ -145,8 +145,7 @@ Feature: Operator Deployment
   @operator-addons
   @operator-addons-jaeger
   Scenario: Syndesis Operator - Addons - Jaeger - Sampler
-    When deploy Jaeger
-      And deploy Syndesis CR from file "spec/addons/jaeger.sampler.yml"
+    When deploy Syndesis CR from file "spec/addons/jaeger.sampler.yml"
     Then wait for Syndesis to become ready
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
       And add a split step

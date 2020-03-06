@@ -90,12 +90,27 @@ public class Syndesis implements Resource {
         createPullSecret();
         deployCrd();
         pullOperatorImage();
+        installCluster();
         grantPermissions();
         deployOperator();
         deploySyndesisViaOperator();
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
+
+        // the syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
+        new Thread(() -> {
+            try {
+                OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(
+                    OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"))
+                );
+                OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
+                    .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+            } catch (Exception e) {
+                log.warn("Syndesis-jaeger pod never reached ready state! " +
+                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking");
+            }
+        }).start();
     }
 
     @Override
@@ -148,6 +163,12 @@ public class Syndesis implements Resource {
         }
     }
 
+    public void installCluster() {
+        executeOperatorCommandAndWait(
+            "install",
+            "cluster");
+    }
+
     /**
      * Pulls the operator image via docker pull.
      */
@@ -180,8 +201,14 @@ public class Syndesis implements Resource {
 
     public void executeOperatorCommandAndWait(String... param) {
         try {
-            this.executeOperatorCommand(param).waitFor();
-        } catch (InterruptedException e) {
+            Process process = this.executeOperatorCommand(param);
+            process.waitFor();
+            if (process.exitValue() != 0) {
+                fail("The docker operator command fail. The exit value is " + process.exitValue() +
+                    "\nThe process error stream: " + IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8) +
+                    "\nThe process input stream: " + IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8));
+            }
+        } catch (InterruptedException | IOException e) {
             log.error("Something interrupted the docker command", e);
             fail("Something interrupted the docker command");
         }
@@ -468,7 +495,7 @@ public class Syndesis implements Resource {
                 serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
             }
             serverFeatures.put("integrationLimit", 5);
-
+            crJson.getJSONObject("spec").getJSONObject("addons").getJSONObject("todo").put("enabled", true);
             // add nexus
             addMavenRepo(serverFeatures);
 

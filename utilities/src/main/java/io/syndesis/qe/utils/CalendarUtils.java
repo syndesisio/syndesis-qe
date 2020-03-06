@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Java6Assertions.fail;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -7,7 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 
+import io.fabric8.kubernetes.api.model.Pod;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,48 +24,49 @@ import lombok.extern.slf4j.Slf4j;
 @Lazy
 public class CalendarUtils {
 
-    /*-2 means that OCP is 2 seconds behind of the instance where the test is running
-      +2 means that OCP is 2 seconds ahead of the instance where the test is running */
-    private int diffSeconds = 0;
-    private int diffMinutes = 0;
-    private int diffHours = 0;
-
-    public CalendarUtils() throws ParseException {
-        String ocpTime = OpenShiftUtils.binary().execute(
-            "run", "--serviceaccount", "builder", "--image", "okansahiner/kube-diag",
-            "kube-diag", "-it", "--restart=Never", "--attach", "--rm", "--command", "--", "bash", "-c", "\"date\"");
-
-        Date ocpDate = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy").parse(ocpTime);
-        Date testDate = new Date();
-        int diff = Math.toIntExact(ocpDate.getTime() - testDate.getTime());
-        diffSeconds = diff / 1000 % 60;
-        diffMinutes = diff / (60 * 1000) % 60;
-        diffHours = diff / (60 * 60 * 1000);
-    }
+    @Getter
+    private Calendar lastBeforeRequest = null;
 
     @Getter
-    private Calendar beforeRequest = null;
+    private Calendar lastAfterRequest = null;
 
-    @Getter
-    private Calendar afterRequest = null;
-
-    public void setBeforeRequest(Calendar beforeRequest) {
-        syncTimeWithOcpInstance(beforeRequest);
-        this.beforeRequest = beforeRequest;
+    public void setBeforeRequest(Calendar beforeRequest, String partialPodName) {
+        syncTimeWithOcpInstance(beforeRequest, partialPodName);
+        this.lastBeforeRequest = beforeRequest;
     }
 
-    public void setAfterRequest(Calendar afterRequest) {
-        syncTimeWithOcpInstance(afterRequest);
-        this.afterRequest = afterRequest;
+    public void setAfterRequest(Calendar afterRequest, String partialPodName) {
+        syncTimeWithOcpInstance(afterRequest, partialPodName);
+        this.lastAfterRequest = afterRequest;
     }
 
     //correct time, sync with the OCP time
-    private void syncTimeWithOcpInstance(Calendar calendar) {
-        log.info("Time before sync: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+    private void syncTimeWithOcpInstance(Calendar calendar, String partialPodName) {
+        Optional<Pod> podByPartialName = OpenShiftUtils.getPodByPartialName(partialPodName);
+        if (!podByPartialName.isPresent()) {
+            fail("Integration with the partial pod name '" + partialPodName + "' does not exist.");
+        }
+        String integrationTime = OpenShiftUtils.binary().execute(
+            "exec", podByPartialName.get().getMetadata().getName(), "date");
+        Date testDate = new Date();
+        Date ocpDate = null;
+        log.info("Time in the integration pod is: " + integrationTime);
+        log.info("Time in test suite is: " + testDate);
+        try {
+            ocpDate = new SimpleDateFormat("EEE MMM d hh:mm:ss zzz yyyy").parse(integrationTime);
+        } catch (ParseException e) {
+            fail("Exception during parsing the date from the integration pod", e);
+        }
+        int diff = Math.toIntExact(ocpDate.getTime() - testDate.getTime());
+
+        int diffSeconds = diff / 1000 % 60;
+        int diffMinutes = diff / (60 * 1000) % 60;
+        int diffHours = diff / (60 * 60 * 1000);
+
         log.info(String.format("Sync info: HOUR:'%s' MINUTE:'%s' SECOND:'%s'", diffHours, diffMinutes, diffSeconds));
         calendar.add(Calendar.SECOND, diffSeconds);
         calendar.add(Calendar.MINUTE, diffMinutes);
         calendar.add(Calendar.HOUR, diffHours);
-        log.info("Time after sync: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
+        log.info("Test suite time after sync: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime()));
     }
 }

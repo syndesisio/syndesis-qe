@@ -51,6 +51,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_CRD_URL = "syndesis.config.crd.url";
     public static final String SYNDESIS_OPERATOR_IMAGE = "syndesis.config.operator.image";
     public static final String SYNDESIS_CR_URL = "syndesis.config.cr.url";
+
     public static final String SYNDESIS_BUILD_PROPERTIES_URL = "syndesis.config.build.properties.url";
 
     public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
@@ -168,7 +169,12 @@ public class TestConfiguration {
                 }
             } else {
                 //OCP 4.x
-                get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
+                if (openShiftUrl().contains("https://api.crc.testing:6443")) {
+                    //CRC
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, "apps-crc.testing");
+                } else {
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
+                }
             }
         }
         return get().readValue(OPENSHIFT_ROUTE_SUFFIX);
@@ -337,23 +343,23 @@ public class TestConfiguration {
     }
 
     private Properties defaultValues() {
-        final Properties props = new Properties();
+        final Properties defaultProps = new Properties();
 
-        props.setProperty(OPENSHIFT_URL, "");
-        props.setProperty(OPENSHIFT_TOKEN, "");
-        props.setProperty(SYNDESIS_REST_API_PATH, "/api/v1");
-        props.setProperty(SYNDESIS_SERVER_ROUTE, "false");
+        defaultProps.setProperty(OPENSHIFT_URL, "");
+        defaultProps.setProperty(OPENSHIFT_TOKEN, "");
+        defaultProps.setProperty(SYNDESIS_REST_API_PATH, "/api/v1");
+        defaultProps.setProperty(SYNDESIS_SERVER_ROUTE, "false");
 
-        props.setProperty(SYNDESIS_CREDENTIALS_FILE, "../credentials.json");
-        props.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
+        defaultProps.setProperty(SYNDESIS_CREDENTIALS_FILE, "../credentials.json");
+        defaultProps.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
 
-        props.setProperty(SYNDESIS_UI_BROWSER, "chrome");
+        defaultProps.setProperty(SYNDESIS_UI_BROWSER, "chrome");
 
-        props.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
+        defaultProps.setProperty(OPENSHIFT_NAMESPACE_CLEANUP, "false");
 
         // to keep backward compatibility
-        if (props.getProperty(SYNDESIS_URL_SUFFIX) != null && props.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {
-            props.setProperty(OPENSHIFT_ROUTE_SUFFIX, props.getProperty(SYNDESIS_URL_SUFFIX));
+        if (properties.getProperty(SYNDESIS_URL_SUFFIX) != null && properties.getProperty(OPENSHIFT_ROUTE_SUFFIX) == null) {
+            defaultProps.setProperty(OPENSHIFT_ROUTE_SUFFIX, properties.getProperty(SYNDESIS_URL_SUFFIX));
         }
 
         String syndesisVersion;
@@ -367,30 +373,33 @@ public class TestConfiguration {
             }
         }
 
-        if (props.getProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL) == null) {
-            props.setProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL, String
+        if (properties.getProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL) == null) {
+            defaultProps.setProperty(SYNDESIS_PUBLIC_OAUTH_PROXY_URL, String
                 .format("https://raw.githubusercontent.com/syndesisio/syndesis/%s/install/support/syndesis-public-oauth-proxy.yml", syndesisVersion));
         }
 
-        props.setProperty(SYNDESIS_CRD_URL, getClass().getClassLoader().getResource("syndesis-crd.yaml").toString());
+        defaultProps.setProperty(SYNDESIS_CRD_URL, getClass().getClassLoader().getResource("syndesis-crd.yaml").toString());
         String operatorVersion;
         if (this.properties.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
             operatorVersion = this.properties.getProperty(SYNDESIS_INSTALL_VERSION);
         } else {
             operatorVersion = "latest";
         }
-        props.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
-        props.setProperty(SYNDESIS_CR_URL, getClass().getClassLoader().getResource("syndesis-minimal.yaml").toString());
+        defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
 
-        props.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
+        if (properties.getProperty(SYNDESIS_CR_URL) == null) {
+            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/master/default-cr.yml");
+        }
+
+        defaultProps.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
 
         // When the single user property is set (for the env where the syndesis is already deployed and you are not an admin)
         // Make the user "admin" anyway, as that user is used in all k8s client invocations by default
         if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
-            props.setProperty(SYNDESIS_ADMIN_USERNAME, properties.getProperty(SYNDESIS_UI_USERNAME));
+            defaultProps.setProperty(SYNDESIS_ADMIN_USERNAME, properties.getProperty(SYNDESIS_UI_USERNAME));
         }
         if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
-            props.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
+            defaultProps.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
         }
 
         // Copy syndesis properties to their xtf counterparts - used by binary oc client
@@ -402,26 +411,26 @@ public class TestConfiguration {
         // Set oc version - this version of the client will be used as the binary client
         System.setProperty("xtf.openshift.version", "4.3");
 
-        if (props.getProperty(SYNDESIS_RUNTIME) == null) {
-            props.setProperty(SYNDESIS_RUNTIME, "springboot");
+        if (properties.getProperty(SYNDESIS_RUNTIME) == null) {
+            defaultProps.setProperty(SYNDESIS_RUNTIME, "springboot");
         }
-        if (props.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
-            props.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
-        }
-
-        props.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
-        if (props.getProperty(SNOOP_SELECTORS) == null) {
-            props.setProperty(SNOOP_SELECTORS, "false");
+        if (properties.getProperty(SYNDESIS_PULL_SECRET_NAME) == null) {
+            defaultProps.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
         }
 
-        if (props.getProperty(CAMEL_K_VERSION) == null) {
-            props.setProperty(CAMEL_K_VERSION, "0.3.4");
+        defaultProps.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
+        if (properties.getProperty(SNOOP_SELECTORS) == null) {
+            defaultProps.setProperty(SNOOP_SELECTORS, "false");
         }
 
-        if (props.getProperty(JAEGER_VERSION) == null) {
-            props.setProperty(JAEGER_VERSION, "v1.15.1");
+        if (properties.getProperty(CAMEL_K_VERSION) == null) {
+            defaultProps.setProperty(CAMEL_K_VERSION, "0.3.4");
         }
-        return props;
+
+        if (properties.getProperty(JAEGER_VERSION) == null) {
+            defaultProps.setProperty(JAEGER_VERSION, "v1.15.1");
+        }
+        return defaultProps;
     }
 
     public String readValue(final String key) {

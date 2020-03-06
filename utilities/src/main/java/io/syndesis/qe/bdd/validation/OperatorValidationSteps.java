@@ -92,6 +92,11 @@ public class OperatorValidationSteps {
         ResourceFactory.get(Syndesis.class).deployCrd();
     }
 
+    @Given("^install cluster resources$")
+    public void installCluster() {
+        ResourceFactory.get(Syndesis.class).installCluster();
+    }
+
     @Given("^grant permissions to user$")
     public void grantPermissions() {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
