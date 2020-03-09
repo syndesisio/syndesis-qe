@@ -102,7 +102,7 @@ public class TodoSteps {
                 return todoPage.getListItemsCount() == numberOfItems;
             }, 5 * 1000L, 30 * 1000L);
         } catch (TimeoutException | InterruptedException e) {
-            fail("Todo app list did not contain expected number of items in 15 seconds!", e);
+            fail("Todo app list did not contain expected number of items in 30 seconds!", e);
         }
     }
 

@@ -59,7 +59,7 @@ public class CamelK implements Resource {
     @Override
     public void undeploy() {
         // The server pod will not be present if the camel-k wasn't deployed
-        if (OpenShiftUtils.getAnyPod("syndesis.io/component", "syndesis-server").isPresent()) {
+        if (OpenShiftUtils.getAnyPod("camel.apache.org/component", "operator").isPresent()) {
             // It is needed to reset-db first, otherwise server would create the integrations again
             TestSupport.getInstance().resetDB();
             resetState();
@@ -129,7 +129,7 @@ public class CamelK implements Resource {
         TestUtils.waitFor(() -> {
             Map<String, Object>
                 integration = OpenShiftUtils.getInstance().customResource(getCamelKCRD()).get(TestConfiguration.openShiftNamespace(), resourceName);
-            String phase = ((String) ((Map<String, Object>) integration.get("status")).get("phase"));
+            String phase = (String) ((Map<String, Object>) integration.get("status")).get("phase");
             return "running".equalsIgnoreCase(phase);
         }, 20, 10 * 60, "Context was not build in 10 minutes for integration " + integrationName);
     }
