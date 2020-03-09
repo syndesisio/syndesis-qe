@@ -102,12 +102,38 @@ public class MailFormatter implements EventListener {
         }
     }
 
+    private void reportOpenIssues() {
+        List<SimpleIssue> allOpenIssues = new ArrayList<>();
+        results.forEach(scenarioResult -> {
+            if (scenarioResult.getIssues() != null) {
+                scenarioResult.getIssues().forEach(issue -> {
+                    if (IssueState.OPEN == issue.getState()) {
+                        allOpenIssues.add(issue);
+                    }
+                });
+            }
+        });
+        if (allOpenIssues.isEmpty()) {
+            return;
+        }
+
+        try (FileWriter out = new FileWriter(new File(path, "issues.html"))) {
+
+            for (SimpleIssue issue : allOpenIssues) {
+                out.write(String.format("<li>%s - %s</li>\n", issue.toLink(), issue.getIssueSummary()));
+            }
+        } catch (IOException e) {
+            log.error("Error writing issues report file", e);
+        }
+    }
+
     private void onTestRunFinished(TestRunFinished t) {
         new File(path).mkdirs();
         try (FileWriter out = new FileWriter(new File(path, "report.html"))) {
             for (String line : results.stream().map(ScenarioResult::toString).collect(Collectors.toList())) {
                 out.write(line + " <br/>\n");
             }
+            reportOpenIssues();
         } catch (IOException e) {
             log.error("Error writing mail report file", e);
         }
@@ -171,12 +197,9 @@ public class MailFormatter implements EventListener {
             if (issues != null) {
                 for (SimpleIssue issue : issues) {
                     if (issue.getState() == IssueState.OPEN) {
-                        sb
-                            .append("| <a href=\"")
-                            .append(issue.getUrl())
-                            .append("\">")
-                            .append(issue.getIssue())
-                            .append("</a>&nbsp;");
+                        sb.append(" | ");
+                        sb.append(issue.toLink());
+                        sb.append("&nbsp;");
                     }
                 }
             }
