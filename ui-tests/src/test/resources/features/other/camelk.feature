@@ -9,6 +9,6 @@ Feature: Camel-k Runtime
 
   @ENTESB-11500
   @camel-k-api-client
-  Scenario:
+  Scenario: Extensions shouldn't be visible
     When click on the "Customizations" link
     Then check "Extensions" link is not visible
