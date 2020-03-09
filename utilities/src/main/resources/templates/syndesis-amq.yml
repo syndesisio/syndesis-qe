@@ -112,7 +112,7 @@ objects:
           component: amq
           deploymentConfig: ${APPLICATION_NAME}-amq
           # Needed for todo app to work
-          syndesis.io/example: broker-amq
+          syndesis.io/example: syndesis-amq
         name: ${APPLICATION_NAME}-amq
       spec:
         containers:

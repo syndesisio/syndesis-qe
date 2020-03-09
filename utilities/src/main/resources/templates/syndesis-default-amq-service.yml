@@ -21,4 +21,4 @@ spec:
     port: 1883
     targetPort: 1883
   selector:
-    syndesis.io/example: broker-amq
+    syndesis.io/example: syndesis-amq

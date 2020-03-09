@@ -76,7 +76,9 @@ public class AMQ implements Resource {
         Map<String, String> openwireAccountParameters = new HashMap<>();
         openwireAccountParameters.put("username", "amq");
         openwireAccountParameters.put("password", "topSecret");
-        openwireAccountParameters.put("brokerUrl", "tcp://syndesis-amq-tcp:61616");
+        // For PROD build, the default broker-amq-tcp service is used, for upstream build, our service broker-amq-tcp `syndesis-default-amq-service
+        // .yml` is used.
+        openwireAccountParameters.put("brokerUrl", "tcp://broker-amq-tcp:61616");
         openwireAccount.setService("amq");
         openwireAccount.setProperties(openwireAccountParameters);
 
