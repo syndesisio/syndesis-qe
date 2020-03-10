@@ -120,7 +120,7 @@ public class MailFormatter implements EventListener {
         try (FileWriter out = new FileWriter(new File(path, "issues.html"))) {
 
             for (SimpleIssue issue : allOpenIssues) {
-                out.write(String.format("<li>%s - %s</li>\n", issue.toLink(), issue.getIssueSummary()));
+                out.write(String.format("%s - %s\n", issue.toLink(), issue.getIssueSummary()));
             }
         } catch (IOException e) {
             log.error("Error writing issues report file", e);
