@@ -1000,7 +1000,7 @@ public class CommonSteps {
      */
     private void set3scaleEnvVar(String url) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        JSONObject cr = new JSONObject(syndesis.getDeployedCr());
+        JSONObject cr = new JSONObject(syndesis.getCr());
         JSONObject features = cr.getJSONObject("spec").getJSONObject("components").getJSONObject("server").getJSONObject("features");
 
         if (url != null) {
@@ -1009,11 +1009,7 @@ public class CommonSteps {
             features.remove("managementUrlFor3scale");
         }
 
-        try {
-            syndesis.editCr(cr.toMap());
-        } catch (IOException e) {
-            fail("There was an error while updating the CR", e);
-        }
+        syndesis.editCr(cr.toMap());
 
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded("server");

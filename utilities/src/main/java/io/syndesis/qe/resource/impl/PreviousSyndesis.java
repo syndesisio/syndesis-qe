@@ -44,7 +44,7 @@ public class PreviousSyndesis extends Syndesis {
                 ? StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://")
                 : TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
 
-            getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), crJson.toMap());
+            super.createCr(crJson.toMap());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
