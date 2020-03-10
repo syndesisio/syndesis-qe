@@ -17,7 +17,7 @@ Feature: Integration - DB to DB
       | Joe | Jackson | Red Hat | db |
 #    this sleep is necessary, because AMQ streams autodiscovery process takes some time so streams are not available immediately
 #    and unfortunatelly there is no indication of autodiscovery process status yet.
-    When sleep for "45000" ms
+    When sleep for "90000" ms
     And created Kafka connection using AMQ streams auto detection
       | Kafka Message Broker | Kafka Autodetect | Kafka Auto Detect QE | Kafka Streams Auto Detection |
 
