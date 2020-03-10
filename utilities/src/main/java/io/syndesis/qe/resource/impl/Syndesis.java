@@ -262,17 +262,36 @@ public class Syndesis implements Resource {
         }
     }
 
-    public Map<String, Object> getDeployedCr() {
+    public Map<String, Object> getCr() {
         return getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME);
     }
 
-    public Map<String, Object> editCr(Map<String, Object> cr) throws IOException {
-        return getSyndesisCrClient().edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
+    public void createCr(Map<String, Object> cr) {
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient();
+        OpenShiftUtils.asRegularUser(() -> {
+            try {
+                syndesisCrClient.create(TestConfiguration.openShiftNamespace(), cr);
+            } catch (IOException e) {
+                fail("Unable to create CR: " + e);
+            }
+        });
+    }
+
+    public void editCr(Map<String, Object> cr) {
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient();
+        OpenShiftUtils.asRegularUser(() -> {
+            try {
+                syndesisCrClient.edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
+            } catch (IOException e) {
+                fail("Unable to modify CR: " + e);
+            }
+        });
     }
 
     private void deleteCr(String name, String version) {
         log.info("Undeploying custom resource \"{}\" in version \"{}\"", name, version);
-        getSyndesisCrClient(version).delete(TestConfiguration.openShiftNamespace(), name);
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient(version);
+        OpenShiftUtils.asRegularUser(() -> syndesisCrClient.delete(TestConfiguration.openShiftNamespace(), name));
     }
 
     private Map<String, Set<String>> getCrNames() {
@@ -505,7 +524,7 @@ public class Syndesis implements Resource {
             // set the route
             crJson.getJSONObject("spec").put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
 
-            getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), crJson.toMap());
+            createCr(crJson.toMap());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -541,8 +560,7 @@ public class Syndesis implements Resource {
      */
     public boolean isAddonEnabled(Addon addon) {
         try {
-            JSONObject spec = new JSONObject(getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME))
-                .getJSONObject("spec");
+            JSONObject spec = new JSONObject(getCr()).getJSONObject("spec");
 
             // Special case for external DB
             if (addon == Addon.EXTERNAL_DB) {
@@ -575,8 +593,7 @@ public class Syndesis implements Resource {
      */
     public void updateAddon(Addon addon, boolean enabled, Map<String, String> properties) {
         log.info((enabled ? "Enabling " : "Disabling ") + addon + " addon.");
-
-        JSONObject cr = new JSONObject(getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME));
+        JSONObject cr = new JSONObject(getCr());
         JSONObject specAddon = cr.getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue());
         specAddon.put("enabled", enabled);
         if (properties != null) {
@@ -585,11 +602,7 @@ public class Syndesis implements Resource {
                 specAddon.put(entry.getKey(), entry.getValue());
             }
         }
-        try {
-            this.editCr(cr.toMap());
-        } catch (IOException e) {
-            fail("IO Exception during editing CR", e);
-        }
+        this.editCr(cr.toMap());
     }
 
     public void changeRuntime(String runtime) {
