@@ -429,7 +429,7 @@ public class TestConfiguration {
         }
 
         if (properties.getProperty(JAEGER_VERSION) == null) {
-            defaultProps.setProperty(JAEGER_VERSION, "v1.15.1");
+            defaultProps.setProperty(JAEGER_VERSION, "v1.17.0");
         }
         return defaultProps;
     }

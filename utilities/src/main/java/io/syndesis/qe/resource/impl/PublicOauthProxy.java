@@ -20,7 +20,7 @@ public class PublicOauthProxy implements Resource {
 
     @Override
     public void deploy() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, Object> properties = new HashMap<>();
         properties.put("routeHostname", PUBLIC_API_PROXY_ROUTE);
         ResourceFactory.get(Syndesis.class).updateAddon(Addon.PUBLIC_API, true, properties);
     }

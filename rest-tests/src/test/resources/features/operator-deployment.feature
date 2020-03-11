@@ -139,7 +139,7 @@ Feature: Operator Deployment
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 3)"
       And create integration with name: "sql-sql-jaeger"
     Then wait for integration with name: "sql-sql-jaeger" to become active
-      And check that jaeger is collecting metrics for integration "sql-sql-jaeger"
+      And check that jaeger pod "syndesis-jaeger" is collecting metrics for integration "sql-sql-jaeger"
 
   @operator-addons-jaeger-sampler
   @operator-addons
@@ -160,7 +160,23 @@ Feature: Operator Deployment
       And check that the deployment config "syndesis-meta" contains variables:
         | JAEGER_SAMPLER_TYPE  | probabilistic |
         | JAEGER_SAMPLER_PARAM | 0.001         |
-      And check that jaeger is collecting metrics for integration "sql-sql-jaeger"
+    And check that jaeger pod "syndesis-jaeger" is collecting metrics for integration "sql-sql-jaeger"
+
+  @operator-addons-jaeger-external
+  @operator-addons
+  @operator-addons-jaeger
+  Scenario: Syndesis Operator - Addons - Jaeger - external
+    When deploy Jaeger
+    And deploy Syndesis CR from file "spec/addons/external-jaeger.yml"
+    Then wait for Syndesis to become ready
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    And add a split step
+    And start mapper definition with name: "mapping 1"
+    And MAP using Step 2 and field "/first_name" to "/<>/task"
+    And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 3)"
+    And create integration with name: "sql-sql-jaeger"
+    Then wait for integration with name: "sql-sql-jaeger" to become active
+    And check that jaeger pod "jaeger-all-in-one" is collecting metrics for integration "sql-sql-jaeger"
 
   @operator-addons-knative
   @operator-addons
