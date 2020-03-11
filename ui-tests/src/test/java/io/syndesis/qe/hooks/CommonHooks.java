@@ -1,9 +1,11 @@
 package io.syndesis.qe.hooks;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
+import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
@@ -70,5 +72,11 @@ public class CommonHooks {
     public void default3scaleAnnotation() {
         log.info("Removing 3scale discovery functionality");
         cs.disable3scaleEnvVar();
+    }
+
+    @After("@camel-k")
+    public void changeRuntimeBack() {
+        log.info("Cleaning after camel-k test");
+        ResourceFactory.get(Syndesis.class).changeRuntime(TestConfiguration.syndesisRuntime());
     }
 }
