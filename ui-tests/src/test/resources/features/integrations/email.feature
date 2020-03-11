@@ -67,6 +67,8 @@ Feature: Email connector
       | Joe | Jackson | Red Hat | db |
     Then Integration "email-send-qe-integration-<security>" is present in integrations list
     And wait until integration "email-send-qe-integration-<security>" gets into "Running" state
+    And wait until integration email-send-qe-integration-<security> processed at least 1 message
+
     And check that email from credenitals "Email SMTP With <security>" with subject "syndesis-tests" and text "Red Hat" exists
     And delete emails from credentials "Email SMTP With <security>" with subject "syndesis-tests"
 
@@ -122,6 +124,7 @@ Feature: Email connector
 
     # Send email to connector, wait for it to be received and check that it's content got into database
     When send an e-mail to credentials "Email <protocol> With SSL"
+    And wait until integration email-receive-qe-integration-<protocol> processed at least 1 message
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
 
     Examples:
@@ -174,4 +177,5 @@ Feature: Email connector
 
     # Send email to connector, wait for it to be received and check that it's content got into database
     When send an e-mail to credentials "Email IMAP With SSL" with subject "syndesis-tests-folder"
+    And wait until integration email-receive-folder processed at least 1 message
     Then check that query "select * from todo where task like '%Red Hat%'" has some output

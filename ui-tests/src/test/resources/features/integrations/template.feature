@@ -84,6 +84,7 @@ Feature: Templates
 
     # wait for integration to get in active state
     And wait until integration "db-template-send-<template_type>" gets into "Running" state
+    And wait until integration db-template-send-<template_type> processed at least 1 message
 
     Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
@@ -162,6 +163,7 @@ Feature: Templates
     Then Integration "DB to gmail-template" is present in integrations list
     #wait for integration to get in active state
     And wait until integration "DB to gmail-template" gets into "Running" state
+    And wait until integration DB to gmail-template processed at least 1 message
 
     Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
 
@@ -256,5 +258,6 @@ Feature: Templates
 
     # wait for integration to get in active state
     And wait until integration "Template-brackets" gets into "Running" state
+    And wait until integration Template-brackets processed at least 1 message
 
     Then check that pod "i-Template-brackets" logs contain string "(Joe) -Jackson-"

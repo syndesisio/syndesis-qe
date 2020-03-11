@@ -53,6 +53,7 @@ Feature: Integration - ServiceNow-amq/log
 
     And navigate to the "Integrations" page
     And wait until integration "service-now-2-amq" gets into "Running" state
+    And wait until integration service-now-2-amq processed at least 1 message
     Then verify that received incident from "incidents" queue contains "{number1}"
 
   @integrations-servicenow-2

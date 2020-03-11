@@ -65,7 +65,8 @@ Feature: SQL Connector
     And wait until integration "DB_2_Log" gets into "Running" state
 
     # validate that all items from db are present
-    When sleep for "10000" ms
+    And wait until integration DB_2_Log processed at least 1 message
+
     Then validate that logs of integration "DB_2_Log" contains string "ABCsampleTODO"
     And validate that logs of integration "DB_2_Log" contains string "XYZsampleTODO"
     And validate that logs of integration "DB_2_Log" contains string "KLMsampleTODO"
@@ -119,6 +120,7 @@ Feature: SQL Connector
     And publish integration
     Then Integration "predicates-<name>" is present in integrations list
     And wait until integration "predicates-<name>" gets into "Running" state
+    And wait until integration predicates-<name> processed at least 1 message
 
     Then validate that logs of integration "predicates-<name>" contains items with IDs "<result>"
 
@@ -184,6 +186,7 @@ Feature: SQL Connector
 
     # Wait for "Running" state and validate
     And wait until integration "Generated_Keys" gets into "Running" state
+    And wait until integration Generated_Keys processed at least 1 message
     And validate that logs of integration "Generated_Keys" contains items with IDs "1"
 
   @reproducer
@@ -211,9 +214,10 @@ Feature: SQL Connector
 
 
     And click on the "Publish" link
-    And set integration name "Generated_Keys"
+    And set integration name "Generated_Keys_2"
     And publish integration
 
     # Wait for "Running" state and validate
-    And wait until integration "Generated_Keys" gets into "Running" state
-    And validate that logs of integration "Generated_Keys" contains items with IDs "1"
+    And wait until integration "Generated_Keys_2" gets into "Running" state
+    And wait until integration Generated_Keys_2 processed at least 1 message
+    And validate that logs of integration "Generated_Keys_2" contains items with IDs "1"

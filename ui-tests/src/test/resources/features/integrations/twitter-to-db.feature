@@ -60,6 +60,7 @@ Feature: Integration - Twitter to Database
     And wait until integration "Twitter to DB integration" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
-    And sleep for "30000" ms
+    And wait until integration Twitter to DB integration processed at least 1 message
+
     Then checks that query "select * from contact where company like 'Red Hat%'" has some output
     And clean all tweets in twitter_talky account

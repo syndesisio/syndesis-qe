@@ -86,6 +86,8 @@ Feature: Jira Connector
 
     Then Integration "jira-add-comment" is present in integrations list
     And wait until integration "jira-add-comment" gets into "Running" state
+    And wait until integration jira-add-comment processed at least 1 message
+
     And check new comment exists in previously created jira issue with text "Red Hat"
 
     When close previously created issue
@@ -130,6 +132,8 @@ Feature: Jira Connector
 
     Then Integration "jira-add-issue" is present in integrations list
     And wait until integration "jira-add-issue" gets into "Running" state
+    And wait until integration jira-add-issue processed at least 1 message
+
     And check that open issue with summary "Test Jira Issue Created From Syndesis" and description "Red Hat" exists
 
     When close all issues with summary "Test Jira Issue Created From Syndesis" and description "Red Hat"
@@ -165,6 +169,8 @@ Feature: Jira Connector
 
     Then Integration "jira-transition-issue" is present in integrations list
     And wait until integration "jira-transition-issue" gets into "Running" state
+    And wait until integration jira-transition-issue processed at least 1 message
+
     And check that previously created jira is in status "Done"
 
   @jira-retrieve-new-comments
@@ -205,6 +211,7 @@ Feature: Jira Connector
     And wait until integration "jira-retrieve-new-comments" gets into "Running" state
 
     When comment previously created jira issue with text "Red Hat"
+    And wait until integration jira-retrieve-new-comments processed at least 1 message
     Then check that query "select * from todo where task like '%Red Hat%'" has some output
 
     When close previously created issue
@@ -247,6 +254,7 @@ Feature: Jira Connector
     And wait until integration "jira-retrieve-new-issues" gets into "Running" state
 
     When create a new jira issue in project "MTP"
+    And wait until integration jira-retrieve-new-issues processed at least 1 message
     Then check that query "select * from todo where task like '%this is the test issue%'" has some output
 
     When close all issues with summary "test issue"

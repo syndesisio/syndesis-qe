@@ -53,8 +53,9 @@ Feature: Integration - Twitter Direct Messages
     And set integration name "twitter-direct-messages-test-receive"
     And publish integration
 
-    Then Integration "twitter-direct-messages-test-receive" is present in integrations list
+    And Integration "twitter-direct-messages-test-receive" is present in integrations list
     And wait until integration "twitter-direct-messages-test-receive" gets into "Running" state
+    And wait until integration twitter-direct-messages-test-receive processed at least 1 message
 
     Then check that contact table contains contact where first name is senderId for "Twitter Talky" account and company is "Red Hat"
 
@@ -104,6 +105,8 @@ Feature: Integration - Twitter Direct Messages
       | Joe | Jackson | Red Hat | db |
 
     # start integration and check that DM exists
-    Then Integration "twitter-direct-messages-test-send" is present in integrations list
+    And Integration "twitter-direct-messages-test-send" is present in integrations list
     And wait until integration "twitter-direct-messages-test-send" gets into "Running" state
+    And wait until integration twitter-direct-messages-test-send processed at least 1 message
+
     Then check that account "Twitter Talky" has DM from user "Twitter Listener" with text "Red Hat"

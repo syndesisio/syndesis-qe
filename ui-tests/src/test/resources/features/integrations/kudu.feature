@@ -74,6 +74,7 @@ Feature: Kudu connector
     And set integration name "integrations-kudu-insert"
     And publish integration
     And wait until integration "integrations-kudu-insert" gets into "Running" state
+    And wait until integration integrations-kudu-insert processed at least 1 message
 
     Then check that Kudu server table contains inserted data
     And delete table from Kudu server
@@ -105,6 +106,7 @@ Feature: Kudu connector
     And publish integration
 
     When wait until integration "Integration_kudu_scan" gets into "Running" state
+    And wait until integration Integration_kudu_scan processed at least 1 message
     Then validate that logs of integration "Integration_kudu_scan" contains string "FirstValue"
     And delete table from Kudu server
 
@@ -154,4 +156,5 @@ Feature: Kudu connector
     And wait until integration "integrations-kudu-mqtt" gets into "Running" state
 
     When send mqtt message to "news" topic
+    And wait until integration integrations-kudu-mqtt processed at least 1 message
     Then check that Kudu server table contains inserted data
