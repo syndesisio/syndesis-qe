@@ -82,7 +82,7 @@ Feature: Testing authentication options of API client
 
     Then Integration "api-key-query" is present in integrations list
     And wait until integration "api-key-query" gets into "Running" state
-    And sleep for jenkins delay or "20" seconds
+    And wait until integration api-key-query processed at least 1 message
     Then check that pod "i-api-key-query" logs contain string "Zerik"
 
   @api-client-auth-api-key-headers
@@ -156,6 +156,6 @@ Feature: Testing authentication options of API client
 
     Then Integration "api-key-header" is present in integrations list
     And wait until integration "api-key-header" gets into "Running" state
-    And sleep for jenkins delay or "20" seconds
+    And wait until integration api-key-header processed at least 1 message
     Then check that pod "i-api-key-header" logs contain string "Zerik"
     

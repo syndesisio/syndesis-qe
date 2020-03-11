@@ -55,7 +55,7 @@ Feature: Slack Connector
       | Joe | Jackson | Red Hat | db |
     Then Integration "Integration_with_slack" is present in integrations list
     And wait until integration "Integration_with_slack" gets into "Running" state
-    And sleep for jenkins delay or "15" seconds
+    And wait until integration Integration_with_slack processed at least 1 message
     And check that last slack message equals "Red Hat" on channel "slack_connector_test"
 
 #
@@ -104,6 +104,8 @@ Feature: Slack Connector
 
     When send message "Red Hat testSlack" on channel "slack_connector_test"
     And send message "Red Hat test incorrect Slack" on channel "slack_connector_test"
+    And wait until integration slack-to-db processed at least 1 message
+
     Then checks that query "select * from contact where company = 'Red Hat testSlack' AND first_name = 'syndesis-bot'" has some output
     And checks that query "select * from contact where company = 'Red Hat test incorrect Slack'" has no output
 
@@ -158,7 +160,7 @@ Feature: Slack Connector
 
     Then Integration "slack-to-db-delay-and-maxmessage" is present in integrations list
     When wait until integration "slack-to-db-delay-and-maxmessage" gets into "Running" state
-    And sleep for jenkins delay or "15" seconds
+    And wait until integration slack-to-db-delay-and-maxmessage processed at least 2 messages
 
     # test Maximum Messages to Retrieve after start
     Then checks that query "select * from contact where company = 'message1'" has no output
@@ -169,7 +171,6 @@ Feature: Slack Connector
     # test delay
     When send message "messageDelayed" on channel "slack_connector_test"
     # test if the message is not arrive immediately
-    And sleep for 2 seconds
     Then checks that query "select * from contact where company = 'messageDelayed'" has no output
     When wait until query "select * from contact where company = 'messageDelayed' AND first_name = 'syndesis-bot'" has output with timeout 60
     Then checks that query "select * from contact where company = 'messageDelayed' AND first_name = 'syndesis-bot'" has "1" output

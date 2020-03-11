@@ -2,6 +2,7 @@
 
 @ui
 @mongodb
+@webhook
 @database
 @integrations-mongodb
 Feature: MongoDB
@@ -63,7 +64,8 @@ Feature: MongoDB
       | _id | value |
       | id1 | v1    |
       | id2 | v2    |
-    And sleep for 20 seconds
+    And wait until integration Mongo to DB consume stream processed at least 2 messages
+
     Then checks that query "select * from todo where task='v1'" has 1 row output
     And checks that query "select * from todo where task='v2'" has 1 row output
     And checks that query "select * from todo where task='v3'" has 0 row output
@@ -81,7 +83,7 @@ Feature: MongoDB
       | _id | value |
       | id3 | v3    |
       | id4 | v4    |
-    And sleep for 10 seconds
+    And wait until integration Mongo to DB consume stream processed at least 4 messages
     Then checks that query "select * from todo where task='v1'" has 1 row output
     And checks that query "select * from todo where task='v2'" has 1 row output
     And checks that query "select * from todo where task='v3'" has 1 row output
@@ -152,6 +154,8 @@ Feature: MongoDB
     And insert the following documents into mongodb collection "capped_for_insert"
       | _id | value |
       | id1 | v1    |
+    And wait until integration Mongo to Mongo insert processed at least 1 message
+
     Then verify that mongodb collection "insert_collection" has 1 document matching
       | value |
       | v1    |
@@ -227,13 +231,12 @@ Feature: MongoDB
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to Mongo update" gets into "Running" state
-    And sleep for 20 seconds
 
     Then verify that mongodb collection "update_collection" has 1 document matching
       | _id | value |
       | id1 | old   |
 
-    When invoke post request to webhook in integration webhook-to-mongo-update with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo update with token mongodb-webhook and body:
       """
          {"_id":"id1", "value":"new"}
       """
@@ -245,7 +248,7 @@ Feature: MongoDB
         [1]
       """
 
-    When invoke post request to webhook in integration webhook-to-mongo-update with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo update with token mongodb-webhook and body:
       """
          {"_id":"id3", "value":"new"}
       """
@@ -309,9 +312,8 @@ Feature: MongoDB
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to Mongo find all" gets into "Running" state
-    And sleep for 20 seconds
 
-    When invoke post request to webhook in integration webhook-to-mongo-find-all with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo find all with token mongodb-webhook and body:
       """
       """
 
@@ -374,9 +376,8 @@ Feature: MongoDB
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to Mongo remove" gets into "Running" state
-    And sleep for 20 seconds
 
-    When invoke post request to webhook in integration webhook-to-mongo-remove with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo remove with token mongodb-webhook and body:
       """
         {"value": "v1"}
       """
@@ -392,7 +393,7 @@ Feature: MongoDB
         [1]
       """
 
-    When invoke post request to webhook in integration webhook-to-mongo-remove with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo remove with token mongodb-webhook and body:
       """
         {"value": "v1"}
       """
@@ -456,9 +457,8 @@ Feature: MongoDB
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to Mongo count" gets into "Running" state
-    And sleep for 20 seconds
 
-    And invoke post request to webhook in integration webhook-to-mongo-count with token mongodb-webhook and body:
+    And invoke post request to webhook in integration Webhook to Mongo count with token mongodb-webhook and body:
       """
         {"value": "v1"}
       """
@@ -467,7 +467,7 @@ Feature: MongoDB
         [2]
       """
 
-    When invoke post request to webhook in integration webhook-to-mongo-count with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo count with token mongodb-webhook and body:
       """
         {"value": "v2"}
       """
@@ -476,7 +476,7 @@ Feature: MongoDB
         [1]
       """
 
-    When invoke post request to webhook in integration webhook-to-mongo-count with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo count with token mongodb-webhook and body:
       """
         {"value": "v3"}
       """
@@ -538,14 +538,13 @@ Feature: MongoDB
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to Mongo save" gets into "Running" state
-    And sleep for 20 seconds
 
     Then verify that mongodb collection "save_collection" has 1 document matching
       | _id | value |
       | id1 | old   |
 
     # update
-    When invoke post request to webhook in integration webhook-to-mongo-save with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo save with token mongodb-webhook and body:
       """
          {"_id": "id1", "value": "new"}
       """
@@ -557,7 +556,7 @@ Feature: MongoDB
       | id2 | v2    |
 
     # insert
-    When invoke post request to webhook in integration webhook-to-mongo-save with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo save with token mongodb-webhook and body:
       """
          {"_id": "id2", "value": "v2"}
       """
@@ -635,9 +634,8 @@ Feature: MongoDB
 
     And navigate to the "Integrations" page
     And wait until integration "Webhook to Mongo find by id" gets into "Running" state
-    And sleep for 20 seconds
 
-    And invoke post request to webhook in integration webhook-to-mongo-find-by-id with token mongodb-webhook and body:
+    And invoke post request to webhook in integration Webhook to Mongo find by id with token mongodb-webhook and body:
       """
          {"inputId": "id1"}
       """
@@ -649,7 +647,7 @@ Feature: MongoDB
     And checks that query "select * from todo where task='v2'" has no output
 
     # Try to find an element which doesn't exist
-    When invoke post request to webhook in integration webhook-to-mongo-find-by-id with token mongodb-webhook and body:
+    When invoke post request to webhook in integration Webhook to Mongo find by id with token mongodb-webhook and body:
       """
          {"inputId": "id3"}
       """

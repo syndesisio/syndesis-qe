@@ -67,7 +67,8 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "create-sheet" gets into "Running" state
-    And sleep for "3000" ms
+    And wait until integration create-sheet processed at least 1 message
+    And sleep for 3 seconds
     Then verify that spreadsheet was created
 
 
@@ -117,7 +118,8 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets" gets into "Running" state
-    And sleep for "3000" ms
+    And wait until integration from-db-to-sheets processed at least 1 message
+    And sleep for 3 seconds
     Then verify that test sheet contains values on range "A1:E5"
       | Matej | Foo    | Red Hat | db |
       | Matej | Bar    | Red Hat | db |
@@ -169,7 +171,8 @@ Feature: Google Sheets Connector
     And sleep for 10 seconds
     And Integration "from-db-to-sheets-update" is present in integrations list
     And wait until integration "from-db-to-sheets-update" gets into "Running" state
-    And sleep for "5000" ms
+    And wait until integration from-db-to-sheets-update processed at least 1 message
+    And sleep for 3 seconds
     Then verify that test sheet contains values on range "A2:D2"
       | New | Updated | Red Hat | db |
 
@@ -222,7 +225,8 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets-update-column" gets into "Running" state
-    And sleep for "3000" ms
+    And wait until integration from-db-to-sheets-update-column processed at least 1 message
+    And sleep for 3 seconds
     Then verify that test sheet contains values on range "E1:E5"
       | Fuse   |
       | Online |
@@ -299,7 +303,8 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "pivot-table" gets into "Running" state
-    And sleep for 10 seconds
+    And wait until integration pivot-table processed at least 1 message
+    And sleep for 3 seconds
     Then verify that data test sheet contains values on range "'pivot rows'!A1:B90"
       | LAFAYETTE COUNTY | 223   |
       | LAKE COUNTY      | 364   |
@@ -335,7 +340,8 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "update-sheet-title" gets into "Running" state
-    And sleep for "3000" ms
+    And wait until integration update-sheet-title processed at least 1 message
+    And sleep for 3 seconds
     Then verify that spreadsheet title match "updated-title"
 
 
@@ -372,6 +378,7 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "properties" gets into "Running" state
+    And wait until integration properties processed at least 1 message
     Then verify that message from "sheety" queue contains "Sheet1,sheet2,pivot-columns,pivot rows"
 
   @add-chart-basic-chart-to-spreadsheet
@@ -408,6 +415,7 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     Then wait until integration "add-chart-basic-chart-to-spreadsheet" gets into "Running" state
+    And wait until integration add-chart-basic-chart-to-spreadsheet processed at least 1 message
     And verify that chart was created
 
 
@@ -444,6 +452,7 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "add-pie-chart-to-spreadsheet" gets into "Running" state
+    And wait until integration add-pie-chart-to-spreadsheet processed at least 1 message
     Then verify that chart was created
 
 
@@ -499,5 +508,6 @@ Feature: Google Sheets Connector
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "copy" gets into "Running" state
+    And wait until integration copy processed at least 1 message
     Then verify that data test sheet contains values on range "A25000:H25000"
       | 241178 | FL | PALM BEACH COUNTY | 0 | 1810826.38 | 0 | 0 | 1810826.38 |

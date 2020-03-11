@@ -4,7 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
+import io.syndesis.qe.utils.IntegrationUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -14,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class InvokeHttpRequest {
+
+    @Autowired
+    private IntegrationUtils integrationUtils;
 
     /**
      * Only works when you are currently on integration details page, because we have to get
@@ -57,7 +63,10 @@ public class InvokeHttpRequest {
         log.debug("Body to set: " + body);
         String url = getUrlForWebhook(nameOfIntegration, token);
         log.info("WebHook URL: " + url);
-        return HttpUtils.doPostRequest(url, body);
+        int beforeNumberOfMessages = integrationUtils.numberOfMessages(nameOfIntegration);
+        HTTPResponse httpResponse = HttpUtils.doPostRequest(url, body);
+        integrationUtils.waitForMessage(nameOfIntegration, beforeNumberOfMessages + 1);
+        return httpResponse;
     }
 
     public static String getUrlForWebhook(String nameOfIntegration, String token) {
@@ -66,6 +75,7 @@ public class InvokeHttpRequest {
                 .filter(x -> x.getMetadata().getName()
                     .contains(nameOfIntegration
                         .replaceAll("_", "-")
+                        .replaceAll(" ", "-")
                         .toLowerCase()
                     ))
                 .findFirst().get().getSpec().getHost(), token);
