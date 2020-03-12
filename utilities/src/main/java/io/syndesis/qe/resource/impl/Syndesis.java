@@ -369,7 +369,7 @@ public class Syndesis implements Resource {
             // else do nothing, as the existing crd and new crd are probably the same
             List<CustomResourceDefinitionVersion> versions = OpenShiftUtils.getInstance().customResourceDefinitions()
                 .withName(existingCrd.getMetadata().getName()).get().getSpec().getVersions();
-            if (!existingCrd.getStatus().getStoredVersions().contains(newCrd.getSpec().getVersion())) {
+            if (existingCrd.getSpec().getVersions().stream().noneMatch(v -> newCrd.getSpec().getVersion().equals(v.getName()))) {
                 CustomResourceDefinitionFluent.SpecNested<DoneableCustomResourceDefinition> crd =
                     OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
                         .edit()
