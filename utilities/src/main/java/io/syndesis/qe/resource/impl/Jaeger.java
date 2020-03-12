@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
@@ -111,5 +112,20 @@ public class Jaeger implements Resource {
                 fail("Unable to process Jaeger resource " + jaegerResource, e);
             }
         }
+    }
+
+    //Productised builds need to link syndesis-pull secret and redeploy pods
+    public void ensureImagePull() {
+        OpenShiftUtils.getInstance().serviceAccounts().list().getItems().stream().filter(sa -> sa.getMetadata().getName().contains("jaeger"))
+            .forEach(sa -> {
+                sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
+                OpenShiftUtils.getInstance().serviceAccounts().createOrReplace(sa);
+            });
+        OpenShiftUtils.getAnyPod("name", "jaeger-operator").ifPresent(pod -> {
+            if (OpenShiftUtils.hasPodIssuesPullingImage(pod)) {
+                log.warn("{} faield to pull image, deleting with linked secrets", pod.getMetadata().getName());
+                OpenShiftUtils.getInstance().deletePod(pod);
+            }
+        });
     }
 }

@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -97,20 +98,7 @@ public class Syndesis implements Resource {
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
-
-        // the syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
-        new Thread(() -> {
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(
-                    OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"))
-                );
-                OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
-                    .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
-            } catch (Exception e) {
-                log.warn("Syndesis-jaeger pod never reached ready state! " +
-                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking");
-            }
-        }).start();
+        jaegerWorkarounds();
     }
 
     @Override
@@ -161,6 +149,38 @@ public class Syndesis implements Resource {
                 .withType("kubernetes.io/dockerconfigjson")
                 .done();
         }
+    }
+
+    ///Ensures that jaeger is working correctly by linking secrets
+    private void jaegerWorkarounds() {
+        BooleanSupplier jaegerReady = () -> OpenShiftWaitUtils.isPodReady(
+            OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"));
+        new Thread(() -> {
+            Jaeger jaeger = ResourceFactory.get(Jaeger.class);
+            try {
+                OpenShiftWaitUtils.waitUntilPodAppears("jaeger-operator");
+                jaeger.ensureImagePull();
+                OpenShiftWaitUtils.waitFor(jaegerReady, 30 * 1000);
+            } catch (Exception e) {
+                log.warn("Syndesis-jaeger didn't get deployed in time, retrying one more time");
+                jaeger.ensureImagePull();
+            }
+            try {
+                OpenShiftWaitUtils.waitFor(jaegerReady);
+                Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
+                if (jaegerPod.isPresent()) {
+                    // the syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added
+                    // manually here
+                    OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
+                        .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+                } else {
+                    throw new TimeoutException("Syndesis jaeger pod didn't get deployed on the second try");
+                }
+            } catch (Exception e) {
+                log.warn("Syndesis-jaeger pod never reached ready state! " +
+                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking");
+            }
+        }).start();
     }
 
     public void installCluster() {

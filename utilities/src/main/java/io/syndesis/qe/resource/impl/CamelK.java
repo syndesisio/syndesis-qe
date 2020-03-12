@@ -7,6 +7,7 @@ import io.syndesis.qe.Image;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.Resource;
+import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -66,6 +67,7 @@ public class CamelK implements Resource {
             OpenShift oc = OpenShiftUtils.getInstance();
             oc.apps().deployments().withName("camel-k-operator").delete();
             oc.getLabeledPods("camel.apache.org/component", "operator").forEach(oc::deletePod);
+            ResourceFactory.get(Syndesis.class).changeRuntime("springboot");
         }
     }
 
