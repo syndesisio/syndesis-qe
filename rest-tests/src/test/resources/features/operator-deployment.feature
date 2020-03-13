@@ -111,8 +111,8 @@ Feature: Operator Deployment
   @operator-addons-dv
   @operator-addons
   Scenario: Syndesis Operator - Addons - Data Virtualization
-    When deploy DV
-      And deploy Syndesis CR from file "spec/addons/dv.yml"
+    When deploy Syndesis CR from file "spec/addons/dv.yml"
+      And deploy DV
     Then wait for Syndesis to become ready
       And check that the "syndesis-ui-config" config map contains
         | config.json | "enabled": 1 |
@@ -176,8 +176,8 @@ Feature: Operator Deployment
   @operator-server
   @operator-prometheus
   Scenario: Syndesis Operator - Components - Memory limits
-    When deploy DV
-      And deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
+    When deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
+      And deploy DV
     Then wait for Syndesis to become ready
       And check correct memory limits
 
