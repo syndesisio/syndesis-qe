@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -134,8 +135,10 @@ public class UpgradeSteps {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator")
                 .contains("Syndesis resource installed after upgrading"), 30000L, 600000L);
-        } catch (Exception e) {
+        } catch (TimeoutException e) {
             fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
+        } catch (Exception ex) {
+            // ignore
         }
     }
 

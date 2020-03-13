@@ -8,6 +8,7 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -59,7 +60,7 @@ public class Connections {
         final String connectionName = connectionPropertiesMap.get("name");
 
         final Connector connector = connectorsEndpoint.get(connectorId);
-        final Optional<Account> account = accountsDirectory.getAccount(connectionPropertiesMap.get("account"));
+        final Optional<Account> acc = accountsDirectory.getAccount(connectionPropertiesMap.get("account"));
 
         connectionPropertiesMap.remove("connector");
         connectionPropertiesMap.remove("connectionId");
@@ -68,10 +69,10 @@ public class Connections {
 
         for (Map.Entry<String, String> keyValue : connectionPropertiesMap.entrySet()) {
             if ("$ACCOUNT$".equals(keyValue.getValue())) {
-                if (!account.isPresent()) {
+                if (!acc.isPresent()) {
                     throw new RuntimeException("Account " + connectionPropertiesMap.get("account") + " was not found");
                 }
-                keyValue.setValue(account.get().getProperty(keyValue.getKey()));
+                keyValue.setValue(acc.get().getProperty(keyValue.getKey()));
             }
         }
 
@@ -94,7 +95,7 @@ public class Connections {
         createConnection(
             fromData(
                 keyValue("connector", "activemq"),
-                accountProperty("brokerUrl"),
+                TestUtils.isProdBuild() ? Arrays.asList("brokerUrl", "tcp://syndesis-amq-tcp:61616") : accountProperty("brokerUrl"),
                 accountProperty("username"),
                 accountProperty("password")
             )
