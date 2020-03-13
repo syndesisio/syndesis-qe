@@ -8,7 +8,6 @@ import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.ConnectorsEndpoint;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.S3BucketNameBuilder;
-import io.syndesis.qe.utils.TestUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -95,7 +94,7 @@ public class Connections {
         createConnection(
             fromData(
                 keyValue("connector", "activemq"),
-                TestUtils.isProdBuild() ? Arrays.asList("brokerUrl", "tcp://syndesis-amq-tcp:61616") : accountProperty("brokerUrl"),
+                accountProperty("brokerUrl"),
                 accountProperty("username"),
                 accountProperty("password")
             )

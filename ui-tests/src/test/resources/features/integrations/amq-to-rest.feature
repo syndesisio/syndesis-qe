@@ -46,8 +46,8 @@ Feature: Integration - AMQ to REST
     And click on the "Save" button
 
     And created connections
-      | Red Hat AMQ    | AMQ  | AMQ             | AMQ on OpenShift |
-      | Todo connector | todo | TODO connection | no validation    |
+      | Red Hat AMQ    | AMQ_PROD | AMQ             | AMQ on OpenShift |
+      | Todo connector | todo     | TODO connection | no validation    |
 
   @integrations-amq-to-rest-xml-message
   Scenario: Publish subscribe on topic
