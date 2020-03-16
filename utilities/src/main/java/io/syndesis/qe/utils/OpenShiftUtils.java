@@ -385,6 +385,7 @@ public final class OpenShiftUtils {
     public static boolean hasPodIssuesPullingImage(Pod pod) {
         return pod.getStatus().getContainerStatuses().stream().anyMatch(status ->
             status.getState().getWaiting() != null
-                && "ImagePullBackOff".equals(status.getState().getWaiting().getReason()));
+                && ("ImagePullBackOff".equals(status.getState().getWaiting().getReason()) ||
+                "ErrImagePull".equals(status.getState().getWaiting().getReason())));
     }
 }

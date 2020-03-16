@@ -38,7 +38,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.BooleanSupplier;
 
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -153,29 +152,14 @@ public class Syndesis implements Resource {
 
     ///Ensures that jaeger is working correctly by linking secrets
     private void jaegerWorkarounds() {
-        BooleanSupplier jaegerReady = () -> OpenShiftWaitUtils.isPodReady(
-            OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"));
         new Thread(() -> {
-            Jaeger jaeger = ResourceFactory.get(Jaeger.class);
             try {
                 OpenShiftWaitUtils.waitUntilPodAppears("jaeger-operator");
-                jaeger.ensureImagePull();
-                OpenShiftWaitUtils.waitFor(jaegerReady, 30 * 1000);
-            } catch (Exception e) {
-                log.warn("Syndesis-jaeger didn't get deployed in time, retrying one more time");
-                jaeger.ensureImagePull();
-            }
-            try {
-                OpenShiftWaitUtils.waitFor(jaegerReady);
+                ensureImagePullForJaegerOperator();
+                ensureImagePullForSyndesisJaeger();
                 Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
-                if (jaegerPod.isPresent()) {
-                    // the syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added
-                    // manually here
-                    OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
-                        .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
-                } else {
-                    throw new TimeoutException("Syndesis jaeger pod didn't get deployed on the second try");
-                }
+                OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
+                    .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
             } catch (Exception e) {
                 log.warn("Syndesis-jaeger pod never reached ready state! " +
                     "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking");
@@ -666,5 +650,54 @@ public class Syndesis implements Resource {
             }
         }
         return crApiVersion;
+    }
+
+    private void ensureImagePullForJaegerOperator() {
+        //if jaeger operator is used
+        OpenShiftUtils.getAnyPod("name", "jaeger-operator").ifPresent(operatorPod -> {
+            ensureImagePull("jaeger-operator", "jaeger");
+        });
+    }
+
+    private void ensureImagePullForSyndesisJaeger() {
+        //if syndesis-jaeger is used
+        OpenShiftUtils.getAnyPod("app.kubernetes.io/name", "syndesis-jaeger").ifPresent(syndesisJaegerPod -> {
+            ensureImagePull("syndesis-jaeger", "jaeger");
+        });
+    }
+
+    /**
+     * Productised builds need to link syndesis-pull secret and redeploy pods
+     *
+     * @param partialPodName
+     * @param serviceAccountName
+     */
+    public void ensureImagePull(String partialPodName, String serviceAccountName) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.hasPodIssuesPullingImage(OpenShiftUtils.getPodByPartialName(partialPodName).get()) ||
+                OpenShiftUtils.getPodByPartialName(partialPodName).filter(OpenShiftWaitUtils::isPodRunning).isPresent(), 10 * 60 * 1000);
+        } catch (Exception e) {
+            fail("Pod " + partialPodName +
+                " is not in the one of the desired state (Running,ImagePullBackOff,ErrImagePull)! Check the log for more details.");
+        }
+        Pod podAfterWait = OpenShiftUtils.getPodByPartialName(partialPodName).get(); //needs to get new instance of the pod
+        if (OpenShiftUtils.hasPodIssuesPullingImage(podAfterWait)) {
+            log.info(
+                "{} faield to pull image (probably due to permission to the Red Hat registry), linking secret with the SA and restarting the pod",
+                podAfterWait.getMetadata().getName());
+            linkServiceAccountWithSyndesisPullSecret(serviceAccountName);
+            OpenShiftUtils.getInstance().deletePod(podAfterWait);
+            OpenShiftWaitUtils.waitUntilPodIsRunning(partialPodName);
+        }
+    }
+
+    public void linkServiceAccountWithSyndesisPullSecret(String serviceAccountName) {
+        //create secret for red hat registry
+        OpenShiftUtils.getInstance().serviceAccounts().list().getItems().stream()
+            .filter(sa -> sa.getMetadata().getName().contains(serviceAccountName))
+            .forEach(sa -> {
+                sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
+                OpenShiftUtils.getInstance().serviceAccounts().createOrReplace(sa);
+            });
     }
 }
