@@ -92,6 +92,7 @@ public class TestConfiguration {
     private static final String SYNDESIS_RUNTIME = "syndesis.config.runtime";
 
     private static final String JAEGER_VERSION = "syndesis.jaeger.version";
+    private static final String CAMEL_VERSION = "camel.version";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 

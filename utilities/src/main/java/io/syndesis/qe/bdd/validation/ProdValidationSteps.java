@@ -57,7 +57,7 @@ public class ProdValidationSteps {
         final XPath xPath = XPathFactory.newInstance().newXPath();
         try {
             assertThat(((Node) xPath.compile("//project/properties/" + property).evaluate(pom, XPathConstants.NODE)).getTextContent())
-                .contains("redhat");
+                .isEqualTo(TestConfiguration.get().readValue(property));
         } catch (XPathExpressionException e) {
             fail("Unable to compile xpath expression: ", e);
         }
