@@ -4,6 +4,9 @@ metadata:
   name: app
 spec:
   addons:
+    #enable due to PR job
+    jaeger:
+      enabled: true
     todo:
       enabled: true
   components:
