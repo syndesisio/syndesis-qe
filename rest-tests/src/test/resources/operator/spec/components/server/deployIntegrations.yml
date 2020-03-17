@@ -7,3 +7,5 @@ spec:
     server:
       features:
         deployIntegrations: false
+        mavenRepositories:
+          nexus: "REPLACE_REPO"
