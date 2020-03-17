@@ -150,19 +150,25 @@ public class Syndesis implements Resource {
         }
     }
 
-    ///Ensures that jaeger is working correctly by linking secrets
+    /**
+     * Ensures that jaeger is working correctly by linking secrets.
+     * The syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
+     */
     private void jaegerWorkarounds() {
         new Thread(() -> {
             try {
                 OpenShiftWaitUtils.waitUntilPodAppears("jaeger-operator");
                 ensureImagePullForJaegerOperator();
+                OpenShiftWaitUtils.waitUntilPodAppears("syndesis-jaeger");
                 ensureImagePullForSyndesisJaeger();
                 Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
                 OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
                     .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
             } catch (Exception e) {
                 log.warn("Syndesis-jaeger pod never reached ready state! " +
-                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking");
+                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking. Exception in case of " +
+                    "debugging: " +
+                    e);
             }
         }).start();
     }
