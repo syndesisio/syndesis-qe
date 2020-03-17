@@ -79,8 +79,6 @@ public abstract class TestSuiteParent {
         if (TestConfiguration.namespaceCleanup()) {
             log.info("Deploying Syndesis to namespace");
             CommonSteps.deploySyndesis();
-            log.info("Waiting for Syndesis to get ready");
-            CommonSteps.waitForSyndesis();
         }
     }
 }

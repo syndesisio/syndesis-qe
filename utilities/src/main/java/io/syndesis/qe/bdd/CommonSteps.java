@@ -74,6 +74,7 @@ public class CommonSteps {
     @Then("^wait for Syndesis to become ready")
     public static void waitForSyndesis() {
         try {
+            log.info("Waiting for Syndesis to get ready");
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
         } catch (Exception e) {
             TestUtils.printPods();
