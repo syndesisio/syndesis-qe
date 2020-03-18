@@ -90,7 +90,7 @@ public class TwValidationSteps {
         } else if ("twitterlistener".equals(account.toLowerCase().replaceAll(" ", ""))) {
             twitter = this.twitterListener;
         } else {
-            fail("Wrond twitter account: " + account);
+            fail("Wrong twitter account: " + account);
         }
 
         Twitter finalTwitter = twitter;

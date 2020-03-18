@@ -8,6 +8,7 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -156,7 +157,7 @@ public class CamelK implements Resource {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator") != null);
         } catch (Exception e) {
-            fail("Unable to get camel-k-operator service account", e);
+            InfraFail.fail("Unable to get camel-k-operator service account", e);
         }
         ServiceAccount sa = OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator");
         sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));

@@ -9,6 +9,7 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -262,12 +263,12 @@ public class Syndesis implements Resource {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
                 .getStatus().getIngress() != null, 120000L);
         } catch (Exception e) {
-            fail("Unable to find syndesis route in 120s");
+            InfraFail.fail("Unable to find syndesis route in 120s");
         }
 
         if ("false".equalsIgnoreCase(
             OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getStatus())) {
-            fail("Syndesis route failed to provision because of: " +
+            InfraFail.fail("Syndesis route failed to provision because of: " +
                 OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getMessage());
         }
     }
@@ -643,13 +644,13 @@ public class Syndesis implements Resource {
             try {
                 OpenShiftWaitUtils.waitForPodIsReloaded("server");
             } catch (InterruptedException | TimeoutException e) {
-                fail("Server was not reloaded after deployment config change", e);
+                InfraFail.fail("Server was not reloaded after deployment config change", e);
             }
             // even though server is in ready state, inside app is still starting so we have to wait a lot just to be sure
             try {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("server").contains("Started Application in"), 1000 * 300L);
             } catch (TimeoutException | InterruptedException e) {
-                fail("Syndesis server did not start in 300s with new variable", e);
+                InfraFail.fail("Syndesis server did not start in 300s with new variable", e);
             }
             RestUtils.reset();
         }
@@ -696,7 +697,7 @@ public class Syndesis implements Resource {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.hasPodIssuesPullingImage(OpenShiftUtils.getPodByPartialName(partialPodName).get()) ||
                 OpenShiftUtils.getPodByPartialName(partialPodName).filter(OpenShiftWaitUtils::isPodRunning).isPresent(), 10 * 60 * 1000);
         } catch (Exception e) {
-            fail("Pod " + partialPodName +
+            InfraFail.fail("Pod " + partialPodName +
                 " is not in the one of the desired state (Running,ImagePullBackOff,ErrImagePull)! Check the log for more details.");
         }
         Pod podAfterWait = OpenShiftUtils.getPodByPartialName(partialPodName).get(); //needs to get new instance of the pod

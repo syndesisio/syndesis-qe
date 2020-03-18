@@ -2,6 +2,8 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Java6Assertions.fail;
 
+import io.syndesis.qe.test.InfraFail;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +46,7 @@ public class CalendarUtils {
     private void syncTimeWithOcpInstance(Calendar calendar, String partialPodName) {
         Optional<Pod> podByPartialName = OpenShiftUtils.getPodByPartialName(partialPodName);
         if (!podByPartialName.isPresent()) {
-            fail("Integration with the partial pod name '" + partialPodName + "' does not exist.");
+            InfraFail.fail("Integration with the partial pod name '" + partialPodName + "' does not exist.");
         }
         String integrationTime = OpenShiftUtils.binary().execute(
             "exec", podByPartialName.get().getMetadata().getName(), "date");

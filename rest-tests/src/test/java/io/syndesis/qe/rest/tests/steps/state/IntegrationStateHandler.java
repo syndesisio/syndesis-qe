@@ -1,8 +1,7 @@
 package io.syndesis.qe.rest.tests.steps.state;
 
-import static org.assertj.core.api.Fail.fail;
-
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
@@ -20,7 +19,7 @@ public class IntegrationStateHandler {
     public void rebuildIntegration(String name) {
         Optional<String> integrationId = integrationsEndpoint.getIntegrationId(name);
         if (!integrationId.isPresent()) {
-            fail("Unable to find ID for flow " + name);
+            InfraFail.fail("Unable to find ID for flow " + name);
         }
 
         final int currentNo = OpenShiftUtils.extractPodSequenceNr(
@@ -32,7 +31,7 @@ public class IntegrationStateHandler {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.integrationPodExists(name, p -> p.getMetadata().getName().endsWith("build"),
                 p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNo), 10000L, 60000L);
         } catch (Exception e) {
-            fail("Unable to find new build pod for integration " + name + "after 60 seconds");
+            InfraFail.fail("Unable to find new build pod for integration " + name + "after 60 seconds");
         }
     }
 }

@@ -13,6 +13,7 @@ import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.Syndesis;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
@@ -77,13 +78,12 @@ public class CommonSteps {
             log.info("Waiting for Syndesis to get ready");
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
         } catch (Exception e) {
-            TestUtils.printPods();
             log.error("Was waiting for following syndesis components:");
             Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
                 + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
-            fail("Wait for Syndesis failed, check error logs for details.", e);
+            InfraFail.fail("Wait for Syndesis failed, check error logs for details.", e);
         }
     }
 
@@ -144,7 +144,7 @@ public class CommonSteps {
             log.error("Was waiting until there is only operator pod or no pods");
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
-            fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
+            InfraFail.fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
         }
     }
 
@@ -215,10 +215,10 @@ public class CommonSteps {
         try {
             if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
-                fail("Todo app wasn't initilized in time");
+                InfraFail.fail("Todo app wasn't initilized in time");
             }
         } catch (InterruptedException e) {
-            fail("Waiting for Todo app was interrupted with exception: " + e.getMessage());
+            InfraFail.fail("Waiting for Todo app was interrupted with exception: " + e.getMessage());
         }
     }
 

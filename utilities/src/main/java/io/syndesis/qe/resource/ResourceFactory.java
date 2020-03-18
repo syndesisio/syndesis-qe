@@ -1,8 +1,6 @@
 package io.syndesis.qe.resource;
 
-import static org.assertj.core.api.Assertions.fail;
-
-import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.ArrayList;
@@ -26,8 +24,7 @@ public class ResourceFactory {
             log.info("Waiting until " + clazz.getSimpleName() + " is ready");
             OpenShiftWaitUtils.waitFor(() -> get(clazz).isReady(), 10 * 60000L);
         } catch (Exception e) {
-            TestUtils.printPods();
-            fail("Wait for " + clazz.getSimpleName() + " failed", e);
+            InfraFail.fail("Wait for " + clazz.getSimpleName() + " failed", e);
         }
     }
 
@@ -54,7 +51,7 @@ public class ResourceFactory {
                 createdResources.add(instance);
                 return instance;
             } catch (Exception e) {
-                fail("Unable to create instance of " + clazz.getSimpleName());
+                InfraFail.fail("Unable to create instance of " + clazz.getSimpleName());
             }
             return instance;
         }
