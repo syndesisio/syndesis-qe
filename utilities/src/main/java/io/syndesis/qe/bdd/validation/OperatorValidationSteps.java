@@ -3,6 +3,7 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.Addon;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
@@ -125,6 +126,9 @@ public class OperatorValidationSteps {
                     : TestConfiguration.upstreamRepository());
             }
             syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
+            if (syndesis.isAddonEnabled(Addon.JAEGER)) {
+                syndesis.jaegerWorkarounds();
+            }
         } catch (IOException e) {
             fail("Unable to open file " + file, e);
         }

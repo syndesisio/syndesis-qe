@@ -155,7 +155,7 @@ public class Syndesis implements Resource {
      * Ensures that jaeger is working correctly by linking secrets.
      * The syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
      */
-    private void jaegerWorkarounds() {
+    public void jaegerWorkarounds() {
         new Thread(() -> {
             try {
                 OpenShiftWaitUtils.waitUntilPodAppears("jaeger-operator");
@@ -625,7 +625,17 @@ public class Syndesis implements Resource {
                 specAddon.put(entry.getKey(), entry.getValue());
             }
         }
-        this.editCr(cr.toMap());
+        try {
+            this.editCr(cr.toMap());
+        } catch (KubernetesClientException kce) {
+            if (kce.getMessage().contains("the object has been modified")) {
+                log.warn("CR was modified in the mean time, retrying in 30 seconds");
+                TestUtils.sleepIgnoreInterrupt(30000L);
+                updateAddon(addon, enabled, properties);
+            } else {
+                throw kce;
+            }
+        }
     }
 
     public void changeRuntime(String runtime) {
