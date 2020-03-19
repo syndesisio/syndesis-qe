@@ -65,8 +65,11 @@ public final class OpenShiftUtils {
      */
     public static void asRegularUser(Runnable r) {
         xtfUtils = useRegularUser();
-        r.run();
-        xtfUtils = useAdminUser();
+        try {
+            r.run();
+        } finally {
+            xtfUtils = useAdminUser();
+        }
     }
 
     /**
