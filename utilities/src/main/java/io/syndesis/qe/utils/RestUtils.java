@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import static org.junit.Assert.fail;
+
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.exceptions.RestClientException;
@@ -38,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.Route;
@@ -144,9 +147,8 @@ public final class RestUtils {
             try {
                 OpenShiftWaitUtils.waitFor(() -> HttpUtils.doGetRequest(restUrl.get() + "/api/v1/version").getCode() == 200, 90000L);
                 TestUtils.sleepIgnoreInterrupt(15000L);
-            } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Backend is not responding");
+            } catch (TimeoutException | InterruptedException e) {
+                fail("Backend is not responding");
             }
         }
         return restUrl.get();

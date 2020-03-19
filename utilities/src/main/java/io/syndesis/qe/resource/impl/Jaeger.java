@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -68,8 +69,10 @@ public class Jaeger implements Resource {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(
                     OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"))
                 );
-            } catch (Exception e) {
+            } catch (TimeoutException | InterruptedException e) {
                 log.error("Syndesis-jaeger pod never reached ready state!");
+            } catch (Exception ex) {
+                log.warn("Exception thrown while waiting, ignoring: ", ex);
             }
             OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
                 .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();

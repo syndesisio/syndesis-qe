@@ -13,6 +13,7 @@ import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.Syndesis;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
@@ -76,14 +78,15 @@ public class CommonSteps {
         try {
             log.info("Waiting for Syndesis to get ready");
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
-        } catch (Exception e) {
-            TestUtils.printPods();
+        } catch (TimeoutException | InterruptedException e) {
             log.error("Was waiting for following syndesis components:");
             Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
                 + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
-            fail("Wait for Syndesis failed, check error logs for details.", e);
+            InfraFail.fail("Wait for Syndesis failed, check error logs for details.", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
@@ -140,11 +143,13 @@ public class CommonSteps {
         ResourceFactory.get(Syndesis.class).undeployCustomResources();
         try {
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isUndeployed(), 10 * 60000L);
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             log.error("Was waiting until there is only operator pod or no pods");
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
-            fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
+            InfraFail.fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
@@ -215,10 +220,10 @@ public class CommonSteps {
         try {
             if (!executorService.awaitTermination(20, TimeUnit.MINUTES)) {
                 executorService.shutdownNow();
-                fail("Todo app wasn't initilized in time");
+                InfraFail.fail("Todo app wasn't initilized in time");
             }
         } catch (InterruptedException e) {
-            fail("Waiting for Todo app was interrupted with exception: " + e.getMessage());
+            InfraFail.fail("Waiting for Todo app was interrupted with exception: " + e.getMessage());
         }
     }
 

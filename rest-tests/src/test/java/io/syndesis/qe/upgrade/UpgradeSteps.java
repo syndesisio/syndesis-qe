@@ -10,6 +10,7 @@ import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.PreviousSyndesis;
 import io.syndesis.qe.resource.impl.Syndesis;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -135,8 +136,8 @@ public class UpgradeSteps {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator")
                 .contains("Syndesis resource installed after upgrading"), 30000L, 600000L);
-        } catch (TimeoutException e) {
-            fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
         } catch (Exception ex) {
             // ignore
         }
