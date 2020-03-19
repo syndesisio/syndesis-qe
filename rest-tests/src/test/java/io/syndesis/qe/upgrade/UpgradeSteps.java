@@ -136,7 +136,7 @@ public class UpgradeSteps {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator")
                 .contains("Syndesis resource installed after upgrading"), 30000L, 600000L);
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
         } catch (Exception ex) {
             // ignore

@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import cz.xtf.core.openshift.OpenShift;
@@ -156,8 +157,10 @@ public class CamelK implements Resource {
         // We need to link syndesis-pull-secret to camel-k-operator SA
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator") != null);
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Unable to get camel-k-operator service account", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
         ServiceAccount sa = OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator");
         sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));

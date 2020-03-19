@@ -6,6 +6,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,8 +24,10 @@ public class ResourceFactory {
         try {
             log.info("Waiting until " + clazz.getSimpleName() + " is ready");
             OpenShiftWaitUtils.waitFor(() -> get(clazz).isReady(), 10 * 60000L);
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Wait for " + clazz.getSimpleName() + " failed", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 

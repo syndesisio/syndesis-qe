@@ -266,6 +266,8 @@ public class OpenShiftWaitUtils {
             waitFor(() -> isPodPresent(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Error thrown while checking if pod exists", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
@@ -275,6 +277,8 @@ public class OpenShiftWaitUtils {
             waitFor(() -> isPodRunning(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Error thrown while checking if pod exists", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
@@ -283,6 +287,8 @@ public class OpenShiftWaitUtils {
             waitFor(() -> !isPodPresent(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Error thrown while checking if pod is not exist", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 

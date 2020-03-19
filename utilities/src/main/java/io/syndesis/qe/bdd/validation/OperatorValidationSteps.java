@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -155,8 +156,10 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
                 .getStatus().getIngress() != null, 120000L);
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException | IOException e) {
             fail("Unable to check route: ", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
 
         assertThat(OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getHost())
@@ -248,8 +251,10 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
                 .getStatus().getPhase().equals("Bound"));
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
 
         final Quantity capacity = OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db").getStatus().getCapacity().get("storage");
@@ -264,8 +269,10 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
                 .getStatus().getPhase().equals("Bound"));
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
         assertThat(OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db").getSpec().getVolumeName()).isEqualTo(TEST_PV_NAME);
     }
@@ -356,8 +363,10 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator").contains("backup for syndesis done"),
                 30000L, 10 * 60000L);
             log.info("Backup done");
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             fail("Exception thrown while waiting for backup log", e);
+        } catch (Exception ex) {
+            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
