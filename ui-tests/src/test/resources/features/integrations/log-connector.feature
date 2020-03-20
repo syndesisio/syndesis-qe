@@ -53,11 +53,11 @@ Feature: Log Connector
     And validate that logs of integration "Integration_with_log_context_<context>_body_<body>" doesn't contain string "<log_not_contains>"
 
     Examples:
-      | context | body | log_contains                    | log_not_contains              |
-      | true    | true | Body: [[{"last_name":"Jackson", | "status":"done","failed":true |
+      | context | body  | log_contains                    | log_not_contains              |
+      | true    | true  | Body: [[{"last_name":"Jackson", | "status":"done","failed":true |
       | false   | true  | Body: [[{"last_name":"Jackson", | Message Context:              |
       | true    | false | Message Context:                | Body: []                      |
-      | false   | false | "status":"done","failed":false  | Message Context:              |
+      | false   | false |                                 | Message Context:              |
 
 #
 #  2. Check that log step works without any message or checkboxes
