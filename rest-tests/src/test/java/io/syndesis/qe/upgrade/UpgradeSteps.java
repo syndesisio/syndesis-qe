@@ -134,12 +134,25 @@ public class UpgradeSteps {
     @Then("wait until upgrade is done")
     public void waitForUpgrade() {
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator")
-                .contains("Syndesis resource installed after upgrading"), 30000L, 600000L);
+            OpenShiftWaitUtils.waitFor(() -> {
+                JSONObject cr = new JSONObject(ResourceFactory.get(Syndesis.class).getCr());
+                return !"Installed".equals(cr.getJSONObject("status").getString("phase"));
+            });
         } catch (TimeoutException | InterruptedException e) {
-            InfraFail.fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
+            InfraFail.fail("Timeout waiting for CR status to be changed from \"Installed\"");
         } catch (Exception ex) {
-            // ignore
+            //ignore
+        }
+
+        try {
+            OpenShiftWaitUtils.waitFor(() -> {
+                JSONObject cr = new JSONObject(ResourceFactory.get(Syndesis.class).getCr());
+                return "Installed".equals(cr.getJSONObject("status").getString("phase"));
+            }, 15 * 60000L);
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("Timeout waiting for CR status to be \"Installed\"");
+        } catch (Exception ex) {
+            //ignore
         }
     }
 
