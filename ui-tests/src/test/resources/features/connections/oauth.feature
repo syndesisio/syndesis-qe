@@ -103,6 +103,7 @@ Feature: Connections - OAuth
     And clean all tweets in twitter_talky account
 
   @ENTESB-11282
+  @ENTESB-13204
   @oauth-gcalendar
   Scenario: Testing Google calendar OAuth connector
     Given renew access token for "QE Google Calendar" google account
