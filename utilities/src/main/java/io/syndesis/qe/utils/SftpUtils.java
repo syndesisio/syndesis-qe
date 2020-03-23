@@ -83,6 +83,7 @@ public class SftpUtils implements FileTansferUtils {
 
     @Override
     public String getFileContent(String directory, String fileName) {
+        checkConnection();
         try {
             sftpClient.get(directory + "/" + fileName, fileName);
             FileInputStream inputStream = new FileInputStream(fileName);
