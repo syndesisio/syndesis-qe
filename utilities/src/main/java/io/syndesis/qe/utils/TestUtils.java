@@ -255,6 +255,7 @@ public final class TestUtils {
                     crb -> crb.getUserNames().contains(user)
                 );
         } catch (Exception e) {
+            log.debug("Exception thrown while checking if user is admin: " + e);
             return false;
         }
     }
