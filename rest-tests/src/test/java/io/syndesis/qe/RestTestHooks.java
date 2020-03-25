@@ -5,6 +5,8 @@ import static org.junit.Assume.assumeTrue;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.bdd.validation.OperatorValidationSteps;
 import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
@@ -13,6 +15,7 @@ import io.syndesis.qe.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import cucumber.api.Scenario;
@@ -82,5 +85,11 @@ public class RestTestHooks {
     public void resetPostgresDB() {
         log.info("Back default values of PostgresDB");
         TestSupport.getInstance().resetDB();
+    }
+
+    @After("@operator-addons-jaeger-external")
+    public void undeployJaeger() throws TimeoutException, InterruptedException {
+        log.info("Undeploying external Jaeger");
+        ResourceFactory.get(Jaeger.class).undeploy();
     }
 }

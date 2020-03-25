@@ -11,6 +11,7 @@ import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
+import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
@@ -125,8 +126,15 @@ public class OperatorValidationSteps {
                 content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
                     : TestConfiguration.upstreamRepository());
             }
+            if (content.contains("REPLACE_QUERY_URL")) {
+                content = content.replace("REPLACE_QUERY_URL", ResourceFactory.get(Jaeger.class).getQueryServiceHost());
+            }
+            if (content.contains("REPLACE_COLLECTOR_URL")) {
+                content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
+            }
             syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-            if (syndesis.isAddonEnabled(Addon.JAEGER)) {
+            //don't do workarounds for external Jaeger
+            if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
                 syndesis.jaegerWorkarounds();
             }
         } catch (IOException e) {
@@ -186,13 +194,19 @@ public class OperatorValidationSteps {
             .waitFor();
     }
 
-    @Then("^check that jaeger (is|is not) collecting metrics for integration \"([^\"]*)\"$")
-    public void checkJaeger(String shouldCollect, String integrationName) {
+    @Then("^check that jaeger pod \"([^\"]*)\" (is|is not) collecting metrics for integration \"([^\"]*)\"$")
+    public void checkJaeger(String jaegerPodName, String shouldCollect, String integrationName) {
         TestUtils.sleepIgnoreInterrupt(30000L);
         LocalPortForward lpf = TestUtils.createLocalPortForward(
-            OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith("syndesis-jaeger")), 16686, 16686);
+            OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith(jaegerPodName)), 16686, 16686);
         final String integrationId = integrations.getIntegrationId(integrationName).get();
-        JSONArray jsonData = new JSONObject(HttpUtils.doGetRequest("http://localhost:16686/api/traces?service=" + integrationId).getBody())
+        String host = "localhost:16686"; //host for default syndesis-jaeger
+        if (ResourceFactory.get(Syndesis.class).containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+            host = ResourceFactory.get(Jaeger.class).getQueryServiceHost();
+        }
+        JSONArray jsonData = new JSONObject(HttpUtils.doGetRequest(
+            "http://" + host + "/api/traces?service=" + integrationId)
+            .getBody())
             .getJSONArray("data");
         TestUtils.terminateLocalPortForward(lpf);
         if ("is".equals(shouldCollect)) {

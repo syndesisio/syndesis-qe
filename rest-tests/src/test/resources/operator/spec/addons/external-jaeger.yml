@@ -1,0 +1,17 @@
+apiVersion: syndesis.io/v1beta1
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  addons:
+    jaeger:
+      enabled: true
+      clientOnly: true
+      operatorOnly: false
+      queryUri: http://REPLACE_QUERY_URL/api
+      collectorUri: http://REPLACE_COLLECTOR_URL/api/traces
+  components:
+    server:
+      features:
+        mavenRepositories:
+          nexus: "REPLACE_REPO"

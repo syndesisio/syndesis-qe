@@ -603,6 +603,13 @@ public class Syndesis implements Resource {
         }
     }
 
+    /**
+     * Test whether addon contains specific property
+     */
+    public boolean containsAddonProperty(Addon addon, String key) {
+        return new JSONObject(getCr()).getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue()).has(key);
+    }
+
     public void updateAddon(Addon addon, boolean enabled) {
         updateAddon(addon, enabled, null);
     }
@@ -614,14 +621,14 @@ public class Syndesis implements Resource {
      * @param enabled - enable or disable?
      * @param properties - additional properties for the specific addon
      */
-    public void updateAddon(Addon addon, boolean enabled, Map<String, String> properties) {
+    public void updateAddon(Addon addon, boolean enabled, Map<String, Object> properties) {
         log.info((enabled ? "Enabling " : "Disabling ") + addon + " addon.");
         JSONObject cr = new JSONObject(getCr());
         JSONObject specAddon = cr.getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue());
         specAddon.put("enabled", enabled);
         if (properties != null) {
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                log.info("Adding property '" + entry.getKey() + ": " + entry.getValue() + " for addon " + addon.getValue() + "' to the CR");
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                log.info("Adding property '" + entry.getKey() + ": " + entry.getValue() + "' for addon " + addon.getValue() + " to the CR");
                 specAddon.put(entry.getKey(), entry.getValue());
             }
         }
