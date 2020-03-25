@@ -239,5 +239,5 @@ Feature: Integration - Import Export
     Then Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
-    Then validate that logs of integration "Integration_import_export_test" contains string ""status":"done","failed":false"
+    Then validate that logs of integration "Integration_import_export_test" contains string "Started Application in"
     And check that last slack message equals "RHEL" on channel "import_export_test"
