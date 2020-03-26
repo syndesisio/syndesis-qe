@@ -407,6 +407,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 @reproducer (tests which are related to the particular issue)
 @rest
 @ui
+@operator
 ------TECHNOLOGIES------
 @activemq
 @amqp
@@ -414,6 +415,7 @@ For more information see [Altering the program's execution flow](https://www.jet
 @apicurio
 @concur
 @dropbox
+@dv
 @ftp
 @gmail
 @google-calendar
