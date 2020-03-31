@@ -297,4 +297,10 @@ public class DbValidationSteps {
             1, timeout,
             "Data is not in the table after " + timeout + " seconds.");
     }
+
+    @Then("^check that contact table contains contact where first name is senderId for \"([^\"]*)\" account and company is \"([^\"]*)\"")
+    public void checkThatTwitterMessageIsInContactTable(String account, String company) {
+        long senderId = new TwValidationSteps().getSenderIdForAccount(account);
+        this.checkValuesExistInTable(String.format("select * from contact where first_name = '%d' and company = '%s'", senderId, company));
+    }
 }

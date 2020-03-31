@@ -15,6 +15,7 @@ import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsPu
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.jms.JmsSubscribe;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.slack.ReadMessages;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.twitter.TwitterSearch;
+import io.syndesis.qe.pages.integrations.editor.add.connection.actions.twitter.TwitterSend;
 import io.syndesis.qe.pages.integrations.editor.add.steps.BasicFilter;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
@@ -37,6 +38,7 @@ public class ConfigureStepSteps {
 
     private IntegrationFlowView integrationFlowView = new IntegrationFlowView();
     private TwitterSearch twitterSearch = new TwitterSearch();
+    private TwitterSend twitterSend = new TwitterSend();
     private JmsSubscribe jmsSubscribe = new JmsSubscribe();
     private JmsPublish jmsPublish = new JmsPublish();
     private FtpDownload ftpDownload = new FtpDownload();
@@ -180,5 +182,10 @@ public class ConfigureStepSteps {
     @When("^select \"([^\"]*)\" from slack delay time units dropdown$")
     public void selectsFromSlackTimeUnitDropdown(String timeUnits) {
         slackReadMessages.selectDelayTimeUnits(timeUnits);
+    }
+
+    @When("^fill username for \"([^\"]*)\" account$")
+    public void fillInRealUserName(String account) {
+        twitterSend.fillRealUserName(account);
     }
 }
