@@ -39,11 +39,11 @@ public class TwValidationSteps {
         final Account twitterTalkyAccount = accountsDirectory.getAccount(Account.Name.TWITTER_TALKY).get();
         //twitterTalky
         final TwitterFactory factoryTalk = new TwitterFactory(new ConfigurationBuilder()
-                .setOAuthConsumerKey(twitterTalkyAccount.getProperty("consumerKey"))
-                .setOAuthConsumerSecret(twitterTalkyAccount.getProperty("consumerSecret"))
-                .setOAuthAccessToken(twitterTalkyAccount.getProperty("accessToken"))
-                .setOAuthAccessTokenSecret(twitterTalkyAccount.getProperty("accessTokenSecret"))
-                .build());
+            .setOAuthConsumerKey(twitterTalkyAccount.getProperty("consumerKey"))
+            .setOAuthConsumerSecret(twitterTalkyAccount.getProperty("consumerSecret"))
+            .setOAuthAccessToken(twitterTalkyAccount.getProperty("accessToken"))
+            .setOAuthAccessTokenSecret(twitterTalkyAccount.getProperty("accessTokenSecret"))
+            .build());
         this.twitterTalky = factoryTalk.getInstance();
 
         final Account twitterListenerAccount = accountsDirectory.getAccount(Account.Name.TWITTER_LISTENER).get();
@@ -65,7 +65,7 @@ public class TwValidationSteps {
     public void sendTweet(String toAcc, String tweet) throws TwitterException {
         final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
         log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(Account.Name.TWITTER_TALKY)
-                .get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
+            .get().getProperty("screenName"), accountsDirectory.getAccount(toAcc).get().getProperty("screenName"), message);
         twitterTalky.updateStatus(message);
         log.info("Tweet submitted.");
     }
@@ -83,20 +83,32 @@ public class TwValidationSteps {
     }
 
     @Then("^check that account \"([^\"]*)\" has DM from user \"([^\"]*)\" with text \"([^\"]*)\"")
-    public void checkDirectMessage(String account, long senderId, String message) {
-        Twitter twitter = null;
-        if ("twittertalky".equals(account.toLowerCase().replaceAll(" ", ""))) {
-            twitter = this.twitterTalky;
-        } else if ("twitterlistener".equals(account.toLowerCase().replaceAll(" ", ""))) {
-            twitter = this.twitterListener;
-        } else {
-            fail("Wrong twitter account: " + account);
-        }
-
-        Twitter finalTwitter = twitter;
-        TestUtils.waitFor(() -> checkDirectMessage(finalTwitter, senderId, message),
+    public void checkDirectMessage(String toAccountName, String fromAccountName, String message) {
+        Twitter toAccount = getCorrectAccount(toAccountName);
+        long fromAccontId = getSenderIdForAccount(fromAccountName);
+        TestUtils.waitFor(() -> checkDirectMessage(toAccount, fromAccontId, message),
             10, 60,
             "Could not find correct twitter DM");
+    }
+
+    public long getSenderIdForAccount(String account) {
+        try {
+            return getCorrectAccount(account).getId();
+        } catch (TwitterException e) {
+            fail("Twitter exception for account " + account + " was thrown. Exception:\n" + e.getMessage());
+            return -1;
+        }
+    }
+
+    private Twitter getCorrectAccount(String account) {
+        if ("twittertalky".equals(account.toLowerCase().replaceAll(" ", ""))) {
+            return this.twitterTalky;
+        } else if ("twitterlistener".equals(account.toLowerCase().replaceAll(" ", ""))) {
+            return this.twitterListener;
+        } else {
+            fail("Wrong twitter account: " + account);
+            return null;
+        }
     }
 
     private boolean checkDirectMessage(Twitter twitter, long senderId, String messageText) {
