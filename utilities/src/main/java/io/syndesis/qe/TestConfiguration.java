@@ -94,6 +94,8 @@ public class TestConfiguration {
     private static final String JAEGER_VERSION = "syndesis.jaeger.version";
     private static final String CAMEL_VERSION = "camel.version";
 
+    private static final String SYNDESIS_APPEND_REPOSITORY = "syndesis.config.append.repository";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -341,6 +343,10 @@ public class TestConfiguration {
 
     public static String syndesisRuntime() {
         return get().readValue(SYNDESIS_RUNTIME);
+    }
+
+    public static boolean appendRepository() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_APPEND_REPOSITORY, "false"));
     }
 
     private Properties defaultValues() {
