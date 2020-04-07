@@ -42,7 +42,7 @@ public class ApiProviderSteps {
 
     private ReviewApiProviderActions reviewApiProviderActions = new ReviewApiProviderActions();
     private ApiProviderToolbar toolbar = new ApiProviderToolbar();
-    private OperationsList operationsList = new OperationsList(By.cssSelector(".list-view-pf-view"));
+    private OperationsList operationsList = new OperationsList(By.cssSelector(".pf-c-data-list"));
     private Response lastResponse;
 
     @When("^select API Provider operation flow (.+)$")
