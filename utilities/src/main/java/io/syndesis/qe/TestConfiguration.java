@@ -431,6 +431,14 @@ public class TestConfiguration {
         if (properties.getProperty(JAEGER_VERSION) == null) {
             defaultProps.setProperty(JAEGER_VERSION, "v1.17.0");
         }
+
+        /**
+         * Resteasy 4.4 uses 2.10 jackson that has this security feature due to CVEs and the only option is to use system properties for that
+         * Needed for atlasmap to be able to deserialize inspection response
+         */
+        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", "*");
+        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", "*");
+
         return defaultProps;
     }
 
