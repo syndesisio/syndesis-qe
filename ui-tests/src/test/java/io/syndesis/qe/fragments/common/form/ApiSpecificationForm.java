@@ -3,6 +3,7 @@ package io.syndesis.qe.fragments.common.form;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.UploadFile;
 
 import org.junit.Assert;
@@ -20,11 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiSpecificationForm {
     private static class Input {
         public static By CHOOSE_FILE = By.className("open-api-select-method__dnd-container");
-        public static By URL = By.id("method");
-        public static By UPLOAD_AN_OPENAPI_FILE = By.id("method-file");
-        public static By USE_A_URL = By.id("method-url");
-        public static By CREATE_FROM_SCRATCH_2X = By.id("method-scratch-2x");
-        public static By CREATE_FROM_SCRATCH_3X = By.id("method-scratch-3x");
+        public static By USE_A_URL = ByUtils.dataTestId("method-url");
+        public static By UPLOAD_AN_OPENAPI_FILE = ByUtils.dataTestId("method-file");
+        public static By URL = ByUtils.dataTestId("method-url-text-input");
+        public static By CREATE_FROM_SCRATCH_2X = ByUtils.dataTestId("method-scratch-2x");
+        public static By CREATE_FROM_SCRATCH_3X = ByUtils.dataTestId("method-scratch-3x");
     }
 
     public void upload(String source, String url) {

@@ -32,9 +32,11 @@ public class SettingsPage extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By OAUTH_APPS = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
-        public static final By SETTINGS_LIST = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
-        public static final By SETTINGS_ITEM = By.className("list-group-item");
-        public static final By SETTINGS_TITLE = By.className("list-group-item-heading");
+        public static final By SETTINGS_LIST = By.cssSelector(".pf-c-data-list");
+        public static final By SETTINGS_ITEM = By.className("pf-c-data-list__item");
+        public static final By SETTINGS_TITLE = By.id("app-name");
+        public static final By EXPAND_BUTTON = By.className("pf-c-data-list__toggle");
+        public static final By CURRENTLY_EXPANDED = By.cssSelector("*[aria-expanded=\"true\"]");
     }
 
     @Override
@@ -61,7 +63,7 @@ public class SettingsPage extends SyndesisPageObject {
                 log.info("Skipping OpenAPI client due to bug #5532");
                 continue;
             }
-            listItem.shouldBe(visible).click();
+            listItem.$(Element.EXPAND_BUTTON).shouldBe(visible).click();
             String credentialsName = null;
             switch (text) {
                 case "Salesforce":
@@ -104,7 +106,7 @@ public class SettingsPage extends SyndesisPageObject {
         getButton("Save").shouldBe(visible).click();
         Selenide.sleep(1000);
         //close list item details
-        getRootElement().$(By.cssSelector("div[class*='list-view-pf-expand active']")).click();
+        getRootElement().$(Element.CURRENTLY_EXPANDED).click();
     }
 
     public void fillOAuthItem(SelenideElement item, String credentialsName) {

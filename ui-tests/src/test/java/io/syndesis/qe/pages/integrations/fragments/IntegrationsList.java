@@ -31,7 +31,7 @@ public class IntegrationsList extends RowList {
     private static final class Element {
         public static final By STATUS = ByUtils.dataTestId("span", "integration-status-status-label");
         public static final By STARTING_STATUS = ByUtils.dataTestId("div", "integration-status-detail");
-        public static final String INTEGRATION_SELECTOR = "div[data-testid=\"integrations-list-item-%s-list-item\"]";
+        public static final String INTEGRATION_SELECTOR = "li[data-testid=\"integrations-list-item-%s-list-item\"]";
         public static final By VIEW_INTEGRATION = ByUtils.dataTestId("a", "integration-actions-view-button");
     }
 
