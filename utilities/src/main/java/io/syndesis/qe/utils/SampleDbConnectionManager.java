@@ -112,7 +112,10 @@ public class SampleDbConnectionManager {
         } catch (IllegalStateException ex) {
             dbUrl = String.format("jdbc:%s://%s:%s/sampledb", driver, "127.0.0.1", localPort);
         }
-        log.debug("DB endpoint URL: " + dbUrl);
+        if ("mysql".equalsIgnoreCase(driver)) {
+            dbUrl = dbUrl.concat("?useSSL=false");
+        }
+        log.info("DB endpoint URL: " + dbUrl);
         return DriverManager.getConnection(dbUrl, props);
     }
 

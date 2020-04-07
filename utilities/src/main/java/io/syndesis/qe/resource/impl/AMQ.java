@@ -37,7 +37,8 @@ public class AMQ implements Resource {
             templateParams.put("MQ_PASSWORD", "topSecret");
 
             OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
-
+            TestUtils.waitFor(() -> OpenShiftUtils.getInstance().templates().withName("syndesis-amq").get() == null, 3, 30,
+                "syndesis-amq template still exist after delete");
             KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
 
             OpenShiftUtils.getInstance().createResources(processedTemplate);
