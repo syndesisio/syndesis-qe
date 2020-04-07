@@ -2,6 +2,9 @@ package io.syndesis.qe.endpoints;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.qe.utils.RestUtils;
+
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.client.Entity;
@@ -12,8 +15,6 @@ import io.atlasmap.json.v2.JsonInspectionRequest;
 import io.atlasmap.json.v2.JsonInspectionResponse;
 import io.atlasmap.xml.v2.XmlInspectionRequest;
 import io.atlasmap.xml.v2.XmlInspectionResponse;
-import io.syndesis.common.model.DataShapeKinds;
-import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -39,8 +40,8 @@ public class AtlasmapEndpoint extends AbstractEndpoint<JsonInspectionResponse> {
     public JsonInspectionResponse inspectJson(String specification, DataShapeKinds dsKind) {
         final Invocation.Builder invocation = this.createInvocation("json/inspect");
         return invocation.post(
-                Entity.entity((JsonInspectionRequest)generateInspectionRequest(specification, dsKind), MediaType.APPLICATION_JSON_TYPE),
-                JsonInspectionResponse.class
+            Entity.entity((JsonInspectionRequest) generateInspectionRequest(specification, dsKind), MediaType.APPLICATION_JSON_TYPE),
+            JsonInspectionResponse.class
         );
     }
 
@@ -53,8 +54,8 @@ public class AtlasmapEndpoint extends AbstractEndpoint<JsonInspectionResponse> {
     public XmlInspectionResponse inspectXml(String specification, DataShapeKinds dsKind) {
         final Invocation.Builder invocation = this.createInvocation("xml/inspect");
         return invocation.post(
-                Entity.entity((XmlInspectionRequest)generateInspectionRequest(specification, dsKind), MediaType.APPLICATION_JSON_TYPE),
-                XmlInspectionResponse.class
+            Entity.entity((XmlInspectionRequest) generateInspectionRequest(specification, dsKind), MediaType.APPLICATION_JSON_TYPE),
+            XmlInspectionResponse.class
         );
     }
 
