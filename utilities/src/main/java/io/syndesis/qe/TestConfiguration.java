@@ -367,7 +367,7 @@ public class TestConfiguration {
         if (System.getProperty(SYNDESIS_INSTALL_VERSION) != null) {
             syndesisVersion = System.getProperty(SYNDESIS_INSTALL_VERSION);
         } else {
-            syndesisVersion = "master";
+            syndesisVersion = "1.9.x";
             // only use defined system property if it doesnt end with SNAPSHOT and it is not prod build
             if (!properties.getProperty(SYNDESIS_VERSION).endsWith("SNAPSHOT") && !properties.getProperty(SYNDESIS_VERSION).contains("redhat")) {
                 syndesisVersion = System.getProperty(SYNDESIS_VERSION);
@@ -389,7 +389,7 @@ public class TestConfiguration {
         defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
 
         if (properties.getProperty(SYNDESIS_CR_URL) == null) {
-            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/master/default-cr.yml");
+            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.9.x/default-cr.yml");
         }
 
         defaultProps.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
