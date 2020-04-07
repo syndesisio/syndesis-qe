@@ -121,6 +121,7 @@ public class MySQL implements Resource {
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME))
-            && OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully");
+            && OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully")
+            && OpenShiftUtils.getPodLogs("mysql").contains("ready for connections");
     }
 }
