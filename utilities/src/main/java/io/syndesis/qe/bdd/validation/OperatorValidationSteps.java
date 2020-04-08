@@ -146,7 +146,13 @@ public class OperatorValidationSteps {
     public void checkVersion() {
         final String deployedVersion = TestUtils.getSyndesisVersion();
         if (TestConfiguration.syndesisInstallVersion() != null) {
-            assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisInstallVersion());
+            // If the install version is "1.X", the deployed version can be "1.X.Y"
+            if (TestConfiguration.syndesisInstallVersion().matches("^\\d\\.\\d$")) {
+                assertThat(deployedVersion).matches("^(\\d\\.){2}\\d+$");
+                assertThat(deployedVersion).startsWith(TestConfiguration.syndesisInstallVersion());
+            } else {
+                assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisInstallVersion());
+            }
         } else if (TestConfiguration.syndesisNightlyVersion() != null) {
             assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisNightlyVersion());
         } else {
