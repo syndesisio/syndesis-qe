@@ -17,7 +17,7 @@ Feature: Integration info
     And select "Simple" integration action
     And click on the "Next" button
     And select the "Log" connection
-    And click on the "Done" button
+    And click on the "Next" button
     And click on the "Save" link
     And set integration name "integration1"
     And save and cancel integration editor
@@ -48,7 +48,7 @@ Feature: Integration info
     And select "Simple" integration action
     And click on the "Next" button
     And select the "Log" connection
-    And click on the "Done" button
+    And click on the "Next" button
     And click on the "Save" link
     And set integration name "integration2"
     And save and cancel integration editor

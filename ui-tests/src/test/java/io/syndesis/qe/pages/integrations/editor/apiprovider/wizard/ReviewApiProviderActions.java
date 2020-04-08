@@ -83,7 +83,7 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
     private int getNumberFromLabel(By selector) {
         try {
             SelenideElement labelElement = $(selector).waitUntil(visible, 15000);
-            return Integer.parseInt(labelElement.$(By.className("label")).getText().trim());
+            return Integer.parseInt(labelElement.$(By.tagName("span")).getText().trim());
         } catch (UIAssertionError e) {
             return 0;
         }

@@ -10,10 +10,11 @@ import lombok.Getter;
 @Getter
 public enum Alert {
 
-    ALL("all", By.className("alert")),
-    SUCCESS("success", By.className("alert-success")),
-    WARNING("warning", By.className("alert-warning")),
-    DANGER("danger", By.className("alert-danger"));
+    ALL("all", By.className("pf-c-alert")),
+    INFO("info", By.className("pf-m-info")),
+    SUCCESS("success", By.className("pf-m-success")),
+    WARNING("warning", By.className("pf-m-warning")),
+    DANGER("danger", By.className("pf-m-danger"));
 
     private final String name;
     private final By by;

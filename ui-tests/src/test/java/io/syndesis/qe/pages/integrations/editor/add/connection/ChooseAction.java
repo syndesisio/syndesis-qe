@@ -22,11 +22,10 @@ public class ChooseAction extends SyndesisPageObject {
 
     private static final class Element {
 
-        public static final By ROOT = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
-        public static final By TITLE = By.className("list-group-item-heading");
+        public static final By ROOT = By.cssSelector(".pf-c-page__main-section > .pf-c-data-list");
         public static final By SELECT_BUTTON = ByUtils.dataTestId("select-action-page-select-button");
 
-        public static final String ACTION_SELECTOR = "div[data-testid=\"integration-editor-actions-list-item-%s-list-item\"]";
+        public static final String ACTION_SELECTOR = "li[data-testid=\"integration-editor-actions-list-item-%s-list-item\"]";
     }
 
     @Override
