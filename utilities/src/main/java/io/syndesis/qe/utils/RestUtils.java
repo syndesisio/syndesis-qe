@@ -15,6 +15,7 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
 import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.InputStreamProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
@@ -82,6 +83,8 @@ public final class RestUtils {
     }
 
     public static Client getClient(ResteasyJackson2Provider jackson2Provider) throws RestClientException {
+        final ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(RestUtils.createAllTrustingClient());
+
         final ResteasyProviderFactory providerFactory = new LocalResteasyProviderFactory();
         providerFactory.register(jackson2Provider)
             .register(new InputStreamProvider()) // needed for GET application/octet-stream in PublicAPI to export zip
@@ -91,6 +94,7 @@ public final class RestUtils {
 
         ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ResteasyClientBuilder.newBuilder();
         clientBuilder.providerFactory(providerFactory);
+        clientBuilder.httpEngine(engine);
         return clientBuilder.build();
     }
 
