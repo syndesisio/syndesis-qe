@@ -23,7 +23,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Twitter integrations related validation steps.
- *
+ * <p>
  * Jan 18, 2018 Red Hat
  *
  * @author tplevko@redhat.com
@@ -130,21 +130,23 @@ public class TwValidationSteps {
         return result;
     }
 
-    @When("^delete all direct messages received by \"([^\"]*)\"$")
-    public void deleteAllDMs(String account) throws TwitterException {
+    @When("^delete all direct messages received by \"([^\"]*)\" with text \"([^\"]*)\"$")
+    public void deleteAllDMs(String account, String text) throws TwitterException {
         if ("twittertalky".equals(account.toLowerCase().replaceAll(" ", ""))) {
-            deleteAllDMs(this.twitterTalky);
+            deleteAllDMs(this.twitterTalky, text);
         }
 
         if ("twitterlistener".equals(account.toLowerCase().replaceAll(" ", ""))) {
-            deleteAllDMs(this.twitterListener);
+            deleteAllDMs(this.twitterListener, text);
         }
     }
 
-    private void deleteAllDMs(Twitter twitter) throws TwitterException {
+    private void deleteAllDMs(Twitter twitter, String text) throws TwitterException {
         DirectMessageList messageList = twitter.getDirectMessages(100);
         for (DirectMessage directMessage : messageList) {
-            twitter.destroyDirectMessage(directMessage.getId());
+            if (directMessage.getText().contains(text)) {
+                twitter.destroyDirectMessage(directMessage.getId());
+            }
         }
     }
 

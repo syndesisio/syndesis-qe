@@ -530,7 +530,7 @@ public class Syndesis implements Resource {
             if (TestUtils.isJenkins()) {
                 serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
             }
-            serverFeatures.put("integrationLimit", 5);
+            serverFeatures.put("integrationLimit", 10);
             crJson.getJSONObject("spec").getJSONObject("addons").getJSONObject("todo").put("enabled", true);
             // add nexus
             addMavenRepo(serverFeatures);

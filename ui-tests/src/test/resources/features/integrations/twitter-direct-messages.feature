@@ -20,7 +20,7 @@ Feature: Integration - Twitter Direct Messages
 
   @twitter-direct-messages-receive
   Scenario: Receive direct message on twitter
-    Given delete all direct messages received by "Twitter Listener"
+    Given delete all direct messages received by "Twitter Listener" with text "Red Hat"
 
     # create integration
     When navigate to the "Home" page
@@ -61,7 +61,7 @@ Feature: Integration - Twitter Direct Messages
 
   @twitter-direct-messages-send
   Scenario: Send direct message on twitter
-    Given delete all direct messages received by "Twitter Talky"
+    Given delete all direct messages received by "Twitter Talky" with text "Red Hat"
 
     # create integration
     When navigate to the "Home" page
