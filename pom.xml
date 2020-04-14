@@ -70,7 +70,7 @@
 		<bytebuddy.version>1.10.1</bytebuddy.version>
 		<mongodb.driver.version>3.10.2</mongodb.driver.version>
 		<sshj.version>0.27.0</sshj.version>
-
+		<semver4j.version>3.1.0</semver4j.version>
 
 		<!-- leave driver versions empty to use latest driver -->
 		<!-- Find supported webdriver version for your chrome browser here:
@@ -512,6 +512,11 @@
 				<version>${sshj.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>com.vdurmont</groupId>
+				<artifactId>semver4j</artifactId>
+				<version>${semver4j.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
