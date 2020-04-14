@@ -1,5 +1,7 @@
 package io.syndesis.qe.hooks;
 
+import static org.junit.Assume.assumeTrue;
+
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
@@ -19,12 +21,19 @@ import com.codeborne.selenide.WebDriverRunner;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.AfterStep;
+import cucumber.api.java.Before;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonHooks {
     @Autowired
     CommonSteps cs;
+
+    @Before("@prod")
+    public void skipProdForNightly() {
+        // Skip prod tests when not running with productized build
+        assumeTrue(TestConfiguration.syndesisVersion().contains("redhat"));
+    }
 
     @AfterStep
     public void afterScreenshot(Scenario scenario) {
