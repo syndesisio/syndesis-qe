@@ -194,8 +194,9 @@ public class UpgradeSteps {
             // For lambda to be final
             Semver finalIncrement = increment;
             // Check if this tag exists, an if yes, use the "latest" as the version
+            // TODO(avano): For 1.10.x there is no 1.10 tag, so temporarily grab latest daily
             String previousTag = tags.stream()
-                .filter(t -> t.matches("^" + getMajorMinor(finalIncrement.toString()).replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$")
+                .filter(t -> t.matches("^" + getMajorMinor(finalIncrement.toString()).replaceAll("\\.", "\\\\.") + "(\\.\\d+)?-\\d{8}$")
             ).reduce((first, second) -> second).orElse(null);
 
             // If this tag exists, save it
