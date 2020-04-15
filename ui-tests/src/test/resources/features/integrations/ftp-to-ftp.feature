@@ -55,6 +55,7 @@ Feature: Integration - FTP to FTP
     And publish integration
     Then Integration "ftp-to-ftp E2E" is present in integrations list
     And wait until integration "ftp-to-ftp E2E" gets into "Running" state
+    And wait until integration ftp-to-ftp E2E processed at least 1 message
 
     Then validate that file "ui-ftp-ftp.txt" has been transfered from "/download" to "/upload" directory using FTP
     And check that "ui-ftp-ftp.txt" file in "/upload" directory has content "Hello-FTP" using FTP

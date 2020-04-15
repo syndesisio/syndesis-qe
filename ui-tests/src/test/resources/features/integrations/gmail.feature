@@ -70,6 +70,8 @@ Feature: Google mail Connector
     Then Integration "Integration_gmail_send" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_gmail_send" gets into "Running" state
+    And wait until integration Integration_gmail_send processed at least 1 message
+
     And check that email from "QE Google Mail" with subject "syndesis-test" and text "Red Hat" exists
     And delete emails from "QE Google Mail" with subject "syndesis-test"
 
@@ -119,5 +121,7 @@ Feature: Google mail Connector
 
     #give gmail time to receive mail
     When send an e-mail
+    And wait until integration Integration_gmail_receive processed at least 1 message
+
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere'" has some output
     And delete emails from "QE Google Mail" with subject "syndesis-tests"

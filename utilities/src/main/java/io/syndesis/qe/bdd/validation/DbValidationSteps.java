@@ -175,7 +175,9 @@ public class DbValidationSteps {
 
     @Then("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
     public void checkValuesExistInTable(String query, Integer count) {
-        assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(count);
+        TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) == count,
+            5, 60,
+            "Count of invoked query is different. Expected: " + count + " Actual:" + dbUtils.getCountOfInvokedQuery(query));
     }
 
     @Then("^.*checks? that query \"([^\"]*)\" has no output$")

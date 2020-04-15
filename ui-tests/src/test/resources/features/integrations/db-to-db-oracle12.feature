@@ -61,7 +61,8 @@ Feature: Integration - DB to DB oracle12
     And publish integration
     And set integration name "db-connection-crud-2-read-create-oracle12"
     And publish integration
-    Then wait until integration "db-connection-crud-2-read-create-oracle12" gets into "Running" state
+    And wait until integration "db-connection-crud-2-read-create-oracle12" gets into "Running" state
+    And wait until integration db-connection-crud-2-read-create-oracle12 processed at least 1 message
 
     Then validate that all todos with task "Josef_oracle12" have value completed "2", period in ms: "5000" on "oracle12"
 

@@ -82,6 +82,7 @@ Feature: Integration - DB to DB with split/aggregate
     And set integration name "Split/Aggregate"
     And publish integration
     And wait until integration "Split/Aggregate" gets into "Running" state
+    And wait until integration Split/Aggregate processed at least 1 message
 
     Then validate that number of all todos with task "startTask" is "3"
     And validate that number of all todos with task "finalTask" is "1"

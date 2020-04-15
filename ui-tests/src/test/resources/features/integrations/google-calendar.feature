@@ -84,6 +84,8 @@ Feature: Google Calendar Connector
     And publish integration
     Then Integration "google_calendar_copy_event" is present in integrations list
     And wait until integration "google_calendar_copy_event" gets into "Running" state
+    And wait until integration google_calendar_copy_event processed at least 1 message
+
     And verify that event "new_event" with description "about_the_event" exists in calendar "syndesis-test1" using account "QE Google Calendar"
 
   # Tests Get a specific Event action by inserting the title of the task
@@ -122,6 +124,8 @@ Feature: Google Calendar Connector
     And publish integration
     Then Integration "google_calendar_get_a_specific_event" is present in integrations list
     And wait until integration "google_calendar_get_a_specific_event" gets into "Running" state
+    And wait until integration google_calendar_get_a_specific_event processed at least 1 message
+
     And validate that number of all todos with task "past_event1" is greater than "0"
 
   # Tests Update Event action for an action coming through the flow.
@@ -168,6 +172,8 @@ Feature: Google Calendar Connector
     And publish integration
     Then Integration "google_calendar_update_event_coming_in" is present in integrations list
     And wait until integration "google_calendar_update_event_coming_in" gets into "Running" state
+    And wait until integration google_calendar_update_event_coming_in processed at least 1 message
+
     And verify that event "updated_summary" exists in calendar "syndesis-test1" using account "QE Google Calendar"
     And verify that event "updated_summary" with description "this_event_has_ended" exists in calendar "syndesis-test1" using account "QE Google Calendar"
 
@@ -226,23 +232,25 @@ Feature: Google Calendar Connector
 
     Then Integration "google_calendar_<name>_on_<events_to_create>_events" is present in integrations list
     And wait until integration "google_calendar_<name>_on_<events_to_create>_events" gets into "Running" state
+    And wait until integration google_calendar_<name>_on_<events_to_create>_events processed at least <integration_messages> message
+
     And check that query "SELECT * FROM TODO" has <expected_num_rows_fst> output
     And reset content of "TODO" table
     And sleep for "30500" ms
     And check that query "SELECT * FROM TODO" has <expected_num_rows_snd> output
 
     Examples:
-      | name          | events_to_create | max_results | from_current_date_ahead | from_last_event_update | query_for_events | expected_num_rows_fst | expected_num_rows_snd |
-      | poll_all      | past             | 5           | false                   | false                  |                  | some                  | 2 rows                |
-      | poll_updated  | past             | 5           | false                   | true                   |                  | some                  | no                    |
-      | poll_upcoming | past             | 5           | true                    | false                  |                  | no                    | no                    |
-      | poll_all      | future           | 5           | false                   | false                  |                  | some                  | 2 rows                |
-      | poll_updated  | future           | 5           | false                   | true                   |                  | some                  | no                    |
-      | poll_upcoming | future           | 5           | true                    | false                  |                  | some                  | 2 rows                |
-      | poll_all      | all              | 5           | false                   | false                  |                  | some                  | 4 rows                |
-      | poll_updated  | all              | 5           | false                   | true                   |                  | some                  | no                    |
-      | poll_upcoming | all              | 5           | true                    | false                  |                  | some                  | 2 rows                |
-      | poll_query    | all              | 5           | false                   | false                  | An old           | some                  | 2 rows                |
+      | name          | events_to_create | max_results | from_current_date_ahead | from_last_event_update | query_for_events | expected_num_rows_fst | expected_num_rows_snd | integration_messages |
+      | poll_all      | past             | 5           | false                   | false                  |                  | some                  | 2 rows                | 1                    |
+      | poll_updated  | past             | 5           | false                   | true                   |                  | some                  | no                    | 1                    |
+      | poll_upcoming | past             | 5           | true                    | false                  |                  | no                    | no                    | 0                    |
+      | poll_all      | future           | 5           | false                   | false                  |                  | some                  | 2 rows                | 1                    |
+      | poll_updated  | future           | 5           | false                   | true                   |                  | some                  | no                    | 1                    |
+      | poll_upcoming | future           | 5           | true                    | false                  |                  | some                  | 2 rows                | 1                    |
+      | poll_all      | all              | 5           | false                   | false                  |                  | some                  | 4 rows                | 1                    |
+      | poll_updated  | all              | 5           | false                   | true                   |                  | some                  | no                    | 1                    |
+      | poll_upcoming | all              | 5           | true                    | false                  |                  | some                  | 2 rows                | 1                    |
+      | poll_query    | all              | 5           | false                   | false                  | An old           | some                  | 2 rows                | 1                    |
 
   # Tests Get events action in particular setup - poll only events updated from previous poll.
   @google-calendar-get-events-poll-updated-during-runtime
@@ -299,6 +307,8 @@ Feature: Google Calendar Connector
 
     Then Integration "google_calendar_get_events_poll_runtime" is present in integrations list
     And wait until integration "google_calendar_get_events_poll_runtime" gets into "Running" state
+    And wait until integration google_calendar_get_events_poll_runtime processed at least 1 message
+
     And check that query "SELECT * FROM TODO" has 4 rows output
     And reset content of "TODO" table
     And create following "all" events in calendar "syndesis-test1" with account "QE Google Calendar"

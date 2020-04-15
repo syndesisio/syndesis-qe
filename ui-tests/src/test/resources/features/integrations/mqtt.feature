@@ -47,6 +47,6 @@ Feature: Integration - MQTT to MQTT
     And set integration name "MQTT publish-subscribe-request E2E"
     And publish integration
     #this will be deleted
-    Then wait until integration "MQTT publish-subscribe-request E2E" gets into "Running" state
+    And wait until integration "MQTT publish-subscribe-request E2E" gets into "Running" state
 
     Then verify that when message is sent to "news" topic it is redirected to "olds" topic via integration

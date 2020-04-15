@@ -79,12 +79,15 @@ Feature: Integration - Twitter to Salesforce
     And wait until integration "Twitter to Salesforce E2E" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #syndesis4ever"
+    And wait until integration Twitter to Salesforce E2E processed at least 1 message
     Then check SF "does not contain" contact with a email: "integrations@salesforce.com"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e"
+    And wait until integration Twitter to Salesforce E2E processed at least 2 messages
     Then check SF "does not contain" contact with a email: "integrations@salesforce.com"
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "test #e2e #syndesis4ever"
+    And wait until integration Twitter to Salesforce E2E processed at least 3 messages
     Then check SF "contains" contact with a email: "integrations@salesforce.com"
     And check that contact from SF with email: "integrations@salesforce.com" has description "test #e2e #syndesis4ever"
 
