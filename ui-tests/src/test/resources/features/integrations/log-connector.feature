@@ -48,7 +48,8 @@ Feature: Log Connector
     Then Integration "Integration_with_log_context_<context>_body_<body>" is present in integrations list
     And wait until integration "Integration_with_log_context_<context>_body_<body>" gets into "Running" state
 
-    When sleep for "10000" ms
+    And wait until integration Integration_with_log_context_<context>_body_<body> processed at least 1 message
+
     Then validate that logs of integration "Integration_with_log_context_<context>_body_<body>" contains string "<log_contains>"
     And validate that logs of integration "Integration_with_log_context_<context>_body_<body>" doesn't contain string "<log_not_contains>"
 

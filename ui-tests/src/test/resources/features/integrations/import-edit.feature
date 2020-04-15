@@ -26,4 +26,5 @@ Feature: Integration - import-edit
       | Joe | Jackson | Red Hat | db |
     And navigate to the "Integrations" page
     Then wait until integration "import-edit-integration" gets into "Running" state
+    And wait until integration import-edit-integration processed at least 1 message
     And check rows number of table "CONTACT" is greater than 1

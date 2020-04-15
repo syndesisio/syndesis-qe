@@ -62,7 +62,7 @@ Feature: Connections - OAuth
     #give gmail time to receive mail
     When send an e-mail
 
-    When sleep for "6000" ms
+    And wait until integration OAuth-gmail-test processed at least 1 message
     Then validate that logs of integration "OAuth-gmail-test" contains string "syndesis-tests"
     And delete emails from "QE Google Mail" with subject "syndesis-tests"
 
@@ -98,7 +98,7 @@ Feature: Connections - OAuth
     And wait until integration "OAuth-twitter-test" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "OAuth testing"
-    When sleep for "10000" ms
+    And wait until integration OAuth-twitter-test processed at least 1 message
     Then validate that logs of integration "OAuth-twitter-test" contains string "OAuth testing"
     And clean all tweets in twitter_talky account
 
@@ -147,7 +147,7 @@ Feature: Connections - OAuth
       | past_event1 | 2018-10-01 | 10:00:00   | 2018-10-01 | 11:00:00 | An old event | jbossqa.fuse@gmail.com |
     And wait until integration "OAuth-Gcalendar-test" gets into "Running" state
 
-    When sleep for "6000" ms
+    And wait until integration OAuth-Gcalendar-test processed at least 1 message
     Then validate that logs of integration "OAuth-Gcalendar-test" contains string "past_event1"
 
   @ENTESB-11282
@@ -187,7 +187,7 @@ Feature: Connections - OAuth
 
     And wait until integration "OAuth-Salesforce-test" gets into "Running" state
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
-    When sleep for "6000" ms
+    And wait until integration OAuth-Salesforce-test processed at least 1 message
 
     Then validate that logs of integration "OAuth-Salesforce-test" contains string "k1stieranka1@istrochem.sk"
     Then delete lead from SF with email: "k1stieranka1@istrochem.sk"
@@ -225,7 +225,7 @@ Feature: Connections - OAuth
     # wait for integration to get in active state
     And wait until integration "OAuth-gsheets-test" gets into "Running" state
 
-    When sleep for "6000" ms
+    And wait until integration OAuth-gsheets-test processed at least 1 message
 
     Then validate that logs of integration "OAuth-gsheets-test" contains string "title=Test-Data"
 

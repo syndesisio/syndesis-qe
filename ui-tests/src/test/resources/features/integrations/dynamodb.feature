@@ -58,7 +58,7 @@ Feature: Dynamodb connector
     And navigate to the "Integrations" page
     And wait until integration "Webhook to dynamoDb" gets into "Running" state
     And select the "Webhook to dynamoDb" integration
-    And invoke post request to webhook in integration webhook-to-dynamodb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"test person","department":"CEE"}
+    And invoke post request to webhook in integration Webhook to dynamoDb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"test person","department":"CEE"}
     And verify the dynamoDB table contains record
       | email      | test@redhat.com |
       | company    | Red Hat         |
@@ -108,14 +108,14 @@ Feature: Dynamodb connector
     And navigate to the "Integrations" page
     And wait until integration "Webhook to dynamoDb" gets into "Running" state
     And select the "Webhook to dynamoDb" integration
-    And invoke post request to webhook in integration webhook-to-dynamodb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"test person","department":"CEE"}
+    And invoke post request to webhook in integration Webhook to dynamoDb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"test person","department":"CEE"}
     And verify the dynamoDB table contains record
       | email      | test@redhat.com |
       | company    | Red Hat         |
       | name       | test person     |
       | department | CEE             |
 
-    And invoke post request to webhook in integration webhook-to-dynamodb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"other person","department":"ACME"}
+    And invoke post request to webhook in integration Webhook to dynamoDb with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat","name":"other person","department":"ACME"}
     And verify the dynamoDB table contains single record
     And verify the dynamoDB table contains record
       | email      | test@redhat.com |
@@ -188,7 +188,7 @@ Feature: Dynamodb connector
     And navigate to the "Integrations" page
     And wait until integration "Webhook dynamoDb query" gets into "Running" state
     And select the "Webhook dynamoDb query" integration
-    And invoke post request to webhook in integration webhook-dynamodb-query with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat"}
+    And invoke post request to webhook in integration Webhook dynamoDb query with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat"}
     And check that query "SELECT * FROM contact WHERE first_name = 'person'" has some output
 
   @dynamodb-delete
@@ -238,7 +238,7 @@ Feature: Dynamodb connector
     And navigate to the "Integrations" page
     And wait until integration "Webhook to dynamoDb delete" gets into "Running" state
     And select the "Webhook to dynamoDb delete" integration
-    And invoke post request to webhook in integration webhook-to-dynamodb-delete with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat"}
+    And invoke post request to webhook in integration Webhook to dynamoDb delete with token test-webhook and body {"email":"test@redhat.com","company":"Red Hat"}
     And verify the dynamoDB table doesn't contain record
       | email      | test@redhat.com |
       | company    | Red Hat         |

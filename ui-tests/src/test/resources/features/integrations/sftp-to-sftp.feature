@@ -56,4 +56,5 @@ Feature: Integration - SFTP to SFTP
     And publish integration
     Then Integration "sftp-to-sftp E2E" is present in integrations list
     And wait until integration "sftp-to-sftp E2E" gets into "Running" state
+    And wait until integration sftp-to-sftp E2E processed at least 1 message
     Then validate that file "ui-sftp-sftp.txt" has been transfered from "/test/download" to "/test/upload" directory using SFTP

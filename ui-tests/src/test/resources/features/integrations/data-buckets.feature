@@ -129,6 +129,7 @@ Feature: Integration - Databucket
     And publish integration
     Then Integration "data-buckets-usage" is present in integrations list
     And wait until integration "data-buckets-usage" gets into "Running" state
+    And wait until integration data-buckets-usage processed at least 1 message
     And check that email from "QE Google Mail" with subject "Red Hat" and text "Red Hat" exists
     And delete emails from "QE Google Mail" with subject "Red Hat"
 
@@ -311,8 +312,7 @@ Feature: Integration - Databucket
 
     ##################### Verify database state ##################################
 
-    # stay to invoke at least one cycle of integration
-    When sleep for jenkins delay or "10" seconds
+    And wait until integration data-buckets-usage-2 processed at least 1 message
     Then check that query "select * from contact where company = 'Joe' and first_name = 'Red Hat' and last_name = 'Jackson' and lead_source = 'db'" has some output
 
     When delete the "data-buckets-usage-2" integration

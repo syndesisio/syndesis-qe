@@ -52,7 +52,8 @@ Feature: OData Connector
     And wait until integration "OData_Read_2_Log_<name>" gets into "Running" state
 
     #Validate logs output
-    When sleep for "10000" ms
+    When wait until integration OData_Read_2_Log_<name> processed at least 1 message
+
     Then validate that logs of integration "OData_Read_2_Log_<name>" <does_contain_1> string "<validate_string_1>"
     And validate that logs of integration "OData_Read_2_Log_<name>" <does_contain_2> string "<validate_string_2>"
 
@@ -110,7 +111,7 @@ Feature: OData Connector
     And publish integration
     Then Integration "OData_Create" is present in integrations list
     And wait until integration "OData_Create" gets into "Running" state
-    When sleep for "10000" ms
+    And wait until integration OData_Create processed at least 1 message
 
     Then validate that OData service contains entity with "Name":"Jianathan" property:value pair in "Products" collection
 
@@ -156,7 +157,7 @@ Feature: OData Connector
     And publish integration
     Then Integration "OData_Delete" is present in integrations list
     And wait until integration "OData_Delete" gets into "Running" state
-    When sleep for "15000" ms
+    And wait until integration OData_Delete processed at least 1 message
 
     Then check that entity "1" is not present in "Products" collection on OData service
 
@@ -207,7 +208,8 @@ Feature: OData Connector
     And wait until integration "<name>" gets into "Running" state
 
     #Validate logs output
-    When sleep for "10000" ms
+    And wait until integration <name> processed at least 1 message
+
     Then validate that OData service contains entity with "<key>":"<value>" property:value pair in "<resource_collection>" collection
 
     @gh-5386
@@ -279,9 +281,9 @@ Feature: OData Connector
     And publish integration
     Then Integration "Enum" is present in integrations list
     And wait until integration "Enum" gets into "Running" state
+    And wait until integration Enum processed at least 1 message
 
     #Validate logs output
-    When sleep for "1000" ms
     Then check that "whatever" entity in "Users" collection contains
       | Gender | MALE |
 

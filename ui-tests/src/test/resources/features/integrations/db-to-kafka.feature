@@ -108,7 +108,9 @@ Feature: Integration - DB to DB
     And set integration name "kafka-to-db E2E"
     And publish integration
 
-    Then wait until integration "db-to-kafka E2E" gets into "Running" state
-    Then wait until integration "kafka-to-db E2E" gets into "Running" state
+    And wait until integration "db-to-kafka E2E" gets into "Running" state
+    And wait until integration "kafka-to-db E2E" gets into "Running" state
+    And wait until integration db-to-kafka E2E processed at least 1 message
+    And wait until integration kafka-to-db E2E processed at least 1 message
 
     Then checks that query "SELECT task FROM TODO WHERE task = 'Joe' limit 1" has "1" output
