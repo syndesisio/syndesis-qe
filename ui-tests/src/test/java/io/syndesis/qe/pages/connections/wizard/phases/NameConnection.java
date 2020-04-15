@@ -17,16 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 public class NameConnection extends AbstractConnectionWizardStep {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".integration-editor-layout__body");
+        public static final By ROOT = ByUtils.dataTestId("connector-configuration-form");
     }
 
     private static final class Input {
         public static final By DESCRIPTION = ByUtils.dataTestId("textarea", "description");
         public static final By NAME = ByUtils.dataTestId("input", "name");
-    }
-
-    private static final class Label {
-        public static final By PAGE_TITLE = By.cssSelector("h2[innertext='Add Connection Details']");
     }
 
     @Override
@@ -45,7 +41,7 @@ public class NameConnection extends AbstractConnectionWizardStep {
 
     @Override
     public boolean validate() {
-        return this.getRootElement().find(Label.PAGE_TITLE).is(visible);
+        return this.getRootElement().exists();
     }
 
     public void setName(String name) {
