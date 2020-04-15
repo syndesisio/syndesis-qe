@@ -91,7 +91,7 @@ public class IntegrationSteps {
         }
         assertThat(TestUtils.waitForEvent(
             status -> status.contains(integrationStatus),
-            () -> integrations.getIntegrationItemStatus(integration),
+            () -> integrations.getIntegrationItemStatus(integrationName),
             TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
         ).isTrue();
     }
@@ -247,8 +247,8 @@ public class IntegrationSteps {
                 switch (checkedPage) {
                     case "Home":
                     case "Integrations":
-                        log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim());
-                        assertThat(integrations.getIntegrationItemStatus(integrations.getIntegration(integrationName)).trim())
+                        log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrationName));
+                        assertThat(integrations.getIntegrationItemStatus(integrationName))
                             .isEqualToIgnoringWhitespace("Running");
                         break;
                     case "Integration detail":

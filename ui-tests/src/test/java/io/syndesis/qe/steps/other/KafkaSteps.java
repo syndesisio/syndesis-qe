@@ -54,7 +54,7 @@ public class KafkaSteps {
         commonSteps.clickOnButtonByCssClassName("pf-c-select__toggle-button");
         commonSteps.clickOnButtonByCssClassName("pf-c-select__menu-item");
         commonSteps.clickOnButton("Validate");
-        commonSteps.successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+        commonSteps.successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");
         commonSteps.scrollTo("top", "right");
         commonSteps.clickOnButton("Next");
 

@@ -282,7 +282,7 @@ public class CommonSteps {
                 "no validation".equalsIgnoreCase(connectionDescription))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "info");
                 scrollTo("top", "right");
                 clickOnButton("Next");
             } else if ("no validation".equalsIgnoreCase(connectionDescription)) {
@@ -530,12 +530,12 @@ public class CommonSteps {
         allertSucces.shouldBe(visible);
     }
 
-    @Then("^check visibility of \"([^\"]*)\" in alert-success notification$")
-    public void successNotificationIsPresentWithError(String textMessage) {
-        TestUtils.waitFor(() -> $$(Alert.SUCCESS.getBy()).filterBy(Condition.exactText(textMessage)).size() == 1,
+    @Then("^check visibility of \"([^\"]*)\" in alert-(\\w+) notification$")
+    public void successNotificationIsPresentWithError(String textMessage, String type) {
+        TestUtils.waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(textMessage)).size() == 1,
             2, 20, "Success notification not found!");
 
-        ElementsCollection successList = $$(Alert.SUCCESS.getBy()).filterBy(Condition.exactText(textMessage));
+        ElementsCollection successList = $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(textMessage));
         assertThat(successList).hasSize(1);
         log.info("Text message {} was found.", textMessage);
     }
