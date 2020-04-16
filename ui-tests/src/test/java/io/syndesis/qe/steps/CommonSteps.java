@@ -477,6 +477,11 @@ public class CommonSteps {
         $(ByUtils.dataTestId(element)).shouldBe(visible).click();
     }
 
+    @When(".*click on element with id \"([^\"]*)\"$")
+    public void clickOnElementId(String id) {
+        $(By.id(id)).shouldBe(visible).click();
+    }
+
     @When(".*clicks? on the \"(\\d+)\". \"([^\"]*)\" link.*$")
     public void clickOnLink(int position, String linkTitle) {
         int index = position - 1; // e.g. first position is 0 index
@@ -1075,6 +1080,6 @@ public class CommonSteps {
 
     @Then("^check that main alert dialog contains text \"([^\"]*)\"$")
     public void checkAlertDialog(String expectedText) {
-        assertThat(syndesisRootPage.getDangerAlertElemet().getText()).isEqualTo(expectedText);
+        assertThat(syndesisRootPage.getDangerAlertElemet().getText()).contains(expectedText);
     }
 }

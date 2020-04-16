@@ -39,7 +39,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     public SelenideElement getConnectorItem(String connectorName) {
         final String dataTestid = ("api-connector-list-item-" + connectorName.trim() + "-list-item").replaceAll("[\\s_]", "-").toLowerCase();
-        return $(ByUtils.dataTestId("div", dataTestid)).should(exist);
+        return $(ByUtils.dataTestId(dataTestid)).should(exist);
     }
 
     @Override

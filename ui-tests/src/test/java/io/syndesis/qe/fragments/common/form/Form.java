@@ -78,17 +78,19 @@ public class Form {
     }
 
     /**
-     *  This is an inputs map, which contains inputs and their respective types (tag names) on the form
-     *  that we are trying to fill.
-     *  Here, key is attribute (name or id) value of the input
-     *  and value of the map element pair is element's tag for later use
+     * This is an inputs map, which contains inputs and their respective types (tag names) on the form
+     * that we are trying to fill.
+     * Here, key is attribute (name or id) value of the input
+     * and value of the map element pair is element's tag for later use
      *
      * @param fillBy [attribute - value]
      */
     private Map<String, String> getInputMap(FillBy fillBy) {
         Map<String, String> inputsMap = new HashMap<>();
+        TestUtils.waitFor(() -> getRootElement().shouldBe(visible).exists(),
+            1, 20, "Form root element not found in 20s");
         for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div", "checkbox")) {
-            for (SelenideElement element : getRootElement().findAll(By.tagName(tagName))) {
+            for (SelenideElement element : getRootElement().shouldBe(visible).findAll(By.tagName(tagName))) {
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
         }
@@ -315,6 +317,7 @@ public class Form {
         SelenideElement dropdownToggle = parent.$(Elements.DROPDOWN_TOGGLE).waitUntil(visible, 30000);
         dropdownToggle.click();
     }
+
     public void checkByTestId(List<String> values) {
         checkBy(FillBy.TEST_ID, values);
     }

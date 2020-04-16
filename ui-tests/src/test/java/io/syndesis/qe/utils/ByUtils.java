@@ -29,6 +29,10 @@ public class ByUtils {
         return By.xpath(String.format("(//*[contains(@data-testid,\"%s\")])[%d]", substring, nthElement));
     }
 
+    public static By rowid(String rowId) {
+        return By.cssSelector(String.format("*[rowid=\"%s\"]", rowId));
+    }
+
     public static By partialLinkText(String partialText) {
         return new ByPartialText(partialText);
     }
