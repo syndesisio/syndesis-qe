@@ -31,11 +31,10 @@ public class SettingsPage extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
-        public static final By OAUTH_APPS = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
         public static final By SETTINGS_LIST = By.cssSelector(".pf-c-data-list");
         public static final By SETTINGS_ITEM = By.className("pf-c-data-list__item");
         public static final By SETTINGS_TITLE = By.id("app-name");
-        public static final By EXPAND_BUTTON = By.className("pf-c-data-list__toggle");
+        public static final By EXPAND_BUTTON = By.cssSelector(".pf-c-data-list__toggle");
         public static final By CURRENTLY_EXPANDED = By.cssSelector("*[aria-expanded=\"true\"]");
     }
 
@@ -101,7 +100,7 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {
-        listItem.shouldBe(visible).click();
+        listItem.shouldBe(visible).$(Element.EXPAND_BUTTON).click();
         fillOAuthItem(listItem, credentialsName);
         getButton("Save").shouldBe(visible).click();
         Selenide.sleep(1000);
