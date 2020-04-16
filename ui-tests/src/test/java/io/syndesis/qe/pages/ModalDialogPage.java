@@ -11,7 +11,6 @@ public class ModalDialogPage extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-modal-box");
-
         public static final By TITLE = By.className("pf-c-title");
     }
 

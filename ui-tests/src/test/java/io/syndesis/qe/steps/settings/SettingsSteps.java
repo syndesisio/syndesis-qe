@@ -39,7 +39,6 @@ public class SettingsSteps {
 
     @When("^fill \"([^\"]*)\" oauth settings \"([^\"]*)\"")
     public void fillOAuthSettings(String itemTitle, String credential) {
-
         settingsPage.fillGivenOAuthSetting(settingsPage.getSettingsItem(itemTitle), credential);
     }
 
