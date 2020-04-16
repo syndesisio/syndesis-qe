@@ -57,11 +57,6 @@ public class ConnectionsList extends CardList {
                 .replaceAll("\\(", ""))));
     }
 
-    @Override
-    public SelenideElement getTitle(String title) {
-        return getItem(title).$(Element.CONNECTION_CARD_TITLE).shouldBe(visible);
-    }
-
     public boolean isConnectionTechPreview(String title) {
         SelenideElement item = getItem(title).parent().$(Element.TECH_PREVIEW);
         return "Technology Preview".equals(item.getText());
