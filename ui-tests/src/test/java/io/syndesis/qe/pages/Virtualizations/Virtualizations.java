@@ -9,6 +9,7 @@ import static com.codeborne.selenide.Selenide.$;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -120,6 +121,6 @@ public class Virtualizations extends SyndesisPageObject {
     }
 
     public String getVirtualizationName(SelenideElement integration) {
-        return virtualizationList.getTitleOfItem(integration);
+        throw new NotImplementedException("Titles were removed from patternfly 4");
     }
 }
