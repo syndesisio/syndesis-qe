@@ -44,7 +44,7 @@ public class Details extends SyndesisPageObject {
 
         public static final By STEP_ICON_ELEMENT = By.className("integration-steps-horizontal-item");
 
-        public static final By TAB = By.cssSelector("ul.nav-tabs > li > a");
+        public static final By TAB = By.cssSelector("nav.pf-c-nav > ul > li > a");
     }
 
     public static final class Status {

@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.UploadFile;
@@ -21,7 +22,8 @@ public class ImportIntegration extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By FILE_INPUT = By.cssSelector("input[type='file']");
-        public static final By FINISHED_PROGRESS_BAR = By.className("pficon-ok");
+        public static final By FINISHED_PROGRESS_BAR =
+            ByUtils.containsDataTestId("dnd-file-chooser-successfully-imported-");
         public static final By DRAG_AND_DROP_PLACE = By.className("dnd-file-chooser__helpText");
     }
 
@@ -41,7 +43,7 @@ public class ImportIntegration extends SyndesisPageObject {
      */
     public void importIntegration(File file) {
         UploadFile.uploadFile(getRootElement().find(Element.FILE_INPUT).should(exist), file);
-        $(Element.FINISHED_PROGRESS_BAR).shouldBe(visible);
+        TestUtils.waitFor(() -> $(Element.FINISHED_PROGRESS_BAR).is(visible), 5, 30, "Import success message is not visible");
     }
 
     /**

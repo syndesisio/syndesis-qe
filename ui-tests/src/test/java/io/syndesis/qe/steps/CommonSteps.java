@@ -282,7 +282,7 @@ public class CommonSteps {
                 "no validation".equalsIgnoreCase(connectionDescription))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "info");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");
                 scrollTo("top", "right");
                 clickOnButton("Next");
             } else if ("no validation".equalsIgnoreCase(connectionDescription)) {
