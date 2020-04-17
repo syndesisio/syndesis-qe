@@ -172,9 +172,12 @@ public class ConnectionSteps {
 
     @Then("^check that (\\d+). tooltip contains text \"([^\"]*)\"$")
     public void checkTextOfTooltip(int tooltip, String expectedText) {
+        if ($(By.className("form-label-hint__popover")).exists()) {
+            $(By.className("form-label-hint__popover")).find(By.className("pf-c-button")).click();
+        }
         SelenideElement selenideElement = new ConfigureConnectionSteps().getAllToolTips().get(tooltip - 1);
         selenideElement.click(); // open tooltip
         TestUtils.sleepForJenkinsDelayIfHigher(2);
-        assertThat($(By.className("pf-c-popover__body")).text()).isEqualTo(expectedText);
+        assertThat($(By.className("form-label-hint__popover")).text()).isEqualTo(expectedText);
     }
 }

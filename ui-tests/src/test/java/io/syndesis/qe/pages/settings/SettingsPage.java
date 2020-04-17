@@ -8,6 +8,7 @@ import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.junit.Assert;
 
@@ -29,13 +30,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SettingsPage extends SyndesisPageObject {
 
-    private static final class Element {
+    public static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By SETTINGS_LIST = By.cssSelector(".pf-c-data-list");
         public static final By SETTINGS_ITEM = By.className("pf-c-data-list__item");
         public static final By SETTINGS_TITLE = By.id("app-name");
         public static final By EXPAND_BUTTON = By.cssSelector(".pf-c-data-list__toggle");
         public static final By CURRENTLY_EXPANDED = By.cssSelector("*[aria-expanded=\"true\"]");
+        public static final By CLIENT_ID = ByUtils.dataTestId("clientid");
+        public static final By CLIENT_SECRET = ByUtils.dataTestId("clientsecret");
     }
 
     @Override
@@ -62,7 +65,7 @@ public class SettingsPage extends SyndesisPageObject {
                 log.info("Skipping OpenAPI client due to bug #5532");
                 continue;
             }
-            listItem.$(Element.EXPAND_BUTTON).shouldBe(visible).click();
+            openSettings(listItem);
             String credentialsName = null;
             switch (text) {
                 case "Salesforce":
@@ -100,12 +103,12 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public void fillGivenOAuthSetting(SelenideElement listItem, String credentialsName) {
-        listItem.shouldBe(visible).$(Element.EXPAND_BUTTON).click();
+        openSettings(listItem);
         fillOAuthItem(listItem, credentialsName);
         getButton("Save").shouldBe(visible).click();
         Selenide.sleep(1000);
         //close list item details
-        getRootElement().$(Element.CURRENTLY_EXPANDED).click();
+        closeCurrentlyExpandedSettings();
     }
 
     public void fillOAuthItem(SelenideElement item, String credentialsName) {
@@ -169,6 +172,20 @@ public class SettingsPage extends SyndesisPageObject {
      */
     public void clickButton(String settingsItemName, String buttonTitle) {
         this.getButtonFromItem(settingsItemName, buttonTitle).shouldBe(visible).click();
+    }
+
+    public void openSettings(String connectionName) {
+        openSettings(getSettingsItem(connectionName));
+    }
+
+    private void openSettings(SelenideElement connectionItem) {
+        if (!connectionItem.find(Element.CURRENTLY_EXPANDED).exists()) {
+            connectionItem.shouldBe(visible).$(Element.EXPAND_BUTTON).click();
+        }
+    }
+
+    public void closeCurrentlyExpandedSettings() {
+        getRootElement().$(Element.CURRENTLY_EXPANDED).click();
     }
 
     public boolean checkButtonOfItem(String itemTitle, String buttonTitle) {

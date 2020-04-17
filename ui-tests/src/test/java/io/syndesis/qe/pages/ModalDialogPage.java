@@ -12,10 +12,7 @@ public class ModalDialogPage extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-modal-box");
 
-        public static final By HEADER = By.className("modal-header");
-        public static final By TITLE = By.className("modal-title");
-        public static final By BODY = By.className("modal-body");
-        public static final By FOOTER = By.className("modal-footer");
+        public static final By TITLE = By.className("pf-c-title");
     }
 
     @Override
@@ -30,6 +27,6 @@ public class ModalDialogPage extends SyndesisPageObject {
     }
 
     public String getTitleText() {
-        return $(Element.TITLE).shouldBe(visible).getText();
+        return getRootElement().find(Element.TITLE).shouldBe(visible).getText();
     }
 }

@@ -169,8 +169,6 @@ public class ExtensionSteps {
     @Then("^check that technical extension \"([^\"]*)\" is not visible$")
     public void expectExtensionNonPresent(String name) {
         log.info("Verifying if extension {} is present", name);
-        //TODO is this necessary
-        customizationsPage.getTechExtensionsListComponent().getExtensionItem(name).shouldNotBe(visible);
         assertThat(customizationsPage.getTechExtensionsListComponent().isExtensionPresent(name)).isFalse();
     }
 

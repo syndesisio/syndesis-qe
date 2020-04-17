@@ -39,7 +39,7 @@ public class ManageCiCdPageSteps {
     public void deleteTag(String tagName) {
         ciCdPage.clickOnRemoveButton(tagName);
         ModalDialogPage warning = new ModalDialogPage();
-        assertThat(warning.getTitleText()).isEqualTo("Confirm Remove?");
+        assertThat(warning.getTitleText()).isEqualTo("Are you sure you want to remove the tag?");
         new ModalDialogPage().getButton("Yes").click();
     }
 
