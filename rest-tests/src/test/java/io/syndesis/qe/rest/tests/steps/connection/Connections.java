@@ -150,6 +150,17 @@ public class Connections {
         );
     }
 
+    @Given("^create HTTPS connection$")
+    public void createHTTPSConnection() {
+        account = accountsDirectory.getAccount(Account.Name.HTTPS).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "https"),
+                accountProperty("baseUrl")
+            )
+        );
+    }
+
     @Given("^create IRC connection$")
     public void createIRCConnection() {
         account = accountsDirectory.getAccount(Account.Name.IRC).get();

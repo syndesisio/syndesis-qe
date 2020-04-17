@@ -9,6 +9,7 @@ import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.Verifier;
+import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.server.openshift.Exposure;
@@ -213,7 +214,10 @@ public class IntegrationHandler {
      */
     private void verifyConnections() {
         for (Step step : steps.getSteps()) {
-            if (step.getStepKind() == StepKind.endpoint && step.getConnection().get().getConnector().get().getTags().contains("verifier")) {
+            if (step.getStepKind() == StepKind.endpoint
+                // Don't verify HTTPS connector as that one always fail because of the certificate
+                && !step.getConnection().get().getConnector().get().getId().get().equals(RestTestsUtils.Connector.HTTPS.getId())
+                && step.getConnection().get().getConnector().get().getTags().contains("verifier")) {
                 TestUtils.withRetry(() -> {
                     String response = Verifier.verify(step.getConnection().get().getConnectorId(),
                         step.getConnection().get().getConfiguredProperties());
