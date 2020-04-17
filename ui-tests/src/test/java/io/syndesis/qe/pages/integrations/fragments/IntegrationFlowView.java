@@ -34,7 +34,6 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
-        public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = ByUtils.dataTestId("integration-flow-add-step-add-step-link");
 
         public static final By POPOVER_CLASS = By.className("pf-c-popover__body");
@@ -46,7 +45,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
         public static final By TRASH = By.className("fa-trash");
 
-        public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-primary");
+        public static final By DELETE_BUTTON = ByUtils.dataTestId("integration-editor-step-adder-delete-button");
 
         //tag has to be specified otherwise it is mixed with DATA_WARNING_BUTTONs
         public static final By STEP = ByUtils.containsDataTestId("li", "integration-editor-steps-list-item");
@@ -105,11 +104,11 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public ElementsCollection getAllTrashes() {
-        return this.getRootElement().findAll(Element.DELETE);
+        return this.getRootElement().findAll(Element.DELETE_BUTTON);
     }
 
     public void clickRandomTrash() {
-        this.getElementRandom(Element.DELETE).shouldBe(visible).click();
+        this.getElementRandom(Element.DELETE_BUTTON).shouldBe(visible).click();
     }
 
     public void clickAddStepLink(int pos) {

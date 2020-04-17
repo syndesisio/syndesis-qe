@@ -21,9 +21,9 @@ public class ManageCICDPage extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
-        public static final By ITEM_LIST_TAGS = By.className("list-group-item");
-        public static final By TAG_NAME = By.className("list-group-item-heading");
-        public static final By TAG_USAGE = By.className("list-view-pf-additional-info-item");
+        public static final By ITEM_LIST_TAGS = By.className("pf-c-data-list__item");
+        public static final By TAG_NAME = By.className("cicd-list-item__text-wrapper");
+        public static final By TAG_USAGE = By.className("cicd-list-item__uses-text");
     }
 
     private static final class Button {

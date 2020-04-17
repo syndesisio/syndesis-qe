@@ -1,20 +1,15 @@
 package io.syndesis.qe.steps.settings;
 
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.core.Is.is;
-
+import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.settings.SettingsPage;
-import io.syndesis.qe.utils.ByUtils;
 
 import org.assertj.core.api.SoftAssertions;
-import org.openqa.selenium.By;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
 import cucumber.api.java.en.Then;
@@ -29,7 +24,7 @@ public class SettingsSteps {
 
     @Then("^check that settings item \"([^\"]*)\" has button \"(\\w+)\"$")
     public void settingsItemHasButton(String itemTitle, String buttonTitle) {
-        assertThat(settingsPage.checkButtonOfItem(itemTitle, buttonTitle), is(true));
+        assertThat(settingsPage.checkButtonOfItem(itemTitle, buttonTitle)).isTrue();
     }
 
     @When("^\"(\\w+)\" clicks to the \"(\\w+)\" item \"(\\w+)\" button$")
@@ -61,35 +56,37 @@ public class SettingsSteps {
         SoftAssertions sa = new SoftAssertions();
 
         SelenideElement item = settingsPage.getSettingsItem(itemTitle);
-        item.shouldBe(visible).click();
-        String title = item.$(By.className("list-group-item-heading")).getText();
-        SelenideElement expansion = item.$(By.cssSelector(".list-group-item-container.container-fluid"));
-        By textOrPassword = ByUtils.dataTestId("clientid");
-        ElementsCollection textFields = expansion.$$(textOrPassword).filterBy(Condition.visible);
-        for (int i = 0; i < textFields.size(); i++) {
-            SelenideElement text = expansion.$$(textOrPassword).filterBy(Condition.visible).get(i);
-            if (shouldBePresent) {
-                sa.assertThat(text.getValue()).as(String.format("OAuth element %s > %s is empty.", title, text.getAttribute("name"))).isNotEmpty();
-            } else {
-                sa.assertThat(text.getValue())
-                    .as(String.format("OAuth element %s > %s is filled with '%s'.", title, text.getAttribute("name"), text.getValue())).isEmpty();
-            }
+        item.shouldBe(visible);
+        settingsPage.openSettings(itemTitle);
+
+        String title = item.find(SettingsPage.Element.SETTINGS_TITLE).getText();
+        SelenideElement clientId = item.find(SettingsPage.Element.CLIENT_ID).shouldBe(visible);
+        SelenideElement clientSecret = item.find(SettingsPage.Element.CLIENT_ID).shouldBe(visible);
+
+        if (shouldBePresent) {
+            sa.assertThat(clientId.getValue()).as(String.format("OAuth element %s > %s is empty.", title, clientId.getAttribute("name")))
+                .isNotEmpty();
+            sa.assertThat(clientSecret.getValue()).as(String.format("OAuth element %s > %s is empty.", title, clientSecret.getAttribute("name")))
+                .isNotEmpty();
+        } else {
+            sa.assertThat(clientId.getValue())
+                .as(String.format("OAuth element %s > %s is filled with '%s'.", title, clientId.getAttribute("name"), clientId.getValue())).isEmpty();
+            sa.assertThat(clientSecret.getValue())
+                .as(String.format("OAuth element %s > %s is filled with client secret.", title, clientSecret.getAttribute("name"))).isEmpty();
         }
+        settingsPage.closeCurrentlyExpandedSettings();
         sa.assertAll();
     }
 
-    @Then("^check button \"([^\"]*)\" of item \"([^\"]*)\"$")
-    public void checkButtonOfItem(String buttonName, String itemTitle) {
-        settingsPage.checkButtonOfItem(itemTitle, buttonName);
-    }
-
-    @When("^click button \"([^\"]*)\" of item \"([^\"]*)\"$")
-    public void clickButtonOfItem(String buttonTitle, String itemTitle) {
-        settingsPage.clickButton(itemTitle, buttonTitle);
-    }
-
-    @When("^confirm settings removal$")
-    public void confirmSettingsRemoval() {
-        $(By.className("modal-content")).$(By.cssSelector("button.btn-danger")).click();
+    @When("^remove information about OAuth \"([^\"]*)\"$")
+    public void clickButtonOfItem(String itemTitle) {
+        settingsPage.openSettings(itemTitle);
+        settingsPage.clickButton(itemTitle, "Remove");
+        //confirm
+        ModalDialogPage modalDialogPage = new ModalDialogPage();
+        assertThat(modalDialogPage.getTitleText())
+            .contains(String.format("Are you sure you want to remove the OAuth credentials for '%s'?", itemTitle));
+        modalDialogPage.getButton("Remove").shouldBe(enabled).click();
+        settingsPage.closeCurrentlyExpandedSettings();
     }
 }

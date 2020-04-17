@@ -63,7 +63,7 @@ Feature: Customization - Extensions CRUD
     Then check visibility of page "Extensions"
 
     When select "Delete" action on "Log Message Body" technical extension
-    Then check visibility of dialog page "Confirm Delete?"
+    Then check visibility of dialog page "Are you sure you want to delete the "Log Message Body" extension?"
 
     When click on the modal dialog "Delete" button
   #  And sleep for jenkins delay or "3" seconds

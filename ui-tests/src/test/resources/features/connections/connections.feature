@@ -2,7 +2,7 @@
 
 @ui
 @amq
-
+@connections-crud-test
 Feature: Connection - CRUD
 # Enter feature description here
 
