@@ -1,5 +1,7 @@
 package io.syndesis.qe.resource.impl;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
@@ -7,7 +9,12 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.io.IOUtils;
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HTTPEndpoints implements Resource {
+    public static final String KEYSTORE_SECRET_NAME = "httpendpoints-secret";
+    public static final String KEYSTORE_URL =
+        "https://github.com/syndesisio/syndesis-qe-HTTPEndpoints/blob/master/src/main/resources/keystore.p12?raw=true";
     private static final String LABEL_NAME = "app";
     private static final String APP_NAME = "httpendpoints";
     private static final String IMAGE = "syndesisqe/httpendpoints";
@@ -79,6 +89,21 @@ public class HTTPEndpoints implements Resource {
                 .withSelector(labels)
                 .endSpec()
                 .done();
+
+            String content = "";
+            // Download the keystore and base64 encode it
+            try {
+                content = new String(Base64.getEncoder().encode(IOUtils.toByteArray(new URL(KEYSTORE_URL))));
+            } catch (IOException e) {
+                fail("Unable to read " + KEYSTORE_URL, e);
+            }
+
+            OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
+                .withNewMetadata()
+                    .withName(KEYSTORE_SECRET_NAME)
+                .endMetadata()
+                .addToData("keystore.p12", content)
+                .done();
             //@formatter:on
         }
         addAccounts();
@@ -90,6 +115,7 @@ public class HTTPEndpoints implements Resource {
 
     @Override
     public void undeploy() {
+        OpenShiftUtils.getInstance().secrets().withName(KEYSTORE_SECRET_NAME).delete();
         OpenShiftUtils.getInstance().deploymentConfigs().withName(APP_NAME).cascading(true).delete();
         OpenShiftUtils.getInstance().imageStreams().withName(APP_NAME).delete();
         OpenShiftUtils.getInstance().services().list().getItems().stream().filter(s -> s.getMetadata().getName().endsWith("-svc"))
