@@ -17,7 +17,7 @@ public class Conditions {
     public static final Condition WO_CLOSE_BUTTONS = new Condition("With out close buttons") {
         @Override
         public boolean apply(Driver driver, WebElement webElement) {
-            return webElement.findElements(By.cssSelector("button.close")).isEmpty();
+            return webElement.findElements(Alert.Element.CLOSE_BUTTON).isEmpty();
         }
     };
 }

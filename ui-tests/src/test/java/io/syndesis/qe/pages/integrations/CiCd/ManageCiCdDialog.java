@@ -1,5 +1,7 @@
 package io.syndesis.qe.pages.integrations.CiCd;
 
+import static org.junit.Assert.fail;
+
 import static com.codeborne.selenide.Condition.appears;
 
 import io.syndesis.qe.pages.ModalDialogPage;
@@ -17,9 +19,9 @@ import java.util.stream.Collectors;
 public class ManageCiCdDialog extends ModalDialogPage {
 
     private static final class Element {
-        static final By ITEM_LIST_TAGS = By.className("list-group-item");
-        static final By CHECKBOX = By.cssSelector("input[type='checkbox']");
-        static final By TAG_NAME = By.className("list-group-item-heading");
+        static final By ITEM_LIST_TAGS = ByUtils.containsDataTestId("tag-integration-list-item-");
+        static final By CHECKBOX = By.name("tag-integration-list-item-check");
+        static final By TAG_NAME = By.className("tag-integration-list-item__text-wrapper");
     }
 
     private static final class Button {
@@ -74,6 +76,9 @@ public class ManageCiCdDialog extends ModalDialogPage {
     }
 
     private void waitForDialogIsReady() {
+        if (getRootElement().find(ByUtils.dataTestId("tag-integration-dialog-empty-state-manage-cicd-button")).exists()) {
+            fail("The Manage CI/CD dialog is empty and doesn't contain any tag");
+        }
         getRootElement().find(Element.ITEM_LIST_TAGS).waitUntil(appears, 5000);
         TestUtils.sleepIgnoreInterrupt(2000); // needs to wait for items list shows correctly
     }

@@ -20,15 +20,15 @@ public class Activity extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
 
-        public static final By ACTIVITY_WRAPPED = By.className("list-group-item");
-        public static final By ACTIVITY_EXPAND_BUTTON = By.className("fa-angle-right");
+        public static final By ACTIVITY_WRAPPED = By.className("integration-detail-activity-item");
+        public static final By ACTIVITY_EXPAND_BUTTON = By.className("pf-c-button");
 
-        public static final By DATE = By.className("list-group-item-heading");
-        public static final By TIME = By.className("list-group-item-text");
-        public static final By VERSION = By.className("list-view-pf-additional-info-item");
-        public static final By ERRORS = By.className("integration-detail-activity-item__status-item");
+        public static final By DATE = By.id("activity-date");
+        public static final By TIME = By.id("activity-time");
+        public static final By VERSION = By.id("activity-version");
+        public static final By ERRORS = By.id("activity-errors");
 
-        public static final By ONE_ROW_TABLE = By.cssSelector("table > tbody");
+        public static final By ONE_ROW_TABLE = By.cssSelector("table > tbody > tr");
         public static final By ONE_CELL_IN_TABLE = By.xpath(".//td");
     }
 

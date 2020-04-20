@@ -11,8 +11,6 @@ import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.Conditions;
 
-import org.openqa.selenium.By;
-
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -43,25 +41,26 @@ public class DetailSteps {
 
     @Then("remove all \"([^\"]*)\" alerts")
     public void removeAllAlerts(String alertType) {
-        Alert alertOption = Alert.getALERTS().get(alertType);
-        ElementsCollection alerts = getCloseableAllerts(alertOption);
         try {
-            while (!alerts.isEmpty()) {
-                for (SelenideElement alert : alerts) {
-                    alert.$(By.cssSelector("button.close")).shouldBe(Condition.visible).click();
-                }
-                alerts = getCloseableAllerts(alertOption);
-            }
+            removeAllAlertsFromPage(alertType);
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             //            repeat everything again:
-            alertOption = Alert.getALERTS().get(alertType);
-            alerts = getCloseableAllerts(alertOption);
-            while (!alerts.isEmpty()) {
-                for (SelenideElement alert : alerts) {
-                    alert.$(By.cssSelector("button.close")).shouldBe(Condition.visible).click();
+            removeAllAlertsFromPage(alertType);
+        }
+    }
+
+    private void removeAllAlertsFromPage(String alertType) {
+        Alert alertOption = Alert.getALERTS().get(alertType);
+        ElementsCollection alerts = getCloseableAllerts(alertOption);
+        while (!alerts.isEmpty()) {
+            for (SelenideElement alert : alerts) {
+                SelenideElement button = alert.$(Alert.Element.CLOSE_BUTTON);
+                if (alert.isDisplayed()) {
+                    //only if the alert still exists and it is not stale
+                    button.click();
                 }
-                alerts = getCloseableAllerts(alertOption);
             }
+            alerts = getCloseableAllerts(alertOption);
         }
     }
 

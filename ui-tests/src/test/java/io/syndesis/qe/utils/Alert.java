@@ -16,6 +16,11 @@ public enum Alert {
     WARNING("warning", By.className("pf-m-warning")),
     DANGER("danger", By.className("pf-m-danger"));
 
+    public static final class Element {
+        public static final By CLOSE_BUTTON = By.cssSelector("button.pf-c-button");
+        public static final By ALERT_TITLE = By.className("pf-c-alert__title");
+    }
+
     private final String name;
     private final By by;
     private static final Map<String, Alert> ALERTS = new HashMap<String, Alert>();
