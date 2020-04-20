@@ -47,7 +47,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
 
         public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-primary");
 
-        public static final By STEP = By.cssSelector(".integration-editor-steps-list-item__list-item");
+        public static final By STEP = ByUtils.containsDataTestId("integration-editor-steps-list-item");
     }
 
     private static final class Button {
