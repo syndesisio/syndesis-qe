@@ -167,7 +167,7 @@ public class ConnectionSteps {
     @Then("^check that page contains (\\d+) tooltips$")
     public void checkNumberOfTooltips(int expectedSize) {
         TestUtils.sleepForJenkinsDelayIfHigher(1);
-        assertThat(new ConfigureConnectionSteps().getAllToolTips()).hasSize(4);
+        assertThat(new ConfigureConnectionSteps().getAllToolTips()).hasSize(expectedSize);
     }
 
     @Then("^check that (\\d+). tooltip contains text \"([^\"]*)\"$")
