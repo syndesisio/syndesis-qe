@@ -7,6 +7,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -53,6 +54,6 @@ public class ConfigureConnectionSteps {
     }
 
     public ElementsCollection getAllToolTips() {
-        return $$(By.cssSelector(".form-label-hint__text-button"));
+        return $$(ByUtils.dataTestId("tooltip"));
     }
 }
