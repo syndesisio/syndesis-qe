@@ -96,7 +96,7 @@ public class IntegrationsPublicApiSteps {
         integrationsEndpoint.deleteTagInIntegration(integrationName, tag);
     }
 
-    @When("^deploy integration (\\w+)$")
+    @When("^deploy integration (\\w+) via PublicApi$")
     public void deployIntegration(String integrationName) {
         integrationsEndpoint.deployIntegration(integrationName);
         TestUtils.sleepIgnoreInterrupt(10000);
@@ -113,9 +113,24 @@ public class IntegrationsPublicApiSteps {
         assertThat(internalIntegrationsEndpoint.getIntegrationByName(integrationName).getVersion()).isEqualTo(version);
     }
 
-    @When("^export integrations with tag (\\w+) as \"([^\"]*)\"$")
-    public void exportIntegrations(String tag, String name) {
-        integrationsEndpoint.exportIntegration(tag, name, false);
+    @When("^export integrations with tag (\\w+) as \"([^\"]*)\"( and ignore timestamp)?$")
+    public void exportIntegrations(String tag, String name, String ignore) {
+        exportIntegrationsAccordingToTag(tag, name, ignore);
+    }
+
+    @Then("^verify that status code after export integrations with tag (\\w+) is (\\d+)( when timestamp is ignored)?$")
+    public void exportIntegrations(String tag, int statusCode, String ignore) {
+        assertThat(exportIntegrationsAccordingToTag(tag, null, ignore)).isEqualTo(statusCode);
+    }
+
+    private int exportIntegrationsAccordingToTag(String tag, String name, String ignoreTimestamp) {
+        int status = 0;
+        if (ignoreTimestamp == null) {
+            status = integrationsEndpoint.exportIntegrationsAccordingToTag(tag, name, false);
+        } else {
+            status = integrationsEndpoint.exportIntegrationsAccordingToTag(tag, name, true);
+        }
+        return status;
     }
 
     /**
@@ -123,7 +138,7 @@ public class IntegrationsPublicApiSteps {
      */
     @When("^export integrations with tag (\\w+) and others as \"([^\"]*)\"$")
     public void exportAllIntegrations(String tag, String name) {
-        integrationsEndpoint.exportIntegration(tag, name, true);
+        integrationsEndpoint.exportAllIntegrations(tag, name);
     }
 
     @When("^import integrations with tag (\\w+) with name \"([^\"]*)\"$")

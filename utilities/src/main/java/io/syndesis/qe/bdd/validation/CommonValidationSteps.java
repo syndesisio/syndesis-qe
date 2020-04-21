@@ -174,4 +174,20 @@ public class CommonValidationSteps {
             }
         }
     }
+
+    @Then("^check that integration (\\w+) contains warning \"([^\"]*)\"")
+    public void verifyWarningOnIntegration(String integrationName, String warning) {
+        IntegrationOverview overview = integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get());
+        assertThat(integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get()).getBoard().getWarnings()
+            .getAsInt()).isGreaterThan(0);
+        assertThat(
+            overview.getBoard().getMessages().stream().filter(leveledMessage -> leveledMessage.getDetail().get().contains(warning)).findFirst())
+            .isNotEmpty();
+    }
+
+    @Then("^check that integration (\\w+) doesn't contains any warning")
+    public void verifyNoWarningOnIntegration(String integrationName) {
+        assertThat(integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get()).getBoard().getWarnings()
+            .getAsInt()).isEqualTo(0);
+    }
 }
