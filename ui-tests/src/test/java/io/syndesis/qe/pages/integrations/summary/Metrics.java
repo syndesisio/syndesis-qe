@@ -17,11 +17,21 @@ public class Metrics extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("integration-detail-metrics");
+
         public static final By ROOT_TOTAL_ERROR = ByUtils.dataTestId("integration-detail-metrics-total-errors-card");
-        public static final By ROOT_LAST_POCESSED = ByUtils.dataTestId("integration-detail-metrics-last-processed-card");
+        public static final By TOTAL_ERROR = ByUtils.dataTestId("integration-detail-metrics-total-errors");
+
+        public static final By ROOT_LAST_PROCESSED = ByUtils.dataTestId("integration-detail-metrics-last-processed-card");
+        public static final By LAST_PROCESSED = ByUtils.dataTestId("integration-detail-metrics-last-processed");
+
         public static final By ROOT_TOTAL_MESSAGES = By.className("aggregate-status");
-        //div has two h3 elements but contains method wants only one as first argument so the class have to be specified
+        public static final By TOTAL_COUNT = ByUtils.dataTestId("aggregated-metric-card-total-count");
+        public static final By OK_COUNT = ByUtils.dataTestId("aggregated-metric-card-ok-count");
+        public static final By ERROR_COUNT = ByUtils.dataTestId("aggregated-metric-card-error-count");
+
         public static final By ROOT_UPTIME = ByUtils.dataTestId("dashboard-page-metrics-uptime");
+        public static final By UPTIME_SINCE = ByUtils.dataTestId("dashboard-page-metrics-uptime-since");
+        public static final By UPTIME_DURATION = ByUtils.dataTestId("dashboard-page-metrics-uptime-duration");
     }
 
     @Override
@@ -36,43 +46,40 @@ public class Metrics extends SyndesisPageObject {
 
     public int getTotalErrors() {
         SelenideElement numberOfErrors = getRootElement().find(Element.ROOT_TOTAL_ERROR).shouldBe(visible)
-            .find(By.className("pf-c-card__body"));
+            .find(Element.TOTAL_ERROR);
         return Integer.parseInt(numberOfErrors.getText().trim());
     }
 
     public String getLastProcessed() {
-        SelenideElement lastProcessed = getRootElement().find(Element.ROOT_LAST_POCESSED).shouldBe(visible)
-            .find(By.className("pf-c-card__body"));
-        return lastProcessed.getText();
+        return getRootElement().find(Element.ROOT_LAST_PROCESSED).shouldBe(visible)
+            .find(Element.LAST_PROCESSED).getText();
     }
 
     public int getNumberOfValidMessages() {
         SelenideElement numberOfValidMessages = getRootElement().find(Element.ROOT_TOTAL_MESSAGES).shouldBe(visible)
-            .find(ByUtils.dataTestId("aggregated-metric-card-ok-count"));
+            .find(Element.OK_COUNT);
         return Integer.parseInt(numberOfValidMessages.getText().trim());
     }
 
     public int getNumberOfErrorMessages() {
         SelenideElement numberOfMessages = getRootElement().find(Element.ROOT_TOTAL_MESSAGES).shouldBe(visible)
-            .find(ByUtils.dataTestId("aggregated-metric-card-error-count"));
+            .find(Element.ERROR_COUNT);
         return Integer.parseInt(numberOfMessages.getText());
     }
 
     public int getNumberOfTotalMessages() {
         SelenideElement numberOfTotalMessages = getRootElement().find(Element.ROOT_TOTAL_MESSAGES).shouldBe(visible)
-            .find(ByUtils.dataTestId("aggregated-metric-card-total-count"));
+            .find(Element.TOTAL_COUNT);
         return Integer.parseInt(numberOfTotalMessages.getText().trim());
     }
 
     public String getUpTime() {
-        SelenideElement uptime = getRootElement().find(Element.ROOT_UPTIME).shouldBe(visible)
-            .findAll(By.className("pf-c-card__body")).get(1);
-        return uptime.getText();
+        return getRootElement().find(Element.ROOT_UPTIME).shouldBe(visible)
+            .find(Element.UPTIME_DURATION).getText();
     }
 
     public String getStartTime() {
-        SelenideElement date = getRootElement().find(Element.ROOT_UPTIME).shouldBe(visible)
-            .find(By.className("metrics-uptime__uptime"));
-        return date.getText();
+        return getRootElement().find(Element.ROOT_UPTIME).shouldBe(visible)
+            .find(Element.UPTIME_SINCE).getText();
     }
 }
