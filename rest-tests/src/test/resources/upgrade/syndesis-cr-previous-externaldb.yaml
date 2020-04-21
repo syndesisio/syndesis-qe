@@ -7,8 +7,11 @@ spec:
     todo:
       enabled: true
   components:
+    database:
+      externalDbURL: postgresql://custom-postgres:5432
+      user: "testuser"
+      name: "testdb"
     server:
       features:
         integrationLimit: 1
         integrationStateCheckInterval: 60
-  devSupport: false
