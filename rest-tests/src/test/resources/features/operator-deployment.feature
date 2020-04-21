@@ -181,7 +181,10 @@ Feature: Operator Deployment
   @operator-addons-knative
   @operator-addons
   Scenario: Syndesis Operator - Addons - Knative
-    When todo
+    When deploy Syndesis CR from file "spec/addons/knative.yml"
+      Then wait for Syndesis to become ready
+      And check that the deployment config "syndesis-server" contains variables:
+        | KNATIVE_ENABLED  | true |
 
   @ENTESB-12418
   @ENTESB-12618
