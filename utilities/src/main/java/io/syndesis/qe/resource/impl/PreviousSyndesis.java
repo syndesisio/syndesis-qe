@@ -2,13 +2,6 @@ package io.syndesis.qe.resource.impl;
 
 import io.syndesis.qe.TestConfiguration;
 
-import org.apache.commons.lang.StringUtils;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,27 +19,9 @@ public class PreviousSyndesis extends Syndesis {
         deploySyndesisViaOperator();
     }
 
-    private void deploySyndesisViaOperator() {
-        log.info("Deploying syndesis resource from " + super.getCrUrl());
-        try (InputStream is = new URL(super.getCrUrl()).openStream()) {
-            JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
-            JSONObject integration = crJson.getJSONObject("spec").getJSONObject("integration");
-            integration.put("limit", 5);
-            integration.put("stateCheckInterval", TestConfiguration.stateCheckInterval());
-
-            super.addMavenRepo(crJson.getJSONObject("spec"));
-
-            // set correct image stream namespace
-            crJson.getJSONObject("spec").put("imageStreamNamespace", TestConfiguration.openShiftNamespace());
-
-            // set the route
-            crJson.getJSONObject("spec").put("routeHostname", TestConfiguration.syndesisUrl() != null
-                ? StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://")
-                : TestConfiguration.openShiftNamespace() + "." + TestConfiguration.openShiftRouteSuffix());
-
-            super.createCr(crJson.toMap());
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
-        }
+    @Override
+    protected void deploySyndesisViaOperator() {
+        // currently the deployment methods are the same, but keep this method here in case of future diverge of deployment methods
+        super.deploySyndesisViaOperator();
     }
 }
