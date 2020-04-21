@@ -1,8 +1,10 @@
 package io.syndesis.qe.model;
 
+import io.syndesis.common.model.bulletin.IntegrationBulletinBoard;
+import io.syndesis.common.model.integration.IntegrationDeploymentState;
+
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import lombok.Data;
 
 /**
@@ -23,4 +25,5 @@ public class IntegrationOverview {
     private boolean draft;
     private IntegrationDeploymentState currentState;
     private IntegrationDeploymentState targetState;
+    private IntegrationBulletinBoard board;
 }

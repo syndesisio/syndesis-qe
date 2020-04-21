@@ -30,14 +30,15 @@ public class ConnectionsPublicApiSteps {
      * DataTable ->  | property1 | value |
      * | property2 | value |
      */
-    @When("^update properties of connection (\\w+)$")
-    public void updateConnectionProperties(String connectionName, DataTable tagsData) {
+    @When("^update properties of connection (\\w+)( and refresh integration)?$")
+    public void updateConnectionProperties(String connectionName, String refreshInt, DataTable tagsData) {
+        boolean refreshIntegrations = refreshInt != null;
         List<List<String>> connectionProperties = tagsData.cells();
         Properties properties = new Properties();
         for (List<String> connectionProperty : connectionProperties) {
             properties.put(connectionProperty.get(0), connectionProperty.get(1));
         }
-        ConnectionOverview response = connectionsPublicEndpoint.updateConnectionProperties(connectionName, properties);
+        ConnectionOverview response = connectionsPublicEndpoint.updateConnectionProperties(connectionName, properties, refreshIntegrations);
 
         for (List<String> connectionProperty : connectionProperties) {
             assertThat(response.getConfiguredProperties()).containsEntry(connectionProperty.get(0), connectionProperty.get(1));
@@ -49,7 +50,7 @@ public class ConnectionsPublicApiSteps {
      * | property2 | value |
      */
     @Then("^check that (\\w+) connection contains properties$")
-    public void checkAllTags(String connectionName, DataTable tagsData) {
+    public void checkConnectionProperties(String connectionName, DataTable tagsData) {
         List<List<String>> connectionProperties = tagsData.cells();
         Connection connection = connectionsEndpoint.getConnectionByName(connectionName);
         for (List<String> connectionProperty : connectionProperties) {
