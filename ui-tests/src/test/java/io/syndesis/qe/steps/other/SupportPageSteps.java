@@ -33,7 +33,7 @@ public class SupportPageSteps {
 
     @When("^.*downloads? diagnostics for \"([^\"]*)\" integration$")
     public void downloadSpecificLogs(String integrationName) throws InterruptedException, IOException {
-        supportPage.selectSpecificIntegrationDownload("my-integration");
+        supportPage.selectSpecificIntegrationDownload(integrationName);
         File downloadedLogs = supportPage.downloadZipLogs();
         assertThat(downloadedLogs)
             .exists()

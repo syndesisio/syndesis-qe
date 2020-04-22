@@ -13,7 +13,6 @@ Feature: Integration - MQTT to MQTT
     Given created connections
       | MQTT Message Broker | QE MQTT | MQTT test connection | some description |
 
-
 #
 #  1. publish-subscribe-request
 #
