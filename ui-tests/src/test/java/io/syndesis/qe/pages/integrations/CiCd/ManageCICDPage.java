@@ -21,15 +21,19 @@ public class ManageCICDPage extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
-        public static final By ITEM_LIST_TAGS = By.className("pf-c-data-list__item");
-        public static final By TAG_NAME = By.className("cicd-list-item__text-wrapper");
-        public static final By TAG_USAGE = By.className("cicd-list-item__uses-text");
+        public static final String ITEM_LIST_TAGS_SELECTOR = "cicd-list-item-%s-list-item";
+        public static final By TAG_NAME = ByUtils.containsDataTestId("cicd-list-item-name");
+        public static final By TAG_USAGE = ByUtils.containsDataTestId("cicd-list-item-usage");
     }
 
     private static final class Button {
         public static final By ADD_NEW = ByUtils.containsDataTestId("add-new-button");
         public static final By EDIT = ByUtils.dataTestId("cicd-list-item-create-button");
         public static final By REMOVE = ByUtils.dataTestId("cicd-list-item-remove-button");
+    }
+
+    private By getListItemSelector(String tagName) {
+        return ByUtils.dataTestId(String.format(Element.ITEM_LIST_TAGS_SELECTOR, tagName.toLowerCase().replaceAll(" ", "-")));
     }
 
     @Override
@@ -59,9 +63,7 @@ public class ManageCICDPage extends SyndesisPageObject {
     }
 
     private SelenideElement getElementForTheTag(String tagName) {
-        return getRootElement().findAll(ManageCICDPage.Element.ITEM_LIST_TAGS).stream()
-            .filter(x -> x.find(ManageCICDPage.Element.TAG_NAME).getText().equals(tagName))
-            .findFirst().get();
+        return getRootElement().find(getListItemSelector(tagName));
     }
 
     public List<String> getAllTags() {

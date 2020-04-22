@@ -19,9 +19,14 @@ import java.util.stream.Collectors;
 public class ManageCiCdDialog extends ModalDialogPage {
 
     private static final class Element {
-        static final By ITEM_LIST_TAGS = ByUtils.containsDataTestId("tag-integration-list-item-");
-        static final By CHECKBOX = By.name("tag-integration-list-item-check");
-        static final By TAG_NAME = By.className("tag-integration-list-item__text-wrapper");
+        static final By ALL_ITEMS = ByUtils.containsDataTestId("-selected-input");
+        static final String ITEM_LIST_TAGS_SELECTOR = "tag-integration-list-item-%s-selected-input";
+        static final By CHECKBOX = ByUtils.dataTestId("tag-integration-list-item-check");
+        static final By TAG_NAME = ByUtils.dataTestId("tag-integration-list-item-text");
+    }
+
+    private By getListItemSelector(String tagName) {
+        return ByUtils.dataTestId(String.format(Element.ITEM_LIST_TAGS_SELECTOR, tagName.toLowerCase().replaceAll(" ", "-")));
     }
 
     private static final class Button {
@@ -61,7 +66,8 @@ public class ManageCiCdDialog extends ModalDialogPage {
     }
 
     public List<String> getOnlyCheckedTags() {
-        List<SelenideElement> checkedTags = getRootElement().findAll(Element.ITEM_LIST_TAGS).stream()
+        waitForDialogIsReady();
+        List<SelenideElement> checkedTags = getRootElement().findAll(Element.ALL_ITEMS).stream()
             .filter(x -> x.find(Element.CHECKBOX).isSelected())
             .collect(Collectors.toList());
         return checkedTags.stream()
@@ -70,16 +76,14 @@ public class ManageCiCdDialog extends ModalDialogPage {
     }
 
     private SelenideElement getElementForTheTag(String tagName) {
-        return getRootElement().findAll(Element.ITEM_LIST_TAGS).stream()
-            .filter(x -> x.find(Element.TAG_NAME).getText().equals(tagName))
-            .findFirst().get();
+        return getRootElement().find(getListItemSelector(tagName));
     }
 
     private void waitForDialogIsReady() {
         if (getRootElement().find(ByUtils.dataTestId("tag-integration-dialog-empty-state-manage-cicd-button")).exists()) {
             fail("The Manage CI/CD dialog is empty and doesn't contain any tag");
         }
-        getRootElement().find(Element.ITEM_LIST_TAGS).waitUntil(appears, 5000);
+        getRootElement().find(ByUtils.containsDataTestId("tag-integration-list-item-")).waitUntil(appears, 5000);
         TestUtils.sleepIgnoreInterrupt(2000); // needs to wait for items list shows correctly
     }
 }
