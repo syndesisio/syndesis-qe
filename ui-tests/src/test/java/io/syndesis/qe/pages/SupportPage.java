@@ -25,10 +25,10 @@ public class SupportPage extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.id("root");
 
-        public static final By SPECIFIC_LOGS = By.id("specificlogs");
+        public static final By SPECIFIC_LOGS = ByUtils.dataTestId("support-page-specific-logs-input");
         public static final By ALL_LOGS = ByUtils.dataTestId("support-page-all-logs-input");
-
-        public static final By CHECKBOX = ByUtils.dataTestId("selective-integration-list-integrations-input");
+//        public static final By CHECKBOX = ByUtils.dataTestId("selective-integration-list-integrations-input");
+        public static final By CHECKBOX = ByUtils.rowid("data-list-item-support-page-integration");
     }
 
     @Override
