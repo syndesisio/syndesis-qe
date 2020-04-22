@@ -221,12 +221,16 @@ public class DataMapper extends SyndesisPageObject {
      * and also in the collection body.name (level2))
      */
     private SelenideElement getMappingItemRow(String name, SelenideElement containerElement, int nestedLevel) {
+        if ("false".equals(containerElement.getAttribute("aria-expanded"))) {
+            containerElement.click();
+        }
+        log.debug("*******************************");
+        log.debug("NAME *{}*, NESTED LEVEL *{}*, ", name, nestedLevel);
         ElementsCollection rowsWithName = containerElement
             .findAll(Element.MAPPING_FIELD_ITEM_ROW)
             .filter(Condition.attribute("aria-level", String.valueOf(nestedLevel)))
-            .filter(Condition.matchText(
-                "^(.*\\s)?" + name + "(\\s.*)?$")); //In case the row will contain another text (separated by spaces)(e.g. number of usage etc.)
-
+            .filter(Condition.text(name));
+        log.debug("SIZE: *{}*, ", rowsWithName.size());
         if (rowsWithName.size() == 0) {
             return null;
         } else if (rowsWithName.size() > 1) {
@@ -246,12 +250,17 @@ public class DataMapper extends SyndesisPageObject {
      * and also in another collection response.person (level2))
      */
     private SelenideElement getCollectionElement(String name, SelenideElement containerElement, int nestedLevel) {
+        //        prepare:
+        if ("false".equals(containerElement.getAttribute("aria-expanded"))) {
+            containerElement.click();
+        }
         ElementsCollection allExpandableRows = containerElement
             .findAll(Element.EXPANDABLE_ROW)
             .filter(Condition.attribute("aria-level", String.valueOf(nestedLevel)));
+        //        log.info("AllExpandableRowns size: *{}*", allExpandableRows.size());
         List<SelenideElement> rowsWithName =
             allExpandableRows.stream().filter(row -> row.find(ByUtils.containsId(name)).exists()).collect(Collectors.toList());
-
+        //        log.info("**LEVEL: *{}* name: *{}* size:*{}*", nestedLevel, name, rowsWithName.size());
         if (rowsWithName.size() == 0) {
             fail("Collection with the name: " + name + " doesn't exist on the nested Level: " + nestedLevel);
         } else if (rowsWithName.size() > 1) {
