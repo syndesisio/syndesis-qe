@@ -42,8 +42,10 @@ public class UpgradeSteps {
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
 
-    @When("^deploy previous Syndesis$")
-    public static void deploySyndesis() {
+    @When("deploy previous Syndesis CR {string}")
+    public void deploySyndesis(String crFile) {
+        Syndesis syndesis = ResourceFactory.get(PreviousSyndesis.class);
+        syndesis.setCrUrl(getClass().getClassLoader().getResource("upgrade/" + crFile).toString());
         ResourceFactory.create(PreviousSyndesis.class);
     }
 
@@ -81,7 +83,6 @@ public class UpgradeSteps {
 
         // We want to deploy "previous" version first
         syndesis.setCrdUrl(getClass().getClassLoader().getResource("upgrade/syndesis-crd-previous.yaml").toString());
-        syndesis.setCrUrl(getClass().getClassLoader().getResource("upgrade/syndesis-cr-previous.yaml").toString());
 
         log.info("Upgrade properties:");
         log.info("  Previous version: " + TestConfiguration.upgradePreviousVersion());
