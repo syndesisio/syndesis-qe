@@ -1,6 +1,7 @@
 package io.syndesis.qe.steps.customizations.extensions;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
@@ -11,6 +12,7 @@ import io.syndesis.qe.pages.customizations.CustomizationsPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsImportPage;
 import io.syndesis.qe.pages.customizations.extensions.TechExtensionsListComponent;
 import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.DragAndDropFile;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.UploadFile;
@@ -45,27 +47,13 @@ public class ExtensionSteps {
         public static final String IMPORT_EXTENSION_BUTTON = "Import Extension";
     }
 
+    /**
+     * When import extensions
+     * | sample-damage-reporter-extension-1.4.8.jar | ./src/test/resources/extensions/ |
+     */
     @Given("^import extensions$")
-    public void importExtension(DataTable extensionsData) throws Throwable {
-        CommonSteps commonSteps = new CommonSteps();
-
-        List<List<String>> dataTable = extensionsData.cells();
-
-        for (List<String> dataRow : dataTable) {
-
-            commonSteps.navigateTo(NavigationElements.CUSTOMIZATIONS_NAV);
-            commonSteps.validatePage(NavigationElements.CUSTOMIZATIONS_NAV);
-
-            commonSteps.clickOnLink(NavigationElements.EXTENSION_NAV);
-            commonSteps.validatePage(NavigationElements.EXTENSION_NAV);
-
-            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
-            commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
-
-            uploadExtensionFromFile(dataRow.get(0), dataRow.get(1));
-
-            commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
-        }
+    public void importExtensionFromPath(DataTable extensionsData) throws Throwable {
+        importExtensionFromFolder(extensionsData);
     }
 
     @Given("^upload extension \"([^\"]*)\" from syndesis-extensions dir using drag and drop$")
@@ -88,8 +76,16 @@ public class ExtensionSteps {
         TestUtils.sleepForJenkinsDelayIfHigher(20);
     }
 
+    /**
+     * Given import extensions from syndesis-extensions folder
+     * | syndesis-extension-log-body |
+     */
     @Given("^import extensions from syndesis-extensions folder$")
-    public void importExtensionFromKnownFolder(DataTable extensionsData) throws Throwable {
+    public void importExtensionFromSyndesisExtensionsFolder(DataTable extensionsData) throws Throwable {
+        importExtensionFromFolder(extensionsData);
+    }
+
+    private void importExtensionFromFolder(DataTable extensionsData) throws Throwable {
         CommonSteps commonSteps = new CommonSteps();
 
         List<List<String>> dataTable = extensionsData.cells();
@@ -105,9 +101,26 @@ public class ExtensionSteps {
             commonSteps.clickOnLink(NavigationElements.IMPORT_EXTENSION_BUTTON);
             commonSteps.validatePage(NavigationElements.IMPORT_EXTENSION_BUTTON);
 
-            uploadExtensionFromFile(dataRow.get(0));
+            if (dataRow.size() == 1) {
+                //import from extension folder
+                uploadExtensionFromFile(dataRow.get(0));
+            } else if (dataRow.size() == 2) {
+                //import from path
+                uploadExtensionFromFile(dataRow.get(0), dataRow.get(1));
+            } else {
+                fail("Extensions data table has too many arguments");
+            }
+
+            TestUtils.waitFor(() -> $(Alert.SUCCESS.getBy()).is(visible),
+                5, 60,
+                "The extension was not successfully imported. Ths notification didn't appear.");
+            customizationsPage.removeAllAlertsFromPage(Alert.SUCCESS);
 
             commonSteps.clickOnButton(NavigationElements.IMPORT_EXTENSION_BUTTON);
+            TestUtils.waitFor(() -> $(Alert.SUCCESS.getBy()).is(visible),
+                5, 60,
+                "The extension was not successfully imported. Ths notification didn't appear.");
+            customizationsPage.removeAllAlertsFromPage(Alert.SUCCESS);
         }
     }
 

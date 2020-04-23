@@ -12,9 +12,12 @@ import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
+import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.junit.Assert;
@@ -290,5 +293,23 @@ public abstract class SyndesisPageObject {
                 break;
         }
         return condition;
+    }
+
+    public void removeAllAlertsFromPage(Alert alertOption) {
+        ElementsCollection alerts = getCloseableAllerts(alertOption);
+        while (!alerts.isEmpty()) {
+            for (SelenideElement alert : alerts) {
+                SelenideElement button = alert.$(Alert.Element.CLOSE_BUTTON);
+                if (alert.isDisplayed()) {
+                    //only if the alert still exists and it is not stale
+                    button.click();
+                }
+            }
+            alerts = getCloseableAllerts(alertOption);
+        }
+    }
+
+    public ElementsCollection getCloseableAllerts(Alert alert) {
+        return $$(alert.getBy()).exclude(Conditions.WO_CLOSE_BUTTONS);
     }
 }
