@@ -76,6 +76,6 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     }
 
     public void checkActionOnExtensionButtonDisabled(String name, String action) {
-        getActionOnExtensionButton(name, action).shouldNotBe(enabled).click();
+        getActionOnExtensionButton(name, action).shouldNotBe(enabled);
     }
 }
