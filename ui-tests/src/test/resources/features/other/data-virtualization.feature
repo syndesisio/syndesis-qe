@@ -31,7 +31,7 @@ Feature: Data Virtualization smoke tests
       | virtdescription | smoke virtualization description |
 
     And click on the "Create" button
-    And sleep for 1 seconds
+    And sleep for 5 seconds
     Then check that data virtualization "smokeVirtualization" is present in virtualizations list
     And check that data virtualization "smokeVirtualization" has description "smoke virtualization description"
 
@@ -85,6 +85,7 @@ Feature: Data Virtualization smoke tests
     When create an invalid view and check that error appears
 
     And click on the "Done" button
+    Then check that data virtualization view "testView" is invalid
 
     And make action "Stop" on the virtualization "smokeVirtualization"
     And wait until virtualization "smokeVirtualization" gets into "Stopped" state

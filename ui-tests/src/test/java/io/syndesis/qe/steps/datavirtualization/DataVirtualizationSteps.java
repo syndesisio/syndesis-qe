@@ -7,6 +7,8 @@ import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.pages.Virtualizations.Virtualizations;
 import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.Alert;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -24,6 +26,9 @@ import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * TODO all finding element should be moved to the own pages like `Create a view page` and `Import views page`
+ */
 @Slf4j
 public class DataVirtualizationSteps {
 
@@ -61,6 +66,11 @@ public class DataVirtualizationSteps {
         assertThat(virtualizations.isVirtualizationPresent(name)).isTrue();
     }
 
+    @Then("check that data virtualization view {string} is invalid")
+    public void checkInvalidView(String name) {
+        assertThat(virtualizations.isVirtualizationViewInvalid(name)).isTrue();
+    }
+
     @When("go to {string} tab on virtualization page")
     public void goToTabOnVirtualizationPage(String tabName) {
         virtualizations.openTab(tabName);
@@ -90,11 +100,10 @@ public class DataVirtualizationSteps {
     @Then("^wait until virtualization \"([^\"]*)\" gets into \"([^\"]*)\" state$")
     public void waitForIntegrationState(String virtualizationName, String virtualizationStatus) {
         commonSteps.navigateTo("Data");
-        SelenideElement virtualization = virtualizations.getVirtualization(virtualizationName);
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         assertThat(TestUtils.waitForEvent(
             status -> status.contains(virtualizationStatus),
-            () -> virtualizations.getVirtualizationItemStatus(virtualization),
+            () -> virtualizations.getVirtualizationStatus(virtualizationName),
             TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
         ).isTrue();
     }
@@ -106,32 +115,30 @@ public class DataVirtualizationSteps {
 
     /**
      * @param page if "import" then import page otherwise create page
+     * TODO this logic should be moved to the own pages like `Create a view page` and `Import views page`
      */
     @When("select DV connection {string} on {string} page")
     public void selectDVConnection(String connectionName, String page) {
-        final String CONNECTION_CARD = "*[data-testid=\"dv-connection-card-%s-card\"]";
-        final String CONNECTION_SCHEMA = "*[data-testid=\"connection-schema-list-item-%s-list-item\"]";
+        final String CONNECTION_CARD = "dv-connection-card-%s-card";
+        final String CONNECTION_SCHEMA = "connection-schema-list-item-%s-list-item";
+        final String CONNECTION_NAME = connectionName.toLowerCase()
+            .replaceAll("\\s|\\)", "-")
+            .replaceAll("\\(", "");
 
-        String element;
         if ("import".equals(page)) {
-            element = CONNECTION_CARD;
+            $(ByUtils.dataTestId(String.format(CONNECTION_CARD, CONNECTION_NAME))).click();
         } else {
-            element = CONNECTION_SCHEMA;
+            $(ByUtils.dataTestId(String.format(CONNECTION_SCHEMA, CONNECTION_NAME))).find(ByUtils.dataTestId("connection-schema-list-item-expand"))
+                .click();
         }
-
-        $(By.cssSelector(String.format(element,
-            connectionName.toLowerCase()
-                .replaceAll("\\s|\\)", "-")
-                .replaceAll("\\(", "")))
-        ).click();
     }
 
     @When("select DV connection tables on create page")
     public void selectDVConnectionTablesCreate(DataTable table) {
-        final String TABLE_CREATE = "*[data-testid=\"schema-node-list-item-%s-list-item\"]";
+        final String TABLE_CREATE = "schema-node-list-item-%s-list-item";
 
         for (List<String> dataRow : table.cells()) {
-            SelenideElement tableElement = $(By.cssSelector(String.format(TABLE_CREATE,
+            SelenideElement tableElement = $(ByUtils.dataTestId(String.format(TABLE_CREATE,
                 dataRow.get(0).toLowerCase()
                     .replaceAll("\\s|\\)", "-")
                     .replaceAll("\\(", ""))));
@@ -156,9 +163,12 @@ public class DataVirtualizationSteps {
         }
     }
 
+    /**
+     * TODO The element should be moved to some `Virtualization View Editor` page.
+     */
     @Then("check that ddl exists and contains text {string}")
     public void checkThatDdlExistsAndContainText(String text) {
-        String editorText = $(By.className("ddl-editor")).$(By.className("text-editor")).getText();
+        String editorText = $(By.className("react-codemirror2")).getText();
         assertThat(editorText.contains(text)).as("DDL editor does not contain text: %s", text).isTrue();
     }
 
@@ -174,17 +184,19 @@ public class DataVirtualizationSteps {
         assertThat(results).as("Preview shows %s results but it should shows %s", results, rows).isEqualTo(rows);
     }
 
+    /**
+     * TODO The element should be moved to some `Virtualization View Editor` page.
+     */
     @When("create an invalid view and check that error appears")
     public void createAnInvalidViewAndCheckThatErrorAppears() {
-        final String SAVE_BUTTON = "*[data-testid=\"ddl-editor-save-button\"]";
-        SelenideElement editor = $(By.className("ddl-editor"));
-        editor.$(By.className("CodeMirror")).click();
+        SelenideElement editor = $(ByUtils.dataTestId("text-editor-codemirror"));
+        editor.click();
         editor.$("textarea").sendKeys("Lorem Ipsum");
-        editor.$(By.cssSelector(SAVE_BUTTON)).click();
+        editor.$(ByUtils.dataTestId("ddl-editor-save-button")).click();
 
         TestUtils.sleepIgnoreInterrupt(1000);
 
-        ElementsCollection dangers = editor.$$(By.className("pf-m-danger"));
+        ElementsCollection dangers = $$(Alert.DANGER.getBy());
         assertThat(dangers.size()).as("Error does not appear").isEqualTo(1);
     }
 }

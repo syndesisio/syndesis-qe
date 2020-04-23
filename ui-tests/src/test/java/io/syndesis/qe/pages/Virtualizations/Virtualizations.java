@@ -7,9 +7,9 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
@@ -20,16 +20,22 @@ import java.util.concurrent.TimeoutException;
 import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * TODO This class need to be separated to the more class according to logic and pages e.g. Virtualization, VirtualizationView,
+ * VirtualizationViewEditor etc.
+ * In some cases, the virtualizationList is used for Virtualization, and in some cases, it is used for VirtualizationView
+ */
 @Slf4j
 public class Virtualizations extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
         public static final By EDIT_ROOT = By.cssSelector(".pf-c-page__main");
-        public static final By EDIT_VIRTUALIZATION = By.cssSelector("a[data-testid=\"virtualization-list-item-edit-button\"]");
-        public static final By EDIT_VIEW = By.cssSelector("a[data-testid=\"view-list-item-edit-button\"]");
+        public static final By EDIT_VIRTUALIZATION = ByUtils.dataTestId("virtualization-list-item-edit-button");
+        public static final By EDIT_VIEW = ByUtils.dataTestId("view-list-item-edit-button");
         public static final By TABS = By.className("virtualization-nav-bar");
         public static final By RESULT_SECTION = By.className("sql-client-content__resultsSection");
+        public static final By INVALID_INFO = ByUtils.dataTestId("view-list-item-invalid-view");
     }
 
     VirtualizationList virtualizationList = new VirtualizationList(By.cssSelector(".list-group.list-view-pf.list-view-pf-view"));
@@ -91,14 +97,14 @@ public class Virtualizations extends SyndesisPageObject {
     public void setSQLclientParams(DataTable table) {
         for (List<String> dataRow : table.cells()) {
             //Set view
-            getEditRootElement().$(By.id("view")).selectOption(dataRow.get(0));
+            getEditRootElement().$(ByUtils.dataTestId("view")).selectOption(dataRow.get(0));
 
             //Set row limit
-            fillInput(getEditRootElement().$(By.id("rowlimit")), dataRow.get(1));
+            fillInput(getEditRootElement().$(ByUtils.dataTestId("rowlimit")), dataRow.get(1));
 
             //Set row offset if is not empty
             if (!dataRow.get(2).isEmpty()) {
-                fillInput(getEditRootElement().$(By.id("rowoffset")), dataRow.get(2));
+                fillInput(getEditRootElement().$(ByUtils.dataTestId("rowoffset")), dataRow.get(2));
             }
         }
     }
@@ -116,11 +122,11 @@ public class Virtualizations extends SyndesisPageObject {
         virtualizationList.invokeActionOnItem(virtuzalition, action);
     }
 
-    public String getVirtualizationItemStatus(SelenideElement item) {
-        return virtualizationList.getStatus(getVirtualizationName(item));
+    public String getVirtualizationStatus(String integrationName) {
+        return virtualizationList.getStatus(integrationName);
     }
 
-    public String getVirtualizationName(SelenideElement integration) {
-        throw new NotImplementedException("Titles were removed from patternfly 4");
+    public boolean isVirtualizationViewInvalid(String name) {
+        return getVirtualization(name).find(Element.INVALID_INFO).is(visible);
     }
 }
