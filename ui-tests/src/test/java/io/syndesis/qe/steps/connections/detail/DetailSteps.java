@@ -3,17 +3,13 @@ package io.syndesis.qe.steps.connections.detail;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.connections.detail.ConnectionDetail;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.Alert;
-import io.syndesis.qe.utils.Conditions;
 
 import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -36,36 +32,17 @@ public class DetailSteps {
         connectionsPage.getConnection(connectionName).shouldBe(Condition.visible).click();
 
         new CommonSteps().clickOnButton("Validate");
-        this.getCloseableAllerts(Alert.SUCCESS).first().shouldBe(exist);
+        detailPage.getCloseableAllerts(Alert.SUCCESS).first().shouldBe(exist);
     }
 
     @Then("remove all \"([^\"]*)\" alerts")
     public void removeAllAlerts(String alertType) {
         try {
-            removeAllAlertsFromPage(alertType);
+            detailPage.removeAllAlertsFromPage(Alert.getALERTS().get(alertType));
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             //            repeat everything again:
-            removeAllAlertsFromPage(alertType);
+            detailPage.removeAllAlertsFromPage(Alert.getALERTS().get(alertType));
         }
-    }
-
-    private void removeAllAlertsFromPage(String alertType) {
-        Alert alertOption = Alert.getALERTS().get(alertType);
-        ElementsCollection alerts = getCloseableAllerts(alertOption);
-        while (!alerts.isEmpty()) {
-            for (SelenideElement alert : alerts) {
-                SelenideElement button = alert.$(Alert.Element.CLOSE_BUTTON);
-                if (alert.isDisplayed()) {
-                    //only if the alert still exists and it is not stale
-                    button.click();
-                }
-            }
-            alerts = getCloseableAllerts(alertOption);
-        }
-    }
-
-    private ElementsCollection getCloseableAllerts(Alert alert) {
-        return $$(alert.getBy()).exclude(Conditions.WO_CLOSE_BUTTONS);
     }
 
     @When("change connection description to \"([^\"]*)\"")
