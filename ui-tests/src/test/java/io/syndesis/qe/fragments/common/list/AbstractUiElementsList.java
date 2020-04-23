@@ -4,12 +4,12 @@ import static com.codeborne.selenide.Condition.exist;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-
-import io.syndesis.qe.pages.SyndesisPageObject;
 
 public abstract class AbstractUiElementsList extends SyndesisPageObject {
 
@@ -32,6 +32,4 @@ public abstract class AbstractUiElementsList extends SyndesisPageObject {
     abstract ElementsCollection getItemsCollection();
 
     abstract SelenideElement getItem(String title);
-
-    abstract SelenideElement getTitle(String title);
 }

@@ -36,15 +36,15 @@ public class Details extends SyndesisPageObject {
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
 
         public static final By TITLE = By.className("integration-detail-editable-name");
-        public static final By KEBEB_OPEN_MENU = By.className("dropdown-toggle");
-        public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
+        public static final By KEBEB_OPEN_MENU = ByUtils.containsDataTestId("-kebab-toggle");
+        public static final By KEBAB_DROPDOWN_MENU = By.className("pf-c-dropdown__menu");
         public static final By INFO = By.className("integration-detail-info");
         public static final By INTEGRATION_DESCRIPTION = By.cssSelector("section.integration-description");
         public static final By EXPOSED_URL = By.cssSelector(".integration-exposed-url__list dd input");
 
         public static final By STEP_ICON_ELEMENT = By.className("integration-steps-horizontal-item");
 
-        public static final By TAB = By.cssSelector("ul.nav-tabs > li > a");
+        public static final By TAB = By.cssSelector("nav.pf-c-nav > ul > li > a");
     }
 
     public static final class Status {

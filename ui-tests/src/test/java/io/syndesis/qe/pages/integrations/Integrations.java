@@ -7,6 +7,7 @@ import static com.codeborne.selenide.Selenide.$;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationsList;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -20,6 +21,7 @@ public class Integrations extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector(".pf-c-page__main-section");
+        public static final By INTEGRATION_TITLE = ByUtils.dataTestId("integration-title");
     }
 
     IntegrationsList integrationsList = new IntegrationsList(By.cssSelector(".list-group.list-view-pf.list-view-pf-view"));
@@ -59,7 +61,7 @@ public class Integrations extends SyndesisPageObject {
     }
 
     public String getIntegrationName(SelenideElement integration) {
-        return integrationsList.getTitleOfItem(integration);
+        return integration.$(Element.INTEGRATION_TITLE).text();
     }
 
     public String getIntegrationItemStatus(String name) {

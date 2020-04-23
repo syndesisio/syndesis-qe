@@ -10,6 +10,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -33,9 +34,8 @@ public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
     }
 
     private static class Input {
-        public static By OAUTH_2_0 = By.xpath(".//label[text()[contains(.,'OAuth 2.0')]]/input[@name='authenticationType']");
         public static By HTTP_BASIC_AUTHENTICATION =
-            By.xpath(".//label[text()[contains(.,'HTTP Basic Authentication')]]/input[@name='authenticationType']");
+            ByUtils.containsDataTestId("api-client-connector-auth-type-basic-");
         public static By AUTHORIZATION_URL = By.xpath(".//input[@formcontrolname='authorizationEndpoint']");
         public static By ACCESS_TOKEN_URL = By.xpath(".//input[@formcontrolname='tokenEndpoint']");
     }

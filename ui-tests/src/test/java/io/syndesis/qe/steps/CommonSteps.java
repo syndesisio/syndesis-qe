@@ -282,7 +282,7 @@ public class CommonSteps {
                 "no validation".equalsIgnoreCase(connectionDescription))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "info");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");
                 scrollTo("top", "right");
                 clickOnButton("Next");
             } else if ("no validation".equalsIgnoreCase(connectionDescription)) {
@@ -537,12 +537,27 @@ public class CommonSteps {
 
     @Then("^check visibility of \"([^\"]*)\" in alert-(\\w+) notification$")
     public void successNotificationIsPresentWithError(String textMessage, String type) {
-        TestUtils.waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(textMessage)).size() == 1,
-            2, 20, "Success notification not found!");
+        TestUtils
+            .waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage))).size() == 1,
+                2, 20, "Success notification not found!");
 
-        ElementsCollection successList = $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(textMessage));
+        ElementsCollection successList =
+            $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage)));
         assertThat(successList).hasSize(1);
         log.info("Text message {} was found.", textMessage);
+    }
+
+    /**
+     * When a text message contains special characters, they needs to be sanitize because the Condition.matchesText use the text message as a regex
+     * pattern
+     * e.g.
+     * "Send Email (smtp) has been successfully validated"
+     * "Send Email \(smtp\) has been successfully validated"
+     */
+    private String sanitizeSpecialCharacter(String textMessage) {
+        String result = textMessage.replaceAll("\\(", "\\\\(");
+        result = result.replaceAll("\\)", "\\\\)");
+        return result;
     }
 
     @Then("^check visibility of alert notification$")
@@ -602,7 +617,7 @@ public class CommonSteps {
         new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
     }
 
-    @Then("^check visibility of dialog page \"([^\"]*)\"$")
+    @Then("^check visibility of dialog page \"(.*)\"$")
     public void isPresentedWithDialogPage(String title) {
         String titleText = new ModalDialogPage().getTitleText();
         assertThat(titleText).isEqualToIgnoringCase(title);
