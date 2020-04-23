@@ -526,7 +526,7 @@ public class Syndesis implements Resource {
             .waitFor();
     }
 
-    private void deploySyndesisViaOperator() {
+    protected void deploySyndesisViaOperator() {
         log.info("Deploying syndesis resource from " + crUrl);
         try (InputStream is = new URL(crUrl).openStream()) {
             JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
