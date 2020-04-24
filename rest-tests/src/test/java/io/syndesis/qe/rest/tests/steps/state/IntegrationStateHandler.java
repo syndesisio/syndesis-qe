@@ -35,8 +35,6 @@ public class IntegrationStateHandler {
                 p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNo), 10000L, 60000L);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Unable to find new build pod for integration " + name + "after 60 seconds");
-        } catch (Exception ex) {
-            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 }

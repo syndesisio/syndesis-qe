@@ -136,8 +136,6 @@ public class UpgradeSteps {
             });
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Timeout waiting for CR status to be changed from \"Installed\"");
-        } catch (Exception ex) {
-            //ignore
         }
 
         try {
@@ -147,8 +145,6 @@ public class UpgradeSteps {
             }, 15 * 60000L);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Timeout waiting for CR status to be \"Installed\"");
-        } catch (Exception ex) {
-            //ignore
         }
     }
 

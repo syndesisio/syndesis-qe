@@ -264,8 +264,6 @@ public class Syndesis implements Resource {
                 .getStatus().getIngress() != null, 120000L);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Unable to find syndesis route in 120s");
-        } catch (Exception ex) {
-            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
 
         if ("false".equalsIgnoreCase(
@@ -492,8 +490,6 @@ public class Syndesis implements Resource {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getDeploymentConfig(operatorResourcesName) != null);
             } catch (TimeoutException | InterruptedException e) {
                 fail("Unable to get operator deployment config", e);
-            } catch (Exception ex) {
-                log.warn("Exception thrown while waiting, ignoring: ", ex);
             }
 
             OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
@@ -502,8 +498,6 @@ public class Syndesis implements Resource {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
             } catch (TimeoutException | InterruptedException e) {
                 fail("Operator pod shouldn't be present after scaling down", e);
-            } catch (Exception ex) {
-                log.warn("Exception thrown while waiting, ignoring: ", ex);
             }
 
             OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
@@ -689,16 +683,12 @@ public class Syndesis implements Resource {
                 OpenShiftWaitUtils.waitForPodIsReloaded("server");
             } catch (InterruptedException | TimeoutException e) {
                 InfraFail.fail("Server was not reloaded after deployment config change", e);
-            } catch (Exception ex) {
-                log.warn("Exception thrown while waiting, ignoring: ", ex);
             }
             // even though server is in ready state, inside app is still starting so we have to wait a lot just to be sure
             try {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("server").contains("Started Application in"), 1000 * 300L);
             } catch (TimeoutException | InterruptedException e) {
                 InfraFail.fail("Syndesis server did not start in 300s with new variable", e);
-            } catch (Exception ex) {
-                log.warn("Exception thrown while waiting, ignoring: ", ex);
             }
             RestUtils.reset();
         }
@@ -747,8 +737,6 @@ public class Syndesis implements Resource {
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Pod " + partialPodName +
                 " is not in the one of the desired state (Running,ImagePullBackOff,ErrImagePull)! Check the log for more details.");
-        } catch (Exception ex) {
-            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
         Pod podAfterWait = OpenShiftUtils.getPodByPartialName(partialPodName).get(); //needs to get new instance of the pod
         if (OpenShiftUtils.hasPodIssuesPullingImage(podAfterWait)) {
