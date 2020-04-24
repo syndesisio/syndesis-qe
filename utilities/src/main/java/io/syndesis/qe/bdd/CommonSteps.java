@@ -85,8 +85,6 @@ public class CommonSteps {
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
                 + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
             InfraFail.fail("Wait for Syndesis failed, check error logs for details.", e);
-        } catch (Exception ex) {
-            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
@@ -148,8 +146,6 @@ public class CommonSteps {
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
             InfraFail.fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
-        } catch (Exception ex) {
-            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
