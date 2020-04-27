@@ -20,7 +20,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = ByUtils.dataTestId("api-connector-list");
         public static By CONNECTOR_TITLE = ByUtils.dataTestId("api-connector-name");
-        public static By CONNECTORS_LIST_ITEM = ByUtils.containsDataTestId("api-connector-list-item");
+        public static By CONNECTORS_LIST_ITEM = ByUtils.containsDataTestId("li", "api-connector-list-item");
         public static By DETAIL_BUTTON = ByUtils.dataTestId("a", "api-connector-list-item-details-button");
     }
 
