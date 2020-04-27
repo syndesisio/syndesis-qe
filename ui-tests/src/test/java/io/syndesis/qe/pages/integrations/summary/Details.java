@@ -11,6 +11,7 @@ import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 
@@ -32,7 +33,7 @@ public class Details extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By STATUS = ByUtils.dataTestId("div", "syndesis-integration-status");
-        public static final By STARTING_STATUS = ByUtils.dataTestId("div", "integration-status-detail");
+        public static final By STARTING_STATUS = ByUtils.dataTestId("progress-with-link-value");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
 
         public static final By TITLE = By.className("integration-detail-editable-name");
@@ -112,7 +113,7 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getStartingStatus() {
-        return $(Element.STARTING_STATUS).text().replace("View Logs", "").trim();
+        return $(Element.STARTING_STATUS).text().trim();
     }
 
     public String getIntegrationInfo() {
@@ -155,6 +156,8 @@ public class Details extends SyndesisPageObject {
     }
 
     public SelenideElement getPublishedVersion() {
+        TestUtils.waitFor(() -> !$(By.className("pf-c-spinner__clipper")).exists(), 5, 60, "The integration is still in \"Starting...\" phase after" +
+            " 1 minute");
         return $(Element.PUBLISHED_VERSION);
     }
 
