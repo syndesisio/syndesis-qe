@@ -75,13 +75,36 @@ public class IntegrationsPublicEndpoint extends PublicEndpoint {
      *
      * @param tag - tag for exporting
      * @param name - name of the exported zip in target folder
-     * @param all - when all is set to true, all integrations are exported and tagged with the tag.
      */
-    public void exportIntegration(String tag, String name, boolean all) {
-        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/export.zip?all=%s", tag, all)));
+    public void exportAllIntegrations(String tag, String name) {
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(String.format(rootEndPoint + "/%s/export.zip?all=true", tag)));
         Response res = invocation.get();
         InputStream is = res.readEntity(InputStream.class);
         exportZip(is, name);
+    }
+
+    /**
+     * Export all integrations which are tagged with particular tag.
+     * endpoint -> GET ​/public​/integrations​/{env}​/export.zip
+     * original method -> {@link io.syndesis.server.endpoint.v1.handler.external.PublicApiHandler#exportResources(String, boolean)}
+     *
+     * @param tag - tag for exporting
+     * @param name - name of the exported zip in target folder. If name is null, only status code is returned and exported integrations are not saved
+     * @param ignoreTimestamp - when it is set to true, all integrations according to tag are exported
+     */
+    public int exportIntegrationsAccordingToTag(String tag, String name, boolean ignoreTimestamp) {
+        String url = String.format(rootEndPoint + "/%s/export.zip", tag);
+        if (ignoreTimestamp) {
+            url = url.concat("?ignoreTimestamp=true");
+        }
+        Invocation.Builder invocation = this.createInvocation(getWholeUrl(url));
+        Response res = invocation.get();
+        int statusCode = res.getStatus();
+        if (statusCode == 200 && name != null) {
+            InputStream is = res.readEntity(InputStream.class);
+            exportZip(is, name);
+        }
+        return statusCode;
     }
 
     /**
