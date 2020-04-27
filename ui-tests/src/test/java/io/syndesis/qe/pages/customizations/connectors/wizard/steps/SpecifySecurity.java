@@ -29,15 +29,24 @@ public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
         public static By NEXT = By.xpath(".//button[contains(.,'Next')]");
     }
 
-    private static class Element {
-        public static By ROOT = By.id("root");
+    public static class Element {
+        public static By SECURITY_FORM = ByUtils.dataTestId("api-client-connector-auth-type-form");
     }
 
     private static class Input {
-        public static By HTTP_BASIC_AUTHENTICATION =
-            ByUtils.containsDataTestId("api-client-connector-auth-type-basic-");
         public static By AUTHORIZATION_URL = By.xpath(".//input[@formcontrolname='authorizationEndpoint']");
         public static By ACCESS_TOKEN_URL = By.xpath(".//input[@formcontrolname='tokenEndpoint']");
+    }
+
+    public static class SecurityType {
+        public static By HTTP_BASIC_AUTHENTICATION =
+            ByUtils.containsDataTestId("api-client-connector-auth-type-basic-");
+        public static By NO_SECURITY =
+            ByUtils.containsDataTestId("api-client-connector-auth-type-none");
+        public static By API_KEY =
+            ByUtils.containsDataTestId("api-client-connector-auth-type-apikey");
+        public static By OAUTH_2 =
+            ByUtils.containsDataTestId("api-client-connector-auth-type-oauth2");
     }
 
     @Override
@@ -47,7 +56,7 @@ public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
 
     @Override
     public SelenideElement getRootElement() {
-        return $(Element.ROOT).should(exist);
+        return $(Element.SECURITY_FORM).should(exist);
     }
 
     @Override
@@ -60,15 +69,15 @@ public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
             switch (key) {
                 case "authorizationUrl":
                     log.info("Setting up authorization url property");
-                    $(Input.AUTHORIZATION_URL).setValue(properties.get(key));
+                    getRootElement().$(Input.AUTHORIZATION_URL).setValue(properties.get(key));
                     break;
                 case "accessTokenUrl":
                     log.info("Setting up access token url property");
 
                     if (properties.get(key).equals("syndesisUrl+syndesisCallbackUrlSuffix")) {
-                        $(Input.ACCESS_TOKEN_URL).setValue(TestConfiguration.syndesisUrl() + TestConfiguration.syndesisCallbackUrlSuffix());
+                        getRootElement().$(Input.ACCESS_TOKEN_URL).setValue(TestConfiguration.syndesisUrl() + TestConfiguration.syndesisCallbackUrlSuffix());
                     } else {
-                        $(Input.ACCESS_TOKEN_URL).setValue(properties.get(key));
+                        getRootElement().$(Input.ACCESS_TOKEN_URL).setValue(properties.get(key));
                     }
                     break;
                 default:
@@ -85,8 +94,8 @@ public class SpecifySecurity extends SyndesisPageObject implements WizardPhase {
     }
 
     public void selectHttpBasicAuthentication() {
-        if ($(Input.HTTP_BASIC_AUTHENTICATION).attr("readonly") == null) {
-            $(Input.HTTP_BASIC_AUTHENTICATION).setSelected(true);
+        if (getRootElement().$(SecurityType.HTTP_BASIC_AUTHENTICATION).attr("readonly") == null) {
+            getRootElement().$(SecurityType.HTTP_BASIC_AUTHENTICATION).setSelected(true);
         }
     }
 }
