@@ -96,6 +96,11 @@ public class TestConfiguration {
 
     private static final String SYNDESIS_APPEND_REPOSITORY = "syndesis.config.append.repository";
 
+    private static final String QUAY_USERNAME = "syndesis.config.quay.username";
+    private static final String QUAY_PASSWORD = "syndesis.config.quay.password";
+    private static final String QUAY_NAMESPACE = "syndesis.config.quay.namespace";
+    private static final String QUAY_AUTH_TOKEN = "syndesis.config.quay.auth.token";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -347,6 +352,22 @@ public class TestConfiguration {
 
     public static boolean appendRepository() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_APPEND_REPOSITORY, "false"));
+    }
+
+    public static String quayUsername() {
+        return get().readValue(QUAY_USERNAME);
+    }
+
+    public static String quayPassword() {
+        return get().readValue(QUAY_PASSWORD);
+    }
+
+    public static String quayNamespace() {
+        return get().readValue(QUAY_NAMESPACE);
+    }
+
+    public static String quayAuthToken() {
+        return get().readValue(QUAY_AUTH_TOKEN);
     }
 
     private Properties defaultValues() {

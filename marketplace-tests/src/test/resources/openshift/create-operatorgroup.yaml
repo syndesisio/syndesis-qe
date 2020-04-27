@@ -1,0 +1,8 @@
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  name: fo-operatorgroup
+  namespace: OPENSHIFT_PROJECT
+spec:
+  targetNamespaces:
+    - OPENSHIFT_PROJECT

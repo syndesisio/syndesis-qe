@@ -1,0 +1,5 @@
+{
+  "blob": "QUAY_PAYLOAD",
+  "release": "QUAY_RELEASE",
+  "media_type": "helm"
+}

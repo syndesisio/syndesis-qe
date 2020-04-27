@@ -530,6 +530,7 @@
 				<module>rest-tests</module>
 				<module>ui-tests</module>
 				<module>utilities</module>
+				<module>marketplace-tests</module>
 			</modules>
 		</profile>
 		<profile>
@@ -552,6 +553,17 @@
 			</activation>
 			<modules>
 				<module>ui-tests</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>marketplace</id>
+			<activation>
+				<property>
+					<name>marketplace</name>
+				</property>
+			</activation>
+			<modules>
+				<module>marketplace-tests</module>
 			</modules>
 		</profile>
 		<profile>

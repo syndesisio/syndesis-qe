@@ -1,0 +1,6 @@
+{
+  "user": {
+    "username": "QUAY_USERNAME",
+    "password": "QUAY_PASSWORD"
+  }
+}

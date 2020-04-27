@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: PACKAGE_NAME
+  namespace: OPENSHIFT_PROJECT
+spec:
+  channel: alpha
+  name: PACKAGE_NAME
+  source: PACKAGE_NAME
+  sourceNamespace: openshift-marketplace

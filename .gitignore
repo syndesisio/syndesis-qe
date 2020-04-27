@@ -231,3 +231,4 @@ test.properties
 
 # web drivers downloaded by mvn
 ui-tests/drivers
+marketplace-tests/drivers
