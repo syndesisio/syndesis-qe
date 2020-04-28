@@ -123,7 +123,7 @@ Feature: Connections - OAuth
     Then check that position of connection to fill is "Start"
     When select the "Gcalendar-test" connection
     And select "Get Events" integration action
-    And fill in values by element data-testid
+    And fill in aliased calendar values by data-testid
       | consumefromnow     | false          |
       | considerlastupdate | false          |
       | calendarid         | syndesis-test1 |
