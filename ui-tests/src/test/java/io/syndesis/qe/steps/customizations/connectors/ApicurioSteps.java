@@ -14,6 +14,7 @@ import static com.codeborne.selenide.Selenide.executeJavaScript;
 import static com.codeborne.selenide.Selenide.switchTo;
 
 import io.syndesis.qe.fragments.common.form.Form;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -46,7 +47,7 @@ public class ApicurioSteps {
         public static final By APICURIO_INNER_ROOT = By.className("api-editor");
 
         //apicurio gui elements
-        public static By CARD_PF = By.className("pf-c-card");
+        public static By CARD_PF = By.className("pf-c-form");
         public static By WARNING_ICON = By.className("validation-icon");
         public static By PROBLEMS_CONTAINER = By.className("editor-problem-drawer");
         public static By OPERATIONS_CONTAINER = By.className("editor-outline");
@@ -307,10 +308,29 @@ public class ApicurioSteps {
     }
 
     @ExcludeFromSelectorReports
-    @Then("^check that api connector authentication section contains text \"([^\"]*)\"$")
-    public void verifySelectedSecurity(String expectedText) {
-        SelenideElement el = $(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible);
-        assertThat($(Elements.AUTHENTICATION_CONTAINER).shouldBe(visible).text()).containsIgnoringCase(expectedText);
+    @Then("^check that api connector authentication section contains security type \"([^\"]*)\"$")
+    public void verifySelectedSecurity(String securityType) {
+        SelenideElement securityForm = $(SpecifySecurity.Element.SECURITY_FORM).shouldBe(visible);
+        switch (securityType) {
+            case "OAuth 2.0":
+                securityForm.$(SpecifySecurity.SecurityType.OAUTH_2).shouldBe(visible);
+                assertThat(securityForm.text()).containsIgnoringCase("OAuth 2.0 ");
+                break;
+            case "HTTP Basic Authentication":
+                securityForm.$(SpecifySecurity.SecurityType.HTTP_BASIC_AUTHENTICATION).shouldBe(visible);
+                assertThat(securityForm.text()).containsIgnoringCase("HTTP Basic Authentication");
+                break;
+            case "API Key":
+                securityForm.$(SpecifySecurity.SecurityType.API_KEY).shouldBe(visible);
+                assertThat(securityForm.text()).containsIgnoringCase("API Key");
+                break;
+            case "No Security":
+                securityForm.$(SpecifySecurity.SecurityType.NO_SECURITY).shouldBe(visible);
+                assertThat(securityForm.text()).containsIgnoringCase("No Security");
+                break;
+            default:
+                fail("The Auth type < " + securityType + "> is not implemented by the test.");
+        }
     }
 
     @ExcludeFromSelectorReports

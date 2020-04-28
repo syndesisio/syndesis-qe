@@ -83,7 +83,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And change frame to "syndesis"
     And clicks on the "Cancel" link
     And clicks on the "Next" link
-    Then check that api connector authentication section contains text "No Security"
+    Then check that api connector authentication section contains security type "No Security"
 
     When click on the "Next" button
     And click on the "Save" button
@@ -106,7 +106,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio shows 218 imported operations
 
     When clicks on the "Next" link
-    Then check that api connector authentication section contains text "HTTP Basic Authentication"
+    Then check that api connector authentication section contains security type "HTTP Basic Authentication"
 
     When click on the "Next" button
     And click on the "Save" button
@@ -131,7 +131,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio shows 218 imported operations
 
     When clicks on the "Next" link
-    Then check that api connector authentication section contains text "API Key"
+    Then check that api connector authentication section contains security type "API Key"
 
     When click on the "Next" button
     And click on the "Save" button
@@ -159,16 +159,20 @@ Feature: Customization - API Connector - ApicurIO GUI
     And check that apicurio imported operations number is loaded
     And check that apicurio shows 218 imported operations
     When clicks on the "Next" link
-    And click on the "Next" button
-#    this part is broken, see: @ENTESB-12019
-    Then check that api connector authentication section contains text "OAuth 2.0"
-    And fill in values
-      | Access Token URL  | https://hehe                            |
-      | Authorization URL | http://petstore.swagger.io/oauth/dialog |
+    Then check that api connector authentication section contains security type "OAuth 2.0"
 
     When click on the "Next" button
     And click on the "Save" button
     And navigate to the "Connections" page
     And click on the "Create Connection" link
     And select "Kie Server API" connection type
-    Then check that connection authentication type has 1 option and contains text "OAuth 2.0"
+    Then check that apicurio connection authentication type contains only fields:
+      | clientid              |
+      | clientsecret          |
+      | accesstoken           |
+      | refreshtoken          |
+      | authorizationendpoint |
+      | tokenendpoint         |
+      | oauthscopes           |
+      | host                  |
+      | basepath              |

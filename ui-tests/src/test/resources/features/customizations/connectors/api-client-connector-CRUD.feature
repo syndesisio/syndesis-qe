@@ -80,6 +80,7 @@ Feature: Customization - API Connector CRUD
       | host        | http://petstore.swagger.io-1 |
       | basepath    | /v2-1                        |
 
+  @ENTESB-13605
   @create-delete-api-connector
   Scenario: Delete
     When click on the "Customizations" link
