@@ -26,8 +26,6 @@ public class ResourceFactory {
             OpenShiftWaitUtils.waitFor(() -> get(clazz).isReady(), 10 * 60000L);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Wait for " + clazz.getSimpleName() + " failed", e);
-        } catch (Exception ex) {
-            log.warn("Exception thrown while waiting, ignoring: ", ex);
         }
     }
 
