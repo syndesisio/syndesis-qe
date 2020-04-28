@@ -15,6 +15,7 @@ Feature: Public API - connections point
     When update properties of connection PostgresDB
       | user   | myuser    |
       | schema | sampledb2 |
+    And sleep for jenkins delay or "5" seconds
     Then check that PostgresDB connection contains properties
       | user   | myuser    |
       | schema | sampledb2 |
