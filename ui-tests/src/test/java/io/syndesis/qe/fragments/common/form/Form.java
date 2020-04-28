@@ -1,5 +1,7 @@
 package io.syndesis.qe.fragments.common.form;
 
+import static io.syndesis.qe.utils.Conditions.STALE_ELEMENT;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.exist;
@@ -90,7 +92,7 @@ public class Form {
         TestUtils.waitFor(() -> getRootElement().shouldBe(visible).exists(),
             1, 20, "Form root element not found in 20s");
         for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div", "checkbox")) {
-            for (SelenideElement element : getRootElement().shouldBe(visible).findAll(By.tagName(tagName))) {
+            for (SelenideElement element : getRootElement().shouldBe(visible).findAll(By.tagName(tagName)).exclude(STALE_ELEMENT)) {
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
         }
