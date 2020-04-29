@@ -1,11 +1,11 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import io.syndesis.qe.utils.ByUtils;
@@ -181,7 +181,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
     public void deleteStepOnPostion(int stepPosition) {
         SelenideElement step = getStepOnPosition(stepPosition);
         step.$(Element.TRASH).shouldBe(visible).click();
-        $(Element.DELETE_BUTTON).shouldBe(enabled, visible).click();
+        ModalDialogPage dialog = new ModalDialogPage();
+        dialog.getButton("Delete").click();
     }
 
     public String getPopoverText() {
