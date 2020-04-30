@@ -179,6 +179,7 @@ public class Connections {
         createConnection(
             fromData(
                 keyValue("connector", "kafka"),
+                keyValue("transportProtocol", "PLAINTEXT"),
                 accountProperty("brokers")
             )
         );
