@@ -145,7 +145,6 @@ Feature: Conditional flows - content base routing
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact(first_name) values ('Shaco was here')" value
     And click on the "Next" button
-    Then check visibility of visual integration editor
     Then return to primary flow from integration flow from dropdown
 
     When configure condition on position 2
@@ -411,7 +410,7 @@ Feature: Conditional flows - content base routing
     And click on the "Next" button
     And click on the "Next" button
 
-    When configure condition on position 5
+    When configure condition on position 4
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
@@ -419,7 +418,7 @@ Feature: Conditional flows - content base routing
     And click on the "Next" button
     Then return to primary flow from integration flow from dropdown
 
-    When configure condition on position 6
+    When configure condition on position 5
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
@@ -427,7 +426,7 @@ Feature: Conditional flows - content base routing
     And click on the "Next" button
     Then return to primary flow from integration flow from dropdown
 
-    When configure condition on position 7
+    When configure condition on position 6
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action

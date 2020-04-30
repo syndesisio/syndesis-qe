@@ -10,7 +10,7 @@ public class UIUtils {
         public static By LOADER = By.cssSelector(".Loader");
     }
 
-    public static void enxureUILoaded() {
+    public static void ensureUILoaded() {
         TestUtils.waitFor(() -> !$(Elements.LOADER).exists(), 1, 10, "Syndesis UI is still loading");
     }
 }

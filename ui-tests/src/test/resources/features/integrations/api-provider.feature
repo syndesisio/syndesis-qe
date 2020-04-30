@@ -1182,6 +1182,7 @@ Feature: API Provider Integration
     When select the "TODO Integration base path" integration
     Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-syndesis.*/api$
 
+  @conditional-flow
   @api-provider-conditional-flow
   Scenario: Conditional flows used in API Provider
     When create an API Provider integration "conditional-provider" from file swagger/connectors/todo.json
@@ -1197,7 +1198,7 @@ Feature: API Provider Integration
     And click on the "Next" button
     And click on the "Next" button
 
-    When configure condition on position 2
+    When configure condition on position 1
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
@@ -1211,7 +1212,7 @@ Feature: API Provider Integration
     And click on the "Done" button
     And return to primary flow from integration flow from dropdown
 
-    When configure condition on position 3
+    When configure condition on position 2
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
