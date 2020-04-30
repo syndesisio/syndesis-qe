@@ -139,10 +139,16 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    private void createHttpStep(String method, String path, long period, String timeunit) {
-        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.HTTP.getId());
-        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.HTTP.getId());
-        super.addProperty(StepProperty.ACTION, period == -1 ? "http4-invoke-url" : "http4-periodic-invoke-url");
+    private void createHttpStep(String protocol, String method, String path, long period, String timeunit) {
+        if ("HTTP".equals(protocol)) {
+            super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.HTTP.getId());
+            super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.HTTP.getId());
+            super.addProperty(StepProperty.ACTION, period == -1 ? "http4-invoke-url" : "http4-periodic-invoke-url");
+        } else {
+            super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.HTTPS.getId());
+            super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.HTTPS.getId());
+            super.addProperty(StepProperty.ACTION, period == -1 ? "https4-invoke-url" : "https4-periodic-invoke-url");
+        }
         final Map<String, String> properties = TestUtils.map(
             "path", path,
             "httpMethod", method
@@ -155,19 +161,19 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^create HTTP \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
-    public void createHTTPStepWithPeriod(String method, long period, String timeunit) {
-        createHttpStep(method, "/", period, timeunit);
+    @When("^create (HTTP|HTTPS) \"([^\"]*)\" step with period \"([^\"]*)\" \"([^\"]*)\"$")
+    public void createHTTPStepWithPeriod(String protocol, String method, long period, String timeunit) {
+        createHttpStep(protocol, method, "/", period, timeunit);
     }
 
-    @When("^create HTTP \"([^\"]*)\" step with path \"([^\"]*)\" and period \"([^\"]*)\" \"([^\"]*)\"$")
-    public void createHTTPStepWithPeriodAndPath(String method, String path, long period, String timeunit) {
-        createHttpStep(method, path, period, timeunit);
+    @When("^create (HTTP|HTTPS) \"([^\"]*)\" step with path \"([^\"]*)\" and period \"([^\"]*)\" \"([^\"]*)\"$")
+    public void createHTTPStepWithPeriodAndPath(String protocol, String method, String path, long period, String timeunit) {
+        createHttpStep(protocol, method, path, period, timeunit);
     }
 
-    @When("^create HTTP \"([^\"]*)\" step$")
-    public void createBasicHTTPStep(String method) {
-        createHttpStep(method, "/", -1, null);
+    @When("^create (HTTP|HTTPS) \"([^\"]*)\" step$")
+    public void createBasicHTTPStep(String protocol, String method) {
+        createHttpStep(protocol, method, "/", -1, null);
     }
 
     @When("^create IRC \"([^\"]*)\" step with nickname \"([^\"]*)\" and channels \"([^\"]*)\"$")
