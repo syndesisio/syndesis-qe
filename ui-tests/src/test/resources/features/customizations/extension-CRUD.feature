@@ -66,5 +66,6 @@ Feature: Customization - Extensions CRUD
     Then check visibility of dialog page "Are you sure you want to delete the "Log Message Body" extension?"
 
     When click on the modal dialog "Delete" button
+    And remove all "success" alerts
   #  And sleep for jenkins delay or "3" seconds
     Then check that technical extension "Log Message Body" is not visible
