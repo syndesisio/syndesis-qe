@@ -92,7 +92,10 @@ public class Form {
         TestUtils.waitFor(() -> getRootElement().shouldBe(visible).exists(),
             1, 20, "Form root element not found in 20s");
         for (String tagName : Arrays.asList("input", "select", "textarea", "button", "div", "checkbox")) {
-            for (SelenideElement element : getRootElement().shouldBe(visible).findAll(By.tagName(tagName)).exclude(STALE_ELEMENT)) {
+            for (SelenideElement element : getRootElement().shouldBe(visible).findAll(By.tagName(tagName))) {
+                if (element.is(STALE_ELEMENT)) {
+                    continue;
+                }
                 inputsMap.put(element.getAttribute(fillBy.attribute), tagName);
             }
         }
