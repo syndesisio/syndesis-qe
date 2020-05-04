@@ -29,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConditionalFlowSteps {
     private static class EditFlowStepElements {
-        private static By ICON_DOWN = By.className("fa-arrow-circle-o-down");
-        private static By ICON_UP = By.className("fa-arrow-circle-o-up");
-        private static By ICON_DELETE = By.className("fa-trash-o");
+        private static By ICON_DOWN = By.className("fa-arrow-alt-circle-down");
+        private static By ICON_UP = By.className("fa-arrow-alt-circle-up");
+        private static By ICON_DELETE = By.className("fa-trash");
         private static By CONDITION_LIST_ITEM = ByUtils.containsDataTestId("input", "-condition");
         private static By OPEN_FLOW_CONDITION_BUTTON_PARENT = By.cssSelector("[data-testid*=\"choice-view\"][data-testid*=\"flow-button\"]");
         private static By FLOW_DROPDOWN = ByUtils.containsDataTestId("flows-dropdown");
@@ -40,9 +40,8 @@ public class ConditionalFlowSteps {
         private static By FLOW_BACK_DROPDOWN_BUTTON = ByUtils.dataTestId("a", "editor-toolbar-dropdown-back-button-item-back-button");
         private static By FLOW_BACK_DIRECT_BUTTON = By.id("integration-editor-back-button");
         private static By ADD_ANOTHER_CONDITION = ByUtils.dataTestId("button", "form-array-control-add-another-item-button");
-        private static By WARNING_ICON = ByUtils.dataTestId("button", "integration-editor-steps-list-item-warning-button");
-        private static By ADD_DATA_MAPPING_STEP_WARNING_LINK =
-            ByUtils.dataTestId("a", "integration-editor-step-adder-add-step-before-connection-link");
+        private static By WARNING_ICON = ByUtils.containsDataTestId("warning-button");
+        private static By ADD_DATA_MAPPING_STEP_WARNING_LINK = ByUtils.dataTestId("integration-editor-step-adder-add-step-before-connection-link");
         private static By ADD_DEFAULT_FLOW_WARNING_LINK = ByUtils.dataTestId("a", "integration-editor-step-adder-add-default-flow-link");
 
         private static By getConditionOnPosition(String position) {
@@ -57,7 +56,7 @@ public class ConditionalFlowSteps {
 
     private static class EditIntegrationElements {
         private static By CONDITIONAL_FLOW_STEP = ByUtils.dataTestId("integration-editor-steps-list-item-conditional-flows-list-item");
-        private static By CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM = By.className("list-group-item");
+        private static By CONDITIONAL_FLOW_STEP_INNER_FLOW_ITEM = ByUtils.dataTestId("condition-row");
         private static By DEFAULT_DISABLED = By.className("fa-ban");
 
         private static By getNthConditionalFlowStep(int nthConditionalFlowElement) {
@@ -121,7 +120,7 @@ public class ConditionalFlowSteps {
                 default:
                     throw new IllegalArgumentException("Incorrect data table value on position 1");
             }
-            selectedCondition.$(iconSelector).shouldBe(visible).click();
+            selectedCondition.$(iconSelector).parent().shouldBe(visible).click();
         }
     }
 
@@ -143,7 +142,7 @@ public class ConditionalFlowSteps {
 
     @When("^return to primary flow from integration flow from dropdown$")
     public void goBackToPrimaryFlowFromDropdown() {
-        UIUtils.enxureUILoaded();
+        UIUtils.ensureUILoaded();
         openDropdownWithConditions();
         $(EditFlowStepElements.FLOW_BACK_DROPDOWN_BUTTON).shouldBe(visible).click();
     }

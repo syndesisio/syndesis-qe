@@ -43,6 +43,7 @@ import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.UIUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -425,6 +426,7 @@ public class CommonSteps {
 
     @When("^click? on the \"([^\"]*)\" button.*$")
     public void clickOnButton(String buttonTitle) {
+        UIUtils.ensureUILoaded();
         if ("Done".equals(buttonTitle)) {
             // this is hack to replace Done with Next if not present
             try {
