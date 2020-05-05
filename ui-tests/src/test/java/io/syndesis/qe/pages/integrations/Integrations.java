@@ -72,6 +72,10 @@ public class Integrations extends SyndesisPageObject {
         return integrationsList.getStartingStatus(item);
     }
 
+    public void waitUntilStartingStatusDisappears() {
+        integrationsList.waitUntilStartingStatusDisappears();
+    }
+
     public SelenideElement getKebabButtonFromItem(SelenideElement item) {
         return integrationsList.getKebabButton(item);
     }

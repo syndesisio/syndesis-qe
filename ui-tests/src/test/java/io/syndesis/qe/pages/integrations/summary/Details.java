@@ -10,6 +10,7 @@ import static com.codeborne.selenide.Selenide.$$;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.fragments.IntegrationsList;
 import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -33,7 +34,6 @@ public class Details extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By STATUS = ByUtils.dataTestId("div", "syndesis-integration-status");
-        public static final By STARTING_STATUS = ByUtils.dataTestId("progress-with-link-value");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
 
         public static final By TITLE = By.className("integration-detail-editable-name");
@@ -113,7 +113,17 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getStartingStatus() {
-        return $(Element.STARTING_STATUS).text().trim();
+        String text = $(IntegrationsList.Element.STARTING_STATUS).shouldBe(visible).getText().trim();
+        if (!text.contains("Starting...") || text.contains("Stopping...")) {
+            text = $(IntegrationsList.Element.STARTING_STATUS_WITH_PROGRESS_BAR).shouldBe(visible).getText().trim();
+        }
+        return text;
+    }
+
+    public void waitUntilStartingStatusDisappears() {
+        TestUtils.waitFor(() -> !$(IntegrationsList.Element.STARTING_STATUS).exists(),
+            1, 60,
+            "Integration is still in the Starting... phase");
     }
 
     public String getIntegrationInfo() {

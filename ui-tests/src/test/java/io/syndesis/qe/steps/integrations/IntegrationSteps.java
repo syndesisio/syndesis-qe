@@ -243,15 +243,19 @@ public class IntegrationSteps {
 
         //polling every 200 ms for 10 minutes
         for (int i = 0; i < 5 * 60 * 10; i++) {
-            if (lastStatusIndex == statuses.size() - 1) {
+            if (lastStatusIndex == statuses.size()) {
                 switch (checkedPage) {
                     case "Home":
                     case "Integrations":
+                        //sometimes, the Starting... is shown, wait until it disappears
+                        integrations.waitUntilStartingStatusDisappears();
                         log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrationName));
                         assertThat(integrations.getIntegrationItemStatus(integrationName))
                             .isEqualToIgnoringWhitespace("Running");
                         break;
                     case "Integration detail":
+                        //sometimes, the Starting... is shown, wait until it disappears
+                        detailPage.waitUntilStartingStatusDisappears();
                         log.info("Status changed to: " + detailPage.getPublishedVersion().getText().trim());
                         assertThat(detailPage.getPublishedVersion().getText()).isEqualToIgnoringWhitespace("Published version 1");
                         break;
@@ -278,7 +282,7 @@ public class IntegrationSteps {
                 }
             } catch (Throwable t) {
                 log.info("Starting status no longer visible, checking deployed integration status");
-                lastStatusIndex = statuses.size() - 1;
+                lastStatusIndex += 1;
                 continue;
             }
 
