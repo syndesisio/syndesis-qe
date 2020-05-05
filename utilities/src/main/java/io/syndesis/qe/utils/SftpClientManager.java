@@ -76,7 +76,7 @@ public class SftpClientManager {
                 log.info("Retrying create ssh client in 30 seconds");
                 return false;
             }
-        }, 3, 30000L, "Unable to create ssh client after 3 retries");
+        }, 9, 30000L, "Unable to create ssh client after 9 retries");
         return sshClient;
     }
 

@@ -68,7 +68,8 @@ Feature: Integration - DB to DB with extension
     # assert integration is present in list
     Then Integration "tech-extension-create-integration-with-new-tech-extension" is present in integrations list
     # wait for integration to get in active state
-    Then wait until integration "tech-extension-create-integration-with-new-tech-extension" gets into "Running" state
+    When wait until integration "tech-extension-create-integration-with-new-tech-extension" gets into "Running" state
+    And wait until integration tech-extension-create-integration-with-new-tech-extension processed at least 1 message
 
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 

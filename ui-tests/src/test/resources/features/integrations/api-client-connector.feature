@@ -69,7 +69,8 @@ Feature: Integration - DB to API
     Then publish integration
 
     When navigate to the "Integrations" page
-    Then wait until integration "Todo integration" gets into "Running" state
+    And wait until integration "Todo integration" gets into "Running" state
+    And wait until integration Todo integration processed at least 1 message
 
     When navigate to Todo app
     Then check Todo list grows in "15" second
@@ -125,6 +126,5 @@ Feature: Integration - DB to API
 
     When navigate to the "Integrations" page
     Then wait until integration "db_custom_api_db" gets into "Running" state
-    # we have to wait here so integration has time to trigger the insert
-    And sleep for jenkins delay or "30" seconds
-    And check that query "select * from contact where company = 'malphite'" has some output
+    And wait until integration db_custom_api_db processed at least 1 message
+    Then check that query "select * from contact where company = 'malphite'" has some output

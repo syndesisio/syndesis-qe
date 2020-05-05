@@ -7,6 +7,8 @@ import io.syndesis.qe.Image;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.Resource;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -15,11 +17,13 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,8 +32,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import cz.xtf.core.openshift.OpenShift;
-import io.fabric8.kubernetes.api.model.LocalObjectReference;
-import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.openshift.api.model.ImageStream;
@@ -66,6 +68,7 @@ public class CamelK implements Resource {
             OpenShift oc = OpenShiftUtils.getInstance();
             oc.apps().deployments().withName("camel-k-operator").delete();
             oc.getLabeledPods("camel.apache.org/component", "operator").forEach(oc::deletePod);
+            ResourceFactory.get(Syndesis.class).changeRuntime("springboot");
         }
     }
 
@@ -142,25 +145,23 @@ public class CamelK implements Resource {
                 arguments.append(" --operator-image ").append(TestConfiguration.image(Image.CAMELK));
             }
             arguments.append(" -n ").append(TestConfiguration.openShiftNamespace());
+            arguments.append(" --config ").append(OpenShiftUtils.binary().getOcConfigPath());
 
             final String command = LOCAL_ARCHIVE_EXTRACT_DIRECTORY + "/kamel install" + arguments.toString();
             log.info("Invoking " + command);
-            Runtime.getRuntime().exec(command).waitFor();
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            if (process.exitValue() != 0) {
+                InfraFail.fail("The kamel command failed. The exit value is " + process.exitValue() +
+                    "\nThe process error stream: " + IOUtils.toString(process.getErrorStream(), StandardCharsets.UTF_8) +
+                    "\nThe process input stream: " + IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8));
+            }
         } catch (Exception e) {
-            fail("Unable to invoke kamel binary", e);
+            InfraFail.fail("Unable to invoke kamel binary", e);
         }
 
-        // We need to link syndesis-pull-secret to camel-k-operator SA
-        try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator") != null);
-        } catch (Exception e) {
-            fail("Unable to get camel-k-operator service account", e);
-        }
-        ServiceAccount sa = OpenShiftUtils.getInstance().getServiceAccount("camel-k-operator");
-        sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
-        OpenShiftUtils.getInstance().serviceAccounts().createOrReplace(sa);
-        // It is very likely that the operator pod already tried to spawn and failed because of the missing secret
-        OpenShiftUtils.getInstance().deletePods("name", "camel-k-operator");
+        OpenShiftWaitUtils.waitUntilPodAppears("camel-k-operator");
+        ResourceFactory.get(Syndesis.class).ensureImagePull("camel-k-operator", "camel-k-operator");
     }
 
     public void resetState() {

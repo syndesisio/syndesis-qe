@@ -1,7 +1,6 @@
 package io.syndesis.qe.bdd.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
@@ -15,6 +14,7 @@ import io.syndesis.qe.resource.impl.MongoDb36;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.SFTP;
 import io.syndesis.qe.resource.impl.WildFlyS2i;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -107,7 +107,7 @@ public class OpenshiftValidationSteps {
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded(podName);
         } catch (InterruptedException | TimeoutException e) {
-            fail(e.getMessage());
+            InfraFail.fail(e.getMessage());
         }
     }
 

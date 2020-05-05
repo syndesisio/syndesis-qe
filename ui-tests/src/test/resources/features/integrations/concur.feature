@@ -81,6 +81,7 @@ Feature: Concur Connector
     And publish integration
     Then Integration "concur-list-get" is present in integrations list
     And wait until integration "concur-list-get" gets into "Running" state
+    And wait until integration concur-list-get processed at least 1 message
     And validate that logs of integration "concur-list-get" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
 
     Then reset content of "contact" table
@@ -136,6 +137,7 @@ Feature: Concur Connector
     When navigate to the "Integrations" page
     Then Integration "concur-listitems-get" is present in integrations list
     And wait until integration "concur-listitems-get" gets into "Running" state
+    And wait until integration concur-listitems-get processed at least 1 message
     And validate that logs of integration "concur-listitems-get" contains string "gWnytPb$pHxNJMPz4yL0nosnCQ4r30gRWs4w"
 
     Then reset content of "contact" table
@@ -225,5 +227,6 @@ Feature: Concur Connector
     And publish integration
     Then Integration "concur-listitem-create-delete" is present in integrations list
     And wait until integration "concur-listitem-create-delete" gets into "Running" state
+    And wait until integration concur-listitem-create-delete processed at least 1 message
 
     Then check that query "select * from contact where first_name = 'Zilean'" has some output

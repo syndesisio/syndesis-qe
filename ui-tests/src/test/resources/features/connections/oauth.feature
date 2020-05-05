@@ -14,7 +14,7 @@ Feature: Connections - OAuth
   @oauth-validate-connectors
   Scenario: Create integration using connections with OAuth
     When navigate to the "Settings" page
-    #Then check that settings item "Salesforce" has button "Register"
+#    Then check that settings item "Salesforce" has button "Register"
     When fill all oauth settings
     Then create connections using oauth
 #    Until the issue with @concur support is resolved, concur testing will be disabled.
@@ -62,7 +62,7 @@ Feature: Connections - OAuth
     #give gmail time to receive mail
     When send an e-mail
 
-    When sleep for "6000" ms
+    And wait until integration OAuth-gmail-test processed at least 1 message
     Then validate that logs of integration "OAuth-gmail-test" contains string "syndesis-tests"
     And delete emails from "QE Google Mail" with subject "syndesis-tests"
 
@@ -98,11 +98,12 @@ Feature: Connections - OAuth
     And wait until integration "OAuth-twitter-test" gets into "Running" state
 
     When tweet a message from twitter_talky to "Twitter Listener" with text "OAuth testing"
-    When sleep for "10000" ms
+    And wait until integration OAuth-twitter-test processed at least 1 message
     Then validate that logs of integration "OAuth-twitter-test" contains string "OAuth testing"
     And clean all tweets in twitter_talky account
 
   @ENTESB-11282
+  @ENTESB-13204
   @oauth-gcalendar
   Scenario: Testing Google calendar OAuth connector
     Given renew access token for "QE Google Calendar" google account
@@ -122,7 +123,7 @@ Feature: Connections - OAuth
     Then check that position of connection to fill is "Start"
     When select the "Gcalendar-test" connection
     And select "Get Events" integration action
-    And fill in values by element data-testid
+    And fill in aliased calendar values by data-testid
       | consumefromnow     | false          |
       | considerlastupdate | false          |
       | calendarid         | syndesis-test1 |
@@ -146,7 +147,7 @@ Feature: Connections - OAuth
       | past_event1 | 2018-10-01 | 10:00:00   | 2018-10-01 | 11:00:00 | An old event | jbossqa.fuse@gmail.com |
     And wait until integration "OAuth-Gcalendar-test" gets into "Running" state
 
-    When sleep for "6000" ms
+    And wait until integration OAuth-Gcalendar-test processed at least 1 message
     Then validate that logs of integration "OAuth-Gcalendar-test" contains string "past_event1"
 
   @ENTESB-11282
@@ -186,7 +187,7 @@ Feature: Connections - OAuth
 
     And wait until integration "OAuth-Salesforce-test" gets into "Running" state
     And create SF lead with first name: "Karol1", last name: "Stieranka1", email: "k1stieranka1@istrochem.sk" and company: "Istrochem"
-    When sleep for "6000" ms
+    And wait until integration OAuth-Salesforce-test processed at least 1 message
 
     Then validate that logs of integration "OAuth-Salesforce-test" contains string "k1stieranka1@istrochem.sk"
     Then delete lead from SF with email: "k1stieranka1@istrochem.sk"
@@ -224,7 +225,7 @@ Feature: Connections - OAuth
     # wait for integration to get in active state
     And wait until integration "OAuth-gsheets-test" gets into "Running" state
 
-    When sleep for "6000" ms
+    And wait until integration OAuth-gsheets-test processed at least 1 message
 
     Then validate that logs of integration "OAuth-gsheets-test" contains string "title=Test-Data"
 
@@ -233,7 +234,9 @@ Feature: Connections - OAuth
   @twitter-oauth-error-msg
   Scenario: Testing Twitter OAuth error message
     When navigate to the "Settings" page
-    And click on element with data-testid "o-auth-app-list-item-twitter-list-item"
+#    preliminary solution:
+    And click on element with id "app-item-toggle-twitter"
+
     And fill in values by element data-testid
       | consumerkey    | invalidValue |
       | consumersecret | invalidValue |

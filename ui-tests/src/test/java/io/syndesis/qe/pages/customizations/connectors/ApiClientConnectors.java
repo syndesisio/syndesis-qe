@@ -18,14 +18,14 @@ import com.codeborne.selenide.SelenideElement;
 public class ApiClientConnectors extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.className("list-group");
-        public static By CONNECTOR_TITLE = By.className("list-group-item-heading");
-        public static By CONNECTORS_LIST_ITEM = ByUtils.dataTestId("api-connector-list-item-swagger-petstore-list-item");
+        public static final By ROOT = ByUtils.dataTestId("api-connector-list");
+        public static By CONNECTOR_TITLE = ByUtils.dataTestId("api-connector-name");
+        public static By CONNECTORS_LIST_ITEM = ByUtils.containsDataTestId("li", "api-connector-list-item");
         public static By DETAIL_BUTTON = ByUtils.dataTestId("a", "api-connector-list-item-details-button");
     }
 
     private static class Button {
-        public static By CREATE_API_CONNECTOR_RIGHT = By.xpath(".//a[text()[contains(.,'Create API Connector')]]");
+        public static By CREATE_API_CONNECTOR_RIGHT = ByUtils.dataTestId("api-connector-list-view-create-button");
     }
 
     public void startWizard() {
@@ -39,7 +39,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     public SelenideElement getConnectorItem(String connectorName) {
         final String dataTestid = ("api-connector-list-item-" + connectorName.trim() + "-list-item").replaceAll("[\\s_]", "-").toLowerCase();
-        return $(ByUtils.dataTestId("div", dataTestid)).should(exist);
+        return $(ByUtils.dataTestId(dataTestid)).should(exist);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     public void clickConnectorByTitle(String connectorName) {
         final String dataTestid = ("api-connector-list-item-" + connectorName.trim() + "-list-item").replaceAll("[\\s_]", "-").toLowerCase();
-        $(ByUtils.dataTestId("div", dataTestid)).should(exist).$(Element.DETAIL_BUTTON).shouldBe(visible).click();
+        $(ByUtils.dataTestId(dataTestid)).should(exist).$(Element.DETAIL_BUTTON).shouldBe(visible).click();
     }
 
     public SelenideElement getDeleteButton(String connectorName) {

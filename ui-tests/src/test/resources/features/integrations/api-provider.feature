@@ -96,9 +96,7 @@ Feature: API Provider Integration
       | 200 |  | true |
 
     And set response description "Response description" for response "200"
-    And set parameters types
-      | type | String  | operations | response | true | 200 |
-
+    And set type of "application/json" media type to "String" on property "type" for response "200"
     #Then check all for errors
 
     And change frame to "syndesis"
@@ -124,7 +122,7 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration from scratch" gets into "Running" state
     When execute GET on API Provider route i-todo-integration-from-scratch endpoint "/syndesistestpath"
     Then verify response has status 200
-
+    And verify response has body type "application/json"
 
   @api-provider-get-single
   Scenario: API Provider GET single
@@ -1182,6 +1180,7 @@ Feature: API Provider Integration
     When select the "TODO Integration base path" integration
     Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-syndesis.*/api$
 
+  @conditional-flow
   @api-provider-conditional-flow
   Scenario: Conditional flows used in API Provider
     When create an API Provider integration "conditional-provider" from file swagger/connectors/todo.json
@@ -1197,7 +1196,7 @@ Feature: API Provider Integration
     And click on the "Next" button
     And click on the "Next" button
 
-    When configure condition on position 2
+    When configure condition on position 1
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
@@ -1211,7 +1210,7 @@ Feature: API Provider Integration
     And click on the "Done" button
     And return to primary flow from integration flow from dropdown
 
-    When configure condition on position 3
+    When configure condition on position 2
     And add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action

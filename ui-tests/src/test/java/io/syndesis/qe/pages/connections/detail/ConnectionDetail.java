@@ -20,7 +20,7 @@ public class ConnectionDetail extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector("pf-c-page__main");
-        public static final By CONNECTION_DETAIL = By.cssSelector(".pf-c-content");
+        public static final By CONNECTION_DETAIL = By.className("pf-c-content");
         public static final By CONNECTION_NAME = By.cssSelector(".inline-text-readwidget.connection-details-header__connectionName");
         public static final By CONNECTION_HEADER = By.cssSelector(".connection-details-header__row");
     }
@@ -48,10 +48,11 @@ public class ConnectionDetail extends SyndesisPageObject {
     }
 
     public void setDescription(String description) {
-        this.connectionDetailElement().find(By.className("pficon-edit")).click();
-        this.connectionDetailElement().find(By.id("textarea")).clear();
-        this.connectionDetailElement().find(By.id("textarea")).setValue(description);
-        this.connectionDetailElement().find(By.className("fa-check")).click();
+        this.connectionDetailElement().find(By.className("inline-text-readwidget")).click();
+        this.connectionDetailElement().find(By.id("inline-edit-textarea")).clear();
+        this.connectionDetailElement().find(By.id("inline-edit-textarea")).setValue(description);
+        //confirm and cancel buttons are indentical:
+        this.connectionDetailElement().findAll(By.className("pf-c-button")).get(0).click();
         TestUtils.sleepForJenkinsDelayIfHigher(2);
     }
 }

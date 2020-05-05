@@ -60,6 +60,7 @@ Feature: Integration - DB to DB mysql
     And publish integration
     And set integration name "db-connection-crud-2-read-create-mysql"
     And publish integration
-    Then wait until integration "db-connection-crud-2-read-create-mysql" gets into "Running" state
+    And wait until integration "db-connection-crud-2-read-create-mysql" gets into "Running" state
+    And wait until integration db-connection-crud-2-read-create-mysql processed at least 1 message
 
     Then validate that all todos with task "Josef_mysql" have value completed "2", period in ms: "5000" on "mysql"

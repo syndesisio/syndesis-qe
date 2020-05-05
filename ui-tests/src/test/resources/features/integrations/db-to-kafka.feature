@@ -5,6 +5,7 @@
 @datamapper
 @kafka
 @integrations-db-to-kafka-to-db
+@ENTESB-13113
 Feature: Integration - DB to DB
 
   Background: Clean application state
@@ -16,8 +17,8 @@ Feature: Integration - DB to DB
     And inserts into "CONTACT" table
       | Joe | Jackson | Red Hat | db |
 #    this sleep is necessary, because AMQ streams autodiscovery process takes some time so streams are not available immediately
-#    and unfortunatelly there is no indication of autodiscovery process status yet.
-    When sleep for "45000" ms
+#    and unfortunatelly there is no indication of autodiscovery process status yet. see issue ENTESB-13113
+    When sleep for "150000" ms
     And created Kafka connection using AMQ streams auto detection
       | Kafka Message Broker | Kafka Autodetect | Kafka Auto Detect QE | Kafka Streams Auto Detection |
 
@@ -107,7 +108,9 @@ Feature: Integration - DB to DB
     And set integration name "kafka-to-db E2E"
     And publish integration
 
-    Then wait until integration "db-to-kafka E2E" gets into "Running" state
-    Then wait until integration "kafka-to-db E2E" gets into "Running" state
+    And wait until integration "db-to-kafka E2E" gets into "Running" state
+    And wait until integration "kafka-to-db E2E" gets into "Running" state
+    And wait until integration db-to-kafka E2E processed at least 1 message
+    And wait until integration kafka-to-db E2E processed at least 1 message
 
     Then checks that query "SELECT task FROM TODO WHERE task = 'Joe' limit 1" has "1" output

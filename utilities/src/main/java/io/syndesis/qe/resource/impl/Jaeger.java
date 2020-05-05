@@ -10,6 +10,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,18 +22,32 @@ import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.api.model.rbac.Subject;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * External Jaeger instance. Make sure you don't have syndesis-jaeger in the namespace
+ */
 @Slf4j
 public class Jaeger implements Resource {
     private static final String[] JAEGER_RESOURCES = new String[] {
         "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/crds/jaegertracing.io_jaegers_crd.yaml",
         "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/service_account.yaml",
         "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/role.yaml",
-        "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/role_binding.yaml"
+        "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/role_binding.yaml",
+        "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/operator.yaml"
     };
 
     private List<HasMetadata> processedResources;
+
+    @Getter
+    private String queryServiceHost;
+
+    @Getter
+    private String collectorServiceHost;
+
+    private static final String COLLECTOR_SERVICE_NAME = "noauth-jaeger-collector";
+    private static final String QUERY_SERVICE_NAME = "noauth-jaeger-query";
 
     @Override
     public void deploy() {
@@ -53,27 +68,45 @@ public class Jaeger implements Resource {
         });
 
         OpenShiftUtils.getInstance().roleBindings().createOrReplaceWithNew()
-            .withNewMetadata().withName("syndesis-jaeger-operator").endMetadata()
-            .withNewRoleRef().withName("jaeger-operator").endRoleRef()
-            .withSubjects(new ObjectReferenceBuilder().withKind("ServiceAccount").withName("syndesis-operator")
+            .withNewMetadata().withName("jaeger-operator-cluster").endMetadata()
+            .withNewRoleRef().withName("jaeger-operator-cluster").endRoleRef()
+            .withSubjects(new ObjectReferenceBuilder().withKind("ServiceAccount").withName("jaeger-operator")
                 .withNamespace(TestConfiguration.openShiftNamespace()).build())
             .done();
 
-        // Jaeger operator is creating the syndesis-jaeger instance and therefore it is not possible to add the syndesis.io/component label
-        // Do it async in a new thread so that it doesn't need to be hacked in other place where it would not make sense
-        // If the wait fails, then the "wait for Syndesis to become ready" step will time out, so it is not necessary to handle the
-        // exception here
-        new Thread(() -> {
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(
-                    OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"))
-                );
-            } catch (Exception e) {
-                log.error("Syndesis-jaeger pod never reached ready state!");
-            }
-            OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
-                .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
-        }).start();
+        OpenShiftWaitUtils.waitUntilPodIsRunning("jaeger-operator");
+        OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("jaeger-operator").get().getMetadata().getName())
+            .edit().editMetadata().addToLabels("syndesis.io/component", "jaeger-operator").endMetadata().done();
+        OpenShiftUtils.create(Paths.get("src/test/resources/jaeger/jaeger.yml").toAbsolutePath().toString());
+        OpenShiftWaitUtils.waitUntilPodIsRunning("jaeger-all-in-one");
+
+        OpenShiftUtils.getInstance().createService(OpenShiftUtils.getInstance().services()
+            .load(Paths.get("src/test/resources/jaeger/jaeger-service-collector.yml").toFile()).get());
+        collectorServiceHost = OpenShiftUtils.getInstance().routes().createOrReplaceWithNew()
+            .withNewMetadata()
+            .withName(COLLECTOR_SERVICE_NAME)
+            .endMetadata()
+            .withNewSpec()
+            .withWildcardPolicy("None")
+            .withNewTo()
+            .withKind("Service").withName(COLLECTOR_SERVICE_NAME)
+            .endTo()
+            .endSpec()
+            .done().getSpec().getHost();
+
+        OpenShiftUtils.getInstance().createService(OpenShiftUtils.getInstance().services()
+            .load(Paths.get("src/test/resources/jaeger/jaeger-service-query.yml").toFile()).get());
+        queryServiceHost = OpenShiftUtils.getInstance().routes().createOrReplaceWithNew()
+            .withNewMetadata()
+            .withName(QUERY_SERVICE_NAME)
+            .endMetadata()
+            .withNewSpec()
+            .withWildcardPolicy("None")
+            .withNewTo()
+            .withKind("Service").withName(QUERY_SERVICE_NAME)
+            .endTo()
+            .endSpec()
+            .done().getSpec().getHost();
     }
 
     @Override
@@ -83,12 +116,18 @@ public class Jaeger implements Resource {
             .filter(res -> !(res instanceof CustomResourceDefinition || res instanceof ClusterRole))
             .collect(Collectors.toList()))
             .cascading(true).delete();
+
+        OpenShiftUtils.getInstance().services().withName(COLLECTOR_SERVICE_NAME).delete();
+        OpenShiftUtils.getInstance().services().withName(QUERY_SERVICE_NAME).delete();
+        OpenShiftUtils.getInstance().routes().withName(COLLECTOR_SERVICE_NAME).delete();
+        OpenShiftUtils.getInstance().routes().withName(QUERY_SERVICE_NAME).delete();
+        OpenShiftUtils.binary().execute("delete", "jaeger.jaegertracing.io/jaeger-all-in-one");
     }
 
     @Override
     public boolean isReady() {
-        // Jaeger operator is deployed by the syndesis operator, so consider it ready always as this code runs before the CR is created
-        return true;
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("jaeger-operator")) &&
+            OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("jaeger-all-in-one"));
     }
 
     private void processResources() {

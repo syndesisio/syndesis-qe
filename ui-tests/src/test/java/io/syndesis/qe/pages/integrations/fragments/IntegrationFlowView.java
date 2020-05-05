@@ -1,11 +1,11 @@
 package io.syndesis.qe.pages.integrations.fragments;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
-import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.StepFactory;
 import io.syndesis.qe.utils.ByUtils;
@@ -34,20 +34,21 @@ public class IntegrationFlowView extends SyndesisPageObject {
         public static final By NAME = By.cssSelector("input.form-control.integration-name");
         public static final By STEP_TITLE = By.cssSelector("div.step-name.syn-truncate__ellipsis");
         public static final By ACTIVE_STEP_ICON = By.cssSelector(".integration-flow-step-details.is-active");
-        public static final By DELETE = By.className("delete-icon");
         public static final By STEP_INSERT = ByUtils.dataTestId("integration-flow-add-step-add-step-link");
 
-        public static final By POPOVER_CLASS = By.className("popover-content");
-        public static final By STEP_DETAILS = By.className("list-view-pf-body");
-        public static final By DATA_WARNING_BUTTON = ByUtils.dataTestId("integration-editor-steps-list-item-warning-button");
+        public static final By POPOVER_CLASS = By.className("pf-c-popover__body");
+        public static final By STEP_DETAILS = By.className("pf-l-split__item");
+
+        public static final By DATA_WARNING_BUTTON = ByUtils.containsDataTestId("button", "warning-button");
 
         public static final By FLOW_TITLE = By.cssSelector(".step.start .step-name");
 
-        public static final By TRASH = By.className("fa-trash");
+        public static final By TRASH = ByUtils.dataTestId("integration-editor-step-adder-delete-button");
 
-        public static final By DELETE_BUTTON = By.cssSelector(".modal-footer .btn-primary");
+        public static final By DELETE_BUTTON = ByUtils.dataTestId("integration-editor-step-adder-delete-button");
 
-        public static final By STEP = By.cssSelector(".integration-editor-steps-list-item__list-item");
+        //tag has to be specified otherwise it is mixed with DATA_WARNING_BUTTONs
+        public static final By STEP = ByUtils.containsDataTestId("li", "integration-editor-steps-list-item");
     }
 
     private static final class Button {
@@ -103,11 +104,11 @@ public class IntegrationFlowView extends SyndesisPageObject {
     }
 
     public ElementsCollection getAllTrashes() {
-        return this.getRootElement().findAll(Element.DELETE);
+        return this.getRootElement().findAll(Element.DELETE_BUTTON);
     }
 
     public void clickRandomTrash() {
-        this.getElementRandom(Element.DELETE).shouldBe(visible).click();
+        this.getElementRandom(Element.DELETE_BUTTON).shouldBe(visible).click();
     }
 
     public void clickAddStepLink(int pos) {
@@ -180,7 +181,8 @@ public class IntegrationFlowView extends SyndesisPageObject {
     public void deleteStepOnPostion(int stepPosition) {
         SelenideElement step = getStepOnPosition(stepPosition);
         step.$(Element.TRASH).shouldBe(visible).click();
-        $(Element.DELETE_BUTTON).shouldBe(enabled, visible).click();
+        ModalDialogPage dialog = new ModalDialogPage();
+        dialog.getButton("Delete").click();
     }
 
     public String getPopoverText() {

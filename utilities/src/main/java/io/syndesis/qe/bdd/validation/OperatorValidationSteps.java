@@ -3,6 +3,7 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.syndesis.qe.Addon;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.accounts.Account;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
@@ -10,6 +11,7 @@ import io.syndesis.qe.endpoints.ExtensionsEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
+import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HttpUtils;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -123,7 +126,17 @@ public class OperatorValidationSteps {
                 content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
                     : TestConfiguration.upstreamRepository());
             }
+            if (content.contains("REPLACE_QUERY_URL")) {
+                content = content.replace("REPLACE_QUERY_URL", ResourceFactory.get(Jaeger.class).getQueryServiceHost());
+            }
+            if (content.contains("REPLACE_COLLECTOR_URL")) {
+                content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
+            }
             syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
+            //don't do workarounds for external Jaeger
+            if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+                syndesis.jaegerWorkarounds();
+            }
         } catch (IOException e) {
             fail("Unable to open file " + file, e);
         }
@@ -133,7 +146,13 @@ public class OperatorValidationSteps {
     public void checkVersion() {
         final String deployedVersion = TestUtils.getSyndesisVersion();
         if (TestConfiguration.syndesisInstallVersion() != null) {
-            assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisInstallVersion());
+            // If the install version is "1.X", the deployed version can be "1.X.Y"
+            if (TestConfiguration.syndesisInstallVersion().matches("^\\d\\.\\d$")) {
+                assertThat(deployedVersion).matches("^(\\d\\.){2}\\d+$");
+                assertThat(deployedVersion).startsWith(TestConfiguration.syndesisInstallVersion());
+            } else {
+                assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisInstallVersion());
+            }
         } else if (TestConfiguration.syndesisNightlyVersion() != null) {
             assertThat(deployedVersion).isEqualTo(TestConfiguration.syndesisNightlyVersion());
         } else {
@@ -155,7 +174,7 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
                 .getStatus().getIngress() != null, 120000L);
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException | IOException e) {
             fail("Unable to check route: ", e);
         }
 
@@ -179,13 +198,19 @@ public class OperatorValidationSteps {
             .waitFor();
     }
 
-    @Then("^check that jaeger (is|is not) collecting metrics for integration \"([^\"]*)\"$")
-    public void checkJaeger(String shouldCollect, String integrationName) {
+    @Then("^check that jaeger pod \"([^\"]*)\" (is|is not) collecting metrics for integration \"([^\"]*)\"$")
+    public void checkJaeger(String jaegerPodName, String shouldCollect, String integrationName) {
         TestUtils.sleepIgnoreInterrupt(30000L);
         LocalPortForward lpf = TestUtils.createLocalPortForward(
-            OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith("syndesis-jaeger")), 16686, 16686);
+            OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith(jaegerPodName)), 16686, 16686);
         final String integrationId = integrations.getIntegrationId(integrationName).get();
-        JSONArray jsonData = new JSONObject(HttpUtils.doGetRequest("http://localhost:16686/api/traces?service=" + integrationId).getBody())
+        String host = "localhost:16686"; //host for default syndesis-jaeger
+        if (ResourceFactory.get(Syndesis.class).containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+            host = ResourceFactory.get(Jaeger.class).getQueryServiceHost();
+        }
+        JSONArray jsonData = new JSONObject(HttpUtils.doGetRequest(
+            "http://" + host + "/api/traces?service=" + integrationId)
+            .getBody())
             .getJSONArray("data");
         TestUtils.terminateLocalPortForward(lpf);
         if ("is".equals(shouldCollect)) {
@@ -248,7 +273,7 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
                 .getStatus().getPhase().equals("Bound"));
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
         }
 
@@ -264,7 +289,7 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
                 .getStatus().getPhase().equals("Bound"));
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
         }
         assertThat(OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db").getSpec().getVolumeName()).isEqualTo(TEST_PV_NAME);
@@ -356,7 +381,7 @@ public class OperatorValidationSteps {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator").contains("backup for syndesis done"),
                 30000L, 10 * 60000L);
             log.info("Backup done");
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException e) {
             fail("Exception thrown while waiting for backup log", e);
         }
     }
@@ -479,8 +504,12 @@ public class OperatorValidationSteps {
 
     @Then("check that connection {string} exists")
     public void checkConnection(String connection) {
-        // This fails when it is not present, so we don't need the value
-        connections.getConnectionByName(connection);
+        assertThat(connections.getConnectionByName(connection)).isNotNull();
+    }
+
+    @Then("check that connection {string} doesn't exist")
+    public void checkConnectionDoesNotExist(String connection) {
+        assertThat(connections.getConnectionByName(connection)).isNull();
     }
 
     @Then("check that extension {string} exists")

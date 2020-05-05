@@ -81,5 +81,5 @@ Feature: Data Mapper
     And wait until integration "11870" gets into "Running" state
 
     # validate that all items from db are present
-    When sleep for "10000" ms
+    And wait until integration 11870 processed at least 1 message
     And validate that number of all todos with task "task1 task2 task3" is "1"

@@ -64,8 +64,8 @@ Feature: Integration - DB to DB
     And publish integration
     And set integration name "CRUD1-read-update E2E"
     And publish integration
-    Then wait until integration "CRUD1-read-update E2E" gets into "Running" state
-
+    And wait until integration "CRUD1-read-update E2E" gets into "Running" state
+    And wait until integration CRUD1-read-update E2E processed at least 1 message
     Then check that query "SELECT * FROM TODO WHERE completed = 1" has some output
 
 
@@ -117,7 +117,8 @@ Feature: Integration - DB to DB
     And publish integration
     And set integration name "db-connection-crud-2-read-create"
     And publish integration
-    Then wait until integration "db-connection-crud-2-read-create" gets into "Running" state
+    And wait until integration "db-connection-crud-2-read-create" gets into "Running" state
+    And wait until integration db-connection-crud-2-read-create processed at least 1 message
 
     Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
 
@@ -174,10 +175,11 @@ Feature: Integration - DB to DB
     And publish integration
     And set integration name "CRUD3-read-delete E2E"
     And publish integration
-    Then wait until integration "CRUD3-read-delete E2E" gets into "Running" state
+    And wait until integration "CRUD3-read-delete E2E" gets into "Running" state
+    And wait until integration CRUD3-read-delete E2E processed at least 1 message
 
     Then validate that number of all todos with task "Joe" is "0"
-    Then validate that number of all todos with task "Jimmy" is "1"
+    And validate that number of all todos with task "Jimmy" is "1"
 
 #
 #  4. select - create (via buildin procedure)
@@ -236,7 +238,9 @@ Feature: Integration - DB to DB
     And publish integration
     And set integration name "db-connection-crud-4-read-update-inbuilt"
     And publish integration
-    Then wait until integration "db-connection-crud-4-read-update-inbuilt" gets into "Running" state
+    And wait until integration "db-connection-crud-4-read-update-inbuilt" gets into "Running" state
+    And wait until integration db-connection-crud-4-read-update-inbuilt processed at least 1 message
+
     Then validate add_lead procedure with last_name: "Stieranka", company: "Istrochem"
 
 
@@ -305,10 +309,11 @@ Feature: Integration - DB to DB
     And publish integration
     And set integration name "DB Connection 5 SQL query checker E2E"
     And publish integration
-    Then wait until integration "DB Connection 5 SQL query checker E2E" gets into "Running" state
+    And wait until integration "DB Connection 5 SQL query checker E2E" gets into "Running" state
+    And wait until integration DB Connection 5 SQL query checker E2E processed at least 1 message
 
     Then validate that number of all todos with task "Joe" is "0"
-    Then validate that number of all todos with task "Jimmy" is "1"
+    And validate that number of all todos with task "Jimmy" is "1"
 
   @db-insert-multiple-rows
   Scenario: Inserting multiple rows 
@@ -374,9 +379,10 @@ Feature: Integration - DB to DB
     And publish integration
     And set integration name "db-insert-multiple-rows"
     And publish integration
-    Then wait until integration "db-insert-multiple-rows" gets into "Running" state
+    And wait until integration "db-insert-multiple-rows" gets into "Running" state
+    And wait until integration db-insert-multiple-rows processed at least 1 message
 
-    And check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
+    Then check that query "SELECT * FROM contact WHERE first_name = 'Jimmy'" has some output
     And check that query "SELECT * FROM contact WHERE first_name = 'Joe'" has some output
 
   @reproducer

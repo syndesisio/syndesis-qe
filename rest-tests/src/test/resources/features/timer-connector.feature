@@ -17,13 +17,13 @@ Feature: Integration - Timer
     And sleep for jenkins delay or "10" seconds
     When add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
       | action       | period |
-      | timer-action | 1000   |
+      | timer-action | 7000   |
 
     And create HTTP "GET" step
     And create integration with name: "timer-to-http-1"
     And wait for integration with name: "timer-to-http-1" to become active
 
-    Then verify that after "2.5" seconds there were "2" calls
+    Then verify that after "8" seconds there were "1" calls
 
   @cron-timer
   Scenario: Cron Timer to GET

@@ -111,8 +111,8 @@ Feature: Operator Deployment
   @operator-addons-dv
   @operator-addons
   Scenario: Syndesis Operator - Addons - Data Virtualization
-    When deploy DV
-      And deploy Syndesis CR from file "spec/addons/dv.yml"
+    When deploy Syndesis CR from file "spec/addons/dv.yml"
+      And deploy DV
     Then wait for Syndesis to become ready
       And check that the "syndesis-ui-config" config map contains
         | config.json | "enabled": 1 |
@@ -139,7 +139,7 @@ Feature: Operator Deployment
       And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 3)"
       And create integration with name: "sql-sql-jaeger"
     Then wait for integration with name: "sql-sql-jaeger" to become active
-      And check that jaeger is collecting metrics for integration "sql-sql-jaeger"
+      And check that jaeger pod "syndesis-jaeger" is collecting metrics for integration "sql-sql-jaeger"
 
   @operator-addons-jaeger-sampler
   @operator-addons
@@ -160,12 +160,31 @@ Feature: Operator Deployment
       And check that the deployment config "syndesis-meta" contains variables:
         | JAEGER_SAMPLER_TYPE  | probabilistic |
         | JAEGER_SAMPLER_PARAM | 0.001         |
-      And check that jaeger is collecting metrics for integration "sql-sql-jaeger"
+    And check that jaeger pod "syndesis-jaeger" is collecting metrics for integration "sql-sql-jaeger"
+
+  @operator-addons-jaeger-external
+  @operator-addons
+  @operator-addons-jaeger
+  Scenario: Syndesis Operator - Addons - Jaeger - external
+    When deploy Jaeger
+    And deploy Syndesis CR from file "spec/addons/external-jaeger.yml"
+    Then wait for Syndesis to become ready
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    And add a split step
+    And start mapper definition with name: "mapping 1"
+    And MAP using Step 2 and field "/first_name" to "/<>/task"
+    And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 3)"
+    And create integration with name: "sql-sql-jaeger"
+    Then wait for integration with name: "sql-sql-jaeger" to become active
+    And check that jaeger pod "jaeger-all-in-one" is collecting metrics for integration "sql-sql-jaeger"
 
   @operator-addons-knative
   @operator-addons
   Scenario: Syndesis Operator - Addons - Knative
-    When todo
+    When deploy Syndesis CR from file "spec/addons/knative.yml"
+      Then wait for Syndesis to become ready
+      And check that the deployment config "syndesis-server" contains variables:
+        | KNATIVE_ENABLED  | true |
 
   @ENTESB-12418
   @ENTESB-12618
@@ -176,8 +195,8 @@ Feature: Operator Deployment
   @operator-server
   @operator-prometheus
   Scenario: Syndesis Operator - Components - Memory limits
-    When deploy DV
-      And deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
+    When deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
+      And deploy DV
     Then wait for Syndesis to become ready
       And check correct memory limits
 

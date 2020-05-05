@@ -9,6 +9,7 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -97,20 +98,7 @@ public class Syndesis implements Resource {
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
-
-        // the syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
-        new Thread(() -> {
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftWaitUtils.isPodReady(
-                    OpenShiftUtils.getAnyPod("app.kubernetes.io/instance", "syndesis-jaeger"))
-                );
-                OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("syndesis-jaeger").get().getMetadata().getName())
-                    .edit().editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
-            } catch (Exception e) {
-                log.warn("Syndesis-jaeger pod never reached ready state! " +
-                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking");
-            }
-        }).start();
+        jaegerWorkarounds();
     }
 
     @Override
@@ -161,6 +149,29 @@ public class Syndesis implements Resource {
                 .withType("kubernetes.io/dockerconfigjson")
                 .done();
         }
+    }
+
+    /**
+     * Ensures that jaeger is working correctly by linking secrets.
+     * The syndesis-jaeger doesn't contain "syndesis.io/component" label which is using for finding all components. It is added manually here
+     */
+    public void jaegerWorkarounds() {
+        new Thread(() -> {
+            try {
+                OpenShiftWaitUtils.waitUntilPodAppears("jaeger-operator");
+                ensureImagePullForJaegerOperator();
+                OpenShiftWaitUtils.waitUntilPodAppears("syndesis-jaeger");
+                ensureImagePullForSyndesisJaeger();
+                Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
+                OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
+                    .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+            } catch (Exception e) {
+                log.warn("Syndesis-jaeger pod never reached ready state! " +
+                    "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking. Exception in case of " +
+                    "debugging: " +
+                    e);
+            }
+        }).start();
     }
 
     public void installCluster() {
@@ -251,28 +262,47 @@ public class Syndesis implements Resource {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
                 .getStatus().getIngress() != null, 120000L);
-        } catch (Exception e) {
-            fail("Unable to find syndesis route in 120s");
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("Unable to find syndesis route in 120s");
         }
 
         if ("false".equalsIgnoreCase(
             OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getStatus())) {
-            fail("Syndesis route failed to provision because of: " +
+            InfraFail.fail("Syndesis route failed to provision because of: " +
                 OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getMessage());
         }
     }
 
-    public Map<String, Object> getDeployedCr() {
+    public Map<String, Object> getCr() {
         return getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME);
     }
 
-    public Map<String, Object> editCr(Map<String, Object> cr) throws IOException {
-        return getSyndesisCrClient().edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
+    public void createCr(Map<String, Object> cr) {
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient();
+        OpenShiftUtils.asRegularUser(() -> {
+            try {
+                syndesisCrClient.create(TestConfiguration.openShiftNamespace(), cr);
+            } catch (IOException e) {
+                fail("Unable to create CR: " + e);
+            }
+        });
+    }
+
+    public void editCr(Map<String, Object> cr) {
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient();
+        OpenShiftUtils.asRegularUser(() -> {
+            try {
+                syndesisCrClient.edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
+            } catch (IOException e) {
+                fail("Unable to modify CR: " + e);
+            }
+        });
     }
 
     private void deleteCr(String name, String version) {
         log.info("Undeploying custom resource \"{}\" in version \"{}\"", name, version);
-        getSyndesisCrClient(version).delete(TestConfiguration.openShiftNamespace(), name);
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient(version);
+        OpenShiftUtils.asRegularUser(() -> syndesisCrClient.delete(TestConfiguration.openShiftNamespace(), name));
     }
 
     private Map<String, Set<String>> getCrNames() {
@@ -350,7 +380,7 @@ public class Syndesis implements Resource {
             // else do nothing, as the existing crd and new crd are probably the same
             List<CustomResourceDefinitionVersion> versions = OpenShiftUtils.getInstance().customResourceDefinitions()
                 .withName(existingCrd.getMetadata().getName()).get().getSpec().getVersions();
-            if (!existingCrd.getStatus().getStoredVersions().contains(newCrd.getSpec().getVersion())) {
+            if (existingCrd.getSpec().getVersions().stream().noneMatch(v -> newCrd.getSpec().getVersion().equals(v.getName()))) {
                 CustomResourceDefinitionFluent.SpecNested<DoneableCustomResourceDefinition> crd =
                     OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
                         .edit()
@@ -458,10 +488,16 @@ public class Syndesis implements Resource {
             log.info("Overriding images to be deployed");
             try {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getDeploymentConfig(operatorResourcesName) != null);
-                OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
+            } catch (TimeoutException | InterruptedException e) {
+                fail("Unable to get operator deployment config", e);
+            }
+
+            OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
+
+            try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (TimeoutException | InterruptedException e) {
+                fail("Operator pod shouldn't be present after scaling down", e);
             }
 
             OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
@@ -484,7 +520,7 @@ public class Syndesis implements Resource {
             .waitFor();
     }
 
-    private void deploySyndesisViaOperator() {
+    protected void deploySyndesisViaOperator() {
         log.info("Deploying syndesis resource from " + crUrl);
         try (InputStream is = new URL(crUrl).openStream()) {
             JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
@@ -505,7 +541,7 @@ public class Syndesis implements Resource {
             // set the route
             crJson.getJSONObject("spec").put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
 
-            getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), crJson.toMap());
+            createCr(crJson.toMap());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -528,9 +564,24 @@ public class Syndesis implements Resource {
                 return;
             }
         }
-        log.info("Adding maven repo {}", replacementRepo);
 
-        serverFeatures.put("mavenRepositories", TestUtils.map("fuseqe_nexus", replacementRepo));
+        Map<String, String> repositories;
+        if (TestConfiguration.appendRepository()) {
+            log.info("Appending maven repo {}", replacementRepo);
+            repositories = TestUtils.map(
+                "central", "https://repo.maven.apache.org/maven2/",
+                "repo-02-redhat-ga", "https://maven.repository.redhat.com/ga/",
+                "repo-03-jboss-ea", "https://repository.jboss.org/nexus/content/groups/ea/",
+                "qe-repo", replacementRepo
+                );
+        } else {
+            log.info("Adding maven repo {}", replacementRepo);
+            repositories = TestUtils.map(
+                "qe-repo", replacementRepo
+            );
+        }
+
+        serverFeatures.put("mavenRepositories", repositories);
     }
 
     /**
@@ -541,8 +592,7 @@ public class Syndesis implements Resource {
      */
     public boolean isAddonEnabled(Addon addon) {
         try {
-            JSONObject spec = new JSONObject(getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME))
-                .getJSONObject("spec");
+            JSONObject spec = new JSONObject(getCr()).getJSONObject("spec");
 
             // Special case for external DB
             if (addon == Addon.EXTERNAL_DB) {
@@ -562,6 +612,13 @@ public class Syndesis implements Resource {
         }
     }
 
+    /**
+     * Test whether addon contains specific property
+     */
+    public boolean containsAddonProperty(Addon addon, String key) {
+        return new JSONObject(getCr()).getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue()).has(key);
+    }
+
     public void updateAddon(Addon addon, boolean enabled) {
         updateAddon(addon, enabled, null);
     }
@@ -573,22 +630,27 @@ public class Syndesis implements Resource {
      * @param enabled - enable or disable?
      * @param properties - additional properties for the specific addon
      */
-    public void updateAddon(Addon addon, boolean enabled, Map<String, String> properties) {
+    public void updateAddon(Addon addon, boolean enabled, Map<String, Object> properties) {
         log.info((enabled ? "Enabling " : "Disabling ") + addon + " addon.");
-
-        JSONObject cr = new JSONObject(getSyndesisCrClient().get(TestConfiguration.openShiftNamespace(), CR_NAME));
+        JSONObject cr = new JSONObject(getCr());
         JSONObject specAddon = cr.getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue());
         specAddon.put("enabled", enabled);
         if (properties != null) {
-            for (Map.Entry<String, String> entry : properties.entrySet()) {
-                log.info("Adding property '" + entry.getKey() + ": " + entry.getValue() + " for addon " + addon.getValue() + "' to the CR");
+            for (Map.Entry<String, Object> entry : properties.entrySet()) {
+                log.info("Adding property '" + entry.getKey() + ": " + entry.getValue() + "' for addon " + addon.getValue() + " to the CR");
                 specAddon.put(entry.getKey(), entry.getValue());
             }
         }
         try {
             this.editCr(cr.toMap());
-        } catch (IOException e) {
-            fail("IO Exception during editing CR", e);
+        } catch (KubernetesClientException kce) {
+            if (kce.getMessage().contains("the object has been modified")) {
+                log.warn("CR was modified in the mean time, retrying in 30 seconds");
+                TestUtils.sleepIgnoreInterrupt(30000L);
+                updateAddon(addon, enabled, properties);
+            } else {
+                throw kce;
+            }
         }
     }
 
@@ -620,13 +682,13 @@ public class Syndesis implements Resource {
             try {
                 OpenShiftWaitUtils.waitForPodIsReloaded("server");
             } catch (InterruptedException | TimeoutException e) {
-                fail("Server was not reloaded after deployment config change", e);
+                InfraFail.fail("Server was not reloaded after deployment config change", e);
             }
             // even though server is in ready state, inside app is still starting so we have to wait a lot just to be sure
             try {
                 OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("server").contains("Started Application in"), 1000 * 300L);
             } catch (TimeoutException | InterruptedException e) {
-                fail("Syndesis server did not start in 300s with new variable", e);
+                InfraFail.fail("Syndesis server did not start in 300s with new variable", e);
             }
             RestUtils.reset();
         }
@@ -646,5 +708,54 @@ public class Syndesis implements Resource {
             }
         }
         return crApiVersion;
+    }
+
+    private void ensureImagePullForJaegerOperator() {
+        //if jaeger operator is used
+        OpenShiftUtils.getAnyPod("name", "jaeger-operator").ifPresent(operatorPod -> {
+            ensureImagePull("jaeger-operator", "jaeger");
+        });
+    }
+
+    private void ensureImagePullForSyndesisJaeger() {
+        //if syndesis-jaeger is used
+        OpenShiftUtils.getAnyPod("app.kubernetes.io/name", "syndesis-jaeger").ifPresent(syndesisJaegerPod -> {
+            ensureImagePull("syndesis-jaeger", "jaeger");
+        });
+    }
+
+    /**
+     * Productised builds need to link syndesis-pull secret and redeploy pods
+     *
+     * @param partialPodName
+     * @param serviceAccountName
+     */
+    public void ensureImagePull(String partialPodName, String serviceAccountName) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.hasPodIssuesPullingImage(OpenShiftUtils.getPodByPartialName(partialPodName).get()) ||
+                OpenShiftUtils.getPodByPartialName(partialPodName).filter(OpenShiftWaitUtils::isPodRunning).isPresent(), 10 * 60 * 1000);
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("Pod " + partialPodName +
+                " is not in the one of the desired state (Running,ImagePullBackOff,ErrImagePull)! Check the log for more details.");
+        }
+        Pod podAfterWait = OpenShiftUtils.getPodByPartialName(partialPodName).get(); //needs to get new instance of the pod
+        if (OpenShiftUtils.hasPodIssuesPullingImage(podAfterWait)) {
+            log.info(
+                "{} failed to pull image (probably due to permission to the Red Hat registry), linking secret with the SA and restarting the pod",
+                podAfterWait.getMetadata().getName());
+            linkServiceAccountWithSyndesisPullSecret(serviceAccountName);
+            OpenShiftUtils.getInstance().deletePod(podAfterWait);
+            OpenShiftWaitUtils.waitUntilPodIsRunning(partialPodName);
+        }
+    }
+
+    public void linkServiceAccountWithSyndesisPullSecret(String serviceAccountName) {
+        //create secret for red hat registry
+        OpenShiftUtils.getInstance().serviceAccounts().list().getItems().stream()
+            .filter(sa -> sa.getMetadata().getName().contains(serviceAccountName))
+            .forEach(sa -> {
+                sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
+                OpenShiftUtils.getInstance().serviceAccounts().createOrReplace(sa);
+            });
     }
 }

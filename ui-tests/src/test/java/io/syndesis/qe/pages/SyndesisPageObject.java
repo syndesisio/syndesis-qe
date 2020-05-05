@@ -12,15 +12,20 @@ import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
+import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.Conditions;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.junit.Assert;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
@@ -28,6 +33,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -72,18 +78,21 @@ public abstract class SyndesisPageObject {
     }
 
     private void waitForButtons(Condition condition, SelenideElement differentRoot) {
-        try {
-            //ugly but necessary due to syndesis page refreshing periodically
+        int maxRetries = 60;
+        int retries = 0;
+        boolean found = false;
+        BooleanSupplier bs = () -> differentRoot.shouldBe(visible).findAll(By.tagName("button")).filter(condition).size() >= 1;
+        while (!found && retries < maxRetries) {
             try {
-                OpenShiftWaitUtils.waitFor(() -> differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(condition).size() >= 1, (long) (60 * 1000.0));
-            } catch (org.openqa.selenium.StaleElementReferenceException ex) {
+                found = bs.getAsBoolean();
+            } catch (StaleElementReferenceException ex) {
                 log.warn("Element was detached from the page, trying again to find a button but now within syndesis-root element");
-                OpenShiftWaitUtils.waitFor(() -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(condition).size() >= 1, (long) (60 * 1000.0));
+                bs = () -> $(By.id("root")).shouldBe(visible).findAll(By.tagName("button")).filter(condition).size() >= 1;
             }
-        } catch (TimeoutException | InterruptedException e1) {
-            fail("button not found", e1);
+            if (!found) {
+                retries++;
+                TestUtils.sleepIgnoreInterrupt(1000L);
+            }
         }
     }
 
@@ -290,5 +299,23 @@ public abstract class SyndesisPageObject {
                 break;
         }
         return condition;
+    }
+
+    public void removeAllAlertsFromPage(Alert alertOption) {
+        ElementsCollection alerts = getCloseableAllerts(alertOption);
+        while (!alerts.isEmpty()) {
+            for (SelenideElement alert : alerts) {
+                SelenideElement button = alert.$(Alert.Element.CLOSE_BUTTON);
+                if (alert.isDisplayed()) {
+                    //only if the alert still exists and it is not stale
+                    button.click();
+                }
+            }
+            alerts = getCloseableAllerts(alertOption);
+        }
+    }
+
+    public ElementsCollection getCloseableAllerts(Alert alert) {
+        return $$(alert.getBy()).exclude(Conditions.WO_CLOSE_BUTTONS);
     }
 }

@@ -24,6 +24,7 @@ public class Account {
         SFTP("sftp"),
         GITHUB("GitHub"),
         HTTP("http"),
+        HTTPS("https"),
         IRC("irc"),
         JIRA_HOOK("Jira Hook"),
         KAFKA("kafka"),

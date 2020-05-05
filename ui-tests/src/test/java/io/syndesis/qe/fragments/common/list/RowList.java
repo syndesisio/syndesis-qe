@@ -1,13 +1,9 @@
 package io.syndesis.qe.fragments.common.list;
 
-import static com.codeborne.selenide.Condition.have;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$$;
 
 import org.openqa.selenium.By;
 
-import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -15,11 +11,10 @@ import com.codeborne.selenide.SelenideElement;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RowList extends AbstractUiElementsList {
+public abstract class RowList extends AbstractUiElementsList {
 
     private static final class Element {
-        public static final By ROW = By.xpath(".//*[contains(@class,'list-group-item')]");
-        public static final By TITLE = By.xpath(".//*[contains(@class,'list-group-item-heading')]");
+        public static final By ROW = By.className("pf-c-data-list__item-row");
     }
 
     public RowList(By rootElement) {
@@ -37,13 +32,4 @@ public class RowList extends AbstractUiElementsList {
         return $$(Element.ROW).findBy(Condition.text(title));
     }
 
-    @Override
-    public SelenideElement getTitle(String title) {
-        return getRootElement().shouldBe(visible).$$(Element.TITLE).shouldHave(CollectionCondition.sizeGreaterThanOrEqual(1))
-            .find(have(text(title)));
-    }
-
-    public String getTitleOfItem(SelenideElement item) {
-        return item.find(Element.TITLE).shouldBe(visible).getText().trim();
-    }
 }

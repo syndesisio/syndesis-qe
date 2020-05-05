@@ -43,6 +43,7 @@ import io.syndesis.qe.utils.GoogleAccounts;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.UIUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -282,7 +283,7 @@ public class CommonSteps {
                 "no validation".equalsIgnoreCase(connectionDescription))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated");
+                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");
                 scrollTo("top", "right");
                 clickOnButton("Next");
             } else if ("no validation".equalsIgnoreCase(connectionDescription)) {
@@ -425,6 +426,7 @@ public class CommonSteps {
 
     @When("^click? on the \"([^\"]*)\" button.*$")
     public void clickOnButton(String buttonTitle) {
+        UIUtils.ensureUILoaded();
         if ("Done".equals(buttonTitle)) {
             // this is hack to replace Done with Next if not present
             try {
@@ -475,6 +477,11 @@ public class CommonSteps {
     @When(".*click on element with data-testid \"([^\"]*)\"$")
     public void clickOnElement(String element) {
         $(ByUtils.dataTestId(element)).shouldBe(visible).click();
+    }
+
+    @When(".*click on element with id \"([^\"]*)\"$")
+    public void clickOnElementId(String id) {
+        $(By.id(id)).shouldBe(visible).click();
     }
 
     @When(".*clicks? on the \"(\\d+)\". \"([^\"]*)\" link.*$")
@@ -530,14 +537,29 @@ public class CommonSteps {
         allertSucces.shouldBe(visible);
     }
 
-    @Then("^check visibility of \"([^\"]*)\" in alert-success notification$")
-    public void successNotificationIsPresentWithError(String textMessage) {
-        TestUtils.waitFor(() -> $$(Alert.SUCCESS.getBy()).filterBy(Condition.exactText(textMessage)).size() == 1,
-            2, 20, "Success notification not found!");
+    @Then("^check visibility of \"([^\"]*)\" in alert-(\\w+) notification$")
+    public void successNotificationIsPresentWithError(String textMessage, String type) {
+        TestUtils
+            .waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage))).size() == 1,
+                2, 20, "Success notification not found!");
 
-        ElementsCollection successList = $$(Alert.SUCCESS.getBy()).filterBy(Condition.exactText(textMessage));
+        ElementsCollection successList =
+            $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage)));
         assertThat(successList).hasSize(1);
         log.info("Text message {} was found.", textMessage);
+    }
+
+    /**
+     * When a text message contains special characters, they needs to be sanitize because the Condition.matchesText use the text message as a regex
+     * pattern
+     * e.g.
+     * "Send Email (smtp) has been successfully validated"
+     * "Send Email \(smtp\) has been successfully validated"
+     */
+    private String sanitizeSpecialCharacter(String textMessage) {
+        String result = textMessage.replaceAll("\\(", "\\\\(");
+        result = result.replaceAll("\\)", "\\\\)");
+        return result;
     }
 
     @Then("^check visibility of alert notification$")
@@ -597,7 +619,7 @@ public class CommonSteps {
         new SyndesisRootPage().checkButtonStatus(buttonTitle, status);
     }
 
-    @Then("^check visibility of dialog page \"([^\"]*)\"$")
+    @Then("^check visibility of dialog page \"(.*)\"$")
     public void isPresentedWithDialogPage(String title) {
         String titleText = new ModalDialogPage().getTitleText();
         assertThat(titleText).isEqualToIgnoringCase(title);
@@ -1000,7 +1022,7 @@ public class CommonSteps {
      */
     private void set3scaleEnvVar(String url) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        JSONObject cr = new JSONObject(syndesis.getDeployedCr());
+        JSONObject cr = new JSONObject(syndesis.getCr());
         JSONObject features = cr.getJSONObject("spec").getJSONObject("components").getJSONObject("server").getJSONObject("features");
 
         if (url != null) {
@@ -1009,11 +1031,7 @@ public class CommonSteps {
             features.remove("managementUrlFor3scale");
         }
 
-        try {
-            syndesis.editCr(cr.toMap());
-        } catch (IOException e) {
-            fail("There was an error while updating the CR", e);
-        }
+        syndesis.editCr(cr.toMap());
 
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded("server");
@@ -1079,6 +1097,6 @@ public class CommonSteps {
 
     @Then("^check that main alert dialog contains text \"([^\"]*)\"$")
     public void checkAlertDialog(String expectedText) {
-        assertThat(syndesisRootPage.getDangerAlertElemet().getText()).isEqualTo(expectedText);
+        assertThat(syndesisRootPage.getDangerAlertElemet().getText()).contains(expectedText);
     }
 }

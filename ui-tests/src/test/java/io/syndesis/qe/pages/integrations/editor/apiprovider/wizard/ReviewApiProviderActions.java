@@ -11,6 +11,7 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.ex.UIAssertionError;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -80,10 +81,10 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
     }
 
     private int getNumberFromLabel(By selector) {
-        SelenideElement labelElement = $(selector);
-        if (labelElement.exists()) {
-            return Integer.parseInt(labelElement.$(By.className("label")).waitUntil(visible, 15000).getText());
-        } else {
+        try {
+            SelenideElement labelElement = $(selector).waitUntil(visible, 15000);
+            return Integer.parseInt(labelElement.$(By.tagName("span")).getText().trim());
+        } catch (UIAssertionError e) {
             return 0;
         }
     }

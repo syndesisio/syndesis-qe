@@ -175,7 +175,9 @@ public class DbValidationSteps {
 
     @Then("^.*checks? that query \"([^\"]*)\" has (\\d+) rows? output$")
     public void checkValuesExistInTable(String query, Integer count) {
-        assertThat(dbUtils.getCountOfInvokedQuery(query)).isEqualTo(count);
+        TestUtils.waitFor(() -> dbUtils.getCountOfInvokedQuery(query) == count,
+            5, 60,
+            "Count of invoked query is different. Expected: " + count + " Actual:" + dbUtils.getCountOfInvokedQuery(query));
     }
 
     @Then("^.*checks? that query \"([^\"]*)\" has no output$")
@@ -296,5 +298,11 @@ public class DbValidationSteps {
         TestUtils.waitFor(() -> this.dbUtils.getCountOfInvokedQuery(query) > 0,
             1, timeout,
             "Data is not in the table after " + timeout + " seconds.");
+    }
+
+    @Then("^check that contact table contains contact where first name is senderId for \"([^\"]*)\" account and company is \"([^\"]*)\"")
+    public void checkThatTwitterMessageIsInContactTable(String account, String company) {
+        long senderId = new TwValidationSteps().getSenderIdForAccount(account);
+        this.checkValuesExistInTable(String.format("select * from contact where first_name = '%d' and company = '%s'", senderId, company));
     }
 }

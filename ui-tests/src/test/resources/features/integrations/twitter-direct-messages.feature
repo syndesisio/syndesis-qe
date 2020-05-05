@@ -53,9 +53,11 @@ Feature: Integration - Twitter Direct Messages
     And set integration name "twitter-direct-messages-test-receive"
     And publish integration
 
-    Then Integration "twitter-direct-messages-test-receive" is present in integrations list
+    And Integration "twitter-direct-messages-test-receive" is present in integrations list
     And wait until integration "twitter-direct-messages-test-receive" gets into "Running" state
-    And check that query "select * from contact where first_name = '879672335145545731' and company = 'Red Hat'" has some output
+    And wait until integration twitter-direct-messages-test-receive processed at least 1 message
+
+    Then check that contact table contains contact where first name is senderId for "Twitter Talky" account and company is "Red Hat"
 
   @twitter-direct-messages-send
   Scenario: Send direct message on twitter
@@ -79,8 +81,8 @@ Feature: Integration - Twitter Direct Messages
     When select the "Twitter Listener" connection
     And select "Send" integration action
     And fill in values by element data-testid
-      | message | temp message   |
-      | user    | syndesis_talky |
+      | message | temp message |
+    And fill username for "twitter_talky" account
     And click on the "Next" button
 
     # add Split step
@@ -103,6 +105,8 @@ Feature: Integration - Twitter Direct Messages
       | Joe | Jackson | Red Hat | db |
 
     # start integration and check that DM exists
-    Then Integration "twitter-direct-messages-test-send" is present in integrations list
+    And Integration "twitter-direct-messages-test-send" is present in integrations list
     And wait until integration "twitter-direct-messages-test-send" gets into "Running" state
-    And check that account "Twitter Talky" has DM from user "879671681031299072" with text "Red Hat"
+    And wait until integration twitter-direct-messages-test-send processed at least 1 message
+
+    Then check that account "Twitter Talky" has DM from user "Twitter Listener" with text "Red Hat"

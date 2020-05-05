@@ -1,8 +1,8 @@
 package io.syndesis.qe.wait;
 
-import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -193,12 +193,16 @@ public class OpenShiftWaitUtils {
 
         while (System.currentTimeMillis() < timeout) {
 
-            if (failCondition != null && failCondition.getAsBoolean()) {
-                return false;
-            }
+            try {
+                if (failCondition != null && failCondition.getAsBoolean()) {
+                    return false;
+                }
 
-            if (condition.getAsBoolean()) {
-                return true;
+                if (condition.getAsBoolean()) {
+                    return true;
+                }
+            } catch (Exception ex) {
+                log.warn("Exception thrown while waiting, ignoring: ", ex);
             }
 
             Thread.sleep(interval);
@@ -265,7 +269,7 @@ public class OpenShiftWaitUtils {
         try {
             waitFor(() -> isPodPresent(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
-            fail("Error thrown while checking if pod exists", e);
+            InfraFail.fail("Error thrown while checking if pod exists", e);
         }
     }
 
@@ -274,7 +278,7 @@ public class OpenShiftWaitUtils {
             waitFor(() -> isPodPresent(podPartialName), 5 * 60 * 1000);
             waitFor(() -> isPodRunning(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
-            fail("Error thrown while checking if pod exists", e);
+            InfraFail.fail("Error thrown while checking if pod exists", e);
         }
     }
 
@@ -282,7 +286,7 @@ public class OpenShiftWaitUtils {
         try {
             waitFor(() -> !isPodPresent(podPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
-            fail("Error thrown while checking if pod is not exist", e);
+            InfraFail.fail("Error thrown while checking if pod is not exist", e);
         }
     }
 

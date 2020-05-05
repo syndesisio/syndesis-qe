@@ -72,7 +72,8 @@ Feature: Integration - Import Export
 
     # wait for integration to get in active state
     And wait until integration "integration-import-export-classic-input" gets into "Running" state
-    And sleep for jenkins delay or "15" seconds
+    And wait until integration integration-import-export-classic-input processed at least 1 message
+
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
     # Add a new contact
@@ -105,6 +106,7 @@ Feature: Integration - Import Export
     And publish integration
     Then Integration "integration-import-export-classic-input" is present in integrations list
     And wait until integration "integration-import-export-classic-input" gets into "Running" state
+    And wait until integration integration-import-export-classic-input processed at least 2 messages
     And check that last slack message equals "RH" on channel "import_export_test"
 
 
@@ -161,6 +163,7 @@ Feature: Integration - Import Export
 
     # wait for integration to get in active state
     And wait until integration "integration-import-export-dnd" gets into "Running" state
+    And wait until integration integration-import-export-dnd processed at least 1 message
 
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
@@ -198,6 +201,7 @@ Feature: Integration - Import Export
     And navigate to the "Integrations" page
     Then Integration "integration-import-export-dnd" is present in integrations list
     And wait until integration "integration-import-export-dnd" gets into "Running" state
+    And wait until integration integration-import-export-dnd processed at least 2 messages
     And check that last slack message equals "New RH" on channel "import_export_test"
 
 #
@@ -225,7 +229,7 @@ Feature: Integration - Import Export
     When fill in "QE Slack" connection details
 
     And click on the "Validate" button
-    Then check visibility of success notification
+    Then check visibility of "Slack has been successfully validated" in alert-info notification
 
     When click on the "Save" button
     And navigate to the "Integrations" page
@@ -239,5 +243,6 @@ Feature: Integration - Import Export
     Then Integration "Integration_import_export_test" is present in integrations list
     # wait for integration to get in active state
     And wait until integration "Integration_import_export_test" gets into "Running" state
-    Then validate that logs of integration "Integration_import_export_test" contains string ""status":"done","failed":false"
+    And wait until integration Integration_import_export_test processed at least 1 message
+    Then validate that logs of integration "Integration_import_export_test" contains string "Started Application in"
     And check that last slack message equals "RHEL" on channel "import_export_test"

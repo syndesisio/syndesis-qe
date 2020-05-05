@@ -10,6 +10,7 @@ import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.PreviousSyndesis;
 import io.syndesis.qe.resource.impl.Syndesis;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -19,9 +20,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
+import com.vdurmont.semver4j.Semver;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -37,8 +42,10 @@ public class UpgradeSteps {
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
 
-    @When("^deploy previous Syndesis$")
-    public static void deploySyndesis() {
+    @When("deploy previous Syndesis CR {string}")
+    public void deploySyndesis(String crFile) {
+        Syndesis syndesis = ResourceFactory.get(PreviousSyndesis.class);
+        syndesis.setCrUrl(getClass().getClassLoader().getResource("upgrade/" + crFile).toString());
         ResourceFactory.create(PreviousSyndesis.class);
     }
 
@@ -50,9 +57,8 @@ public class UpgradeSteps {
             // If it is a prod build and the version is null, it means it was started by test-runner, so skip it as for prod upgrade there is a
             // separate job
             assumeThat(TestConfiguration.upgradePreviousVersion()).isNotNull();
-            final String floatingTag = TestConfiguration.syndesisOperatorImage().split(":")[1].split("-")[0];
-            final BigDecimal currentVersion = new BigDecimal(floatingTag).setScale(1, BigDecimal.ROUND_HALF_UP);
-            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + currentVersion.subtract(new BigDecimal("0.1")));
+            // Parse the previous tag from maven artifacts
+            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + getMajorMinor(TestConfiguration.upgradePreviousVersion()));
             TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_CURRENT_VERSION, TestConfiguration.syndesisVersion());
             // Previous version needs to be specified manually via system properties
         } else {
@@ -64,19 +70,12 @@ public class UpgradeSteps {
             List<String> tags = new ArrayList<>();
             jsonArray.forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
 
-            // Get penultimate version - not daily
-            BigDecimal previousVersion = new BigDecimal(TestConfiguration.syndesisInstallVersion().substring(0, 3))
-                .setScale(1, BigDecimal.ROUND_HALF_UP).subtract(new BigDecimal("0.1"));
-            // Find the last (== highest) tag
-            String previousTag = tags.stream().filter(
-                t -> t.matches("^" + (previousVersion.doubleValue() + "").replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$")
-            ).reduce((first, second) -> second).orElse(null);
-
-            if (previousTag != null) {
+            String previousTag = getPreviousVersion(getMajorMinor(TestConfiguration.syndesisInstallVersion()), tags);
+            if (!previousTag.isEmpty()) {
                 TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_PREVIOUS_VERSION, previousTag);
                 syndesis.setOperatorImage(UPSTREAM_OPERATOR_IMAGE + ":" + previousTag);
             } else {
-                fail("Unable to find tagged version for " + previousVersion);
+                fail("Unable to find previous version for " + TestConfiguration.syndesisInstallVersion());
             }
 
             TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_CURRENT_VERSION, TestConfiguration.syndesisInstallVersion());
@@ -84,7 +83,6 @@ public class UpgradeSteps {
 
         // We want to deploy "previous" version first
         syndesis.setCrdUrl(getClass().getClassLoader().getResource("upgrade/syndesis-crd-previous.yaml").toString());
-        syndesis.setCrUrl(getClass().getClassLoader().getResource("upgrade/syndesis-cr-previous.yaml").toString());
 
         log.info("Upgrade properties:");
         log.info("  Previous version: " + TestConfiguration.upgradePreviousVersion());
@@ -132,10 +130,21 @@ public class UpgradeSteps {
     @Then("wait until upgrade is done")
     public void waitForUpgrade() {
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator")
-                .contains("Syndesis resource installed after upgrading"), 30000L, 600000L);
-        } catch (Exception e) {
-            fail("\"Syndesis resource installed after upgrading\" wasn't found in operator log after 10 minutes");
+            OpenShiftWaitUtils.waitFor(() -> {
+                JSONObject cr = new JSONObject(ResourceFactory.get(Syndesis.class).getCr());
+                return !"Installed".equals(cr.getJSONObject("status").getString("phase"));
+            });
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("Timeout waiting for CR status to be changed from \"Installed\"");
+        }
+
+        try {
+            OpenShiftWaitUtils.waitFor(() -> {
+                JSONObject cr = new JSONObject(ResourceFactory.get(Syndesis.class).getCr());
+                return "Installed".equals(cr.getJSONObject("status").getString("phase"));
+            }, 15 * 60000L);
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("Timeout waiting for CR status to be \"Installed\"");
         }
     }
 
@@ -165,5 +174,51 @@ public class UpgradeSteps {
         TestUtils.sleepIgnoreInterrupt(10000L);
         String logsAfter = OpenShiftUtils.getIntegrationLogs(name);
         assertThat(logsAfter.substring(logsAfter.indexOf(lastLine))).contains("[[options]]");
+    }
+
+    private String getPreviousVersion(String current, List<String> tags) {
+        // Semver needs 1.2.3 version style, so add ".0" if it's missing
+        if (current.matches("^\\d\\.\\d+")) {
+            current += ".0";
+        }
+        Semver currentVersion = new Semver(current);
+        // Find previous version by incrementing until the next one is equal to current
+        Semver increment = new Semver("1.0.0");
+        String previousVersion = "";
+        // Max minor version in one version
+        int maxMinor = 20;
+        while (!currentVersion.equals(increment)) {
+            // For lambda to be final
+            Semver finalIncrement = increment;
+            // Check if this tag exists, an if yes, use the "latest" as the version
+            String previousTag = tags.stream()
+                .filter(t -> t.matches("^" + getMajorMinor(finalIncrement.toString()).replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$")
+            ).reduce((first, second) -> second).orElse(null);
+
+            // If this tag exists, save it
+            if (previousTag != null) {
+                previousVersion = previousTag;
+            }
+
+            increment = increment.getMinor() == maxMinor ? increment.nextMajor() : increment.withIncMinor();
+        }
+        log.info("Previous version for {} is {}", current, previousVersion);
+        return previousVersion;
+    }
+
+    private String getMajorMinor(String version) {
+        final String expr = "^(\\d\\.\\d+)";
+        if (version.matches(expr)) {
+            return version;
+        } else {
+            Matcher matcher = Pattern.compile(expr).matcher(version);
+            if (matcher.find()) {
+                return matcher.group(1);
+            } else {
+                fail("Unable to parse major.minor version from " + version);
+            }
+        }
+        // This won't happen
+        return "";
     }
 }

@@ -59,7 +59,7 @@ public class Connections {
         final String connectionName = connectionPropertiesMap.get("name");
 
         final Connector connector = connectorsEndpoint.get(connectorId);
-        final Optional<Account> account = accountsDirectory.getAccount(connectionPropertiesMap.get("account"));
+        final Optional<Account> acc = accountsDirectory.getAccount(connectionPropertiesMap.get("account"));
 
         connectionPropertiesMap.remove("connector");
         connectionPropertiesMap.remove("connectionId");
@@ -68,10 +68,10 @@ public class Connections {
 
         for (Map.Entry<String, String> keyValue : connectionPropertiesMap.entrySet()) {
             if ("$ACCOUNT$".equals(keyValue.getValue())) {
-                if (!account.isPresent()) {
+                if (!acc.isPresent()) {
                     throw new RuntimeException("Account " + connectionPropertiesMap.get("account") + " was not found");
                 }
-                keyValue.setValue(account.get().getProperty(keyValue.getKey()));
+                keyValue.setValue(acc.get().getProperty(keyValue.getKey()));
             }
         }
 
@@ -150,6 +150,17 @@ public class Connections {
         );
     }
 
+    @Given("^create HTTPS connection$")
+    public void createHTTPSConnection() {
+        account = accountsDirectory.getAccount(Account.Name.HTTPS).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "https"),
+                accountProperty("baseUrl")
+            )
+        );
+    }
+
     @Given("^create IRC connection$")
     public void createIRCConnection() {
         account = accountsDirectory.getAccount(Account.Name.IRC).get();
@@ -168,6 +179,7 @@ public class Connections {
         createConnection(
             fromData(
                 keyValue("connector", "kafka"),
+                keyValue("transportProtocol", "PLAINTEXT"),
                 accountProperty("brokers")
             )
         );

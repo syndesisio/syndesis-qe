@@ -11,6 +11,7 @@ import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.fragments.common.menu.KebabMenu;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
@@ -28,10 +29,11 @@ public class IntegrationsList extends RowList {
         super(rootElement);
     }
 
-    private static final class Element {
+    public static final class Element {
         public static final By STATUS = ByUtils.dataTestId("span", "integration-status-status-label");
         public static final By STARTING_STATUS = ByUtils.dataTestId("div", "integration-status-detail");
-        public static final String INTEGRATION_SELECTOR = "div[data-testid=\"integrations-list-item-%s-list-item\"]";
+        public static final By STARTING_STATUS_WITH_PROGRESS_BAR = ByUtils.dataTestId("progress-with-link-value");
+        public static final String INTEGRATION_SELECTOR = "li[data-testid=\"integrations-list-item-%s-list-item\"]";
         public static final By VIEW_INTEGRATION = ByUtils.dataTestId("a", "integration-actions-view-button");
     }
 
@@ -73,11 +75,21 @@ public class IntegrationsList extends RowList {
     }
 
     public String getStatus(SelenideElement item) {
-        return $(Element.STATUS).shouldBe(visible).getText().trim();
+        return item.$(Element.STATUS).shouldBe(visible).getText().trim();
     }
 
     public String getStartingStatus(SelenideElement item) {
-        return $(Element.STARTING_STATUS).shouldBe(visible).getText().replace("View Logs", "").trim();
+        String text = item.$(Element.STARTING_STATUS).shouldBe(visible).getText().trim();
+        if (!text.contains("Starting...") || text.contains("Stopping...")) {
+            text = item.$(Element.STARTING_STATUS_WITH_PROGRESS_BAR).shouldBe(visible).getText().trim();
+        }
+        return text;
+    }
+
+    public void waitUntilStartingStatusDisappears() {
+        TestUtils.waitFor(() -> !$(Element.STARTING_STATUS).exists(),
+            1, 60,
+            "Integration is still in the starting phase");
     }
 
     public SelenideElement getKebabButton(SelenideElement item) {

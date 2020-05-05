@@ -1,13 +1,14 @@
-apiVersion: syndesis.io/v1alpha1
+apiVersion: syndesis.io/v1beta1
 kind: Syndesis
 metadata:
   name: app
 spec:
   addons:
     todo:
-      enabled: "true"
+      enabled: true
   components:
-    scheduled: false
-  integration:
-    limit: 1
+    server:
+      features:
+        integrationLimit: 1
+        integrationStateCheckInterval: 60
   devSupport: false

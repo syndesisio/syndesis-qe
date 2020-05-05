@@ -1,32 +1,28 @@
 package io.syndesis.qe.pages.customizations.extensions;
 
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import io.syndesis.qe.pages.SyndesisPageObject;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
-
-import java.util.concurrent.TimeoutException;
-
 import static com.codeborne.selenide.Condition.enabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
-import static org.assertj.core.api.Assertions.assertThat;
+
+import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.openqa.selenium.By;
+
+import com.codeborne.selenide.SelenideElement;
+
+import java.util.concurrent.TimeoutException;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class TechExtensionsListComponent extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
-        public static final By ITEM_TITLE = By.className("list-group-item-heading");
-        public static final By LIST_WRAPPER = By.cssSelector(".list-group.list-view-pf.list-view-pf-view");
-        public static final String ITEM_SELECTOR = "[data-testid=\"extension-list-item-%s-list-item\"]";
-        public static final String EXTENSION_ACTION_SELECTOR = ".btn[data-testid=\"extension-list-item-%s-button\"]";
-
-
+        public static final String ITEM_SELECTOR = "extension-list-item-%s-list-item";
+        public static final String EXTENSION_ACTION_SELECTOR = "extension-list-item-%s-button";
     }
 
     @Override
@@ -40,16 +36,16 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     }
 
     public static By extensionActionButton(String action) {
-        return By.cssSelector(String.format(Element.EXTENSION_ACTION_SELECTOR, action.toLowerCase()));
+        return ByUtils.dataTestId(String.format(Element.EXTENSION_ACTION_SELECTOR, action.toLowerCase()));
     }
 
     public SelenideElement getExtensionItem(String name) {
-        String cssSelector = String.format(Element.ITEM_SELECTOR, name.toLowerCase().replaceAll(" ", "-"));
+        String dataTestId = String.format(Element.ITEM_SELECTOR, name.toLowerCase().replaceAll(" ", "-"));
 
         try {
             OpenShiftWaitUtils.waitFor(() ->
-                    $(By.cssSelector(cssSelector)).is(visible));
-            return $(By.cssSelector(cssSelector)).shouldBe(visible);
+                $(ByUtils.dataTestId(dataTestId)).is(visible), 6000);
+            return $(ByUtils.dataTestId(dataTestId)).shouldBe(visible);
         } catch (InterruptedException | TimeoutException e) {
             log.error("not found!");
             return null;
@@ -71,7 +67,6 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
         return extensionElement.$(extensionActionButton(action)).shouldBe(visible);
     }
 
-
     public void chooseActionOnExtension(String name, String action) {
         getActionOnExtensionButton(name, action).shouldBe(visible).click();
     }
@@ -81,6 +76,6 @@ public class TechExtensionsListComponent extends SyndesisPageObject {
     }
 
     public void checkActionOnExtensionButtonDisabled(String name, String action) {
-        getActionOnExtensionButton(name, action).shouldNotBe(enabled).click();
+        getActionOnExtensionButton(name, action).shouldNotBe(enabled);
     }
 }

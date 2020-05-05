@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 public class ByUtils {
 
     public static By dataTestId(String dataTestId) {
-        return By.cssSelector(String.format("*[data-testid=\"%s\"]", dataTestId));
+        return By.cssSelector(String.format("*[data-testid~=\"%s\"]", dataTestId));
     }
 
     public static By dataTestId(String tag, String dataTestId) {
-        return By.cssSelector(String.format("%s[data-testid=\"%s\"]", tag, dataTestId));
+        return By.cssSelector(String.format("%s[data-testid~=\"%s\"]", tag, dataTestId));
     }
 
     public static By containsDataTestId(String dataTestId) {
@@ -27,6 +27,10 @@ public class ByUtils {
 
     public static By dataTestIdContainsSubstring(String substring, int nthElement) {
         return By.xpath(String.format("(//*[contains(@data-testid,\"%s\")])[%d]", substring, nthElement));
+    }
+
+    public static By rowid(String rowId) {
+        return By.cssSelector(String.format("*[rowid=\"%s\"]", rowId));
     }
 
     public static By partialLinkText(String partialText) {

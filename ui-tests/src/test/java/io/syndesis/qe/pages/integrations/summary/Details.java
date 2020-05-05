@@ -10,7 +10,9 @@ import static com.codeborne.selenide.Selenide.$$;
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.pages.integrations.fragments.IntegrationsList;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
 
@@ -32,19 +34,18 @@ public class Details extends SyndesisPageObject {
     private static final class Element {
         public static final By ROOT = By.className("pf-c-page__main");
         public static final By STATUS = ByUtils.dataTestId("div", "syndesis-integration-status");
-        public static final By STARTING_STATUS = ByUtils.dataTestId("div", "integration-status-detail");
         public static final By PUBLISHED_VERSION = By.className("integration-detail-info__status");
 
         public static final By TITLE = By.className("integration-detail-editable-name");
-        public static final By KEBEB_OPEN_MENU = By.className("dropdown-toggle");
-        public static final By KEBAB_DROPDOWN_MENU = By.className("dropdown-menu-right");
+        public static final By KEBEB_OPEN_MENU = ByUtils.containsDataTestId("-kebab-toggle");
+        public static final By KEBAB_DROPDOWN_MENU = By.className("pf-c-dropdown__menu");
         public static final By INFO = By.className("integration-detail-info");
         public static final By INTEGRATION_DESCRIPTION = By.cssSelector("section.integration-description");
         public static final By EXPOSED_URL = By.cssSelector(".integration-exposed-url__list dd input");
 
         public static final By STEP_ICON_ELEMENT = By.className("integration-steps-horizontal-item");
 
-        public static final By TAB = By.cssSelector("ul.nav-tabs > li > a");
+        public static final By TAB = By.cssSelector("nav.pf-c-nav > ul > li > a");
     }
 
     public static final class Status {
@@ -112,7 +113,17 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getStartingStatus() {
-        return $(Element.STARTING_STATUS).text().replace("View Logs", "").trim();
+        String text = $(IntegrationsList.Element.STARTING_STATUS).shouldBe(visible).getText().trim();
+        if (!text.contains("Starting...") || text.contains("Stopping...")) {
+            text = $(IntegrationsList.Element.STARTING_STATUS_WITH_PROGRESS_BAR).shouldBe(visible).getText().trim();
+        }
+        return text;
+    }
+
+    public void waitUntilStartingStatusDisappears() {
+        TestUtils.waitFor(() -> !$(IntegrationsList.Element.STARTING_STATUS).exists(),
+            1, 60,
+            "Integration is still in the Starting... phase");
     }
 
     public String getIntegrationInfo() {
@@ -155,6 +166,8 @@ public class Details extends SyndesisPageObject {
     }
 
     public SelenideElement getPublishedVersion() {
+        TestUtils.waitFor(() -> !$(By.className("pf-c-spinner__clipper")).exists(), 5, 60, "The integration is still in \"Starting...\" phase after" +
+            " 1 minute");
         return $(Element.PUBLISHED_VERSION);
     }
 

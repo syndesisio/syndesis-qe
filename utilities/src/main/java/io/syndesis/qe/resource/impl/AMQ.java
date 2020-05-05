@@ -37,7 +37,8 @@ public class AMQ implements Resource {
             templateParams.put("MQ_PASSWORD", "topSecret");
 
             OpenShiftUtils.getInstance().templates().withName("syndesis-amq").delete();
-
+            TestUtils.waitFor(() -> OpenShiftUtils.getInstance().templates().withName("syndesis-amq").get() == null, 3, 30,
+                "syndesis-amq template still exist after delete");
             KubernetesList processedTemplate = OpenShiftUtils.getInstance().recreateAndProcessTemplate(template, templateParams);
 
             OpenShiftUtils.getInstance().createResources(processedTemplate);
@@ -72,13 +73,20 @@ public class AMQ implements Resource {
 
     private static void addAccounts() {
 
+        //account to use broker-amq instead of syndesis-amq. It is uses in AMQ-TO-REST test
+        Account amqProdAccount = new Account();
+        Map<String, String> amqProdAccountParameters = new HashMap<>();
+        amqProdAccountParameters.put("username", "amq");
+        amqProdAccountParameters.put("password", "topSecret");
+        amqProdAccountParameters.put("brokerUrl", "tcp://broker-amq-tcp:61616");
+        amqProdAccount.setService("amq");
+        amqProdAccount.setProperties(amqProdAccountParameters);
+
         Account openwireAccount = new Account();
         Map<String, String> openwireAccountParameters = new HashMap<>();
         openwireAccountParameters.put("username", "amq");
         openwireAccountParameters.put("password", "topSecret");
-        // For PROD build, the default broker-amq-tcp service is used, for upstream build, our service broker-amq-tcp `syndesis-default-amq-service
-        // .yml` is used.
-        openwireAccountParameters.put("brokerUrl", "tcp://broker-amq-tcp:61616");
+        openwireAccountParameters.put("brokerUrl", "tcp://syndesis-amq-tcp:61616");
         openwireAccount.setService("amq");
         openwireAccount.setProperties(openwireAccountParameters);
 
@@ -103,6 +111,7 @@ public class AMQ implements Resource {
         mqttAccount.setService("MQTT");
         mqttAccount.setProperties(mqttAccountParameters);
 
+        AccountsDirectory.getInstance().addAccount("AMQ_PROD", amqProdAccount);
         AccountsDirectory.getInstance().addAccount("AMQ", openwireAccount);
         AccountsDirectory.getInstance().addAccount("AMQP", amqpAccount);
         AccountsDirectory.getInstance().addAccount("QE MQTT", mqttAccount);

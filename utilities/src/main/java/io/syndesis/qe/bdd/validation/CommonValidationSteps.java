@@ -9,6 +9,7 @@ import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.model.IntegrationOverview;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -59,18 +60,11 @@ public class CommonValidationSteps {
         final boolean activated = TestUtils.waitForPublishing(integrationOverviewEndpoint, integrationOverview, TimeUnit.MINUTES, waitTime);
         if (!activated) {
             log.error("Integration was not active after {} minutes", waitTime);
-            log.error("Pod list: ");
-            for (Pod pod : OpenShiftUtils.getInstance().pods().list().getItems()) {
-                log.error(pod.getMetadata().getName());
-
-                if (pod.getMetadata().getName().toLowerCase().contains(integrationName.replaceAll(" ", "-").toLowerCase())) {
-                    log.error("....................Printing integration pod info...................");
-                    log.error(pod.toString());
-                    log.error(OpenShiftUtils.getInstance().pods().withName(pod.getMetadata().getName()).getLog());
-                }
-            }
+            final String podName = OpenShiftUtils.getPod(p -> p.getMetadata().getName().contains(integrationName.replaceAll(" ", "-").toLowerCase()))
+                .getMetadata().getName();
+            log.error(OpenShiftUtils.getInstance().pods().withName(podName).getLog());
+            InfraFail.fail("Integration was not active after " + waitTime + " minutes");
         }
-        assertThat(activated).isTrue();
         log.info("Integration pod has been started. It took {}s to build the integration.",
             TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
         if (TestUtils.isJenkins()) {
@@ -179,5 +173,21 @@ public class CommonValidationSteps {
                 verifyPodCount(integrationName, 0);
             }
         }
+    }
+
+    @Then("^check that integration (\\w+) contains warning \"([^\"]*)\"")
+    public void verifyWarningOnIntegration(String integrationName, String warning) {
+        IntegrationOverview overview = integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get());
+        assertThat(integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get()).getBoard().getWarnings()
+            .getAsInt()).isGreaterThan(0);
+        assertThat(
+            overview.getBoard().getMessages().stream().filter(leveledMessage -> leveledMessage.getDetail().get().contains(warning)).findFirst())
+            .isNotEmpty();
+    }
+
+    @Then("^check that integration (\\w+) doesn't contains any warning")
+    public void verifyNoWarningOnIntegration(String integrationName) {
+        assertThat(integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get()).getBoard().getWarnings()
+            .getAsInt()).isEqualTo(0);
     }
 }

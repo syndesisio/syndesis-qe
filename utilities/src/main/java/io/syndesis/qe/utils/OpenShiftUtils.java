@@ -1,10 +1,11 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.assertj.core.api.Java6Assertions.assertThat;
 
 import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.Arrays;
@@ -64,8 +65,11 @@ public final class OpenShiftUtils {
      */
     public static void asRegularUser(Runnable r) {
         xtfUtils = useRegularUser();
-        r.run();
-        xtfUtils = useAdminUser();
+        try {
+            r.run();
+        } finally {
+            xtfUtils = useAdminUser();
+        }
     }
 
     /**
@@ -102,20 +106,20 @@ public final class OpenShiftUtils {
 
     public static Route createRestRoute(String openShiftNamespace, String urlSuffix) {
         final Route route = new RouteBuilder()
-                .withNewMetadata()
-                .withName(Component.SERVER.getName())
-                .endMetadata()
-                .withNewSpec()
-                .withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
-                .withWildcardPolicy("None")
-                .withNewTls()
-                .withTermination("edge")
-                .endTls()
-                .withNewTo()
-                .withKind("Service").withName(Component.SERVER.getName())
-                .endTo()
-                .endSpec()
-                .build();
+            .withNewMetadata()
+            .withName(Component.SERVER.getName())
+            .endMetadata()
+            .withNewSpec()
+            .withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
+            .withWildcardPolicy("None")
+            .withNewTls()
+            .withTermination("edge")
+            .endTls()
+            .withNewTo()
+            .withKind("Service").withName(Component.SERVER.getName())
+            .endTo()
+            .endSpec()
+            .build();
         return client().resource(route).createOrReplace();
     }
 
@@ -146,7 +150,7 @@ public final class OpenShiftUtils {
         if (m.find()) {
             return Integer.parseInt(m.group(1));
         } else {
-            fail("Unable to parse number from " + podFullName);
+            InfraFail.fail("Unable to parse number from " + podFullName);
         }
         return -1;
     }
@@ -158,13 +162,13 @@ public final class OpenShiftUtils {
     public static String getPodLogs(String podPartialName) {
         // pod has to be in running state because pod in ContainerCreating state causes exception
         OpenShiftWaitUtils.waitUntilPodIsRunning(podPartialName);
-        Optional<Pod> integrationPod = getPodByPartialName(podPartialName);
-        if (integrationPod.isPresent()) {
-            String logText = OpenShiftUtils.getInstance().getPodLog(integrationPod.get());
+        Optional<Pod> pod = getPodByPartialName(podPartialName);
+        if (pod.isPresent()) {
+            String logText = OpenShiftUtils.getInstance().getPodLog(pod.get());
             assertThat(logText).isNotEmpty();
             return logText;
         } else {
-            fail("No pod found for pod name: " + podPartialName);
+            InfraFail.fail("No pod found for pod name: " + podPartialName);
         }
         // this can not happen due to assert - make idea happy that it can't be null
         return "";
@@ -180,6 +184,7 @@ public final class OpenShiftUtils {
 
     /**
      * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
+     *
      * @param method HTTP method to use
      * @param url api path
      * @param body body to send as JSON
@@ -191,6 +196,7 @@ public final class OpenShiftUtils {
 
     /**
      * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
+     *
      * @param method HTTP method to use
      * @param url api path
      * @param body body to send as JSON
@@ -203,7 +209,8 @@ public final class OpenShiftUtils {
             headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken());
         } else {
             if (headers.get("Authorization") == null) {
-                headers = headers.newBuilder().add("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken()).build();
+                headers =
+                    headers.newBuilder().add("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken()).build();
             }
         }
 
@@ -236,14 +243,15 @@ public final class OpenShiftUtils {
 
     /**
      * Creates the resource using binary oc client.
+     *
      * @param resource path to resource file to use with -f
      */
     public static void create(String resource) {
         final String output = binary().execute(
-                "apply",
-                "--overwrite=false",
-                "-n", TestConfiguration.openShiftNamespace(),
-                "-f", resource
+            "apply",
+            "--overwrite=false",
+            "-n", TestConfiguration.openShiftNamespace(),
+            "-f", resource
         );
         log.info(output);
     }
@@ -376,5 +384,12 @@ public final class OpenShiftUtils {
 
         dc.getSpec().getTemplate().getSpec().getContainers().get(0).setEnv(vars);
         getInstance().updateDeploymentconfig(dc);
+    }
+
+    public static boolean hasPodIssuesPullingImage(Pod pod) {
+        return pod.getStatus().getContainerStatuses().stream().anyMatch(status ->
+            status.getState().getWaiting() != null
+                && ("ImagePullBackOff".equals(status.getState().getWaiting().getReason()) ||
+                "ErrImagePull".equals(status.getState().getWaiting().getReason())));
     }
 }

@@ -1,6 +1,6 @@
 package io.syndesis.qe.utils;
 
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.TestConfiguration;
@@ -255,6 +255,7 @@ public final class TestUtils {
                     crb -> crb.getUserNames().contains(user)
                 );
         } catch (Exception e) {
+            log.debug("Exception thrown while checking if user is admin: " + e);
             return false;
         }
     }
@@ -330,10 +331,28 @@ public final class TestUtils {
      * Saves the useful info to a log file.
      */
     public static void saveDebugInfo() {
+        final String separator = "-----------------------\n";
         final String fileName = "error-" + new Date().getTime() + ".log";
-        final String content = TestUtils.printPods() + "\n" + OpenShiftUtils.getPodLogs("syndesis-server");
+        final StringBuilder content = new StringBuilder();
+        content.append(TestUtils.printPods()).append("\n").append(separator);
+        Optional<Pod> server = OpenShiftUtils.getPodByPartialName("syndesis-server");
+        if (server.isPresent()) {
+            content.append("Server logs:\n");
+            content.append(OpenShiftUtils.getPodLogs("syndesis-server"));
+        } else {
+            content.append("Syndesis server not present");
+        }
+        content.append(separator);
+        Optional<Pod> operator = OpenShiftUtils.getPodByPartialName("syndesis-operator");
+        if (operator.isPresent()) {
+            content.append("Operator logs:\n");
+            content.append(OpenShiftUtils.getPodLogs("syndesis-operator"));
+        } else {
+            content.append("Syndesis operator not present");
+        }
+
         try {
-            FileUtils.writeStringToFile(new File("log/" + fileName), content, "UTF-8");
+            FileUtils.writeStringToFile(new File("log/" + fileName), content.toString(), "UTF-8");
             log.error("Wrote server debug stuff to " + fileName);
         } catch (IOException ex) {
             log.error("Unable to write string to file: ", ex);

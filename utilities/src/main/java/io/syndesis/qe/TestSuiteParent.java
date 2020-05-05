@@ -19,7 +19,7 @@ public abstract class TestSuiteParent {
         // Do this check only if installing syndesis
         if (TestConfiguration.namespaceCleanup() && !TestUtils.isUserAdmin(TestConfiguration.adminUsername())) {
             throw new IllegalArgumentException("Admin user " + TestUtils.getCurrentUser()
-                + " specified in test properties doesn't have admin priviledges");
+                + " specified in test properties doesn't have admin priviledges (if this shouldn't happen, check debug logs for more info");
         }
 
         if (TestUtils.isUserAdmin(TestConfiguration.syndesisUsername())) {
@@ -79,8 +79,6 @@ public abstract class TestSuiteParent {
         if (TestConfiguration.namespaceCleanup()) {
             log.info("Deploying Syndesis to namespace");
             CommonSteps.deploySyndesis();
-            log.info("Waiting for Syndesis to get ready");
-            CommonSteps.waitForSyndesis();
         }
     }
 }
