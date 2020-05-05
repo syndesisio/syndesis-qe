@@ -1,5 +1,7 @@
 package io.syndesis.qe.pages.integrations.editor.add.steps;
 
+import static io.syndesis.qe.utils.Conditions.STALE_ELEMENT;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.visible;
@@ -206,7 +208,7 @@ public class Template extends AbstractStep {
             If the line doesn't have any errors there is just pre.CodeMirror-line inside the div
             But if there is any error there are also divs for displaying the error marker
          */
-        return getRootElement().$$(CodeEditor.CODE_EDITOR_LINES).stream()
+        return getRootElement().$$(CodeEditor.CODE_EDITOR_LINES).exclude(STALE_ELEMENT).stream()
             .map(element -> element.$$("div"))
             .filter(((Predicate<ElementsCollection>) (ElementsCollection::isEmpty)).negate())
             .flatMap(ElementsCollection::stream)
