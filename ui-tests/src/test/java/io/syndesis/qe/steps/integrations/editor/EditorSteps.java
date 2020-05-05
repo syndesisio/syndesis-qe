@@ -42,7 +42,7 @@ public class EditorSteps {
         public static final By EXPANDER = By.xpath(".//button[contains(@class, 'toggle-collapsed')]");
         public static final By HIDDEN_DETAILED_VIEW = By.cssSelector("div[class*='flow-view-container syn-scrollable--body collapsed']");
         public static final By INTEGRATION_EDITOR_STEPS_LIST = By.className("integration-editor-steps-list");
-        public static final By INTEGRATION_EDITOR_STEPS_LIST_ITEM = By.className("list-group-item");
+        public static final By INTEGRATION_EDITOR_STEPS_LIST_ITEM = ByUtils.containsDataTestId("integration-editor-steps-list-item");
         public static final By STEP_DATA_SHAPE = ByUtils.dataTestId("editor-step-datashape");
         public static final By ADDITIONAL_INFO = ByUtils.dataTestId("editor-step-info");
     }
