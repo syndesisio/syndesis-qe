@@ -547,10 +547,6 @@ Feature: API Provider Integration
     # update existing
     When execute DELETE on API Provider route i-todo-integration-delete endpoint "/api/1"
     Then verify response has status 204
-    And verify response has body
-    """
-
-    """
     And validate that number of all todos with task "task1" is "0"
     And validate that number of all todos with task "task2" is "1"
 
