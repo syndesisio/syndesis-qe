@@ -12,37 +12,26 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Selenide;
 
-import java.util.HashMap;
-
 import cucumber.api.java.en.Then;
 
 public class DocsVerificationSteps {
-    private HashMap<String, String> versions = new HashMap<>();
-    private static String versionOnAboutPage;
-
-    public DocsVerificationSteps() {
-        versions.put("1.9", "7.6");
-        versions.put("1.10", "7.7");
-    }
+    final String syndesisVersion = "1.10";
+    final String docsVersion = "7.7";
 
     @Then("^check version in about page$")
     public void checkVersion() {
-        By syndesisVersion = By.cssSelector("[data-testid=\"about-modal-content-version-list-item\"]");
-        assertThat($(syndesisVersion).shouldBe(visible).getText())
+        By versionOnAboutPage = By.cssSelector("[data-testid=\"about-modal-content-version-list-item\"]");
+        assertThat($(versionOnAboutPage).shouldBe(visible).getText())
             .isNotEmpty();
-        assertThat($(syndesisVersion).getText()).isEqualTo(TestUtils.getSyndesisVersion());
-        if (Character.isDigit($(syndesisVersion).getText().charAt(3))) {
-            versionOnAboutPage = $(syndesisVersion).getText().substring(0, 4);
-        } else {
-            versionOnAboutPage = $(syndesisVersion).getText().substring(0, 3);
-        }
+        assertThat($(versionOnAboutPage).getText()).isEqualTo(TestUtils.getSyndesisVersion());
+        assertThat($(versionOnAboutPage).getText().substring(0, 4)).isEqualTo(syndesisVersion);
     }
 
     @Then("verify whether the docs has right version")
     public void verifyDocsVersion() {
         Selenide.switchTo().window(1);
         TestUtils.waitFor(() -> url().contains(".redhat.com"), 1, 15, "URL was not found");
-        assertThat(versions.get(versionOnAboutPage)).isEqualTo(url().split("/")[6]);
+        assertThat(url().split("/")[6]).isEqualTo(docsVersion);
         Selenide.closeWindow();
     }
 }
