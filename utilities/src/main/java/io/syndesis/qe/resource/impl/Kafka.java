@@ -67,17 +67,33 @@ public class Kafka implements Resource {
         kafka.setProperties(kafkaParameters);
         AccountsDirectory.getInstance().getAccounts().put("kafka", kafka);
 
-        Account kafkaAutodetect = new Account();
-        Map<String, String> kafkaAutodetectParameters = new HashMap<>();
+        //for ui testing - plain:
+        Account kafkaAutodetectPlain = new Account();
+        Map<String, String> kafkaAutodetectPlainParameters = new HashMap<>();
+        kafkaAutodetectPlainParameters.put("brokers", constructBrokerName(brokersNameBase, 9092));
+        kafkaAutodetectPlainParameters.put("transportprotocol", "PLAIN");
+        kafkaAutodetectPlain.setService("kafka-autodetect-plain");
+        kafkaAutodetectPlain.setProperties(kafkaAutodetectPlainParameters);
+        AccountsDirectory.getInstance().getAccounts().put("kafka-autodetect-plain", kafkaAutodetectPlain);
+
+        //for ui testing - tls:
+        Account kafkaAutodetectTls = new Account();
+        Map<String, String> kafkaAutodetectTlsParameters = new HashMap<>();
+        kafkaAutodetectTlsParameters.put("brokers", constructBrokerName(brokersNameBase, 9093));
+        kafkaAutodetectTlsParameters.put("transportprotocol", "TLS");
+        kafkaAutodetectTls.setService("kafka-autodetect-tls");
+        kafkaAutodetectTls.setProperties(kafkaAutodetectTlsParameters);
+        AccountsDirectory.getInstance().getAccounts().put("kafka-autodetect-tls", kafkaAutodetectTls);
+    }
+
+    private static String constructBrokerName(String brokersNameBase, Integer port) {
         StringBuilder brokersGeneratedName = new StringBuilder();
         brokersGeneratedName.append(brokersNameBase);
         brokersGeneratedName.append("-bootstrap.");
         brokersGeneratedName.append(OpenShiftUtils.getInstance().getNamespace());
-        brokersGeneratedName.append(".svc:9092");
-        kafkaAutodetectParameters.put("brokers", brokersGeneratedName.toString());
-        kafkaAutodetect.setService("kafka-autodetect");
-        kafkaAutodetect.setProperties(kafkaAutodetectParameters);
-        AccountsDirectory.getInstance().getAccounts().put("kafka-autodetect", kafka);
+        brokersGeneratedName.append(".svc:");
+        brokersGeneratedName.append(port.toString());
+        return brokersGeneratedName.toString();
     }
 
     private static void addClusterRole() {
