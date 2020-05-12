@@ -261,7 +261,6 @@ Feature: API Provider Integration
     And add integration step on position "1"
     And select "Data Mapper" integration step
     And open data mapper collection mappings
-    And open data mapper unnamed collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
