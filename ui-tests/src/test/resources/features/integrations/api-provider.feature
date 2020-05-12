@@ -175,8 +175,6 @@ Feature: API Provider Integration
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "3 - SQL Result"
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -219,7 +217,6 @@ Feature: API Provider Integration
     And add integration step on position "1"
     And select "Data Mapper" integration step
     And sleep for 2 seconds
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -260,7 +257,6 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -312,7 +308,6 @@ Feature: API Provider Integration
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "1 - Request"
     And create data mapper mappings
       | body.id        | body.id        |
       | body.completed | body.completed |
@@ -351,7 +346,6 @@ Feature: API Provider Integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | body.id        | id        |
       | body.completed | completed |
@@ -362,7 +356,6 @@ Feature: API Provider Integration
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "1 - Request"
     And create data mapper mappings
       | body.id        | body.id        |
       | body.completed | body.completed |
@@ -424,7 +417,6 @@ Feature: API Provider Integration
 
     And add integration step on position "3"
     And select "Data Mapper" integration step
-    And open data bucket "2 - Request"
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -464,7 +456,6 @@ Feature: API Provider Integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | parameters.id  | id        |
       | body.completed | completed |
@@ -475,7 +466,6 @@ Feature: API Provider Integration
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "1 - Request"
     And create data mapper mappings
       | parameters.id  | body.id        |
       | body.completed | body.completed |
@@ -529,7 +519,6 @@ Feature: API Provider Integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | parameters.id | id |
     And sleep for jenkins delay or "2" seconds
@@ -727,8 +716,6 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And open data bucket "2 - SQL Result"
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -784,8 +771,6 @@ Feature: API Provider Integration
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "3 - SQL Result"
-    And open data mapper collection mappings
     And create data mapper mappings
       | id   | body.id   |
 #     | completed | body.completed | completed can either be null or false
@@ -852,8 +837,6 @@ Feature: API Provider Integration
     And sleep for jenkins delay or "2" seconds
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "3 - SQL Result"
-    And open data mapper collection mappings
     And create data mapper mappings
       | id   | body.id   |
 #     | completed | body.completed | completed can either be null or false
@@ -914,7 +897,6 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -1229,7 +1211,6 @@ Feature: API Provider Integration
     And add integration step on position "1"
     And select the "Data Mapper" connection
     And define constant "1" of type "Integer" in data mapper
-    And open data bucket "Constants"
     And create data mapper mappings
       | 1 | body.id |
     And click on the "Done" button
@@ -1267,7 +1248,6 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |

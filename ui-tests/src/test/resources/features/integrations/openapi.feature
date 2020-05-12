@@ -195,7 +195,6 @@ Feature: OpenApi support
     And add integration step on position "0"
     And select the "Data Mapper" connection
     And define constant "12" of type "Integer" in data mapper
-    And open data bucket "Constants"
     And create data mapper mappings
       | 12 | parameters.id |
     And click on the "Done" button
@@ -229,7 +228,6 @@ Feature: OpenApi support
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "1 - Request"
     And create data mapper mappings
       | body.id        | body.id        |
       | body.completed | body.completed |
@@ -276,8 +274,6 @@ Feature: OpenApi support
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And open data bucket "3 - SQL Result"
-    And open data mapper collection mappings
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |

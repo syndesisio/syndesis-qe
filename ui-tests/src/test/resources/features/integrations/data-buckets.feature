@@ -116,7 +116,6 @@ Feature: Integration - Databucket
 
     When open data bucket "1 - SQL Result"
     And open data bucket "2 - SQL Result"
-    And open data mapper collection mappings
     And create data mapper mappings
       | company | text    |
       | firma   | subject |
@@ -220,7 +219,6 @@ Feature: Integration - Databucket
     And close data bucket "4 - SQL Result"
     And open data bucket "4 - SQL Result"
 
-    When open data mapper collection mappings
     And create data mapper mappings
       | firma        | COMPANY   |
       | myname       | MYNAME    |
@@ -240,7 +238,6 @@ Feature: Integration - Databucket
       | 3 - SQL Result | open |
       | 4 - SQL Result | open |
 
-    When open data mapper collection mappings
     And create data mapper mappings
       | firma        | COMPANY   |
       | mysurname    | MYNAME    |
@@ -259,8 +256,7 @@ Feature: Integration - Databucket
       | 2 - SQL Result | open |
       | 3 - SQL Result | open |
 
-    When open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | firma     | COMPANY   |
       | myname    | MYNAME    |
       | mysurname | MYSURNAME |
@@ -277,8 +273,7 @@ Feature: Integration - Databucket
       | 2 - SQL Result | open |
 
 
-    When open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | firma     | COMPANY   |
       | mysurname | MYSURNAME |
     And scroll "top" "right"
@@ -292,8 +287,7 @@ Feature: Integration - Databucket
     Then check visibility of data mapper ui
     And open data bucket "1 - SQL Result"
 
-    When open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | firma | COMPANY |
     And scroll "top" "right"
     And click on the "Done" button

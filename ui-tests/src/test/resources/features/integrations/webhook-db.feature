@@ -98,10 +98,8 @@ Feature: Integration - Webhook to DB
 
     When add integration step on position "0"
     And select the "Data Mapper" connection
-    And open data mapper collection mappings
     Then check visibility of data mapper ui
-    And open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | task      | task      |
       | completed | completed |
 

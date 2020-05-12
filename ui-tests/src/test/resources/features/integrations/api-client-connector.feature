@@ -60,7 +60,6 @@ Feature: Integration - DB to API
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | last_name | body.task |
     And click on the "Done" button
@@ -106,8 +105,7 @@ Feature: Integration - DB to API
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | company | parameters.id |
     And click on the "Done" button
 
@@ -115,7 +113,6 @@ Feature: Integration - DB to API
     When add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When open data bucket "3 - Response"
     And create data mapper mappings
       | body.task | COMPANY |
     And click on the "Done" button
