@@ -4,28 +4,29 @@
 @database
 @datamapper
 @kafka
-@integrations-db-to-kafka-to-db
+@integrations-db-to-kafka-to-db-secure
 @ENTESB-13113
 Feature: Integration - DB to DB
 
   Background: Clean application state
     Given clean application state
     And deploy Kafka broker and add account
+    And extract broker certificate
     And log into the Syndesis
     And reset content of "todo" table
     And reset content of "CONTACT" table
     And inserts into "CONTACT" table
-      | Joe-plain | Jackson | Red Hat | db |
+      | Joe-tls | Jackson | Red Hat | db |
 #    this sleep is necessary, because AMQ streams autodiscovery process takes some time so streams are not available immediately
 #    and unfortunatelly there is no indication of autodiscovery process status yet. see issue ENTESB-13113
     When sleep for "150000" ms
-    And created Kafka connection using AMQ streams auto detection using "PLAIN" security
-      | Kafka Message Broker | Kafka Autodetect PLAIN | Kafka Auto Detect QE | Kafka Streams Auto Detection |
+    And created Kafka connection using AMQ streams auto detection using "TLS" security
+      | Kafka Message Broker | Kafka Autodetect TLS | Kafka Auto Detect QE TLS | Kafka Streams Auto Detection |
 
 #
 #  1. select - update
 #
-  @db-to-kafka-to-db
+  @db-to-kafka-to-db-secure
   Scenario: from database to kafka topic
 #    A.db to kafka:
     When navigate to the "Home" page
@@ -44,11 +45,11 @@ Feature: Integration - DB to DB
 
     # select kafka connection as 'Finish Connection'
     Then check visibility of page "Choose a Finish Connection"
-    When select the "Kafka Auto Detect QE" connection
+    When select the "Kafka Auto Detect QE TLS" connection
     And select "Publish" integration action
 
     And fill in values by element data-testid
-      | topic | auto-detect |
+      | topic | auto-detect-tls |
     And click on the "Next" button
     And fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Schema |
@@ -66,7 +67,7 @@ Feature: Integration - DB to DB
       | first_name | firstName |
     And click on the "Done" button
     And publish integration
-    And set integration name "db-to-kafka E2E"
+    And set integration name "db-to-kafka-tls E2E"
     And publish integration
 
 
@@ -78,10 +79,10 @@ Feature: Integration - DB to DB
 
     # select kafka connection as 'Start Connection'
     Then check visibility of page "Choose a Finish Connection"
-    When select the "Kafka Auto Detect QE" connection
+    When select the "Kafka Auto Detect QE TLS" connection
     And select "Subscribe" integration action
     Then fill in values by element data-testid
-      | topic | auto-detect |
+      | topic | auto-detect-tls |
     And click on the "Next" button
     And fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Schema |
@@ -105,12 +106,12 @@ Feature: Integration - DB to DB
     And click on the "Done" button
 
     And publish integration
-    And set integration name "kafka-to-db E2E"
+    And set integration name "kafka-to-db-tls E2E"
     And publish integration
 
-    And wait until integration "db-to-kafka E2E" gets into "Running" state
-    And wait until integration "kafka-to-db E2E" gets into "Running" state
-    And wait until integration db-to-kafka E2E processed at least 1 message
-    And wait until integration kafka-to-db E2E processed at least 1 message
+    And wait until integration "db-to-kafka-tls E2E" gets into "Running" state
+    And wait until integration "kafka-to-db-tls E2E" gets into "Running" state
+    And wait until integration db-to-kafka-tls E2E processed at least 1 message
+    And wait until integration kafka-to-db-tls E2E processed at least 1 message
 
-    Then checks that query "SELECT task FROM TODO WHERE task = 'Joe-plain' limit 1" has "1" output
+    Then checks that query "SELECT task FROM TODO WHERE task = 'Joe-tls' limit 1" has "1" output
