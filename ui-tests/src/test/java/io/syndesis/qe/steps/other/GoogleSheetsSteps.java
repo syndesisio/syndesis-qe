@@ -44,8 +44,6 @@ public class GoogleSheetsSteps {
 
     private void defineSpreadsheetIdInDatamapper(String id) {
         DataMapper mapper = new DataMapper();
-        mapper.switchToDatamapperIframe();
         mapper.addProperty("spreadsheetId", id, "String");
-        mapper.switchIframeBack();
     }
 }

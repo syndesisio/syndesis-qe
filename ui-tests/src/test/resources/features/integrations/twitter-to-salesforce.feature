@@ -46,7 +46,6 @@ Feature: Integration - Twitter to Salesforce
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And define constant "integrations@salesforce.com" of type "String" in data mapper
-    And open data bucket "Constants"
     When create data mapper mappings
       | user.screenName             | TwitterScreenName__c |
       | text                        | Description          |

@@ -152,30 +152,19 @@ public class IntegrationSteps {
             OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
     }
 
-    @Then("^.*check that data bucket \"([^\"]*)\" is available$")
-    public void checkPreviousDataBuckets(String bucket) {
-        //there is condition for element to be visible
-        dataMapper.getDataBucketElement(bucket);
-    }
-
     @When("^.*open data bucket \"([^\"]*)\"$")
     public void openDataBucket(String bucket) {
         //check if it exists included
-        dataMapper.switchToDatamapperIframe();
         dataMapper.openBucket(bucket);
-        dataMapper.switchIframeBack();
     }
 
     @When("^.*close data bucket \"([^\"]*)\"$")
     public void closeDataBucket(String bucket) {
-        dataMapper.switchToDatamapperIframe();
         dataMapper.closeBucket(bucket);
-        dataMapper.switchIframeBack();
     }
 
     @When("^.*perform action with data bucket")
     public void performActionWithBucket(DataTable table) {
-        dataMapper.switchToDatamapperIframe();
         List<List<String>> rows = table.cells();
         String action;
 
@@ -183,14 +172,15 @@ public class IntegrationSteps {
             action = row.get(1);
             if ("open".equalsIgnoreCase(action)) {
                 dataMapper.openBucket(row.get(0));
+                assertThat(dataMapper.isDataBucketOpen(row.get(0))).isTrue();
             } else if ("close".equalsIgnoreCase(action)) {
                 dataMapper.closeBucket(row.get(0));
+                assertThat(dataMapper.isDataBucketOpen(row.get(0))).isFalse();
             } else {
                 //check if exists, condition visible is in used method
-                dataMapper.getDataBucketElement(row.get(0));
+                assertThat(dataMapper.getDataBucketElement(row.get(0)).is(visible)).isTrue();
             }
         }
-        dataMapper.switchIframeBack();
     }
 
     @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"(.*)\"$")

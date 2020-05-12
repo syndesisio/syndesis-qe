@@ -219,6 +219,11 @@ public abstract class SyndesisPageObject {
         this.doFillInput(input, value);
     }
 
+    public void selectValueByDataTestid(String dataTestid, String value) {
+        SelenideElement input = this.getElementByDataTestid(dataTestid);
+        this.setElementValue(value, input);
+    }
+
     private void doFillInput(SelenideElement input, String value) {
         assertThat(input.getTagName(), is("input"));
         if (input.getAttribute("type").equals("checkbox")) {
