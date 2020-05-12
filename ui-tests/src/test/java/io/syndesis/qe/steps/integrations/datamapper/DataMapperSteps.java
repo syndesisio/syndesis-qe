@@ -51,12 +51,6 @@ public class DataMapperSteps {
     }
 
     @ExcludeFromSelectorReports
-    @When("^open data mapper collection mappings$")
-    public void openCollectionMappings() {
-        mapper.openDataMapperCollectionElement();
-    }
-
-    @ExcludeFromSelectorReports
     @Then("^check element with id \"([^\"]*)\" is present (\\d+) times$")
     public void sourceContainsElementsWithId(String id, int numberOfElements) {
         assertThat(mapper.getAllItemsWithName(id)).hasSize(numberOfElements);

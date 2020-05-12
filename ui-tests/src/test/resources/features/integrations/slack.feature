@@ -44,8 +44,7 @@ Feature: Slack Connector
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    When open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | company | message |
     And click on the "Done" button
     And click on the "Save" link
@@ -84,7 +83,6 @@ Feature: Slack Connector
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When define constant "syndesis-bot" of type "String" in data mapper
-    And open data bucket "Constants"
 
     And create data mapper mappings
       | syndesis-bot | AUTOR   |
@@ -142,7 +140,6 @@ Feature: Slack Connector
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When define constant "syndesis-bot" of type "String" in data mapper
-    And open data bucket "Constants"
 
     And create data mapper mappings
       | syndesis-bot | AUTOR   |

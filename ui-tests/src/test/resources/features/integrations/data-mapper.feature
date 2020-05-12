@@ -29,13 +29,11 @@ Feature: Data Mapper
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And sleep for 2 seconds
-    And open data mapper collection mappings
     And create data mapper mappings
       | task | task |
     And click on the "Done" button
 
     And edit integration step on position 2
-    And open data mapper collection mappings
     Then check element with id "task" is present 2 times
 
   @reproducer
@@ -68,7 +66,6 @@ Feature: Data Mapper
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | task | task |
     And click on the "Done" button

@@ -71,8 +71,7 @@ Feature: Templates
     And add integration step on position "3"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When open data bucket "4 - Template JSON Schema"
-    And create data mapper mappings
+    When create data mapper mappings
       | message | text |
     And scroll "top" "right"
     And click on the "Done" button
@@ -149,7 +148,6 @@ Feature: Templates
     And add integration step on position "3"
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
-    And open data bucket "4 - Template JSON Schema"
     And create data mapper mappings
       | message | text |
     And scroll "top" "right"

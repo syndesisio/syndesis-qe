@@ -101,9 +101,7 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And open data bucket "Properties"
     And define spreadsheetID as property in data mapper
-    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId |
       | first_name    | A             |
@@ -153,9 +151,7 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And open data bucket "Properties"
     And define spreadsheetID as property in data mapper
-    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId |
       | first_name    | A             |
@@ -208,9 +204,7 @@ Feature: Google Sheets Connector
     And add integration step on position "1"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And open data bucket "Properties"
     And define spreadsheetID as property in data mapper
-    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId |
       | first_name    | #1            |
@@ -262,7 +256,6 @@ Feature: Google Sheets Connector
     And define property "sourceSheetId" with value "0" of type "Integer" in data mapper
     And define property "sourceGroupColumn" with value "C" of type "String" in data mapper
     And define property "sourceValuesColumn" with value "D" of type "String" in data mapper
-    And open data bucket "Properties"
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId             |
       | sheetId            | sheetId                   |
@@ -285,7 +278,6 @@ Feature: Google Sheets Connector
     And define property "layout" with value "vertical" of type "String" in data mapper
     And define property "start" with value "A1" of type "String" in data mapper
 
-    And open data bucket "Properties"
     And create data mapper mappings
       | spreadsheetId      | spreadsheetId            |
       | sheetId            | sheetId                  |
@@ -401,8 +393,6 @@ Feature: Google Sheets Connector
     When define property "sheetId" with value "789378340" of type "String" in data mapper
     And define property "dataRange" with value "B1:B20" of type "String" in data mapper
     And define property "domainRange" with value "A1:A20" of type "String" in data mapper
-    And open data bucket "Properties"
-    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId        |
       | sheetId       | sourceSheetId        |
@@ -438,8 +428,6 @@ Feature: Google Sheets Connector
     And define property "sheetId" with value "789378340" of type "String" in data mapper
     And define property "dataRange" with value "B1:B20" of type "String" in data mapper
     And define property "domainRange" with value "A1:A20" of type "String" in data mapper
-    And open data bucket "Properties"
-    And open data mapper collection mappings
     And create data mapper mappings
       | spreadsheetId | spreadsheetId        |
       | sheetId       | sourceSheetId        |
