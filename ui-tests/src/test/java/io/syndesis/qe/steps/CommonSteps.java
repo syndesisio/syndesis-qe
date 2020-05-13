@@ -156,7 +156,7 @@ public class CommonSteps {
 
         try {
             OpenShiftWaitUtils.waitFor(() -> WebDriverRunner.getWebDriver().getCurrentUrl().contains("login") ||
-                $(By.className("login")).is(visible), 20 * 1000);
+                $(By.className("pf-c-login")).is(visible), 20 * 1000);
         } catch (InterruptedException | TimeoutException e) {
             fail("Log in page was never loaded");
         }
