@@ -42,7 +42,8 @@ Feature: Integration - S3
       And create a new text file in bucket "syndesis-server-bucket-out" with name "testdelete2.txt" and text "Hello world!"
       And validate bucket with name "syndesis-server-bucket-out" contains file with name "testdelete1.txt" and text "Hello world!"
       And validate bucket with name "syndesis-server-bucket-out" contains file with name "testdelete2.txt" and text "Hello world!"
-    When create S3 polling START action step with bucket: "syndesis-server-bucket-out" and prefix "testdelete1"
+    When create S3 polling START action step with bucket: "syndesis-server-bucket-out" and properties
+        | prefix | testdelete1 |
       And create S3 "delete" FINISH action step with bucket: "syndesis-server-bucket-out"
       And create integration with name: "delete all prefixed from S3 rest test"
       And wait for integration with name: "delete all prefixed from S3 rest test" to become active
