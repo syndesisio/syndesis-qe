@@ -232,18 +232,24 @@ public class ConnectionSteps extends AbstractStep {
         createS3PollingStep(bucketName, null);
     }
 
-    @When("^create S3 polling START action step with bucket: \"([^\"]*)\" and prefix \"([^\"]*)\"$")
-    public void createS3PollingStep(String bucketName, String prefix) {
+    @When("^create S3 polling START action step with bucket: \"([^\"]*)\" and properties$")
+    public void createS3PollingStepWithProperties(String bucketName, DataTable properties) {
+        createS3PollingStep(bucketName, properties.asMap(String.class, String.class));
+    }
+
+    private void createS3PollingStep(String bucketName, Map<String, String> properties) {
+        Map<String, String> defaultProperties = TestUtils.map(
+            "deleteAfterRead", "false",
+            "maxMessagesPerPoll", "10",
+            "delay", "1000"
+        );
+        if (properties != null) {
+            defaultProperties.putAll(properties);
+        }
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.S3.getId());
         super.addProperty(StepProperty.CONNECTION_ID, S3BucketNameBuilder.getBucketName(bucketName));
         super.addProperty(StepProperty.ACTION, "aws-s3-polling-bucket-connector");
-        final Map<String, String> properties = TestUtils.map(TestUtils.map("deleteAfterRead", "false",
-            "maxMessagesPerPoll", "10",
-            "delay", "1000"));
-        if (prefix != null) {
-            properties.put("prefix", prefix);
-        }
-        super.addProperty(StepProperty.PROPERTIES, properties);
+        super.addProperty(StepProperty.PROPERTIES, defaultProperties);
         super.createStep();
     }
 

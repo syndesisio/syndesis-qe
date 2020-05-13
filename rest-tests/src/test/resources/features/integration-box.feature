@@ -95,11 +95,14 @@ Feature: Integration - File transfer
   Scenario: S3 to Box upload
     When create sample buckets on S3 with name "syndesis-box-upload"
       And create S3 connection using "syndesis-box-upload" bucket
-      And create S3 polling START action step with bucket: "syndesis-box-upload"
+      And create S3 polling START action step with bucket: "syndesis-box-upload" and properties
+        | deleteAfterRead | true  |
+        | delay           | 10000 |
       And create Box upload action step with file name ""
       And create integration with name: "S3-Box"
     Then wait for integration with name: "S3-Box" to become active
     When create a new text file in bucket "syndesis-box-upload" with name "test_box.txt" and text "Hello from AWS!"
+    Then wait until integration S3-Box processed at least 1 message
       And verify that file "test_box.txt" with content 'Hello from AWS!' is present in Box
 
   @ftp
