@@ -200,6 +200,15 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("^create SFTP \"([^\"]*)\" action with values$")
+    public void createSftpStep(String action, DataTable sourceMappingData) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SFTP.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SFTP.getId());
+        super.addProperty(StepProperty.ACTION, "io.syndesis:sftp-" + action);
+        super.addProperty(StepProperty.PROPERTIES, sourceMappingData.asMaps(String.class, String.class).get(0));
+        super.createStep();
+    }
+
     @When("^create SNS publish action step with topic \"([^\"]*)\"$")
     public void createSNSStepWithProperties(String topic) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SNS.getId());
