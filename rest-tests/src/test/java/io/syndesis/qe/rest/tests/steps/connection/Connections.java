@@ -190,6 +190,20 @@ public class Connections {
         );
     }
 
+    @Given("^create SFTP connection$")
+    public void createSFTPConnection() {
+        account = accountsDirectory.getAccount(Account.Name.SFTP).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "sftp"),
+                accountProperty("host"),
+                accountProperty("port"),
+                accountProperty("username"),
+                accountProperty("password")
+            )
+        );
+    }
+
     @Given("^create SNS connection$")
     public void createSNSConnection() {
         account = accountsDirectory.getAccount(Account.Name.AWS).get();
