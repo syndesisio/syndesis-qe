@@ -12,7 +12,7 @@ import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FtpUtils implements FileTansferUtils {
+public class FtpUtils implements FileTransferUtils {
     private FtpClientManager manager = new FtpClientManager();
     private FTPClient ftpClient = manager.getClient();
 

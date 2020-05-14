@@ -95,13 +95,17 @@ Feature: Integration - File transfer
   Scenario: S3 to Box upload
     When create sample buckets on S3 with name "syndesis-box-upload"
       And create S3 connection using "syndesis-box-upload" bucket
-      And create S3 polling START action step with bucket: "syndesis-box-upload"
+      And create S3 polling START action step with bucket: "syndesis-box-upload" and properties
+        | deleteAfterRead | true  |
+        | delay           | 10000 |
       And create Box upload action step with file name ""
       And create integration with name: "S3-Box"
     Then wait for integration with name: "S3-Box" to become active
     When create a new text file in bucket "syndesis-box-upload" with name "test_box.txt" and text "Hello from AWS!"
+    Then wait until integration S3-Box processed at least 1 message
       And verify that file "test_box.txt" with content 'Hello from AWS!' is present in Box
 
+  @ENTESB-12553
   @ftp
   @integration-ftp-box
   Scenario: FTP to Box
@@ -116,3 +120,19 @@ Feature: Integration - File transfer
       And create integration with name: "FTP to Dropbox rest test"
     Then wait for integration with name: "FTP to Dropbox rest test" to become active
       And verify that file "test_box.txt" with content 'Hello from FTP!' is present in Box
+
+  @ENTESB-12553
+  @sftp
+  @integration-sftp-box
+  Scenario: SFTP to Box
+    Given deploy SFTP server
+      And prepare SFTP server
+      And put "test_box.txt" file with content "Hello from SFTP!" in the directory: "/test/download" using SFTP
+    When create SFTP connection
+      And create SFTP "download" action with values
+        | fileName     | directoryName  | initialDelay | delay | delete |
+        | test_box.txt | /test/download | 1000         | 500   | true   |
+      And create Box upload action step with file name ""
+      And create integration with name: "SFTP to Box rest test"
+    Then wait for integration with name: "SFTP to Box rest test" to become active
+      And verify that file "test_box.txt" with content 'Hello from SFTP!' is present in Box

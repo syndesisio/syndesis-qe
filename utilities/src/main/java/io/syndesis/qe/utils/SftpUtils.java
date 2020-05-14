@@ -4,11 +4,14 @@ import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.resource.impl.SFTP;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +21,7 @@ import net.schmizz.sshj.sftp.RemoteResourceInfo;
 import net.schmizz.sshj.sftp.SFTPClient;
 
 @Slf4j
-public class SftpUtils implements FileTansferUtils {
+public class SftpUtils implements FileTransferUtils {
 
     private SftpClientManager manager = new SftpClientManager();
     private SSHClient sshClient = manager.getSshClient();
@@ -71,11 +74,11 @@ public class SftpUtils implements FileTansferUtils {
     public void uploadTestFile(String testFileName, String text, String remoteDirectory) {
         checkConnection();
         log.info("Uploading file " + testFileName + " with content " + text + " to directory " + remoteDirectory + ". This may take some time");
-        try (FileOutputStream out = new FileOutputStream(testFileName);) {
-            out.write(text.getBytes("UTF-8"));
-            out.close();
-            //uploading file:
-            sftpClient.put(testFileName, remoteDirectory + "/" + testFileName);
+        try {
+            Path tempFile = Files.createTempFile(testFileName, null,
+                PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx")));
+            FileUtils.write(tempFile.toFile(), text, "UTF-8");
+            sftpClient.put(tempFile.toAbsolutePath().toString(), remoteDirectory + "/" + testFileName);
         } catch (IOException ex) {
             fail("Unable to SFTP upload test file: ", ex);
         }
