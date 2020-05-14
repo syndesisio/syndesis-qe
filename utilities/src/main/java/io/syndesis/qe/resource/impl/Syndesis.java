@@ -479,7 +479,7 @@ public class Syndesis implements Resource {
             for (Image image : images) {
                 if (TestConfiguration.image(image) != null) {
                     log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
-                    imagesEnvVars.put(image.name() + "_IMAGE", TestConfiguration.image(image));
+                    imagesEnvVars.put("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image));
                 }
             }
         }
