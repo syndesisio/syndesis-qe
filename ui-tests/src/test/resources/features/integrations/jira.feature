@@ -198,7 +198,6 @@ Feature: Jira Connector
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | body | task |
     And scroll "top" "right"
@@ -241,7 +240,6 @@ Feature: Jira Connector
 
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    And open data mapper collection mappings
     And create data mapper mappings
       | description | task |
     And scroll "top" "right"

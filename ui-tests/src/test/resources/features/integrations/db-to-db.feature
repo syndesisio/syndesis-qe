@@ -301,8 +301,7 @@ Feature: Integration - DB to DB
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | first_name | TASK |
 
     And click on the "Done" button
@@ -371,7 +370,6 @@ Feature: Integration - DB to DB
 
     When add integration step on position "1"
     And select the "Data Mapper" connection
-    And open data mapper collection mappings
     And create data mapper mappings
       | body.task | task |
 

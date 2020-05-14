@@ -61,7 +61,6 @@ Feature: Google Calendar Connector
     Then check visibility of data mapper ui
     When define constant "new_event" of type "String" in data mapper
     And define constant "about_the_event" of type "String" in data mapper
-    And open data bucket "Constants"
     And create data mapper mappings
       | new_event       | title       |
       | about_the_event | description |
