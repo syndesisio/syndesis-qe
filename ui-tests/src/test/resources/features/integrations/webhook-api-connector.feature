@@ -63,8 +63,7 @@ Feature: Integration - Webhook to API connector
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
 
-    When open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | author | body.task |
     And click on the "Done" button
     And publish integration

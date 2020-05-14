@@ -54,7 +54,6 @@ Feature: API Provider Integration - Import Export
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And open data bucket "1 - Request"
     And create data mapper mappings
       | body.id        | body.id        |
       | body.completed | body.completed |

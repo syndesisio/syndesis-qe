@@ -185,7 +185,6 @@ Feature: Concur Connector
     When add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data bucket "3 - Response"
     And create data mapper mappings
       | ID | parameters.id |
 
@@ -202,7 +201,6 @@ Feature: Concur Connector
     When add integration step on position "4"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When open data bucket "5 - Response"
     And create data mapper mappings
       | ID | DESCRIPTION |
 
@@ -212,9 +210,7 @@ Feature: Concur Connector
     When add integration step on position "6"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When open data bucket "3 - Response"
-    And .*open data bucket "1 - SQL Result"
-    And create data mapper mappings
+    When create data mapper mappings
       | ID      | parameters.id     |
       | company | parameters.listId |
 

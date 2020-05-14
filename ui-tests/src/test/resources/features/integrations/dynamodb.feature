@@ -174,7 +174,6 @@ Feature: Dynamodb connector
     When add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And open data bucket "3 - Result"
     When create data mapper mappings
       | name    | first_name  |
       | company | company     |

@@ -69,8 +69,7 @@ Feature: Quickstart db to db
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When open data mapper collection mappings
-    And create data mapper mappings
+    When create data mapper mappings
       | first_name; last_name; company | task |
     And click on the "Done" button
 

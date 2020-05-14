@@ -37,6 +37,10 @@ public class ByUtils {
         return new ByPartialText(partialText);
     }
 
+    public static By containsId(String id) {
+        return By.cssSelector(String.format("*[id*=\"%s\"]", id));
+    }
+
     private static class ByPartialText extends By {
 
         private final String partialText;
