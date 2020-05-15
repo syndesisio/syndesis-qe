@@ -1,6 +1,6 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
