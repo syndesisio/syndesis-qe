@@ -7,6 +7,7 @@ import static com.codeborne.selenide.Selenide.$;
 import io.syndesis.qe.fragments.common.form.ApiSpecificationForm;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -24,7 +25,7 @@ public class UploadSwaggerSpecification extends SyndesisPageObject implements Wi
     }
 
     private static class Element {
-        public static By ROOT = By.className("open-api-review-actions");
+        public static By ROOT = ByUtils.dataTestId("openapi-select-method");
     }
 
     @Override

@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Selenide.$;
 import io.syndesis.qe.fragments.common.form.ApiSpecificationForm;
 import io.syndesis.qe.logic.common.wizard.WizardPhase;
 import io.syndesis.qe.pages.SyndesisPageObject;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
@@ -16,7 +17,7 @@ public class UploadApiProviderSpecification extends SyndesisPageObject implement
     private ApiSpecificationForm apiSpecificationForm = new ApiSpecificationForm();
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector(".open-api-review-actions");
+        public static final By ROOT = ByUtils.dataTestId("openapi-select-method");
     }
 
     private static class Button {
