@@ -98,17 +98,29 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public void doCreateMapping(String source, String target) {
-        createNewMapping(source, target);
+        createNewMapping(null, source, null, target);
+        getRootElement().find(Element.CLOSING_MAPPING_DETAIL_BUTTON).shouldBe(visible).click();
+    }
+
+    public void doCreateMappingWithDataBucket(String sourceBucket, String source, String targetBucket, String target) {
+        createNewMapping(sourceBucket, source, targetBucket, target);
         getRootElement().find(Element.CLOSING_MAPPING_DETAIL_BUTTON).shouldBe(visible).click();
     }
 
     /**
      * Parse multiple properties e.g. first_name ; last_name etc.
      */
-    private void createNewMapping(String source, String target) {
+    private void createNewMapping(String sourceBucket, String source, String targetBucket, String target) {
         log.info("Mapping {} -> {}", source, target);
         SelenideElement src = this.getSourceElementColumn();
         SelenideElement dest = this.getTargetElementColumn();
+
+        if (sourceBucket != null && !sourceBucket.isEmpty()) {
+            src = this.getDataBucketElement(sourceBucket);
+        }
+        if (targetBucket != null && !targetBucket.isEmpty()) {
+            dest = this.getDataBucketElement(targetBucket);
+        }
 
         if (source.contains(";")) {
             String[] array = source.split(";");
@@ -208,7 +220,9 @@ public class DataMapper extends SyndesisPageObject {
         if (rowsWithName.size() == 0) {
             return null;
         } else if (rowsWithName.size() > 1) {
-            fail("Too many rows with the same name. Name: " + name + " Nested Level: " + nestedLevel);
+            fail("Too many rows with the same name. Name: " + name + " Nested Level: " + nestedLevel +
+                ". Probably more data buckets have the field element with the same name. In that case, use different step when explicitly select " +
+                "data bucket");
         }
         return rowsWithName.get(0);
     }

@@ -202,6 +202,7 @@ Feature: Activity
     And check that 1. activity has not any errors
 
   @gh-4192
+  @ENTESB-13811
   @activity-error
   Scenario: Check error
     When navigate to the "Home" page
@@ -275,6 +276,7 @@ Feature: Activity
 
   @reproducer
   @gh-4192
+  @ENTESB-13811
   @activity-error-data-mapper-before
   Scenario: Check whether shows error when data mapper is before
     When navigate to the "Home" page
