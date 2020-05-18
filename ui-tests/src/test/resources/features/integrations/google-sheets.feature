@@ -228,6 +228,7 @@ Feature: Google Sheets Connector
       | db     |
 
   @pivot-tables
+  @ENTESB-13817
   Scenario: create pivottable from sample data
     When clear range "'pivot rows'" in data test spreadsheet
     And clear range "'pivot-columns'" in data test spreadsheet

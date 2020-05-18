@@ -174,10 +174,10 @@ Feature: Dynamodb connector
     When add integration step on position "2"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When create data mapper mappings
-      | name    | first_name  |
-      | company | company     |
-      | email   | lead_source |
+    When create data mapper mappings with data bucket
+      | 3 - Result | name    | | first_name  |
+      | 3 - Result | company | | company     |
+      | 3 - Result | email   | | lead_source |
     And click on the "Done" button
 
     And publish integration
