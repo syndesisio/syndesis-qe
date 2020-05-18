@@ -156,6 +156,7 @@ public class CommonSteps {
             TestSupport.getInstance().resetDB();
             return connectionsEndpoint.list().stream().anyMatch(s -> s.getName().equals("PostgresDB"));
         }, 10, 1000L, "Default PostgresDB connection has not been created");
+        TestSupport.getInstance().resetDv();
     }
 
     /**
