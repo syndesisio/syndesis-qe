@@ -50,9 +50,27 @@ public class DataMapperSteps {
         }
     }
 
+    /**
+     * Same table as "create data mapper mappings step but with data bucket names"
+     * SourceDataBucket | SourceMapping | TargetDataBucket | TargetMapping
+     * @param table
+     */
+    @ExcludeFromSelectorReports
+    @When("^create data mapper mappings with data bucket$")
+    public void createMappingWithDataBucket(DataTable table) {
+
+        // automatically open all collections for data mapping
+        mapper.openDataMapperCollectionElement();
+
+        for (List<String> row : table.cells()) {
+            mapper.doCreateMappingWithDataBucket(row.get(0), row.get(1), row.get(2), row.get(3));
+        }
+    }
+
     @ExcludeFromSelectorReports
     @Then("^check element with id \"([^\"]*)\" is present (\\d+) times$")
     public void sourceContainsElementsWithId(String id, int numberOfElements) {
+        mapper.openDataMapperCollectionElement();
         assertThat(mapper.getAllItemsWithName(id)).hasSize(numberOfElements);
     }
 
