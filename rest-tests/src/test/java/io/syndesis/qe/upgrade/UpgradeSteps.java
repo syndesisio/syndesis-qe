@@ -169,15 +169,6 @@ public class UpgradeSteps {
         assertThat(found).as("The pull secret should be linked to service account, but wasn't").isTrue();
     }
 
-    @Then("verify upgrade integration {string}")
-    public void checkIntegration(String name) {
-        String[] lines = OpenShiftUtils.getIntegrationLogs(name).split("\n");
-        final String lastLine = lines[lines.length - 1];
-        TestUtils.sleepIgnoreInterrupt(10000L);
-        String logsAfter = OpenShiftUtils.getIntegrationLogs(name);
-        assertThat(logsAfter.substring(logsAfter.indexOf(lastLine))).contains("[[options]]");
-    }
-
     private String getPreviousVersion(String current, List<String> tags) {
         // Semver needs 1.2.3 version style, so add ".0" if it's missing
         if (current.matches("^\\d\\.\\d+")) {
