@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.vdurmont.semver4j.Semver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -69,6 +70,7 @@ public class UpgradeSteps {
             JSONArray jsonArray = new JSONObject(HttpUtils.doGetRequest(DOCKER_HUB_SYNDESIS_TAGS_URL).getBody()).getJSONArray("results");
             List<String> tags = new ArrayList<>();
             jsonArray.forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
+            Collections.sort(tags);
 
             String previousTag = getPreviousVersion(getMajorMinor(TestConfiguration.syndesisInstallVersion()), tags);
             if (!previousTag.isEmpty()) {
