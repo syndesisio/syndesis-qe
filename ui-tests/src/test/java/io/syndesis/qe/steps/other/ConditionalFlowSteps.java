@@ -29,9 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConditionalFlowSteps {
     private static class EditFlowStepElements {
-        private static By ICON_DOWN = By.className("fa-arrow-alt-circle-down");
-        private static By ICON_UP = By.className("fa-arrow-alt-circle-up");
-        private static By ICON_DELETE = By.className("fa-trash");
+        private static By ICON_DOWN = ByUtils.dataTestId("condition-move-down");
+        private static By ICON_UP = ByUtils.dataTestId("condition-move-up");
+        private static By ICON_DELETE = ByUtils.dataTestId("condition-delete");
         private static By CONDITION_LIST_ITEM = ByUtils.containsDataTestId("input", "-condition");
         private static By OPEN_FLOW_CONDITION_BUTTON_PARENT = By.cssSelector("[data-testid*=\"choice-view\"][data-testid*=\"flow-button\"]");
         private static By FLOW_DROPDOWN = ByUtils.containsDataTestId("flows-dropdown");
@@ -120,7 +120,7 @@ public class ConditionalFlowSteps {
                 default:
                     throw new IllegalArgumentException("Incorrect data table value on position 1");
             }
-            selectedCondition.$(iconSelector).parent().shouldBe(visible).click();
+            selectedCondition.$(iconSelector).shouldBe(visible).click();
         }
     }
 
