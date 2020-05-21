@@ -15,6 +15,7 @@ import static com.codeborne.selenide.Selenide.switchTo;
 
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -77,12 +78,10 @@ public class ApicurioSteps {
         public static By MODAL_PATH_INPUT = By.id("path");
 
         //syndesis apicurio-review page elements
-        public static By WARNINGS = By.className("review-actions__warnings");
-        public static By ERRORS = By.className("review-actions__errors");
-        public static By PAGE_ROOT = By.className("pf-c-content");
-
-        //specify security elements
-        public static By AUTHENTICATION_CONTAINER = By.className("form-group");
+        public static By WARNINGS = ByUtils.dataTestId("api-provider-review-actions-warning-number");
+        public static By ERRORS = ByUtils.dataTestId("api-provider-review-actions-error-number");
+        public static By PAGE_ROOT = By.className("pf-c-wizard__main");
+        public static By NUMBER_OPERATIONS = ByUtils.dataTestId("api-provider-review-operations-number");
     }
 
     private static class TextFormElements {
@@ -108,7 +107,7 @@ public class ApicurioSteps {
     @ExcludeFromSelectorReports
     @Then("^check that apicurio shows (\\d+) imported operations$")
     public void verifyOperations(int expectedCount) {
-        SelenideElement operations = $(Elements.PAGE_ROOT).shouldBe(visible).$$("div").filter(attribute("class", "container-fluid")).first();
+        SelenideElement operations = $(Elements.PAGE_ROOT).shouldBe(visible).find(Elements.NUMBER_OPERATIONS);
         assertThat(operations).isNotNull();
         assertThat(operations.getText())
             .containsIgnoringCase(Integer.toString(expectedCount))
@@ -119,7 +118,7 @@ public class ApicurioSteps {
     @When("^check that apicurio imported operations number is loaded$")
     public void verifyOperationsAreVisible() {
         try {
-            OpenShiftWaitUtils.waitFor(() -> !$(Elements.PAGE_ROOT).shouldBe(visible).$$("div").filter(attribute("class", "container-fluid")).first()
+            OpenShiftWaitUtils.waitFor(() -> !$(Elements.PAGE_ROOT).shouldBe(visible).find(Elements.NUMBER_OPERATIONS)
                 .getText().equalsIgnoreCase("{{0}} operations"), 1000 * 60);
         } catch (InterruptedException | TimeoutException e) {
             fail("Operations number was not loaded in 60s.", e);
