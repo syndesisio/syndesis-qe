@@ -29,7 +29,6 @@ Feature: Kudu connector
     And deploy Kudu
     And create table in Kudu server
     And clean "todo" table
-    And set Kudu credentials
     And log into the Syndesis
     And created connections
       | Apache Kudu | kudu | KuduConnector | description |

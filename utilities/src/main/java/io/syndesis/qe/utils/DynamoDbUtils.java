@@ -44,7 +44,7 @@ public class DynamoDbUtils {
     public void initClient() {
         log.info("Initializing DynamoDb client");
 
-        final Account dynamoDbAccount = AccountsDirectory.getInstance().getAccount(Account.Name.AWS_DDB)
+        final Account dynamoDbAccount = AccountsDirectory.getInstance().getAccount(Account.Name.AWS)
             .orElseThrow(() -> new IllegalArgumentException("Unable to find AWS DDB account"));
         final String region = dynamoDbAccount.getProperty("region");
         this.tableName = dynamoDbAccount.getProperty("tableName");

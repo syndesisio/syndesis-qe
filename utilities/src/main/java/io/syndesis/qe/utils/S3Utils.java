@@ -69,7 +69,7 @@ public class S3Utils {
         s3client = AmazonS3ClientBuilder
             .standard()
             .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .withRegion(Regions.valueOf(s3Account.getProperty("region")))
+            .withRegion(Regions.valueOf(s3Account.getProperty("region").toUpperCase().replaceAll("-", "_")))
             .build();
         bucketsCreated = new HashMap<>();
     }

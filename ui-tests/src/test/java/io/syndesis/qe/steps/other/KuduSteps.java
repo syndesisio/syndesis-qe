@@ -3,14 +3,10 @@ package io.syndesis.qe.steps.other;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import cucumber.api.java.en.When;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+
+import cucumber.api.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -51,15 +47,5 @@ public class KuduSteps {
                 .findFirst().get().getSpec().getHost() + "/kudu/table/validate").getBody();
 
         assertThat(response).isEqualToIgnoringCase("Success");
-    }
-
-    @When("^set Kudu credentials$")
-    public void createCredentials() {
-        Account kudu = new Account();
-        kudu.setService("Apache Kudu");
-        Map<String, String> accountParameters = new HashMap<>();
-        accountParameters.put("host", "syndesis-kudu");
-        kudu.setProperties(accountParameters);
-        AccountsDirectory.getInstance().addAccount("kudu", kudu);
     }
 }

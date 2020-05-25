@@ -18,8 +18,12 @@ public class ODataUtils {
     }
 
     public static String getOpenshiftService() {
-        String clusterIp = OpenShiftUtils.getInstance().services().withName("odata").get().getSpec().getClusterIP();
-        return "http://" + clusterIp + ":8080/TripPin/odata.svc/";
+        if (OpenShiftUtils.getInstance().getService("odata") != null) {
+            String clusterIp = OpenShiftUtils.getInstance().getService("odata").getSpec().getClusterIP();
+            return "http://" + clusterIp + ":8080/TripPin/odata.svc/";
+        } else {
+            return null;
+        }
     }
 
     public static String readResourceFile(URL file) {

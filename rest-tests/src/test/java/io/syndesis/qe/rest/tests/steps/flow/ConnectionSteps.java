@@ -44,6 +44,15 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("^create AMQP \"([^\"]*)\" action step with properties:$")
+    public void createAmqpStep(String action, DataTable properties) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.AMQP.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.AMQP.getId());
+        super.addProperty(StepProperty.ACTION, action);
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        super.createStep();
+    }
+
     @When("^create Box download action step (with|without) fileId$")
     public void createBoxDownload(String withFileId) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.BOX.getId());
@@ -130,6 +139,38 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("^create DynamoDB \"([^\"]*)\" action step with properties:$")
+    public void createDynamoDBStep(String action, DataTable properties) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.DYNAMO_DB.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.DYNAMO_DB.getId());
+        super.addProperty(StepProperty.ACTION, "io.syndesis:aws-ddb-" + action);
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        super.createStep();
+    }
+
+    @When("^create Email \"([^\"]*)\" action with properties:$")
+    public void createEmailStep(String action, DataTable properties) {
+        if (action.contains("send")) {
+            super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.EMAIL_SEND.getId());
+            super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.EMAIL_SEND.getId());
+        } else {
+            super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.EMAIL_RECEIVE.getId());
+            super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.EMAIL_RECEIVE.getId());
+        }
+        super.addProperty(StepProperty.ACTION, "io.syndesis:email-" + action);
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        super.createStep();
+    }
+
+    @When("^create FHIR \"([^\"]*)\" action with resource type \"([^\"]*)\"")
+    public void createFhirStep(String action, String type) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.FHIR.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.FHIR.getId());
+        super.addProperty(StepProperty.ACTION, "io.syndesis:fhir-" + action);
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map("resourceType", type));
+        super.createStep();
+    }
+
     @When("^create FTP \"([^\"]*)\" action with values$")
     public void createFtpStep(String action, DataTable sourceMappingData) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.FTP.getId());
@@ -188,12 +229,48 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("^create JIRA \"([^\"]*)\" step with JQL \'([^\']*)\'$")
+    public void createJiraStep(String action, String jql) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.JIRA.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.JIRA.getId());
+        super.addProperty(StepProperty.ACTION, "jira-" + action);
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map("jql", jql));
+        super.createStep();
+    }
+
     @When("^create Kafka \"([^\"]*)\" step with topic \"([^\"]*)\"$")
     public void createKafkaStep(String action, String topic) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.KAFKA.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.KAFKA.getId());
         super.addProperty(StepProperty.ACTION, "kafka-" + action);
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map("topic", topic));
+        super.createStep();
+    }
+
+    @When("^create Kudu \"([^\"]*)\" step with table \"([^\"]*)\"$")
+    public void createKuduStep(String action, String table) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.KUDU.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.KUDU.getId());
+        super.addProperty(StepProperty.ACTION, "kudu-" + action);
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map("table", table));
+        super.createStep();
+    }
+
+    @When("^create MongoDB \"([^\"]*)\" with collection \"([^\"]*)\"$")
+    public void createMongoDBStep(String action, String collection) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.MONGODB36.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.MONGODB36.getId());
+        super.addProperty(StepProperty.ACTION, "mongodb-" + action);
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map("collection", collection));
+        super.createStep();
+    }
+
+    @When("^create OData \"([^\"]*)\" action with properties$")
+    public void createODataStep(String action, DataTable properties) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.ODATA.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.ODATA.getId());
+        super.addProperty(StepProperty.ACTION, "odata-" + action);
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
         super.createStep();
     }
 
@@ -206,12 +283,30 @@ public class ConnectionSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("^create ServiceNow \"([^\"]*)\" action with properties$")
+    public void createServiceNowStep(String action, DataTable properties) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SERVICENOW.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SERVICENOW.getId());
+        super.addProperty(StepProperty.ACTION, "servicenow-action-" + action);
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        super.createStep();
+    }
+
     @When("^create SFTP \"([^\"]*)\" action with values$")
     public void createSftpStep(String action, DataTable sourceMappingData) {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SFTP.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SFTP.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:sftp-" + action);
         super.addProperty(StepProperty.PROPERTIES, sourceMappingData.asMaps(String.class, String.class).get(0));
+        super.createStep();
+    }
+
+    @When("^create Slack \"([^\"]*)\" action with properties$")
+    public void createSlackStep(String action, DataTable properties) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.SLACK.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.SLACK.getId());
+        super.addProperty(StepProperty.ACTION, "io.syndesis:slack-" + action);
+        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
         super.createStep();
     }
 
@@ -283,6 +378,20 @@ public class ConnectionSteps extends AbstractStep {
             properties.put("fileName", fileName);
         }
         super.addProperty(StepProperty.PROPERTIES, properties);
+        super.createStep();
+    }
+
+    @When("^create telegram (send|receive) action( with chat id \"([^\"]*)\")?$")
+    public void createTelegramStep(String action, String chatId) {
+        super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.TELEGRAM.getId());
+        super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.TELEGRAM.getId());
+        super.addProperty(StepProperty.ACTION, "telegram-chat-" + ("send".equals(action) ? "to" : "from"));
+        if ("send".equals(action)) {
+            super.addProperty(StepProperty.ACTION, "telegram-chat-to");
+            super.addProperty(StepProperty.PROPERTIES, TestUtils.map("chatId", chatId));
+        } else {
+            super.addProperty(StepProperty.ACTION, "telegram-chat-from");
+        }
         super.createStep();
     }
 

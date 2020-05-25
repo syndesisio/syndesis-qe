@@ -73,9 +73,19 @@ public class OpenshiftValidationSteps {
         ResourceFactory.create(AMQ.class);
     }
 
-    @Given("^deploy Kafka broker and add account$")
+    @Given("create ActiveMQ accounts")
+    public void addActiveMQAccounts() {
+        ResourceFactory.get(AMQ.class).addAccounts();
+    }
+
+    @Given("^deploy Kafka broker$")
     public void deployKafka() {
         ResourceFactory.create(Kafka.class);
+    }
+
+    @Given("create Kafka accounts")
+    public void createKafkaAccounts() {
+        ResourceFactory.get(Kafka.class).addAccounts();
     }
 
     @Given("^deploy HTTP endpoints")
@@ -83,9 +93,19 @@ public class OpenshiftValidationSteps {
         ResourceFactory.create(HTTPEndpoints.class);
     }
 
+    @Given("create HTTP accounts")
+    public void createHTTPAccounts() {
+        ResourceFactory.get(HTTPEndpoints.class).addAccounts();
+    }
+
     @Given("^deploy IRC server")
     public void deployIRCServer() {
         ResourceFactory.create(IRC.class);
+    }
+
+    @Given("create IRC account")
+    public void createIRCAccount() {
+        ResourceFactory.get(IRC.class).addAccount();
     }
 
     @Given("^deploy OData server$")
@@ -100,6 +120,21 @@ public class OpenshiftValidationSteps {
     @Given("^deploy MongoDB 3.6 database$")
     public void deployMongoDB36() {
         ResourceFactory.create(MongoDb36.class);
+    }
+
+    @Given("create MongoDB account")
+    public void createMongoDBAccount() {
+        ResourceFactory.get(MongoDb36.class).addAccount();
+    }
+
+    @Given("create Kudu account")
+    public void createKuduAccount() {
+        ResourceFactory.get(Kudu.class).createAccount();
+    }
+
+    @Given("^create OData( HTTPS)? credentials$")
+    public void createODataHttpCredentials(String https) {
+        ResourceFactory.get(WildFlyS2i.class).createODataAccount(https != null && !https.isEmpty());
     }
 
     @Given("^wait until \"([^\"]*)\" pod is reloaded$")

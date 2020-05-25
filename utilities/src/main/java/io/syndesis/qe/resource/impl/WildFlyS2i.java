@@ -1,6 +1,9 @@
 package io.syndesis.qe.resource.impl;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
+import io.syndesis.qe.utils.ODataUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -68,17 +71,41 @@ public class WildFlyS2i implements Resource {
 
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().routes().withName(appName).delete();
-        OpenShiftUtils.getInstance().services().withName(appName).delete();
-        OpenShiftUtils.getInstance().imageStreams().withName(appName).delete();
-        OpenShiftUtils.getInstance().imageStreams().withName("wildfly-130-centos7").delete();
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(appName).cascading(true).delete();
-        OpenShiftUtils.getInstance().buildConfigs().withName(appName).cascading(true).delete();
+        if (appName != null) {
+            OpenShiftUtils.getInstance().routes().withName(appName).delete();
+            OpenShiftUtils.getInstance().services().withName(appName).delete();
+            OpenShiftUtils.getInstance().imageStreams().withName(appName).delete();
+            OpenShiftUtils.getInstance().imageStreams().withName("wildfly-130-centos7").delete();
+            OpenShiftUtils.getInstance().deploymentConfigs().withName(appName).cascading(true).delete();
+            OpenShiftUtils.getInstance().buildConfigs().withName(appName).cascading(true).delete();
+        }
     }
 
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", appName))
             && OpenShiftUtils.getPodLogs(appName).contains("OData service has started");
+    }
+
+    public void createODataAccount(boolean https) {
+        Account oData = new Account();
+        oData.setService("OData");
+        Map<String, String> properties = new HashMap<>();
+
+        String serviceUri;
+        String key;
+
+        if (https) {
+            serviceUri = "https://services.odata.org/TripPinRESTierService/";
+            key = "odataHttps";
+        } else {
+            serviceUri = ODataUtils.getOpenshiftService();
+            key = "odata";
+        }
+
+        properties.put("serviceUri", serviceUri);
+        oData.setProperties(properties);
+        AccountsDirectory.getInstance().addAccount(key, oData);
+        log.info("Created new Account: {}", key);
     }
 }

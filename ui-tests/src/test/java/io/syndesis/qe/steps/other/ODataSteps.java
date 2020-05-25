@@ -2,15 +2,11 @@ package io.syndesis.qe.steps.other;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.ODataUtils;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -20,39 +16,6 @@ import okhttp3.Headers;
 
 @Slf4j
 public class ODataSteps {
-
-    @When("^create OData credentials$")
-    public void createODataHttpCredentials() {
-        createODataCredentials(false);
-    }
-
-    @When("^create OData https credentials$")
-    public void createODataHttpsCredentials() {
-        createODataCredentials(true);
-    }
-
-    private void createODataCredentials(boolean https) {
-        Account oData = new Account();
-        oData.setService("OData");
-        Map<String, String> properties = new HashMap<>();
-
-        String serviceUri;
-        String key;
-
-        if (https) {
-            serviceUri = "https://services.odata.org/TripPinRESTierService/";
-            key = "odataHttps";
-        } else {
-            serviceUri = ODataUtils.getOpenshiftService();
-            key = "odata";
-        }
-
-        properties.put("serviceUri", serviceUri);
-        oData.setProperties(properties);
-        AccountsDirectory.getInstance().addAccount(key, oData);
-        log.info("Created new Account: {}", key);
-    }
-
     @When("^.*insert entity \"([^\"]*)\" into \"([^\"]*)\" collection on OData service$")
     public void insertEntityToODataService(final String entity, final String collection) {
         String requestBody = ODataUtils.readResourceFile(this.getClass().getClassLoader().getResource(entity));

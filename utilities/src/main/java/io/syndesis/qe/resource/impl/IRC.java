@@ -41,7 +41,7 @@ public class IRC implements Resource {
             deployIrcController();
         }
 
-        addAccounts();
+        addAccount();
     }
 
     @Override
@@ -186,7 +186,7 @@ public class IRC implements Resource {
             .done();
     }
 
-    private static void addAccounts() {
+    public void addAccount() {
         Account irc = new Account();
         Map<String, String> params = new HashMap<>();
         params.put("hostname", "irc-server");

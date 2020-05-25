@@ -190,4 +190,21 @@ public class CommonValidationSteps {
         assertThat(integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get()).getBoard().getWarnings()
             .getAsInt()).isEqualTo(0);
     }
+
+    @Then("verify that integration {string} build is successful")
+    public void verifyBuildIsSuccessful(String integrationName) {
+        TestUtils.waitFor(
+            () -> OpenShiftUtils.integrationPodExists(integrationName, pod -> pod.getMetadata().getName().endsWith("build")),
+            5,
+            60,
+            "Unable to find build pod for integration " + integrationName
+        );
+
+        TestUtils.waitFor(
+            () -> "Succeeded".equals(OpenShiftUtils.getIntegrationPod(integrationName, pod -> pod.getMetadata().getName().endsWith("build")).getStatus().getPhase()),
+            5,
+            600,
+            "Build pod for integration " + integrationName + " didn't finish successfully in 10 minutes"
+        );
+    }
 }

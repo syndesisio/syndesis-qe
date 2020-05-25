@@ -288,7 +288,7 @@ Feature: OData Connector
   @reproducer
   @odata-server-certificate
   Scenario: OData connector needs server certificate
-    When create OData https credentials
+    When create OData HTTPS credentials
     And log into the Syndesis
     And created connections
       | OData | odataHttps | ODataHttps | sample OData service |
