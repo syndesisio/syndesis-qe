@@ -112,7 +112,7 @@ public class MongoDBSteps {
             });
     }
 
-    @After("@mongodb")
+    @After("@mongodb,@10-integrations-complex")
     public void closeMongoConnection() {
         if (client != null) {
             client.close();
