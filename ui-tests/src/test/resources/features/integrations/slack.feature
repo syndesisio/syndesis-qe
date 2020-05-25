@@ -14,7 +14,7 @@ Feature: Slack Connector
     And created connections
       | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
     And navigate to the "Home" page
-    
+    And send message "StartingNewTest" on channel "slack_connector_test"
 #
 #  1. Check that slack message exists, use data mapper
 #
