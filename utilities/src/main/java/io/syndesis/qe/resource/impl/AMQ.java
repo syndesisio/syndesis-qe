@@ -49,8 +49,7 @@ public class AMQ implements Resource {
                     .load(Paths.get("../utilities/src/main/resources/templates/syndesis-default-amq-service.yml").toFile()).get());
             }
         }
-        //this is not part of deployment, but let's have it the same method:
-        AMQ.addAccounts();
+        addAccounts();
     }
 
     @Override
@@ -71,8 +70,7 @@ public class AMQ implements Resource {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("application", NAME));
     }
 
-    private static void addAccounts() {
-
+    public void addAccounts() {
         //account to use broker-amq instead of syndesis-amq. It is uses in AMQ-TO-REST test
         Account amqProdAccount = new Account();
         Map<String, String> amqProdAccountParameters = new HashMap<>();

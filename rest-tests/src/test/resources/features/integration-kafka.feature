@@ -10,7 +10,7 @@
 Feature: Integration - Kafka
   Background:
     Given clean SF, removes all leads with email: "test@integration-kafka.feature"
-      And deploy Kafka broker and add account
+      And deploy Kafka broker
       And deploy ActiveMQ broker
       And create ActiveMQ connection
       And create SalesForce connection

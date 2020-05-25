@@ -101,6 +101,20 @@ public class Connections {
         );
     }
 
+    @Given("^create AMQP connection$")
+    public void createAMQPConnection() {
+        account = accountsDirectory.getAccount(Account.Name.AMQP).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "amqp"),
+                accountProperty("connectionUri"),
+                accountProperty("username"),
+                accountProperty("password"),
+                accountProperty("clientID")
+            )
+        );
+    }
+
     @Given("^create Box connection$")
     public void createBoxConnection() {
         account = accountsDirectory.getAccount(Account.Name.BOX).get();
@@ -123,6 +137,43 @@ public class Connections {
                 keyValue("connector", "dropbox"),
                 accountProperty("accessToken"),
                 accountProperty("clientIdentifier")
+            )
+        );
+    }
+
+    @Given("^create DynamoDB connection$")
+    public void createDynamoDBConnection() {
+        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "dynamo_db"),
+                accountProperty("accessKey"),
+                accountProperty("secretKey"),
+                regionAccountProperty(),
+                accountProperty("tableName")
+            )
+        );
+    }
+
+    @Given("^create Email (SMTP|IMAP|POP3) (SSL|STARTTLS) connection$")
+    public void createEmailConnection(String type, String security) {
+        account = accountsDirectory.getAccount("Email " + type + " With " + security).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "smtp".equals(type.toLowerCase()) ? "email_send" : "email_receive"),
+                accountProperty("username"),
+                accountProperty("password"),
+                accountProperty("host"),
+                accountProperty("port")
+            )
+        );
+    }
+
+    @Given("^create FHIR connection$")
+    public void createFhirConnection() {
+        createConnection(
+            fromData(
+                keyValue("connector", "fhir")
             )
         );
     }
@@ -173,6 +224,16 @@ public class Connections {
         );
     }
 
+    @Given("^create Jira connection$")
+    public void createJiraConnection() {
+        createConnection(
+            fromData(
+                keyValue("connector", "jira"),
+                keyValue("jiraUrl", "http://myjira.com")
+            )
+        );
+    }
+
     @Given("^create Kafka connection$")
     public void createKafkaConnection() {
         account = accountsDirectory.getAccount(Account.Name.KAFKA).get();
@@ -181,6 +242,43 @@ public class Connections {
                 keyValue("connector", "kafka"),
                 keyValue("transportProtocol", "PLAINTEXT"),
                 accountProperty("brokers")
+            )
+        );
+    }
+
+    @Given("^create Kudu connection$")
+    public void createKuduConnection() {
+        account = accountsDirectory.getAccount(Account.Name.KUDU).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "kudu"),
+                accountProperty("host")
+            )
+        );
+    }
+
+    @Given("^create MongoDB connection$")
+    public void createMongoDBConnection() {
+        account = accountsDirectory.getAccount(Account.Name.MONGODB36).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "mongodb36"),
+                accountProperty("host"),
+                accountProperty("user"),
+                accountProperty("password"),
+                accountProperty("database"),
+                accountProperty("url")
+            )
+        );
+    }
+
+    @Given("^create OData (HTTP|HTTPS) connection$")
+    public void createODataConnection(String type) {
+        account = accountsDirectory.getAccount("http".equals(type.toLowerCase()) ? Account.Name.ODATA_HTTP : Account.Name.ODATA_HTTPS).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "odata"),
+                accountProperty("serviceUri")
             )
         );
     }
@@ -197,7 +295,19 @@ public class Connections {
                 accountProperty("userName"),
                 accountProperty("password")
             )
+        );
+    }
 
+    @Given("^create ServiceNow connection$")
+    public void createServicenowConnection() {
+        account = accountsDirectory.getAccount(Account.Name.SERVICENOW).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "servicenow"),
+                accountProperty("instanceName"),
+                accountProperty("userName"),
+                accountProperty("password")
+            )
         );
     }
 
@@ -215,6 +325,18 @@ public class Connections {
         );
     }
 
+    @Given("^create Slack connection$")
+    public void createSlackConnection() {
+        account = accountsDirectory.getAccount(Account.Name.SLACK).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "slack"),
+                accountProperty("webhookUrl"),
+                accountProperty("token")
+            )
+        );
+    }
+
     @Given("^create SNS connection$")
     public void createSNSConnection() {
         account = accountsDirectory.getAccount(Account.Name.AWS).get();
@@ -223,7 +345,7 @@ public class Connections {
                 keyValue("connector", "sns"),
                 accountProperty("accessKey"),
                 accountProperty("secretKey"),
-                accountProperty("region")
+                regionAccountProperty()
             )
         );
     }
@@ -236,7 +358,7 @@ public class Connections {
                 keyValue("connector", "sqs"),
                 accountProperty("accessKey"),
                 accountProperty("secretKey"),
-                accountProperty("region")
+                regionAccountProperty()
             )
         );
     }
@@ -250,10 +372,21 @@ public class Connections {
                 keyValue("connector", "s3"),
                 accountProperty("accessKey"),
                 keyValue("bucketNameOrArn", S3BucketNameBuilder.getBucketName(s3Bucket)),
-                accountProperty("region"),
+                regionAccountProperty(),
                 accountProperty("secretKey"),
                 keyValue("connectionId", S3BucketNameBuilder.getBucketName(s3Bucket)),
                 keyValue("name", "Fuse QE S3 " + S3BucketNameBuilder.getBucketName(s3Bucket))
+            )
+        );
+    }
+
+    @Given("^create Telegram connection$")
+    public void createTelegramConnection() {
+        account = accountsDirectory.getAccount(Account.Name.TELEGRAM).get();
+        createConnection(
+            fromData(
+                keyValue("connector", "telegram"),
+                accountProperty("authorizationToken")
             )
         );
     }
@@ -283,6 +416,10 @@ public class Connections {
 
     private List<String> accountProperty(String prop) {
         return Arrays.asList(prop, account.getProperty(prop));
+    }
+
+    private List<String> regionAccountProperty() {
+        return Arrays.asList("region", account.getProperty("region").toUpperCase().replaceAll("-", "_"));
     }
 }
 

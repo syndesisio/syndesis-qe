@@ -127,7 +127,7 @@ public class HTTPEndpoints implements Resource {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME));
     }
 
-    private static void addAccounts() {
+    public void addAccounts() {
         Account http = new Account();
         Map<String, String> params = new HashMap<>();
         params.put("baseUrl", "http://http-svc:8080");

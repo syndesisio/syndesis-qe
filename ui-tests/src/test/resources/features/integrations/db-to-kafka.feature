@@ -10,7 +10,7 @@ Feature: Integration - DB to DB
 
   Background: Clean application state
     Given clean application state
-    And deploy Kafka broker and add account
+    And deploy Kafka broker
     And log into the Syndesis
     And reset content of "todo" table
     And reset content of "CONTACT" table
