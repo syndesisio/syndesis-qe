@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Properties;
 
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,6 +41,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_URL_SUFFIX = "syndesis.config.url.suffix";
     public static final String SYNDESIS_CALLBACK_URL_SUFFIX = "syndesis.config.callbackUrlSuffix";
     public static final String SYNDESIS_ENABLE_TEST_SUPPORT = "syndesis.config.enableTestSupport";
+    public static final String SYNDESIS_ENVIRONMENT_DELOREAN = "syndesis.config.environment.delorean";
 
     public static final String SYNDESIS_REST_API_PATH = "syndesis.config.rest.api.path";
     public static final String SYNDESIS_SERVER_ROUTE = "syndesis.config.server.route";
@@ -239,6 +241,10 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_ENABLE_TEST_SUPPORT, "false"));
     }
 
+    public static boolean isDeloreanEnvironment() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_ENVIRONMENT_DELOREAN));
+    }
+
     public static String syndesisCrdUrl() {
         return get().readValue(SYNDESIS_CRD_URL);
     }
@@ -397,16 +403,28 @@ public class TestConfiguration {
         // When the single user property is set (for the env where the syndesis is already deployed and you are not an admin)
         // Make the user "admin" anyway, as that user is used in all k8s client invocations by default
         if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
-            defaultProps.setProperty(SYNDESIS_ADMIN_USERNAME, properties.getProperty(SYNDESIS_UI_USERNAME));
+            //need to be in the main properties because it will be used for xtf settings
+            properties.setProperty(SYNDESIS_ADMIN_USERNAME, properties.getProperty(SYNDESIS_UI_USERNAME));
         }
         if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
-            defaultProps.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
+            //need to be in the main properties because it will be used for xtf settings
+            properties.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
         }
 
-        // Copy syndesis properties to their xtf counterparts - used by binary oc client
-        System.setProperty("xtf.openshift.url", properties.getProperty(OPENSHIFT_URL));
-        System.setProperty("xtf.openshift.master.username", properties.getProperty(SYNDESIS_ADMIN_USERNAME));
-        System.setProperty("xtf.openshift.master.password", properties.getProperty(SYNDESIS_ADMIN_PASSWORD));
+        if (properties.get(SYNDESIS_ENVIRONMENT_DELOREAN) == null || properties.get(SYNDESIS_ENVIRONMENT_DELOREAN).equals("false")) {
+            // Copy syndesis properties to their xtf counterparts - used by binary oc client
+            System.setProperty("xtf.openshift.url", properties.getProperty(OPENSHIFT_URL));
+            System.setProperty("xtf.openshift.master.username", properties.getProperty(SYNDESIS_ADMIN_USERNAME));
+            System.setProperty("xtf.openshift.master.password", properties.getProperty(SYNDESIS_ADMIN_PASSWORD));
+        } else {
+            // get openshift url from the default client which use KUBECONFIG
+            DefaultKubernetesClient defaultKubernetesClient = new DefaultKubernetesClient();
+            defaultProps.setProperty(OPENSHIFT_URL, defaultKubernetesClient.getMasterUrl().toString());
+            System.setProperty("xtf.openshift.url", defaultKubernetesClient.getMasterUrl().toString());
+            log.info("Kubernetes master URL: " + defaultKubernetesClient.getMasterUrl().toString());
+//            System.setProperty("xtf.openshift.master.kubeconfig", System.getenv("KUBECONFIG")); //need for OpenShiftBinary
+            defaultKubernetesClient.close();
+        }
         System.setProperty("xtf.openshift.namespace", properties.getProperty(OPENSHIFT_NAMESPACE));
 
         // Set oc version - this version of the client will be used as the binary client
