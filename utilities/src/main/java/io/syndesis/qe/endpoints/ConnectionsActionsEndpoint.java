@@ -50,6 +50,6 @@ public class ConnectionsActionsEndpoint extends AbstractEndpoint<ConnectorDescri
             JsonNode.class
         );
 
-        return transformJsonNode(response, ConnectorDescriptor.class).getPropertyDefinitionSteps().get(0).getProperties().get("template").getDefaultValue();
+        return transformJsonNode(response, ConnectorDescriptor.class).getPropertyDefinitionSteps().get(0).getProperties().get("template").getDefaultValue().toString();
     }
 }
