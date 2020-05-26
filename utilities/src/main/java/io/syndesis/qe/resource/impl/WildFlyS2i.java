@@ -26,7 +26,7 @@ public class WildFlyS2i implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(appName)) {
+        if (!isDeployed()) {
             Template template;
             try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-wildfly.yml")) {
                 template = OpenShiftUtils.getInstance().templates().load(is).get();
@@ -85,6 +85,11 @@ public class WildFlyS2i implements Resource {
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", appName))
             && OpenShiftUtils.getPodLogs(appName).contains("OData service has started");
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(appName);
     }
 
     public void createODataAccount(boolean https) {

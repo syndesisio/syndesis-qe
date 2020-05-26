@@ -35,4 +35,9 @@ public class PublicOauthProxy implements Resource {
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("syndesis.io/component", POD_NAME));
     }
+
+    @Override
+    public boolean isDeployed() {
+        return OpenShiftUtils.getAnyPod("syndesis.io/component", POD_NAME).isPresent();
+    }
 }

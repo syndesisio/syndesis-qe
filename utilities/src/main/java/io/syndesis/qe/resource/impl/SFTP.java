@@ -53,7 +53,7 @@ public class SFTP implements Resource {
             .addNewUser("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
             .done();
 
-        if (!TestUtils.isDcDeployed(appName)) {
+        if (!isDeployed()) {
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
                 .withName("sftp-cmd")
@@ -121,6 +121,11 @@ public class SFTP implements Resource {
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName));
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(appName);
     }
 
     private void initProperties() {

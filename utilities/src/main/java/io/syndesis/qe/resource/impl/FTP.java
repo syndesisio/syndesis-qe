@@ -37,7 +37,7 @@ public class FTP implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(appName)) {
+        if (!isDeployed()) {
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
                 .withName("ftp-cmd")
@@ -113,6 +113,11 @@ public class FTP implements Resource {
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName));
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(appName);
     }
 
     private void initProperties() {

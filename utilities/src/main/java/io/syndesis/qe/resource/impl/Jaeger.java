@@ -130,6 +130,11 @@ public class Jaeger implements Resource {
             OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getPodByPartialName("jaeger-all-in-one"));
     }
 
+    @Override
+    public boolean isDeployed() {
+        return OpenShiftUtils.getPodByPartialName("jaeger-all-in-one").isPresent();
+    }
+
     private void processResources() {
         for (String jaegerResource : JAEGER_RESOURCES) {
             jaegerResource = String.format(jaegerResource, TestConfiguration.jaegerVersion());
