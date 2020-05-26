@@ -57,6 +57,11 @@ public class Kafka implements Resource {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-kafka-0"));
     }
 
+    @Override
+    public boolean isDeployed() {
+        return OpenShiftUtils.getAnyPod("name", "strimzi-cluster-operator").isPresent();
+    }
+
     public void addAccounts() {
         final String brokersNameBase = "my-cluster-kafka";
 

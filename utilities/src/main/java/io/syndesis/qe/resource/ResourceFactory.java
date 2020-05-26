@@ -63,8 +63,10 @@ public class ResourceFactory {
      */
     public static void cleanup() {
         createdResources.forEach(created -> {
-            log.info("Undeploying resource " + created.getClass().getSimpleName());
-            created.undeploy();
+            if (created.isDeployed()) {
+                log.info("Undeploying resource " + created.getClass().getSimpleName());
+                created.undeploy();
+            }
         });
     }
 }

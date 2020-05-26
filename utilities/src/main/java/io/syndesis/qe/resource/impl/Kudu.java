@@ -205,6 +205,11 @@ public class Kudu implements Resource {
             && OpenShiftUtils.getPodLogs(API_APP_NAME).contains("Started App in");
     }
 
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(APP_NAME);
+    }
+
     public void createAccount() {
         Account kudu = new Account();
         kudu.setService("Apache Kudu");

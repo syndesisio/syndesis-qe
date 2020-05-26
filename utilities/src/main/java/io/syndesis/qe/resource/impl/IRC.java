@@ -66,6 +66,11 @@ public class IRC implements Resource {
             && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, CONTROLLER_APP_NAME));
     }
 
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(SERVER_APP_NAME);
+    }
+
     private static void deployIrcServer() {
         List<ContainerPort> ports = new LinkedList<>();
         ports.add(new ContainerPortBuilder()

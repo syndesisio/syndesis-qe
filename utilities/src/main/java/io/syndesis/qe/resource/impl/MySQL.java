@@ -124,4 +124,9 @@ public class MySQL implements Resource {
             && OpenShiftUtils.getPodLogs("mysql").contains("MySQL started successfully")
             && OpenShiftUtils.getPodLogs("mysql").contains("ready for connections");
     }
+
+    @Override
+    public boolean isDeployed() {
+        return OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME).isPresent();
+    }
 }

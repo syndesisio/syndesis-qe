@@ -40,7 +40,7 @@ public class MongoDb36 implements Resource {
     public void deploy() {
         addAccount();
 
-        if (TestUtils.isDcDeployed(APP_NAME)) {
+        if (isDeployed()) {
             return;
         }
 
@@ -122,6 +122,11 @@ public class MongoDb36 implements Resource {
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME)) && OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted");
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(APP_NAME);
     }
 
     public void addAccount() {

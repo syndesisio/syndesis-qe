@@ -24,7 +24,7 @@ public class AMQ implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(NAME)) {
+        if (!isDeployed()) {
             Template template;
             try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
                 template = OpenShiftUtils.getInstance().templates().load(is).get();
@@ -68,6 +68,11 @@ public class AMQ implements Resource {
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("application", NAME));
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(NAME);
     }
 
     public void addAccounts() {

@@ -77,6 +77,11 @@ public class CamelK implements Resource {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("name", "camel-k-operator"));
     }
 
+    @Override
+    public boolean isDeployed() {
+        return OpenShiftUtils.getAnyPod("name", "camel-k-operator").isPresent();
+    }
+
     private void downloadArchive() {
         try {
             FileUtils.copyURLToFile(new URL(CAMEL_K_ARCHIVE_PATH), new File(LOCAL_ARCHIVE_PATH));
