@@ -12,7 +12,7 @@ Feature: Dynamodb connector
     And delete dynamoDb DB table
     And create new dynamoDb table with primary key "email" and sort key "company"
     And created connections
-      | Amazon DynamoDB | AWS DDB | AWS-DDB-test | AWS-DDB test |
+      | Amazon DynamoDB | AWS | AWS-DDB-test | AWS-DDB test |
     And navigate to the "Home" page
 
   @dynamodb-put

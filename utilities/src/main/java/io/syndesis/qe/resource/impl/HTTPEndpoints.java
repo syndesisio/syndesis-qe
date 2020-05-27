@@ -40,7 +40,7 @@ public class HTTPEndpoints implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(APP_NAME)) {
+        if (!isDeployed()) {
             Map<String, String> labels = TestUtils.map(LABEL_NAME, APP_NAME);
             List<ContainerPort> ports = new ArrayList<>();
             ports.add(new ContainerPortBuilder().withName("http").withContainerPort(8080).build());
@@ -127,7 +127,12 @@ public class HTTPEndpoints implements Resource {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME));
     }
 
-    private static void addAccounts() {
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(APP_NAME);
+    }
+
+    public void addAccounts() {
         Account http = new Account();
         Map<String, String> params = new HashMap<>();
         params.put("baseUrl", "http://http-svc:8080");

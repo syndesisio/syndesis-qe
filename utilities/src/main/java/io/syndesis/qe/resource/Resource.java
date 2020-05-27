@@ -5,4 +5,5 @@ public interface Resource {
     void undeploy();
 
     boolean isReady();
+    boolean isDeployed();
 }

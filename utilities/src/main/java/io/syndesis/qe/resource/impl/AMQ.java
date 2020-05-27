@@ -24,7 +24,7 @@ public class AMQ implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(NAME)) {
+        if (!isDeployed()) {
             Template template;
             try (InputStream is = ClassLoader.getSystemResourceAsStream("templates/syndesis-amq.yml")) {
                 template = OpenShiftUtils.getInstance().templates().load(is).get();
@@ -49,8 +49,7 @@ public class AMQ implements Resource {
                     .load(Paths.get("../utilities/src/main/resources/templates/syndesis-default-amq-service.yml").toFile()).get());
             }
         }
-        //this is not part of deployment, but let's have it the same method:
-        AMQ.addAccounts();
+        addAccounts();
     }
 
     @Override
@@ -71,8 +70,12 @@ public class AMQ implements Resource {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("application", NAME));
     }
 
-    private static void addAccounts() {
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(NAME);
+    }
 
+    public void addAccounts() {
         //account to use broker-amq instead of syndesis-amq. It is uses in AMQ-TO-REST test
         Account amqProdAccount = new Account();
         Map<String, String> amqProdAccountParameters = new HashMap<>();

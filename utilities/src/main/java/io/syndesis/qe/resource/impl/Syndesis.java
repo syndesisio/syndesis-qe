@@ -116,6 +116,11 @@ public class Syndesis implements Resource {
         return syndesisPods.size() == components.size() && syndesisPods.stream().allMatch(OpenShiftWaitUtils::isPodReady);
     }
 
+    @Override
+    public boolean isDeployed() {
+        return true;
+    }
+
     public boolean isUndeployed() {
         List<Pod> syndesisPods = Component.getComponentPods();
         // Either 0 pods when the namespace was empty before undeploying, or 1 pod (the operator)

@@ -86,4 +86,9 @@ public class ExternalDatabase implements Resource {
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("app", NAME));
     }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(NAME);
+    }
 }

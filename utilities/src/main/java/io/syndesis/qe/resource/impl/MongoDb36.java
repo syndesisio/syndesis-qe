@@ -38,20 +38,9 @@ public class MongoDb36 implements Resource {
 
     @Override
     public void deploy() {
-        Account mongodbAccount = new Account();
-        mongodbAccount.setService("mongodb36");
-        Map<String, String> accountParameters = new HashMap<>();
-        accountParameters.put("host", APP_NAME);
-        accountParameters.put("user", MONGODB_USER);
-        accountParameters.put("password", MONGODB_PASSWORD);
-        accountParameters.put("database", MONGODB_DATABASE);
-        // this does not work for now
-        //        accountParameters.put("admindb", MONGODB_DATABASE);
-        accountParameters.put("url", MONGDB_URL);
-        mongodbAccount.setProperties(accountParameters);
-        AccountsDirectory.getInstance().addAccount(Account.Name.MONGODB36.getId(), mongodbAccount);
+        addAccount();
 
-        if (TestUtils.isDcDeployed(APP_NAME)) {
+        if (isDeployed()) {
             return;
         }
 
@@ -133,5 +122,25 @@ public class MongoDb36 implements Resource {
     @Override
     public boolean isReady() {
         return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME)) && OpenShiftUtils.getPodLogs(APP_NAME).contains("transition to primary complete; database writes are now permitted");
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(APP_NAME);
+    }
+
+    public void addAccount() {
+        Account mongodbAccount = new Account();
+        mongodbAccount.setService("mongodb36");
+        Map<String, String> accountParameters = new HashMap<>();
+        accountParameters.put("host", APP_NAME);
+        accountParameters.put("user", MONGODB_USER);
+        accountParameters.put("password", MONGODB_PASSWORD);
+        accountParameters.put("database", MONGODB_DATABASE);
+        // this does not work for now
+        //        accountParameters.put("admindb", MONGODB_DATABASE);
+        accountParameters.put("url", MONGDB_URL);
+        mongodbAccount.setProperties(accountParameters);
+        AccountsDirectory.getInstance().addAccount(Account.Name.MONGODB36.getId(), mongodbAccount);
     }
 }

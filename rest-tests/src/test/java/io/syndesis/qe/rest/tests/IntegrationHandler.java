@@ -49,14 +49,20 @@ public class IntegrationHandler {
     @Autowired
     private AtlasMapperGenerator amg;
 
-    @When("^create integration with name: \"([^\"]*)\"")
-    public void createActiveIntegrationFromGivenSteps(String integrationName) {
-        createIntegrationFromGivenStepsWithState(integrationName, "Published");
-    }
-
     @When("^create new integration with name: \"([^\"]*)\" and desiredState: \"([^\"]*)\"")
     public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
-        verifyConnections();
+        createIntegrationFromGivenStepsWithStateAndValidation(integrationName, desiredState, null);
+    }
+
+    @When("^create integration with name: \"([^\"]*)\"( and without validating connections)?")
+    public void createIntegrationWithoutValidation(String name, String validate) {
+        createIntegrationFromGivenStepsWithStateAndValidation(name, "Published", validate);
+    }
+
+    private void createIntegrationFromGivenStepsWithStateAndValidation(String integrationName, String desiredState, String validate) {
+        if (validate == null || validate.isEmpty()) {
+            verifyConnections();
+        }
         processAggregateSteps();
         processMapperSteps();
         Set<String> tags = new HashSet<>();

@@ -1,13 +1,17 @@
 package io.syndesis.qe.resource.impl;
 
+import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -167,6 +171,8 @@ public class Kudu implements Resource {
             log.info("Creating route {} with path {}", API_APP_NAME, "/");
             OpenShiftUtils.getInstance().routes().createOrReplace(route);
         }
+
+        createAccount();
     }
 
     @Override
@@ -197,5 +203,19 @@ public class Kudu implements Resource {
             && OpenShiftUtils.getPodLogs(APP_NAME).contains("Flush successful")
             && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(LABEL_NAME, API_APP_NAME))
             && OpenShiftUtils.getPodLogs(API_APP_NAME).contains("Started App in");
+    }
+
+    @Override
+    public boolean isDeployed() {
+        return TestUtils.isDcDeployed(APP_NAME);
+    }
+
+    public void createAccount() {
+        Account kudu = new Account();
+        kudu.setService("Apache Kudu");
+        Map<String, String> accountParameters = new HashMap<>();
+        accountParameters.put("host", "syndesis-kudu");
+        kudu.setProperties(accountParameters);
+        AccountsDirectory.getInstance().addAccount("kudu", kudu);
     }
 }

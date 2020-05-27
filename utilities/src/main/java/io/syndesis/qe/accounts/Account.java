@@ -15,6 +15,7 @@ import lombok.Setter;
 public class Account {
     public enum Name {
         ACTIVEMQ("AMQ"),
+        AMQP("AMQP"),
         AWS("AWS"),
         AWS_DDB("AWS DDB"),
         BOX("Box"),
@@ -28,12 +29,15 @@ public class Account {
         IRC("irc"),
         JIRA_HOOK("Jira Hook"),
         KAFKA("kafka"),
+        KUDU("kudu"),
         MONGODB36("mongodb36"),
         MQTT("QE MQTT"),
+        ODATA_HTTP("odata"),
+        ODATA_HTTPS("odataHttps"),
         SALESFORCE("QE Salesforce"),
         SERVICENOW("Servicenow"),
         SLACK("QE Slack"),
-        TELEGRAM("Telegram"),
+        TELEGRAM("telegram"),
         TWITTER_LISTENER("Twitter Listener"),
         TWITTER_TALKY("twitter_talky"),
         ZENHUB("ZenHub");
