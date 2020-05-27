@@ -392,4 +392,17 @@ public final class OpenShiftUtils {
                 && ("ImagePullBackOff".equals(status.getState().getWaiting().getReason()) ||
                 "ErrImagePull".equals(status.getState().getWaiting().getReason())));
     }
+
+    public static boolean dcContainsEnv(String dcName, String envName) {
+        return OpenShiftUtils.getInstance().getDeploymentConfig(dcName)
+            .getSpec().getTemplate().getSpec().getContainers().get(0).getEnv()
+            .stream().anyMatch(envVar -> envVar.getName().equals(envName));
+    }
+
+    public static boolean envInDcContainsValue(String dcName, String envName, String envValue) {
+        EnvVar envVar = OpenShiftUtils.getInstance().getDeploymentConfig(dcName)
+            .getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().stream().filter(env -> env.getName().equals(envName)).findAny()
+            .get();
+        return envValue.equals(envVar.getValue());
+    }
 }
