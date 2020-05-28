@@ -1,6 +1,7 @@
 # @sustainer: mmajerni@redhat.com
 @dv
 @ui
+@disconnected-install
 Feature: Data Virtualization smoke tests
 
   Background:
