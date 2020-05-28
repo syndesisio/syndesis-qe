@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vdurmont.semver4j.Semver;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,8 +59,10 @@ public class UpgradeSteps {
             // If it is a prod build and the version is null, it means it was started by test-runner, so skip it as for prod upgrade there is a
             // separate job
             assumeThat(TestConfiguration.upgradePreviousVersion()).isNotNull();
+            String majorMinorMavenVersion = getMajorMinor(TestConfiguration.upgradePreviousVersion());
+            BigDecimal majorMinorImageVersion = new BigDecimal(majorMinorMavenVersion).subtract(new BigDecimal("0.3"));
             // Parse the previous tag from maven artifacts
-            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + getMajorMinor(TestConfiguration.upgradePreviousVersion()));
+            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + majorMinorImageVersion.toPlainString());
             TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_CURRENT_VERSION, TestConfiguration.syndesisVersion());
             // Previous version needs to be specified manually via system properties
         } else {
