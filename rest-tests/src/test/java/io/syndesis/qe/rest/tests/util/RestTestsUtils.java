@@ -15,7 +15,6 @@ public class RestTestsUtils {
         EMAIL_SEND("email-send"),
         FHIR("fhir"),
         FTP("ftp"),
-        SFTP("sftp"),
         HTTP("http"),
         HTTPS("https"),
         IRC("irc"),
