@@ -126,6 +126,7 @@ Feature: Conditional flows - content base routing
       | 0 |  |
       | 1 |  |
 
+  @disconnected-install
   @integrations-conditional-flows-functional-test
   Scenario: Conditional flows - functional test
     And select "Advanced expression builder" integration action

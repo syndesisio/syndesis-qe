@@ -89,7 +89,7 @@ public class WildFlyS2i implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(appName);
+        return appName != null && TestUtils.isDcDeployed(appName);
     }
 
     public void createODataAccount(boolean https) {
