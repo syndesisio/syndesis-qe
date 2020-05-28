@@ -279,16 +279,16 @@ Feature: Google Sheets Connector
     And define property "layout" with value "vertical" of type "String" in data mapper
     And define property "start" with value "A1" of type "String" in data mapper
 
-    And create data mapper mappings
-      | spreadsheetId      | spreadsheetId            |
-      | sheetId            | sheetId                  |
-      | sourceValuesColumn | valueGroups.sourceColumn |
-      | label              | rowGroups.label          |
-      | range              | sourceRange              |
-      | sourceSheetId      | sourceSheetId            |
-      | sourceGroupColumn  | rowGroups.sourceColumn   |
-      | start              | start                    |
-      | layout             | valueLayout              |
+    And create data mapper mappings with data bucket
+      | 2 - PivotTable | spreadsheetId      |  | spreadsheetId            |
+      | Properties     | sheetId            |  | sheetId                  |
+      | Properties     | sourceValuesColumn |  | valueGroups.sourceColumn |
+      | Properties     | label              |  | rowGroups.label          |
+      | Properties     | range              |  | sourceRange              |
+      | Properties     | sourceSheetId      |  | sourceSheetId            |
+      | Properties     | sourceGroupColumn  |  | rowGroups.sourceColumn   |
+      | Properties     | start              |  | start                    |
+      | Properties     | layout             |  | valueLayout              |
     Then click on the "Done" button
 
     When publish integration
@@ -395,8 +395,8 @@ Feature: Google Sheets Connector
     And define property "dataRange" with value "B1:B20" of type "String" in data mapper
     And define property "domainRange" with value "A1:A20" of type "String" in data mapper
     And create data mapper mappings
-      | spreadsheetId | spreadsheetId        |
-      | sheetId       | sourceSheetId        |
+      | spreadsheetId | spreadsheetId          |
+      | sheetId       | sourceSheetId          |
       | dataRange     | basicChart.dataRange   |
       | domainRange   | basicChart.domainRange |
     Then click on the "Done" button
