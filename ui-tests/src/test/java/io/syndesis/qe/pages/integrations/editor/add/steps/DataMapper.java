@@ -46,8 +46,15 @@ public class DataMapper extends SyndesisPageObject {
         public static final By CREATE_NEW_MAPPING_BUTTON = ByUtils.dataTestId("create-new-mapping-button");
 
         public static final By CLOSING_MAPPING_DETAIL_BUTTON = ByUtils.dataTestId("close-mapping-detail-button");
+
         public static final By CREATE_PROPERTY_BUTTON = ByUtils.dataTestId("create-property-button");
+        public static final String PROPERTY_NAME = "property-name-text-input";
+        public static final String PROPERTY_VALUE = "property-value-text-input";
+        public static final String PROPERTY_TYPE = "property-type-form-select";
+
         public static final By CREATE_CONSTANT_BUTTON = ByUtils.dataTestId("create-constant-button");
+        public static final String CONSTANT_NAME = "constant-name-text-input";
+        public static final String CONSTANT_TYPE = "constant-type-form-select";
     }
 
     @Override
@@ -80,8 +87,8 @@ public class DataMapper extends SyndesisPageObject {
         getSourceElementColumn().find(Element.CREATE_CONSTANT_BUTTON).shouldBe(visible).click();
         ModalDialogPage modalDialogPage = new ModalDialogPage();
         assertThat(modalDialogPage.getTitleText()).contains("Create Constant");
-        modalDialogPage.fillInputByDataTestid("itsd-value1-text-input", value);
-        modalDialogPage.selectValueByDataTestid("itsd-form-select", type);
+        modalDialogPage.fillInputByDataTestid(Element.CONSTANT_NAME, value);
+        modalDialogPage.selectValueByDataTestid(Element.CONSTANT_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
     }
@@ -90,9 +97,9 @@ public class DataMapper extends SyndesisPageObject {
         getSourceElementColumn().find(Element.CREATE_PROPERTY_BUTTON).shouldBe(visible).click();
         ModalDialogPage modalDialogPage = new ModalDialogPage();
         assertThat(modalDialogPage.getTitleText()).contains("Create Property");
-        modalDialogPage.fillInputByDataTestid("itsd-value1-text-input", name);
-        modalDialogPage.fillInputByDataTestid("itsd-value2-text-input", value);
-        modalDialogPage.selectValueByDataTestid("itsd-form-select", type);
+        modalDialogPage.fillInputByDataTestid(Element.PROPERTY_NAME, name);
+        modalDialogPage.fillInputByDataTestid(Element.PROPERTY_VALUE, value);
+        modalDialogPage.selectValueByDataTestid(Element.PROPERTY_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
     }
