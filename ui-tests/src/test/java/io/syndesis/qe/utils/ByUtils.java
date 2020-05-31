@@ -41,6 +41,10 @@ public class ByUtils {
         return By.cssSelector(String.format("*[id*=\"%s\"]", id));
     }
 
+    public static By containsClassName(String id) {
+        return By.cssSelector(String.format("*[class*=\"%s\"]", id));
+    }
+
     private static class ByPartialText extends By {
 
         private final String partialText;
