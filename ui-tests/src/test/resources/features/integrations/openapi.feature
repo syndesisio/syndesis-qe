@@ -202,7 +202,7 @@ Feature: OpenApi support
     And click on the "Publish" link
     And set integration name "client-provider-mismatch"
     And click on the "Save" button
-    
+
   @ENTESB-12736
   @openapi-provider-post-new
   Scenario: API Provider POST new - OpenAPI specification
@@ -283,8 +283,8 @@ Feature: OpenApi support
 
     And edit integration step on position 5
     And map Api Provider errors
-      | Server Error         | 418 |
-      | SQL Entity Not Found | 404 |
+      | Server Error           | 418 |
+      | Entity Not Found Error | 404 |
     And fill in values by element data-testid
       | returnbody | true |
     And click on the "Next" button
@@ -332,33 +332,33 @@ Feature: OpenApi support
         "openapi": "3.0.2"
         """
 
-    @openapi-callback-warnings
-    Scenario: Warning when user uses specification with callbacks
-      When click on the "Create Integration" link to create a new integration.
-      Then check visibility of visual integration editor
-      And check that position of connection to fill is "Start"
+  @openapi-callback-warnings
+  Scenario: Warning when user uses specification with callbacks
+    When click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
     # select API Provider as start connection
-      When select the "API Provider" connection
-      Then check visibility of page "Upload API Provider Specification"
+    When select the "API Provider" connection
+    Then check visibility of page "Upload API Provider Specification"
 
-      When create API Provider spec from url https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/callback-example.yaml
-      And navigate to the next API Provider wizard step
-      Then check visibility of page "Review API Provider Actions"
-      And verify API spec warnings contain "All callbacks will be ignored."
+    When create API Provider spec from url https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/callback-example.yaml
+    And navigate to the next API Provider wizard step
+    Then check visibility of page "Review API Provider Actions"
+    And verify API spec warnings contain "All callbacks will be ignored."
 
-    @openapi-link-warnings
-    Scenario: Warning when user uses specification with callbacks
-      When click on the "Create Integration" link to create a new integration.
-      Then check visibility of visual integration editor
-      And check that position of connection to fill is "Start"
+  @openapi-link-warnings
+  Scenario: Warning when user uses specification with callbacks
+    When click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
 
       # select API Provider as start connection
-      When select the "API Provider" connection
-      Then check visibility of page "Upload API Provider Specification"
+    When select the "API Provider" connection
+    Then check visibility of page "Upload API Provider Specification"
 
-      When create API Provider spec from url https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/link-example.yaml
-      And navigate to the next API Provider wizard step
-      Then check visibility of page "Review API Provider Actions"
-      And verify API spec warnings contain "All links will be ignored."
-      And verify API spec warnings contain "Links component is not supported yet."
+    When create API Provider spec from url https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/link-example.yaml
+    And navigate to the next API Provider wizard step
+    Then check visibility of page "Review API Provider Actions"
+    And verify API spec warnings contain "All links will be ignored."
+    And verify API spec warnings contain "Links component is not supported yet."
