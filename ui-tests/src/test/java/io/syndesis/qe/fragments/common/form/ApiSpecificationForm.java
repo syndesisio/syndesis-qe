@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApiSpecificationForm {
     private static class Input {
-        public static By CHOOSE_FILE = By.className("open-api-select-method__dnd-container");
+        public static By CHOOSE_FILE = ByUtils.containsClassName("-select-method__dnd-container");
         public static By USE_A_URL = ByUtils.dataTestId("method-url");
         public static By UPLOAD_AN_OPENAPI_FILE = ByUtils.dataTestId("method-file");
         public static By URL = ByUtils.dataTestId("method-url-text-input");
