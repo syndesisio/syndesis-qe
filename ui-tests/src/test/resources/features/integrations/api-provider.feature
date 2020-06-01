@@ -184,8 +184,8 @@ Feature: API Provider Integration
 
     And edit integration step on position 5
     And map Api Provider errors
-      | Server Error         | 418 |
-      | SQL Entity Not Found | 404 |
+      | Server Error           | 418 |
+      | Entity Not Found Error | 404 |
     And fill in values by element data-testid
       | returnbody | true |
     And click on the "Next" button
@@ -417,10 +417,10 @@ Feature: API Provider Integration
 
     And add integration step on position "3"
     And select "Data Mapper" integration step
-    And create data mapper mappings
-      | id        | body.id        |
-      | completed | body.completed |
-      | task      | body.task      |
+    And create data mapper mappings with data bucket
+      | 4 - SQL Result | id       | | body.id        |
+      | 2 - Request   | completed | | body.completed |
+      | 2 - Request  | task       | | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
@@ -716,10 +716,10 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And create data mapper mappings
-      | id        | body.id        |
-      | completed | body.completed |
-      | task      | body.task      |
+    And create data mapper mappings with data bucket
+      | 2 - SQL Result | id        | | body.id        |
+      | 2 - SQL Result | completed | | body.completed |
+      | 2 - SQL Result | task      | | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
