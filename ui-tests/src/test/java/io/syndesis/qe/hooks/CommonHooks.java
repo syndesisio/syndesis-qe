@@ -6,6 +6,7 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
 import io.syndesis.qe.resource.impl.CamelK;
+import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.steps.CommonSteps;
@@ -89,5 +90,11 @@ public class CommonHooks {
             log.info("Changing Syndesis runtime back to springboot");
             ResourceFactory.destroy(CamelK.class);
         }
+    }
+
+    @After("@dv")
+    public void cleanDv() {
+        log.info("Deleting DV addon");
+        ResourceFactory.destroy(DV.class);
     }
 }
