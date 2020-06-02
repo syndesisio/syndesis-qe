@@ -7,7 +7,7 @@ spec:
     server:
       features:
         maven:
-          append: false
+          append: true
           repositories:
             customRepo1: https://customRepo1
             customRepo2: https://customRepo2
