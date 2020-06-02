@@ -445,6 +445,9 @@ public class TestConfiguration {
         System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", "*");
         System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", "*");
 
+        if (properties.getProperty(SYNDESIS_APPEND_REPOSITORY) == null) {
+            defaultProps.setProperty(SYNDESIS_APPEND_REPOSITORY, "true");
+        }
         return defaultProps;
     }
 
