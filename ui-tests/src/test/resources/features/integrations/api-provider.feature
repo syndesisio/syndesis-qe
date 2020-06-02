@@ -326,7 +326,7 @@ Feature: API Provider Integration
       """
         {"id":1,"completed":1,"task":"task1"}
       """
-    And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
+    And validate that all todos with task "task1" have value completed "1", period in ms: "2000"
     And validate that number of all todos with task "task1" is "1"
 
   @ENTESB-11675
@@ -833,10 +833,10 @@ Feature: API Provider Integration
     And sleep for jenkins delay or "2" seconds
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And create data mapper mappings
-      | id   | body.id   |
+    And create data mapper mappings with data bucket
+      | 3 - SQL Result | id | | body.id |
 #     | completed | body.completed | completed can either be null or false
-      | task | body.task |
+      | 3 - SQL Result | task | | body.task |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
