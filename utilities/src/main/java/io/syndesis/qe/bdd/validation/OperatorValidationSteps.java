@@ -182,11 +182,19 @@ public class OperatorValidationSteps {
             .isEqualTo(expectedRoute);
     }
 
-    @Then("check that the {string} config map contains")
-    public void checkConfigMap(String cmName, DataTable table) {
-        table.asLists(String.class).forEach(row ->
-            assertThat(OpenShiftUtils.getInstance().getConfigMap(cmName).getData().get(row.get(0)).contains(row.get(1).toString()))
-        );
+    @Then("check that the \"([^\"]*)\" config map (contains|doesn't contain)")
+    public void checkConfigMap(String cmName, String shouldContain, DataTable table) {
+        SoftAssertions asserts = new SoftAssertions();
+        if ("contains".equals(shouldContain)) {
+            table.asLists(String.class).forEach(row ->
+                asserts.assertThat(OpenShiftUtils.getInstance().getConfigMap(cmName).getData().get(row.get(0))).contains(row.get(1).toString())
+            );
+        } else {
+            table.asLists(String.class).forEach(row ->
+                asserts.assertThat(OpenShiftUtils.getInstance().getConfigMap(cmName).getData().get(row.get(0))).doesNotContain(row.get(1).toString())
+            );
+        }
+        asserts.assertAll();
     }
 
     @Then("check that datavirt is deployed")
