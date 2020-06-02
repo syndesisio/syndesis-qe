@@ -234,6 +234,7 @@ Feature: Disconnected install
       And create integration with name: "split-aggregate" and without validating connections
     Then verify that integration "split-aggregate" build is successful
 
+  @camel-k
   Scenario: Camel-K
     Given change runtime to camelk
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms

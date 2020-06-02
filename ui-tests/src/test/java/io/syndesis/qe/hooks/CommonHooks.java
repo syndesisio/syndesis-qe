@@ -1,17 +1,12 @@
 package io.syndesis.qe.hooks;
 
-import static org.junit.Assume.assumeTrue;
-
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
-import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
-import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -22,19 +17,12 @@ import com.codeborne.selenide.WebDriverRunner;
 import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.AfterStep;
-import cucumber.api.java.Before;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonHooks {
     @Autowired
     CommonSteps cs;
-
-    @Before("@prod")
-    public void skipProdForNightly() {
-        // Skip prod tests when not running with productized build
-        assumeTrue(TestConfiguration.syndesisVersion().contains("redhat"));
-    }
 
     @AfterStep
     public void afterScreenshot(Scenario scenario) {
@@ -51,13 +39,6 @@ public class CommonHooks {
     public void closeDBConnection() {
         log.debug("Closing DB connection if it exists");
         SampleDbConnectionManager.closeConnections();
-    }
-
-    @After
-    public void printPodsWhenFailed(Scenario scenario) {
-        if (scenario.isFailed()) {
-            TestUtils.printPods();
-        }
     }
 
     @After("@integrations-mqtt,@integrations-amqp-to-amqp,@integrations-openwire-to-openwire")
@@ -82,14 +63,6 @@ public class CommonHooks {
     public void default3scaleAnnotation() {
         log.info("Removing 3scale discovery functionality");
         cs.disable3scaleEnvVar();
-    }
-
-    @After("@camel-k")
-    public void cleanCamelK() {
-        if (!"camelk".equals(TestConfiguration.syndesisRuntime())) {
-            log.info("Changing Syndesis runtime back to springboot");
-            ResourceFactory.destroy(CamelK.class);
-        }
     }
 
     @After("@dv")
