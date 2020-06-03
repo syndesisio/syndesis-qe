@@ -23,7 +23,8 @@ public class OperatorMetricsEndpointSteps {
     @Then("verify whether operator metrics endpoint includes version information")
     public void checkVersion() throws IOException {
         try (LocalPortForward ignored = TestUtils.createLocalPortForward(
-            OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith("syndesis-operator")), 8383, 8383)) {
+            //skip syndesis-operator-{d}-deploy pods
+            OpenShiftUtils.getPod(p -> p.getMetadata().getName().matches("syndesis-operator-\\d-(?!deploy).*")), 8383, 8383)) {
             assertThat(HttpUtils.doGetRequest("http://localhost:8383/metrics").getBody()).contains("syndesis_version_info{operator_version");
         }
     }

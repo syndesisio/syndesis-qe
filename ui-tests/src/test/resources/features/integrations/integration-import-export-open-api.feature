@@ -54,10 +54,10 @@ Feature: API Provider Integration - Import Export
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And create data mapper mappings
-      | body.id        | body.id        |
-      | body.completed | body.completed |
-      | body.task      | body.task      |
+    And create data mapper mappings with data bucket
+      | 2 - Response | body.id        |  | body.id        |
+      | 2 - Response | body.completed |  | body.completed |
+      | 2 - Response | body.task      |  | body.task      |
     And sleep for jenkins delay or "2" seconds
     And check "Done" button is "visible"
     And click on the "Done" button
