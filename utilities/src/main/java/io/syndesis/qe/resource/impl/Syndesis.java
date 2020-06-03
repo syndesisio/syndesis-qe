@@ -101,6 +101,16 @@ public class Syndesis implements Resource {
         jaegerWorkarounds();
     }
 
+    public void deployCrOnly() {
+        log.info("Deploying Syndesis CR");
+        log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
+        log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
+
+        deploySyndesisViaOperator();
+        checkRoute();
+        TodoUtils.createDefaultRouteForTodo("todo2", "/");
+    }
+
     @Override
     public void undeploy() {
         // Intentionally left blank to preserve current behavior - after test execution, syndesis was left installed and every other resource was
