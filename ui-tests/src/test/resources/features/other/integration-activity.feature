@@ -11,7 +11,10 @@ Feature: Activity
   Background: Clean application state
     Given clean application state
     And reset content of "contact" table
+    And deploy ActiveMQ broker
     And log into the Syndesis
+    And created connections
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection is awesome |
 
   @activity-test
   Scenario: Check activity
@@ -210,10 +213,11 @@ Feature: Activity
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-    When select the "Webhook" connection
-    And select "Incoming Webhook" integration action
+    When select the "AMQ" connection
+    And select "Subscribe for Messages" integration action
     And fill in values by element data-testid
-      | contextpath | test-webhook |
+      | destinationname | activity-error |
+      | destinationtype | Queue  |
     And click on the "Next" button
     And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
@@ -221,7 +225,7 @@ Feature: Activity
       | {"first_name":"John","company":"Red Hat"} |
     And fill in values by element data-testid
       | describe-data-shape-form-name-input | personInstance |
-    And click on the "Next" button
+    And click on the "Done" button
 
     # finish point
     Then check visibility of page "Choose a Finish Connection"
@@ -251,7 +255,8 @@ Feature: Activity
     Then check that in the activity log are 0 activities
 
     When save time before request for integration activity-error
-    And invoke post request which can fail to webhook in integration activity-error with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And publish message with content '{"first_name":"John","company":"Red Hat"}' to queue "activity-error"
+    And wait until integration activity-error processed at least 1 message
     And save time after request for integration activity-error
     And sleep for "3000" ms
 
@@ -264,11 +269,11 @@ Feature: Activity
     And check that 1. activity has 3 steps in the log
     And check that all steps in the 1. activity has valid duration
     And check that all steps in the 1. activity has valid time with 5 second accuracy
-    And check that 1. step in the 1. activity is Incoming Webhook step
+    And check that 1. step in the 1. activity is Subscribe for messages step
     And check that 1. step in the 1. activity contains No output in the output
     And check that 2. step in the 1. activity is Log step
     And check that 2. step in the 1. activity has Success status
-    And check that 2. step in the 1. activity contains Body: [[{"first_name":"John","company":"Red Hat"}]] before error insertion in the output
+    And check that 2. step in the 1. activity contains Body: [[{"first_name":"John", "company":"Red Hat"}]] before error insertion in the output
 
     And check that 3. step in the 1. activity is Invoke SQL step
     And check that 3. step in the 1. activity has Error status
@@ -284,10 +289,11 @@ Feature: Activity
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-    When select the "Webhook" connection
-    And select "Incoming Webhook" integration action
+    When select the "AMQ" connection
+    And select "Subscribe for Messages" integration action
     And fill in values by element data-testid
-      | contextpath | test-webhook |
+      | destinationname | activity-error-mapper |
+      | destinationtype | Queue  |
     And click on the "Next" button
     And force fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Instance |
@@ -295,7 +301,7 @@ Feature: Activity
       | {"first_name":"John","company":"Red Hat"} |
     And fill in values by element data-testid
       | describe-data-shape-form-name-input | personInstance |
-    And click on the "Next" button
+    And click on the "Done" button
 
     # finish point
     Then check visibility of page "Choose a Finish Connection"
@@ -324,7 +330,8 @@ Feature: Activity
     Then check that in the activity log are 0 activities
 
     When save time before request for integration activity-error-data-mapper-before
-    And invoke post request which can fail to webhook in integration activity-error-data-mapper-before with token test-webhook and body {"first_name":"John","company":"Red Hat"}
+    And publish message with content '{"first_name":"John","company":"Red Hat"}' to queue "activity-error-mapper"
+    And wait until integration activity-error-data-mapper-before processed at least 1 message
     And save time after request for integration activity-error-data-mapper-before
     And sleep for "3000" ms
     # Test activity
@@ -336,7 +343,7 @@ Feature: Activity
     And check that 1. activity has 3 steps in the log
     And check that all steps in the 1. activity has valid duration
     And check that all steps in the 1. activity has valid time with 5 second accuracy
-    And check that 1. step in the 1. activity is Incoming Webhook step
+    And check that 1. step in the 1. activity is Subscribe for messages step
     And check that 1. step in the 1. activity has Success status
     And check that 1. step in the 1. activity contains No output in the output
     And check that 2. step in the 1. activity is Data Mapper step
