@@ -271,8 +271,8 @@ public class OperatorValidationSteps {
     public void checkDbPvCapacity(String expected) {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
-                .getStatus().getPhase().equals("Bound"));
+            OpenShiftWaitUtils.waitFor(() -> !OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
+                .getSpec().getVolumeName().isEmpty());
         } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
         }
@@ -287,8 +287,8 @@ public class OperatorValidationSteps {
     public void checkDbPv() {
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
-                .getStatus().getPhase().equals("Bound"));
+            OpenShiftWaitUtils.waitFor(() -> !OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
+                .getSpec().getVolumeName().isEmpty());
         } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
         }
@@ -323,12 +323,7 @@ public class OperatorValidationSteps {
             .withNewPath("/testPath")
             .endNfs();
 
-        // The default storage class for OCP3 is empty, for OCP4 is "standard", so if the className is empty, we should use the default one
-        if ("".equals(className)) {
-            if (!TestUtils.isOpenshift3()) {
-                pv.withStorageClassName("standard");
-            }
-        } else {
+        if (!className.isEmpty()) {
             pv.withStorageClassName(className);
         }
 
