@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 import cucumber.api.java.en.Then;
@@ -191,17 +192,25 @@ public class CommonValidationSteps {
             .getAsInt()).isEqualTo(0);
     }
 
-    @Then("verify that integration {string} build is successful")
-    public void verifyBuildIsSuccessful(String integrationName) {
+    @Then("^verify that (camel-k )?integration \"([^\"]*)\" build is successful$")
+    public void verifyBuildIsSuccessful(String camelK, String integrationName) {
+        BooleanSupplier bs = (camelK != null && !camelK.isEmpty())
+            ? () -> OpenShiftUtils.podExists(p -> p.getMetadata().getName().startsWith("camel-k-ctx") && p.getMetadata().getName().endsWith("build"))
+            : () -> OpenShiftUtils.integrationPodExists(integrationName, pod -> pod.getMetadata().getName().endsWith("build"));
         TestUtils.waitFor(
-            () -> OpenShiftUtils.integrationPodExists(integrationName, pod -> pod.getMetadata().getName().endsWith("build")),
+            bs,
             5,
-            60,
+            300,
             "Unable to find build pod for integration " + integrationName
         );
 
+        bs = (camelK != null && !camelK.isEmpty())
+            ? () -> "Succeeded".equals(OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith("camel-k-ctx")
+            && p.getMetadata().getName().endsWith("build")).getStatus().getPhase())
+            : () -> "Succeeded".equals(OpenShiftUtils.getIntegrationPod(integrationName, pod -> pod.getMetadata().getName().endsWith("build"))
+            .getStatus().getPhase());
         TestUtils.waitFor(
-            () -> "Succeeded".equals(OpenShiftUtils.getIntegrationPod(integrationName, pod -> pod.getMetadata().getName().endsWith("build")).getStatus().getPhase()),
+            bs,
             5,
             600,
             "Build pod for integration " + integrationName + " didn't finish successfully in 10 minutes"
