@@ -2,6 +2,7 @@
 
 @rest
 @disconnected-install
+@ignore
 Feature: Disconnected install
   Background:
     Given clean application state
@@ -135,7 +136,6 @@ Feature: Disconnected install
       And create integration with name: "jira" and without validating connections
     Then verify that integration "jira" build is successful
 
-    @zzz
   Scenario: Kafka Message Broker
     Given create Kafka accounts
       And create Kafka connection
@@ -144,14 +144,15 @@ Feature: Disconnected install
       And create integration with name: "kafka" and without validating connections
     Then verify that integration "kafka" build is successful
 
-#    currently not working as mongodb connector requires functional mongodb to fetch metadata
-#  Scenario: MongoDB
-#    Given create MongoDB account
-#      And create MongoDB connection
-#    When create MongoDB "consumer-tail" with collection "test"
-#      And add log step
-#      And create integration with name: "mongo" and without validating connections
-#    Then verify that integration "mongo" build is successful
+  Scenario: MongoDB
+    # todo
+    When todo deploy mongodb in disconnected install job
+    Given create MongoDB account
+      And create MongoDB connection
+    When create MongoDB "consumer-tail" with collection "test"
+      And add log step
+      And create integration with name: "mongo" and without validating connections
+    Then verify that integration "mongo" build is successful
 
   Scenario: OData
     Given create OData HTTPS credentials
@@ -209,3 +210,34 @@ Feature: Disconnected install
       And add log step
       And create integration with name: "telegram" and without validating connections
     Then verify that integration "telegram" build is successful
+
+  Scenario: Datamapper
+    Given create ActiveMQ accounts
+      And create ActiveMQ connection
+    When create ActiveMQ "subscribe" action step with destination type "queue" and destination name "in"
+      And change "out" datashape of previous step to "JSON_INSTANCE" type with specification '{"msg":"hello"}'
+      And start mapper definition with name: "sqs-amq"
+      And MAP using Step 1 and field "/msg" to "/output"
+      And create ActiveMQ "publish" action step with destination type "queue" and destination name "out"
+      And change "in" datashape of previous step to "JSON_INSTANCE" type with specification '{"output":"hi"}'
+      And create integration with name: "datamapper" and without validating connections
+    Then verify that integration "datamapper" build is successful
+
+  Scenario: Split/Aggregate
+    Given create ActiveMQ accounts
+      And create ActiveMQ connection
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "10000" ms
+      And add a split step
+      And create basic filter step for "last_name" with word "Doe" and operation "contains"
+      And add an aggregate step
+      And add log step
+      And create integration with name: "split-aggregate" and without validating connections
+    Then verify that integration "split-aggregate" build is successful
+
+  @camel-k
+  Scenario: Camel-K
+    Given change runtime to camelk
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+      And add log step
+      And create integration with name: "camelk" and without validating connections
+    Then verify that camel-k integration "camelk" build is successful
