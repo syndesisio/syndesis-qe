@@ -90,3 +90,104 @@ Feature: Webhook extension
 
     Then check that webhook url for "webhook-test-5575" with token "test-webhook" in UI is same as in routes
     And verify the displayed webhook URL matches regex ^https://i-.*-syndesis.*/webhook/.*$
+
+  @ENTESB-13988
+    @webhook-error-handling
+  Scenario Outline: Check whether webhook returns <error_code> error code
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    When select the "Webhook" connection
+    And select "Incoming Webhook" integration action
+    And fill in values by element data-testid
+      | contextpath                     | test-webhook |
+      | errorresponsecodes-server-error | <error_code> |
+
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"first_name":"John","company":"Red Hat"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-name-input | personInstance |
+    And click on the "Next" button
+
+    # finish point
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO contact (create_date) VALUES ('Red Hat')" value
+    And click on the "Done" button
+
+    And publish integration
+    And set integration name "webhook-error-code-<error_code>"
+    And publish integration
+
+    And navigate to the "Integrations" page
+    And wait until integration "webhook-error-code-<error_code>" gets into "Running" state
+
+    When invoke post request to webhook
+      | webhook-error-code-<error_code> | test-webhook | {"message":"Shaco"} | <error_code> |
+    # ENTESB-13811 reproducer
+    Then validate that logs of integration "webhook-error-code-<error_code>" contains string "ERROR: invalid input syntax for type date: "Red Hat""
+    And validate that logs of integration "webhook-error-code-<error_code>" contains string "nested exception is org.postgresql.util.PSQLException: ERROR: invalid input syntax for type date: "Red Hat""
+
+    Examples:
+      | error_code |
+      | 400        |
+      | 404        |
+      | 405        |
+      | 409        |
+      | 500        |
+      | 501        |
+      | 503        |
+
+  @ENTESB-13988
+    @webhook-return-codes
+  Scenario Outline: Check whether webhook returns <code> code
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    When select the "Webhook" connection
+    And select "Incoming Webhook" integration action
+    And fill in values by element data-testid
+      | contextpath      | test-webhook |
+      | httpresponsecode | <code>       |
+
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"first_name":"John","company":"Red Hat"} |
+    And fill in values by element data-testid
+      | describe-data-shape-form-name-input | personInstance |
+    And click on the "Next" button
+
+    # finish point
+    Then check visibility of page "Choose a Finish Connection"
+    When select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO todo (task) VALUES ('test')" value
+    And click on the "Done" button
+
+    And publish integration
+    And set integration name "webhook-return-code-<code>"
+    And publish integration
+
+    And navigate to the "Integrations" page
+    And wait until integration "webhook-return-code-<code>" gets into "Running" state
+
+    When invoke post request to webhook
+      | webhook-return-code-<code> | test-webhook | {"message":"Shaco"} | <code> |
+
+    Examples:
+      | code |
+      | 200  |
+      | 201  |
+      | 202  |
+      | 204  |
+    
