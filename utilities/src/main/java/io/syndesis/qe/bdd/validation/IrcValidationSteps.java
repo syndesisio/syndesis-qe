@@ -38,8 +38,7 @@ public class IrcValidationSteps {
         Map<String, List<String>> receivedMessages = new Gson().fromJson(HttpUtils.doGetRequest(controllerRoute + "/messages").getBody(), Map.class);
         assertThat(receivedMessages.keySet()).size().isEqualTo(channelsCount);
         for (String channel : channels.split(",")) {
-            assertThat(receivedMessages.get(channel)).hasSize(1);
-            assertThat(receivedMessages.get(channel).get(0)).isEqualTo(content);
+            assertThat(receivedMessages.get(channel).get(receivedMessages.get(channel).size() - 1)).isEqualTo(content);
         }
     }
 

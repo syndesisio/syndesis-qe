@@ -36,19 +36,21 @@ Feature: Syndesis Upgrade Using Operator
       And deploy previous Syndesis CR "syndesis-cr-previous.yaml"
       And wait for Syndesis to become ready
       And verify syndesis "previous" version
-    Given deploy HTTP endpoints
+      And deploy IRC server
     # Not needed for the integration, just to check if it is present after upgrade
     When import extension from path "./src/test/resources/extensions/set-sqs-group-id-extension-1.0-SNAPSHOT.jar"
-    And create HTTP connection
-    And create HTTP "OPTIONS" step with period "5" "SECONDS"
-    And add log step
-    And create integration with name: "upgrade"
+      And create IRC connection
+      And create IRC "privmsg" step with nickname "listener" and channels "#listen"
+      And create IRC "sendmsg" step with nickname "syndesis-publish" and channels "#spam1,#spam2"
+      And create integration with name: "upgrade"
     Then wait for integration with name: "upgrade" to become active
-    And verify upgrade integration "upgrade"
+    When connect IRC controller to channels "#spam1,#spam2"
+      And send message to IRC user "listener" with content 'Hello!'
+    Then verify that the message with content 'Hello!' was posted to channels "#spam1,#spam2"
 
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
-    And sleep for jenkins delay or "180" seconds
+      And sleep for jenkins delay or "180" seconds
     # Needed until https://issues.redhat.com/browse/ENTESB-12923 is fixed
       And rollout
       # Just to be sure for rollout that everything started to roll out
@@ -56,11 +58,13 @@ Feature: Syndesis Upgrade Using Operator
       And wait for Syndesis to become ready
       And verify syndesis "upgraded" version
       And verify that integration with name "upgrade" exists
-      And verify upgrade integration "upgrade"
+    When send message to IRC user "listener" with content 'Hello after upgrade!'
+    Then verify that the message with content 'Hello after upgrade!' was posted to channels "#spam1,#spam2"
       And check that extension "set-sqs-group-id-extension" exists
     When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
-    And verify upgrade integration "upgrade"
+    When send message to IRC user "listener" with content 'Hello after rebuild!'
+    Then verify that the message with content 'Hello after rebuild!' was posted to channels "#spam1,#spam2"
     When deploy ActiveMQ broker
       And create ActiveMQ connection
       And clean destination type "queue" with name "upgrade-after-in"
@@ -82,15 +86,16 @@ Feature: Syndesis Upgrade Using Operator
     Then wait for Syndesis to become ready
       And verify syndesis "previous" version
       And check that deployment config "syndesis-db" does not exist
-    Given deploy HTTP endpoints
+    Given deploy IRC server
     # Not needed for the integration, just to check if it is present after upgrade
     When import extension from path "./src/test/resources/extensions/set-sqs-group-id-extension-1.0-SNAPSHOT.jar"
-      And create HTTP connection
-      And create HTTP "OPTIONS" step with period "5" "SECONDS"
-      And add log step
-      And create integration with name: "upgrade"
+    And create IRC connection
+    And create IRC "privmsg" step with nickname "listener" and channels "#listen"
+    And create IRC "sendmsg" step with nickname "syndesis-publish" and channels "#spam1,#spam2"
+    And create integration with name: "upgrade"
     Then wait for integration with name: "upgrade" to become active
-      And verify upgrade integration "upgrade"
+    When connect IRC controller to channels "#spam1,#spam2"
+    And send message to IRC user "listener" with content 'Hello!'
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
       And sleep for jenkins delay or "180" seconds
@@ -102,11 +107,14 @@ Feature: Syndesis Upgrade Using Operator
       And check that deployment config "syndesis-db" does not exist
       And verify syndesis "upgraded" version
       And verify that integration with name "upgrade" exists
-      And verify upgrade integration "upgrade"
+    When perform syndesis upgrade to newer version using operator
+    When send message to IRC user "listener" with content 'Hello after upgrade!'
+    Then verify that the message with content 'Hello after upgrade!' was posted to channels "#spam1,#spam2"
       And check that extension "set-sqs-group-id-extension" exists
     When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
-      And verify upgrade integration "upgrade"
+    When send message to IRC user "listener" with content 'Hello after rebuild!'
+    Then verify that the message with content 'Hello after rebuild!' was posted to channels "#spam1,#spam2"
     When deploy ActiveMQ broker
       And create ActiveMQ connection
       And clean destination type "queue" with name "upgrade-external-after-in"

@@ -22,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vdurmont.semver4j.Semver;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
@@ -57,8 +59,10 @@ public class UpgradeSteps {
             // If it is a prod build and the version is null, it means it was started by test-runner, so skip it as for prod upgrade there is a
             // separate job
             assumeThat(TestConfiguration.upgradePreviousVersion()).isNotNull();
+            String majorMinorMavenVersion = getMajorMinor(TestConfiguration.upgradePreviousVersion());
+            BigDecimal majorMinorImageVersion = new BigDecimal(majorMinorMavenVersion).subtract(new BigDecimal("0.3"));
             // Parse the previous tag from maven artifacts
-            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + getMajorMinor(TestConfiguration.upgradePreviousVersion()));
+            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + majorMinorImageVersion.toPlainString());
             TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_CURRENT_VERSION, TestConfiguration.syndesisVersion());
             // Previous version needs to be specified manually via system properties
         } else {
@@ -69,6 +73,7 @@ public class UpgradeSteps {
             JSONArray jsonArray = new JSONObject(HttpUtils.doGetRequest(DOCKER_HUB_SYNDESIS_TAGS_URL).getBody()).getJSONArray("results");
             List<String> tags = new ArrayList<>();
             jsonArray.forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
+            Collections.sort(tags);
 
             String previousTag = getPreviousVersion(getMajorMinor(TestConfiguration.syndesisInstallVersion()), tags);
             if (!previousTag.isEmpty()) {
@@ -165,15 +170,6 @@ public class UpgradeSteps {
             }
         }
         assertThat(found).as("The pull secret should be linked to service account, but wasn't").isTrue();
-    }
-
-    @Then("verify upgrade integration {string}")
-    public void checkIntegration(String name) {
-        String[] lines = OpenShiftUtils.getIntegrationLogs(name).split("\n");
-        final String lastLine = lines[lines.length - 1];
-        TestUtils.sleepIgnoreInterrupt(10000L);
-        String logsAfter = OpenShiftUtils.getIntegrationLogs(name);
-        assertThat(logsAfter.substring(logsAfter.indexOf(lastLine))).contains("[[options]]");
     }
 
     private String getPreviousVersion(String current, List<String> tags) {
