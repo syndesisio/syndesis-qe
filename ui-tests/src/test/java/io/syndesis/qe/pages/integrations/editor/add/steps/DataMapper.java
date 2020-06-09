@@ -30,10 +30,11 @@ import lombok.extern.slf4j.Slf4j;
 public class DataMapper extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.className("css-1ucl7rz");
+        public static final By ROOT = ByUtils.dataTestId("datamapper-root-view");
         public static final By COLLECTION_ROOT = ByUtils.containsId("field-atlas:");
-        public static final By SOURCE_TARGET_COLUMNS = By.className("css-ok24jj");
-        public static final By SOURCE_TARGET_TITLE = By.className("css-1wr49u2");
+
+        public static final By SOURCE_COLUMN = ByUtils.dataTestId("column-source-area");
+        public static final By TARGET_COLUMN = ByUtils.dataTestId("column-target-area");
 
         public static final By DATA_BUCKET_ROOT = By.className("pf-c-card");
         public static final String DATA_BUCKET_BUTTON = "expand-collapse-%s";
@@ -263,18 +264,18 @@ public class DataMapper extends SyndesisPageObject {
      * Return element contains only source mapping items
      */
     private SelenideElement getSourceElementColumn() {
-        return getRootElement().findAll(Element.SOURCE_TARGET_COLUMNS)
-            .stream().filter(column -> column.find(Element.SOURCE_TARGET_TITLE).text().contains("Source"))
-            .findFirst().get();
+        ElementsCollection sourceColumn = getRootElement().findAll(Element.SOURCE_COLUMN);
+        assertThat(sourceColumn.size()).isEqualTo(1);
+        return sourceColumn.first();
     }
 
     /**
      * Return element contains only target mapping items
      */
     private SelenideElement getTargetElementColumn() {
-        return getRootElement().findAll(Element.SOURCE_TARGET_COLUMNS)
-            .stream().filter(column -> column.find(Element.SOURCE_TARGET_TITLE).text().contains("Target"))
-            .findFirst().get();
+        ElementsCollection targetColumn = getRootElement().findAll(Element.TARGET_COLUMN);
+        assertThat(targetColumn.size()).isEqualTo(1);
+        return targetColumn.first();
     }
 
     /**
