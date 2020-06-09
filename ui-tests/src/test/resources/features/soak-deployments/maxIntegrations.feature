@@ -194,8 +194,10 @@ Feature: Test maximum integration
     Then check SF "does not contain" contact with a email: "test@maxIntegration.feature"
     When send message "StartingNewTest" on channel "max-integrations"
     And reset content of "contact" table
+    And reset content of "todo" table
     And delete emails from "QE Google Mail" with subject "MaxIntegrations"
     And delete all direct messages received by "Twitter Listener" with text "MaxIntegrations"
+    And delete incidents with "MaxIntegrations" number
 
     #todo app
     When wait for Todo to become ready
@@ -222,10 +224,11 @@ Feature: Test maximum integration
     And deploy OData server
     And create OData credentials
     And created connections
-      | Red Hat AMQ    | AMQ_PROD | AMQ             | AMQ on OpenShift      |
-      | Slack          | QE Slack | QE Slack        | SyndesisQE Slack test |
-      | Todo connector | todo     | TODO connection | no validation         |
-      | OData          | odata    | OData           | sample OData service  |
+      | Red Hat AMQ    | AMQ_PROD   | AMQ             | AMQ on OpenShift       |
+      | Slack          | QE Slack   | QE Slack        | SyndesisQE Slack test  |
+      | Todo connector | todo       | TODO connection | no validation          |
+      | OData          | odata      | OData           | sample OData service   |
+      | ServiceNow     | Servicenow | ServiceNow      | Service-Now connection |
 
     And navigate to the "Settings" page
     And fill "Salesforce" oauth settings "QE Salesforce"
@@ -441,7 +444,7 @@ Feature: Test maximum integration
     And select "Send" integration action
     And fill in values by element data-testid
       | message | MaxIntegrations |
-      | user    | syndesis_talky  |
+    And fill username for "twitter_talky" account
     And click on the "Next" button
 
     And publish integration
@@ -532,7 +535,7 @@ Feature: Test maximum integration
     And navigate to the "Integrations" page
     And wait until integration "Integration8_gmail" gets into "Running" state
 
-    # Integration9 Amq->odata->Amq
+    # Integration9 Amq->serviceNow->Amq
     When click on the "Create Integration" link to create a new integration
     And select the "AMQ" connection
     And select "Subscribe for Messages" integration action
@@ -551,25 +554,33 @@ Feature: Test maximum integration
     And click on the "Next" button
 
     And add integration step on position "0"
-    And select the "OData" connection
-    And select "Create" integration action
-    And select "Products" from "resourcepath" dropdown
-    And click on the "Next" button
+    When select the "ServiceNow" connection
+    And select "Add Record" integration action
+    And select "Qa Create Incident" from "table" dropdown
+    Then click on the "Next" button
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "MaxIntegrations" of type "String" in data mapper
-    And open data bucket "Constants"
+    And define property "description" with value "MaxIntegrations Description" of type "String" in data mapper
+    And define property "impact" with value "1" of type "Integer" in data mapper
+    And define property "number" with value "MaxIntegrations" of type "String" in data mapper
+    And define property "urgency" with value "1" of type "String" in data mapper
+    And define property "short_description" with value "descript" of type "String" in data mapper
+    And define property "user_input" with value "ui" of type "String" in data mapper
     And create data mapper mappings
-      | MaxIntegrations | Description |
-      | MaxIntegrations | Name        |
+      | number            | u_number            |
+      | description       | u_description       |
+      | impact            | u_impact            |
+      | urgency           | u_urgency           |
+      | short_description | u_short_description |
+      | user_input        | u_user_input        |
     And click on the "Done" button
 
     And publish integration
-    And set integration name "Integration9_odata"
+    And set integration name "Integration9_serviceNow"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration9_odata" gets into "Running" state
+    And wait until integration "Integration9_serviceNow" gets into "Running" state
 
     # Integration10 Amq -> API Client Connector
     When click on the "Create Integration" link to create a new integration
@@ -608,7 +619,7 @@ Feature: Test maximum integration
     And wait until integration Integration6_tw processed at least 1 message
     And wait until integration Integration7_mongo processed at least 1 message
     And wait until integration Integration8_gmail processed at least 1 message
-    And wait until integration Integration9_odata processed at least 1 message
+    And wait until integration Integration9_serviceNow processed at least 1 message
     And wait until integration Integration10_todo processed at least 1 messages
 
     #Verification
@@ -621,7 +632,7 @@ Feature: Test maximum integration
       | _id             | value           |
       | MaxIntegrations | MaxIntegrations |
     And check that email from "QE Google Mail" with subject "maxIntegrations" and text "MaxIntegrations" exists
-    And validate that OData service contains entity with "Name":"MaxIntegrations" property:value pair in "Products" collection
+    And verify that incident with "MaxIntegrations" number has "MaxIntegrations Description" description
     And checks that query "select * from todo where task='MaxIntegrations'" has 1 row output
 
     When delete contact from SF with email: "test@maxIntegration.feature"
