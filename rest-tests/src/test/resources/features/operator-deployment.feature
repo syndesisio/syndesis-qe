@@ -100,12 +100,24 @@ Feature: Operator Deployment
 
   @operator-maven-repositories
   @operator-server
-  Scenario: Syndesis Operator - Components - Server - Maven Repositories
+  Scenario: Syndesis Operator - Components - Server - Maven Repositories - Append
+    When deploy Syndesis CR from file "spec/components/server/mavenRepositories-append.yml"
+    Then wait for Syndesis to become ready
+      And check that the "syndesis-server-config" config map contains
+        | application.yml | customRepo1: https://customRepo1                           |
+        | application.yml | customRepo2: https://customRepo2                           |
+        | application.yml | repo-02-redhat-ga: https://maven.repository.redhat.com/ga/ |
+
+  @operator-maven-repositories
+  @operator-server
+  Scenario: Syndesis Operator - Components - Server - Maven Repositories - Don't append
     When deploy Syndesis CR from file "spec/components/server/mavenRepositories.yml"
     Then wait for Syndesis to become ready
       And check that the "syndesis-server-config" config map contains
         | application.yml | customRepo1: https://customRepo1 |
         | application.yml | customRepo2: https://customRepo2 |
+      And check that the "syndesis-server-config" config map doesn't contain
+        | application.yml | repo-02-redhat-ga: https://maven.repository.redhat.com/ga/ |
 
   @ENTESB-12418
   @operator-addons-dv
