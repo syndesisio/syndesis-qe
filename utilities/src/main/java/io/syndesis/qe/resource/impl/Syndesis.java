@@ -570,23 +570,27 @@ public class Syndesis implements Resource {
             }
         }
 
-        Map<String, String> repositories;
+        Map<String, Object> mavenConfiguration = new HashMap<>();
         if (TestConfiguration.appendRepository()) {
             log.info("Appending maven repo {}", replacementRepo);
-            repositories = TestUtils.map(
+            mavenConfiguration.put("append", true);
+            mavenConfiguration.put("repositories", TestUtils.map(
                 "central", "https://repo.maven.apache.org/maven2/",
                 "repo-02-redhat-ga", "https://maven.repository.redhat.com/ga/",
                 "repo-03-jboss-ea", "https://repository.jboss.org/nexus/content/groups/ea/",
                 "qe-repo", replacementRepo
-                );
+                )
+            );
         } else {
             log.info("Adding maven repo {}", replacementRepo);
-            repositories = TestUtils.map(
+            mavenConfiguration.put("append", false);
+            mavenConfiguration.put("repositories", TestUtils.map(
                 "qe-repo", replacementRepo
+                )
             );
         }
 
-        serverFeatures.put("mavenRepositories", repositories);
+        serverFeatures.put("maven", mavenConfiguration);
     }
 
     /**
