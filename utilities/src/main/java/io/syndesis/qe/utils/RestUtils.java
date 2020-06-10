@@ -1,11 +1,7 @@
 package io.syndesis.qe.utils;
 
-import static org.junit.Assert.fail;
-
 import io.syndesis.qe.Component;
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.exceptions.RestClientException;
-import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.HttpClient;
@@ -41,10 +37,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
-import io.fabric8.openshift.api.model.Route;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -57,6 +51,8 @@ public final class RestUtils {
 
     private static LocalPortForward localPortForward = null;
     private static Optional<String> restUrl = Optional.empty();
+
+    private static final String CHECK_URL = "http://localhost:8080/api/v1/version";
 
     private RestUtils() {
     }
@@ -135,43 +131,60 @@ public final class RestUtils {
     }
 
     public static String getRestUrl() {
-
-        //TODO(tplevko): before the rest route is generated, check whether it is live. If not, add wait and retry several times
-        // and then after some attempts recreate
         if (!restUrl.isPresent()) {
-            if (TestConfiguration.useServerRoute()) {
-                setupRestPodRoute();
-            } else {
-                setupLocalPortForward();
-            }
+            setupLocalPortForward();
+            waitForPortForward();
+        } else {
+            // Check if the port forward is working
+            HTTPResponse httpResponse = null;
             try {
-                OpenShiftWaitUtils.waitFor(() -> HttpUtils.doGetRequest(restUrl.get() + "/api/v1/version").getCode() == 200, 90000L);
-                TestUtils.sleepIgnoreInterrupt(15000L);
-            } catch (TimeoutException | InterruptedException e) {
-                fail("Backend is not responding");
+                httpResponse = HttpUtils.doGetRequest(CHECK_URL);
+            } catch (Exception ignore) {
+                // ignore
+            }
+            if (httpResponse == null || httpResponse.getCode() != 200) {
+                log.error("Port-forward was created, but seems it isn't working, recreating it");
+                setupLocalPortForward();
+                waitForPortForward();
             }
         }
         return restUrl.get();
     }
 
-    public static void setupRestPodRoute() {
-        Route route = OpenShiftUtils.createRestRoute(TestConfiguration.openShiftNamespace(), TestConfiguration.openShiftRouteSuffix());
-        restUrl = Optional.of(String.format("https://%s", route.getSpec().getHost()));
-        log.debug("rest endpoint URL: " + restUrl.get());
+    private static void waitForPortForward() {
+        TestUtils.waitFor(() -> {
+            HTTPResponse response = null;
+            try {
+                response = HttpUtils.doGetRequest(CHECK_URL);
+            } catch (Exception ignore) {
+                // ignore
+            }
+            return response != null && response.getCode() == 200;
+        }, 5, 90, "Port-forward not working after 90 seconds");
+        TestUtils.sleepIgnoreInterrupt(15000L);
     }
 
     public static void setupLocalPortForward() {
-        if (localPortForward == null || !localPortForward.isAlive()) {
-            log.debug("creating local port forward for pod syndesis-server");
-            localPortForward = TestUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
+        if (localPortForward != null) {
             try {
-                restUrl = Optional.of(String
-                    .format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort()));
-            } catch (IllegalStateException ex) {
-                restUrl = Optional.of(String.format("http://%s:%s", "127.0.0.1", 8080));
+                localPortForward.close();
+            } catch (IOException e) {
+                log.error("Unable to terminate local port forward: ", e);
             }
-            log.debug("rest endpoint URL: " + restUrl.get());
         }
+        log.debug("creating local port forward for pod syndesis-server");
+        localPortForward = TestUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
+        // If there was no pod, do nothing
+        if (localPortForward == null) {
+            return;
+        }
+        try {
+            restUrl = Optional.of(String
+                .format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort()));
+        } catch (IllegalStateException ex) {
+            restUrl = Optional.of(String.format("http://%s:%s", "127.0.0.1", 8080));
+        }
+        log.debug("rest endpoint URL: " + restUrl.get());
     }
 
     /**
