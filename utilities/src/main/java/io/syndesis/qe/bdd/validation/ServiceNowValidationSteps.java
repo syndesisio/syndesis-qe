@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class ServiceNowValidationSteps {
@@ -56,6 +57,15 @@ public class ServiceNowValidationSteps {
         assertThat(created.getDescription()).contains(description);
     }
 
+    @Then("^verify that incident with \"([^\"]*)\" number has \"([^\"]*)\" description")
+    public void verifyIncidentsWithNumber(String numbers, String description) {
+        List<Incident> list = ServiceNow.getFilteredIncidents("number=" + numbers, 1);
+        assertThat(list).isNotEmpty();
+
+        Incident created = list.get(0);
+        assertThat(created.getDescription()).contains(description);
+    }
+
     @When("^delete incidents with \"([^\"]*)\" number$")
     public void deleteIncidentsWithNumber(String numbers) {
         final String[] incidentNumbers = numbers.split(",");
@@ -71,8 +81,9 @@ public class ServiceNowValidationSteps {
             return input.replace("{number1}", "QA" + BROWSER.substring(0, 4).toUpperCase() + "1");
         } else if (input.contains("{number2}")) {
             return input.replace("{number2}", "QACR" + BROWSER.substring(0, 2).toUpperCase() + "1");
+        } else {
+            // add browser info to the other input
+            return input + BROWSER.substring(0, 2).toUpperCase() + "1";
         }
-
-        return input;
     }
 }
