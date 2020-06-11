@@ -69,6 +69,7 @@ public class DataVirtualizationSteps {
 
     @Then("check that data virtualization view {string} is invalid")
     public void checkInvalidView(String name) {
+        TestUtils.sleepIgnoreInterrupt(2000);
         assertThat(virtualizations.isVirtualizationViewInvalid(name)).isTrue();
     }
 

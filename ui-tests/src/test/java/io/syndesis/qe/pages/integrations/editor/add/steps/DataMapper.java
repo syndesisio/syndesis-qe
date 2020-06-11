@@ -1,5 +1,7 @@
 package io.syndesis.qe.pages.integrations.editor.add.steps;
 
+import static io.syndesis.qe.utils.Conditions.STALE_ELEMENT;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -75,7 +77,7 @@ public class DataMapper extends SyndesisPageObject {
             1, 3);
 
         if (mapperCollectionFound) {
-            for (SelenideElement element : $$(Element.COLLECTION_ROOT)) {
+            for (SelenideElement element : $$(Element.COLLECTION_ROOT).exclude(STALE_ELEMENT)) {
                 if (element.attr("aria-expanded").equals("false")) {
                     // collection has not been expanded yet
                     element.click();
