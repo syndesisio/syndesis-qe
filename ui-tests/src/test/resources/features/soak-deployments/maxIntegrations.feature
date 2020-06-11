@@ -219,15 +219,12 @@ Feature: Test maximum integration
     And click on the "Save" button
     And navigate to the "Home" page
 
-#    #AMQ, ODATA, Slack
+#    #AMQ, Slack
     And deploy ActiveMQ broker
-    And deploy OData server
-    And create OData credentials
     And created connections
       | Red Hat AMQ    | AMQ_PROD   | AMQ             | AMQ on OpenShift       |
       | Slack          | QE Slack   | QE Slack        | SyndesisQE Slack test  |
       | Todo connector | todo       | TODO connection | no validation          |
-      | OData          | odata      | OData           | sample OData service   |
       | ServiceNow     | Servicenow | ServiceNow      | Service-Now connection |
 
     And navigate to the "Settings" page
