@@ -96,7 +96,8 @@ Feature: API Provider Integration
       | 200 |  | true |
 
     And set response description "Response description" for response "200"
-    And set type of "application/json" media type to "String" on property "type" for response "200"
+    And set parameters types
+      | type | String  | operations | response | true | 200 |
     #Then check all for errors
 
     And change frame to "syndesis"
