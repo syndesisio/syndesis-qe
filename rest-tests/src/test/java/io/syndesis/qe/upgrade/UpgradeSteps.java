@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
-import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
@@ -151,12 +150,6 @@ public class UpgradeSteps {
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Timeout waiting for CR status to be \"Installed\"");
         }
-    }
-
-    @When("rollout")
-    public void rollout() {
-        Component.getAllComponents().stream().filter(c -> c != Component.DB && c != Component.OPERATOR).forEach(
-            component -> OpenShiftUtils.getInstance().deploymentConfigs().withName(component.getName()).deployLatest());
     }
 
     @Then("check that pull secret is linked in the service accounts")
