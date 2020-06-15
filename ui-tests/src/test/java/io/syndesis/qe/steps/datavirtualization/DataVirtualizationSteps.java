@@ -12,6 +12,7 @@ import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.Condition;
@@ -168,7 +169,7 @@ public class DataVirtualizationSteps {
      */
     @Then("check that ddl exists and contains text {string}")
     public void checkThatDdlExistsAndContainText(String text) {
-        String editorText = $(By.className("react-codemirror2")).getText();
+        String editorText = $(By.className("react-monaco-editor-container")).getText();
         assertThat(editorText.contains(text)).as("DDL editor does not contain text: %s", text).isTrue();
     }
 
@@ -189,10 +190,14 @@ public class DataVirtualizationSteps {
      */
     @When("create an invalid view and check that error appears")
     public void createAnInvalidViewAndCheckThatErrorAppears() {
-        SelenideElement editor = $(ByUtils.dataTestId("text-editor-codemirror"));
+        SelenideElement editor = $(By.className("react-monaco-editor-container"));
         editor.click();
+
+        editor.$("textarea").sendKeys(Keys.CONTROL + "a");
+        editor.$("textarea").sendKeys(Keys.DELETE);
         editor.$("textarea").sendKeys("Lorem Ipsum");
-        editor.$(ByUtils.dataTestId("ddl-editor-save-button")).click();
+
+        $("article").$(ByUtils.dataTestId("ddl-editor-save-button")).click();
 
         TestUtils.sleepIgnoreInterrupt(1000);
 
