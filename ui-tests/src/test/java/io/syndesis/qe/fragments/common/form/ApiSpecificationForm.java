@@ -10,6 +10,8 @@ import org.junit.Assert;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.Condition;
+
 import java.io.File;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +49,8 @@ public class ApiSpecificationForm {
     public void uploadFileFromPath(String path) {
         $(Input.UPLOAD_AN_OPENAPI_FILE).shouldBe(visible).click();
         UploadFile.uploadFile($(Input.CHOOSE_FILE).shouldBe(visible).$(By.tagName("input")),
-            new File(getClass().getClassLoader().getResource(path).getFile()));
+                              new File(getClass().getClassLoader().getResource(path).getFile()));
+        $(By.className("dnd-file-chooser__uploadMessage")).should(Condition.appear);
     }
 
     public void uploadFileFromUrl(String url) {

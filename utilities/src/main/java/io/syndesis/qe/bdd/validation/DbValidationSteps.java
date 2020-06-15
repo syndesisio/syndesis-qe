@@ -132,10 +132,19 @@ public class DbValidationSteps {
 
     @Then("^validate that all todos with task \"([^\"]*)\" have value completed \"(\\w+)\", period in ms: \"(\\w+)\"$")
     public void checksThatAllTodosHaveCompletedVal(String task, Integer val, Integer ms) {
-        TestUtils.sleepIgnoreInterrupt(ms);
-
         String sql = String.format("SELECT completed FROM TODO WHERE task like '%s'", task);
-        ResultSet rs = dbUtils.executeSQLGetResultSet(sql);
+        ResultSet rs;
+        int tries = 5;
+        do {
+            TestUtils.sleepIgnoreInterrupt(ms);
+            rs = dbUtils.executeSQLGetResultSet(sql);
+            tries--;
+        } while (rs == null && tries > 0);
+
+        if (tries <= 0) {
+            fail("Could not fetch data from database");
+        }
+
         try {
             while (rs.next()) {
                 assertThat(rs.getInt("completed")).isEqualTo(val);

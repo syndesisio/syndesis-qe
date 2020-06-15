@@ -12,6 +12,7 @@ import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -75,7 +76,7 @@ public class DataMapper extends SyndesisPageObject {
             1, 3);
 
         if (mapperCollectionFound) {
-            for (SelenideElement element : $$(Element.COLLECTION_ROOT)) {
+            for (SelenideElement element : $$(Element.COLLECTION_ROOT).exclude(Conditions.STALE_ELEMENT)) {
                 if (element.attr("aria-expanded").equals("false")) {
                     // collection has not been expanded yet
                     element.click();
