@@ -9,5 +9,7 @@ spec:
   components:
     server:
       features:
-        mavenRepositories:
-          nexus: "REPLACE_REPO"
+        maven:
+          append: true
+          repositories:
+            nexus: "REPLACE_REPO"
