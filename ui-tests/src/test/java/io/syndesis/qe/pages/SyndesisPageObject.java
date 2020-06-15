@@ -67,7 +67,9 @@ public abstract class SyndesisPageObject {
         waitForButtons(Condition.exactText(buttonTitle), differentRoot);
 
         ElementsCollection foundButtons = differentRoot.shouldBe(visible).findAll(By.tagName("button"))
-            .filter(Condition.exactText(buttonTitle)).shouldHave(sizeGreaterThanOrEqual(1));
+            .filter(Condition.exactText(buttonTitle))
+            .exclude(Conditions.STALE_ELEMENT)
+            .shouldHave(sizeGreaterThanOrEqual(1));
 
         if (foundButtons.size() > 1) {
             log.warn("Ambiguous button title. Found more that 1 button with title {}", buttonTitle);

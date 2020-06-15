@@ -71,6 +71,7 @@ Feature: Testing authentication options of API client
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And define constant "1" of type "Integer" in data mapper
+    And sleep for jenkins delay or "2" seconds
     And create data mapper mappings
       | 1 | parameters.petId |
     And click on the "Done" button
@@ -124,6 +125,7 @@ Feature: Testing authentication options of API client
       | host                         | http://http-svc:8080 |
       | basepath                     | /auth                |
     And click on the "Next" button
+    And sleep for jenkins delay or "2" seconds
     And click on the "Save" button
 
     And navigate to the "Home" page
@@ -132,6 +134,7 @@ Feature: Testing authentication options of API client
     And select "Simple" integration action
     And click on the "Next" button
     And select "Log" integration step
+    And sleep for jenkins delay or "2" seconds
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Next" button
@@ -144,6 +147,7 @@ Feature: Testing authentication options of API client
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And define constant "1" of type "Integer" in data mapper
+    And open data bucket "parameters"
     And create data mapper mappings
       | 1 | parameters.petId |
     And click on the "Done" button
