@@ -67,5 +67,5 @@ Feature: Customization - Extensions CRUD
 
     When click on the modal dialog "Delete" button
     And remove all "success" alerts
-  #  And sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or "3" seconds
     Then check that technical extension "Log Message Body" is not visible

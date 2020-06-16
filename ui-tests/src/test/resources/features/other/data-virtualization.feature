@@ -5,8 +5,9 @@
 Feature: Data Virtualization smoke tests
 
   Background:
-    Given clean application state
-    And deploy DV
+    Given deploy DV
+    # cleans also DV, first the DV server needs to be deployed
+    And clean application state
     And log into the Syndesis
 
     And reset content of "contact" table
