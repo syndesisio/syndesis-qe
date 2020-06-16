@@ -377,12 +377,12 @@ public class OperatorValidationSteps {
         );
     }
 
-    @Then("wait for backup")
-    public void waitForBackup() {
+    @Then("wait for backup with {int}s interval")
+    public void waitForBackup(int interval) {
         log.info("Waiting until the operator does the backup...");
         try {
             OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getPodLogs("syndesis-operator").contains("backup for syndesis done"),
-                30000L, 10 * 60000L);
+                interval * 1000L, 10 * 60000L);
             log.info("Backup done");
         } catch (TimeoutException | InterruptedException e) {
             fail("Exception thrown while waiting for backup log", e);
