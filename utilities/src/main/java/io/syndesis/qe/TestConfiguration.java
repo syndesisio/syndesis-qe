@@ -101,6 +101,7 @@ public class TestConfiguration {
     private static final String QUAY_PASSWORD = "syndesis.config.quay.password";
     private static final String QUAY_NAMESPACE = "syndesis.config.quay.namespace";
     private static final String QUAY_AUTH_TOKEN = "syndesis.config.quay.auth.token";
+    private static final String QUAY_OPSRC_TOKEN = "syndesis.config.quay.opsrc.token";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -373,6 +374,10 @@ public class TestConfiguration {
 
     public static String quayAuthToken() {
         return get().readValue(QUAY_AUTH_TOKEN);
+    }
+
+    public static String quayOpsrcToken() {
+        return get().readValue(QUAY_OPSRC_TOKEN);
     }
 
     private Properties defaultValues() {

@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>io.syndesis.qe</groupId>
 			<artifactId>marketplace-utilities</artifactId>
-			<version>1.0.0</version>
+			<version>1.0</version>
 		</dependency>
 
 		<!-- test dependencies -->

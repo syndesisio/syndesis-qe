@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TestSuiteParent {
+
     @BeforeClass
     public static void beforeTests() {
         // do not use both deploy methods, universes will collapse
@@ -96,6 +97,8 @@ public abstract class TestSuiteParent {
     }
 
     private static void deployOperatorhub() {
+        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+
         QuayUser quayUser = new QuayUser(
                 TestConfiguration.quayUsername(),
                 TestConfiguration.quayPassword(),
@@ -103,7 +106,10 @@ public abstract class TestSuiteParent {
                 TestConfiguration.quayAuthToken()
         );
 
-        QuayService quayService = new QuayService(quayUser, TestConfiguration.syndesisOperatorImage());
+        QuayService quayService = new QuayService(
+            quayUser,
+            TestConfiguration.syndesisOperatorImage(),
+            syndesis.generateImageEnvVars());
         String quayProject;
         try {
             quayProject = quayService.createQuayProject();
@@ -125,7 +131,8 @@ public abstract class TestSuiteParent {
         OpenShiftConfiguration openShiftConfiguration = new OpenShiftConfiguration(
                 TestConfiguration.openShiftNamespace(),
                 TestConfiguration.syndesisPullSecretName(),
-                TestConfiguration.syndesisPullSecret()
+                TestConfiguration.syndesisPullSecret(),
+                TestConfiguration.quayOpsrcToken()
         );
         OpenShiftService openShiftService = new OpenShiftService(
                 TestConfiguration.quayNamespace(),
@@ -141,18 +148,21 @@ public abstract class TestSuiteParent {
             InfraFail.fail("Deploying operator with marketplace failed", e);
         }
 
-        ResourceFactory.get(Syndesis.class).deployCrOnly();
-        CommonSteps.waitForSyndesis();
-
         // at this point we don't really need operator source anymore
         // and we doon't need project on quay either, because all the necessary stuff
         // has already been deployed, we can delete those
+        log.info("Cleaning all unnecessary resorces");
+        openShiftService.deleteOpsrcToken();
         openShiftService.deleteOperatorSource();
         try {
             quayService.deleteQuayProject();
         } catch (IOException e) {
             InfraFail.fail("Fail during cleanup of quay project", e);
         }
+
+        syndesis.deployCrAndRoutes();
+        CommonSteps.waitForSyndesis();
+
     }
 
     @AfterClass
