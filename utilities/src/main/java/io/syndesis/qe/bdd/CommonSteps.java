@@ -6,6 +6,11 @@ import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
+import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
+import io.syndesis.qe.marketplace.openshift.OpenShiftService;
+import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
+import io.syndesis.qe.marketplace.quay.QuayService;
+import io.syndesis.qe.marketplace.quay.QuayUser;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.DV;
@@ -24,6 +29,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +90,7 @@ public class CommonSteps {
             Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
             log.error("Found following component pods:");
             Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
-                + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
+                                                                    + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
             InfraFail.fail("Wait for Syndesis failed, check error logs for details.", e);
         }
     }
@@ -233,5 +239,78 @@ public class CommonSteps {
     @When("^set up ServiceAccount for Public API$")
     public void setUpServiceAccountForPublicAPI() {
         PublicApiUtils.createServiceAccount();
+    }
+
+    @Given("deploy Syndesis from OperatorHub")
+    public void deployOperatorHubStep() {
+        deployOperatorHub();
+    }
+
+    public static void deployOperatorHub() {
+        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+
+        QuayUser quayUser = new QuayUser(
+            TestConfiguration.quayUsername(),
+            TestConfiguration.quayPassword(),
+            TestConfiguration.quayNamespace(),
+            TestConfiguration.quayAuthToken()
+        );
+
+        QuayService quayService = new QuayService(
+            quayUser,
+            TestConfiguration.syndesisOperatorImage(),
+            syndesis.generateImageEnvVars());
+        String quayProject;
+        try {
+            quayProject = quayService.createQuayProject();
+        } catch (Exception e) {
+            InfraFail.fail("Creating project on quay failed", e);
+            return;
+        }
+
+        OpenShiftUser defaultUser = new OpenShiftUser(
+            TestConfiguration.syndesisUsername(),
+            TestConfiguration.syndesisPassword(),
+            TestConfiguration.openShiftUrl()
+        );
+        OpenShiftUser adminUser = new OpenShiftUser(
+            TestConfiguration.adminUsername(),
+            TestConfiguration.adminPassword(),
+            TestConfiguration.openShiftUrl()
+        );
+        OpenShiftConfiguration openShiftConfiguration = OpenShiftConfiguration.builder()
+            .namespace(TestConfiguration.openShiftNamespace())
+            .pullSecretName(TestConfiguration.syndesisPullSecretName())
+            .pullSecret(TestConfiguration.syndesisPullSecret())
+            .quayOpsrcToken(TestConfiguration.quayOpsrcToken())
+            .build();
+        OpenShiftService openShiftService = new OpenShiftService(
+            TestConfiguration.quayNamespace(),
+            quayProject,
+            openShiftConfiguration,
+            adminUser,
+            defaultUser
+        );
+
+        try {
+            openShiftService.deployOperator();
+        } catch (IOException e) {
+            InfraFail.fail("Deploying operator with marketplace failed", e);
+        }
+
+        // at this point we don't really need operator source anymore
+        // and we doon't need project on quay either, because all the necessary stuff
+        // has already been deployed, we can delete those
+        log.info("Cleaning all unnecessary resorces");
+        openShiftService.deleteOpsrcToken();
+        openShiftService.deleteOperatorSource();
+        try {
+            quayService.deleteQuayProject();
+        } catch (IOException e) {
+            InfraFail.fail("Fail during cleanup of quay project", e);
+        }
+
+        syndesis.deployCrAndRoutes();
+        CommonSteps.waitForSyndesis();
     }
 }

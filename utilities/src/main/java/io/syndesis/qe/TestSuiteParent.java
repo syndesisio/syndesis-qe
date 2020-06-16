@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TestSuiteParent {
+
     @BeforeClass
     public static void beforeTests() {
         // Do this check only if installing syndesis
@@ -75,6 +76,10 @@ public abstract class TestSuiteParent {
             e.printStackTrace();
             throw e;
         }
+    }
+
+    private static void deployOperatorhub() {
+        CommonSteps.deployOperatorHub();
     }
 
     @AfterClass
