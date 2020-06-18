@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -106,8 +107,15 @@ public final class TestUtils {
 
     public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
         try {
-            final Pod podToForward = OpenShiftUtils.getInstance().getAnyPod("syndesis.io/component", podName);
-            return OpenShiftUtils.portForward(podToForward, remotePort, localPort);
+            List<Pod> podsByPredicates = OpenShiftUtils.findPodsByPredicates(
+                p -> p.getMetadata().getName().contains(podName),
+                p -> "Running".equals(p.getStatus().getPhase())
+            );
+            if (podsByPredicates.size() == 0) {
+                log.warn("No pods in running state with name " + podName + " found!");
+                return null;
+            }
+            return OpenShiftUtils.portForward(podsByPredicates.get(0), remotePort, localPort);
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException(ex.getMessage() + ". Probably Syndesis is not in the namespace.");
         }
