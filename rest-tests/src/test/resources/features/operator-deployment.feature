@@ -311,7 +311,7 @@ Feature: Operator Deployment
     When create pull secret for backup
       And deploy Syndesis CR from file "spec/backup-multiple.yml"
       And wait for Syndesis to become ready
-      And wait for backup
+      And wait for backup with 5s interval
     When clean backup S3 bucket
     Then sleep for jenkins delay or "200" seconds
       And verify that there are 3 backups in S3
@@ -342,7 +342,7 @@ Feature: Operator Deployment
     When publish message with content "Hello backup" to "queue" with name "backup-in"
     Then verify that JMS message with content 'Hello backup' was received from "queue" "backup-out"
 
-    When wait for backup
+    When wait for backup with 30s interval
       And download the backup file
       And prepare backup folder
 

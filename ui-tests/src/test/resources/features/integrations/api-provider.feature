@@ -124,7 +124,8 @@ Feature: API Provider Integration
     Then wait until integration "TODO Integration from scratch" gets into "Running" state
     When execute GET on API Provider route i-todo-integration-from-scratch endpoint "/syndesistestpath"
     Then verify response has status 200
-    And verify response has body type "application/json"
+    # for OpenApi V2 ENTESB-14058
+    # And verify response has body type "application/json"
 
   @api-provider-get-single
   Scenario: API Provider GET single

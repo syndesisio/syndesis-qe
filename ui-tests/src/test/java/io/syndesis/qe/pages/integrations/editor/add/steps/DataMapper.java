@@ -1,5 +1,7 @@
 package io.syndesis.qe.pages.integrations.editor.add.steps;
 
+import static io.syndesis.qe.utils.Conditions.STALE_ELEMENT;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -12,7 +14,6 @@ import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
-import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
@@ -73,10 +74,10 @@ public class DataMapper extends SyndesisPageObject {
         // Give page and elements time to load in slower environment
         // before pressing mapper collection items
         boolean mapperCollectionFound = TestUtils.waitForNoFail(() -> $(Element.COLLECTION_ROOT).is(visible),
-            1, 3);
+                                                                1, 3);
 
         if (mapperCollectionFound) {
-            for (SelenideElement element : $$(Element.COLLECTION_ROOT).exclude(Conditions.STALE_ELEMENT)) {
+            for (SelenideElement element : $$(Element.COLLECTION_ROOT).exclude(STALE_ELEMENT)) {
                 if (element.attr("aria-expanded").equals("false")) {
                     // collection has not been expanded yet
                     element.click();
@@ -184,14 +185,14 @@ public class DataMapper extends SyndesisPageObject {
                     parentContainer = getCollectionElement(separatedElement.get(i), parentContainer, nestedLevel);
                     nestedLevel++;
                     log.info("In the {}. parent on the {} nested level. Parent (Collection) name is '{}'", i + 1, nestedLevel,
-                        separatedElement.get(i));
+                             separatedElement.get(i));
                 }
             }
             mappingItemRow = getMappingItemRow(separatedElement.get(separatedElement.size() - 1), parentContainer, nestedLevel);
         }
         if (mappingItemRow == null) {
             fail("The mapping field '" + mappingName + "' cannot be found! Check log and screenshot whether DataMapper contains that field." +
-                " If it is a part of nested collection, you have to add all parent names. See mapping step's JavaDoc");
+                     " If it is a part of nested collection, you have to add all parent names. See mapping step's JavaDoc");
         }
         mappingItemRow.scrollIntoView(true);
         TestUtils.sleepIgnoreInterrupt(500);
@@ -230,8 +231,9 @@ public class DataMapper extends SyndesisPageObject {
             return null;
         } else if (rowsWithName.size() > 1) {
             fail("Too many rows with the same name. Name: " + name + " Nested Level: " + nestedLevel +
-                ". Probably more data buckets have the field element with the same name. In that case, use different step when explicitly select " +
-                "data bucket");
+                     ". Probably more data buckets have the field element with the same name. In that case, use different step when explicitly " +
+                     "select " +
+                     "data bucket");
         }
         return rowsWithName.get(0);
     }
@@ -255,8 +257,8 @@ public class DataMapper extends SyndesisPageObject {
             fail("Collection with the name: " + name + " doesn't exist on the nested Level: " + nestedLevel);
         } else if (rowsWithName.size() > 1) {
             fail("Too many rows with the same name. " +
-                "Probably the element contains more collections with the same name in the different nested level." +
-                "Searched collection name: " + name + " Actual nested level: " + nestedLevel);
+                     "Probably the element contains more collections with the same name in the different nested level." +
+                     "Searched collection name: " + name + " Actual nested level: " + nestedLevel);
         }
         return rowsWithName.get(0);
     }
