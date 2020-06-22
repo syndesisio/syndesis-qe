@@ -27,7 +27,6 @@ Feature: Test maximum integration
     And set integration name "Integration1"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration1" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -42,7 +41,6 @@ Feature: Test maximum integration
     And set integration name "Integration2"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration2" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -57,7 +55,6 @@ Feature: Test maximum integration
     And set integration name "Integration3"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration3" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -72,7 +69,6 @@ Feature: Test maximum integration
     And set integration name "Integration4"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration4" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -87,7 +83,6 @@ Feature: Test maximum integration
     And set integration name "Integration5"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration5" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -102,7 +97,6 @@ Feature: Test maximum integration
     And set integration name "Integration6"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration6" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -117,7 +111,6 @@ Feature: Test maximum integration
     And set integration name "Integration7"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration7" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -132,7 +125,6 @@ Feature: Test maximum integration
     And set integration name "Integration8"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration8" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -147,7 +139,6 @@ Feature: Test maximum integration
     And set integration name "Integration9"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration9" gets into "Running" state
 
     And click on the "Create Integration" link to create a new integration
     And check that position of connection to fill is "Start"
@@ -162,6 +153,16 @@ Feature: Test maximum integration
     And set integration name "Integration10"
     And publish integration
     And navigate to the "Integrations" page
+    
+    And wait until integration "Integration1" gets into "Running" state
+    And wait until integration "Integration2" gets into "Running" state
+    And wait until integration "Integration3" gets into "Running" state
+    And wait until integration "Integration4" gets into "Running" state
+    And wait until integration "Integration5" gets into "Running" state
+    And wait until integration "Integration6" gets into "Running" state
+    And wait until integration "Integration7" gets into "Running" state
+    And wait until integration "Integration8" gets into "Running" state
+    And wait until integration "Integration9" gets into "Running" state
     And wait until integration "Integration10" gets into "Running" state
 
     And wait until integration Integration1 processed at least 1 message
@@ -272,7 +273,6 @@ Feature: Test maximum integration
     And set integration name "Integration1_webhook"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration1_webhook" gets into "Running" state
 
     # Integration2 Amq->Slack->Amq
     When click on the "Create Integration" link to create a new integration
@@ -310,8 +310,6 @@ Feature: Test maximum integration
     And set integration name "Integration2_slack"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration2_slack" gets into "Running" state
-
 
     # Integration3 Amq->DB->Amq
     When click on the "Create Integration" link to create a new integration
@@ -341,7 +339,6 @@ Feature: Test maximum integration
     And set integration name "Integration3_db"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration3_db" gets into "Running" state
 
     # Integration4 Amq->Log->Amq
     When click on the "Create Integration" link to create a new integration
@@ -371,7 +368,6 @@ Feature: Test maximum integration
     And set integration name "Integration4_log"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration4_log" gets into "Running" state
 
     # Integration5 Amq->Salesforce->Amq
     When click on the "Create Integration" link to create a new integration
@@ -416,7 +412,6 @@ Feature: Test maximum integration
     And set integration name "Integration5_sf"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration5_sf" gets into "Running" state
 
     # Integration6 Amq->Twitter->AmQ
     When click on the "Create Integration" link to create a new integration
@@ -448,7 +443,6 @@ Feature: Test maximum integration
     And set integration name "Integration6_tw"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration6_tw" gets into "Running" state
 
     # Integration7 Amq->Mongo->Amq
     When click on the "Create Integration" link to create a new integration
@@ -489,7 +483,6 @@ Feature: Test maximum integration
     And set integration name "Integration7_mongo"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration7_mongo" gets into "Running" state
 
     # Integration8 Amq->Gmail->Amq
     When click on the "Create Integration" link to create a new integration
@@ -530,7 +523,6 @@ Feature: Test maximum integration
     And set integration name "Integration8_gmail"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration8_gmail" gets into "Running" state
 
     # Integration9 Amq->serviceNow->Amq
     When click on the "Create Integration" link to create a new integration
@@ -577,7 +569,6 @@ Feature: Test maximum integration
     And set integration name "Integration9_serviceNow"
     And publish integration
     And navigate to the "Integrations" page
-    And wait until integration "Integration9_serviceNow" gets into "Running" state
 
     # Integration10 Amq -> API Client Connector
     When click on the "Create Integration" link to create a new integration
@@ -605,6 +596,16 @@ Feature: Test maximum integration
     And set integration name "Integration10_todo"
     And publish integration
     And navigate to the "Integrations" page
+
+    And wait until integration "Integration1_webhook" gets into "Running" state
+    And wait until integration "Integration2_slack" gets into "Running" state
+    And wait until integration "Integration3_db" gets into "Running" state
+    And wait until integration "Integration4_log" gets into "Running" state
+    And wait until integration "Integration5_sf" gets into "Running" state
+    And wait until integration "Integration6_tw" gets into "Running" state
+    And wait until integration "Integration7_mongo" gets into "Running" state
+    And wait until integration "Integration8_gmail" gets into "Running" state
+    And wait until integration "Integration9_serviceNow" gets into "Running" state
     And wait until integration "Integration10_todo" gets into "Running" state
 
     When invoke post request to webhook in integration Integration1_webhook with token test-webhook and body {}

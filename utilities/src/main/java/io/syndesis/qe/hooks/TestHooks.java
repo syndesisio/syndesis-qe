@@ -15,6 +15,7 @@ import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,8 +38,22 @@ public class TestHooks {
                     && !p.getMetadata().getName().contains("build")
             ).collect(Collectors.toList());
             for (Pod integrationPod : integrationPods) {
-                scenario.embed(String.format("%s\n\n%s", integrationPod.getMetadata().getName(),
-                    OpenShiftUtils.getInstance().getPodLog(integrationPod)).getBytes(), "text/plain");
+                try {
+                    scenario.embed(String.format("%s\n\n%s", integrationPod.getMetadata().getName(),
+                        OpenShiftUtils.getInstance().getPodLog(integrationPod)).getBytes(), "text/plain");
+                } catch (KubernetesClientException ex) {
+                    //when the build failed, the integration pod is not ready (`ImagePullBackOff`) In that case, the pod doesn't contain log. That
+                    // causes that OpenShiftUtils has thrown KubernetesClientException
+                }
+            }
+            log.warn("Adding all failed build to the log");
+            List<Pod> failedBuilds = OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
+                p -> p.getMetadata().getName().contains("build")
+                    && p.getStatus().getContainerStatuses().stream().anyMatch(c -> c.getState().getTerminated().getReason().equals("Error"))
+            ).collect(Collectors.toList());
+            for (Pod failedBuild : failedBuilds) {
+                log.warn("Build with name {} failed. Failed pod log:", failedBuild.getMetadata().getName());
+                log.error(OpenShiftUtils.getInstance().getPodLog(failedBuild));
             }
         }
     }
@@ -50,5 +65,4 @@ public class TestHooks {
             ResourceFactory.destroy(CamelK.class);
         }
     }
-
 }
