@@ -138,6 +138,7 @@ public class CamelK implements Resource {
             Map<String, Object>
                 integration = OpenShiftUtils.getInstance().customResource(getCamelKCRD()).get(TestConfiguration.openShiftNamespace(), resourceName);
             String phase = (String) ((Map<String, Object>) integration.get("status")).get("phase");
+            log.info("{} is in phase {}", integrationName, phase);
             return "running".equalsIgnoreCase(phase);
         }, 20, 10 * 60, "Context was not build in 10 minutes for integration " + integrationName);
     }

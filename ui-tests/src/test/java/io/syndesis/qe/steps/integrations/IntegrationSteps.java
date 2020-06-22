@@ -23,6 +23,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import org.assertj.core.api.Condition;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
@@ -88,6 +89,8 @@ public class IntegrationSteps {
         TestUtils.sleepForJenkinsDelayIfHigher(10);
         if ("camelk".equalsIgnoreCase(TestConfiguration.syndesisRuntime())) {
             ResourceFactory.get(CamelK.class).waitForContextToBuild(integrationName);
+            Selenide.refresh();
+            log.info("Integration platform status: {}", OpenShiftUtils.binary().execute("get", "integrationplatforms", "-o yaml"));
         }
         assertThat(TestUtils.waitForEvent(
             status -> status.contains(integrationStatus),
