@@ -753,7 +753,8 @@ public class Syndesis implements Resource {
         Pod podAfterWait = OpenShiftUtils.getPodByPartialName(partialPodName).get(); //needs to get new instance of the pod
         if (OpenShiftUtils.hasPodIssuesPullingImage(podAfterWait)) {
             log.info(
-                "{} failed to pull image (probably due to permission to the Red Hat registry), linking secret with the SA and restarting the pod",
+                "{} failed to pull image (probably due to permission to the Red Hat registry), the test suite is linking secret with the SA and " +
+                    "the pod is going to be restarted",
                 podAfterWait.getMetadata().getName());
             linkServiceAccountWithSyndesisPullSecret(serviceAccountName);
             OpenShiftUtils.getInstance().deletePod(podAfterWait);
