@@ -3,6 +3,7 @@ kind: Syndesis
 metadata:
   name: app
 spec:
+  demoData: true
   addons:
     #enable due to PR job
     jaeger:
