@@ -15,7 +15,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UpgradeSteps {
     private static final String RELEASED_OPERATOR_IMAGE = "registry.redhat.io/fuse7/fuse-online-operator";
     private static final String UPSTREAM_OPERATOR_IMAGE = "syndesis/syndesis-operator";
-    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://hub.docker.com/v2/repositories/syndesis/syndesis-server/tags/?page_size=1024";
+    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://hub.docker.com/v2/repositories/syndesis/syndesis-server/tags/?page_size=100";
 
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
@@ -69,9 +69,17 @@ public class UpgradeSteps {
                 + TestConfiguration.SYNDESIS_INSTALL_VERSION + " property set!").isNotNull();
 
             // List all the tags from docker hub
-            JSONArray jsonArray = new JSONObject(HttpUtils.doGetRequest(DOCKER_HUB_SYNDESIS_TAGS_URL).getBody()).getJSONArray("results");
+            String next = DOCKER_HUB_SYNDESIS_TAGS_URL;
             List<String> tags = new ArrayList<>();
-            jsonArray.forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
+            while (next != null) {
+                JSONObject response = new JSONObject(HttpUtils.doGetRequest(next).getBody());
+                response.getJSONArray("results").forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
+                try {
+                    next = response.getString("next");
+                } catch (JSONException ex) {
+                    next = null;
+                }
+            }
             Collections.sort(tags);
 
             String previousTag = getPreviousVersion(getMajorMinor(TestConfiguration.syndesisInstallVersion()), tags);
