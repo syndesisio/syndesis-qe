@@ -67,6 +67,7 @@ Feature: API Provider Integration
       | file   | openapi/connectors/todo.yaml         |
 
   @gh-6109
+  @ENTESB-14058
   @api-provider-create-from-scratch
   Scenario: Create from scratch
     # create integration

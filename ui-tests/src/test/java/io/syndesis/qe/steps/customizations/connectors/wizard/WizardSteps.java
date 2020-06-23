@@ -1,5 +1,10 @@
 package io.syndesis.qe.steps.customizations.connectors.wizard;
 
+import io.syndesis.qe.pages.customizations.connectors.wizard.ApiClientConnectorWizard;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewEditConnectorDetails;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
+import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
+
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -7,13 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.pages.customizations.connectors.wizard.ApiClientConnectorWizard;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewEditConnectorDetails;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.SpecifySecurity;
-import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -24,23 +25,25 @@ public class WizardSteps {
     private ReviewEditConnectorDetails reviewEditConnectorDetailsWizardPhase = new ReviewEditConnectorDetails();
     private SpecifySecurity specifySecurityWizardPhase = new SpecifySecurity();
 
-    @And("^navigate to the next Api Connector wizard step \"([^\"]*)\"$")
+    @When("^navigate to the next Api Connector wizard step \"([^\"]*)\"$")
     public void navigateToNextWizardStep(String step) {
         wizard.nextStep();
 
-        //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and displays
+        //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and
+        // displays
         wizard.getCurrentStep().validate();
     }
 
-    @And("^tries to navigate to the next Api Connector wizard step but expects validation error$")
+    @When("^tries to navigate to the next Api Connector wizard step but expects validation error$")
     public void navigateToNextWizardStepButExpectError() {
         wizard.nextStep();
 
-        //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and displays
+        //validation ensures that multiple clicking the Next button doesn't click on the same button multiple times before the next step loads and
+        // displays
         wizard.getCurrentStep().validate();
     }
 
-    @And("^create new connector$")
+    @When("^create new connector$")
     public void finishNewConnectorWizard() {
         wizard.nextStep();
     }
@@ -65,10 +68,10 @@ public class WizardSteps {
         specifySecurityWizardPhase.validate();
 
         boolean authTypeSet = false;
-        Map<String,String> authTypeProperties = new HashMap<>();
+        Map<String, String> authTypeProperties = new HashMap<>();
 
         for (List<String> property : properties.cells()) {
-            if(property.get(0).equals("authType")) {
+            if (property.get(0).equals("authType")) {
 
                 switch (property.get(1)) {
                     case "OAuth 2.0":
@@ -81,14 +84,13 @@ public class WizardSteps {
                         Assert.fail("The Auth type < " + property.get(1) + "> is not implemented by the test.");
                 }
                 authTypeSet = true;
-
             } else {
                 //pick auth properties (with exception of authType) to be filled in the form
                 authTypeProperties.put(property.get(0), property.get(1));
             }
         }
 
-        if(!authTypeSet) {
+        if (!authTypeSet) {
             Assert.fail("Auth type not set.");
         }
 

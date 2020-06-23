@@ -14,6 +14,7 @@ import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
+import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.openqa.selenium.By;
