@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.fail;
 import static com.codeborne.selenide.Condition.disabled;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPageObject;
@@ -74,14 +73,27 @@ public class DataMapper extends SyndesisPageObject {
         // Give page and elements time to load in slower environment
         // before pressing mapper collection items
         boolean mapperCollectionFound = TestUtils.waitForNoFail(() -> $(Element.COLLECTION_ROOT).is(visible),
-                                                                1, 3);
+            1, 3);
 
+        //during investigating instability on chrome, i noticed that the datamapper is reloaded after 2-3sec, so after that
+        // the all collection are not expanded. I am not able to reproduce it manually, maybe some problem with chrome driver
+        TestUtils.sleepIgnoreInterrupt(4000);
         if (mapperCollectionFound) {
-            for (SelenideElement element : $$(Element.COLLECTION_ROOT).exclude(STALE_ELEMENT)) {
-                if (element.attr("aria-expanded").equals("false")) {
-                    // collection has not been expanded yet
-                    element.click();
-                }
+            ElementsCollection dataMapperCollections = getSourceElementColumn().$$(Element.COLLECTION_ROOT).exclude(STALE_ELEMENT);
+            log.info("DataMapper Source column contains {} collections for expand", dataMapperCollections.size());
+            expandCollection(dataMapperCollections);
+
+            dataMapperCollections = getTargetElementColumn().$$(Element.COLLECTION_ROOT).exclude(STALE_ELEMENT);
+            log.info("DataMapper Target column contains {} collections for expand", dataMapperCollections.size());
+            expandCollection(dataMapperCollections);
+        }
+    }
+
+    private void expandCollection(ElementsCollection collectionsCollection) {
+        for (SelenideElement element : collectionsCollection) {
+            if (element.attr("aria-expanded").equals("false")) {
+                // collection has not been expanded yet
+                element.click();
             }
         }
     }
@@ -94,6 +106,8 @@ public class DataMapper extends SyndesisPageObject {
         modalDialogPage.selectValueByDataTestid(Element.CONSTANT_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
+        //when the modalDialog is closed, the tooltip remains open, maybe it causes instability on chrome
+        getSourceElementColumn().find(By.className("pf-c-title")).click();
     }
 
     public void addProperty(String name, String value, String type) {
@@ -105,6 +119,8 @@ public class DataMapper extends SyndesisPageObject {
         modalDialogPage.selectValueByDataTestid(Element.PROPERTY_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
+        //when the modalDialog is closed, the tooltip remains open, maybe it causes instability on chrome
+        getSourceElementColumn().find(By.className("pf-c-title")).click();
     }
 
     public void doCreateMapping(String source, String target) {
