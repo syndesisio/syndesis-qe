@@ -24,6 +24,7 @@ Feature: Data Virtualization smoke tests
 
     And navigate to the "Data" page
 
+  @notIgnoreOpenIssue
   @ENTESB-13150
   @dvSmoke
   Scenario: basic smoke ui test
