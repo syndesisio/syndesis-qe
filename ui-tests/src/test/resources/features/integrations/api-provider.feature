@@ -369,7 +369,7 @@ Feature: API Provider Integration
 
     And edit integration step on position 5
     And map Api Provider errors
-      | Server Error | 409 |
+      | Duplicate Key Error | 409 |
     And click on the "Next" button
 
     And click on the "Save" link
@@ -1259,3 +1259,19 @@ Feature: API Provider Integration
     And navigate to the "Integrations" page
     And select the "TODO Integration" integration
     Then verify there are 5 flows in the integration
+
+  @api-provider-finish-replace
+  Scenario: API Provider Finish step should not be replaceable
+    When create an API Provider integration "TODO Integration post existing" from file swagger/connectors/todo.json
+    And select API Provider operation flow Create new task
+    Then check flow title is "Create new task"
+
+    When add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "INSERT INTO todo (id, completed, task) VALUES (:#id, :#completed, :#task)" value
+    And click on the "Next" button
+
+    And edit integration step on position 3
+    And click on the "Cancel" link
+    Then check visibility of page "Add to integration"
