@@ -23,7 +23,12 @@ Feature: Support page
     When navigates to the "About" page in help menu
     Then check version string in about page
     And check that commit id exists in about page
-    And check that build id exists in about page
+
+  @prod
+  @support-page-build-id-check
+  Scenario: Version
+    When navigates to the "About" page in help menu
+    Then check that build id exists in about page
 
 #
 #  2. download all diagnostic info
