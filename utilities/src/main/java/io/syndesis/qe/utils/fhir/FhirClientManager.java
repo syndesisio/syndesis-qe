@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FhirClientManager {
+    private static FhirClientManager instance = null;
     private static LocalPortForward LOCAL_PORT_FORWARD = null;
 
     private final int fhirLocalPort = 8082;
@@ -28,8 +29,15 @@ public class FhirClientManager {
     @Getter
     private FhirContext ctx  = FhirContext.forDstu3();
 
-    public FhirClientManager() {
+    private FhirClientManager() {
         initProperties();
+    }
+
+    public static FhirClientManager getInstance() {
+        if (instance == null) {
+            instance = new FhirClientManager();
+        }
+        return instance;
     }
 
     public MyPatientClient getClient() {

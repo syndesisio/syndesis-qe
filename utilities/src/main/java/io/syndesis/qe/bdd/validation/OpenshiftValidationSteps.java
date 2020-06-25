@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
-import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.FTP;
 import io.syndesis.qe.resource.impl.HTTPEndpoints;
 import io.syndesis.qe.resource.impl.IRC;
@@ -18,7 +17,6 @@ import io.syndesis.qe.resource.impl.WildFlyS2i;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
-import io.syndesis.qe.utils.fhir.FhirClientManager;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -137,17 +135,6 @@ public class OpenshiftValidationSteps {
     @Given("^create OData( HTTPS)? credentials$")
     public void createODataHttpCredentials(String https) {
         ResourceFactory.get(WildFlyS2i.class).createODataAccount(https != null && !https.isEmpty());
-    }
-
-    @Given("^deploy FHIR server$")
-    public void deployFHIR() {
-        ResourceFactory.create(FHIR.class);
-    }
-
-    @Given("^undeploy FHIR server$")
-    public void undeployFHIR() {
-        FhirClientManager.closeClient();
-        ResourceFactory.destroy(FHIR.class);
     }
 
     @Given("^wait until \"([^\"]*)\" pod is reloaded$")

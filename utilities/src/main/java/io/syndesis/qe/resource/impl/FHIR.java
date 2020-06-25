@@ -91,12 +91,14 @@ public class FHIR implements Resource {
         if (isDeployed()) {
             OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(appName), true);
             OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(appName));
+            OpenShiftWaitUtils.waitUntilPodIsDeleted(appName);
         }
     }
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName))
+            && OpenShiftUtils.getPodLogs(appName).contains("Server:main: Started");
     }
 
     @Override
@@ -124,10 +126,10 @@ public class FHIR implements Resource {
             Account fhir = new Account();
             Map<String, String> fhirParameters = new HashMap<>();
             fhirParameters.put("port", "8080");
-            fhirParameters.put("host", "fhir");
-            fhirParameters.put("serverurl", "http://fhir:8080/baseDstu3");
+            fhirParameters.put("host", "fhir-app");
+            fhirParameters.put("serverurl", "http://fhir-app:8080/baseDstu3");
 
-            fhir.setService("fhir");
+            fhir.setService("fhir-app");
             fhir.setProperties(fhirParameters);
             AccountsDirectory.getInstance().getAccounts().put("fhir", fhir);
         }

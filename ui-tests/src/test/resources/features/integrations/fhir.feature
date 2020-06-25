@@ -4,13 +4,9 @@
 @fhir
 Feature: Integration - FHIR - all actions
 
-#  Gherkin does not support (and it is deprecated) to have one background step for all scenarios
-#  so server needs to be deployed / undeployed each time.
-
   Background: Clean application state
     Given clean application state
     And add FHIR account
-    And undeploy FHIR server
     And deploy FHIR server
     When delete all relevant entities on FHIR server
     And reset content of "todo" table
@@ -29,30 +25,30 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-#start connection
+    #start connection
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     Then check "Next" button is "Disabled"
     Then fill in periodic query input with "SELECT * FROM CONTACT" value
-    Then fill in period input with "5" value
+    Then fill in period input with "20" value
     Then select "Minutes" from sql dropdown
     And click on the "Next" button
 
-#finish connection
+    #finish connection
     When select the "Log" connection
     And fill in values by element data-testid
       | contextloggingenabled | true |
       | bodyloggingenabled    | true |
     Then click on the "Next" button
 
-#FHIR create
+    #FHIR create
     When add integration step on position "0"
     When select the "FHIR" connection
     And select "Create" integration action
     And select resource type "Patient"
     And click on the "Next" button
 
-#datamapper before FHIR create
+    #datamapper before FHIR create
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -61,7 +57,7 @@ Feature: Integration - FHIR - all actions
       | last_name  | Patient.name.family.value |
     And click on the "Done" button
 
-#run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_read"
     And publish integration
@@ -70,7 +66,6 @@ Feature: Integration - FHIR - all actions
 
     When sleep for "10000" ms
     And validate that patient with name "Emil Hacik" is in FHIR
-    Then validate that logs of integration "FHIR_read" contains string "<name><tns:given value="Emil"/><tns:family value="Hacik"/></name>"
 
   @fhir-1-delete
   Scenario: FHIR delete operation
@@ -82,7 +77,7 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-  #start connection
+    #start connection
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     Then check "Next" button is "Disabled"
@@ -91,13 +86,13 @@ Feature: Integration - FHIR - all actions
     Then select "Seconds" from sql dropdown
     And click on the "Next" button
 
-  #finish connection - FHIR delete
+    #finish connection - FHIR delete
     When select the "FHIR" connection
     And select "Delete" integration action
     And select resource type "Patient"
     And click on the "Next" button
 
-  #datamapper before FHIR delete
+    #datamapper before FHIR delete
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -105,7 +100,7 @@ Feature: Integration - FHIR - all actions
       | lead_source | id |
     And click on the "Done" button
 
-  #run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_delete"
     And publish integration
@@ -115,8 +110,7 @@ Feature: Integration - FHIR - all actions
     When sleep for "10000" ms
     Then validate that patient with name "Duro Mrdar" is not in FHIR
 
-#  just solve todo
-  @ignore
+  @ENTESB-14237
   @fhir-2-patch
   Scenario: FHIR patch operation
 
@@ -126,7 +120,7 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-  #start connection
+    #start connection
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     Then check "Next" button is "Disabled"
@@ -135,30 +129,32 @@ Feature: Integration - FHIR - all actions
     Then select "Minutes" from sql dropdown
     And click on the "Next" button
 
-  #finish connection FHIR patch
+    #finish connection FHIR patch
     When select the "FHIR" connection
     And select "Patch" integration action
     And select resource type "Patient"
     And fill in values by element data-testid
-#    todo: play little bit with exact form of this patch JSON:
-#    does not work:
-#      | patch | [{ "op": "replace", "path": "/HumanName.family", "value": "Mestanek" }] |
-#      | patch | [{ "op": "replace", "path": "HumanName.family", "value": "Mestanek" }] |
-#      | patch | { "op": "replace", "path": "HumanName.family", "value": "Mestanek" } |
-#    to be tried:
-      | patch | [{ "op": "replace", "path": "Patient", "value" : {"name" : "family", "value" : "Mestanek"} }] |
-#      | patch | [{ "op": "replace", "path": "Patient", "value" : {"name" : "HumanName.family", "value" : "Mestanek"} }] |
+      | patch | [{ "op":"replace", "path":"/name/0/family", "value": "Mestanek" }] |
     And click on the "Next" button
 
-  #datamapper before FHIR patch
+    #datamapper before FHIR patch
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
       | lead_source | id |
+
+    # workaround for @ENTESB-14237
+    And define property "op" with value "replace" of type "String" in data mapper
+    And define property "path" with value "/name/0/family" of type "String" in data mapper
+    And define property "value" with value "Mestanek" of type "String" in data mapper
+    And create data mapper mappings
+      | op    | 1.op    |
+      | path  | 1.path  |
+      | value | 1.value |
     And click on the "Done" button
 
-  #run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_patch"
     And publish integration
@@ -178,7 +174,7 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-  #start connection
+   #start connection
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     Then check "Next" button is "Disabled"
@@ -187,21 +183,21 @@ Feature: Integration - FHIR - all actions
     Then select "Seconds" from sql dropdown
     And click on the "Next" button
 
-#finish connection
+    #finish connection
     When select the "Log" connection
     And fill in values by element data-testid
       | contextloggingenabled | true |
       | bodyloggingenabled    | true |
     Then click on the "Next" button
 
-#FHIR read
+    #FHIR read
     When add integration step on position "0"
     When select the "FHIR" connection
     And select "Read" integration action
     And select resource type "Patient"
     And click on the "Next" button
 
-#datamapper before FHIR read
+    #datamapper before FHIR read
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
@@ -209,7 +205,7 @@ Feature: Integration - FHIR - all actions
       | lead_source | id |
     And click on the "Done" button
 
-#run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_read"
     And publish integration
@@ -217,7 +213,6 @@ Feature: Integration - FHIR - all actions
     And wait until integration "FHIR_read" gets into "Running" state
 
     When sleep for "10000" ms
-    Then validate that logs of integration "FHIR_read" contains string "<name><tns:given value="Duro"/><tns:family value="Mrdar"/></name>"
 
 
   @fhir-4-search
@@ -229,7 +224,7 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-  #start connection
+    #start connection
     When select the "Timer" connection
     And select "Simple" integration action
     And fill in values by element data-testid
@@ -237,14 +232,14 @@ Feature: Integration - FHIR - all actions
       | period-duration | Seconds |
     And click on the "Next" button
 
-  #finish connection
+    #finish connection
     When select the "Log" connection
     And fill in values by element data-testid
       | contextloggingenabled | true |
       | bodyloggingenabled    | true |
     Then click on the "Next" button
 
-  #FHIR search
+    #FHIR search
     When add integration step on position "0"
     When select the "FHIR" connection
     And select "Search" integration action
@@ -253,7 +248,7 @@ Feature: Integration - FHIR - all actions
       | query | given=Palo&family=Matrtaj |
     And click on the "Next" button
 
-  #run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_search"
     And publish integration
@@ -276,7 +271,7 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-  #start connection
+    #start connection
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     Then check "Next" button is "Disabled"
@@ -285,7 +280,7 @@ Feature: Integration - FHIR - all actions
     Then select "Seconds" from sql dropdown
     And click on the "Next" button
 
-#finish Log connection
+    #finish Log connection
     When select the "Log" connection
     And fill in values by element data-testid
       | contextloggingenabled | true |
@@ -301,7 +296,7 @@ Feature: Integration - FHIR - all actions
       | Basic   |
     And click on the "Next" button
 
-  #second input connection
+    #second input connection
     When add integration step on position "0"
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
@@ -309,12 +304,12 @@ Feature: Integration - FHIR - all actions
     Then fill in periodic query input with "SELECT * FROM TODO WHERE task = 'slovak'" value
     And click on the "Next" button
 
-#datamapper before FHIR transaction
+    #datamapper before FHIR transaction
     When add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
-#    must be `id-` in order not to collide with Patient.identifier
+    #must be `id-` in order not to collide with Patient.identifier
       | lead_source | Transaction.Patient.id-.value         |
       | first_name  | Transaction.Patient.name.given.value  |
       | last_name   | Transaction.Patient.name.family.value |
@@ -322,7 +317,7 @@ Feature: Integration - FHIR - all actions
       | task        | Transaction.Basic.language.value      |
     And click on the "Done" button
 
-#run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_transaction"
     And publish integration
@@ -343,7 +338,7 @@ Feature: Integration - FHIR - all actions
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"
 
-  #start connection
+    #start connection
     When select the "PostgresDB" connection
     And select "Periodic SQL invocation" integration action
     Then check "Next" button is "Disabled"
@@ -352,24 +347,24 @@ Feature: Integration - FHIR - all actions
     Then select "Minutes" from sql dropdown
     And click on the "Next" button
 
-  #finish connection: FHIR update
+    #finish connection: FHIR update
     When select the "FHIR" connection
     And select "Update" integration action
     And select resource type "Patient"
     And click on the "Next" button
 
-  #datamapper before FHIR update
+    #datamapper before FHIR update
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
-#    must be `id-` in order not to collide with Patient.identified
+    #must be `id-` in order not to collide with Patient.identified
       | lead_source | Patient.id-.value         |
       | first_name  | Patient.name.given.value  |
       | last_name   | Patient.name.family.value |
     And click on the "Done" button
 
-  #run the integration
+    #run the integration
     When click on the "Save" link
     And set integration name "FHIR_update"
     And publish integration
@@ -378,4 +373,3 @@ Feature: Integration - FHIR - all actions
 
     When sleep for "10000" ms
     Then validate that last inserted patients name has been changed to "Jano Matrtaj" in FHIR
-    

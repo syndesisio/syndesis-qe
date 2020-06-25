@@ -17,8 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FhirUtils {
-    private FhirClientManager manager = new FhirClientManager();
-    private MyPatientClient fhirClient = manager.getClient();
+    private MyPatientClient fhirClient = FhirClientManager.getInstance().getClient();
     @Getter
     private String lastPatientId;
     @Getter
@@ -148,7 +147,7 @@ public class FhirUtils {
             fhirClient.getPatientsByFamilyName("Mrdar");
             log.info("**************** client renewed! ****************");
         } catch (FhirClientConnectionException ex) {
-            fhirClient = manager.getClient();
+            fhirClient = FhirClientManager.getInstance().getClient();
         }
     }
 }
