@@ -41,7 +41,9 @@ public class IssueHooks {
     public void skipTestsWithOpenIssues(Scenario scenario) {
         if (TestConfiguration.skipTestsWithOpenIssues()) {
             log.info(scenario.getName());
-
+            if (scenario.getSourceTagNames().contains("@notIgnoreOpenIssue")) {
+                return;
+            }
             List<SimpleIssue> issues = getAllIssues(scenario);
 
             for (SimpleIssue issue : issues) {
@@ -132,22 +134,13 @@ public class IssueHooks {
     }
 
     public static List<SimpleIssue> getAllIssues(Scenario scenario) {
-        List<SimpleIssue> issues = new ArrayList<>();
-
-        List<String> ghIssues = scenario.getSourceTagNames().stream().filter(t -> t.matches("^@gh-\\d+$")).collect(Collectors.toList());
         List<String> jiraIssues = scenario.getSourceTagNames().stream().filter(t -> t.matches("^@ENTESB-\\d+$")).collect(Collectors.toList());
 
-        if (ghIssues.isEmpty() && jiraIssues.isEmpty()) {
+        if (jiraIssues.isEmpty()) {
             return Collections.emptyList();
+        } else {
+            return new ArrayList<>(IssueHooksUtils.analyzeJiraIssues(jiraIssues, scenario));
         }
-        if (!ghIssues.isEmpty()) {
-            issues.addAll(IssueHooksUtils.analyzeGithubIssues(ghIssues, scenario));
-        }
-        if (!jiraIssues.isEmpty()) {
-            issues.addAll(IssueHooksUtils.analyzeJiraIssues(jiraIssues, scenario));
-        }
-
-        return issues;
     }
 
     private static void logIssues(Scenario scenario, List<SimpleIssue> issues) {
