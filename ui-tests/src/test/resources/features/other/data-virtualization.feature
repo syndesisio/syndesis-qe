@@ -11,11 +11,11 @@ Feature: Data Virtualization smoke tests
     And log into the Syndesis
 
     And reset content of "contact" table
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
 
     And reset content of "todo" table
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
       | task3 |

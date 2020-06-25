@@ -8,8 +8,7 @@ public enum IssueState {
     CLOSED,
     DONE;
 
-    public enum DoneJira
-    {
+    public enum DoneJira {
         DONE("Done"),
         RESOLVED("Resolved"),
         PRODUCTIZATION_BACKLOG("Productization Backlog"),

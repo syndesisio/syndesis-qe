@@ -5,7 +5,7 @@ import io.syndesis.qe.issue.IssueState;
 import io.syndesis.qe.issue.SimpleIssue;
 import io.syndesis.qe.utils.IssueHooksUtils;
 
-import org.junit.Assume;
+import org.assertj.core.api.Assumptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,9 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,7 +35,7 @@ public class IssueHooks {
      * <p>
      * Only runs when {@link TestConfiguration#SKIP_TESTS_WITH_OPEN_ISSUES} property is set to true
      *
-     * @param scenario
+     * @param scenario scenario
      */
     @Before
     public void skipTestsWithOpenIssues(Scenario scenario) {
@@ -48,7 +48,7 @@ public class IssueHooks {
 
             for (SimpleIssue issue : issues) {
                 // assumeFalse will skip the test if the argument evaluates to true, i.e. when the issue is open
-                Assume.assumeFalse(IssueState.OPEN.equals(issue.getState()));
+                Assumptions.assumeThat(issue.getState()).isEqualTo(IssueState.OPEN);
             }
         }
     }
@@ -70,7 +70,7 @@ public class IssueHooks {
      * No effort is made to reason about the impact of the found issues (e.g. is it ok that a test fails if there's one open and one done issue?).
      * Also, this hook completely ignores passed tests (i.e. nothing happens when a tests with open issues passes).
      *
-     * @param scenario
+     * @param scenario scenario
      */
     @After
     public void checkIssues(Scenario scenario) {
@@ -115,7 +115,7 @@ public class IssueHooks {
             embedIssues(scenario, issues);
         } catch (Exception e) {
             log.error("Error while processing GH & Jira issues", e);
-            scenario.embed("Error while processing GH & Jira issues".getBytes(), "text/plain");
+            scenario.attach("Error while processing GH & Jira issues".getBytes(), "text/plain", "ErrorMessage");
             e.printStackTrace();
         }
     }
@@ -130,7 +130,7 @@ public class IssueHooks {
 
         StringWriter sw = new StringWriter();
         mapper.writeValue(sw, array);
-        scenario.embed(sw.toString().getBytes(), "application/x.issues+json");
+        scenario.attach(sw.toString().getBytes(), "application/x.issues+json", "Issues");
     }
 
     public static List<SimpleIssue> getAllIssues(Scenario scenario) {

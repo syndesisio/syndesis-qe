@@ -21,14 +21,14 @@ else
 fi
 
 mvn clean test -P rest \
-		-Dcucumber.options="--tags '""${TAGS}""'" \
+		-Dtags="${TAGS}" \
 		-Dsyndesis.config.openshift.url="${URL}" \
 		-Dsyndesis.config.admin.username="${ADMIN_USERNAME}" \
 		-Dsyndesis.config.admin.password="${ADMIN_PASSWORD}" \
 		-Dsyndesis.config.openshift.namespace="${NAMESPACE}" \
 		-Dsyndesis.config.openshift.namespace.lock=false \
 		-Dsyndesis.config.openshift.namespace.cleanup=false \
-		-Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE" \
+		-Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE" \
 		-Dsyndesis.config.enableTestSupport=true
 
 STATUS=$?

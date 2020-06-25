@@ -118,7 +118,7 @@ Feature: OpenApi support
 
     And navigate to the "Integrations" page
     And wait until integration "OpenAPI-client" gets into "Running" state
-    And inserts into "TODO" table
+    And insert into "TODO" table
       | Squirtle |
     And validate that logs of integration "i-openapi-client" contains string "Squirtle"
 
@@ -133,7 +133,7 @@ Feature: OpenApi support
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -222,7 +222,7 @@ Feature: OpenApi support
       | body.id        | id        |
       | body.completed | completed |
       | body.task      | task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -232,7 +232,7 @@ Feature: OpenApi support
       | body.id        | body.id        |
       | body.completed | body.completed |
       | body.task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -246,8 +246,8 @@ Feature: OpenApi support
       """
         {"id":13,"completed":1,"task":"task1"}
       """
-    And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "1"
+    And validate that all todos with task "task1" have value completed 1, period in ms: 1000
+    And validate that number of all todos with task "task1" is 1
 
   @api-provider-error-handling
   @openapi-provider-error-handling
@@ -310,7 +310,7 @@ Feature: OpenApi support
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 

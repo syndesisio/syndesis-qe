@@ -13,7 +13,7 @@ Feature: Integration - Databucket
   Background: Clean application state
     Given clean application state
     And reset content of "contact" table
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
     And delete emails from "QE Google Mail" with subject "Red Hat"
     And log into the Syndesis

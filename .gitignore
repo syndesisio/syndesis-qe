@@ -230,4 +230,4 @@ rest-tests/src/test/resources/credentials.json
 test.properties
 
 # web drivers downloaded by mvn
-ui-tests/drivers
+drivers

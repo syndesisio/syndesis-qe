@@ -631,7 +631,7 @@ Feature: Test maximum integration
       | MaxIntegrations | MaxIntegrations |
     And check that email from "QE Google Mail" with subject "maxIntegrations" and text "MaxIntegrations" exists
     And verify that incident with "MaxIntegrations" number has "MaxIntegrations Description" description
-    And checks that query "select * from todo where task='MaxIntegrations'" has 1 row output
+    And check that query "select * from todo where task='MaxIntegrations'" has 1 row output
 
     When delete contact from SF with email: "test@maxIntegration.feature"
     And delete emails from "QE Google Mail" with subject "maxIntegrations"

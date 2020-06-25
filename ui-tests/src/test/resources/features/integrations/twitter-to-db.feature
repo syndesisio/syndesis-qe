@@ -62,5 +62,5 @@ Feature: Integration - Twitter to Database
     When tweet a message from twitter_talky to "Twitter Listener" with text "Red Hat"
     And wait until integration Twitter to DB integration processed at least 1 message
 
-    Then checks that query "select * from contact where company like 'Red Hat%'" has some output
+    Then check that query "select * from contact where company like 'Red Hat%'" has some output
     And clean all tweets in twitter_talky account

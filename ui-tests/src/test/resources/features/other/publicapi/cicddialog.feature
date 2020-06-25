@@ -213,7 +213,7 @@ Feature: Test tagging integration in CI CD dialog
     And delete tag tag12 from Manage CI/CD page
 
     #Check that tag was removed from the Syndesis and it is not in the dialog
-    When sleep for jenkins delay or "2" seconds
+    When sleep for jenkins delay or 2 seconds
     Then check that tag with name tag12 is not in the tag list
     And check that tag tag12 doesn't exist in Manage CI/CD page
 

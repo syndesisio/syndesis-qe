@@ -20,7 +20,7 @@ Feature: 3scale integration
     And upload swagger file src/test/resources/swagger/connectors/petstore.json
     And click on the "Next" button
     # wait for redirect so it does not click twice on the same page
-    And sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or 3 seconds
     And click on the "Next" button
     # give UI time to render all operations
     # TODO: should be refactored after api provider tests are done by asmigala

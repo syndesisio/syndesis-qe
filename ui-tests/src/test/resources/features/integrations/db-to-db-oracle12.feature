@@ -15,7 +15,7 @@ Feature: Integration - DB to DB oracle12
       | syndesis-library-jdbc-driver |
     And wait until "meta" pod is reloaded
     Given create standard table schema on "oracle12" driver
-    When inserts into "contact" table on "oracle12"
+    When insert into "contact" table on "oracle12"
       | Josef_oracle12 | Stieranka | Istrochem | db |
     Given created connections
       | Database | Oracle12 | Oracle12 | Oracle 12 RC1 |
@@ -63,6 +63,6 @@ Feature: Integration - DB to DB oracle12
     And wait until integration "db-connection-crud-2-read-create-oracle12" gets into "Running" state
     And wait until integration db-connection-crud-2-read-create-oracle12 processed at least 1 message
 
-    Then validate that all todos with task "Josef_oracle12" have value completed "2", period in ms: "5000" on "oracle12"
+    Then validate that all todos with task "Josef_oracle12" have value completed 2, period in ms: 5000 on "oracle12"
 
     And free allocated "oracle12cR1" database

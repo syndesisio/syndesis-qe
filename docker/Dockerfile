@@ -70,7 +70,7 @@ WORKDIR /syndesis-qe
 #RUN mvn clean package -B -f syndesis-extensions/pom.xml --also-make --projects :syndesis-library-jdbc-driver,:syndesis-extension-log-body,:syndesis-extension-body
 
 ## Build syndesis-qe tests (To download all dependencies during the building phase. not during the running phase)
-RUN mvn -pl !ui-tests clean install -DskipTests
+RUN mvn -P rest clean install -DskipTests
 
 ## This file has not contained 3rd party services. It is copied into the test suite in order to the tests which use self-deployed services work (AMQ broker, MongoDB).
 ## In the future, the external credential.json (with 3rd party services credential) can be pass to the image as an environment variable.
@@ -80,7 +80,6 @@ COPY credentials_minimal.json /syndesis-qe/credentials.json
 ## For building image for Delorean, use syndesisQe_delorean.sh entrypoint
 #COPY syndesisQe.sh /usr/local/bin/syndesisQe.sh
 COPY syndesisQe_delorean.sh /usr/local/bin/syndesisQe.sh
-
 
 RUN chmod +x /usr/local/bin/syndesisQe.sh
 ENTRYPOINT ["/usr/local/bin/syndesisQe.sh"]

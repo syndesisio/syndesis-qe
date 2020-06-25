@@ -20,7 +20,7 @@ public class PreviousSyndesis extends Syndesis {
     }
 
     @Override
-    protected void deploySyndesisViaOperator() {
+    public void deploySyndesisViaOperator() {
         // currently the deployment methods are the same, but keep this method here in case of future diverge of deployment methods
         super.deploySyndesisViaOperator();
     }

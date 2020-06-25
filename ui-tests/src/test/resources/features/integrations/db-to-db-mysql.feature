@@ -14,7 +14,7 @@ Feature: Integration - DB to DB mysql
     Given deploy MySQL server
     Given create standard table schema on "mysql" driver
 
-    When inserts into "contact" table on "mysql"
+    When insert into "contact" table on "mysql"
       | Josef_mysql | Stieranka | Istrochem | db |
     Given created connections
       | Database | MySQL | MySQL | Mysql on OpenShift |
@@ -62,4 +62,4 @@ Feature: Integration - DB to DB mysql
     And wait until integration "db-connection-crud-2-read-create-mysql" gets into "Running" state
     And wait until integration db-connection-crud-2-read-create-mysql processed at least 1 message
 
-    Then validate that all todos with task "Josef_mysql" have value completed "2", period in ms: "5000" on "mysql"
+    Then validate that all todos with task "Josef_mysql" have value completed 2, period in ms: 5000 on "mysql"

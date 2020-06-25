@@ -51,10 +51,10 @@ Feature: Webhook extension
     Then wait until integration "webhook-test" gets into "Running" state
 
     When select the "webhook-test" integration
-    And sleep for jenkins delay or "10" seconds
+    And sleep for jenkins delay or 10 seconds
     And invoke post request to webhook in integration webhook-test with token test-webhook and body {"author":"New Author","title":"Book Title"}
     # give integration time to invoke DB request
-    And sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or 3 seconds
     Then check that query "select * from contact where first_name = 'Prokop' AND last_name = 'Dvere' AND company = 'New Author'" has some output
 
   @reproducer
@@ -86,7 +86,7 @@ Feature: Webhook extension
     Then wait until integration "webhook-test-5575" gets into "Running" state
 
     When select the "webhook-test-5575" integration
-    And sleep for jenkins delay or "10" seconds
+    And sleep for jenkins delay or 10 seconds
 
     Then check that webhook url for "webhook-test-5575" with token "test-webhook" in UI is same as in routes
     And verify the displayed webhook URL matches regex ^https://i-.*-syndesis.*/webhook/.*$

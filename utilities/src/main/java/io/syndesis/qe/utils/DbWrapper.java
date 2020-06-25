@@ -11,7 +11,7 @@ public class DbWrapper {
     private LocalPortForward localPortForward;
     private Connection dbConnection;
 
-    public DbWrapper(String dbType){
+    public DbWrapper(String dbType) {
         setDbType(dbType);
     }
 }

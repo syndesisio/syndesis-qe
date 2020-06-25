@@ -137,7 +137,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -224,14 +224,14 @@ Feature: API Provider Integration
       | id        | body.id        |
       | completed | body.completed |
       | task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
     Then wait until integration "TODO Integration get collection" gets into "Running" state
@@ -264,14 +264,14 @@ Feature: API Provider Integration
       | id        | body.id        |
       | completed | body.completed |
       | task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
 
@@ -282,7 +282,7 @@ Feature: API Provider Integration
         [{"id":1,"completed":null,"task":"task1"},{"id":2,"completed":null,"task":"task2"}]
       """
 
-    When clean "todo" table
+    When reset content of "todo" table
     Then wait until integration "TODO Integration get collection empty" gets into "Running" state
     Then verify response has status 200
 
@@ -305,7 +305,7 @@ Feature: API Provider Integration
       | body.id        | id        |
       | body.completed | completed |
       | body.task      | task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -315,7 +315,7 @@ Feature: API Provider Integration
       | body.id        | body.id        |
       | body.completed | body.completed |
       | body.task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -329,8 +329,8 @@ Feature: API Provider Integration
       """
         {"id":1,"completed":1,"task":"task1"}
       """
-    And validate that all todos with task "task1" have value completed "1", period in ms: "2000"
-    And validate that number of all todos with task "task1" is "1"
+    And validate that all todos with task "task1" have value completed 1, period in ms: 2000
+    And validate that number of all todos with task "task1" is 1
 
   @ENTESB-11675
   @api-provider-post-existing
@@ -353,7 +353,7 @@ Feature: API Provider Integration
       | body.id        | id        |
       | body.completed | completed |
       | body.task      | task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -363,7 +363,7 @@ Feature: API Provider Integration
       | body.id        | body.id        |
       | body.completed | body.completed |
       | body.task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -375,14 +375,14 @@ Feature: API Provider Integration
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
     Then wait until integration "TODO Integration post existing" gets into "Running" state
     When execute POST on API Provider route i-todo-integration-post-existing endpoint "/api/" with body '{"id":1,"completed":1,"task":"task1"}'
     Then verify response has status 409
 
-    And validate that all todos with task "task1" have value completed "0", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "1"
+    And validate that all todos with task "task1" have value completed 0, period in ms: 1000
+    And validate that number of all todos with task "task1" is 1
 
   @gh-6118
   @gh-5017
@@ -414,7 +414,7 @@ Feature: API Provider Integration
       | id        | id        |
       | completed | completed |
       | task      | task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -424,14 +424,14 @@ Feature: API Provider Integration
       | 4 - SQL Result | id       | | body.id        |
       | 2 - Request   | completed | | body.completed |
       | 2 - Request  | task       | | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
     Then wait until integration "TODO Integration post collection" gets into "Running" state
     When execute POST on API Provider route i-todo-integration-post-collection endpoint "/api/multi" with body '[{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]'
@@ -440,9 +440,9 @@ Feature: API Provider Integration
       """
         [{"id":2,"completed":1,"task":"task2"},{"id":3,"completed":1,"task":"task3"}]
       """
-    And validate that number of all todos with task "task1" is "1"
-    And validate that number of all todos with task "task2" is "1"
-    And validate that number of all todos with task "task3" is "1"
+    And validate that number of all todos with task "task1" is 1
+    And validate that number of all todos with task "task2" is 1
+    And validate that number of all todos with task "task3" is 1
 
 
   @api-provider-put
@@ -463,7 +463,7 @@ Feature: API Provider Integration
       | parameters.id  | id        |
       | body.completed | completed |
       | body.task      | task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -473,14 +473,14 @@ Feature: API Provider Integration
       | parameters.id  | body.id        |
       | body.completed | body.completed |
       | body.task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
     Then wait until integration "TODO Integration put" gets into "Running" state
@@ -490,20 +490,20 @@ Feature: API Provider Integration
       """
         {"id":1,"completed":1,"task":"changedtask1"}
       """
-    And validate that all todos with task "changedtask1" have value completed "1", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "0"
-    And validate that number of all todos with task "task2" is "1"
-    And validate that number of all todos with task "changedtask1" is "1"
+    And validate that all todos with task "changedtask1" have value completed 1, period in ms: 1000
+    And validate that number of all todos with task "task1" is 0
+    And validate that number of all todos with task "task2" is 1
+    And validate that number of all todos with task "changedtask1" is 1
     # insert new
     When execute PUT on API Provider route i-todo-integration-put endpoint "/api/7" with body '{"completed":1,"task":"task7"}'
     Then verify response has body
       """
         {"id":7,"completed":1,"task":"task7"}
       """
-    And validate that number of all todos with task "task1" is "0"
-    And validate that number of all todos with task "task2" is "1"
-    And validate that number of all todos with task "changedtask1" is "1"
-    And validate that number of all todos with task "task7" is "1"
+    And validate that number of all todos with task "task1" is 0
+    And validate that number of all todos with task "task2" is 1
+    And validate that number of all todos with task "changedtask1" is 1
+    And validate that number of all todos with task "task7" is 1
 
   @reproducer
   @api-provider-delete
@@ -524,22 +524,22 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
     Then wait until integration "TODO Integration delete" gets into "Running" state
     # update existing
     When execute DELETE on API Provider route i-todo-integration-delete endpoint "/api/1"
     Then verify response has status 204
-    And validate that number of all todos with task "task1" is "0"
-    And validate that number of all todos with task "task2" is "1"
+    And validate that number of all todos with task "task1" is 0
+    And validate that number of all todos with task "task2" is 1
 
 
   @api-provider-export-roundtrip
@@ -553,7 +553,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -580,7 +580,7 @@ Feature: API Provider Integration
 
     When select the "TODO Integration import export" integration
     And check visibility of "Stopped" integration status on Integration Detail page
-    And sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or 3 seconds
     And start integration "TODO Integration import export"
     And navigate to the "Integrations" page
     And sleep for 20 seconds
@@ -611,13 +611,13 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
     And click on the "Save" link
-    And sleep for jenkins delay or "5" seconds
+    And sleep for jenkins delay or 5 seconds
     And check "Save" button is "visible"
-    And sleep for jenkins delay or "5" seconds
+    And sleep for jenkins delay or 5 seconds
 
     # create new operation in apicurio
     And edit API Provider OpenAPI specification
@@ -657,7 +657,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body.id   |
       | parameters.id | body.task |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
     And click on the "Save" link
@@ -719,7 +719,7 @@ Feature: API Provider Integration
       | 2 - SQL Result | id        | | body.id        |
       | 2 - SQL Result | completed | | body.completed |
       | 2 - SQL Result | task      | | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -727,7 +727,7 @@ Feature: API Provider Integration
     And set integration name "TODO Integration edit unimplemented"
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
     Then wait until integration "TODO Integration edit unimplemented" gets into "Running" state
@@ -764,7 +764,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -774,13 +774,13 @@ Feature: API Provider Integration
       | id   | body.id   |
 #     | completed | body.completed | completed can either be null or false
       | task | body.task |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
     And click on the "Save" link
     And publish integration
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
     And navigate to the "Integrations" page
@@ -833,14 +833,14 @@ Feature: API Provider Integration
     # step indexes are weird
     And delete step on position 4
 
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And add integration step on position "2"
     And select "Data Mapper" integration step
     And create data mapper mappings with data bucket
       | 3 - SQL Result | id | | body.id |
 #     | completed | body.completed | completed can either be null or false
       | 3 - SQL Result | task | | body.task |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -879,7 +879,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And sleep for 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
@@ -907,7 +907,7 @@ Feature: API Provider Integration
     And click on the "Save" link
     And publish integration
     And navigate to the "Integrations" page
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
     Then wait until integration "TODO Integration delete implemented" gets into "Running" state
@@ -975,7 +975,7 @@ Feature: API Provider Integration
 
     And go to API Provider operation list
 
-    Then check Fetch task operation is not present in API Provider operation list
+    Then check "Fetch task" operation is not present in API Provider operation list
 
 
   @gh-4976
@@ -1059,7 +1059,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -1106,7 +1106,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -1151,7 +1151,7 @@ Feature: API Provider Integration
     And select "Data Mapper" integration step
     And create data mapper mappings
       | parameters.id | body.id |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And click on the "Done" button
     And click on the "Save" link
     And publish integration
@@ -1227,10 +1227,10 @@ Feature: API Provider Integration
     """
       {"id":1}
     """
-    And validate that number of all todos with task "task7" is "1"
+    And validate that number of all todos with task "task7" is 1
     When execute POST on API Provider route i-conditional-provider endpoint "/api" with body '{"completed":-1,"task":"task7", "id": 1}'
     Then verify response has status 201
-    And validate that number of all todos with task "task7" is "0"
+    And validate that number of all todos with task "task7" is 0
 
   @reproducer
   @gh-6230
@@ -1251,7 +1251,7 @@ Feature: API Provider Integration
       | id        | body.id        |
       | completed | body.completed |
       | task      | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
     And click on the "Save" link

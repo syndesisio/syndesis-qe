@@ -6,54 +6,47 @@
 	<artifactId>syndesis-qe-parent</artifactId>
 	<version>0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>syndesis-qe</name>
+
+	<name>Syndesis QE</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<syndesis.version>2.0-SNAPSHOT</syndesis.version>
+		<syndesis.qe.version>0.1-SNAPSHOT</syndesis.qe.version>
 		<atlas.mapper.version>1.44.0-M1</atlas.mapper.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.version>3.3</maven.compiler.version>
+		<maven.compiler.version>3.8.1</maven.compiler.version>
 		<maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
-		<surefire.version>2.22.0</surefire.version>
-
-		<apache.http.commons.version>4.5.8</apache.http.commons.version>
+		<failsafe.version>2.22.0</failsafe.version>
 		<apache.http.core.version>4.4.10</apache.http.core.version>
-		<lombok.version>1.18.6</lombok.version>
-		<hibernate.version>6.0.16.Final</hibernate.version>
-		<junit.version>4.12</junit.version>
-		<hamcrest.version>1.3</hamcrest.version>
+		<lombok.version>1.18.12</lombok.version>
+		<junit.version>4.13</junit.version>
 		<org.json.version>20160810</org.json.version>
-		<commons.io.version>2.5</commons.io.version>
+		<commons.io.version>2.7</commons.io.version>
 		<resteasy.version>4.4.2.Final</resteasy.version>
 		<jackson.version>2.10.3</jackson.version>
 		<twitter4j.version>4.0.7</twitter4j.version>
 		<logback.classic.version>1.2.3</logback.classic.version>
 		<force.rest.api.version>0.0.37</force.rest.api.version>
-		<selenide.version>5.6.0</selenide.version>
-		<guava.version>22.0</guava.version>
-		<cucumber.version>4.2.3</cucumber.version>
-		<assertj.version>3.11.1</assertj.version>
+		<selenide.version>5.12.2</selenide.version>
+		<cucumber.version>6.2.2</cucumber.version>
+		<assertj.version>3.16.1</assertj.version>
 		<awaitility.version>4.0.1</awaitility.version>
-		<rxjava.version>1.3.0</rxjava.version>
-		<rxjava-string.version>1.1.1</rxjava-string.version>
 		<postgresql.version>42.2.5</postgresql.version>
 		<mysql.version>6.0.6</mysql.version>
 		<oracle.version>12.2.0.1</oracle.version>
-		<amazon.sdk.version>1.11.257</amazon.sdk.version>
-		<commons-lang3.version>3.7</commons-lang3.version>
-		<webdriverextensions.version>3.1.3</webdriverextensions.version>
-		<!-- version >= 0.16 is needed for https://github.com/xtf-cz/xtf/pull/348 -->
-		<xtf.utilities.version>0.16-SNAPSHOT</xtf.utilities.version>
-		<ftp.client.version>3.3</ftp.client.version>
+		<commons-lang3.version>3.10</commons-lang3.version>
+		<webdriverextensions.version>3.2.0</webdriverextensions.version>
+		<xtf.utilities.version>0.16</xtf.utilities.version>
+		<ftp.client.version>3.6</ftp.client.version>
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
-		<activemq.version>5.15.9</activemq.version>
+		<activemq.version>5.16.0</activemq.version>
 		<jslack.version>1.0.26</jslack.version>
 		<mqttv3.version>1.2.1</mqttv3.version>
 		<qpid.version>0.32.0</qpid.version>
 		<google.oauth.version>1.23.0</google.oauth.version>
-		<google.apis.version>v1-rev96-1.25.0</google.apis.version>
+		<google.apis.gmail.version>v1-rev96-1.25.0</google.apis.gmail.version>
 		<google.apis.calendar.version>v3-rev347-1.25.0</google.apis.calendar.version>
 		<google.apis.sheets.version>v4-rev553-1.25.0</google.apis.sheets.version>
 		<github.core.version>2.1.5</github.core.version>
@@ -63,15 +56,21 @@
 		<el.version>3.0.0</el.version>
 		<box.version>2.30.1</box.version>
 		<jsoup.version>1.11.3</jsoup.version>
-		<aws.sqs.version>2.8.4</aws.sqs.version>
-		<aws.dynamodb.version>2.8.4</aws.dynamodb.version>
+		<aws.clients.version>2.8.4</aws.clients.version>
 		<openshift.client.version>4.7.1</openshift.client.version>
 		<velocity.version>1.7</velocity.version>
 		<bytebuddy.version>1.10.1</bytebuddy.version>
 		<mongodb.driver.version>3.10.2</mongodb.driver.version>
 		<sshj.version>0.27.0</sshj.version>
 		<semver4j.version>3.1.0</semver4j.version>
+		<spring.version>5.1.8.RELEASE</spring.version>
+		<ws.rs-api.version>2.1</ws.rs-api.version>
+		<validation-api.version>2.0.1.Final</validation-api.version>
+		<slf4j-api.version>1.7.30</slf4j-api.version>
+		<apicurito.tests.version>0.0.3-SNAPSHOT</apicurito.tests.version>
 		<fhir.version>4.1.0</fhir.version>
+		<cluecumber.version>2.5.0</cluecumber.version>
+		<okhttp.client.version>3.12.6</okhttp.client.version>
 
 		<!-- leave driver versions empty to use latest driver -->
 		<!-- Find supported webdriver version for your chrome browser here:
@@ -83,7 +82,10 @@
 		<firefox.driver.version></firefox.driver.version>
 
 		<!-- Placeholder for user defined cucumber tags that should be run -->
-		<tags></tags>
+		<!--suppress UnresolvedMavenProperty -->
+		<tags>not @manual and not @wip and not @ignore and not @disabled and not @apicuritoTests</tags>
+		<report.src>${project.build.directory}/cucumber</report.src>
+		<report.dest>${project.build.directory}/cucumber/cucumber-html</report.dest>
 
 	</properties>
 
@@ -97,136 +99,41 @@
 		</license>
 	</licenses>
 
-	<developers>
-		<developer>
-			<name>Tomas Plevko</name>
-			<email>tplevko@redhat.com</email>
-			<organization>Red Hat</organization>
-			<organizationUrl>http://www.redhat.com</organizationUrl>
-		</developer>
-	</developers>
-
 	<scm>
 		<url>https://github.com/syndesisio/syndesis-qe/tree/master</url>
 	</scm>
 
-	<modules>
-		<module>utilities</module>
-	</modules>
-
 	<dependencyManagement>
 		<dependencies>
+			<!-- Overrides for compatible versions used -->
+			<!-- For RESTEasy -->
 			<dependency>
-				<groupId>io.syndesis.qe</groupId>
-				<artifactId>utilities</artifactId>
-				<version>${project.version}</version>
+				<groupId>javax.ws.rs</groupId>
+				<artifactId>javax.ws.rs-api</artifactId>
+				<version>${ws.rs-api.version}</version>
 			</dependency>
 
+			<!-- For hibernate coming from Syndesis dependencies -->
 			<dependency>
-				<groupId>cz.xtf</groupId>
-				<artifactId>core</artifactId>
-				<version>${xtf.utilities.version}</version>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${validation-api.version}</version>
 			</dependency>
 
+			<!-- Use openshift client we want -->
 			<dependency>
-				<groupId>org.projectlombok</groupId>
-				<artifactId>lombok</artifactId>
-				<version>${lombok.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.reactivex</groupId>
-				<artifactId>rxjava-string</artifactId>
-				<version>${rxjava-string.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.reactivex</groupId>
-				<artifactId>rxjava</artifactId>
-				<version>${rxjava.version}</version>
+				<groupId>io.fabric8</groupId>
+				<artifactId>openshift-client</artifactId>
+				<version>${openshift.client.version}</version>
 			</dependency>
 
+			<!-- okhttp3 client used in the openshift-client in given version -->
 			<dependency>
-				<groupId>org.assertj</groupId>
-				<artifactId>assertj-core</artifactId>
-				<version>${assertj.version}</version>
+				<groupId>com.squareup.okhttp3</groupId>
+				<artifactId>okhttp</artifactId>
+				<version>${okhttp.client.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>org.awaitility</groupId>
-				<artifactId>awaitility</artifactId>
-				<version>${awaitility.version}</version>
-			</dependency>
-
-			<!-- Syndesis dependencies -->
-			<dependency>
-				<groupId>io.syndesis.common</groupId>
-				<artifactId>common-model</artifactId>
-				<version>${syndesis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.syndesis.server</groupId>
-				<artifactId>server-endpoint</artifactId>
-				<version>${syndesis.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>io.fabric8</groupId>
-						<artifactId>kubernetes-client</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>io.fabric8</groupId>
-						<artifactId>kubernetes-model</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>commons-net</groupId>
-				<artifactId>commons-net</artifactId>
-				<version>${ftp.client.version}</version>
-			</dependency>
-			<!-- Atlas mapper dependencies -->
-			<dependency>
-				<groupId>io.atlasmap</groupId>
-				<artifactId>atlas-model</artifactId>
-				<version>${atlas.mapper.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.atlasmap</groupId>
-				<artifactId>atlas-json-model</artifactId>
-				<version>${atlas.mapper.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.atlasmap</groupId>
-				<artifactId>atlas-xml-model</artifactId>
-				<version>${atlas.mapper.version}</version>
-			</dependency>
-
-			<!-- test dependencies -->
-			<dependency>
-				<groupId>org.hibernate.validator</groupId>
-				<artifactId>hibernate-validator-annotation-processor</artifactId>
-				<version>${hibernate.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-all</artifactId>
-				<version>${hamcrest.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>${logback.classic.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>${apache.http.commons.version}</version>
-			</dependency>
 			<!-- avoid - https://github.com/aws/aws-sdk-java-v2/issues/652 -->
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
@@ -234,40 +141,11 @@
 				<version>${apache.http.core.version}</version>
 			</dependency>
 
+			<!-- Jackson stuff compatible with the openshift client -->
 			<dependency>
-				<groupId>org.json</groupId>
-				<artifactId>json</artifactId>
-				<version>${org.json.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-io</groupId>
-				<artifactId>commons-io</artifactId>
-				<version>${commons.io.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${commons-lang3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-core</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-jackson2-provider</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-client</artifactId>
-				<version>${resteasy.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.jboss.resteasy</groupId>
-				<artifactId>resteasy-multipart-provider</artifactId>
-				<version>${resteasy.version}</version>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.module</groupId>
@@ -284,280 +162,138 @@
 				<artifactId>jackson-datatype-jdk8</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
+
+			<!-- Syndesis QE subprojects -->
 			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.version}</version>
+				<groupId>io.syndesis.qe</groupId>
+				<artifactId>endpoints</artifactId>
+				<version>${syndesis.qe.version}</version>
 			</dependency>
+
 			<dependency>
-				<groupId>com.codeborne</groupId>
-				<artifactId>selenide</artifactId>
-				<version>${selenide.version}</version>
+				<groupId>io.syndesis.qe</groupId>
+				<artifactId>rest-common</artifactId>
+				<version>${syndesis.qe.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.syndesis.qe</groupId>
+				<artifactId>ui-common</artifactId>
+				<version>${syndesis.qe.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.syndesis.qe</groupId>
+				<artifactId>utilities</artifactId>
+				<version>${syndesis.qe.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.syndesis.qe</groupId>
+				<artifactId>validation</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- Syndesis dependencies -->
+			<dependency>
+				<groupId>io.syndesis.common</groupId>
+				<artifactId>common-model</artifactId>
+				<version>${syndesis.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.syndesis.server</groupId>
+				<artifactId>server-endpoint</artifactId>
+				<version>${syndesis.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>com.google.guava</groupId>
-						<artifactId>guava</artifactId>
+						<groupId>io.fabric8</groupId>
+						<artifactId>kubernetes-client</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.fabric8</groupId>
+						<artifactId>kubernetes-model</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
+
+			<!-- Atlasmap dependencies -->
 			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
+				<groupId>io.atlasmap</groupId>
+				<artifactId>atlas-model</artifactId>
+				<version>${atlas.mapper.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>io.atlasmap</groupId>
+				<artifactId>atlas-json-model</artifactId>
+				<version>${atlas.mapper.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.atlasmap</groupId>
+				<artifactId>atlas-xml-model</artifactId>
+				<version>${atlas.mapper.version}</version>
+			</dependency>
+
+			<!-- Main Frameworks -->
+			<dependency>
+				<groupId>cz.xtf</groupId>
+				<artifactId>core</artifactId>
+				<version>${xtf.utilities.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.assertj</groupId>
+				<artifactId>assertj-core</artifactId>
+				<version>${assertj.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.classic.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>io.cucumber</groupId>
 				<artifactId>cucumber-java</artifactId>
 				<version>${cucumber.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>io.cucumber</groupId>
 				<artifactId>cucumber-junit</artifactId>
 				<version>${cucumber.version}</version>
 			</dependency>
+
 			<dependency>
 				<groupId>io.cucumber</groupId>
 				<artifactId>cucumber-spring</artifactId>
 				<version>${cucumber.version}</version>
 			</dependency>
 
-			<!-- Third party services dependencies -->
 			<dependency>
-				<groupId>org.twitter4j</groupId>
-				<artifactId>twitter4j-core</artifactId>
-				<version>${twitter4j.version}</version>
+				<groupId>com.codeborne</groupId>
+				<artifactId>selenide</artifactId>
+				<version>${selenide.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.frejo</groupId>
-				<artifactId>force-rest-api</artifactId>
-				<version>${force.rest.api.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.fasterxml.jackson.core</groupId>
-						<artifactId>jackson-databind</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-s3</artifactId>
-				<version>${amazon.sdk.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.postgresql</groupId>
-				<artifactId>postgresql</artifactId>
-				<version>${postgresql.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-			<dependency>
-				<groupId>mysql</groupId>
-				<artifactId>mysql-connector-java</artifactId>
-				<version>${mysql.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.oracle.jdbc</groupId>
-				<artifactId>ojdbc8</artifactId>
-				<version>${oracle.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-core 5.7.0 -->
-			<dependency>
-				<groupId>org.apache.activemq</groupId>
-				<artifactId>activemq-client</artifactId>
-				<version>${activemq.version}</version>
-			</dependency>
-
-
-			<dependency>
-				<groupId>com.github.seratch</groupId>
-				<artifactId>jslack</artifactId>
-				<version>${jslack.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3 -->
-			<dependency>
-				<groupId>org.eclipse.paho</groupId>
-				<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-				<version>${mqttv3.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.qpid</groupId>
-				<artifactId>qpid-jms-client</artifactId>
-				<version>${qpid.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.oauth-client</groupId>
-				<!-- this means java6+ so do not panic :) -->
-				<artifactId>google-oauth-client-java6</artifactId>
-				<version>${google.oauth.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.oauth-client</groupId>
-				<artifactId>google-oauth-client-jetty</artifactId>
-				<version>${google.oauth.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.apis</groupId>
-				<artifactId>google-api-services-gmail</artifactId>
-				<version>${google.apis.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.apis</groupId>
-				<artifactId>google-api-services-calendar</artifactId>
-				<version>${google.apis.calendar.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.apis</groupId>
-				<artifactId>google-api-services-sheets</artifactId>
-				<version>${google.apis.sheets.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.eclipse.mylyn.github</groupId>
-				<artifactId>org.eclipse.egit.github.core</artifactId>
-				<version>${github.core.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.atlassian.fugue</groupId>
-				<artifactId>fugue</artifactId>
-				<version>${jira.fugue.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.schwering</groupId>
-				<artifactId>irclib</artifactId>
-				<version>${irclib.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.glassfish</groupId>
-				<artifactId>javax.el</artifactId>
-				<version>${el.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.box</groupId>
-				<artifactId>box-java-sdk</artifactId>
-				<version>${box.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jsoup</groupId>
-				<artifactId>jsoup</artifactId>
-				<version>${jsoup.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>sqs</artifactId>
-				<version>${aws.sqs.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>software.amazon.awssdk</groupId>
-				<artifactId>dynamodb</artifactId>
-				<version>${aws.dynamodb.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.atlassian.jira</groupId>
-				<artifactId>jira-rest-java-client-core</artifactId>
-				<version>${jira.client.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.atlassian.jira</groupId>
-				<artifactId>jira-rest-java-client-api</artifactId>
-				<version>${jira.client.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.fabric8</groupId>
-				<artifactId>openshift-client</artifactId>
-				<version>${openshift.client.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.velocity</groupId>
-				<artifactId>velocity</artifactId>
-				<version>${velocity.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy</artifactId>
-				<version>${bytebuddy.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>net.bytebuddy</groupId>
-				<artifactId>byte-buddy-agent</artifactId>
-				<version>${bytebuddy.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.mongodb</groupId>
-				<artifactId>mongodb-driver-sync</artifactId>
-				<version>${mongodb.driver.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.hierynomus</groupId>
-				<artifactId>sshj</artifactId>
-				<version>${sshj.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.vdurmont</groupId>
-				<artifactId>semver4j</artifactId>
-				<version>${semver4j.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-base</artifactId>
-				<version>${fhir.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-client</artifactId>
-				<version>${fhir.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>com.fasterxml.woodstox</groupId>
-						<artifactId>woodstox-core</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-structures-dstu3</artifactId>
-				<version>${fhir.version}</version>
-			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
 
 	<profiles>
-		<profile>
-			<id>all</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<modules>
-				<module>rest-tests</module>
-				<module>ui-tests</module>
-				<module>utilities</module>
-			</modules>
-		</profile>
 		<profile>
 			<id>rest</id>
 			<activation>
@@ -566,6 +302,10 @@
 				</property>
 			</activation>
 			<modules>
+				<module>endpoints</module>
+				<module>utilities</module>
+				<module>validation</module>
+				<module>rest-common</module>
 				<module>rest-tests</module>
 			</modules>
 		</profile>
@@ -577,7 +317,41 @@
 				</property>
 			</activation>
 			<modules>
+				<module>endpoints</module>
+				<module>utilities</module>
+				<module>validation</module>
+				<module>ui-common</module>
 				<module>ui-tests</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>operator</id>
+			<activation>
+				<property>
+					<name>operator</name>
+				</property>
+			</activation>
+			<modules>
+				<module>endpoints</module>
+				<module>utilities</module>
+				<module>validation</module>
+				<module>rest-common</module>
+				<module>operator-tests</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>upgrade</id>
+			<activation>
+				<property>
+					<name>upgrade</name>
+				</property>
+			</activation>
+			<modules>
+				<module>endpoints</module>
+				<module>utilities</module>
+				<module>validation</module>
+				<module>rest-common</module>
+				<module>upgrade-tests</module>
 			</modules>
 		</profile>
 		<profile>
@@ -586,8 +360,8 @@
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-surefire-plugin</artifactId>
-						<version>${surefire.version}</version>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${failsafe.version}</version>
 						<configuration combine.self="append">
 							<systemPropertyVariables>
 								<syndesis.config.openshift.namespace.cleanup>true</syndesis.config.openshift.namespace.cleanup>
@@ -612,12 +386,54 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${surefire.version}</version>
-				<configuration combine.self="append">
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${failsafe.version}</version>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<includes>io.syndesis.qe.CucumberRunner</includes>
 					<systemPropertyVariables>
-						<cucumber.options>--tags '${tags}'</cucumber.options>
+						<cucumber.features>classpath:features</cucumber.features>
+						<cucumber.filter.tags>${tags}</cucumber.filter.tags>
+						<cucumber.plugin>
+							pretty,
+							junit:target/cucumber/cucumber-junit.xml,
+							json:target/cucumber/cucumber-report.json,
+							io.syndesis.qe.cucumber.MailFormatter:target/cucumber/cucumber-mail
+						</cucumber.plugin>
+						<syndesis.version>${syndesis.version}</syndesis.version>
 					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.trivago.rta</groupId>
+				<artifactId>cluecumber-report-plugin</artifactId>
+				<version>${cluecumber.version}</version>
+				<executions>
+					<execution>
+						<id>report</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>reporting</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<logLevel>minimal</logLevel>
+					<sourceJsonReportDirectory>${report.src}</sourceJsonReportDirectory>
+					<generatedHtmlReportDirectory>${report.dest}</generatedHtmlReportDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -645,18 +461,6 @@
 			</snapshots>
 			<releases>
 				<enabled>true</enabled>
-			</releases>
-		</repository>
-		<!-- Needed until 0.15 XTF is released -->
-		<repository>
-			<id>xtf-snapshots</id>
-			<name>XTF-Snapshots</name>
-			<url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>false</enabled>
 			</releases>
 		</repository>
 	</repositories>

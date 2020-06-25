@@ -22,7 +22,7 @@ Feature: Integration - import-edit
     And click on the "Next" button
     And publish integration
     And click on the "Save and publish" button
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
     And navigate to the "Integrations" page
     Then wait until integration "import-edit-integration" gets into "Running" state

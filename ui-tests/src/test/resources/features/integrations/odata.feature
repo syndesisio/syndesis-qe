@@ -76,7 +76,7 @@ Feature: OData Connector
   Scenario: Create entity in OData service
 
     When reset content of "contact" table
-    And inserts into "contact" table
+    And insert into "contact" table
       | Jianathan | Yang | RH | lead_source |
 
     When click on the "Create Integration" link to create a new integration
