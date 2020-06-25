@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import cucumber.api.Scenario;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -52,8 +52,8 @@ public class IssueHooksUtils {
                 com.atlassian.jira.rest.client.api.domain.Issue issue = issueClient.getIssue(issueName).claim();
                 issues.add(transformJiraIssue(issue));
             } catch (RestClientException e) {
-                log.error("Couldn't obtain the Jira issue : ", tag);
-                scenario.embed("Error while processing Jira issues".getBytes(), "text/plain");
+                log.error("Couldn't obtain the Jira issue : {}", tag);
+                scenario.attach("Error while processing Jira issues".getBytes(), "text/plain", "ErrorMessage");
                 e.printStackTrace();
             }
         }
@@ -83,7 +83,7 @@ public class IssueHooksUtils {
             }
         } catch (IOException e) {
             log.error("Error while processing GitHub issues", e);
-            scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
+            scenario.attach("Error while processing GitHub issues".getBytes(), "text/plain", "ErrorMessage");
             e.printStackTrace();
         }
 
@@ -235,7 +235,7 @@ public class IssueHooksUtils {
         try {
             uri = new URI(instanceUrl);
         } catch (URISyntaxException e) {
-            log.error("URL $ is a malformed URL", instanceUrl);
+            log.error("URL {} is a malformed URL", instanceUrl);
             e.printStackTrace();
         }
         JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, userName, password);
@@ -243,7 +243,7 @@ public class IssueHooksUtils {
     }
 
     public static void logError(Scenario scenario, String message) {
-        scenario.embed(message.getBytes(), "text/plain");
+        scenario.attach(message.getBytes(), "text/plain", "ErrorMessage");
         log.error(message);
     }
 }

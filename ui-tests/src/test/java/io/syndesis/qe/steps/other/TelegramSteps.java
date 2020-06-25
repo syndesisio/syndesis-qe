@@ -2,8 +2,8 @@ package io.syndesis.qe.steps.other;
 
 import org.assertj.core.api.Assertions;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.syndesis.qe.utils.HTTPResponse;
 import io.syndesis.qe.utils.TelegramUtils;
 

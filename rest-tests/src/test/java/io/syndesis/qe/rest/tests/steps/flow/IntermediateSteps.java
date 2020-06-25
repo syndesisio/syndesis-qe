@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 
 public class IntermediateSteps extends AbstractStep {

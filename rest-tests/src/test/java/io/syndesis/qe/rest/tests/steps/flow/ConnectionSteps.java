@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 
 /**

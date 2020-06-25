@@ -29,8 +29,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import lombok.extern.slf4j.Slf4j;
 

@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.java.After;
+import io.cucumber.java.After;
 import lombok.extern.slf4j.Slf4j;
 
 /**

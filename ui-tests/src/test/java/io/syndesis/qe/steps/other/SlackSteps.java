@@ -1,7 +1,7 @@
 package io.syndesis.qe.steps.other;
 
 import com.github.seratch.jslack.api.methods.SlackApiException;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.syndesis.qe.utils.SlackConnector;
 import io.syndesis.qe.utils.TestUtils;
 import org.springframework.beans.factory.annotation.Autowired;

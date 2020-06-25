@@ -1,6 +1,6 @@
 package io.syndesis.qe.steps.connections.wizard.phases;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.connections.wizard.phases.NameConnection;

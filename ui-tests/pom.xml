@@ -39,6 +39,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>
             <groupId>junit</groupId>
@@ -54,7 +59,7 @@
             <groupId>apicurio</groupId>
             <artifactId>apicurito-tests</artifactId>
             <classifier>tests</classifier>
-            <version>0.0.2-SNAPSHOT</version>
+            <version>0.0.3-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -73,7 +78,6 @@
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
         </dependency>
-
     </dependencies>
 
     <profiles>
@@ -138,10 +142,19 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
-                    <systemProperties>
-                        <syndesis.version>${syndesis.version}</syndesis.version>
+                    <systemPropertyVariables>
                         <apicurito.config.app.root>.api-editor</apicurito.config.app.root>
-                    </systemProperties>
+                        <cucumber.glue>io.syndesis.qe, apicurito.tests.steps</cucumber.glue>
+                        <cucumber.tags>${tags}</cucumber.tags>
+                        <cucumber.plugin>
+                            pretty,
+                            html:target/cucumber/cucumber-html,
+                            junit:target/cucumber/cucumber-junit.xml,
+                            json:target/cucumber/cucumber-report.json,
+                            io.syndesis.qe.cucumber.MailFormatter:target/cucumber/cucumber-mail,
+                            io.syndesis.qe.hooks.ClassTransformerHook
+                        </cucumber.plugin>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>

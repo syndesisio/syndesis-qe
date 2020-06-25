@@ -14,7 +14,7 @@ import com.dropbox.core.v2.files.DeleteErrorException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 public class DropBoxValidationSteps {
     @Lazy

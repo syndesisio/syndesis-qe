@@ -14,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 public class ServiceNowValidationSteps {
     private static String incidentId;

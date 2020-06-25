@@ -2,6 +2,10 @@ package io.syndesis.qe.rest.tests.steps.flow;
 
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.common.model.integration.StepKind;
+import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
+import io.syndesis.qe.bdd.entities.SeparatorType;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Constructor;
@@ -12,12 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.java.en.When;
 import io.atlasmap.v2.MappingType;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
-import io.syndesis.qe.bdd.entities.SeparatorType;
+import io.cucumber.java.en.When;
 
 /**
  * There are two ways how to specify data mapping. 1 is using preconfigured atlas mapping json file, with placeholders
@@ -34,7 +35,7 @@ public class DataMapperSteps extends AbstractStep {
      *
      * @param mapperName
      */
-    @When("start mapper definition with name: \"([^\"]*)\"")
+    @When("^start mapper definition with name: \"([^\"]*)\"$")
     public void startMapperDefinition(String mapperName) {
         super.addProperty(StepProperty.STEP_NAME, mapperName);
         super.addProperty(StepProperty.KIND, StepKind.mapper);

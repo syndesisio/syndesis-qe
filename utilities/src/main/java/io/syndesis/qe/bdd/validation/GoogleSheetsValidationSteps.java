@@ -12,7 +12,7 @@ import com.google.api.services.sheets.v4.model.Sheet;
 
 import java.util.List;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 

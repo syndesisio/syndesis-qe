@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.WebDriverRunner;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.After;
-import cucumber.api.java.AfterStep;
+import io.cucumber.java.After;
+import io.cucumber.java.AfterStep;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,7 +30,7 @@ public class CommonHooks {
     public void afterScreenshot(Scenario scenario) {
         if (scenario.isFailed() && WebDriverRunner.hasWebDriverStarted()) {
             byte[] screenshotAsBytes = ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);
-            scenario.embed(screenshotAsBytes, "image/png");
+            scenario.attach(screenshotAsBytes, "image/png", "Screenshot");
         }
     }
 

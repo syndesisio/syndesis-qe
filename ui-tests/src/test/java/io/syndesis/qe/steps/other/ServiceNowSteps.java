@@ -7,7 +7,7 @@ import io.syndesis.qe.pages.SyndesisRootPage;
 import java.util.HashMap;
 import java.util.Map;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 
 public class ServiceNowSteps {

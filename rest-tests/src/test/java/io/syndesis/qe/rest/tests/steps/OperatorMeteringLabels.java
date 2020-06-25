@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 
 public class OperatorMeteringLabels {

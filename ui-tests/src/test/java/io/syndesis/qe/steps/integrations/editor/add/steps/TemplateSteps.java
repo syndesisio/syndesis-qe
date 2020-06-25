@@ -9,7 +9,7 @@ import io.syndesis.qe.pages.integrations.editor.add.steps.Template.WarningType;
 import java.util.List;
 import java.util.Optional;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

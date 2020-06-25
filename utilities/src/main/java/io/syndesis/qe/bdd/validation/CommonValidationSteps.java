@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 import io.syndesis.common.model.DataShapeKinds;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.qe.bdd.entities.StepDefinition;

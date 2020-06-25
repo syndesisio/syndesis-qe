@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Lazy;
 
 import java.util.concurrent.TimeUnit;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 
 /**

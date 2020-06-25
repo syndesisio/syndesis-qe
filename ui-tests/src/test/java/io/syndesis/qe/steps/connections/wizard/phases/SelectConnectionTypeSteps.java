@@ -2,7 +2,7 @@ package io.syndesis.qe.steps.connections.wizard.phases;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.syndesis.qe.pages.connections.wizard.ConnectionWizard;
 import io.syndesis.qe.pages.connections.wizard.phases.SelectConnectionType;
 import io.syndesis.qe.pages.connections.wizard.phases.configure.ConfigureConnection;

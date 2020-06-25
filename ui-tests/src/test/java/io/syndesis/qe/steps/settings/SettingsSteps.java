@@ -12,8 +12,8 @@ import org.assertj.core.api.SoftAssertions;
 
 import com.codeborne.selenide.SelenideElement;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
 /**
  * Created by sveres on 11/20/17.

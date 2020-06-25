@@ -3,9 +3,9 @@ package io.syndesis.qe.hooks;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.ExcludeFromSelectorReports;
 
-import cucumber.api.event.EventListener;
-import cucumber.api.event.EventPublisher;
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
+import io.cucumber.plugin.EventListener;
+import io.cucumber.plugin.event.EventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -82,8 +82,8 @@ public class ClassTransformerHook implements EventListener {
     }
 
     ///Install Bytebuddy agent only once
-    private void lazyAgentInstall(){
-        if (shouldLoadAgent){
+    private void lazyAgentInstall() {
+        if (shouldLoadAgent) {
             ByteBuddyAgent.install();
             shouldLoadAgent = false;
         }

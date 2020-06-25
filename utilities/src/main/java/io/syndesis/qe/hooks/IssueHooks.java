@@ -17,9 +17,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -115,7 +115,7 @@ public class IssueHooks {
             embedIssues(scenario, issues);
         } catch (Exception e) {
             log.error("Error while processing GH & Jira issues", e);
-            scenario.embed("Error while processing GH & Jira issues".getBytes(), "text/plain");
+            scenario.attach("Error while processing GH & Jira issues".getBytes(), "text/plain", "ErrorMessage");
             e.printStackTrace();
         }
     }
@@ -130,7 +130,7 @@ public class IssueHooks {
 
         StringWriter sw = new StringWriter();
         mapper.writeValue(sw, array);
-        scenario.embed(sw.toString().getBytes(), "application/x.issues+json");
+        scenario.attach(sw.toString().getBytes(), "application/x.issues+json", "Issues");
     }
 
     public static List<SimpleIssue> getAllIssues(Scenario scenario) {

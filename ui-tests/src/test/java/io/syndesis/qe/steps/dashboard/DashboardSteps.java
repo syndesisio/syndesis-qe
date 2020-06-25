@@ -7,8 +7,8 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.syndesis.qe.fragments.common.list.actions.ListAction;
 import io.syndesis.qe.pages.dashboard.DashboardPage;
 import io.syndesis.qe.pages.integrations.fragments.IntegrationsList;

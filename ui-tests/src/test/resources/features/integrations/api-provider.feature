@@ -975,7 +975,7 @@ Feature: API Provider Integration
 
     And go to API Provider operation list
 
-    Then check Fetch task operation is not present in API Provider operation list
+    Then check "Fetch task" operation is not present in API Provider operation list
 
 
   @gh-4976

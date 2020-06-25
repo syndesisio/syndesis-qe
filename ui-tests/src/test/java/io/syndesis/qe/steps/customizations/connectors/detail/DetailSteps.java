@@ -14,7 +14,7 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
 
 public class DetailSteps {

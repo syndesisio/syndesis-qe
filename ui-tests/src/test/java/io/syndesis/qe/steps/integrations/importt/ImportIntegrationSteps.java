@@ -7,7 +7,7 @@ import io.syndesis.qe.utils.TestUtils;
 
 import java.io.File;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

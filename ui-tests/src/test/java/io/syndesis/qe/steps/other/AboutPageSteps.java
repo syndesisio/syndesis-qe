@@ -10,7 +10,7 @@ import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -14,7 +14,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 import io.syndesis.common.model.connection.ConnectorSettings;
 import io.syndesis.qe.endpoints.CustomApiEndpoint;
 import io.syndesis.qe.utils.TestUtils;

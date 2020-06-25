@@ -10,8 +10,8 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 

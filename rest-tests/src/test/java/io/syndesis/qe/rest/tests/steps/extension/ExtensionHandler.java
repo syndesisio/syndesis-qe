@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.util.List;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 import io.cucumber.datatable.DataTable;
 
 public class ExtensionHandler {

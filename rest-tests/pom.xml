@@ -89,23 +89,6 @@
 			<groupId>com.vdurmont</groupId>
 			<artifactId>semver4j</artifactId>
 		</dependency>
+
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>io.syndesis.qe.CucumberTestsRunner.class</include>
-					</includes>
-					<systemProperties>
-						<syndesis.version>${syndesis.version}</syndesis.version>
-					</systemProperties>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
 </project>

@@ -1,6 +1,6 @@
 package io.syndesis.qe.steps;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.syndesis.qe.steps.integrations.IntegrationSteps;
 import lombok.extern.slf4j.Slf4j;
 

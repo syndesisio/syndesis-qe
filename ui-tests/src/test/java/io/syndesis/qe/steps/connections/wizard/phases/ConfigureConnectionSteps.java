@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 
 public class ConfigureConnectionSteps {
 

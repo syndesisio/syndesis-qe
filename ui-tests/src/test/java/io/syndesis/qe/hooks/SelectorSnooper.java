@@ -29,8 +29,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.Before;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

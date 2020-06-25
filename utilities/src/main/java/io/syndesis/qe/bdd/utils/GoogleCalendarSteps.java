@@ -1,7 +1,7 @@
 package io.syndesis.qe.bdd.utils;
 
-import cucumber.api.PendingException;
-import cucumber.api.java.en.And;
+import io.syndesis.qe.utils.GoogleCalendarUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.api.client.util.DateTime;
@@ -15,9 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
-import io.syndesis.qe.utils.GoogleCalendarUtils;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

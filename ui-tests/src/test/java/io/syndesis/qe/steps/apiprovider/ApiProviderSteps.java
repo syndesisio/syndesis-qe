@@ -30,8 +30,8 @@ import javax.ws.rs.core.Response;
 
 import java.util.List;
 
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.fabric8.openshift.api.model.Route;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +51,7 @@ public class ApiProviderSteps {
         operationsList.apiOperationCreateFlow(operationName);
     }
 
-    @Then("check ([\\w ]+) operation is not present in API Provider operation list")
+    @Then("check {string} operation is not present in API Provider operation list")
     public void checkOperationNotPresent(String operationName) {
         List<String> operations = operationsList.getOperations();
         assertThat(operations).doesNotContain(operationName);

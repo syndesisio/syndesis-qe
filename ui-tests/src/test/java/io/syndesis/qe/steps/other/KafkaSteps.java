@@ -25,8 +25,8 @@ import com.codeborne.selenide.ElementsCollection;
 import java.util.List;
 import java.util.Map;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.Secret;
 import lombok.extern.slf4j.Slf4j;

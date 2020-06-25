@@ -9,7 +9,7 @@ import com.google.api.services.calendar.model.Event;
 
 import java.io.IOException;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.syndesis.qe.utils.GoogleCalendarUtils;
 
 public class GoogleCalendarValidationSteps {

@@ -8,7 +8,7 @@ import io.syndesis.qe.utils.TestUtils;
 
 import java.io.IOException;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.client.LocalPortForward;
 

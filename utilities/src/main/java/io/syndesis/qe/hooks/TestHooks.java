@@ -11,9 +11,9 @@ import io.syndesis.qe.utils.TestUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import cucumber.api.Scenario;
-import cucumber.api.java.After;
-import cucumber.api.java.Before;
+import io.cucumber.java.Scenario;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +39,8 @@ public class TestHooks {
             ).collect(Collectors.toList());
             for (Pod integrationPod : integrationPods) {
                 try {
-                    scenario.embed(String.format("%s\n\n%s", integrationPod.getMetadata().getName(),
-                        OpenShiftUtils.getInstance().getPodLog(integrationPod)).getBytes(), "text/plain");
+                    scenario.attach(String.format("%s\n\n%s", integrationPod.getMetadata().getName(),
+                        OpenShiftUtils.getInstance().getPodLog(integrationPod)).getBytes(), "text/plain", "ErrorMessage");
                 } catch (KubernetesClientException ex) {
                     //when the build failed, the integration pod is not ready (`ImagePullBackOff`) In that case, the pod doesn't contain log. That
                     // causes that OpenShiftUtils has thrown KubernetesClientException

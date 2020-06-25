@@ -8,7 +8,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.concurrent.TimeoutException;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

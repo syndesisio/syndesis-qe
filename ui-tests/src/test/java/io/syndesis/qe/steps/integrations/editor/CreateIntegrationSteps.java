@@ -4,7 +4,7 @@ import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.integrations.editor.CreateIntegration;
 import io.syndesis.qe.utils.TestUtils;
 
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 

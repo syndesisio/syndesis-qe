@@ -8,9 +8,9 @@ import io.syndesis.qe.utils.TestUtils;
 
 import java.util.Optional;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;

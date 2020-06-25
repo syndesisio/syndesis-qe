@@ -12,7 +12,7 @@ import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Selenide;
 
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Then;
 
 public class DocsVerificationSteps {
     final String syndesisVersion = "1.10";

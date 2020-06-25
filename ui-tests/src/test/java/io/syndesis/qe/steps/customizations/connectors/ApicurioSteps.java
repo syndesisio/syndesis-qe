@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import apicurito.tests.configuration.TestConfiguration;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -394,7 +394,7 @@ public class ApicurioSteps {
             .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
     }
 
-    @When("configure the \"([^\"]*)\" security schema")
+    @When("configure the {string} security schema")
     public void configureSecuritySchema(String name) {
         SelenideElement securityRow = $(Elements.SECURITY_SECTION).$$(Elements.SECURITY_SCHEMA_ROW).find(Condition.text(name));
         if (securityRow == null) {
