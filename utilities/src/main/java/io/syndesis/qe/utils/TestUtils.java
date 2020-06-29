@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
-import io.syndesis.qe.model.IntegrationOverview;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.endpoint.IntegrationOverviewEndpoint;
+import io.syndesis.qe.endpoint.model.IntegrationOverview;
 import io.syndesis.qe.utils.dballoc.DBAllocation;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
@@ -204,7 +204,7 @@ public final class TestUtils {
 
     /**
      * This is method for transhipping externally dynamicaly generated connection data(Database, etc.) into
-     * io.syndesis.qe.accounts.Account properties.
+     * io.syndesis.qe.Account properties.
      *
      * @param connectionName name of the connection
      * @param sourceMap source map

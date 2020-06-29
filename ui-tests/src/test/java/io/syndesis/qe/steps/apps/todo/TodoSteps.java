@@ -7,8 +7,8 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.sleep;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.apps.todo.Todo;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.UploadSwaggerSpecification;

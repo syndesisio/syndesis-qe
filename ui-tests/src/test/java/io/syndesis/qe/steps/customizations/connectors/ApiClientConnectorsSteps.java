@@ -10,8 +10,8 @@ import static com.codeborne.selenide.Condition.not;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$$;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.pages.customizations.connectors.ApiClientConnectors;
 import io.syndesis.qe.pages.customizations.connectors.wizard.steps.ReviewActions;
 import io.syndesis.qe.utils.UploadFile;

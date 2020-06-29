@@ -7,7 +7,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.account.Account;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
@@ -25,9 +25,9 @@ import com.codeborne.selenide.ElementsCollection;
 import java.util.List;
 import java.util.Map;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
-import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.Secret;
 import lombok.extern.slf4j.Slf4j;
 

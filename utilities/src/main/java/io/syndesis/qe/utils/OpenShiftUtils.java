@@ -3,8 +3,8 @@ package io.syndesis.qe.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.component.Component;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 

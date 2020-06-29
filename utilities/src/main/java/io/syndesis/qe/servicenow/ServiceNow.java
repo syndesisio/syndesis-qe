@@ -3,6 +3,14 @@ package io.syndesis.qe.servicenow;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.servicenow.model.Incident;
+import io.syndesis.qe.servicenow.model.IncidentRecordList;
+import io.syndesis.qe.servicenow.model.IncidentSingleResponse;
+import io.syndesis.qe.utils.HTTPResponse;
+import io.syndesis.qe.utils.HttpUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,13 +23,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.servicenow.model.Incident;
-import io.syndesis.qe.servicenow.model.IncidentRecordList;
-import io.syndesis.qe.servicenow.model.IncidentSingleResponse;
-import io.syndesis.qe.utils.HTTPResponse;
-import io.syndesis.qe.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 

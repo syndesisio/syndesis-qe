@@ -12,6 +12,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.syndesis.qe</groupId>
+			<artifactId>common</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>io.syndesis.qe</groupId>
+			<artifactId>endpoints</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>openshift-client</artifactId>
 		</dependency>

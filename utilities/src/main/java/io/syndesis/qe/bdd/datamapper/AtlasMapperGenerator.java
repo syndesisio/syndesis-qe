@@ -12,7 +12,7 @@ import io.syndesis.common.model.integration.StepKind;
 import io.syndesis.common.util.json.JsonUtils;
 import io.syndesis.qe.bdd.entities.DataMapperStepDefinition;
 import io.syndesis.qe.bdd.entities.StepDefinition;
-import io.syndesis.qe.endpoints.AtlasmapEndpoint;
+import io.syndesis.qe.endpoint.AtlasmapEndpoint;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.apache.commons.lang.StringUtils;

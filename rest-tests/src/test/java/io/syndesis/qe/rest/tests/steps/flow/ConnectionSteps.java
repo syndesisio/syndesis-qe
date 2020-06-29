@@ -1,6 +1,6 @@
 package io.syndesis.qe.rest.tests.steps.flow;
 
-import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.account.Account;
 import io.syndesis.qe.rest.tests.util.RestTestsUtils;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.BoxUtils;
@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.When;
 
 /**
  * Class holding the steps for creating the flow steps related to connections.

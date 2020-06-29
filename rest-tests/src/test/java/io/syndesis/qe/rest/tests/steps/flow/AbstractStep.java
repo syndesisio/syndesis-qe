@@ -17,9 +17,9 @@ import io.syndesis.common.util.json.JsonUtils;
 import io.syndesis.qe.bdd.entities.DataMapperDefinition;
 import io.syndesis.qe.bdd.entities.StepDefinition;
 import io.syndesis.qe.bdd.storage.StepsStorage;
-import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.endpoints.ConnectorsEndpoint;
+import io.syndesis.qe.endpoint.ConnectionsActionsEndpoint;
+import io.syndesis.qe.endpoint.ConnectionsEndpoint;
+import io.syndesis.qe.endpoint.ConnectorsEndpoint;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

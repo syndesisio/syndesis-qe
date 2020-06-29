@@ -4,8 +4,8 @@ import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.ByUtils;

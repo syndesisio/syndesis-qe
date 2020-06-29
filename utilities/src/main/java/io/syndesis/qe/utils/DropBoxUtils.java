@@ -1,5 +1,8 @@
 package io.syndesis.qe.utils;
 
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+
 import org.springframework.stereotype.Component;
 
 import com.dropbox.core.DbxException;
@@ -16,8 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

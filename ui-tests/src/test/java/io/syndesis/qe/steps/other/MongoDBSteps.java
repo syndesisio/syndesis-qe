@@ -1,7 +1,7 @@
 package io.syndesis.qe.steps.other;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.impl.MongoDb36;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;

@@ -2,10 +2,10 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import java.util.Optional;
-
-import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.account.Account;
 import io.syndesis.qe.accounts.AccountsDirectory;
+
+import java.util.Optional;
 
 public class TelegramUtils {
     private static String SEND_MESSAGE_URL = "https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s";

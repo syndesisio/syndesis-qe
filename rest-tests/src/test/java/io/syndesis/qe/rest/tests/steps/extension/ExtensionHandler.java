@@ -2,15 +2,15 @@ package io.syndesis.qe.rest.tests.steps.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.endpoints.ExtensionsEndpoint;
+import io.syndesis.qe.endpoint.ExtensionsEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.util.List;
 
-import io.cucumber.java.en.Given;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Given;
 
 public class ExtensionHandler {
     @Autowired

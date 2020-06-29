@@ -1,5 +1,7 @@
 package io.syndesis.qe.utils;
 
+import io.syndesis.qe.account.Account;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -8,11 +10,10 @@ import com.google.api.services.calendar.Calendar;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.sheets.v4.Sheets;
 
-import io.syndesis.qe.accounts.Account;
-import lombok.extern.slf4j.Slf4j;
-
 import java.io.IOException;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Google Account representation, holds all important info got from the credentials.json.

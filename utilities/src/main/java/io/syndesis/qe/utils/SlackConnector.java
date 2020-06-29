@@ -1,5 +1,8 @@
 package io.syndesis.qe.utils;
 
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+
 import org.assertj.core.api.Assertions;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -19,15 +22,13 @@ import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.Optional;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 @Lazy
 public class SlackConnector {
-    private static final Slack slack = Slack.getInstance();
+    private static final Slack SLACK = Slack.getInstance();
     private static String token;
 
     /**
@@ -64,13 +65,13 @@ public class SlackConnector {
     public ChatPostMessageResponse sendMessage(String message, String channelName) throws IOException, SlackApiException {
 
         // find all channels in the workspace
-        ChannelsListResponse channelsResponse = slack.methods().channelsList(ChannelsListRequest.builder().token(token).build());
+        ChannelsListResponse channelsResponse = SLACK.methods().channelsList(ChannelsListRequest.builder().token(token).build());
         // find channelName
         Channel chann = channelsResponse.getChannels().stream()
                 .filter(c -> c.getName().equals(channelName)).findFirst().get();
 
         // https://slack.com/api/chat.postMessage
-        ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(ChatPostMessageRequest.builder()
+        ChatPostMessageResponse postResponse = SLACK.methods().chatPostMessage(ChatPostMessageRequest.builder()
                 .token(token)
                 .channel(chann.getId())
                 .username("syndesis-bot")
@@ -95,14 +96,14 @@ public class SlackConnector {
     public void checkLastMessageFromChannel(String expectedMessage, String channelName) throws IOException, SlackApiException {
 
         // find all channels in the workspace
-        ChannelsListResponse channelsResponse = slack.methods().channelsList(ChannelsListRequest.builder().token(token).build());
+        ChannelsListResponse channelsResponse = SLACK.methods().channelsList(ChannelsListRequest.builder().token(token).build());
         Assertions.assertThat(channelsResponse.isOk()).isTrue();
         // find channelName
         Channel chann = channelsResponse.getChannels().stream()
                 .filter(c -> c.getName().equals(channelName)).findFirst().get();
 
         // fetch history
-        ChannelsHistoryResponse history = slack.methods().channelsHistory(ChannelsHistoryRequest.builder()
+        ChannelsHistoryResponse history = SLACK.methods().channelsHistory(ChannelsHistoryRequest.builder()
                 .token(token)
                 .channel(chann.getId())
                 .build());

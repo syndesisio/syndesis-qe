@@ -1,4 +1,4 @@
-package io.syndesis.qe.endpoints.publicendpoint;
+package io.syndesis.qe.publicendpoint;
 
 import static org.assertj.core.api.Assertions.fail;
 

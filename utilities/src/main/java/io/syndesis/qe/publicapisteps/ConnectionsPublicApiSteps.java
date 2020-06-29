@@ -4,17 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.connection.ConnectionOverview;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
-import io.syndesis.qe.endpoints.publicendpoint.ConnectionsPublicEndpoint;
+import io.syndesis.qe.endpoint.ConnectionsEndpoint;
+import io.syndesis.qe.publicendpoint.ConnectionsPublicEndpoint;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Properties;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,6 +1,6 @@
 package io.syndesis.qe.utils.jira;
 
-import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.account.Account;
 import io.syndesis.qe.utils.AccountUtils;
 
 import org.springframework.context.annotation.Bean;

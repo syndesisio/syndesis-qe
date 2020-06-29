@@ -2,7 +2,7 @@ package io.syndesis.qe.publicapisteps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.endpoints.publicendpoint.EnvironmentsPublicEndpoint;
+import io.syndesis.qe.publicendpoint.EnvironmentsPublicEndpoint;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

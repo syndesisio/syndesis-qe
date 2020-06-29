@@ -2,8 +2,8 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import com.google.api.client.repackaged.org.apache.commons.codec.binary.Base64;
 import com.google.api.services.gmail.Gmail;

@@ -2,8 +2,8 @@ package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;

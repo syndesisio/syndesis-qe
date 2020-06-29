@@ -1,9 +1,9 @@
-package io.syndesis.qe.endpoints.publicendpoint;
+package io.syndesis.qe.publicendpoint;
 
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoint.RestUtils;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.utils.PublicApiUtils;
-import io.syndesis.qe.utils.RestUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;

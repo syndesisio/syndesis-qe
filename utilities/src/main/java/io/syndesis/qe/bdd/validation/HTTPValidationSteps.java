@@ -3,7 +3,7 @@ package io.syndesis.qe.bdd.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.account.Account;
 import io.syndesis.qe.resource.impl.HTTPEndpoints;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.HTTPResponse;

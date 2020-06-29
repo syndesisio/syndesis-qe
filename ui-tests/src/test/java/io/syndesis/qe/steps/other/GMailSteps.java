@@ -1,6 +1,6 @@
 package io.syndesis.qe.steps.other;
 
-import io.syndesis.qe.accounts.Account;
+import io.syndesis.qe.account.Account;
 import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.GoogleAccount;

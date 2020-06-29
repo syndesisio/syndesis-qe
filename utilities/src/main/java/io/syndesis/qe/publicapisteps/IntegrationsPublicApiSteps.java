@@ -3,10 +3,10 @@ package io.syndesis.qe.publicapisteps;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.common.model.integration.ContinuousDeliveryEnvironment;
-import io.syndesis.qe.endpoints.IntegrationOverviewEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.endpoints.publicendpoint.IntegrationsPublicEndpoint;
-import io.syndesis.qe.model.IntegrationOverview;
+import io.syndesis.qe.endpoint.IntegrationOverviewEndpoint;
+import io.syndesis.qe.endpoint.IntegrationsEndpoint;
+import io.syndesis.qe.endpoint.model.IntegrationOverview;
+import io.syndesis.qe.publicendpoint.IntegrationsPublicEndpoint;
 import io.syndesis.qe.utils.TestUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 
 public class IntegrationsPublicApiSteps {
 

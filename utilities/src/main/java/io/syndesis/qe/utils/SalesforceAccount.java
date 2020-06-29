@@ -1,7 +1,7 @@
 package io.syndesis.qe.utils;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import com.force.api.ApiConfig;
 import com.force.api.ForceApi;

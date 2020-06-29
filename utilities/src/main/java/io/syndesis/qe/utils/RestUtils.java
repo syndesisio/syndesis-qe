@@ -1,6 +1,6 @@
 package io.syndesis.qe.utils;
 
-import io.syndesis.qe.Component;
+import io.syndesis.qe.component.Component;
 import io.syndesis.qe.exceptions.RestClientException;
 
 import org.apache.commons.io.IOUtils;

@@ -3,8 +3,8 @@ package io.syndesis.qe.endpoints;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Addon;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.Syndesis;

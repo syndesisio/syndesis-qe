@@ -1,6 +1,6 @@
 package io.syndesis.qe.rest.tests.steps.state;
 
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.endpoint.IntegrationsEndpoint;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;

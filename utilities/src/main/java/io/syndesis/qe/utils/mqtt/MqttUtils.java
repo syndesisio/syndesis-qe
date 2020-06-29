@@ -1,5 +1,8 @@
 package io.syndesis.qe.utils.mqtt;
 
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.accounts.AccountsDirectory;
+
 import org.assertj.core.api.Assertions;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -9,18 +12,15 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.util.Optional;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
 
 
 @Slf4j
 public class MqttUtils {
-    private static final String broker = "tcp://localhost:1883";
-
+    private static final String BROKER = "tcp://localhost:1883";
 
     public MqttClient createReceiver(String clientName, String topic) throws MqttException {
-        MqttClient sampleClient = new MqttClient(broker, clientName, new MemoryPersistence());
+        MqttClient sampleClient = new MqttClient(BROKER, clientName, new MemoryPersistence());
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(false);
 
@@ -41,7 +41,7 @@ public class MqttUtils {
         final String clientId = "syndesis-mqtt-sender";
         MqttClient sampleClient = null;
         try {
-            sampleClient = new MqttClient(broker, clientId, new MemoryPersistence());
+            sampleClient = new MqttClient(BROKER, clientId, new MemoryPersistence());
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(false);
 

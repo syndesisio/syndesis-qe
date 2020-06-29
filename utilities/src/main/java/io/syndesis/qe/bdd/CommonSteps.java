@@ -2,9 +2,9 @@ package io.syndesis.qe.bdd;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Component;
+import io.syndesis.qe.ComponentUtils;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
@@ -29,10 +29,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import cz.xtf.core.waiting.WaiterException;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import cz.xtf.core.waiting.WaiterException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -81,9 +81,9 @@ public class CommonSteps {
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
         } catch (TimeoutException | InterruptedException e) {
             log.error("Was waiting for following syndesis components:");
-            Component.getAllComponents().forEach(c -> log.error("  " + c.getName()));
+            ComponentUtils.getAllComponents().forEach(c -> log.error("  " + c.getName()));
             log.error("Found following component pods:");
-            Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
+            ComponentUtils.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
                 + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
             InfraFail.fail("Wait for Syndesis failed, check error logs for details.", e);
         }
@@ -150,7 +150,7 @@ public class CommonSteps {
         } catch (TimeoutException | InterruptedException e) {
             log.error("Was waiting until there is only operator pod or no pods");
             log.error("Found following component pods:");
-            Component.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
+            ComponentUtils.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()));
             InfraFail.fail("Wait for Syndesis undeployment failed, check error logs for details.", e);
         }
     }

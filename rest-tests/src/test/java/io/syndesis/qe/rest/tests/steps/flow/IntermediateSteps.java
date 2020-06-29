@@ -10,8 +10,8 @@ import io.syndesis.common.model.extension.Extension;
 import io.syndesis.common.model.filter.FilterPredicate;
 import io.syndesis.common.model.integration.Step;
 import io.syndesis.common.model.integration.StepKind;
-import io.syndesis.qe.endpoints.ExtensionsEndpoint;
-import io.syndesis.qe.endpoints.StepDescriptorEndpoint;
+import io.syndesis.qe.endpoint.ExtensionsEndpoint;
+import io.syndesis.qe.endpoint.StepDescriptorEndpoint;
 import io.syndesis.qe.utils.FilterRulesBuilder;
 import io.syndesis.qe.utils.TestUtils;
 
@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
-import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.When;
 
 public class IntermediateSteps extends AbstractStep {
     @Autowired

@@ -2,11 +2,12 @@ package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Addon;
-import io.syndesis.qe.Component;
-import io.syndesis.qe.Image;
+import io.syndesis.qe.ComponentUtils;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.bdd.CommonSteps;
+import io.syndesis.qe.component.Component;
+import io.syndesis.qe.image.Image;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.test.InfraFail;
@@ -111,8 +112,8 @@ public class Syndesis implements Resource {
 
     @Override
     public boolean isReady() {
-        EnumSet<Component> components = Component.getAllComponents();
-        List<Pod> syndesisPods = Component.getComponentPods();
+        EnumSet<Component> components = ComponentUtils.getAllComponents();
+        List<Pod> syndesisPods = ComponentUtils.getComponentPods();
         return syndesisPods.size() == components.size() && syndesisPods.stream().allMatch(OpenShiftWaitUtils::isPodReady);
     }
 
@@ -122,7 +123,7 @@ public class Syndesis implements Resource {
     }
 
     public boolean isUndeployed() {
-        List<Pod> syndesisPods = Component.getComponentPods();
+        List<Pod> syndesisPods = ComponentUtils.getComponentPods();
         // Either 0 pods when the namespace was empty before undeploying, or 1 pod (the operator)
         return syndesisPods.size() == 0 || (syndesisPods.size() == 1 && syndesisPods.get(0).getMetadata().getName().startsWith("syndesis-operator"));
     }

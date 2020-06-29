@@ -1,5 +1,9 @@
 package io.syndesis.qe.rest.tests.steps.customization;
 
+import io.syndesis.common.model.connection.ConnectorSettings;
+import io.syndesis.qe.endpoint.CustomApiEndpoint;
+import io.syndesis.qe.utils.TestUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -15,9 +19,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import io.cucumber.java.en.Given;
-import io.syndesis.common.model.connection.ConnectorSettings;
-import io.syndesis.qe.endpoints.CustomApiEndpoint;
-import io.syndesis.qe.utils.TestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**

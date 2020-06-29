@@ -1,5 +1,9 @@
 package io.syndesis.qe.accounts;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.exceptions.AccountsException;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,8 +13,6 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Optional;
 
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.exceptions.AccountsException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

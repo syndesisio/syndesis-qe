@@ -1,6 +1,6 @@
-package io.syndesis.qe.endpoints.publicendpoint;
+package io.syndesis.qe.publicendpoint;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;

@@ -18,8 +18,8 @@ import static com.codeborne.selenide.Selenide.$$;
 
 import io.syndesis.qe.CustomWebDriverProvider;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.SyndesisPage;
@@ -76,10 +76,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

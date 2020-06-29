@@ -2,7 +2,7 @@ package io.syndesis.qe.utils;
 
 import static org.junit.Assert.fail;
 
-import io.syndesis.qe.endpoints.ConnectionsActionsEndpoint;
+import io.syndesis.qe.endpoint.ConnectionsActionsEndpoint;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

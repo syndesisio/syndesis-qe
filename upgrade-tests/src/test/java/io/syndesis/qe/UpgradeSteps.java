@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
+import io.syndesis.qe.endpoint.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.PreviousSyndesis;
 import io.syndesis.qe.resource.impl.Syndesis;
