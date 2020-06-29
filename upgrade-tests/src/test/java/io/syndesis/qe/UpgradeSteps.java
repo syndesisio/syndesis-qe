@@ -1,10 +1,9 @@
-package io.syndesis.qe.upgrade;
+package io.syndesis.qe;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
-import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.PreviousSyndesis;

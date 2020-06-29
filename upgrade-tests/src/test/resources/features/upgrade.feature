@@ -20,7 +20,7 @@ Feature: Syndesis Upgrade Using Operator
       And verify syndesis "previous" version
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
-      And sleep for jenkins delay or "180" seconds
+      And sleep for jenkins delay or 180 seconds
       And wait for Syndesis to become ready
       And verify syndesis "upgraded" version
       And check that pull secret is linked in the service accounts
@@ -35,16 +35,16 @@ Feature: Syndesis Upgrade Using Operator
     Given deploy HTTP endpoints
     # Not needed for the integration, just to check if it is present after upgrade
     When import extension from path "./src/test/resources/extensions/set-sqs-group-id-extension-1.0-SNAPSHOT.jar"
-    And create HTTP connection
-    And create HTTP "OPTIONS" step with period "5" "SECONDS"
-    And add log step
-    And create integration with name: "upgrade"
+      And create HTTP connection
+      And create HTTP "OPTIONS" step with period "5" "SECONDS"
+      And add log step
+      And create integration with name: "upgrade"
     Then wait for integration with name: "upgrade" to become active
-    And verify upgrade integration "upgrade"
+      And verify upgrade integration "upgrade"
 
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
-      And sleep for jenkins delay or "180" seconds
+      And sleep for jenkins delay or 180 seconds
       And wait for Syndesis to become ready
       And verify syndesis "upgraded" version
       And verify that integration with name "upgrade" exists
@@ -52,7 +52,7 @@ Feature: Syndesis Upgrade Using Operator
       And check that extension "set-sqs-group-id-extension" exists
     When rebuild integration with name "upgrade"
     Then wait for integration with name: "upgrade" to become active
-    And verify upgrade integration "upgrade"
+      And verify upgrade integration "upgrade"
     When deploy ActiveMQ broker
       And create ActiveMQ connection
       And clean destination type "queue" with name "upgrade-after-in"
@@ -85,7 +85,7 @@ Feature: Syndesis Upgrade Using Operator
       And verify upgrade integration "upgrade"
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
-      And sleep for jenkins delay or "180" seconds
+      And sleep for jenkins delay or 180 seconds
       And wait for Syndesis to become ready
       And check that deployment config "syndesis-db" does not exist
       And verify syndesis "upgraded" version
