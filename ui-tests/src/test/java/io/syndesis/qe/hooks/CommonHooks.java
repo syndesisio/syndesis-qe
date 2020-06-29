@@ -3,10 +3,12 @@ package io.syndesis.qe.hooks;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
 import io.syndesis.qe.resource.impl.DV;
+import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
+import io.syndesis.qe.utils.fhir.FhirClientManager;
 
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -69,5 +71,12 @@ public class CommonHooks {
     public void cleanDv() {
         log.info("Deleting DV addon");
         ResourceFactory.destroy(DV.class);
+    }
+
+    @After("@fhir")
+    public void cleanFHIR() {
+        log.info("Removing FHIR");
+        ResourceFactory.destroy(FHIR.class);
+        FhirClientManager.closeClient();
     }
 }

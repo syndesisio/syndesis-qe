@@ -10,6 +10,7 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
+import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.Syndesis;
@@ -134,6 +135,11 @@ public class CommonSteps {
     @When("^deploy public oauth proxy$")
     public void deployApiOauthProxy() {
         ResourceFactory.create(PublicOauthProxy.class);
+    }
+
+    @Given("^deploy FHIR server$")
+    public void deployFHIR() {
+        ResourceFactory.create(FHIR.class);
     }
 
     @When("^undeploy Syndesis$")
