@@ -3,16 +3,16 @@ package io.syndesis.qe.pages.integrations.editor;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.pages.SyndesisPageObject;
+
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
-import io.syndesis.qe.pages.SyndesisPageObject;
-
 public class AddToIntegration extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = By.cssSelector("syndesis-integration-save-or-add-step");
+        public static final By ROOT = By.cssSelector(".integration-editor-layout");
         public static final By TITLE = By.cssSelector("h1[innertext='Add to Integration']");
     }
     @Override
