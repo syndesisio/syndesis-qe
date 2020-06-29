@@ -5,7 +5,7 @@ import io.syndesis.qe.issue.IssueState;
 import io.syndesis.qe.issue.SimpleIssue;
 import io.syndesis.qe.utils.IssueHooksUtils;
 
-import org.junit.Assume;
+import org.assertj.core.api.Assumptions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -48,7 +48,7 @@ public class IssueHooks {
 
             for (SimpleIssue issue : issues) {
                 // assumeFalse will skip the test if the argument evaluates to true, i.e. when the issue is open
-                Assume.assumeFalse(IssueState.OPEN.equals(issue.getState()));
+                Assumptions.assumeThat(issue.getState()).isEqualTo(IssueState.OPEN);
             }
         }
     }

@@ -4,7 +4,6 @@ import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.StepDescriptor;
 import io.syndesis.common.model.connection.DynamicActionMetadata;
-import io.syndesis.qe.util.Util;
 
 import org.springframework.stereotype.Component;
 
@@ -35,7 +34,11 @@ public class StepDescriptorEndpoint extends AbstractEndpoint<StepDescriptor> {
             response = invocation.post(Entity.entity(metadata, MediaType.APPLICATION_JSON), JsonNode.class);
         } catch (BadRequestException ex) {
             log.error("Bad request, trying again in 15 seconds");
-            Util.sleep(15000L);
+            try {
+                Thread.sleep(15000L);
+            } catch (InterruptedException ignore) {
+                // ignore
+            }
             response = invocation.post(Entity.entity(metadata, MediaType.APPLICATION_JSON), JsonNode.class);
         }
         return transformJsonNode(response, StepDescriptor.class);

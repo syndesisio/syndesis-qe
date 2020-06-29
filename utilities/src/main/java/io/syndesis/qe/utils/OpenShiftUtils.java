@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.component.Component;
 import io.syndesis.qe.test.InfraFail;
+import io.syndesis.qe.utils.http.HTTPResponse;
+import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.Arrays;
@@ -190,7 +192,7 @@ public final class OpenShiftUtils {
      * @param body body to send as JSON
      * @return response object
      */
-    public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body) {
+    public static HTTPResponse invokeApi(HTTPUtils.Method method, String url, String body) {
         return invokeApi(method, url, body, null);
     }
 
@@ -203,7 +205,7 @@ public final class OpenShiftUtils {
      * @param headers headers to send, can be null
      * @return response object
      */
-    public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body, Headers headers) {
+    public static HTTPResponse invokeApi(HTTPUtils.Method method, String url, String body, Headers headers) {
         url = TestConfiguration.openShiftUrl() + url;
         if (headers == null) {
             headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken());
@@ -218,19 +220,19 @@ public final class OpenShiftUtils {
         HTTPResponse response = null;
         switch (method) {
             case GET: {
-                response = HttpUtils.doGetRequest(url, headers);
+                response = HTTPUtils.doGetRequest(url, headers);
                 break;
             }
             case POST: {
-                response = HttpUtils.doPostRequest(url, body, headers);
+                response = HTTPUtils.doPostRequest(url, body, headers);
                 break;
             }
             case PUT: {
-                response = HttpUtils.doPutRequest(url, body, headers);
+                response = HTTPUtils.doPutRequest(url, body, headers);
                 break;
             }
             case DELETE: {
-                response = HttpUtils.doDeleteRequest(url, headers);
+                response = HTTPUtils.doDeleteRequest(url, headers);
                 break;
             }
             default: {

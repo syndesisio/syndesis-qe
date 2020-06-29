@@ -2,17 +2,17 @@ package io.syndesis.qe.steps.other;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.utils.HTTPResponse;
-import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.IntegrationUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.http.HTTPResponse;
+import io.syndesis.qe.utils.http.HTTPUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-import io.cucumber.java.en.When;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -64,7 +64,7 @@ public class InvokeHttpRequest {
         String url = getUrlForWebhook(nameOfIntegration, token);
         log.info("WebHook URL: " + url);
         int beforeNumberOfMessages = integrationUtils.numberOfMessages(nameOfIntegration);
-        HTTPResponse httpResponse = HttpUtils.doPostRequest(url, body);
+        HTTPResponse httpResponse = HTTPUtils.doPostRequest(url, body);
         integrationUtils.waitForMessage(nameOfIntegration, beforeNumberOfMessages + 1);
         return httpResponse;
     }

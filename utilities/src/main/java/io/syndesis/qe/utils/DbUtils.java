@@ -1,8 +1,8 @@
 package io.syndesis.qe.utils;
 
-import static org.junit.Assert.fail;
-
 import io.syndesis.qe.endpoint.ConnectionsActionsEndpoint;
+
+import org.assertj.core.api.Assertions;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -112,7 +112,7 @@ public class DbUtils {
             }
         } catch (SQLException ex) {
             log.error("Error: " + ex);
-            fail("SQLException occurred");
+            Assertions.fail("SQLException occurred");
         }
         log.debug("Number of records: " + records);
         return records;
@@ -183,7 +183,7 @@ public class DbUtils {
             }
         } catch (SQLException ex) {
             log.error("Error: " + ex);
-            fail("SQLException occurred");
+            Assertions.fail("SQLException occurred");
         }
     }
 }

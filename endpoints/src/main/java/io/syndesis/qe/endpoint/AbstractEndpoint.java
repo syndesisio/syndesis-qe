@@ -2,7 +2,7 @@ package io.syndesis.qe.endpoint;
 
 import io.syndesis.common.model.ListResult;
 import io.syndesis.common.util.json.JsonUtils;
-import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.qe.endpoint.util.RetryingInvocationBuilder;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
@@ -36,7 +36,6 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractEndpoint<T> {
     @Setter
     protected String endpointName;
-    protected String apiPath = TestConfiguration.syndesisRestApiPath();
     private Class<T> type;
     protected Client client;
 
@@ -46,7 +45,7 @@ public abstract class AbstractEndpoint<T> {
         this.type = (Class<T>) type;
         this.endpointName = endpointName;
 
-        client = RestUtils.getClient();
+        client = EndpointClient.getClient();
 
         commonHeaders.add("X-Forwarded-User", "pista");
         commonHeaders.add("X-Forwarded-Access-Token", "kral");
@@ -128,9 +127,9 @@ public abstract class AbstractEndpoint<T> {
     public String getEndpointUrl(Optional<String> id) {
         String url = null;
         if (id.isPresent()) {
-            url = String.format("%s%s%s/%s", TestConfiguration.syndesisLocalRestUrl(), apiPath, endpointName, id.get());
+            url = String.format("%s%s%s/%s", Constants.LOCAL_REST_URL, Constants.API_PATH, endpointName, id.get());
         } else {
-            url = String.format("%s%s%s", TestConfiguration.syndesisLocalRestUrl(), apiPath, endpointName);
+            url = String.format("%s%s%s", Constants.LOCAL_REST_URL, Constants.API_PATH, endpointName);
         }
         return url;
     }

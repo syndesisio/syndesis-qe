@@ -2,6 +2,7 @@ package io.syndesis.qe.utils;
 
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.qe.issue.IssueState;
 import io.syndesis.qe.issue.SimpleIssue;
 
@@ -18,7 +19,6 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
@@ -175,9 +175,8 @@ public class IssueHooksUtils {
             }
         }
 
-        Client client = RestUtils.getClient();
         // hardcoded syndesis repo id for now
-        JsonNode jsonNode = client.target("https://api.zenhub.io/p1/repositories/105563335/issues/" + issueNumber)
+        JsonNode jsonNode = EndpointClient.getClient().target("https://api.zenhub.io/p1/repositories/105563335/issues/" + issueNumber)
             .request(MediaType.APPLICATION_JSON)
             .header("X-Authentication-Token", oauthToken)
             .get(JsonNode.class);

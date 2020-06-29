@@ -1,9 +1,9 @@
 package io.syndesis.qe.utils;
 
-import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+
 import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
-import org.junit.Assert;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ExportedIntegrationJSONUtil {
@@ -33,7 +35,7 @@ public class ExportedIntegrationJSONUtil {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            Assert.fail("Error while processing exported integration zip file");
+            Assertions.fail("Error while processing exported integration zip file");
         }
     }
 
@@ -56,9 +58,9 @@ public class ExportedIntegrationJSONUtil {
                 currentConnectionJson = connections.getJSONObject(keyName);
                 currentConnectionType = currentConnectionJson.getString("connectorId");
 
-                if (currentConnectionType.equalsIgnoreCase("twitter")) {
+                if ("twitter".equalsIgnoreCase(currentConnectionType)) {
                     testTwitterEncryption(currentConnectionJson);
-                } else if (currentConnectionType.equalsIgnoreCase("salesforce")) {
+                } else if ("salesforce".equalsIgnoreCase(currentConnectionType)) {
                     testSalesforceEncryption(currentConnectionJson);
                 }
             }

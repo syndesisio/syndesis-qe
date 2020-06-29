@@ -1,8 +1,8 @@
 package io.syndesis.qe;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.bdd.CommonSteps;
+import io.syndesis.qe.common.CommonSteps;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.SyndesisDB;
 import io.syndesis.qe.test.InfraFail;

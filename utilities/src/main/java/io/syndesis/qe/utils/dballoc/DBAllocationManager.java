@@ -1,5 +1,8 @@
 package io.syndesis.qe.utils.dballoc;
 
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoint.client.EndpointClient;
+
 import org.assertj.core.api.Assertions;
 
 import javax.ws.rs.client.Client;
@@ -13,8 +16,6 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.Properties;
 
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.utils.RestUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,7 +27,7 @@ public class DBAllocationManager {
 
     private static final int EXPIRE = 60;
 
-    private static final Client client = RestUtils.getInsecureClient();
+    private static final Client CLIENT = EndpointClient.getInsecureClient();
 
     public static DBAllocation allocate(String dbLabel) {
         return allocate(dbLabel, REQUESTEE, EXPIRE);
@@ -56,8 +57,6 @@ public class DBAllocationManager {
         invocation.get();
     }
 
-//    AUXILIARIES:
-
     private static Map<String, String> loadProps(String propsText) throws IOException {
         Properties prop = new Properties();
         Reader reader = new StringReader(propsText);
@@ -70,8 +69,7 @@ public class DBAllocationManager {
     }
 
     private static Invocation.Builder createAllocateInvocation(String dbLabel, String requestee, int expire) {
-        Invocation.Builder invocation = client.target(createAllocationEndpointUrl(dbLabel, requestee, expire)).request(MediaType.TEXT_PLAIN);
-        return invocation;
+        return CLIENT.target(createAllocationEndpointUrl(dbLabel, requestee, expire)).request(MediaType.TEXT_PLAIN);
     }
 
     private static String createAllocationEndpointUrl(String dbLabel, String requestee, int expire) {
@@ -85,8 +83,7 @@ public class DBAllocationManager {
     }
 
     private static Invocation.Builder createFreeInvocation(String uuid) {
-        Invocation.Builder invocation = client.target(createFreeEdndpointUrl(uuid)).request(MediaType.TEXT_PLAIN);
-        return invocation;
+        return CLIENT.target(createFreeEdndpointUrl(uuid)).request(MediaType.TEXT_PLAIN);
     }
 
     private static String createFreeEdndpointUrl(String uuid) {

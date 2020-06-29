@@ -1,6 +1,6 @@
 package io.syndesis.qe.endpoint;
 
-import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 
 import org.json.JSONObject;
 
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class Verifier {
     private static final String ENDPOINT_NAME = "/verifier";
-    private static final String apiPath = TestConfiguration.syndesisRestApiPath() + "/connectors/";
+    private static final String API_PATH = Constants.API_PATH + "/connectors/";
     private static Client client;
 
     private Verifier() {
@@ -34,11 +34,11 @@ public final class Verifier {
      */
     public static String verify(String connection, Map<String, String> properties) {
         if (client == null) {
-            client = RestUtils.getClient();
+            client = EndpointClient.getClient();
         }
         log.debug("Validating connection {}", connection);
         final Invocation.Builder invocation = client
-                .target(TestConfiguration.syndesisLocalRestUrl() + apiPath + connection + ENDPOINT_NAME)
+            .target(Constants.LOCAL_REST_URL + API_PATH + connection + ENDPOINT_NAME)
                 .request(MediaType.APPLICATION_JSON)
                 .header("X-Forwarded-User", "pista")
                 .header("X-Forwarded-Access-Token", "kral")

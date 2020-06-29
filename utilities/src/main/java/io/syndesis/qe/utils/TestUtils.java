@@ -6,9 +6,11 @@ import io.syndesis.common.model.integration.IntegrationDeploymentState;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.endpoint.Constants;
 import io.syndesis.qe.endpoint.IntegrationOverviewEndpoint;
 import io.syndesis.qe.endpoint.model.IntegrationOverview;
 import io.syndesis.qe.utils.dballoc.DBAllocation;
+import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.io.FileUtils;
@@ -332,7 +334,7 @@ public final class TestUtils {
      */
     public static String getSyndesisVersion() {
         RestUtils.reset();
-        return HttpUtils.doGetRequest(RestUtils.getRestUrl() + VERSION_ENDPOINT, Headers.of("Accept", "text/plain")).getBody();
+        return HTTPUtils.doGetRequest(Constants.LOCAL_REST_URL + VERSION_ENDPOINT, Headers.of("Accept", "text/plain")).getBody();
     }
 
     /**

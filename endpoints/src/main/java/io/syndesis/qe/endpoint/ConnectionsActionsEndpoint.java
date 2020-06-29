@@ -2,7 +2,6 @@ package io.syndesis.qe.endpoint;
 
 import io.syndesis.common.model.action.Action;
 import io.syndesis.common.model.action.ConnectorDescriptor;
-import io.syndesis.qe.util.Util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -35,7 +34,11 @@ public class ConnectionsActionsEndpoint extends AbstractEndpoint<ConnectorDescri
             response = invocation.post(Entity.entity(body, MediaType.APPLICATION_JSON), JsonNode.class);
         } catch (BadRequestException ex) {
             log.error("Bad request, trying again in 15 seconds");
-            Util.sleep(15000L);
+            try {
+                Thread.sleep(15000L);
+            } catch (InterruptedException ignore) {
+                // ignore
+            }
             response = invocation.post(Entity.entity(body, MediaType.APPLICATION_JSON), JsonNode.class);
         }
         return transformJsonNode(response, ConnectorDescriptor.class);

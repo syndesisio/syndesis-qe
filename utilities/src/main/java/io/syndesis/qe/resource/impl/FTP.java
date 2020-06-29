@@ -7,7 +7,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.junit.Assert;
+import org.assertj.core.api.Assertions;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -130,7 +130,7 @@ public class FTP implements Resource {
             appName = properties.get("host");
             ftpCommandPort = Integer.parseInt(properties.get("port"));
         } else {
-            Assert.fail("Credentials for " + Account.Name.FTP + " were not found!");
+            Assertions.fail("Credentials for " + Account.Name.FTP + " were not found!");
         }
     }
 }

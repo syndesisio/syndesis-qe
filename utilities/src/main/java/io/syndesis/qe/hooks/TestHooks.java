@@ -1,19 +1,19 @@
 package io.syndesis.qe.hooks;
 
-import static org.junit.Assume.assumeTrue;
-
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
+import org.assertj.core.api.Assumptions;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.cucumber.java.Scenario;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class TestHooks {
     @Before("@prod")
     public void skipProdForNightly() {
         // Skip prod tests when not running with productized build
-        assumeTrue(TestConfiguration.syndesisVersion().contains("redhat"));
+        Assumptions.assumeThat(TestConfiguration.syndesisVersion()).contains("redhat");
     }
 
     @After

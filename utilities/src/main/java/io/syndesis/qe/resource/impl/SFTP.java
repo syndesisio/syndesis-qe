@@ -8,7 +8,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.junit.Assert;
+import org.assertj.core.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,7 +139,7 @@ public class SFTP implements Resource {
             sftpPort = Integer.parseInt(properties.get("port"));
             userAndPassword = properties.get("username") + ":" + properties.get("password") + ":1500::" + TEST_DIRECTORY;
         } else {
-            Assert.fail("Credentials for " + Account.Name.SFTP + " were not found!");
+            Assertions.fail("Credentials for " + Account.Name.SFTP + " were not found!");
         }
     }
 }

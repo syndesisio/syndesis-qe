@@ -1,6 +1,6 @@
 package io.syndesis.qe.endpoint.util;
 
-import io.syndesis.qe.util.Util;
+import io.syndesis.qe.endpoint.exception.RestClientException;
 
 import javax.ws.rs.client.AsyncInvoker;
 import javax.ws.rs.client.CompletionStageRxInvoker;
@@ -277,9 +277,13 @@ public class RetryingInvocationBuilder implements Invocation.Builder {
             } catch (Exception e) {
                 log.error("Exception raised during method invocation, will retry " + (RETRIES_COUNT - retries) + " more times", e);
                 retries++;
-                Util.sleep(10000L);
+                try {
+                    Thread.sleep(10000L);
+                } catch (InterruptedException ignore) {
+                    // ignore
+                }
             }
         } while (retries <= RETRIES_COUNT);
-        throw new RuntimeException("Unable to invoke endpoint, see logs");
+        throw new RestClientException("Unable to invoke endpoint, see logs");
     }
 }

@@ -1,11 +1,12 @@
 package io.syndesis.qe.steps.other;
 
+import io.syndesis.qe.utils.TelegramUtils;
+import io.syndesis.qe.utils.http.HTTPResponse;
+
 import org.assertj.core.api.Assertions;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.syndesis.qe.utils.HTTPResponse;
-import io.syndesis.qe.utils.TelegramUtils;
 
 public class TelegramSteps {
     @When("^send telegram message \"([^\"]*)\" on channel with id \"([^\"]*)\"$")

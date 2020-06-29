@@ -2,11 +2,10 @@ package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.ComponentUtils;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.addon.Addon;
-import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.component.Component;
+import io.syndesis.qe.component.ComponentUtils;
 import io.syndesis.qe.image.Image;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
@@ -668,8 +667,12 @@ public class Syndesis implements Resource {
         boolean needsReload = false;
         if ("camelk".equalsIgnoreCase(runtime)) {
             if (!ResourceFactory.get(CamelK.class).isReady()) {
-                CommonSteps.deployCamelK();
-                CommonSteps.waitForCamelK();
+                ResourceFactory.get(CamelK.class).deploy();
+                OpenShiftUtils.getInstance().waiters()
+                    .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
+                    .interval(TimeUnit.SECONDS, 20)
+                    .timeout(TimeUnit.MINUTES, 5)
+                    .waitFor();
             }
             Syndesis syndesis = ResourceFactory.get(Syndesis.class);
             if (!syndesis.isAddonEnabled(Addon.CAMELK)) {

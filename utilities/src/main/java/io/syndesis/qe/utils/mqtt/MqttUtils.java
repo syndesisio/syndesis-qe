@@ -1,7 +1,7 @@
 package io.syndesis.qe.utils.mqtt;
 
 import io.syndesis.qe.account.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import org.assertj.core.api.Assertions;
 import org.eclipse.paho.client.mqttv3.MqttClient;

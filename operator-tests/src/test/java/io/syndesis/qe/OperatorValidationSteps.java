@@ -13,11 +13,11 @@ import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.AccountUtils;
-import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.S3BucketNameBuilder;
-import io.syndesis.qe.utils.S3Utils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.aws.S3BucketNameBuilder;
+import io.syndesis.qe.utils.aws.S3Utils;
+import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.io.FileUtils;
@@ -215,7 +215,7 @@ public class OperatorValidationSteps {
         if (ResourceFactory.get(Syndesis.class).containsAddonProperty(Addon.JAEGER, "collectorUri")) {
             host = ResourceFactory.get(Jaeger.class).getQueryServiceHost();
         }
-        JSONArray jsonData = new JSONObject(HttpUtils.doGetRequest(
+        JSONArray jsonData = new JSONObject(HTTPUtils.doGetRequest(
             "http://" + host + "/api/traces?service=" + integrationId)
             .getBody())
             .getJSONArray("data");

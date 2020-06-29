@@ -9,9 +9,9 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.PreviousSyndesis;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.test.InfraFail;
-import io.syndesis.qe.utils.HttpUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.json.JSONException;
@@ -71,7 +71,7 @@ public class UpgradeSteps {
             String next = DOCKER_HUB_SYNDESIS_TAGS_URL;
             List<String> tags = new ArrayList<>();
             while (next != null) {
-                JSONObject response = new JSONObject(HttpUtils.doGetRequest(next).getBody());
+                JSONObject response = new JSONObject(HTTPUtils.doGetRequest(next).getBody());
                 response.getJSONArray("results").forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
                 try {
                     next = response.getString("next");

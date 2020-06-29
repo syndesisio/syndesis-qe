@@ -3,6 +3,7 @@ package io.syndesis.qe.endpoint;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.DataShapeKinds;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 
 import org.springframework.stereotype.Component;
 
@@ -27,7 +28,7 @@ public class AtlasmapEndpoint extends AbstractEndpoint<JsonInspectionResponse> {
 
     public AtlasmapEndpoint() {
         super(JsonInspectionRequest.class, "/atlas");
-        client = RestUtils.getWrappedClient();
+        client = EndpointClient.getWrappedClient();
     }
 
     /**

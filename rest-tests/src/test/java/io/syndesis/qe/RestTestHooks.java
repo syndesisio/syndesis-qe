@@ -2,12 +2,11 @@ package io.syndesis.qe;
 
 import io.syndesis.common.model.connection.Connection;
 import io.syndesis.common.model.integration.Integration;
-import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoint.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.impl.SyndesisDB;
+import io.syndesis.qe.storage.StepsStorage;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
 
 import org.springframework.beans.factory.annotation.Autowired;

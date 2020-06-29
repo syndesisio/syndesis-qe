@@ -1,7 +1,7 @@
 package io.syndesis.qe.endpoint;
 
 import io.syndesis.common.model.connection.ConnectorSettings;
-import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.server.endpoint.v1.handler.connection.CustomConnectorHandler;
 
 import org.springframework.stereotype.Component;
@@ -25,12 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class CustomApiEndpoint {
-
-    protected String apiPath = TestConfiguration.syndesisRestApiPath();
     protected Client client;
 
     public CustomApiEndpoint() {
-        client = RestUtils.getClient();
+        client = EndpointClient.getClient();
     }
 
     //TODO(tplevko): find some solution for this. For now it doesn't work properly.
@@ -61,8 +59,6 @@ public class CustomApiEndpoint {
     }
 
     public String getEndpointUrl(String endpointName) {
-        String url = null;
-        url = String.format("%s%s%s", TestConfiguration.syndesisLocalRestUrl(), apiPath, endpointName);
-        return url;
+        return String.format("%s%s%s", Constants.LOCAL_REST_URL, Constants.API_PATH, endpointName);
     }
 }

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.endpoints.util.RetryingInvocationBuilder;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ApiProviderWizard;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.wizard.ReviewApiProviderActions;
@@ -16,13 +16,11 @@ import io.syndesis.qe.steps.integrations.editor.CreateIntegrationSteps;
 import io.syndesis.qe.steps.integrations.editor.EditorSteps;
 import io.syndesis.qe.steps.integrations.editor.add.ChooseConnectionSteps;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 
 import org.openqa.selenium.By;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
@@ -189,14 +187,11 @@ public class ApiProviderSteps {
 
     private String getUrl(String routeName, String endpoint) {
         Route route = OpenShiftUtils.getInstance().getRoute(routeName);
-        String host = "https://" + route.getSpec().getHost();
-        String url = host + endpoint;
-        return url;
+        return "https://" + route.getSpec().getHost() + endpoint;
     }
 
     private Invocation.Builder getInvocation(String url) {
-        Client client = RestUtils.getClient();
-        return new RetryingInvocationBuilder(client
+        return new RetryingInvocationBuilder(EndpointClient.getClient()
             .target(url)
             .request(MediaType.APPLICATION_JSON)
             .header("X-Forwarded-User", "pista")

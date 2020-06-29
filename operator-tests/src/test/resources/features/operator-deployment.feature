@@ -1,7 +1,6 @@
 # @sustainer: avano@redhat.com
 
 @operator
-@ignore
 Feature: Operator Deployment
 
   Background:

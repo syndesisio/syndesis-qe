@@ -16,8 +16,15 @@
 
 		<dependency>
 			<groupId>io.syndesis.qe</groupId>
-			<artifactId>utilities</artifactId>
+			<artifactId>rest-common</artifactId>
+			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>io.syndesis.qe</groupId>
+			<artifactId>validation</artifactId>
+			<version>0.1-SNAPSHOT</version>
+		</dependency>
+
 
 		<!-- Syndesis dependencies -->
 		<dependency>
