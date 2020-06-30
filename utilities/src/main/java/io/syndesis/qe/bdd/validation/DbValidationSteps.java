@@ -117,7 +117,7 @@ public class DbValidationSteps {
                     sql = String.format(sql, next) + ")";
                 }
             }
-            log.debug("SQL query: *{}*", sql);
+            log.info("SQL query: *{}*", sql);
             int newId = dbUtils.executeSQLGetUpdateNumber(sql);
             //assert new row in database has been created:
             assertThat(newId).isEqualTo(1);

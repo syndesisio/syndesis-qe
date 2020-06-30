@@ -4,6 +4,8 @@
 @sftp
 @integrations-sftp-to-sftp
 Feature: Integration - SFTP to SFTP
+Given deploy FHIR server
+And add FHIR account
 
   Background: Clean application state
     Given clean application state
