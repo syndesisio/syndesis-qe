@@ -2,9 +2,13 @@ package io.syndesis.qe.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.utils.fhir.FhirUtils;
-import io.syndesis.qe.utils.fhir.MyBasicSpecification;
-import io.syndesis.qe.utils.fhir.MyPatientSpecification;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.FHIR;
+import io.syndesis.qe.util.fhir.FhirUtils;
+import io.syndesis.qe.util.fhir.MyBasicSpecification;
+import io.syndesis.qe.util.fhir.MyPatientSpecification;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FhirValidationSteps {
-
-    private final FhirUtils fhirUtils = new FhirUtils();
+    @Autowired
+    private FhirUtils fhirUtils;
     private final DbValidationSteps dbValidationSteps = new DbValidationSteps();
 
     //    entity PATIENT:
@@ -93,5 +97,10 @@ public class FhirValidationSteps {
         row.add(bs.getId());
         row.add(bs.getLanguage());
         return DataTable.create(raw);
+    }
+
+    @Then("^add FHIR account$")
+    public void addFhirAccount() {
+        ResourceFactory.get(FHIR.class).addAccount();
     }
 }

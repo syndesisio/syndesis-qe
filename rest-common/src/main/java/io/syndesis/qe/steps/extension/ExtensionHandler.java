@@ -16,7 +16,7 @@ public class ExtensionHandler {
     @Autowired
     private ExtensionsEndpoint extensionsEndpoint;
 
-    @Given("^import extensions from syndesis-extensions folder$")
+    @Given("^import extensions from syndesis-extensions folder through API$")
     public void importExtensionsFromSyndesisExtensionsFolder(DataTable properties) {
         List<String> extensions = properties.asList(String.class);
         for (String ext : extensions) {

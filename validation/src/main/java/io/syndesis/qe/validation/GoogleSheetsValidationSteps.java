@@ -2,7 +2,7 @@ package io.syndesis.qe.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.syndesis.qe.util.GoogleSheetsUtils;
+import io.syndesis.qe.utils.GoogleSheetsUtils;
 import io.syndesis.qe.utils.jms.JMSUtils;
 
 import org.assertj.core.api.Assertions;

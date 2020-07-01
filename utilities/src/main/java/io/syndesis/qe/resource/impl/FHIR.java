@@ -1,7 +1,7 @@
 package io.syndesis.qe.resource.impl;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -24,17 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FHIR implements Resource {
-
     private final String labelName = "app";
     public int fhirPort;
     private String appName;
 
-    public FHIR() {
-        this.initProperties();
-    }
-
     @Override
     public void deploy() {
+        addAccount();
+        initProperties();
         if (!TestUtils.isDcDeployed(appName)) {
 
             List<ContainerPort> ports = new LinkedList<>();
@@ -120,7 +117,7 @@ public class FHIR implements Resource {
         }
     }
 
-    public static void addAccount() {
+    public void addAccount() {
         Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FHIR);
         if (!optional.isPresent()) {
             Account fhir = new Account();

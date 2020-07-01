@@ -6,7 +6,6 @@ Feature: Integration - FHIR - all actions
 
   Background: Clean application state
     Given clean application state
-    And add FHIR account
     And deploy FHIR server
     When delete all relevant entities on FHIR server
     And reset content of "todo" table

@@ -1,6 +1,6 @@
 package io.syndesis.qe.validation;
 
-import io.syndesis.qe.util.GoogleCalendarUtils;
+import io.syndesis.qe.utils.GoogleCalendarUtils;
 
 import org.junit.Assert;
 

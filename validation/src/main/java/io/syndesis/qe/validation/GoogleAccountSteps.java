@@ -1,6 +1,6 @@
 package io.syndesis.qe.validation;
 
-import io.syndesis.qe.util.google.GoogleAccounts;
+import io.syndesis.qe.utils.google.GoogleAccounts;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
