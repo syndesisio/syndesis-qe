@@ -122,7 +122,8 @@ public class HTTPValidationSteps {
                             .endVolumeMount()
                             .addToEnv(new EnvVar(
                                 "JAVA_OPTIONS",
-                                "-Djavax.net.ssl.trustStore=/opt/jboss/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
+                                "-Djackson.deserialization.whitelist.packages=io.syndesis.common.model,io.atlasmap" +
+                                    " -Djavax.net.ssl.trustStore=/opt/jboss/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
                                 null
                             ))
                         .endContainer()
