@@ -69,6 +69,11 @@ public class DataMapper extends SyndesisPageObject {
         return getRootElement().is(visible);
     }
 
+    /**
+     * This method expands the only collections as root elements. The other collections (as child element somewhere on the nested level)
+     * are expanded only when they are used ( in getMappingItemRow / getCollectionElement methods).
+     * Expanding all collections here would be ineffective because some connector has lots of collection on multiple nested levels (e.g. fhir)
+     */
     public void openDataMapperCollectionElement() {
         // Give page and elements time to load in slower environment
         // before pressing mapper collection items
@@ -194,7 +199,7 @@ public class DataMapper extends SyndesisPageObject {
                 nestedLevel++;
             } else {
                 log.info("Mapping field is nested. Parsing parents and select the final collection and nested level");
-                // iterate parent to get close to the final level
+                // iterate through parents to get close to the final level
                 // -1 because the last element is not a parent but the desired mapping field
                 for (int i = 0; i < separatedElement.size() - 1; i++) {
                     log.info("Searching for '{}' collection on the {} nested level", separatedElement.get(i), nestedLevel);
@@ -237,17 +242,16 @@ public class DataMapper extends SyndesisPageObject {
      * and also in the collection body.name (level2))
      */
     private SelenideElement getMappingItemRow(String name, SelenideElement containerElement, int nestedLevel) {
+        // if parent element has not been expanded yet
         if ("false".equals(containerElement.getAttribute("aria-expanded"))) {
             containerElement.click();
         }
-        log.debug("*******************************");
-        log.debug("NAME *{}*, NESTED LEVEL *{}*, ", name, nestedLevel);
         ElementsCollection rowsWithName = containerElement
             .findAll(Element.MAPPING_FIELD_ITEM_ROW)
             .filter(Condition.attribute("aria-level", String.valueOf(nestedLevel)))
-            // if the row has same name or the name is a part of sentence (must be space before and after, for properties in datamapper `properties = value`)
+            // if the row has same name or the name is a part of sentence (must be space before and after, for properties in datamapper `properties
+            // = value`)
             .filter(Condition.matchText("^(.* )?" + name + "( .*)?$"));
-        log.debug("SIZE: *{}*, ", rowsWithName.size());
         if (rowsWithName.size() == 0) {
             return null;
         } else if (rowsWithName.size() > 1) {
@@ -267,17 +271,18 @@ public class DataMapper extends SyndesisPageObject {
      * and also in another collection response.person (level2))
      */
     private SelenideElement getCollectionElement(String name, SelenideElement containerElement, int nestedLevel) {
-        //        prepare:
+        // if parent element has not been expanded yet
         if ("false".equals(containerElement.getAttribute("aria-expanded"))) {
             containerElement.click();
         }
+        // find all expandable row on particular nested level
         ElementsCollection allExpandableRows = containerElement
             .findAll(Element.EXPANDABLE_ROW)
             .filter(Condition.attribute("aria-level", String.valueOf(nestedLevel)));
-        //        log.info("AllExpandableRowns size: *{}*", allExpandableRows.size());
+        // get only row which contains particular collection (defined by collection name in the datatestid)
         List<SelenideElement> rowsWithName =
-            allExpandableRows.stream().filter(row -> row.find(ByUtils.containsId(name)).exists()).collect(Collectors.toList());
-        //        log.info("**LEVEL: *{}* name: *{}* size:*{}*", nestedLevel, name, rowsWithName.size());
+            allExpandableRows.stream().filter(row -> row.find(ByUtils.containsDataTestId("field-group-" + name + "-expanded")).exists())
+                .collect(Collectors.toList());
         if (rowsWithName.size() == 0) {
             fail("Collection with the name: " + name + " doesn't exist on the nested Level: " + nestedLevel);
         } else if (rowsWithName.size() > 1) {
