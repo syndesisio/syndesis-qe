@@ -38,38 +38,38 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class OpenshiftValidationSteps {
-    @Then("^check that pod \"([^\"]*)\" logs contain string \"([^\"]*)\"$")
+    @Then("check that pod {string} logs contain string {string}")
     public void checkPodHasInLog(String podPartialName, String expectedText) {
         Assertions.assertThat(OpenShiftUtils.getPodLogs(podPartialName))
             .containsIgnoringCase(expectedText);
     }
 
-    @Given("^deploy FTP server$")
+    @Given("deploy FTP server")
     public void deployFTPServer() {
         ResourceFactory.create(FTP.class);
     }
 
-    @Given("^deploy SFTP server$")
+    @Given("deploy SFTP server")
     public void deploySFTPServer() {
         ResourceFactory.create(SFTP.class);
     }
 
-    @Given("^deploy Kudu$")
+    @Given("deploy Kudu")
     public void deployKudu() {
         ResourceFactory.create(Kudu.class);
     }
 
-    @Given("^clean MySQL server$")
+    @Given("clean MySQL server")
     public void cleanMySQLServer() {
         ResourceFactory.destroy(MySQL.class);
     }
 
-    @Given("^deploy MySQL server$")
+    @Given("deploy MySQL server")
     public void deployMySQLServer() {
         ResourceFactory.create(MySQL.class);
     }
 
-    @Given("^deploy ActiveMQ broker$")
+    @Given("deploy ActiveMQ broker")
     public void deployAMQBroker() {
         ResourceFactory.create(AMQ.class);
     }
@@ -79,7 +79,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(AMQ.class).addAccounts();
     }
 
-    @Given("^deploy Kafka broker$")
+    @Given("deploy Kafka broker")
     public void deployKafka() {
         ResourceFactory.create(Kafka.class);
     }
@@ -89,7 +89,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(Kafka.class).addAccounts();
     }
 
-    @Given("^deploy HTTP endpoints")
+    @Given("deploy HTTP endpoints")
     public void deployHTTPEndpoints() {
         ResourceFactory.create(HTTPEndpoints.class);
     }
@@ -99,7 +99,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(HTTPEndpoints.class).addAccounts();
     }
 
-    @Given("^deploy IRC server")
+    @Given("deploy IRC server")
     public void deployIRCServer() {
         ResourceFactory.create(IRC.class);
     }
@@ -109,7 +109,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(IRC.class).addAccount();
     }
 
-    @Given("^deploy OData server$")
+    @Given("deploy OData server")
     public void deployODataServer() {
         WildFlyS2i wildFlyS2i = ResourceFactory.get(WildFlyS2i.class);
         wildFlyS2i.setAppName("odata");
@@ -118,7 +118,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.create(WildFlyS2i.class);
     }
 
-    @Given("^deploy MongoDB 3.6 database$")
+    @Given("deploy MongoDB 3.6 database")
     public void deployMongoDB36() {
         ResourceFactory.create(MongoDb36.class);
     }
@@ -138,7 +138,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(WildFlyS2i.class).createODataAccount(https != null && !https.isEmpty());
     }
 
-    @Given("^wait until \"([^\"]*)\" pod is reloaded$")
+    @Given("wait until {string} pod is reloaded")
     public void waitUntilPodIsReloaded(String podName) {
         try {
             OpenShiftWaitUtils.waitForPodIsReloaded(podName);
@@ -147,7 +147,7 @@ public class OpenshiftValidationSteps {
         }
     }
 
-    @Then("^check that the pod \"([^\"]*)\" is not redeployed by server$")
+    @Then("check that the pod {string} is not redeployed by server")
     public void checkThatPodIsNotRedeployed(String podName) {
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podName);
         Assertions.assertThat(pod).isPresent();
@@ -162,18 +162,18 @@ public class OpenshiftValidationSteps {
             .isFalse();
     }
 
-    @When("^wait for state check interval$")
+    @When("wait for state check interval")
     public void waitForStateCheckInterval() {
         // Wait for a state check so that server can figure out that something is not right + a bit more for spawning a new pod
         TestUtils.sleepIgnoreInterrupt((TestConfiguration.stateCheckInterval() + 60) * 1000L);
     }
 
-    @When("^edit replicas count for deployment config \"([^\"]*)\" to (\\d)$")
+    @When("edit replicas count for deployment config {string} to {int}")
     public void editReplicasCount(String dcName, int replicas) {
         OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().withReplicas(replicas).endSpec().done();
     }
 
-    @When("^add following variables to the \"([^\"]*)\" deployment config:$")
+    @When("add following variables to the {string} deployment config:")
     public void addEnvVarsToDc(String dcName, DataTable vars) {
         Map<String, String> content = vars.asMap(String.class, String.class);
         for (Map.Entry<String, String> keyValue : content.entrySet()) {
@@ -181,7 +181,7 @@ public class OpenshiftValidationSteps {
         }
     }
 
-    @Then("^check that the deployment config \"([^\"]*)\" contains variables:$")
+    @Then("check that the deployment config {string} contains variables:")
     public void checkDcEnvVars(String dcName, DataTable vars) {
         Assertions.assertThat(OpenShiftUtils.getInstance().getDeploymentConfigEnvVars(dcName))
             .containsAllEntriesOf(vars.asMap(String.class, String.class));
@@ -192,19 +192,19 @@ public class OpenshiftValidationSteps {
         Assertions.assertThat(OpenShiftUtils.getInstance().getPods("i-" + integrationName)).hasSize(count);
     }
 
-    @When("^change deployment strategy for \"([^\"]*)\" deployment config to \"([^\"]*)\"$")
+    @When("change deployment strategy for {string} deployment config to {string}")
     public void changeDeploymentStrategy(String dcName, String strategy) {
         OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().editStrategy().withType(strategy).endStrategy().endSpec()
             .done();
     }
 
-    @Then("^chech that the deployment strategy for \"([^\"]*)\" deployment config is \"([^\"]*)\"$")
+    @Then("chech that the deployment strategy for {string} deployment config is {string}")
     public void checkDeploymentStrategy(String dcName, String strategy) {
         Assertions.assertThat(OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get().getSpec().getStrategy().getType())
             .isEqualTo(strategy);
     }
 
-    @When("^create HPA for deployment config \"([^\"]*)\" with (\\d+) replicas$")
+    @When("create HPA for deployment config {string} with {int} replicas")
     public void createHpaWithMinReplicas(String dcName, int replicas) {
         OpenShiftUtils.getInstance().createHorizontalPodAutoscaler(
             new HorizontalPodAutoscalerBuilder()

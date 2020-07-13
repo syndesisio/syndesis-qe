@@ -10,8 +10,8 @@ Feature: Google Sheets Connector
   Background: Clean application state
     Given clean application state
     And deploy ActiveMQ broker
-    And clean "contact" table
-    And clean "todo" table
+    And reset content of "contact" table
+    And reset content of "todo" table
     And log into the Syndesis
     And navigate to the "Settings" page
     And fill "Google Sheets" oauth settings "QE Google Sheets"
@@ -75,7 +75,7 @@ Feature: Google Sheets Connector
   @spreadsheet-append
   Scenario: Append messages from DB
     When clear test spreadsheet
-    And inserts into "contact" table
+    And insert into "contact" table
       | Matej | Foo    | Red Hat | db |
       | Matej | Bar    | Red Hat | db |
       | Fuse  | Online | Red Hat | db |
@@ -126,7 +126,7 @@ Feature: Google Sheets Connector
 
   @from-db-rows
   Scenario: Update messages from DB - Rows
-    When inserts into "contact" table
+    When insert into "contact" table
       | New    | Updated | Red Hat | db |
       | Second | Update  | IBM     | db |
     Then click on the "Create Integration" link to create a new integration
@@ -175,7 +175,7 @@ Feature: Google Sheets Connector
 
   @from-db-columns
   Scenario: Update messages from DB - Columns
-    When inserts into "contact" table
+    When insert into "contact" table
       | Matej | Foo    | RedHat | db |
       | Matej | Bar    | RedHat | db |
       | Fuse  | Online | RedHat | db |

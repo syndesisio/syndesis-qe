@@ -36,7 +36,8 @@ public class TwValidationSteps {
 
     public TwValidationSteps() {
         accountsDirectory = AccountsDirectory.getInstance();
-        final Account twitterTalkyAccount = accountsDirectory.getAccount(Account.Name.TWITTER_TALKY).get();
+
+        final Account twitterTalkyAccount = accountsDirectory.get(Account.Name.TWITTER_TALKY);
         //twitterTalky
         final TwitterFactory factoryTalk = new TwitterFactory(new ConfigurationBuilder()
             .setOAuthConsumerKey(twitterTalkyAccount.getProperty("consumerKey"))
@@ -46,7 +47,7 @@ public class TwValidationSteps {
             .build());
         this.twitterTalky = factoryTalk.getInstance();
 
-        final Account twitterListenerAccount = accountsDirectory.getAccount(Account.Name.TWITTER_LISTENER).get();
+        final Account twitterListenerAccount = accountsDirectory.get(Account.Name.TWITTER_LISTENER);
         final TwitterFactory factoryListen = new TwitterFactory(new ConfigurationBuilder()
             .setOAuthConsumerKey(twitterListenerAccount.getProperty("consumerKey"))
             .setOAuthConsumerSecret(twitterListenerAccount.getProperty("consumerSecret"))
@@ -56,12 +57,12 @@ public class TwValidationSteps {
         this.twitterListener = factoryListen.getInstance();
     }
 
-    @Given("^clean all tweets in twitter_talky account")
+    @Given("clean all tweets in twitter_talky account")
     public void cleanupTwSf() throws TwitterException {
         deleteAllTweets(twitterTalky);
     }
 
-    @When("^tweet a message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"")
+    @When("tweet a message from twitter_talky to {string} with text {string}")
     public void sendTweet(String toAcc, String tweet) throws TwitterException {
         final String message = tweet + " @" + accountsDirectory.getAccount(toAcc).get().getProperty("screenName");
         log.info("Sending a tweet from {}, to {} with message: {}", accountsDirectory.getAccount(Account.Name.TWITTER_TALKY)
@@ -70,7 +71,7 @@ public class TwValidationSteps {
         log.info("Tweet submitted.");
     }
 
-    @When("^send direct message from twitter_talky to \"([^\"]*)\" with text \"([^\"]*)\"$")
+    @When("send direct message from twitter_talky to {string} with text {string}")
     public void sendDirectMessage(String toAcc, String message) throws TwitterException {
         Optional<Account> optionalAccount = accountsDirectory.getAccount(toAcc);
         if (optionalAccount.isPresent()) {
@@ -82,7 +83,7 @@ public class TwValidationSteps {
         }
     }
 
-    @Then("^check that account \"([^\"]*)\" has DM from user \"([^\"]*)\" with text \"([^\"]*)\"")
+    @Then("check that account {string} has DM from user {string} with text {string}")
     public void checkDirectMessage(String toAccountName, String fromAccountName, String message) {
         Twitter toAccount = getCorrectAccount(toAccountName);
         long fromAccontId = getSenderIdForAccount(fromAccountName);
@@ -130,7 +131,7 @@ public class TwValidationSteps {
         return result;
     }
 
-    @When("^delete all direct messages received by \"([^\"]*)\" with text \"([^\"]*)\"$")
+    @When("delete all direct messages received by {string} with text {string}")
     public void deleteAllDMs(String account, String text) throws TwitterException {
         if ("twittertalky".equals(account.toLowerCase().replaceAll(" ", ""))) {
             deleteAllDMs(this.twitterTalky, text);

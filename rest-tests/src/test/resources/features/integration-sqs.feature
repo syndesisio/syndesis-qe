@@ -226,7 +226,7 @@ Feature: Integration - SQS
   @datamapper
   @integration-db-sqs-fifo-deduplication-exchangeid
   Scenario: DB to SQS FIFO ExchangeID deduplication
-    Given inserts into "CONTACT" table
+    Given insert into "CONTACT" table
       | X1 | Y1 | Z1 | db |
       | X2 | Y2 | Z2 | db |
       | X3 | Y3 | Z3 | db |
@@ -247,7 +247,7 @@ Feature: Integration - SQS
   @database
   @integration-db-sqs-fifo-deduplication-content-based
   Scenario: DB to SQS FIFO ContentBased deduplication
-    Given inserts into "CONTACT" table
+    Given insert into "CONTACT" table
       | X1 | Y1 | Z1 | db |
       | X1 | Y1 | Z1 | db |
       | X1 | Y1 | Z1 | db |

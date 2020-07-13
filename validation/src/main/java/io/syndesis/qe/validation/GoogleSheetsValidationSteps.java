@@ -12,6 +12,7 @@ import com.google.api.services.sheets.v4.model.EmbeddedChart;
 import com.google.api.services.sheets.v4.model.Sheet;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
@@ -22,7 +23,7 @@ public class GoogleSheetsValidationSteps {
     @Autowired
     GoogleSheetsUtils sheetsUtils;
 
-    @Then("^verify that spreadsheet was created$")
+    @Then("verify that spreadsheet was created")
     public void verifyThatSpreadsheetWasCreated() {
         if (sheetsUtils.getTestSheetId() == null || "".equals(sheetsUtils.getTestSheetId())) {
             sheetsUtils.setTestSheetId(JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, "sheets").split(":")[1].split("\"")[1]);
@@ -31,24 +32,22 @@ public class GoogleSheetsValidationSteps {
         Assertions.assertThat(sheetsUtils.spreadSheetExists());
     }
 
-    @Then("^verify that test sheet contains values on range \"([^\"]*)\"$")
+    @Then("verify that test sheet contains values on range {string}")
     public void verifyThatTestSheetContainsValuesOnRange(String range, DataTable table) {
         verifySpreadsheetContainsValuesOnRange(sheetsUtils.getTestSheetId(), range, table);
     }
 
-    @Then("^verify that data test sheet contains values on range \"([^\"]*)\"$")
+    @Then("verify that data test sheet contains values on range {string}")
     public void verifyThatDataTestSheetContainsValuesOnRange(String range, DataTable table) {
         verifySpreadsheetContainsValuesOnRange(sheetsUtils.getTestDataSpreadSheet(), range, table);
     }
 
     public void verifySpreadsheetContainsValuesOnRange(String id, String range, DataTable table) {
-        List result = sheetsUtils.getSpreadSheetValues(id, range);
-        table.asLists().forEach(list -> {
-            assertThat(result).contains(list.toString());
-        });
+        List<String> result = sheetsUtils.getSpreadSheetValues(id, range);
+        table.asLists().forEach(list -> assertThat(result).contains(list.stream().map(s -> s == null ? "" : s).collect(Collectors.toList()).toString()));
     }
 
-    @Then("^verify that chart was created$")
+    @Then("verify that chart was created")
     public void verifyThatChartWasCreated() {
         for (Sheet s : sheetsUtils.getSheetsFromDataSpreadsheet()) {
             if (s.getProperties().getTitle().contains("Chart")) {
@@ -60,12 +59,12 @@ public class GoogleSheetsValidationSteps {
         }
     }
 
-    @Then("^verify that spreadsheet title match \"([^\"]*)\"$")
+    @Then("verify that spreadsheet title match {string}")
     public void verifyThatSpreadsheetTitleMatch(String title) {
         assertThat(title).isEqualTo(sheetsUtils.getSpreadSheet().getProperties().getTitle());
     }
 
-    @Then("^verify that message from \"([^\"]*)\" queue contains \"([^\"]*)\"$")
+    @Then("verify that message from {string} queue contains {string}")
     public void verifyThatMessageFromQueueContains(String queue, String content) {
         String text = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queue);
         for (String s : content.split(",")) {

@@ -22,7 +22,7 @@ Feature: SQL Connector
   @sql-connector-all-rows
   Scenario: Check SQL pulls all rows
 
-    When inserts into "todo" table
+    When insert into "todo" table
       | ABCsampleTODO |
       | XYZsampleTODO |
       | KLMsampleTODO |
@@ -75,7 +75,7 @@ Feature: SQL Connector
   @sql-connector-predicates
   Scenario Outline: Check SQL connector with predicate <predicate>
 
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1 |
       | task2 |
       | task3 |

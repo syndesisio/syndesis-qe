@@ -80,7 +80,7 @@ public class DbUtils {
      * @return number of records in the table
      */
     public int getNumberOfRecordsInTable(String tableName, String column, String value) {
-        String query = "SELECT COUNT(*) FROM " + tableName.toUpperCase();
+        String query = "SELECT * FROM " + tableName.toUpperCase();
         if (column != null && value != null) {
             query += " WHERE " + column + " LIKE '" + value + "'";
         }
@@ -94,17 +94,16 @@ public class DbUtils {
      * @return count of rows for given query
      */
     public int getCountOfInvokedQuery(String query) {
+        int records = 0;
         try {
             ResultSet resultSet = executeSQLGetResultSet(query);
-            if (resultSet.next()) {
-                return resultSet.getInt("count");
-            } else {
-                return 0;
+            while (resultSet != null && resultSet.next()) {
+                records++;
             }
         } catch (SQLException e) {
             fail("Unable to get count from ResultSet: " + e);
         }
-        return -1;
+        return records;
     }
 
     /**

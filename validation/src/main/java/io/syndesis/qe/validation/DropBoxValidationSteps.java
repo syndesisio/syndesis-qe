@@ -25,7 +25,6 @@ public class DropBoxValidationSteps {
         dropBoxUtils.uploadFile(filePath, content);
     }
 
-
     @When("^check that file with path \"([^\"]*)\" exists on Dropbox$")
     public void checkThatFileExists(String filePath) {
         Assertions.assertThat(TestUtils.waitForEvent(r -> r, () -> dropBoxUtils.checkIfFileExists(filePath),

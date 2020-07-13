@@ -11,7 +11,7 @@ public class GoogleAccountSteps {
     @Autowired
     private GoogleAccounts googleAccounts;
 
-    @Given("^renew access token for \"([^\"]*)\" google account$")
+    @Given("renew access token for {string} google account")
     public void renewAccessTokenForAccount(String googleAccount) throws Throwable {
         googleAccounts.getGoogleAccountForTestAccount(googleAccount).renewAccessToken();
     }

@@ -12,7 +12,7 @@ Feature: Integration - Database
 
   @smoke
   Scenario: Smoke - Periodic invocation to Insert
-    Then inserts into "CONTACT" table
+    Then insert into "CONTACT" table
       | Josef_first  | Stieranka_first  | Syndesis-qe | db |
       | Josef_second | Stieranka_second | Syndesis-qe | db |
 
@@ -26,10 +26,10 @@ Feature: Integration - Database
     Then create integration with name: "DB to DB smoke rest test"
     Then wait for integration with name: "DB to DB smoke rest test" to become active
 
-    And sleep for jenkins delay or "15" seconds
+    And sleep for jenkins delay or 15 seconds
 
-    Then validate that number of all todos with task "Josef_first" is greater than "0"
-    Then validate that number of all todos with task "Josef_second" is "0"
+    Then validate that number of all todos with task "Josef_first" is greater than 0
+    Then validate that number of all todos with task "Josef_second" is 0
 
   @integrations-db-stored-procedures
   @datamapper
@@ -42,7 +42,7 @@ Feature: Integration - Database
       And create finish DB invoke stored procedure "create_contact" action step
       And create integration with name: "db-db-stored-procedures"
     Then wait for integration with name: "db-db-stored-procedures" to become active
-    When inserts into "TODO" table
+    When insert into "TODO" table
       | Adam |
     Then check that query "SELECT * FROM CONTACT" has some output
       And verify that contact with first name "Adam" exists in database

@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.addon.Addon;
-import io.syndesis.qe.endpoint.ConnectionsEndpoint;
-import io.syndesis.qe.endpoint.ExtensionsEndpoint;
 import io.syndesis.qe.endpoint.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
@@ -76,14 +74,6 @@ public class OperatorValidationSteps {
     @Autowired
     @Lazy
     private IntegrationsEndpoint integrations;
-
-    @Autowired
-    @Lazy
-    private ConnectionsEndpoint connections;
-
-    @Autowired
-    @Lazy
-    private ExtensionsEndpoint extensions;
 
     @Autowired
     @Lazy
@@ -181,7 +171,7 @@ public class OperatorValidationSteps {
             .isEqualTo(expectedRoute);
     }
 
-    @Then("check that the \"([^\"]*)\" config map (contains|doesn't contain)")
+    @Then("^check that the \"([^\"]*)\" config map (contains|doesn't contain)$")
     public void checkConfigMap(String cmName, String shouldContain, DataTable table) {
         SoftAssertions asserts = new SoftAssertions();
         if ("contains".equals(shouldContain)) {
@@ -507,22 +497,6 @@ public class OperatorValidationSteps {
         // Invoke manual restore script
         log.debug(OpenShiftUtils.getInstance().podShell(dbPod, containerName)
             .executeWithBash("/tmp/manual_restore.sh " + dbName).getOutput());
-    }
-
-    @Then("check that connection {string} exists")
-    public void checkConnection(String connection) {
-        assertThat(connections.getConnectionByName(connection)).isNotNull();
-    }
-
-    @Then("check that connection {string} doesn't exist")
-    public void checkConnectionDoesNotExist(String connection) {
-        assertThat(connections.getConnectionByName(connection)).isNull();
-    }
-
-    @Then("check that extension {string} exists")
-    public void checkExtension(String extension) {
-        // This fails when it is not present, so we don't need the value
-        extensions.getExtensionByName(extension);
     }
 
     @When("redeploy custom database")

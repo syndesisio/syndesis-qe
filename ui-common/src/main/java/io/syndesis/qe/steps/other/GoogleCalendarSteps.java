@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.google.EventForm;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.google.GetSpecificEvent;
 import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.DatatableUtils;
 import io.syndesis.qe.utils.GoogleCalendarUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,9 @@ import com.google.api.services.calendar.model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
-import io.cucumber.datatable.DataTableTypeRegistry;
-import io.cucumber.datatable.DataTableTypeRegistryTableConverter;
 import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,20 +62,18 @@ public class GoogleCalendarSteps {
     }
 
     @When("^fill in aliased calendar values by data-testid$")
-    public void fillInAliasedCalendarValues(DataTable data) throws Throwable {
+    public void fillInAliasedCalendarValues(DataTable data) {
         // we need to find the calendar name in the table and alias it before passing on to fillForm
         // we also need to create a copy of the raw DataTable lists, because the returned lists are unmodifiable
         List<List<String>> newCells = new ArrayList<>();
         for (List<String> row : data.cells()) {
             List<String> newRow = new ArrayList<>(row);
-            newCells.add(newRow);
+            newCells.add(row.stream().map(s -> s == null ? "" : s).collect(Collectors.toList()));
             if ("calendarid".equals(newRow.get(0))) {
                 newRow.set(1, gcu.getAliasedCalendarName(newRow.get(1)));
             }
         }
-        // oh well, things are never as nice as you want them to be
-        DataTable newData = DataTable.create(newCells,
-            new DataTableTypeRegistryTableConverter(new DataTableTypeRegistry(Locale.getDefault())));
+        DataTable newData = DatatableUtils.create(newCells);
         new CommonSteps().fillFormViaTestID(newData);
     }
 

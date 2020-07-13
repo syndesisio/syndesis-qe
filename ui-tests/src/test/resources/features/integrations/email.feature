@@ -63,7 +63,7 @@ Feature: Email connector
     When click on the "Save" link
     And set integration name "email-send-qe-integration-<security>"
     And publish integration
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
     Then Integration "email-send-qe-integration-<security>" is present in integrations list
     And wait until integration "email-send-qe-integration-<security>" gets into "Running" state

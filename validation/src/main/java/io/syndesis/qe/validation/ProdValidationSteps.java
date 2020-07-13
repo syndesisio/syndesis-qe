@@ -1,7 +1,7 @@
 package io.syndesis.qe.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.utils.OpenShiftUtils;
@@ -51,7 +51,7 @@ public class ProdValidationSteps {
         }
     }
 
-    @Then("^check that integration pom contains productized version in property \"([^\"]*)\"$")
+    @Then("check that integration pom contains productized version in property {string}")
     public void checkProductizedVersionIn(String property) {
         loadIntegrationXml();
         final XPath xPath = XPathFactory.newInstance().newXPath();

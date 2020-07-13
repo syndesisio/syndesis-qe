@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IrcValidationSteps {
     private String controllerRoute;
 
-    @When("^connect IRC controller to channels \"([^\"]*)\"$")
+    @When("connect IRC controller to channels {string}")
     public void connectController(String channels) {
         controllerRoute = "http://" + OpenShiftUtils.getInstance().routes()
             .withName(IRC.CONTROLLER_APP_NAME).get().getSpec().getHost() + "/irc";
@@ -31,7 +31,7 @@ public class IrcValidationSteps {
             null);
     }
 
-    @Then("^verify that the message with content \'([^\']*)\' was posted to channels \"([^\"]*)\"$")
+    @Then("verify that the message with content {string} was posted to channels {string}")
     public void verifyThatMessageWasPosted(String content, String channels) {
         TestUtils.sleepIgnoreInterrupt(30000L);
         final int channelsCount = channels.split(",").length;
@@ -43,7 +43,7 @@ public class IrcValidationSteps {
         }
     }
 
-    @When("^send message to IRC user \"([^\"]*)\" with content \'([^\']*)\'$")
+    @When("send message to IRC user {string} with content {string}")
     public void sendMessage(String target, String msg) {
         HTTPUtils.doPostRequest(
             controllerRoute + "/messages",

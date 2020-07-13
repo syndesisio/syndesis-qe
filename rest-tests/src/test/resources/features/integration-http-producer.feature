@@ -153,7 +153,7 @@ Feature: Integration - HTTP
   @gh-5093
   @integration-http-sql-split
   Scenario Outline: <protocol> to SQL with split
-    Given clean "TODO" table
+    Given reset content of "TODO" table
     When create <protocol> "GET" step with path "/api/getJsonArray" and period "1" "MINUTES"
       And change "out" datashape of previous step to "JSON_INSTANCE" type with specification '[{"key":"value"}]'
       And add a split step

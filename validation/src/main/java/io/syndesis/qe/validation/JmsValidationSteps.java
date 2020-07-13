@@ -25,8 +25,7 @@ public class JmsValidationSteps {
     public JmsValidationSteps() {
     }
 
-    @Then("^verify that JMS message using \"([^\"]*)\" protocol, published on \"([^\"]*)\" named \"([^\"]*)\" has arrived to \"([^\"]*)\" named \"" +
-        "([^\"]*)\" consumer$")
+    @Then("verify that JMS message using {string} protocol, published on {string} named {string} has arrived to {string} named {string} consumer")
     public void verifyJMSconnection(String protocol, String typeFrom, String destinationFrom, String typeTo, String destinationTo) {
         JMSUtils.sendMessage(protocol, JMSUtils.Destination.valueOf(typeFrom.toUpperCase()), destinationFrom, messageText);
 
@@ -40,18 +39,18 @@ public class JmsValidationSteps {
         Assertions.assertThat(textMessage).isEqualTo(messageText);
     }
 
-    @Then("^verify that JMS message with content \'([^\']*)\' was received from \"([^\"]*)\" \"([^\"]*)\"$")
+    @Then("verify that JMS message with content {string} was received from {string} {string}")
     public void verifyThatJMSMessageWithContentWasReceivedFrom(String content, String type, String destination) {
         final String message = JMSUtils.getMessageText("tcp", JMSUtils.Destination.valueOf(type.toUpperCase()), destination);
         assertThat(message).isEqualTo(content);
     }
 
-    @When("^publish message with content \"([^\"]*)\" to \"([^\"]*)\" with name \"([^\"]*)\"")
+    @When("publish message with content {string} to {string} with name {string}")
     public void publishMessageToDestinationWithName(String content, String type, String name) {
         JMSUtils.sendMessage("tcp", JMSUtils.Destination.valueOf(type.toUpperCase()), name, content);
     }
 
-    @Given("^clean destination type \"([^\"]*)\" with name \"([^\"]*)\"")
+    @Given("clean destination type {string} with name {string}")
     public void cleanDestination(String type, String name) {
         JMSUtils.clear(JMSUtils.Destination.valueOf(type.toUpperCase()), name);
     }
@@ -63,7 +62,7 @@ public class JmsValidationSteps {
      * @param type - queue or topic
      * @param name - name of topic/queue
      */
-    @When("^publish JMS message from resource \"([^\"]*)\" to \"([^\"]*)\" with name \"([^\"]*)\"")
+    @When("publish JMS message from resource {string} to {string} with name {string}")
     public void publishMessageFromResourceToDestinationWithName(String resourceName, String type, String name) throws IOException {
 
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -77,7 +76,7 @@ public class JmsValidationSteps {
         JMSUtils.sendMessage("tcp", JMSUtils.Destination.valueOf(type.toUpperCase()), name, jmsMessage);
     }
 
-    @Then("^verify that the JMS queue \"([^\"]*)\" is empty$")
+    @Then("verify that the JMS queue {string} is empty")
     public void verifyEmptyQueue(String queue) {
         // This waits up to 60 seconds to get something for the queue
         Assertions.assertThat(JMSUtils.getMessage(JMSUtils.Destination.QUEUE, queue)).isNull();
@@ -91,12 +90,12 @@ public class JmsValidationSteps {
         verifyEmptyQueue(queue);
     }
 
-    @Then("^verify that JMS queue \"([^\"]*)\" received a message in (\\d+) seconds$")
+    @Then("verify that JMS queue {string} received a message in {int} seconds")
     public void verifyEmptyQueue(String queue, int secondsTimeout) {
         Assertions.assertThat(JMSUtils.getMessage("tcp", JMSUtils.Destination.QUEUE, queue, secondsTimeout * 1000L)).isNotNull();
     }
 
-    @When("^send \"([^\"]*)\" message to \"([^\"]*)\" queue on \"([^\"]*)\" broker$")
+    @When("send {string} message to {string} queue on {string} broker")
     public void sendMessageToQueueOnBroker(String message, String queue, String brokerAccount) {
         Account brokerCredentials = AccountsDirectory.getInstance().get(brokerAccount);
         final String userName = brokerCredentials.getProperty("username");

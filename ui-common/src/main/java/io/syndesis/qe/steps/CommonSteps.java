@@ -668,7 +668,9 @@ public class CommonSteps {
     public void fillFormViaTestID(DataTable data) {
         Form.waitForInputs(20);
         TestUtils.sleepIgnoreInterrupt(2000);
-        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(data.asMap(String.class, String.class));
+        Map<String, String> dataMap = new HashMap<>(data.asMap(String.class, String.class));
+        dataMap.replaceAll((key, value) -> value == null ? "" : value);
+        new Form(new SyndesisRootPage().getRootElement()).fillByTestId(dataMap);
     }
 
     @Then("^fill in data-testid field \"([^\"]*)\" from property \"([^\"]*)\" of credentials \"([^\"]*)\"")

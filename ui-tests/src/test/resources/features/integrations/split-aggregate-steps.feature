@@ -13,7 +13,7 @@ Feature: Integration - DB to DB with split/aggregate
   @split-aggregate-flow-1
   Scenario: Split and aggregate integration flow
 
-    When inserts into "todo" table
+    When insert into "todo" table
       | task1 |
       | task1 |
       | task1 |
@@ -75,7 +75,7 @@ Feature: Integration - DB to DB with split/aggregate
     When add integration step on position "4"
     And select "Aggregate" integration step
     And click on the "Next" button
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     # Then check visibility of page "Add to Integration"
 
     When publish integration
@@ -84,5 +84,5 @@ Feature: Integration - DB to DB with split/aggregate
     And wait until integration "Split/Aggregate" gets into "Running" state
     And wait until integration Split/Aggregate processed at least 1 message
 
-    Then validate that number of all todos with task "startTask" is "3"
-    And validate that number of all todos with task "finalTask" is "1"
+    Then validate that number of all todos with task "startTask" is 3
+    And validate that number of all todos with task "finalTask" is 1

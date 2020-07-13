@@ -1,7 +1,7 @@
 package io.syndesis.qe.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.utils.BoxUtils;
 import io.syndesis.qe.utils.DbUtils;
@@ -33,22 +33,22 @@ public class BoxValidationSteps {
 
     private DbUtils dbUtils = new DbUtils("postgresql");
 
-    @Given("^remove all files from Box$")
+    @Given("remove all files from Box")
     public void clearBox() {
         boxUtils.clearBox();
     }
 
-    @When("^upload file with name \"([^\"]*)\" and content \"([^\"]*)\" to Box$")
+    @When("upload file with name {string} and content {string} to Box")
     public void uploadFile(String name, String content) {
         boxUtils.uploadFile(name, content);
     }
 
-    @Then("^verify that file count in Box is \\d$")
+    @Then("verify that file count in Box is {int}")
     public void verifyFileCount(int count) {
         assertThat(count).isEqualTo(boxUtils.getFileCount());
     }
 
-    @Then("^verify that file \"([^\"]*)\" with content '([^\']*)' is present in Box$")
+    @Then("verify that file {string} with content {string} is present in Box")
     public void verifyFileWithContentIsPresent(String filename, String content) {
         BoxFile f = boxUtils.getFile(filename);
         Assertions.assertThat(f).isNotNull();
@@ -63,14 +63,14 @@ public class BoxValidationSteps {
         }
     }
 
-    @Then("^verify the Box AMQ response from queue \"([^\"]*)\" with text \"([^\"]*)\"$")
+    @Then("verify the Box AMQ response from queue {string} with text {string}")
     public void verifyBoxResponse(String queueName, String text) {
         final String message = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queueName);
         final int expectedMessageSize = text.getBytes().length;
         assertThat(message).isEqualTo(String.format("{\"text\":\"%s-%s-%d\"}", text, BoxUtils.getFileIds().get(0), expectedMessageSize));
     }
 
-    @Then("^verify that all box messages were received from \"([^\"]*)\" queue:$")
+    @Then("verify that all box messages were received from {string} queue:")
     public void verifyBoxMessages(String queueName, DataTable expectedMessages) {
         List<String> messages = new ArrayList<>();
         String message = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queueName);
@@ -85,7 +85,7 @@ public class BoxValidationSteps {
         );
     }
 
-    @Given("^insert box file ids to box id table$")
+    @Given("insert box file ids to box id table")
     public void insertIdsInTable() {
         for (String fileId : BoxUtils.getFileIds()) {
             dbUtils.executeSQLGetUpdateNumber("INSERT INTO BOX_IDS(id) VALUES(" + fileId + ")");

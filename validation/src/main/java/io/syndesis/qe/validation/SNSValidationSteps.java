@@ -1,8 +1,9 @@
 package io.syndesis.qe.validation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.qe.utils.aws.SQSUtils;
 
-import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,13 +20,13 @@ public class SNSValidationSteps {
     @Autowired
     private SQSUtils sqs;
 
-    @Then("^verify that the SQS queue \"([^\"]*)\" contains notifications related to$")
+    @Then("verify that the SQS queue {string} contains notifications related to")
     public void verifySNSMessage(String queue, DataTable content) {
         final List<Message> messages = sqs.getMessages(queue);
         Map<String, String> contentMap = content.asMap(String.class, String.class);
 
         for (Map.Entry<String, String> entry : contentMap.entrySet()) {
-            Assertions.assertThat(messages.stream().filter(m -> {
+            assertThat(messages.stream().filter(m -> {
                 JSONObject messageJson = new JSONObject(m.body());
                 return messageJson.getString("Subject").equals(entry.getKey())
                     && messageJson.getString("Message").equals(entry.getValue());

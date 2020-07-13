@@ -7,6 +7,7 @@ import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.util.salesforce.Contact;
 import io.syndesis.qe.util.salesforce.Lead;
 import io.syndesis.qe.util.salesforce.SalesforceAccount;
+import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.jms.JMSUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -16,7 +17,10 @@ import org.assertj.core.api.Assertions;
 import com.force.api.ApiException;
 import com.force.api.QueryResult;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.cucumber.java.en.Given;
@@ -33,11 +37,16 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class SfValidationSteps {
+    private DbUtils dbUtils;
     private String leadId;
 
     private static final long DEFAULT_WAIT_TIMEOUT = 30000L;
 
-    @Given("^clean SF, removes all leads with email: \"([^\"]*)\"$")
+    public SfValidationSteps() {
+        dbUtils = new DbUtils("postgresql");
+    }
+
+    @Given("clean SF, removes all leads with email: {string}")
     public void cleanupSfDb(String emails) {
         TestSupport.getInstance().resetDB();
         for (String email : emails.split(",")) {
@@ -45,7 +54,7 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^create SF lead with first name: \"([^\"]*)\", last name: \"([^\"]*)\", email: \"([^\"]*)\" and company: \"([^\"]*)\"")
+    @Then("create SF lead with first name: {string}, last name: {string}, email: {string} and company: {string}")
     public void createNewSalesforceLead(String firstName, String lastName, String email, String companyName) {
         final Lead lead = new Lead();
         lead.setFirstName(firstName);
@@ -56,7 +65,7 @@ public class SfValidationSteps {
         log.debug("Created lead with id " + leadId);
     }
 
-    @Then("^delete lead from SF with email: \"([^\"]*)\"")
+    @Then("delete lead from SF with email: {string}")
     public void deleteSalesforceLead(String email) {
         final Optional<Lead> lead = getSalesforceLeadByEmail(email);
         if (lead.isPresent()) {
@@ -66,7 +75,7 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^delete contact from SF with email: \"([^\"]*)\"")
+    @Then("delete contact from SF with email: {string}")
     public void deleteSalesforceContactWithEmail(String email) {
         final Optional<Contact> lead = getSalesforceContactByEmail(email);
         if (lead.isPresent()) {
@@ -75,18 +84,18 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^.*deletes? contact from SF with last name: \"([^\"]*)\"")
+    @Then("delete contact from SF with last name: {string}")
     public void deleteSalesforceContactWithName(String name) {
         final Optional<Contact> lead = getSalesforceContactByLastName(name);
         if (lead.isPresent()) {
             SalesforceAccount.getInstance().deleteSObject("contact", String.valueOf(lead.get().getId()));
             log.info("Deleting salesforce lead: {}", lead.get());
         } else {
-            log.info("Contact with name {} was not found, nothing was deleted");
+            log.info("Contact with name {} was not found, nothing was deleted", name);
         }
     }
 
-    @Then("^.*checks? that contact from SF with email: \"([^\"]*)\" has description \"([^\"]*)\"$")
+    @Then("check that contact from SF with email: {string} has description {string}")
     public void checkSalesforceContactHasDescription(String email, String description) {
         try {
             OpenShiftWaitUtils.waitFor(() -> getSalesforceContactByEmail(email).isPresent(), DEFAULT_WAIT_TIMEOUT);
@@ -102,8 +111,7 @@ public class SfValidationSteps {
             .containsIgnoringCase(description);
     }
 
-    @Then("^update SF lead with email \"([^\"]*)\" to first name: \"([^\"]*)\", last name \"([^\"]*)\", email \"([^\"]*)\", company name \"([^\"]*)" +
-        "\"")
+    @Then("update SF lead with email {string} to first name: {string}, last name {string}, email {string}, company name {string}")
     public void updateLead(String origEmail, String newFirstName, String newLastName, String newEmailAddress, String companyName) {
         Optional<Lead> sfLead = getSalesforceLeadByEmail(origEmail);
         Assertions.assertThat(sfLead).isPresent();
@@ -123,7 +131,7 @@ public class SfValidationSteps {
      *
      * @param contains if parameter contains == "contains" the method expects contact to exist
      */
-    @Then("^check SF \"([^\"]*)\" contact with a email: \"([^\"]*)\"$")
+    @Then("check SF {string} contact with a email: {string}")
     public void checkSalesforceContact(String contains, String email) {
         if ("contains".equalsIgnoreCase(contains)) {
             TestUtils.waitFor(() -> getSalesforceContactByEmail(email).isPresent(), 5, 60, "Salesforce contact does not exist!");
@@ -140,22 +148,18 @@ public class SfValidationSteps {
         }
     }
 
-    private void checkSfAccount(String twAccount, boolean shouldExist) {
-
-    }
-
-    @When("^publish message with content \'([^\']*)\' to queue \"([^\"]*)\"$")
+    @When("publish message with content {string} to queue {string}")
     public void publishMessage(String content, String name) {
         JMSUtils.sendMessage(JMSUtils.Destination.QUEUE, name, content.replaceAll("LEAD_ID", leadId));
     }
 
-    @Then("^verify that lead json object was received from queue \"([^\"]*)\"$")
+    @Then("verify that lead json object was received from queue {string}")
     public void verifyLeadJsonReceived(String queueName) {
         final String text = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queueName);
         assertThat(text).contains(leadId);
     }
 
-    @Then("^verify that lead with email \"([^\"]*)\" was created")
+    @Then("verify that lead with email {string} was created")
     public void verifyLeadCreated(String email) {
         try {
             OpenShiftWaitUtils.waitFor(() -> getSalesforceLeadByEmail(email).isPresent(), DEFAULT_WAIT_TIMEOUT);
@@ -169,7 +173,7 @@ public class SfValidationSteps {
         Assertions.assertThat(lead.get().getFirstName()).isEqualTo("Joe");
     }
 
-    @Then("^verify that lead creation response with email \"([^\"]*)\" was received from queue \"([^\"]*)\"$")
+    @Then("verify that lead creation response with email {string} was received from queue {string}")
     public void verifyLeadCreatedResponse(String email, String queueName) {
         Optional<Lead> lead = getSalesforceLeadByEmail(email);
         Assertions.assertThat(lead).isPresent();
@@ -177,7 +181,7 @@ public class SfValidationSteps {
             lead.get().getId()));
     }
 
-    @Then("^verify that lead was deleted$")
+    @Then("verify that lead was deleted")
     public void verifyLeadRemoval() {
         try {
             OpenShiftWaitUtils.waitFor(() -> {
@@ -193,7 +197,7 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^verify that leads email was updated to \"([^\"]*)\"$")
+    @Then("verify that leads email was updated to {string}")
     public void verifyLeadUpdated(String email) {
         try {
             OpenShiftWaitUtils.waitFor(() -> email.equals(getLeadWithId(leadId).getEmail()), DEFAULT_WAIT_TIMEOUT);
@@ -202,7 +206,7 @@ public class SfValidationSteps {
         }
     }
 
-    @Then("^verify that lead name was updated$")
+    @Then("verify that lead name was updated")
     public void verifyLeadNameUpdate() {
         try {
             OpenShiftWaitUtils.waitFor(() -> "Joe".equals(getLeadWithId(leadId).getFirstName()), DEFAULT_WAIT_TIMEOUT);
@@ -211,17 +215,43 @@ public class SfValidationSteps {
         }
     }
 
-    private Lead getLeadWithId(String id) {
-        return SalesforceAccount.getInstance().getSObject("lead", id).as(Lead.class);
+    @Then("validate DB created new lead with first name: {string}, last name: {string}, email: {string}")
+    public void validateSfDbIntegration(String firstName, String lastName, String emailAddress) {
+        final long start = System.currentTimeMillis();
+        // We wait for exactly 1 record to appear in DB.
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
+            5, 120,
+            "Lead record was not found in the table.");
+
+        log.debug("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+        // Now we verify, the created lead contains the correct personal information.
+        assertThat(getLeadTaskFromDb(firstName + " " + lastName).toLowerCase()).contains(emailAddress);
     }
 
-    private void deleteSalesforceContact(String screenName) {
-        final Optional<Contact> contact = getSalesforceContact(screenName);
-        if (contact.isPresent()) {
-            final String id = String.valueOf(contact.get().getId());
-            SalesforceAccount.getInstance().deleteSObject("contact", id);
-            log.info("Deleting salesforce contact: {}", contact.get());
-        }
+    @Then("validate SF on delete to DB created new task")
+    public void validateLead() {
+        final long start = System.currentTimeMillis();
+        // We wait for exactly 1 record to appear in DB.
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
+            5, 120,
+            "Lead record was not found in the table.");
+
+        log.debug("Lead record appeared in DB. It took {}s to create contact.", TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start));
+        // Now we verify, the created lead contains the correct information.
+        assertThat(getLeadTaskFromDb()).isNotEmpty();
+    }
+
+    @Then("validate add_lead procedure with last_name: {string}, company: {string}")
+    public void validateAddLeadProcedure(String lastName, String company) {
+        TestUtils.waitFor(() -> dbUtils.getNumberOfRecordsInTable("todo") > 0,
+            5, 120,
+            "Lead record was not found in the table.");
+
+        assertThat(getLeadTaskFromDb(lastName).contains(company)).isTrue();
+    }
+
+    private Lead getLeadWithId(String id) {
+        return SalesforceAccount.getInstance().getSObject("lead", id).as(Lead.class);
     }
 
     private Optional<Contact> getSalesforceContact(String lastName) {
@@ -269,4 +299,38 @@ public class SfValidationSteps {
             );
         return queryResult.getTotalSize() > 0 ? Optional.of(queryResult.getRecords().get(0)) : Optional.empty();
     }
+
+    private String getLeadTaskFromDb() {
+        String leadTask = null;
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO")) {
+            if (rs.next()) {
+                leadTask = rs.getString("task");
+                log.debug("task = " + leadTask);
+            }
+        } catch (SQLException ex) {
+            fail("Error: " + ex);
+        }
+        return leadTask;
+    }
+
+    /**
+     * Used for verification of successful creation of a new task in the todo app.
+     *
+     * @return lead task
+     */
+    private String getLeadTaskFromDb(String task) {
+        String leadTask = null;
+        log.info("***SELECT id, task, completed FROM TODO WHERE task LIKE '%" + task + "%'***");
+        try (ResultSet rs = dbUtils.executeSQLGetResultSet("SELECT id, task, completed FROM TODO WHERE task LIKE '%"
+            + task + "%'")) {
+            if (rs.next()) {
+                leadTask = rs.getString("task");
+                log.debug("task = " + leadTask);
+            }
+        } catch (SQLException ex) {
+            fail("Error: " + ex);
+        }
+        return leadTask;
+    }
+
 }

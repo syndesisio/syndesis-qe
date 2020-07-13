@@ -313,7 +313,7 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
       And wait for backup with 5s interval
     When clean backup S3 bucket
-    Then sleep for jenkins delay or "200" seconds
+    Then sleep for jenkins delay or 200 seconds
       And verify that there are 3 backups in S3
 
   @ENTESB-12114
@@ -358,7 +358,7 @@ Feature: Operator Deployment
     # Restore backup
     When perform "<method>" "<type>" restore from backup
 
-      And sleep for jenkins delay or "5" seconds
+      And sleep for jenkins delay or 5 seconds
       And refresh server port-forward
 
     # Ideally the connection should be updated so that the password is encrypted with the current key

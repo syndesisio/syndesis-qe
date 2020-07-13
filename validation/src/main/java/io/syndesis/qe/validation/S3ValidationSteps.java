@@ -35,17 +35,17 @@ public class S3ValidationSteps {
         this.s3Utils = s3Utils;
     }
 
-    @Given("^create sample buckets? on S3 with name \"([^\"]*)\"")
+    @Given("create sample bucket(s) on S3 with name {string}")
     public void createSampleBucket(String bucketName) {
         s3Utils.forceCreateS3Bucket(S3BucketNameBuilder.getBucketName(bucketName));
     }
 
-    @Then("^create a new text file in bucket \"([^\"]*)\" with name \"([^\"]*)\" and text \"([^\"]*)\"")
+    @Then("create a new text file in bucket {string} with name {string} and text {string}")
     public void createFileInBucket(String bucketName, String fileName, String text) {
         s3Utils.createTextFile(S3BucketNameBuilder.getBucketName(bucketName), fileName, text);
     }
 
-    @Then("^validate bucket with name \"([^\"]*)\" contains file with name \"([^\"]*)\" and text \"([^\"]*)\"")
+    @Then("validate bucket with name {string} contains file with name {string} and text {string}")
     public void validateIntegration(String bucketName, String fileName, String text) {
         Assertions
             .assertThat(TestUtils.waitForEvent(r -> r, () -> s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName),
@@ -53,19 +53,19 @@ public class S3ValidationSteps {
         Assertions.assertThat(s3Utils.readTextFileContentFromBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName)).contains(text);
     }
 
-    @Then("^validate bucket with name \"([^\"]*)\" does not contain file with name \"([^\"]*)\"")
+    @Then("validate bucket with name {string} does not contain file with name {string}")
     public void checkFileNotInBucket(String bucketName, String fileName) {
         Assertions
             .assertThat(TestUtils.waitForEvent(r -> r, () -> s3Utils.checkFileExistsInBucket(S3BucketNameBuilder.getBucketName(bucketName), fileName),
                 TimeUnit.MINUTES, 2, TimeUnit.SECONDS, 15)).isFalse();
     }
 
-    @Then("^check that buckets do exist: \"([^\"]*)\"")
+    @Then("check that buckets do exist: {string}")
     public void checkBucketsDoExist(String bucketNames) {
         checkBucketsPresence(bucketNames, true);
     }
 
-    @Then("^check that buckets do not exist: \"([^\"]*)\"")
+    @Then("check that buckets do not exist: {string}")
     public void checkBucketsDontExist(String bucketNames) {
         checkBucketsPresence(bucketNames, false);
     }

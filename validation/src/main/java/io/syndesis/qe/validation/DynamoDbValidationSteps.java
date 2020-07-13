@@ -29,7 +29,7 @@ public class DynamoDbValidationSteps {
      * @param primaryKey - dynamoDB primary key
      * @param sortKey - dynamoDb sort key
      */
-    @Given("create new dynamoDb table with primary key \"([^\"]*)\" and sort key \"([^\"]*)\"")
+    @Given("create new dynamoDb table with primary key {string} and sort key {string}")
     public void createTable(String primaryKey, String sortKey) {
         dynamoDb.createTable(primaryKey, sortKey);
     }

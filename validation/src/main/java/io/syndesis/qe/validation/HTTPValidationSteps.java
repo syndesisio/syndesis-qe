@@ -34,7 +34,7 @@ public class HTTPValidationSteps {
     // Static to have this lpf shared between tests
     private static LocalPortForward localPortForward;
 
-    @When("^clear endpoint events$")
+    @When("clear endpoint events")
     public void clear() {
         if (localPortForward != null) {
             OpenShiftUtils.terminateLocalPortForward(localPortForward);
@@ -47,12 +47,12 @@ public class HTTPValidationSteps {
         HTTPUtils.doDeleteRequest("http://localhost:28080/clearEvents");
     }
 
-    @Then("^verify that endpoint \"([^\"]*)\" was executed$")
+    @Then("verify that endpoint {string} was executed")
     public void verifyThatEndpointWasExecuted(String method) {
         verify(method, false);
     }
 
-    @Then("^verify that endpoint \"([^\"]*)\" was executed once$")
+    @Then("verify that endpoint {string} was executed once")
     public void verifyThatEndpointWasExecutedOnce(String method) {
         verify(method, true);
     }
@@ -74,8 +74,8 @@ public class HTTPValidationSteps {
         }
     }
 
-    @Then("^verify that after \"([^\"]*)\" seconds there were \"([^\"]*)\" calls$")
-    public void verifyThatAfterSecondsWasCalls(double seconds, int calls) {
+    @Then("^verify that after (\\d+) seconds there (?:were|was) (\\d+) calls?$")
+    public void verifyThatAfterSecondsWasCalls(int seconds, int calls) {
         clear();
         TestUtils.sleepIgnoreInterrupt((long) seconds * 1000);
         HTTPResponse r = HTTPUtils.doGetRequest("http://localhost:28080/events");

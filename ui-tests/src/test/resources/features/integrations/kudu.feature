@@ -28,7 +28,7 @@ Feature: Kudu connector
     Given clean application state
     And deploy Kudu
     And create table in Kudu server
-    And clean "todo" table
+    And reset content of "todo" table
     And log into the Syndesis
     And created connections
       | Apache Kudu | kudu | KuduConnector | description |
@@ -38,7 +38,7 @@ Feature: Kudu connector
   @ENTESB-11787
   @integrations-kudu-insert
   Scenario: Insert data into kudu table
-    When inserts into "todo with id" table
+    When insert into "todo with id" table
       | 1 | FirstValue |
 
     And click on the "Create Integration" link to create a new integration.

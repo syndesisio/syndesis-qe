@@ -16,7 +16,7 @@ Feature: Testing authentication options of API client
   @api-client-auth-api-key-query
   Scenario: API key used in API client provided in query
     Given deploy HTTP endpoints
-    And clean "todo" table
+    And reset content of "todo" table
     When navigate to the "Home" page
     And click on the "Customizations" link
     And click on the "API Client Connectors" link
@@ -71,7 +71,7 @@ Feature: Testing authentication options of API client
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And define constant "1" of type "Integer" in data mapper
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And create data mapper mappings
       | 1 | parameters.petId |
     And click on the "Done" button
@@ -90,7 +90,7 @@ Feature: Testing authentication options of API client
   @ENTESB-12921
   Scenario: API key used in API client provided in headers
     Given deploy HTTP endpoints
-    And clean "todo" table
+    And reset content of "todo" table
     When navigate to the "Home" page
     And click on the "Customizations" link
     And click on the "API Client Connectors" link
@@ -125,7 +125,7 @@ Feature: Testing authentication options of API client
       | host                         | http://http-svc:8080 |
       | basepath                     | /auth                |
     And click on the "Next" button
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And click on the "Save" button
 
     And navigate to the "Home" page
@@ -134,7 +134,7 @@ Feature: Testing authentication options of API client
     And select "Simple" integration action
     And click on the "Next" button
     And select "Log" integration step
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Next" button

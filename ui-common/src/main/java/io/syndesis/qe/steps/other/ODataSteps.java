@@ -7,6 +7,7 @@ import io.syndesis.qe.utils.http.HTTPResponse;
 import io.syndesis.qe.utils.http.HTTPUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
@@ -33,7 +34,7 @@ public class ODataSteps {
         HTTPResponse response = HTTPUtils.doGetRequest(ODataUtils.getOpenshiftRoute() + collection + "(" + entityKey + ")");
         assertThat(response.getCode()).isEqualTo(200);
         for (List<String> row : table.cells()) {
-            assertThat(response.getBody()).contains(row);
+            assertThat(response.getBody()).contains(row.stream().map(s -> s == null ? "" : s).collect(Collectors.toList()));
         }
     }
 

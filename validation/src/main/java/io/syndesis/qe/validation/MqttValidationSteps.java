@@ -22,7 +22,7 @@ public class MqttValidationSteps {
     private MqttUtils mqttUtils = new MqttUtils();
     private static LocalPortForward mqttLocalPortForward = null;
 
-    @Then("^.*verify that when message is sent to \"([^\"]*)\" topic it is redirected to \"([^\"]*)\" topic via integration$")
+    @Then("verify that when message is sent to {string} topic it is redirected to {string} topic via integration")
     public void sendAndRecieveMessage(String senderTopic, String receiverTopic) {
 
         //reset message received flag
@@ -57,7 +57,6 @@ public class MqttValidationSteps {
 
     @When("^send mqtt message to \"([^\"]*)\" topic$")
     public void sendMqttMessage(String senderTopic) {
-
         try {
             portForward();
 
@@ -74,7 +73,6 @@ public class MqttValidationSteps {
 
     private void portForward() {
         if (mqttLocalPortForward == null || !mqttLocalPortForward.isAlive()) {
-            //can be the same pod twice forwarded to different ports? YES
             Pod pod = OpenShiftUtils.getInstance().getAnyPod("app", "syndesis-amq");
             log.info("POD NAME: *{}*", pod.getMetadata().getName());
             mqttLocalPortForward = OpenShiftUtils.portForward(pod, 1883, 1883);
@@ -84,7 +82,7 @@ public class MqttValidationSteps {
     }
 
     private void portClose() {
-        if (mqttLocalPortForward != null || mqttLocalPortForward.isAlive()) {
+        if (mqttLocalPortForward != null && mqttLocalPortForward.isAlive()) {
             try {
                 mqttLocalPortForward.close();
             } catch (IOException e) {

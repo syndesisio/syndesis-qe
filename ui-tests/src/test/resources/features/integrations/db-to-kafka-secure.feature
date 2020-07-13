@@ -15,7 +15,7 @@ Feature: Integration - DB to DB
     And log into the Syndesis
     And reset content of "todo" table
     And reset content of "CONTACT" table
-    And inserts into "CONTACT" table
+    And insert into "CONTACT" table
       | Joe-tls | Jackson | Red Hat | db |
 #    this sleep is necessary, because AMQ streams autodiscovery process takes some time so streams are not available immediately
 #    and unfortunatelly there is no indication of autodiscovery process status yet. see issue ENTESB-13113
@@ -114,4 +114,4 @@ Feature: Integration - DB to DB
     And wait until integration db-to-kafka-tls E2E processed at least 1 message
     And wait until integration kafka-to-db-tls E2E processed at least 1 message
 
-    Then checks that query "SELECT task FROM TODO WHERE task = 'Joe-tls' limit 1" has "1" output
+    Then check that query "SELECT task FROM TODO WHERE task = 'Joe-tls' limit 1" has 1 row output

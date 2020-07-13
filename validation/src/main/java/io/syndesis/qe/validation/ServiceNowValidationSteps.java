@@ -25,7 +25,7 @@ public class ServiceNowValidationSteps {
     @Autowired
     private ServiceNowUtils snUtils;
 
-    @When("^create incident with \"([^\"]*)\" number$")
+    @When("create incident with {string} number")
     public void createIncidentWithNumber(String number) {
         Incident i = Incident.getSampleIncident();
         i.setNumber(snUtils.modifySNNumber(number));
@@ -34,7 +34,7 @@ public class ServiceNowValidationSteps {
         incidentId = ServiceNow.createIncident(i).getSysId();
     }
 
-    @When("^verify that received incident from \"([^\"]*)\" queue contains \"([^\"]*)\"$")
+    @When("verify that received incident from {string} queue contains {string}")
     public void verifyThatReceivedIncidentFromQueueContains(String queue, String contains) {
         String message = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, queue);
         ServiceNow.deleteIncident(incidentId);
@@ -42,7 +42,7 @@ public class ServiceNowValidationSteps {
         assertThat(message).contains(incidentId);
     }
 
-    @When("^send \"([^\"]*)\" incident to \"([^\"]*)\" queue and verify it was created in SN$")
+    @When("send {string} incident to {string} queue and verify it was created in SN")
     public void sendIncidentToQueueAndVerifyItWasCreatedInSN(String incidentNumber, String queue) {
         incidentNumber = snUtils.modifySNNumber(incidentNumber);
         final String description = "CRTDINC01" + UUID.randomUUID().toString().substring(0, 8);
@@ -61,7 +61,7 @@ public class ServiceNowValidationSteps {
         Assertions.assertThat(created.getDescription()).contains(description);
     }
 
-    @Then("^verify that incident with \"([^\"]*)\" number has \"([^\"]*)\" description")
+    @Then("verify that incident with {string} number has {string} description")
     public void verifyIncidentsWithNumber(String numbers, String description) {
         List<Incident> list = ServiceNow.getFilteredIncidents("number=" + numbers, 1);
         Assertions.assertThat(list).isNotEmpty();
@@ -70,7 +70,7 @@ public class ServiceNowValidationSteps {
         Assertions.assertThat(created.getDescription()).contains(description);
     }
 
-    @When("^delete incidents with \"([^\"]*)\" number$")
+    @When("delete incidents with {string} number")
     public void deleteIncidentsWithNumber(String numbers) {
         final String[] incidentNumbers = numbers.split(",");
         List<Incident> incidents = new ArrayList<>();

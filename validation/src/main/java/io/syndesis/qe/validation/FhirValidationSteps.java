@@ -25,25 +25,25 @@ public class FhirValidationSteps {
     private final DbValidationSteps dbValidationSteps = new DbValidationSteps();
 
     //    entity PATIENT:
-    @Then("^validate that patient with name \"([^\"]*)\" is not in FHIR$")
+    @Then("validate that patient with name {string} is not in FHIR")
     public void validateFhirDelete(String fullName) {
         MyPatientSpecification ps = splitName(fullName);
         assertThat(fhirUtils.isPatientInFhir(ps)).isFalse();
     }
 
-    @Then("^validate that patient with name \"([^\"]*)\" is in FHIR$")
+    @Then("validate that patient with name {string} is in FHIR")
     public void validateThatPatientIsInFHIR(String name) {
         MyPatientSpecification ps = splitName(name);
         assertThat(fhirUtils.isPatientInFhir(ps)).isTrue();
     }
 
-    @Then("^delete all relevant entities on FHIR server$")
+    @Then("delete all relevant entities on FHIR server")
     public void cleanAllRelevantEntitiesOnFHIRServer() {
         fhirUtils.deleteAllPatients();
         fhirUtils.deleteAllBasics();
     }
 
-    @Then("^create patient with name \"([^\"]*)\" on FHIR and put it into DB$")
+    @Then("create patient with name {string} on FHIR and put it into DB")
     public void createPatientWithNameOnFHIRServerAndDb(String name) {
         MyPatientSpecification ps = splitName(name);
         ps.setId(fhirUtils.insertPatientToFhir(ps));
@@ -51,7 +51,7 @@ public class FhirValidationSteps {
         dbValidationSteps.insertsIntoTable("CONTACT", dt);
     }
 
-    @Then("^validate that last inserted patients name has been changed to \"([^\"]*)\" in FHIR$")
+    @Then("validate that last inserted patients name has been changed to {string} in FHIR")
     public void validateThatLastInsertPatientNameHasBeenChangedToInFHIR(String newName) {
         MyPatientSpecification newPs = splitName(newName);
         newPs.setId(fhirUtils.getLastPatientId());
@@ -75,7 +75,7 @@ public class FhirValidationSteps {
     }
 
     //    entity - BASIC:
-    @When("create basic with language \"([^\"]*)\" on FHIR and put it into DB")
+    @When("create basic with language {string} on FHIR and put it into DB")
     public void createBasicWithLanguageOnFHIRAndDB(String lang) {
         String basicId = fhirUtils.insertBasicToFhir(lang);
         MyBasicSpecification bs = new MyBasicSpecification(lang, basicId);
@@ -83,7 +83,7 @@ public class FhirValidationSteps {
         dbValidationSteps.insertsIntoTable("TODO WITH ID", dt);
     }
 
-    @Then("validate that last inserted basics language has been changed to \"([^\"]*)\" in FHIR")
+    @Then("validate that last inserted basics language has been changed to {string} in FHIR")
     public void validateThatLastBasicsLanguageHasBeenChangedInFHIR(String lang) {
         MyBasicSpecification newBs = new MyBasicSpecification(lang);
         newBs.setId(fhirUtils.getLastBasicId());
@@ -99,7 +99,7 @@ public class FhirValidationSteps {
         return DataTable.create(raw);
     }
 
-    @Then("^add FHIR account$")
+    @Then("add FHIR account")
     public void addFhirAccount() {
         ResourceFactory.get(FHIR.class).addAccount();
     }

@@ -39,35 +39,35 @@ public class CommonSteps {
     // Flag is the cluster reachability test failed, if it does, all remaining tests will be failed
     private static boolean isClusterReachable = true;
 
-    @Given("^clean default namespace")
+    @Given("clean default namespace")
     public static void cleanNamespace() {
         io.syndesis.qe.common.CommonSteps.cleanNamespace();
     }
 
-    @Given("^clean all builds")
+    @Given("clean all builds")
     public void cleanBuilds() {
         OpenShiftUtils.getInstance().getBuildConfigs().forEach(OpenShiftUtils.getInstance()::deleteBuildConfig);
         OpenShiftUtils.getInstance().getBuilds().forEach(OpenShiftUtils.getInstance()::deleteBuild);
     }
 
-    @When("^deploy Syndesis$")
+    @When("deploy Syndesis")
     public static void deploySyndesis() {
         ResourceFactory.get(Syndesis.class).deploy();
         // Use this method instead of ResourceFactory#create() to get the info what went wrong
         waitForSyndesis();
     }
 
-    @Then("^wait for Syndesis to become ready")
+    @Then("wait for Syndesis to become ready")
     public static void waitForSyndesis() {
         io.syndesis.qe.common.CommonSteps.waitForSyndesis();
     }
 
-    @When("^deploy Camel-K$")
+    @When("deploy Camel-K")
     public static void deployCamelK() {
         ResourceFactory.create(CamelK.class);
     }
 
-    @Then("^wait for Camel-K to become ready$")
+    @Then("wait for Camel-K to become ready")
     public static void waitForCamelK() {
         OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
@@ -81,7 +81,7 @@ public class CommonSteps {
         ResourceFactory.get(Syndesis.class).changeRuntime(runtime);
     }
 
-    @Then("^wait for DV to become ready$")
+    @Then("wait for DV to become ready")
     public void waitForDv() {
         OpenShiftUtils.getInstance().waiters()
             .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
@@ -90,37 +90,37 @@ public class CommonSteps {
             .waitFor();
     }
 
-    @When("^deploy Jaeger$")
+    @When("deploy Jaeger")
     public void deployJaeger() {
         ResourceFactory.create(Jaeger.class);
     }
 
-    @When("^deploy custom database$")
+    @When("deploy custom database")
     public void deployDb() {
         ResourceFactory.create(ExternalDatabase.class);
     }
 
-    @When("^deploy DV$")
+    @When("deploy DV")
     public void deployDv() {
         ResourceFactory.create(DV.class);
     }
 
-    @When("^deploy public oauth proxy$")
+    @When("deploy public oauth proxy")
     public void deployApiOauthProxy() {
         ResourceFactory.create(PublicOauthProxy.class);
     }
 
-    @Given("^deploy FHIR server$")
+    @Given("deploy FHIR server")
     public void deployFHIR() {
         ResourceFactory.create(FHIR.class);
     }
 
-    @When("^undeploy Syndesis$")
+    @When("undeploy Syndesis")
     public static void undeploySyndesis() {
         io.syndesis.qe.common.CommonSteps.undeploySyndesis();
     }
 
-    @Given("^clean application state")
+    @Given("clean application state")
     public void resetState() {
         if (TestConfiguration.isDeloreanEnvironment()) {
             return;
@@ -164,18 +164,18 @@ public class CommonSteps {
         }
     }
 
-    @Then("^sleep for jenkins delay or \"([^\"]*)\" seconds")
+    @Then("sleep for jenkins delay or {int} seconds")
     public void sleepForJenkinsDelay(int secs) {
         TestUtils.sleepForJenkinsDelayIfHigher(secs);
     }
 
-    @When("^refresh server port-forward")
+    @When("refresh server port-forward")
     public void refreshPortForward() {
         RestUtils.reset();
         RestUtils.getRestUrl();
     }
 
-    @Then("^wait for Todo to become ready$")
+    @Then("wait for Todo to become ready")
     public void waitForTodo() {
         log.info("Waiting for Todo to get ready");
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -198,7 +198,7 @@ public class CommonSteps {
         }
     }
 
-    @When("^set up ServiceAccount for Public API$")
+    @When("set up ServiceAccount for Public API")
     public void setUpServiceAccountForPublicAPI() {
         PublicApiUtils.createServiceAccount();
     }

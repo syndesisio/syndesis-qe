@@ -42,15 +42,12 @@ public class CommonValidationSteps {
     @Autowired
     private IntegrationOverviewEndpoint integrationOverviewEndpoint;
 
-    public CommonValidationSteps() {
-    }
-
-    @Then("^wait for integration with name: \"([^\"]*)\" to become active$")
+    @Then("wait for integration with name: {string} to become active")
     public void waitForIntegrationToBeActive(String integrationName) {
         waitForIntegrationToBeActive(9, integrationName);
     }
 
-    @Then("wait max (\\d+) minutes for integration with name: \"([^\"]*)\" to become active$")
+    @Then("wait max {int} minutes for integration with name: {string} to become active")
     public void waitForIntegrationToBeActive(int waitTime, String integrationName) {
         final long start = System.currentTimeMillis();
         //wait for activation
@@ -75,7 +72,7 @@ public class CommonValidationSteps {
         }
     }
 
-    @Then("^verify that the integration with name \"([^\"]*)\" is not started$")
+    @Then("verify that the integration with name {string} is not started")
     public void verifyIntegrationNotStarted(String integrationName) {
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
         final IntegrationOverview integrationOverview = integrationOverviewEndpoint.getOverview(integrationId);
@@ -83,7 +80,7 @@ public class CommonValidationSteps {
             .as("No more integrations should be started").isFalse();
     }
 
-    @Then(value = "^verify there is s2i build running for integration: \"([^\"]*)\"$")
+    @Then("verify there is s2i build running for integration: {string}")
     public void verifyIntegrationBuildRunning(String integrationName) {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
         final List<Build> builds = new ArrayList<>(OpenShiftUtils.getInstance().getBuilds());
@@ -93,7 +90,7 @@ public class CommonValidationSteps {
         log.info("There is build with name {} running", sanitizedName);
     }
 
-    @Then(value = "^verify there are no s2i builds running for integration: \"([^\"]*)\"$")
+    @Then("verify there are no s2i builds running for integration: {string}")
     public void verifyNoIntegrationBuildRunning(String integrationName) {
         final String sanitizedName = integrationName.toLowerCase().replaceAll(" ", "-");
         Assertions.assertThat(new ArrayList<>(OpenShiftUtils.getInstance().getBuilds()))
@@ -112,7 +109,7 @@ public class CommonValidationSteps {
             .isThrownBy(() -> integrationsEndpoint.getIntegrationId(integrationName));
     }
 
-    @Then("^verify integration \"([^\"]*)\" has current state \"([^\"]*)\"")
+    @Then("verify integration {string} has current state {string}")
     public void verifyIntegrationState(String integrationName, String integrationState) {
 
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
@@ -123,7 +120,7 @@ public class CommonValidationSteps {
         Assertions.assertThat(integrationOverview.getCurrentState().name()).isEqualTo(integrationState);
     }
 
-    @Then("^validate integration: \"([^\"]*)\" pod scaled to (\\d+)$")
+    @Then("validate integration: {string} pod scaled to {int}")
     public void verifyPodCount(String integrationName, int podCount) {
         log.info("Then validate the pod scaled to: {}", podCount);
 
@@ -136,10 +133,10 @@ public class CommonValidationSteps {
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                log.error("Interruption Error: {}", e);
+                log.error("Interruption Error: {0}", e);
             }
         } catch (InterruptedException ex) {
-            log.error("Error: {}", ex);
+            log.error("Error: {0}", ex);
         }
         final List<Pod> pods = OpenShiftUtils.getInstance().getPods().stream().filter(
             b -> b.getMetadata().getName().contains(sanitizedName)).collect(Collectors.toList());
@@ -147,7 +144,7 @@ public class CommonValidationSteps {
         log.info("There are {} pods with name {} running", podCount, sanitizedName);
     }
 
-    @Then("^switch Inactive and Active state on integration \"([^\"]*)\" for (\\d+) times and check pods up/down")
+    @Then("switch Inactive and Active state on integration {string} for {int} times and check pods")
     public void verifyIntegrationOnOffNTimes(String integrationName, int switchNTimes) {
         final String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
 
@@ -178,7 +175,7 @@ public class CommonValidationSteps {
         }
     }
 
-    @Then("^check that integration (\\w+) contains warning \"([^\"]*)\"")
+    @Then("check that integration {word} contains warning {string}")
     public void verifyWarningOnIntegration(String integrationName, String warning) {
         IntegrationOverview overview = integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get());
         Assertions
@@ -189,7 +186,7 @@ public class CommonValidationSteps {
             .isNotEmpty();
     }
 
-    @Then("^check that integration (\\w+) doesn't contains any warning")
+    @Then("check that integration {word} doesn't contains any warning")
     public void verifyNoWarningOnIntegration(String integrationName) {
         Assertions
             .assertThat(integrationOverviewEndpoint.getOverview(integrationsEndpoint.getIntegrationId(integrationName).get()).getBoard().getWarnings()

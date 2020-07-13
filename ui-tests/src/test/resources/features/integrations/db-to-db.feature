@@ -11,7 +11,7 @@ Feature: Integration - DB to DB
     And log into the Syndesis
     And reset content of "todo" table
     And reset content of "CONTACT" table
-    And inserts into "CONTACT" table
+    And insert into "CONTACT" table
       | Joe | Jackson | Red Hat | db |
 
 #
@@ -21,7 +21,7 @@ Feature: Integration - DB to DB
   @db-connection-crud-1-read-update
   Scenario: Read and update operations
 
-    Then inserts into "todo" table
+    Then insert into "todo" table
       | Joe |
 
     When navigate to the "Home" page
@@ -120,16 +120,16 @@ Feature: Integration - DB to DB
     And wait until integration "db-connection-crud-2-read-create" gets into "Running" state
     And wait until integration db-connection-crud-2-read-create processed at least 1 message
 
-    Then validate that all todos with task "Joe" have value completed "2", period in ms: "5000"
+    Then validate that all todos with task "Joe" have value completed 2, period in ms: 5000
 
 #
 #  3. select - delete
 #
   @db-connection-crud-3-read-delete
   Scenario: Read and delete operations
-    Then inserts into "todo" table
+    Then insert into "todo" table
       | Joe |
-    Then inserts into "todo" table
+    Then insert into "todo" table
       | Jimmy |
 
     When navigate to the "Home" page
@@ -178,8 +178,8 @@ Feature: Integration - DB to DB
     And wait until integration "CRUD3-read-delete E2E" gets into "Running" state
     And wait until integration CRUD3-read-delete E2E processed at least 1 message
 
-    Then validate that number of all todos with task "Joe" is "0"
-    And validate that number of all todos with task "Jimmy" is "1"
+    Then validate that number of all todos with task "Joe" is 0
+    And validate that number of all todos with task "Jimmy" is 1
 
 #
 #  4. select - create (via buildin procedure)
@@ -190,7 +190,7 @@ Feature: Integration - DB to DB
       # INSERT INTO CONTACT(first_name, last_name, company, lead_source) VALUES('Josef','Stieranka','Istrochem','db');
 
 
-    When inserts into "contact" table
+    When insert into "contact" table
       | Josef | Stieranka | Istrochem | db |
 
     Then navigate to the "Home" page
@@ -250,9 +250,9 @@ Feature: Integration - DB to DB
 #
   @db-connection-5-sqlquery-checker
   Scenario: Sql query checker
-    Then inserts into "todo" table
+    Then insert into "todo" table
       | Joe |
-    Then inserts into "todo" table
+    Then insert into "todo" table
       | Jimmy |
 
     When navigate to the "Home" page
@@ -311,15 +311,15 @@ Feature: Integration - DB to DB
     And wait until integration "DB Connection 5 SQL query checker E2E" gets into "Running" state
     And wait until integration DB Connection 5 SQL query checker E2E processed at least 1 message
 
-    Then validate that number of all todos with task "Joe" is "0"
-    And validate that number of all todos with task "Jimmy" is "1"
+    Then validate that number of all todos with task "Joe" is 0
+    And validate that number of all todos with task "Jimmy" is 1
 
   @db-insert-multiple-rows
   Scenario: Inserting multiple rows 
     Given Set Todo app credentials
-    Then inserts into "todo" table
+    Then insert into "todo" table
       | Joe |
-    And inserts into "todo" table
+    And insert into "todo" table
       | Jimmy |
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page

@@ -21,9 +21,9 @@ import com.codeborne.selenide.WebDriverRunner;
 
 import java.util.List;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -87,13 +87,14 @@ public class ConditionalFlowSteps {
     public void validateConditionContent(DataTable data) {
 
         for (List<String> row : data.cells()) {
+            String expected = row.get(1) == null ? "" : row.get(1);
             assertThat($(EditFlowStepElements.getConditionOnPosition(row.get(0))).getValue())
-                .isEqualToIgnoringCase(row.get(1));
+                .isEqualToIgnoringCase(expected);
 
             //selenide returns empty value in some cases even if the value is present, probably a driver bug
             // so second assert with usage of javascript is necessary
             assertThat((String) executeJavaScript("return document.getElementById('flowconditions-" + row.get(0) + "-condition').value"))
-                .isEqualToIgnoringCase(row.get(1));
+                .isEqualToIgnoringCase(expected);
         }
     }
 

@@ -69,7 +69,7 @@ public class DataMapperSteps extends AbstractStep {
         DataMapperStepDefinition newDmStep = new DataMapperStepDefinition();
         newDmStep.setFromStep(fromStep);
         newDmStep.setInputFields(Arrays.asList(sourceField));
-        newDmStep.setOutputFields(targetMappingData.asList(String.class));
+        newDmStep.setOutputFields(targetMappingData.transpose().asList(String.class));
         newDmStep.setMappingType(MappingType.SEPARATE);
         newDmStep.setStrategy(SeparatorType.valueOf(strategy));
         super.getSteps().getLastStepDefinition().getDataMapperDefinition().get().getDataMapperStepDefinition().add(newDmStep);

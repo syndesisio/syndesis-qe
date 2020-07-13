@@ -13,8 +13,8 @@ Feature: Integration - HTTP
     Given clean application state
       And deploy ActiveMQ broker
       And create ActiveMQ connection
-      And clean "CONTACT" table
-      And inserts into "CONTACT" table
+      And reset content of "CONTACT" table
+      And insert into "CONTACT" table
         | Tony  | Do  | Syndesis-qe | db |
         | John  | Doe | Syndesis-qe | db |
         | Jeff  | Doe | Syndesis-qe | db |

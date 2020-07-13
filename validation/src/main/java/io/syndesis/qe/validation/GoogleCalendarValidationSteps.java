@@ -17,13 +17,12 @@ public class GoogleCalendarValidationSteps {
     @Autowired
     private GoogleCalendarUtils gcu;
 
-
-    @Then("^verify that event \"([^\"]*)\" exists in calendar \"([^\"]*)\" using account \"([^\"]*)\"$")
+    @Then("verify that event {string} exists in calendar {string} using account {string}")
     public void verifyThatEventExistsInCalendarUsingAccount(String eventSummary, String calendarName, String googleAccount) throws Throwable {
         verifyEvent(eventSummary, null, gcu.getAliasedCalendarName(calendarName), googleAccount);
     }
 
-    @Then("^verify that event \"([^\"]*)\" with description \"([^\"]*)\" exists in calendar \"([^\"]*)\" using account \"([^\"]*)\"$")
+    @Then("verify that event {string} with description {string} exists in calendar {string} using account {string}")
     public void verifyThatEventWithDescriptionExistsInCalendarUsingAccount(String eventSummary, String eventDescription, String calendarName, String googleAccount) throws IOException {
         verifyEvent(eventSummary, eventDescription, gcu.getAliasedCalendarName(calendarName), googleAccount);
     }

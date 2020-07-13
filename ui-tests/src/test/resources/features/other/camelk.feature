@@ -17,7 +17,7 @@ Feature: Camel-k Runtime
   @ENTESB-14063
   Scenario: CamelK smoke test
     Given truncate "todo" table
-    And inserts into "todo" table
+    And insert into "todo" table
       | task1        |
       | task2_filter |
 
@@ -75,6 +75,6 @@ Feature: Camel-k Runtime
     #wait for integration to get in active state
     And wait until integration "CamelK DB to log" gets into "Running" state
 
-    And sleep for jenkins delay or "20" seconds
+    And sleep for jenkins delay or 20 seconds
     Then validate that logs of integration "CamelK DB to log" contains string "task1"
     And validate that logs of integration "CamelK DB to log" doesn't contain string "task2"

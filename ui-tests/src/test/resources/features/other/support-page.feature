@@ -52,7 +52,7 @@ Feature: Support page
     And log into the Syndesis
     And reset content of "todo" table
     And reset content of "CONTACT" table
-    And inserts into "CONTACT" table
+    And insert into "CONTACT" table
       | Joe | Jackson | Red Hat | db |
 
     When navigate to the "Home" page

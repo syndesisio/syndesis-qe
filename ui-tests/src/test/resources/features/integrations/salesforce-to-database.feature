@@ -12,7 +12,7 @@ Feature: Integration - Salesforce to DB
   Background: Clean application state
     Given clean application state
     And log into the Syndesis
-    And clean "contact" table
+    And reset content of "contact" table
     And clean SF, removes all leads with email: "test@salesfoce-to-database.feature"
     And navigate to the "Settings" page
     And fill "Salesforce" oauth settings "QE Salesforce"

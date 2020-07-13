@@ -20,13 +20,13 @@ public class DetailSteps {
 
     private ConnectionDetail detailPage = new ConnectionDetail();
 
-    @Then("^check visibility of \"([^\"]*)\" connection details")
+    @Then("check visibility of {string} connection details")
     public void verifyConnectionDetails(String connectionName) {
         log.info("Connection detail page must show connection name");
         assertThat(detailPage.connectionName()).isEqualTo(connectionName);
     }
 
-    @Then("^validate oauth connection \"([^\"]*)\" by clicking Validate button$")
+    @Then("validate oauth connection {string} by clicking Validate button")
     public void validateOauthConnectionByClickingValidateButton(String connectionName) {
         Connections connectionsPage = new Connections();
         connectionsPage.getConnection(connectionName).shouldBe(Condition.visible).click();
@@ -35,7 +35,7 @@ public class DetailSteps {
         detailPage.getCloseableAllerts(Alert.SUCCESS).first().shouldBe(exist);
     }
 
-    @Then("remove all \"([^\"]*)\" alerts")
+    @Then("remove all {string} alerts")
     public void removeAllAlerts(String alertType) {
         try {
             detailPage.removeAllAlertsFromPage(Alert.getALERTS().get(alertType));
@@ -45,12 +45,12 @@ public class DetailSteps {
         }
     }
 
-    @When("change connection description to \"([^\"]*)\"")
+    @When("change connection description to {string}")
     public void changeConnectionDescription(String connectionDescription) {
         detailPage.setDescription(connectionDescription);
     }
 
-    @Then("^check that connection description \"([^\"]*)\"")
+    @Then("check that connection description {string}")
     public void verifyConnectionDescription(String description) {
         assertThat(detailPage.getDescription()).isEqualTo(description);
     }

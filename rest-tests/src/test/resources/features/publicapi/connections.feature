@@ -15,7 +15,7 @@ Feature: Public API - connections point
     When update properties of connection PostgresDB
       | user   | myuser    |
       | schema | sampledb2 |
-    And sleep for jenkins delay or "5" seconds
+    And sleep for jenkins delay or 5 seconds
     Then check that PostgresDB connection contains properties
       | user   | myuser    |
       | schema | sampledb2 |
@@ -29,12 +29,12 @@ Feature: Public API - connections point
     And update properties of connection PostgresDB
       | user   | myuser    |
       | schema | sampledb2 |
-    And sleep for jenkins delay or "5" seconds
+    And sleep for jenkins delay or 5 seconds
     Then check that integration integrationConnectionUpdate contains warning "'configured-properties' is different"
     And check that integration integrationConnectionUpdate contains warning "Context: Connection('PostgresDB')"
     When update properties of connection PostgresDB and refresh integration
       | user   | myuser    |
       | schema | sampledb2 |
-    And sleep for jenkins delay or "5" seconds
+    And sleep for jenkins delay or 5 seconds
     Then check that integration integrationConnectionUpdate doesn't contains any warning
 

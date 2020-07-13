@@ -25,7 +25,7 @@ public class GoogleCalendarSteps {
     @Autowired
     private GoogleCalendarUtils gcu;
 
-    @When("^create calendars$")
+    @When("create calendars")
     public void createCalendar(DataTable calendarsData) throws IOException {
         List<Map<String, String>> valueRows = calendarsData.asMaps(String.class, String.class);
         for (Map<String, String> row : valueRows) {
@@ -43,10 +43,10 @@ public class GoogleCalendarSteps {
         }
     }
 
-    @When("^create following \"([^\"]*)\" events in calendar \"([^\"]*)\" with account \"([^\"]*)\"$")
+    @When("create following {string} events in calendar {string} with account {string}")
     public void createFollowingEventsInCalendarWithAccount(String eventTime, String calendarName, String account, DataTable events) throws IOException {
         List<Map<String, String>> valueRows = events.asMaps(String.class, String.class);
-        String prefix = ((eventTime.equalsIgnoreCase("all")) ? "" : eventTime).trim();
+        String prefix = (("all".equalsIgnoreCase(eventTime)) ? "" : eventTime).trim();
         for (Map<String, String> row : valueRows) {
             String eventName = row.get("summary").trim();
             if (!eventName.startsWith(prefix)) {
@@ -95,13 +95,13 @@ public class GoogleCalendarSteps {
             }
         } else { // if date value not provided set time in future
             // offset of 24 or 25 hours to future: start time now()+24, end time now()+25
-            long millisToFuture = ((prefix.equalsIgnoreCase("start") ? 0 : 1) + 24) * 60 * 60 * 1000;
+            long millisToFuture = (("start".equalsIgnoreCase(prefix) ? 0 : 1) + 24) * 60 * 60 * 1000;
             edt.setDateTime(new DateTime(System.currentTimeMillis() + millisToFuture));
         }
         return edt;
     }
 
-    @When("^update event \"([^\"]*)\" in calendar \"([^\"]*)\" for user \"([^\"]*)\" with values$")
+    @When("update event {string} in calendar {string} for user {string} with values")
     public void updateEventInCalendarForUserWithValues(String eventSummary, String calendarName, String account, DataTable properties) throws Throwable {
         String aliasedCalendarName = gcu.getAliasedCalendarName(calendarName);
         String calendarId = gcu.getPreviouslyCreatedCalendar(account, aliasedCalendarName).getId();

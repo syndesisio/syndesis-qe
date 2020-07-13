@@ -155,7 +155,7 @@ public class EditorSteps {
 
     @Then("^.*checks? that in connection info popover for step number \"([^\"]*)\" is following text$")
     public void checkTextInConnectionInfo(int stepPosition, DataTable connectionsData) {
-        List<String> data = connectionsData.asList(String.class);
+        List<String> data = connectionsData.transpose().asList(String.class);
         String foundText = flowViewComponent.getConnectionPropertiesText(flowViewComponent.getStepOnPosition(stepPosition));
 
         assertThat(foundText).isNotEmpty();
