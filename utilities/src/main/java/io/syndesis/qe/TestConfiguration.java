@@ -418,6 +418,9 @@ public class TestConfiguration {
         // Set oc version - this version of the client will be used as the binary client
         System.setProperty("xtf.openshift.version", "4.3");
 
+        // Set jackson properties for productized build
+        System.setProperty("jackson.deserialization.whitelist.packages", "io.syndesis.common.model,io.atlasmap");
+
         if (properties.getProperty(SYNDESIS_RUNTIME) == null) {
             defaultProps.setProperty(SYNDESIS_RUNTIME, "springboot");
         }
