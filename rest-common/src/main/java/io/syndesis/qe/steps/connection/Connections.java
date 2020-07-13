@@ -17,7 +17,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -59,7 +58,6 @@ public class Connections {
         final String connectionName = connectionPropertiesMap.get("name");
 
         final Connector connector = connectorsEndpoint.get(connectorId);
-        final Optional<Account> acc = accountsDirectory.getAccount(connectionPropertiesMap.get("account"));
 
         connectionPropertiesMap.remove("connector");
         connectionPropertiesMap.remove("connectionId");
@@ -68,10 +66,7 @@ public class Connections {
 
         for (Map.Entry<String, String> keyValue : connectionPropertiesMap.entrySet()) {
             if ("$ACCOUNT$".equals(keyValue.getValue())) {
-                if (!acc.isPresent()) {
-                    throw new RuntimeException("Account " + connectionPropertiesMap.get("account") + " was not found");
-                }
-                keyValue.setValue(acc.get().getProperty(keyValue.getKey()));
+                keyValue.setValue(accountsDirectory.get(connectionPropertiesMap.get("account")).getProperty(keyValue.getKey()));
             }
         }
 
@@ -90,7 +85,7 @@ public class Connections {
 
     @Given("^create ActiveMQ connection$")
     public void createActiveMQConnection() {
-        account = accountsDirectory.getAccount(Account.Name.ACTIVEMQ).get();
+        account = accountsDirectory.get(Account.Name.ACTIVEMQ);
         createConnection(
             fromData(
                 keyValue("connector", "activemq"),
@@ -103,7 +98,7 @@ public class Connections {
 
     @Given("^create AMQP connection$")
     public void createAMQPConnection() {
-        account = accountsDirectory.getAccount(Account.Name.AMQP).get();
+        account = accountsDirectory.get(Account.Name.AMQP);
         createConnection(
             fromData(
                 keyValue("connector", "amqp"),
@@ -117,7 +112,7 @@ public class Connections {
 
     @Given("^create Box connection$")
     public void createBoxConnection() {
-        account = accountsDirectory.getAccount(Account.Name.BOX).get();
+        account = accountsDirectory.get(Account.Name.BOX);
         createConnection(
             fromData(
                 keyValue("connector", "box"),
@@ -131,7 +126,7 @@ public class Connections {
 
     @Given("^create Dropbox connection$")
     public void createDropboxConnection() {
-        account = accountsDirectory.getAccount(Account.Name.DROPBOX).get();
+        account = accountsDirectory.get(Account.Name.DROPBOX);
         createConnection(
             fromData(
                 keyValue("connector", "dropbox"),
@@ -143,7 +138,7 @@ public class Connections {
 
     @Given("^create DynamoDB connection$")
     public void createDynamoDBConnection() {
-        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        account = accountsDirectory.get(Account.Name.AWS);
         createConnection(
             fromData(
                 keyValue("connector", "dynamo_db"),
@@ -157,7 +152,7 @@ public class Connections {
 
     @Given("^create Email (SMTP|IMAP|POP3) (SSL|STARTTLS) connection$")
     public void createEmailConnection(String type, String security) {
-        account = accountsDirectory.getAccount("Email " + type + " With " + security).get();
+        account = accountsDirectory.get("Email " + type + " With " + security);
         createConnection(
             fromData(
                 keyValue("connector", "smtp".equals(type.toLowerCase()) ? "email_send" : "email_receive"),
@@ -180,7 +175,7 @@ public class Connections {
 
     @Given("^create FTP connection$")
     public void createFTPConnection() {
-        account = accountsDirectory.getAccount(Account.Name.FTP).get();
+        account = accountsDirectory.get(Account.Name.FTP);
         createConnection(
             fromData(
                 keyValue("connector", "ftp"),
@@ -192,7 +187,7 @@ public class Connections {
 
     @Given("^create HTTP connection$")
     public void createHTTPConnection() {
-        account = accountsDirectory.getAccount(Account.Name.HTTP).get();
+        account = accountsDirectory.get(Account.Name.HTTP);
         createConnection(
             fromData(
                 keyValue("connector", "http"),
@@ -203,7 +198,7 @@ public class Connections {
 
     @Given("^create HTTPS connection$")
     public void createHTTPSConnection() {
-        account = accountsDirectory.getAccount(Account.Name.HTTPS).get();
+        account = accountsDirectory.get(Account.Name.HTTPS);
         createConnection(
             fromData(
                 keyValue("connector", "https"),
@@ -214,7 +209,7 @@ public class Connections {
 
     @Given("^create IRC connection$")
     public void createIRCConnection() {
-        account = accountsDirectory.getAccount(Account.Name.IRC).get();
+        account = accountsDirectory.get(Account.Name.IRC);
         createConnection(
             fromData(
                 keyValue("connector", "irc"),
@@ -236,7 +231,7 @@ public class Connections {
 
     @Given("^create Kafka connection$")
     public void createKafkaConnection() {
-        account = accountsDirectory.getAccount(Account.Name.KAFKA).get();
+        account = accountsDirectory.get(Account.Name.KAFKA);
         createConnection(
             fromData(
                 keyValue("connector", "kafka"),
@@ -248,7 +243,7 @@ public class Connections {
 
     @Given("^create Kudu connection$")
     public void createKuduConnection() {
-        account = accountsDirectory.getAccount(Account.Name.KUDU).get();
+        account = accountsDirectory.get(Account.Name.KUDU);
         createConnection(
             fromData(
                 keyValue("connector", "kudu"),
@@ -259,7 +254,7 @@ public class Connections {
 
     @Given("^create MongoDB connection$")
     public void createMongoDBConnection() {
-        account = accountsDirectory.getAccount(Account.Name.MONGODB36).get();
+        account = accountsDirectory.get(Account.Name.MONGODB36);
         createConnection(
             fromData(
                 keyValue("connector", "mongodb36"),
@@ -274,7 +269,7 @@ public class Connections {
 
     @Given("^create OData (HTTP|HTTPS) connection$")
     public void createODataConnection(String type) {
-        account = accountsDirectory.getAccount("http".equals(type.toLowerCase()) ? Account.Name.ODATA_HTTP : Account.Name.ODATA_HTTPS).get();
+        account = accountsDirectory.get("http".equals(type.toLowerCase()) ? Account.Name.ODATA_HTTP : Account.Name.ODATA_HTTPS);
         createConnection(
             fromData(
                 keyValue("connector", "odata"),
@@ -285,7 +280,7 @@ public class Connections {
 
     @Given("^create SalesForce connection$")
     public void createSalesForceConnection() {
-        account = accountsDirectory.getAccount(Account.Name.SALESFORCE).get();
+        account = accountsDirectory.get(Account.Name.SALESFORCE);
         createConnection(
             fromData(
                 keyValue("connector", "salesforce"),
@@ -300,7 +295,7 @@ public class Connections {
 
     @Given("^create ServiceNow connection$")
     public void createServicenowConnection() {
-        account = accountsDirectory.getAccount(Account.Name.SERVICENOW).get();
+        account = accountsDirectory.get(Account.Name.SERVICENOW);
         createConnection(
             fromData(
                 keyValue("connector", "servicenow"),
@@ -313,7 +308,7 @@ public class Connections {
 
     @Given("^create SFTP connection$")
     public void createSFTPConnection() {
-        account = accountsDirectory.getAccount(Account.Name.SFTP).get();
+        account = accountsDirectory.get(Account.Name.SFTP);
         createConnection(
             fromData(
                 keyValue("connector", "sftp"),
@@ -327,7 +322,7 @@ public class Connections {
 
     @Given("^create Slack connection$")
     public void createSlackConnection() {
-        account = accountsDirectory.getAccount(Account.Name.SLACK).get();
+        account = accountsDirectory.get(Account.Name.SLACK);
         createConnection(
             fromData(
                 keyValue("connector", "slack"),
@@ -339,7 +334,7 @@ public class Connections {
 
     @Given("^create SNS connection$")
     public void createSNSConnection() {
-        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        account = accountsDirectory.get(Account.Name.AWS);
         createConnection(
             fromData(
                 keyValue("connector", "sns"),
@@ -352,7 +347,7 @@ public class Connections {
 
     @Given("^create SQS connection$")
     public void createSQSConnection() {
-        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        account = accountsDirectory.get(Account.Name.AWS);
         createConnection(
             fromData(
                 keyValue("connector", "sqs"),
@@ -365,7 +360,7 @@ public class Connections {
 
     @Given("^create S3 connection using \"([^\"]*)\" bucket$")
     public void createS3Connection(String s3Bucket) {
-        account = accountsDirectory.getAccount(Account.Name.AWS).get();
+        account = accountsDirectory.get(Account.Name.AWS);
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
         createConnection(
             fromData(
@@ -382,7 +377,7 @@ public class Connections {
 
     @Given("^create Telegram connection$")
     public void createTelegramConnection() {
-        account = accountsDirectory.getAccount(Account.Name.TELEGRAM).get();
+        account = accountsDirectory.get(Account.Name.TELEGRAM);
         createConnection(
             fromData(
                 keyValue("connector", "telegram"),
@@ -393,7 +388,7 @@ public class Connections {
 
     @Given("^create Twitter connection using \"([^\"]*)\" account$")
     public void createTwitterConnection(String twitterAccount) {
-        account = accountsDirectory.getAccount(twitterAccount).get();
+        account = accountsDirectory.get(twitterAccount);
         createConnection(
             fromData(
                 keyValue("connector", "twitter"),

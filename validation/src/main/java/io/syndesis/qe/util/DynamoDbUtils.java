@@ -1,6 +1,6 @@
 package io.syndesis.qe.util;
 
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
@@ -44,8 +44,7 @@ public class DynamoDbUtils {
     public void initClient() {
         log.info("Initializing DynamoDb client");
 
-        final Account dynamoDbAccount = AccountsDirectory.getInstance().getAccount(Account.Name.AWS)
-            .orElseThrow(() -> new IllegalArgumentException("Unable to find AWS DDB account"));
+        Account dynamoDbAccount = AccountsDirectory.getInstance().get(Account.Name.AWS);
         final String region = dynamoDbAccount.getProperty("region");
         this.tableName = dynamoDbAccount.getProperty("tableName");
         dynamoDb = DynamoDbClient.builder().region(Region.of(region))
@@ -88,7 +87,7 @@ public class DynamoDbUtils {
 
         Map<String, AttributeValue> input =
             item.entrySet().stream().collect(Collectors.toMap(
-                entry -> entry.getKey(),
+                Map.Entry::getKey,
                 entry -> AttributeValue.builder().s(entry.getValue()).build())
             );
 

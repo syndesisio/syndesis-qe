@@ -2,7 +2,6 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.google.GoogleAccount;
 
@@ -22,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,26 +44,18 @@ public class GMailUtils {
     }
 
     public String getGmailAddress(String gmailAccount) {
-        String gmailAddress = null;
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(gmailAccount);
-        if (account.isPresent()) {
-            gmailAddress = account.get().getProperty("email");
-        } else {
-            fail("Credentials for " + gmailAccount + " were not found.");
-        }
-
-        return gmailAddress;
+        return AccountsDirectory.getInstance().get(gmailAccount).getProperty("email");
     }
 
     /**
      * Create a MimeMessage using the parameters provided.
      *
-     * @param to       email address of the receiver
-     * @param from     email address of the sender, the mailbox account
-     * @param subject  subject of the email
+     * @param to email address of the receiver
+     * @param from email address of the sender, the mailbox account
+     * @param subject subject of the email
      * @param bodyText body text of the email
      * @return the MimeMessage to be used to send email
-     * @throws MessagingException
+     * @throws MessagingException when something goes wrong
      */
     private static MimeMessage createEmail(String to,
                                            String from,
@@ -91,8 +81,8 @@ public class GMailUtils {
      *
      * @param emailContent Email to be set to raw of message
      * @return a message containing a base64url encoded email
-     * @throws IOException
-     * @throws MessagingException
+     * @throws IOException when something goes wrong
+     * @throws MessagingException when something goes wrong
      */
     private static Message createMessageWithEmail(MimeMessage emailContent)
             throws MessagingException, IOException {
@@ -112,26 +102,23 @@ public class GMailUtils {
     /**
      * Send an email from the user's mailbox to its recipient.
      *
-     * @param userId       User's email address. The special value "me"
-     *                     can be used to indicate the authenticated user.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
      * @param emailContent Email to be sent.
      * @return The sent message
-     * @throws MessagingException
-     * @throws IOException
+     * @throws MessagingException when something goes wrong
+     * @throws IOException when something goes wrong
      */
     private Message sendMessage(String userId, MimeMessage emailContent)
             throws MessagingException, IOException {
 
-        Message message = createMessageWithEmail(emailContent);
         log.info("Sending encoded message...");
-        message = getClient().users().messages().send(userId, message).execute();
-
-        return message;
+        return getClient().users().messages().send(userId, createMessageWithEmail(emailContent)).execute();
     }
 
     public void sendEmail(String from, String to, String subject, String text) {
         try {
-            Message m = sendMessage("me", createEmail(to, from, subject, text));
+            sendMessage("me", createEmail(to, from, subject, text));
             log.info("Message successfully sent.");
         } catch (Exception e) {
             fail("Exception thrown while tying to send an email.", e);
@@ -150,9 +137,9 @@ public class GMailUtils {
      * Query options can be found here: https://support.google.com/mail/answer/7190
      *
      * @param userId User's email address. The special value "me"
-     *               can be used to indicate the authenticated user.
-     * @param query  String used to filter the Messages listed.
-     * @throws IOException
+     * can be used to indicate the authenticated user.
+     * @param query String used to filter the Messages listed.
+     * @throws IOException when something goes wrong
      */
     public List<Message> getMessagesMatchingQuery(String userId,
                                                          String query) throws IOException {
@@ -179,12 +166,12 @@ public class GMailUtils {
     /**
      * Modify the labels a message is associated with.
      *
-     * @param userId         User's email address. The special value "me"
-     *                       can be used to indicate the authenticated user.
-     * @param messageId      ID of Message to Modify.
-     * @param labelsToAdd    List of label ids to add.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
+     * @param messageId ID of Message to Modify.
+     * @param labelsToAdd List of label ids to add.
      * @param labelsToRemove List of label ids to remove.
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public void modifyMessage(String userId, String messageId,
                                      List<String> labelsToAdd, List<String> labelsToRemove) throws IOException {
@@ -193,7 +180,7 @@ public class GMailUtils {
                 .setRemoveLabelIds(labelsToRemove);
         Message message = getClient().users().messages().modify(userId, messageId, mods).execute();
 
-        log.info("Message with id: " + message.getId() + "was modified:");
+        log.info("Message with id: " + message.getId() + "was modified");
         log.debug(message.toPrettyString());
     }
 
@@ -203,7 +190,7 @@ public class GMailUtils {
      * can be used to indicate the authenticated user.
      *
      * @param msgId ID of Message to trash.
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public void trashMessage(String msgId)
             throws IOException {
@@ -238,8 +225,8 @@ public class GMailUtils {
      *
      * @param messageId ID of Message to retrieve.
      * @return MimeMessage MimeMessage populated from retrieved Message.
-     * @throws IOException
-     * @throws MessagingException
+     * @throws IOException when something goes wrong
+     * @throws MessagingException when something goes wrong
      */
     public MimeMessage getMimeMessage(String messageId)
             throws IOException, MessagingException {

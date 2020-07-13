@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.impl.HTTPEndpoints;
-import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPResponse;
@@ -85,7 +85,7 @@ public class HTTPValidationSteps {
 
     @When("send get request using {string} and {string} path")
     public void sendGetRequestUsingAndPath(String account, String path) {
-        final Account a = AccountUtils.get(account);
+        final Account a = AccountsDirectory.getInstance().get(account);
         HTTPUtils.doGetRequest(a.getProperty("baseUrl") + path);
     }
 

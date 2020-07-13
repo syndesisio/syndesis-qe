@@ -39,8 +39,7 @@ public class SQSUtils {
     public void initClient() {
         log.info("Initializing SQS client");
 
-        final Account sqs = AccountsDirectory.getInstance().getAccount(Account.Name.AWS)
-            .orElseThrow(() -> new IllegalArgumentException("Unable to find AWS account"));
+        Account sqs = AccountsDirectory.getInstance().get(Account.Name.AWS);
         final String region = sqs.getProperty("region").toLowerCase().replaceAll("_", "-");
         final String accountId = sqs.getProperty("accountId");
 

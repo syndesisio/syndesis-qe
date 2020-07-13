@@ -1,8 +1,8 @@
 package io.syndesis.qe.steps.flow;
 
 import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.util.RestTestsUtils;
-import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.BoxUtils;
 import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -71,7 +71,7 @@ public class ConnectionSteps extends AbstractStep {
         super.addProperty(StepProperty.CONNECTOR_ID, RestTestsUtils.Connector.BOX.getId());
         super.addProperty(StepProperty.CONNECTION_ID, RestTestsUtils.Connection.BOX.getId());
         super.addProperty(StepProperty.ACTION, "io.syndesis:box-upload");
-        Map<String, String> properties = TestUtils.map("parentFolderId", AccountUtils.get(Account.Name.BOX).getProperty("folderId"));
+        Map<String, String> properties = TestUtils.map("parentFolderId", AccountsDirectory.getInstance().get(Account.Name.BOX).getProperty("folderId"));
         if (!fileName.isEmpty()) {
             properties.put("fileName", fileName);
         }

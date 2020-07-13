@@ -42,7 +42,7 @@ public class MongoDBValidationSteps {
 
     @Given("connect to MongoDB {string}")
     public void connectToMongoDB(String mongodDb) {
-        mongoAccount = AccountsDirectory.getInstance().getAccount(mongodDb).get();
+        mongoAccount = AccountsDirectory.getInstance().get(mongodDb);
         createPortForward();
         client = MongoClients.create(mongoAccount.getProperty("url").replace("@mongodb", "@localhost"));
         database = client.getDatabase(mongoAccount.getProperty("database"));

@@ -6,13 +6,10 @@ import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.assertj.core.api.Assertions;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -120,16 +117,12 @@ public class FTP implements Resource {
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FTP);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            appName = properties.get("host");
-            ftpCommandPort = Integer.parseInt(properties.get("port"));
-        } else {
-            Assertions.fail("Credentials for " + Account.Name.FTP + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.FTP);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        appName = properties.get("host");
+        ftpCommandPort = Integer.parseInt(properties.get("port"));
     }
 }

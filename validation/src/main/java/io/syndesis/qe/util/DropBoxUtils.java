@@ -17,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,15 +28,9 @@ public class DropBoxUtils {
     private DbxClientV2 getClient() throws DbxException {
         if (this.client == null) {
             System.setProperty("https.protocols", "TLSv1.2");
-            Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.DROPBOX);
-
-            if (optional.isPresent()) {
-                DbxRequestConfig config = new DbxRequestConfig(optional.get().getProperty("clientIdentifier"));
-                this.client = new DbxClientV2(config, optional.get().getProperty("accessToken"));
-            } else {
-                log.error("Unable to create DropBox client - credentials not found.");
-                throw new IllegalArgumentException("DropBox credentials were not found.");
-            }
+            Account account = AccountsDirectory.getInstance().get(Account.Name.DROPBOX);
+            DbxRequestConfig config = new DbxRequestConfig(account.getProperty("clientIdentifier"));
+            this.client = new DbxClientV2(config, account.getProperty("accessToken"));
             log.debug("DropBox client created, logged as: " + client.users().getCurrentAccount());
         } else {
             log.debug("DropBox client was already created, returning existing instance");
@@ -74,8 +67,8 @@ public class DropBoxUtils {
     /**
      * Example: deleteFile("/someFolder/file.name")
      *
-     * @param filePath
-     * @throws DbxException
+     * @param filePath file path
+     * @throws DbxException when something goes wrong with the api
      */
     public void deleteFile(String filePath) throws DbxException {
         getClient().files().deleteV2(filePath);
@@ -84,10 +77,10 @@ public class DropBoxUtils {
     /**
      * Example: uploadFile("/someFolder/file.name", "whatever Text You Want Inside")
      *
-     * @param filePath
-     * @param text
-     * @throws IOException
-     * @throws DbxException
+     * @param filePath path in dropbox
+     * @param text content
+     * @throws IOException when something goes wrong with temp file
+     * @throws DbxException when something goes wrong with the api
      */
     public void uploadFile(String filePath, String text) throws IOException, DbxException {
         File temp = File.createTempFile(filePath, "");

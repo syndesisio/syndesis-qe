@@ -10,8 +10,6 @@ import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.SyndesisPageObject;
 import io.syndesis.qe.utils.ByUtils;
 
-import org.junit.Assert;
-
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -20,7 +18,6 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -113,16 +110,12 @@ public class SettingsPage extends SyndesisPageObject {
 
     public void fillOAuthItem(SelenideElement item, String credentialsName) {
         Form form = new Form(item);
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(credentialsName);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            form.fillByTestId(properties);
-        } else {
-            Assert.fail("Credentials for " + credentialsName + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(credentialsName);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        form.fillByTestId(properties);
     }
 
     public ElementsCollection getSettingsItems() {
@@ -132,16 +125,14 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public void updateTwitterAccount(String name) {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(name);
-        if (optional.isPresent()) {
-            if (!optional.get().getProperties().containsKey("Client Secret")) {
+        Account account = AccountsDirectory.getInstance().get(name);
+        if (!account.getProperties().containsKey("Client Secret")) {
 
-                Map<String, String> additions = new HashMap<>();
-                additions.put("clientId", optional.get().getProperty("consumerKey"));
-                additions.put("clientSecret", optional.get().getProperty("consumerSecret"));
+            Map<String, String> additions = new HashMap<>();
+            additions.put("clientId", account.getProperty("consumerKey"));
+            additions.put("clientSecret", account.getProperty("consumerSecret"));
 
-                optional.get().getProperties().putAll(additions);
-            }
+            account.getProperties().putAll(additions);
         }
     }
 

@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -90,7 +91,7 @@ public class SftpUtils implements FileTransferUtils {
         try {
             sftpClient.get(directory + "/" + fileName, fileName);
             FileInputStream inputStream = new FileInputStream(fileName);
-            return IOUtils.toString(inputStream, "utf-8");
+            return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (Exception ex) {
             fail("Unable to read SFTP file " + directory + "/" + fileName);
         }

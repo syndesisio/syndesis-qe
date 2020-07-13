@@ -6,13 +6,10 @@ import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.junit.Assert;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -103,22 +100,19 @@ public class FHIR implements Resource {
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FHIR);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            appName = properties.get("host");
-            fhirPort = Integer.parseInt(properties.get("port"));
-        } else {
-            Assert.fail("Credentials for " + Account.Name.FHIR + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.FHIR);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        appName = properties.get("host");
+        fhirPort = Integer.parseInt(properties.get("port"));
     }
 
     public void addAccount() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FHIR);
-        if (!optional.isPresent()) {
+        try {
+            AccountsDirectory.getInstance().get(Account.Name.FHIR);
+        } catch (IllegalStateException ex) {
             Account fhir = new Account();
             Map<String, String> fhirParameters = new HashMap<>();
             fhirParameters.put("port", "8080");

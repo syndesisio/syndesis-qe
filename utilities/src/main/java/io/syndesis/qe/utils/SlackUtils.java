@@ -19,8 +19,6 @@ import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.Message;
 
 import java.io.IOException;
-import java.security.InvalidParameterException;
-import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 @Lazy
 public class SlackUtils {
     private static final Slack SLACK = Slack.getInstance();
-    private static String token;
+    private String token;
 
     /**
      * To create instance of slack connector, correct credentials must be set up. Class expects
@@ -38,31 +36,23 @@ public class SlackUtils {
      * is API Token for slack workspace custom integration called "Bots".
      */
     public SlackUtils() {
-        Optional<Account> accountInfo = AccountsDirectory.getInstance().getAccount(Account.Name.SLACK);
-
-        if (accountInfo.isPresent()) {
-            SlackUtils.token = accountInfo.get().getProperties().get("token");
-        } else {
-            throw new InvalidParameterException("Credentials for QE Slack connector not found!");
-        }
-        Assertions.assertThat(SlackUtils.token).as("There is no slack property \"Token\" in credentials file!")
-            .isNotEmpty();
+        Account account = AccountsDirectory.getInstance().get(Account.Name.SLACK);
+        token = account.getProperty("token");
+        Assertions.assertThat(token).as("There is no slack property \"Token\" in credentials file!");
     }
 
     /**
      * Send message to specified channel.
-     *
+     * <p>
      * Note that Slack QE credentials must have "Token" property correctly set up for desired workspace.
      *
-     * @param message
-     * @param channelName
-     * @return
-     * @throws IOException
-     * @throws SlackApiException
-     * @throws InterruptedException
+     * @param message message
+     * @param channelName channel
+     * @return response
+     * @throws IOException when something goes wrong
+     * @throws SlackApiException when something goes wrongn
      */
     public ChatPostMessageResponse sendMessage(String message, String channelName) throws IOException, SlackApiException {
-
         // find all channels in the workspace
         ChannelsListResponse channelsResponse = SLACK.methods().channelsList(ChannelsListRequest.builder().token(token).build());
         // find channelName
@@ -70,27 +60,23 @@ public class SlackUtils {
                 .filter(c -> c.getName().equals(channelName)).findFirst().get();
 
         // https://slack.com/api/chat.postMessage
-        ChatPostMessageResponse postResponse = SLACK.methods().chatPostMessage(ChatPostMessageRequest.builder()
-                .token(token)
-                .channel(chann.getId())
-                .username("syndesis-bot")
-                .text(message)
-                .build());
-
-        return postResponse;
-
+        return SLACK.methods().chatPostMessage(ChatPostMessageRequest.builder()
+            .token(token)
+            .channel(chann.getId())
+            .username("syndesis-bot")
+            .text(message)
+            .build());
     }
-
 
     /**
      * Check if last message on channel is expectedMessage.
-     *
+     * <p>
      * Note that Slack QE credentials must have "Token" property correctly set up for desired workspace.
      *
-     * @param expectedMessage
-     * @param channelName
-     * @throws IOException
-     * @throws SlackApiException
+     * @param expectedMessage expected message
+     * @param channelName channel
+     * @throws IOException when something goes wrong
+     * @throws SlackApiException when something goes wrong
      */
     public void checkLastMessageFromChannel(String expectedMessage, String channelName) throws IOException, SlackApiException {
 

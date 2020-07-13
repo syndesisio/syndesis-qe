@@ -4,11 +4,8 @@ import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 
-import org.junit.Assert;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import ca.uhn.fhir.context.FhirContext;
 import io.fabric8.kubernetes.client.LocalPortForward;
@@ -53,22 +50,17 @@ public class FhirClientManager {
     }
 
     private MyPatientClient initClient() {
-//        ctx = FhirContext.forDstu3();
         return ctx.newRestfulClient(MyPatientClient.class, fhirServerLocalUrl);
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FHIR);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            fhirPodName = properties.get("host");
-            fhirRemotePort = Integer.parseInt(properties.get("port"));
-            fhirServerLocalUrl = "http://localhost:" + fhirLocalPort + "/baseDstu3";
-        } else {
-            Assert.fail("Credentials for " + Account.Name.FHIR + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.FHIR);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        fhirPodName = properties.get("host");
+        fhirRemotePort = Integer.parseInt(properties.get("port"));
+        fhirServerLocalUrl = "http://localhost:" + fhirLocalPort + "/baseDstu3";
     }
 }

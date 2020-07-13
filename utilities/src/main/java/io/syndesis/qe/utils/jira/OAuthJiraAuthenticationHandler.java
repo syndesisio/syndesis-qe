@@ -1,7 +1,7 @@
 package io.syndesis.qe.utils.jira;
 
 import io.syndesis.qe.account.Account;
-import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import org.assertj.core.api.Assertions;
 
@@ -63,7 +63,7 @@ public class OAuthJiraAuthenticationHandler implements AuthenticationHandler {
     }
 
     private AbstractOAuthGetToken createAccessToken() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        Account jiraAccount = AccountUtils.get("Jira");
+        Account jiraAccount = AccountsDirectory.getInstance().get("Jira");
         String privateKey = jiraAccount.getProperty("privatekey");
         String tempToken = jiraAccount.getProperty("accesstoken");
         String verifier = jiraAccount.getProperty("verificationcode");

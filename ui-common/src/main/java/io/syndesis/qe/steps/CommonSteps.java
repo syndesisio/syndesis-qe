@@ -34,7 +34,6 @@ import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.steps.connections.wizard.phases.ConfigureConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
-import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.CalendarUtils;
@@ -73,7 +72,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 import io.cucumber.datatable.DataTable;
@@ -244,7 +242,7 @@ public class CommonSteps {
 
             if ("Gmail".equalsIgnoreCase(connectionType) ||
                 "Google Calendar".equalsIgnoreCase(connectionType)) {
-                Account a = AccountUtils.get(connectionCredentialsName);
+                Account a = AccountsDirectory.getInstance().get(connectionCredentialsName);
                 GoogleAccount googleAccount = googleAccounts.getGoogleAccountForTestAccount(connectionCredentialsName);
                 a.getProperties().put("accessToken", googleAccount.getCredential().getAccessToken());
             }
@@ -314,12 +312,14 @@ public class CommonSteps {
 
         accounts.keySet().forEach(key -> {
             List<String> accountWithDetailsInList = new ArrayList<>();
-            Optional<Account> currentAccount = AccountsDirectory.getInstance().getAccount(key);
-            if (!currentAccount.isPresent()) {
+            Account currentAccount;
+            try {
+                currentAccount = AccountsDirectory.getInstance().get(key);
+            } catch (IllegalStateException e) {
                 return;
             }
 
-            String service = currentAccount.get().getService();
+            String service = currentAccount.getService();
             Credentials current;
             try {
                 current = Credentials.valueOf(service.toUpperCase()
@@ -673,7 +673,7 @@ public class CommonSteps {
 
     @Then("^fill in data-testid field \"([^\"]*)\" from property \"([^\"]*)\" of credentials \"([^\"]*)\"")
     public void fillFormByTestIdFromCreds(String testId, String property, String credentials) {
-        Account account = AccountUtils.get(credentials);
+        Account account = AccountsDirectory.getInstance().get(credentials);
         Map<String, String> map = new HashMap<>();
         map.put(testId, account.getProperty(property));
 
@@ -880,7 +880,7 @@ public class CommonSteps {
     }
 
     private void fillAndValidateTwitter() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.TWITTER_LISTENER);
+        Account account = AccountsDirectory.getInstance().get(Account.Name.TWITTER_LISTENER);
 
         try {
             OpenShiftWaitUtils.waitFor(() -> $(By.id("username_or_email")).exists(), 10 * 1000L);
@@ -890,41 +890,32 @@ public class CommonSteps {
             return;
         }
 
-        if (account.isPresent()) {
-            $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.get().getProperty("login"));
-            $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
-            $(By.id("allow")).shouldBe(visible).click();
-        } else {
-            fail("Credentials for Twitter were not found.");
-        }
+        $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.getProperty("login"));
+        $(By.id("password")).shouldBe(visible).sendKeys(account.getProperty("password"));
+        $(By.id("allow")).shouldBe(visible).click();
     }
 
     private void fillAndValidateSalesforce() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.SALESFORCE);
+        Account account = AccountsDirectory.getInstance().get(Account.Name.SALESFORCE);
 
         if (isStringInUrl("%22message%22:%22Successfully%20authorized", 5)) {
             log.info("Salesforce is already connected");
             return;
         }
 
-        if (account.isPresent()) {
-
-            //Clicking on validate takes you to step 3.
-            //So instead if there's an alert saying you are already connected we skip clicking the validate button
-            if ($(By.cssSelector("alert")).exists()) {
-                log.info("Found alert, probably about account already being authorized");
-                log.info("{}", $(By.className("alert")).getText());
-                return;
-            }
-
-            $(By.id("username")).shouldBe(visible).sendKeys(account.get().getProperty("userName"));
-            $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
-            $(By.id("Login")).shouldBe(visible).click();
-            //give it time to log in
-            TestUtils.sleepForJenkinsDelayIfHigher(10);
-        } else {
-            fail("Credentials for Salesforce were not found.");
+        //Clicking on validate takes you to step 3.
+        //So instead if there's an alert saying you are already connected we skip clicking the validate button
+        if ($(By.cssSelector("alert")).exists()) {
+            log.info("Found alert, probably about account already being authorized");
+            log.info("{}", $(By.className("alert")).getText());
+            return;
         }
+
+        $(By.id("username")).shouldBe(visible).sendKeys(account.getProperty("userName"));
+        $(By.id("password")).shouldBe(visible).sendKeys(account.getProperty("password"));
+        $(By.id("Login")).shouldBe(visible).click();
+        //give it time to log in
+        TestUtils.sleepForJenkinsDelayIfHigher(10);
     }
 
     /**
@@ -938,39 +929,30 @@ public class CommonSteps {
     }
 
     private void fillAndValidateGoogleAccount(String googleAccount) {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(googleAccount);
+        Account account = AccountsDirectory.getInstance().get(googleAccount);
 
-        if (account.isPresent()) {
-            selectGoogleAccountIfNeeded();
+        selectGoogleAccountIfNeeded();
 
-            $(By.id("identifierId")).shouldBe(visible).sendKeys(account.get().getProperty("email"));
-            $(By.id("identifierNext")).shouldBe(visible).click();
+        $(By.id("identifierId")).shouldBe(visible).sendKeys(account.getProperty("email"));
+        $(By.id("identifierNext")).shouldBe(visible).click();
 
-            $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(account.get().getProperty("password"));
-            $(By.id("passwordNext")).shouldBe(visible).click();
-        } else {
-            fail("Credentials for " + googleAccount + " were not found.");
-        }
+        $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(account.getProperty("password"));
+        $(By.id("passwordNext")).shouldBe(visible).click();
     }
 
     private void fillAndValidateConcur() {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.CONCUR);
+        Account account = AccountsDirectory.getInstance().get(Account.Name.CONCUR);
 
-        if (account.isPresent()) {
-
-            $$(By.tagName("input")).stream()
-                .filter(e ->
-                    e.getAttribute("name").equalsIgnoreCase("type") &&
-                        e.getAttribute("value").equalsIgnoreCase("username"))
-                .findFirst().get().click();
-            $(By.id("userid")).shouldBe(visible).sendKeys(account.get().getProperty("userId"));
-            $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
-            TestUtils.sleepForJenkinsDelayIfHigher(3);
-            $(By.id("password")).shouldBe(visible).sendKeys(account.get().getProperty("password"));
-            $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
-        } else {
-            fail("Credentials for QE Concur were not found.");
-        }
+        $$(By.tagName("input")).stream()
+            .filter(e ->
+                e.getAttribute("name").equalsIgnoreCase("type") &&
+                    e.getAttribute("value").equalsIgnoreCase("username"))
+            .findFirst().get().click();
+        $(By.id("userid")).shouldBe(visible).sendKeys(account.getProperty("userId"));
+        $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
+        $(By.id("password")).shouldBe(visible).sendKeys(account.getProperty("password"));
+        $(By.xpath(".//*[@type='submit']")).shouldBe(visible).click();
     }
 
     private void waitForCallbackRedirect(String expectedPartOfUrl) {

@@ -157,8 +157,7 @@ public class IssueHooksUtils {
     }
 
     private static String getJiraIssueUrl(com.atlassian.jira.rest.client.api.domain.Issue jiraIssue) {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.JIRA_HOOK);
-        return account.get().getProperty("instanceUrl") + "/browse/" + jiraIssue.getKey();
+        return AccountsDirectory.getInstance().get(Account.Name.JIRA_HOOK).getProperty("instanceUrl") + "/browse/" + jiraIssue.getKey();
     }
 
     private static String getZenHubPipeline(Scenario scenario, String issueNumber) {

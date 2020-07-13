@@ -1,7 +1,7 @@
 package io.syndesis.qe.steps.other;
 
 import io.syndesis.qe.account.Account;
-import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.GMailUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.google.GoogleAccount;
@@ -53,7 +53,7 @@ public class GMailSteps {
 
     @When("^.*send an e-mail to credentials \"([^\"]*)\" with subject \"([^\"]*)\"$")
     public void sendEmailToCreds(String credentials, String subject) {
-        Account account = AccountUtils.get(credentials);
+        Account account = AccountsDirectory.getInstance().get(credentials);
         sendEmail(account.getProperty("username"), subject);
     }
 
@@ -69,7 +69,7 @@ public class GMailSteps {
 
     @Given("^delete emails from credentials \"([^\"]*)\" with subject \"([^\"]*)\"$")
     public void deleteMailsFromCreds(String creds, String subject) {
-        Account account = AccountUtils.get(creds);
+        Account account = AccountsDirectory.getInstance().get(creds);
         gmu.deleteMessages(account.getProperty("username"), subject);
     }
 
@@ -82,7 +82,7 @@ public class GMailSteps {
 
     @Then("^check that email from credenitals \"([^\"]*)\" with subject \"([^\"]*)\" and text \"([^\"]*)\" exists")
     public void checkMailsFromCredentials(String credentials, String subject, String text) {
-        Account account = AccountUtils.get(credentials);
+        Account account = AccountsDirectory.getInstance().get(credentials);
         String username = account.getProperty("username");
 
         TestUtils.waitFor(() -> checkMailExists(username, subject, text),

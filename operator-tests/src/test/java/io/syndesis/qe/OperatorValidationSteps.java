@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoint.ExtensionsEndpoint;
@@ -12,7 +13,6 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.Jaeger;
 import io.syndesis.qe.resource.impl.Syndesis;
-import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.aws.S3BucketNameBuilder;
@@ -365,7 +365,7 @@ public class OperatorValidationSteps {
 
     @When("create pull secret for backup")
     public void createPullSecretForBackup() {
-        Account aws = AccountUtils.get(Account.Name.AWS);
+        Account aws = AccountsDirectory.getInstance().get(Account.Name.AWS);
         OpenShiftUtils.getInstance().createSecret(
             new SecretBuilder()
                 .withNewMetadata()

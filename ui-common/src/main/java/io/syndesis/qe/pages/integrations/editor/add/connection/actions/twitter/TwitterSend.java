@@ -1,21 +1,12 @@
 package io.syndesis.qe.pages.integrations.editor.add.connection.actions.twitter;
 
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
 
-import java.util.Optional;
-
 public class TwitterSend extends ConfigureAction {
-
     public void fillRealUserName(String account) {
-        Optional<Account> optionalAccount = AccountsDirectory.getInstance().getAccount(account);
-        if (optionalAccount.isPresent()) {
-            this.fillInputByDataTestid("user", optionalAccount.get().getProperty("screenName"));
-        } else {
-            fail("Could not find account {}", account);
-        }
+        Account acc = AccountsDirectory.getInstance().get(account);
+        this.fillInputByDataTestid("user", acc.getProperty("screenName"));
     }
 }

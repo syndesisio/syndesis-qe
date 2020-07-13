@@ -6,14 +6,11 @@ import io.syndesis.qe.resource.impl.FTP;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
-import org.junit.Assert;
-
 import org.apache.commons.net.ftp.FTPClient;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +55,7 @@ public class FtpClientManager {
             if (ftpClient == null) {
                 return;
             }
-            if (!ftpClient.isConnected()) {
+            if (ftpClient.isConnected()) {
                 ftpClient.logout();
                 ftpClient.disconnect();
             }
@@ -86,18 +83,14 @@ public class FtpClientManager {
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FTP);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            ftpUser = properties.get("username");
-            ftpPass = properties.get("password");
-            ftpPodName = properties.get("host");
-            ftpRemotePort = Integer.parseInt(properties.get("port"));
-        } else {
-            Assert.fail("Credentials for " + Account.Name.FTP + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.FTP);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        ftpUser = properties.get("username");
+        ftpPass = properties.get("password");
+        ftpPodName = properties.get("host");
+        ftpRemotePort = Integer.parseInt(properties.get("port"));
     }
 }

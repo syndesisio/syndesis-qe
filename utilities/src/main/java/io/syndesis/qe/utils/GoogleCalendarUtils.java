@@ -41,7 +41,6 @@ public class GoogleCalendarUtils {
 
     private final String aliasSuffix = RandomStringUtils.randomAlphanumeric(8);
 
-
     public GoogleCalendarUtils() {
         log.info("Using alias suffix '{}' for Google Calendar", aliasSuffix);
     }
@@ -102,7 +101,7 @@ public class GoogleCalendarUtils {
      * Method that assures cleanup after running the suite.
      * Removes all calendars created during runtime.
      *
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     @PreDestroy
     public void removeCalendars() throws IOException {
@@ -120,7 +119,7 @@ public class GoogleCalendarUtils {
      *
      * @param ga Google Account specification
      * @param id Id of the calendar to clear
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public void clearCalendar(String ga, String id) throws IOException {
         getClient(ga).calendars().clear(id).execute();
@@ -131,7 +130,7 @@ public class GoogleCalendarUtils {
      *
      * @param ga Google Account specification
      * @param id Id of the calendar to delete
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public void deleteCalendar(String ga, String id) throws IOException {
         getClient(ga).calendars().delete(id).execute();
@@ -144,7 +143,7 @@ public class GoogleCalendarUtils {
      * @param ga Google Account specification
      * @param id Id of the calendar to get
      * @return Calendar instance with matching id
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Calendar getCalendar(String ga, String id) throws IOException {
         return getClient(ga).calendars().get(id).execute();
@@ -154,10 +153,10 @@ public class GoogleCalendarUtils {
      * Method to insert (create) a calendar with given google account.
      * Use the instance returned, not the one provided as argument.
      *
-     * @param ga          Google Account specification
+     * @param ga Google Account specification
      * @param newCalendar a calendar instance to be created
      * @return calendar instance with the created instance (id assigned, updated fields filled, etc) or null
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Calendar insertCalendar(String ga, Calendar newCalendar) throws IOException {
         Calendar createdCalendar = getClient(ga).calendars().insert(newCalendar).execute();
@@ -172,7 +171,7 @@ public class GoogleCalendarUtils {
      * @param ga      Google Account specification
      * @param updated the Calendar instance to update
      * @return updated Calendar instance
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Calendar updateCalendar(String ga, Calendar updated) throws IOException {
         return getClient(ga).calendars().update(updated.getId(), updated).execute();
@@ -184,7 +183,7 @@ public class GoogleCalendarUtils {
      * @param ga         Google Account specification
      * @param calendarId Id of the calendar
      * @param eventId    Id of the event
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public void deleteEvent(String ga, String calendarId, String eventId) throws IOException {
         getClient(ga).events().delete(calendarId, eventId).execute();
@@ -197,7 +196,7 @@ public class GoogleCalendarUtils {
      * @param calendarId Id of the calendar
      * @param eventId    Id of the event
      * @return Event instance with given Id or null.
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Event getEvent(String ga, String calendarId, String eventId) throws IOException {
         return getClient(ga).events().get(calendarId, eventId).execute();
@@ -210,7 +209,7 @@ public class GoogleCalendarUtils {
      * @param calendarId target calendar Id
      * @param toImport   event originating in different calendar
      * @return Event instance - the new clone of the event
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Event importEvent(String ga, String calendarId, Event toImport) throws IOException {
         return getClient(ga).events().calendarImport(calendarId, toImport).execute();
@@ -224,7 +223,7 @@ public class GoogleCalendarUtils {
      * @param calendarId Id of target calendar.
      * @param toInsert   Event instance to be created.
      * @return newly created Event instance
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Event insertEvent(String ga, String calendarId, Event toInsert) throws IOException {
         return getClient(ga).events().insert(calendarId, toInsert).execute();
@@ -238,7 +237,7 @@ public class GoogleCalendarUtils {
      * @param calendarId Id of the calendar
      * @param toUpdate   Event instance to be updated
      * @return updated Event instance
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Event updateEvent(String ga, String calendarId, Event toUpdate) throws IOException {
         return getClient(ga).events().update(calendarId, toUpdate.getId(), toUpdate).execute();
@@ -250,7 +249,7 @@ public class GoogleCalendarUtils {
      * @param ga           Google Account specification
      * @param calendarName name of the calendar
      * @return Calendar instance with matching name (aka summary)
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Calendar getCalendarByName(String ga, String calendarName) throws IOException {
         // Iterate through entries in calendar list
@@ -276,7 +275,7 @@ public class GoogleCalendarUtils {
      * @param calendarId   Id of the source calendar
      * @param eventSummary Summary of the event to find
      * @return first Event instance matching the given summary.
-     * @throws IOException
+     * @throws IOException when something goes wrong
      */
     public Event getEventBySummary(String ga, String calendarId, String eventSummary) throws IOException {
         Event e = null;

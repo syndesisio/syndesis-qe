@@ -7,12 +7,9 @@ import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
-import org.junit.Assert;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
@@ -85,8 +82,7 @@ public class SftpClientManager {
     public SFTPClient getSftpClient(SSHClient sshClient) {
         try {
             log.info("SSH client connected: {}", sshClient.isConnected());
-            SFTPClient sftpClient = sshClient.newSFTPClient();
-            return sftpClient;
+            return sshClient.newSFTPClient();
         } catch (IOException e) {
             fail("creation of SFTP client failed", e);
             return null;
@@ -94,18 +90,14 @@ public class SftpClientManager {
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.SFTP);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            sftpUser = properties.get("username");
-            sftpPass = properties.get("password");
-            sftpPodName = properties.get("host");
-            sftpRemotePort = Integer.parseInt(properties.get("port"));
-        } else {
-            Assert.fail("Credentials for " + Account.Name.SFTP + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.SFTP);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        sftpUser = properties.get("username");
+        sftpPass = properties.get("password");
+        sftpPodName = properties.get("host");
+        sftpRemotePort = Integer.parseInt(properties.get("port"));
     }
 }

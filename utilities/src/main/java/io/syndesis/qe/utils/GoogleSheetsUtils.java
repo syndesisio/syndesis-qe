@@ -35,8 +35,8 @@ public class GoogleSheetsUtils {
     @Setter
     private String testSheetId = "";
 
-    private String testDataSpreadSheet = "1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw";
-    private String testDataSpreadSheetFirefox = "1yzYO6cV-YbtyJW8POQwjLVu86I3AU45QEmGs3_HalYg";
+    private static final String TEST_DATA_SPREAD_SHEET = "1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw";
+    private static final String TEST_DATA_SPREAD_SHEET_FIREFOX = "1yzYO6cV-YbtyJW8POQwjLVu86I3AU45QEmGs3_HalYg";
 
     private Sheets getSheets() {
         if (sheets == null) {
@@ -131,10 +131,7 @@ public class GoogleSheetsUtils {
     }
 
     public String getTestDataSpreadSheet() {
-        if (TestConfiguration.syndesisBrowser().equals("firefox")) {
-            return testDataSpreadSheetFirefox;
-        }
-        return testDataSpreadSheet;
+        return "firefox".equals(TestConfiguration.syndesisBrowser()) ? TEST_DATA_SPREAD_SHEET_FIREFOX : TEST_DATA_SPREAD_SHEET;
     }
 
     public Spreadsheet getSpreadSheet(String id) {
@@ -152,11 +149,11 @@ public class GoogleSheetsUtils {
     }
 
     public List<Sheet> getSheetsFromDataSpreadsheet() {
-        return getSheets(testDataSpreadSheet);
+        return getSheets(TEST_DATA_SPREAD_SHEET);
     }
 
     public void clearSheetInDataSpreadsheet(Integer sheetId) {
-        clearSheet(testDataSpreadSheet, sheetId);
+        clearSheet(TEST_DATA_SPREAD_SHEET, sheetId);
     }
 
     public Spreadsheet getSpreadSheet() {

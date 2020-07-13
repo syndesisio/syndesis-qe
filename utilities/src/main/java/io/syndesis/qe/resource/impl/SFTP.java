@@ -7,14 +7,11 @@ import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.assertj.core.api.Assertions;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -128,17 +125,13 @@ public class SFTP implements Resource {
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.SFTP);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            appName = properties.get("host");
-            sftpPort = Integer.parseInt(properties.get("port"));
-            userAndPassword = properties.get("username") + ":" + properties.get("password") + ":1500::" + TEST_DIRECTORY;
-        } else {
-            Assertions.fail("Credentials for " + Account.Name.SFTP + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.SFTP);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        appName = properties.get("host");
+        sftpPort = Integer.parseInt(properties.get("port"));
+        userAndPassword = properties.get("username") + ":" + properties.get("password") + ":1500::" + TEST_DIRECTORY;
     }
 }

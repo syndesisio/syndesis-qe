@@ -15,7 +15,7 @@ public class SalesforceAccount {
 
     public static ForceApi getInstance() {
         if (salesforce == null) {
-            final Account salesforceAccount = AccountsDirectory.getInstance().getAccount(Account.Name.SALESFORCE).get();
+            final Account salesforceAccount = AccountsDirectory.getInstance().get(Account.Name.SALESFORCE);
             TestUtils.withRetry(() -> {
                 try {
                     salesforce = new ForceApi(new ApiConfig()

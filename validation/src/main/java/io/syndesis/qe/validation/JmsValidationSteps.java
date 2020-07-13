@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.account.Account;
-import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.jms.JMSUtils;
 
 import org.assertj.core.api.Assertions;
@@ -98,7 +98,7 @@ public class JmsValidationSteps {
 
     @When("^send \"([^\"]*)\" message to \"([^\"]*)\" queue on \"([^\"]*)\" broker$")
     public void sendMessageToQueueOnBroker(String message, String queue, String brokerAccount) {
-        Account brokerCredentials = AccountUtils.get(brokerAccount);
+        Account brokerCredentials = AccountsDirectory.getInstance().get(brokerAccount);
         final String userName = brokerCredentials.getProperty("username");
         final String password = brokerCredentials.getProperty("password");
         final String brokerpod = brokerCredentials.getProperty("appname");

@@ -8,11 +8,11 @@ import static com.codeborne.selenide.Selenide.$;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.NameConnectionSteps;
 import io.syndesis.qe.steps.connections.wizard.phases.SelectConnectionTypeSteps;
-import io.syndesis.qe.utils.AccountUtils;
 import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -53,7 +53,7 @@ public class KafkaSteps {
         String connectionName = dataRow.get(2);
         String description = dataRow.get(3);
 
-        Account kafkaAccount = AccountUtils.get("kafka-autodetect-" + securityMode.toLowerCase());
+        Account kafkaAccount = AccountsDirectory.getInstance().get("kafka-autodetect-" + securityMode.toLowerCase());
 
         commonSteps.navigateTo("Connections");
         commonSteps.validatePage("Connections");
@@ -96,7 +96,7 @@ public class KafkaSteps {
         String cert = extractValue("crt", secrets);
 
         //        3. put values into account:
-        Account kafkaTlsAccount = AccountUtils.get("kafka-autodetect-tls");
+        Account kafkaTlsAccount = AccountsDirectory.getInstance().get("kafka-autodetect-tls");
         Map<String, String> kafkaAutodetectTlsParameters = kafkaTlsAccount.getProperties();
         kafkaAutodetectTlsParameters.put("brokercertificate", cert);
         kafkaTlsAccount.setProperties(kafkaAutodetectTlsParameters);

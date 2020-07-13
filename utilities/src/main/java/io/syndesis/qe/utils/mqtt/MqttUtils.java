@@ -10,8 +10,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import java.util.Optional;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,12 +21,9 @@ public class MqttUtils {
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(false);
 
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.MQTT);
-        if (optional.isPresent()) {
-            log.info("Setting username and password for QE MQTT client");
-            connOpts.setUserName(optional.get().getProperties().get("userName"));
-            connOpts.setPassword(optional.get().getProperties().get("password").toCharArray());
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.MQTT);
+        connOpts.setUserName(account.getProperties().get("userName"));
+        connOpts.setPassword(account.getProperties().get("password").toCharArray());
 
         sampleClient.connect(connOpts);
         sampleClient.subscribe(topic, 1);
@@ -44,12 +39,9 @@ public class MqttUtils {
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(false);
 
-            Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.MQTT);
-            if (optional.isPresent()) {
-                log.info("Setting username and password for QE MQTT client");
-                connOpts.setUserName(optional.get().getProperties().get("userName"));
-                connOpts.setPassword(optional.get().getProperties().get("password").toCharArray());
-            }
+            Account account = AccountsDirectory.getInstance().get(Account.Name.MQTT);
+            connOpts.setUserName(account.getProperties().get("userName"));
+            connOpts.setPassword(account.getProperties().get("password").toCharArray());
 
             sampleClient.connect(connOpts);
             MqttMessage message = new MqttMessage(messageContent.getBytes());

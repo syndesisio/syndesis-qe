@@ -1,7 +1,7 @@
 package io.syndesis.qe.utils.jira;
 
 import io.syndesis.qe.account.Account;
-import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ public class JiraClientFactory {
 
     @Bean
     public JiraRestClient getJiraRestClient() throws URISyntaxException {
-        Account jiraAccount = AccountUtils.get("Jira");
+        Account jiraAccount = AccountsDirectory.getInstance().get("Jira");
         String jiraUrl = jiraAccount.getProperty("jiraurl");
         return new AsynchronousJiraRestClientFactory().create(new URI(jiraUrl), new OAuthJiraAuthenticationHandler());
     }

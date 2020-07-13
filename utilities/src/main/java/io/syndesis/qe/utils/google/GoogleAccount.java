@@ -1,7 +1,7 @@
 package io.syndesis.qe.utils.google;
 
 import io.syndesis.qe.account.Account;
-import io.syndesis.qe.utils.AccountUtils;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -32,7 +32,7 @@ public class GoogleAccount {
     private Sheets sheetsClient;
 
     public GoogleAccount(String accountName) {
-        account = AccountUtils.get(accountName);
+        account = AccountsDirectory.getInstance().get(accountName);
         credential = createGoogleCredential(account);
     }
 
@@ -65,7 +65,7 @@ public class GoogleAccount {
     /**
      * Get credential of the Google Account.
      *
-     * @return
+     * @return credential
      */
     public Credential getCredential() {
         return credential;

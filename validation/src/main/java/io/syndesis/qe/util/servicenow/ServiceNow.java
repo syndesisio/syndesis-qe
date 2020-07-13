@@ -1,7 +1,7 @@
 package io.syndesis.qe.util.servicenow;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
@@ -21,7 +21,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
@@ -43,11 +42,10 @@ public class ServiceNow {
     }
 
     private ServiceNow() {
-        Optional<Account> serviceNow = AccountsDirectory.getInstance().getAccount(Account.Name.SERVICENOW);
-        assertThat(serviceNow).isPresent();
-        String instanceName = serviceNow.get().getProperty("instanceName");
-        userName = serviceNow.get().getProperty("userName");
-        password = serviceNow.get().getProperty("password");
+        Account serviceNow = AccountsDirectory.getInstance().get(Account.Name.SERVICENOW);
+        String instanceName = serviceNow.getProperty("instanceName");
+        userName = serviceNow.getProperty("userName");
+        password = serviceNow.getProperty("password");
         url = String.format("https://%s.service-now.com/%s", instanceName, INCIDENT_ENDPOINT);
         om = new ObjectMapper();
         om.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);

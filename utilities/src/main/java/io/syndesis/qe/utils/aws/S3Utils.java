@@ -54,7 +54,7 @@ public class S3Utils {
     private Set<String> bucketsCreated = new HashSet<>();
 
     public S3Utils() {
-        final Account s3Account = AccountsDirectory.getInstance().getAccount(Account.Name.AWS).get();
+        Account s3Account = AccountsDirectory.getInstance().get(Account.Name.AWS);
         s3client = S3Client.builder()
             .region(Region.of(s3Account.getProperty("region")))
             .credentialsProvider(() -> AwsBasicCredentials.create(s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")))

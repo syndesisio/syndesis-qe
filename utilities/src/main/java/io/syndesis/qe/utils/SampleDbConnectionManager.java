@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import io.fabric8.kubernetes.api.model.Service;
@@ -120,10 +119,7 @@ public class SampleDbConnectionManager {
 
         final Properties props = new Properties();
 
-        Optional<Account> optAccount = AccountsDirectory.getInstance().getAccount(dbType);
-        Assertions.assertThat(optAccount.isPresent()).isTrue();
-        Account account = optAccount.get();
-
+        Account account = AccountsDirectory.getInstance().get(dbType);
         props.setProperty("user", account.getProperty("user"));
         props.setProperty("password", account.getProperty("password"));
 

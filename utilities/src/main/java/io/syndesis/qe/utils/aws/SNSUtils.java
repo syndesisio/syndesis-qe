@@ -14,8 +14,7 @@ public class SNSUtils {
      * @return topic ARN
      */
     public static String getTopicArn(String topic) {
-        final Account sqs = AccountsDirectory.getInstance().getAccount(Account.Name.AWS)
-            .orElseThrow(() -> new IllegalArgumentException("Unable to find AWS account"));
+        final Account sqs = AccountsDirectory.getInstance().get(Account.Name.AWS);
         final String region = sqs.getProperty("region").toLowerCase().replaceAll("_", "-");
         final String accountId = sqs.getProperty("accountId");
         return String.format("arn:aws:sns:%s:%s:%s", region, accountId, topic);
