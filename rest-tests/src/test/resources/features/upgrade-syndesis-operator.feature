@@ -44,11 +44,7 @@ Feature: Syndesis Upgrade Using Operator
 
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
-    And sleep for jenkins delay or "180" seconds
-    # Needed until https://issues.redhat.com/browse/ENTESB-12923 is fixed
-      And rollout
-      # Just to be sure for rollout that everything started to roll out
-      And sleep for jenkins delay or "60" seconds
+      And sleep for jenkins delay or "180" seconds
       And wait for Syndesis to become ready
       And verify syndesis "upgraded" version
       And verify that integration with name "upgrade" exists
@@ -90,10 +86,6 @@ Feature: Syndesis Upgrade Using Operator
     When perform syndesis upgrade to newer version using operator
     Then wait until upgrade is done
       And sleep for jenkins delay or "180" seconds
-      # Needed until https://issues.redhat.com/browse/ENTESB-12923 is fixed
-      And rollout
-        # Just to be sure for rollout that everything started to roll out
-      And sleep for jenkins delay or "60" seconds
       And wait for Syndesis to become ready
       And check that deployment config "syndesis-db" does not exist
       And verify syndesis "upgraded" version
