@@ -11,7 +11,7 @@ import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -703,7 +703,7 @@ public class Syndesis implements Resource {
             } catch (TimeoutException | InterruptedException e) {
                 InfraFail.fail("Syndesis server did not start in 300s with new variable", e);
             }
-            RestUtils.reset();
+            PortForwardUtils.createOrCheckPortForward();
         }
     }
 

@@ -288,7 +288,7 @@ public final class TestUtils {
      * @return syndesis version
      */
     public static String getSyndesisVersion() {
-        RestUtils.reset();
+        PortForwardUtils.createOrCheckPortForward();
         return HTTPUtils.doGetRequest(Constants.LOCAL_REST_URL + VERSION_ENDPOINT, Headers.of("Accept", "text/plain")).getBody();
     }
 

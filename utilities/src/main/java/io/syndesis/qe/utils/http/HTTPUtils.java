@@ -43,17 +43,25 @@ public final class HTTPUtils {
     }
 
     private static HTTPResponse doRequest(Request request) {
+        return doRequest(request, false);
+    }
+
+    private static HTTPResponse doRequest(Request request, boolean doLog) {
         try {
             Response r = getClient().newCall(request).execute();
             if (r.body() != null) {
                 return new HTTPResponse(r.body().string(), r.code());
             } else {
-                return new HTTPResponse(null, r.code());
+                int response = r.code();
+                r.close();
+                return new HTTPResponse(null, response);
             }
         } catch (IOException e) {
-            log.error("Request invocation failed!", e);
-            //print whole stacktrace
-            e.printStackTrace();
+            if (doLog) {
+                log.error("Request invocation failed!", e);
+                //print whole stacktrace
+                e.printStackTrace();
+            }
         }
         return null;
     }
@@ -74,6 +82,10 @@ public final class HTTPUtils {
     }
 
     public static HTTPResponse doGetRequest(String url, Headers headers) {
+        return doGetRequest(url, headers, true);
+    }
+
+    public static HTTPResponse doGetRequest(String url, Headers headers, boolean doLog) {
         Request.Builder requestBuilder = new Request.Builder()
             .url(url)
             .get();
@@ -81,7 +93,7 @@ public final class HTTPUtils {
             requestBuilder.headers(headers);
         }
 
-        return doRequest(requestBuilder.build());
+        return doRequest(requestBuilder.build(), doLog);
     }
 
     public static HTTPResponse doDeleteRequest(String url) {

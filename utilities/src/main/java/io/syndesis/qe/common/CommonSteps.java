@@ -6,6 +6,7 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -31,6 +32,7 @@ public class CommonSteps {
             OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor();
         }
         OpenShiftUtils.getInstance().getTemplates().forEach(OpenShiftUtils.getInstance()::deleteTemplate);
+        PortForwardUtils.reset();
     }
 
     public static void deploySyndesis() {
@@ -44,6 +46,7 @@ public class CommonSteps {
         try {
             log.info("Waiting for Syndesis to get ready");
             OpenShiftWaitUtils.waitFor(() -> ResourceFactory.get(Syndesis.class).isReady(), 10000L, 15 * 60000L);
+            PortForwardUtils.createOrCheckPortForward();
         } catch (TimeoutException | InterruptedException e) {
             log.error("Was waiting for following syndesis components:");
             ComponentUtils.getAllComponents().forEach(c -> log.error("  " + c.getName()));

@@ -10,6 +10,7 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import javax.ws.rs.ProcessingException;
@@ -51,6 +52,7 @@ public final class TestSupport {
      */
     public void resetDB() {
         TestUtils.withRetry(() -> {
+            PortForwardUtils.createOrCheckPortForward();
             if (resetDbWithResponse(getEndpointUrl()) == 204) {
                 log.info("Cleaning integration pods");
                 // wait till the integration pods are deleted

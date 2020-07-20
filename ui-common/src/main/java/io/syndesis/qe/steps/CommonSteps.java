@@ -38,7 +38,7 @@ import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.CalendarUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.UIUtils;
 import io.syndesis.qe.utils.google.GoogleAccount;
@@ -1029,7 +1029,7 @@ public class CommonSteps {
             fail("Syndesis server did not start in 300s with new variable", e);
         }
 
-        RestUtils.reset();
+        PortForwardUtils.createOrCheckPortForward();
         Selenide.refresh();
     }
 

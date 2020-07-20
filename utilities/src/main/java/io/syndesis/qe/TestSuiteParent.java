@@ -7,6 +7,7 @@ import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.SyndesisDB;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
@@ -62,6 +63,7 @@ public abstract class TestSuiteParent {
                 //syndesis server is in the namespace but the syndesis-db is not. Needs to deploy our own syndesis db and update default connection
                 ResourceFactory.create(SyndesisDB.class);
             }
+            PortForwardUtils.createOrCheckPortForward();
             return;
         }
 

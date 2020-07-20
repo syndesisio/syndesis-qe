@@ -15,8 +15,8 @@ import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
-import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPUtils;
 
@@ -171,8 +171,8 @@ public class CommonSteps {
 
     @When("refresh server port-forward")
     public void refreshPortForward() {
-        RestUtils.reset();
-        RestUtils.getRestUrl();
+        PortForwardUtils.reset();
+        PortForwardUtils.createOrCheckPortForward();
     }
 
     @Then("wait for Todo to become ready")
