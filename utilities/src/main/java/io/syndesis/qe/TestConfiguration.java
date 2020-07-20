@@ -417,7 +417,7 @@ public class TestConfiguration {
             properties.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
         }
 
-        if (properties.get(SYNDESIS_ENVIRONMENT_DELOREAN) == null || properties.get(SYNDESIS_ENVIRONMENT_DELOREAN).equals("false")) {
+        if (!Boolean.parseBoolean(String.valueOf(properties.get(SYNDESIS_ENVIRONMENT_DELOREAN)))) {
             // Copy syndesis properties to their xtf counterparts - used by binary oc client
             System.setProperty("xtf.openshift.url", properties.getProperty(OPENSHIFT_URL));
             System.setProperty("xtf.openshift.master.username", properties.getProperty(SYNDESIS_ADMIN_USERNAME));
@@ -428,7 +428,6 @@ public class TestConfiguration {
             defaultProps.setProperty(OPENSHIFT_URL, defaultKubernetesClient.getMasterUrl().toString());
             System.setProperty("xtf.openshift.url", defaultKubernetesClient.getMasterUrl().toString());
             log.info("Kubernetes master URL: " + defaultKubernetesClient.getMasterUrl().toString());
-//            System.setProperty("xtf.openshift.master.kubeconfig", System.getenv("KUBECONFIG")); //need for OpenShiftBinary
             defaultKubernetesClient.close();
         }
         System.setProperty("xtf.openshift.namespace", properties.getProperty(OPENSHIFT_NAMESPACE));
