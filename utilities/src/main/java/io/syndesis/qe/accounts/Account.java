@@ -38,6 +38,7 @@ public class Account {
         SALESFORCE("QE Salesforce"),
         SERVICENOW("Servicenow"),
         SLACK("QE Slack"),
+        SYNDESIS_DB("SyndesisDB"),
         TELEGRAM("telegram"),
         TWITTER_LISTENER("Twitter Listener"),
         TWITTER_TALKY("twitter_talky"),
