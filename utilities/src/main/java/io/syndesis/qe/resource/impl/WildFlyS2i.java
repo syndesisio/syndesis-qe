@@ -5,7 +5,6 @@ import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.ODataUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.io.IOException;
@@ -89,7 +88,7 @@ public class WildFlyS2i implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return appName != null && TestUtils.isDcDeployed(appName);
+        return appName != null && OpenShiftUtils.isDcDeployed(appName);
     }
 
     public void createODataAccount(boolean https) {

@@ -208,7 +208,7 @@ public class OperatorValidationSteps {
     @Then("^check that jaeger pod \"([^\"]*)\" (is|is not) collecting metrics for integration \"([^\"]*)\"$")
     public void checkJaeger(String jaegerPodName, String shouldCollect, String integrationName) {
         TestUtils.sleepIgnoreInterrupt(30000L);
-        LocalPortForward lpf = TestUtils.createLocalPortForward(
+        LocalPortForward lpf = OpenShiftUtils.createLocalPortForward(
             OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith(jaegerPodName)), 16686, 16686);
         final String integrationId = integrations.getIntegrationId(integrationName).get();
         String host = "localhost:16686"; //host for default syndesis-jaeger
@@ -219,7 +219,7 @@ public class OperatorValidationSteps {
             "http://" + host + "/api/traces?service=" + integrationId)
             .getBody())
             .getJSONArray("data");
-        TestUtils.terminateLocalPortForward(lpf);
+        OpenShiftUtils.terminateLocalPortForward(lpf);
         if ("is".equals(shouldCollect)) {
             assertThat(jsonData).size().isNotZero();
         } else {
@@ -332,7 +332,7 @@ public class OperatorValidationSteps {
 
         // The default storage class for OCP3 is empty, for OCP4 is "standard", so if the className is empty, we should use the default one
         if ("".equals(className)) {
-            if (!TestUtils.isOpenshift3()) {
+            if (!OpenShiftUtils.isOpenshift3()) {
                 pv.withStorageClassName("standard");
             }
         } else {
@@ -355,7 +355,7 @@ public class OperatorValidationSteps {
                 .withNewPath("/testPath")
                 .endNfs();
 
-            if (!TestUtils.isOpenshift3()) {
+            if (!OpenShiftUtils.isOpenshift3()) {
                 // This should always be the default value despite the actual value of className - that is used only in "test-pv" intentionally
                 pv.withStorageClassName("standard");
             }

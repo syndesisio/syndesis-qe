@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
-
 @Slf4j
 public class MqttUtils {
     private static final String BROKER = "tcp://localhost:1883";

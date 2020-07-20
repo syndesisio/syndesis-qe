@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * [WIP] refactor of former JMSClient
+ * JMS Client class.
  *
  * @author David Simansky | dsimansk@redhat.com
  */
@@ -106,7 +106,7 @@ public class JmsClient {
         }
         String consumerId = "consumer-" + UUID.randomUUID();
         topicConnection = startConnection(consumerId);
-        Session session = null;
+        Session session;
         try {
             session = topicConnection.createSession(isTransacted, Session.AUTO_ACKNOWLEDGE);
             Topic topic = session.createTopic(destinationName);
@@ -189,7 +189,7 @@ public class JmsClient {
 
     public void sendMessage(Message message) {
         Connection connection = null;
-        Session session = null;
+        Session session;
         try {
             connection = startConnection(); //try to be smarter here and initiate start connection
 
@@ -211,13 +211,8 @@ public class JmsClient {
 
             producer.send(message);
 
-            if (producer != null) {
-                producer.close();
-            }
-
-            if (session != null) {
-                session.close();
-            }
+            producer.close();
+            session.close();
         } catch (JMSException e) {
             log.error("unable to send message", e);
         } finally {
@@ -283,7 +278,7 @@ public class JmsClient {
     }
 
     public static String getTextMessage(Message message) {
-        if (message != null && message instanceof TextMessage) {
+        if (message instanceof TextMessage) {
             try {
                 return ((TextMessage) message).getText();
             } catch (JMSException e) {

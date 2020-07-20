@@ -5,7 +5,6 @@ import io.syndesis.qe.utils.http.HTTPResponse;
 import io.syndesis.qe.utils.http.HTTPUtils;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class RestUtils {
     private static LocalPortForward localPortForward = null;
-    private static Optional<String> restUrl = Optional.empty();
+    private static String restUrl;
 
     private static final String CHECK_URL = "http://localhost:8080/api/v1/version";
 
@@ -26,7 +25,7 @@ public final class RestUtils {
     }
 
     public static String getRestUrl() {
-        if (!restUrl.isPresent()) {
+        if (restUrl == null) {
             setupLocalPortForward();
             waitForPortForward();
         } else {
@@ -43,7 +42,7 @@ public final class RestUtils {
                 waitForPortForward();
             }
         }
-        return restUrl.get();
+        return restUrl;
     }
 
     private static void waitForPortForward() {
@@ -68,26 +67,26 @@ public final class RestUtils {
             }
         }
         log.debug("creating local port forward for pod syndesis-server");
-        localPortForward = TestUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
+        localPortForward = OpenShiftUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
         // If there was no pod, do nothing
         if (localPortForward == null) {
             return;
         }
         try {
-            restUrl = Optional.of(String
-                .format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(), localPortForward.getLocalPort()));
+            restUrl = String.format("http://%s:%s", localPortForward.getLocalAddress().getLoopbackAddress().getHostName(),
+                localPortForward.getLocalPort());
         } catch (IllegalStateException ex) {
-            restUrl = Optional.of(String.format("http://%s:%s", "127.0.0.1", 8080));
+            restUrl = String.format("http://%s:%s", "127.0.0.1", 8080);
         }
-        log.debug("rest endpoint URL: " + restUrl.get());
+        log.debug("rest endpoint URL: " + restUrl);
     }
 
     /**
      * Resets the URL and port-forward.
      */
     public static void reset() {
-        restUrl = Optional.empty();
-        TestUtils.terminateLocalPortForward(localPortForward);
+        restUrl = null;
+        OpenShiftUtils.terminateLocalPortForward(localPortForward);
         localPortForward = null;
     }
 }

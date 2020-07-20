@@ -516,15 +516,18 @@ public class TestConfiguration {
     }
 
     /**
-     * @param key
-     * @param value
+     * Overrides the property held in test configuration.
+     *
+     * @param key key
+     * @param value value
      */
     public void overrideProperty(String key, String value) {
         properties.put(key, value);
     }
 
     /**
-     * @param key
+     * Clears the property from test configuration.
+     * @param key key
      */
     public void clearProperty(String key) {
         properties.remove(key);

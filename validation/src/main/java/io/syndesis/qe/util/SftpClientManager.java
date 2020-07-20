@@ -50,7 +50,7 @@ public class SftpClientManager {
     }
 
     public void closeClient(SSHClient sshClient, SFTPClient sftpClient) {
-        TestUtils.terminateLocalPortForward(localPortForward);
+        OpenShiftUtils.terminateLocalPortForward(localPortForward);
         try {
             if (sshClient == null) {
                 return;

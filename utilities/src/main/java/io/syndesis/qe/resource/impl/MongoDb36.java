@@ -126,7 +126,7 @@ public class MongoDb36 implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(APP_NAME);
+        return OpenShiftUtils.isDcDeployed(APP_NAME);
     }
 
     public void addAccount() {

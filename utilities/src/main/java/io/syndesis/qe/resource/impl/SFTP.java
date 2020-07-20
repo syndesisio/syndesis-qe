@@ -5,7 +5,6 @@ import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.assertj.core.api.Assertions;
@@ -125,7 +124,7 @@ public class SFTP implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(appName);
+        return OpenShiftUtils.isDcDeployed(appName);
     }
 
     private void initProperties() {

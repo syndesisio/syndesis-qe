@@ -10,7 +10,6 @@ import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +45,11 @@ public final class HTTPUtils {
     private static HTTPResponse doRequest(Request request) {
         try {
             Response r = getClient().newCall(request).execute();
-            return new HTTPResponse(r.body().string(), r.code());
+            if (r.body() != null) {
+                return new HTTPResponse(r.body().string(), r.code());
+            } else {
+                return new HTTPResponse(null, r.code());
+            }
         } catch (IOException e) {
             log.error("Request invocation failed!", e);
             //print whole stacktrace
@@ -128,7 +131,9 @@ public final class HTTPUtils {
         try {
             Response r = getClient().newCall(requestBuilder.build()).execute();
             // Close the body to prevent leaked connections
-            r.body().close();
+            if (r.body() != null) {
+                r.body().close();
+            }
             return true;
         } catch (Exception e) {
             return false;
@@ -140,11 +145,11 @@ public final class HTTPUtils {
         final TrustManager[] trustAllCerts = new TrustManager[] {
             new X509TrustManager() {
                 @Override
-                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                 }
 
                 @Override
-                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
+                public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                 }
 
                 @Override
@@ -171,6 +176,7 @@ public final class HTTPUtils {
         } catch (NoSuchAlgorithmException | KeyManagementException e) {
             fail("Error while creating Http client", e);
         }
-        return null;
+        // Just so that idea doesn't complain about null even if this can't happen
+        return new OkHttpClient.Builder().build();
     }
 }

@@ -3,7 +3,6 @@ package io.syndesis.qe.util.fhir;
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 import org.junit.Assert;
 
@@ -50,7 +49,7 @@ public class FhirClientManager {
     }
 
     public static void closeClient() {
-        TestUtils.terminateLocalPortForward(LOCAL_PORT_FORWARD);
+        OpenShiftUtils.terminateLocalPortForward(LOCAL_PORT_FORWARD);
     }
 
     private MyPatientClient initClient() {

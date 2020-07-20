@@ -3,11 +3,11 @@ package io.syndesis.qe.utils.http;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-@Data
-@Slf4j
 /**
  * Wrapper for {@link okhttp3.Response}
  */
+@Data
+@Slf4j
 public class HTTPResponse {
     private String body;
     private int code;

@@ -4,7 +4,6 @@ import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.impl.MongoDb36;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 import org.assertj.core.api.Assertions;
 import org.awaitility.Awaitility;
@@ -52,7 +51,7 @@ public class MongoDBValidationSteps {
     private void createPortForward() {
         try {
             Pod mongoPod = OpenShiftUtils.getInstance().getAnyPod("app", mongoAccount.getService());
-            portForward = TestUtils.createLocalPortForward(mongoPod, MongoDb36.MONGODB_PORT, MongoDb36.MONGODB_PORT);
+            portForward = OpenShiftUtils.createLocalPortForward(mongoPod, MongoDb36.MONGODB_PORT, MongoDb36.MONGODB_PORT);
         } catch (Exception e) {
             // we don't fail here because we might be running the port forward locally when debugging
             log.error("could not port forward, mongo connections probably won't work", e);

@@ -4,7 +4,6 @@ import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.junit.Assert;
@@ -32,7 +31,7 @@ public class FHIR implements Resource {
     public void deploy() {
         addAccount();
         initProperties();
-        if (!TestUtils.isDcDeployed(appName)) {
+        if (!OpenShiftUtils.isDcDeployed(appName)) {
 
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
@@ -100,7 +99,7 @@ public class FHIR implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(appName);
+        return OpenShiftUtils.isDcDeployed(appName);
     }
 
     private void initProperties() {

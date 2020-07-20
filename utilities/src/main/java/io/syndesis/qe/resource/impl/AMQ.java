@@ -72,7 +72,7 @@ public class AMQ implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(NAME);
+        return OpenShiftUtils.isDcDeployed(NAME);
     }
 
     public void addAccounts() {

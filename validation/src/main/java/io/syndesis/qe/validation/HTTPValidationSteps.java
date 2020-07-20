@@ -37,11 +37,11 @@ public class HTTPValidationSteps {
     @When("^clear endpoint events$")
     public void clear() {
         if (localPortForward != null) {
-            TestUtils.terminateLocalPortForward(localPortForward);
+            OpenShiftUtils.terminateLocalPortForward(localPortForward);
         }
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName("endpoints");
         assertThat(pod.isPresent()).isTrue();
-        localPortForward = TestUtils.createLocalPortForward(pod.get(), 8080, 28080);
+        localPortForward = OpenShiftUtils.createLocalPortForward(pod.get(), 8080, 28080);
 
         // Clear all events
         HTTPUtils.doDeleteRequest("http://localhost:28080/clearEvents");

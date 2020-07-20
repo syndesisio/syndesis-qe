@@ -3,7 +3,6 @@ package io.syndesis.qe.steps;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPUtils;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ public class OperatorMetricsEndpointSteps {
 
     @Then("verify whether operator metrics endpoint includes version information")
     public void checkVersion() throws IOException {
-        try (LocalPortForward ignored = TestUtils.createLocalPortForward(
+        try (LocalPortForward ignored = OpenShiftUtils.createLocalPortForward(
             //skip syndesis-operator-{d}-deploy pods
             OpenShiftUtils.getPod(p -> p.getMetadata().getName().matches("syndesis-operator-\\d-(?!deploy).*")), 8383, 8383)) {
             assertThat(HTTPUtils.doGetRequest("http://localhost:8383/metrics").getBody()).contains("syndesis_version_info{operator_version");

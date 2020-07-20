@@ -35,7 +35,7 @@ public class IssueHooks {
      * <p>
      * Only runs when {@link TestConfiguration#SKIP_TESTS_WITH_OPEN_ISSUES} property is set to true
      *
-     * @param scenario
+     * @param scenario scenario
      */
     @Before
     public void skipTestsWithOpenIssues(Scenario scenario) {
@@ -70,7 +70,7 @@ public class IssueHooks {
      * No effort is made to reason about the impact of the found issues (e.g. is it ok that a test fails if there's one open and one done issue?).
      * Also, this hook completely ignores passed tests (i.e. nothing happens when a tests with open issues passes).
      *
-     * @param scenario
+     * @param scenario scenario
      */
     @After
     public void checkIssues(Scenario scenario) {

@@ -89,6 +89,6 @@ public class ExternalDatabase implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(NAME);
+        return OpenShiftUtils.isDcDeployed(NAME);
     }
 }

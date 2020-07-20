@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +28,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.fabric8.kubernetes.api.model.Pod;
-import io.fabric8.kubernetes.client.LocalPortForward;
-import io.fabric8.kubernetes.client.VersionInfo;
-import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 
@@ -93,7 +89,6 @@ public final class TestUtils {
     public static boolean waitForState(IntegrationOverviewEndpoint e, IntegrationOverview i, IntegrationDeploymentState state, TimeUnit unit,
         long timeout) {
         return waitForEvent(
-            // integration -> integration.getCurrentStatus().orElse(IntegrationDeploymentState.Pending) == state,
             integration -> integration.getCurrentState() == state,
             () -> getIntegration(e, i.getId()).orElse(i),
             unit,
@@ -105,46 +100,6 @@ public final class TestUtils {
 
     private static Optional<IntegrationOverview> getIntegration(IntegrationOverviewEndpoint e, String integrationId) {
         return Optional.of(e.getOverview(integrationId));
-    }
-
-    public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
-        try {
-            List<Pod> podsByPredicates = OpenShiftUtils.findPodsByPredicates(
-                p -> p.getMetadata().getName().contains(podName),
-                p -> "Running".equals(p.getStatus().getPhase())
-            );
-            if (podsByPredicates.size() == 0) {
-                log.warn("No pods in running state with name " + podName + " found!");
-                return null;
-            }
-            return OpenShiftUtils.portForward(podsByPredicates.get(0), remotePort, localPort);
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException(ex.getMessage() + ". Probably Syndesis is not in the namespace.");
-        }
-    }
-
-    public static LocalPortForward createLocalPortForward(Pod pod, int remotePort, int localPort) {
-        return OpenShiftUtils.portForward(pod, remotePort, localPort);
-    }
-
-    public static boolean isDcDeployed(String dcName) {
-        DeploymentConfig dc = OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get();
-        return dc != null && dc.getStatus().getReadyReplicas() != null && dc.getStatus().getReadyReplicas() > 0;
-    }
-
-    public static void terminateLocalPortForward(LocalPortForward lpf) {
-        if (lpf == null) {
-            return;
-        }
-        if (lpf.isAlive()) {
-            try {
-                lpf.close();
-            } catch (IOException ex) {
-                log.error("Error: " + ex);
-            }
-        } else {
-            log.info("Local Port Forward already closed.");
-        }
     }
 
     /**
@@ -367,17 +322,6 @@ public final class TestUtils {
         } catch (IOException ex) {
             log.error("Unable to write string to file: ", ex);
         }
-    }
-
-    /**
-     * Checks if the OpenShift version is 3.x
-     *
-     * @return true/false
-     */
-    public static boolean isOpenshift3() {
-        // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
-        VersionInfo version = OpenShiftUtils.getInstance().getVersion();
-        return version != null && version.getMinor().contains("11+");
     }
 
     /**

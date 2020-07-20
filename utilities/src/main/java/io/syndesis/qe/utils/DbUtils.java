@@ -1,11 +1,10 @@
 package io.syndesis.qe.utils;
 
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.endpoint.ConnectionsActionsEndpoint;
 
-import org.assertj.core.api.Assertions;
-
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -26,12 +25,6 @@ public class DbUtils {
         this.dbConnection = SampleDbConnectionManager.getConnection(dbType);
     }
 
-    /*
-     * ******************************************
-     * BASIC METHODS
-     * ******************************************
-     */
-
     /**
      * Best to use with SELECT.
      *
@@ -41,14 +34,11 @@ public class DbUtils {
     public ResultSet executeSQLGetResultSet(String sqlCommand) {
         reopenConnectionIfIsClosed();
         ResultSet resultSet = null;
-        final PreparedStatement preparedStatement;
         try {
             log.debug("Executing SQL query: " + sqlCommand);
-            preparedStatement = dbConnection.prepareStatement(sqlCommand);
-            resultSet = preparedStatement.executeQuery();
+            resultSet = dbConnection.prepareStatement(sqlCommand).executeQuery();
         } catch (SQLException ex) {
             log.error("Error: " + ex);
-            //            fail("SQLException occurred");
         }
         return resultSet;
     }
@@ -61,23 +51,15 @@ public class DbUtils {
      */
     public int executeSQLGetUpdateNumber(String sqlCommand) {
         reopenConnectionIfIsClosed();
-        final PreparedStatement preparedStatement;
         int result = -1;
         try {
             log.debug("Executing SQL query: " + sqlCommand);
-            preparedStatement = dbConnection.prepareStatement(sqlCommand);
-            result = preparedStatement.executeUpdate();
+            result = dbConnection.prepareStatement(sqlCommand).executeUpdate();
         } catch (SQLException ex) {
             log.error("Error: " + ex);
         }
         return result;
     }
-
-    /*
-     * ******************************************
-     * SPECIFIC METHODS
-     * ******************************************
-     */
 
     /**
      * Get the row count of given table.
@@ -86,7 +68,7 @@ public class DbUtils {
      * @return row count
      */
     public int getNumberOfRecordsInTable(String tableName) {
-        return getCountOfInvokedQuery("SELECT * FROM " + tableName.toUpperCase());
+        return getNumberOfRecordsInTable(tableName, null, null);
     }
 
     /**
@@ -98,24 +80,31 @@ public class DbUtils {
      * @return number of records in the table
      */
     public int getNumberOfRecordsInTable(String tableName, String column, String value) {
-        return getCountOfInvokedQuery("SELECT * FROM " + tableName.toUpperCase() + " WHERE " + column + " LIKE '" + value + "'");
+        String query = "SELECT COUNT(*) FROM " + tableName.toUpperCase();
+        if (column != null && value != null) {
+            query += " WHERE " + column + " LIKE '" + value + "'";
+        }
+        return getCountOfInvokedQuery(query);
     }
 
+    /**
+     * Gets the count of records returned by given query.
+     *
+     * @param query sql query
+     * @return count of rows for given query
+     */
     public int getCountOfInvokedQuery(String query) {
-        int records = 0;
         try {
-            final ResultSet resultSet = executeSQLGetResultSet(query);
-
-            //inefficient but it works :/ our table has 2 rows so it is not a problem...
-            while (resultSet != null && resultSet.next()) {
-                records++;
+            ResultSet resultSet = executeSQLGetResultSet(query);
+            if (resultSet.next()) {
+                return resultSet.getInt("count");
+            } else {
+                return 0;
             }
-        } catch (SQLException ex) {
-            log.error("Error: " + ex);
-            Assertions.fail("SQLException occurred");
+        } catch (SQLException e) {
+            fail("Unable to get count from ResultSet: " + e);
         }
-        log.debug("Number of records: " + records);
-        return records;
+        return -1;
     }
 
     /**
@@ -183,7 +172,7 @@ public class DbUtils {
             }
         } catch (SQLException ex) {
             log.error("Error: " + ex);
-            Assertions.fail("SQLException occurred");
+            fail("SQLException occurred");
         }
     }
 }

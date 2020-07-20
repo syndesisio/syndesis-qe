@@ -2,8 +2,6 @@ package io.syndesis.qe.utils.aws;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.Optional;
-
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,24 +15,23 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class S3BucketNameBuilder {
-
-    private static Optional<String> randomSalt = Optional.empty();
+    private static String randomSalt;
 
     private S3BucketNameBuilder() {
     }
 
-    private static Optional<String> getRandomSalt() {
-        if (!randomSalt.isPresent()) {
-            randomSalt = Optional.of(RandomStringUtils.randomAlphanumeric(3).toLowerCase());
+    private static String getRandomSalt() {
+        if (randomSalt == null) {
+            randomSalt = RandomStringUtils.randomAlphanumeric(3).toLowerCase();
         }
-        log.debug(randomSalt.get());
+        log.debug(randomSalt);
         return randomSalt;
     }
 
     public static String getBucketName(String bucketName) {
         final StringBuilder resp = new StringBuilder(bucketName);
         resp.append("-");
-        resp.append(getRandomSalt().get());
+        resp.append(getRandomSalt());
 
         log.debug(resp.toString());
         return resp.toString();

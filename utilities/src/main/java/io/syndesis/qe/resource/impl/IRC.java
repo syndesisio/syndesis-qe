@@ -4,7 +4,6 @@ import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.util.ArrayList;
@@ -33,11 +32,11 @@ public class IRC implements Resource {
 
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(SERVER_APP_NAME)) {
+        if (!OpenShiftUtils.isDcDeployed(SERVER_APP_NAME)) {
             deployIrcServer();
         }
 
-        if (!TestUtils.isDcDeployed(CONTROLLER_APP_NAME)) {
+        if (!OpenShiftUtils.isDcDeployed(CONTROLLER_APP_NAME)) {
             deployIrcController();
         }
 
@@ -68,7 +67,7 @@ public class IRC implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(SERVER_APP_NAME);
+        return OpenShiftUtils.isDcDeployed(SERVER_APP_NAME);
     }
 
     private static void deployIrcServer() {

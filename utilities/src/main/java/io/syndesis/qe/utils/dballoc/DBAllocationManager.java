@@ -74,11 +74,11 @@ public class DBAllocationManager {
 
     private static String createAllocationEndpointUrl(String dbLabel, String requestee, int expire) {
         StringBuilder url = new StringBuilder(URL_GUI);
-        url.append("?");
-        url.append("operation=allocate&");
-        url.append("expression=" + dbLabel + "&");
-        url.append("expiry=" + expire + "&");
-        url.append("requestee=" + requestee);
+        url.append("?")
+            .append("operation=allocate&")
+            .append("expression=").append(dbLabel).append("&")
+            .append("expiry=").append(expire).append("&")
+            .append("requestee=").append(requestee);
         return url.toString();
     }
 
@@ -90,7 +90,7 @@ public class DBAllocationManager {
         StringBuilder url = new StringBuilder(URL_GUI);
         url.append("?");
         url.append("operation=dealloc&");
-        url.append("uuid=" + uuid);
+        url.append("uuid=").append(uuid);
         return url.toString();
     }
 }

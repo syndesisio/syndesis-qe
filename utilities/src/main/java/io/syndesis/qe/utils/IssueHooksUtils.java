@@ -41,10 +41,10 @@ public class IssueHooksUtils {
         List<SimpleIssue> issues = new ArrayList<>();
         JiraRestClient jiraClient = getJiraClient(scenario);
 
-        IssueRestClient issueClient = jiraClient.getIssueClient();
         if (jiraClient == null) {
             return Collections.emptyList();
         }
+        IssueRestClient issueClient = jiraClient.getIssueClient();
 
         for (String tag : jiraIssues) {
             String issueName = tag.replaceFirst("^@", "");
@@ -138,8 +138,8 @@ public class IssueHooksUtils {
      * <p>
      * The "Closed" state represents single state - "Closed"
      *
-     * @param issue
-     * @return
+     * @param issue jira issue
+     * @return issue state
      */
     private static IssueState getJiraIssueState(com.atlassian.jira.rest.client.api.domain.Issue issue) {
 
@@ -237,8 +237,7 @@ public class IssueHooksUtils {
             log.error("URL {} is a malformed URL", instanceUrl);
             e.printStackTrace();
         }
-        JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, userName, password);
-        return client;
+        return factory.createWithBasicHttpAuthentication(uri, userName, password);
     }
 
     public static void logError(Scenario scenario, String message) {

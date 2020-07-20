@@ -53,7 +53,7 @@ public class FtpClientManager {
     }
 
     public void closeFtpClient(FTPClient ftpClient) {
-        TestUtils.terminateLocalPortForward(LOCAL_PORT_FORWARD);
+        OpenShiftUtils.terminateLocalPortForward(LOCAL_PORT_FORWARD);
         try {
             if (ftpClient == null) {
                 return;

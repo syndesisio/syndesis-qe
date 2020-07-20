@@ -1,7 +1,6 @@
 package io.syndesis.qe.utils.jms;
 
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionFactory;
@@ -76,7 +75,6 @@ public class JmsClientManager {
 
     private JmsClient getClient() {
         if (jmsLocalPortForward == null || !jmsLocalPortForward.isAlive()) {
-            //can be the same pod twice forwarded to different ports? YES
             Pod pod = OpenShiftUtils.getInstance().getAnyPod("app", jmsAppName);
             jmsLocalPortForward = OpenShiftUtils.portForward(pod, jmsPort, jmsPort);
         }
@@ -88,7 +86,7 @@ public class JmsClientManager {
             jmsClient.disconnect();
             jmsClient = null;
         }
-        TestUtils.terminateLocalPortForward(jmsLocalPortForward);
+        OpenShiftUtils.terminateLocalPortForward(jmsLocalPortForward);
     }
 
     private JmsClient initClient() {
