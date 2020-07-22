@@ -1,10 +1,8 @@
 package io.syndesis.qe.steps.connections;
 
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.exist;
@@ -30,10 +28,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -67,7 +65,7 @@ public class ConnectionSteps {
     @Then("^check visibility of \"(\\d+)\" connections$")
     public void connectionsCount(Integer connectionCount) {
         log.info("There should be {} available", connectionCount);
-        assertThat(connectionsPage.getAllConnections().size(), is(connectionCount));
+        assertThat(connectionsPage.getAllConnections()).hasSize(connectionCount);
     }
 
     @Then("^check visibility of unveiled kebab menu of all connections, each of this menu consist of \"(\\w+)\", \"(\\w+)\" and \"(\\w+)\" actions$")

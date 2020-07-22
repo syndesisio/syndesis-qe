@@ -9,17 +9,6 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-
 import javax.annotation.PreDestroy;
 
 import java.io.BufferedWriter;
@@ -31,15 +20,22 @@ import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
+import software.amazon.awssdk.services.s3.model.S3Object;
+import software.amazon.awssdk.utils.builder.SdkBuilder;
 
 /**
  * Aws S3 utils.
@@ -52,45 +48,35 @@ import lombok.extern.slf4j.Slf4j;
 @Lazy
 @Component
 public class S3Utils {
-
-    private final AccountsDirectory accountsDirectory;
-    private final AmazonS3 s3client;
+    private final S3Client s3client;
     // holder for buckets created by this instance
     @Getter
-    private Map<String, Bucket> bucketsCreated;
+    private Set<String> bucketsCreated = new HashSet<>();
 
     public S3Utils() {
-        accountsDirectory = AccountsDirectory.getInstance();
-        final Account s3Account = accountsDirectory.getAccount(Account.Name.AWS).get();
-        final AWSCredentials credentials = new BasicAWSCredentials(
-            s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")
-        );
-
-        s3client = AmazonS3ClientBuilder
-            .standard()
-            .withCredentials(new AWSStaticCredentialsProvider(credentials))
-            .withRegion(Regions.valueOf(s3Account.getProperty("region").toUpperCase().replaceAll("-", "_")))
+        final Account s3Account = AccountsDirectory.getInstance().getAccount(Account.Name.AWS).get();
+        s3client = S3Client.builder()
+            .region(Region.of(s3Account.getProperty("region")))
+            .credentialsProvider(() -> AwsBasicCredentials.create(s3Account.getProperty("accessKey"), s3Account.getProperty("secretKey")))
             .build();
-        bucketsCreated = new HashMap<>();
     }
 
     public void forceCreateS3Bucket(String bucketName) {
-
         createS3Bucket(bucketName, true);
     }
 
     public void createS3Bucket(String bucketName, boolean force) {
-
         if (doesBucketExist(bucketName)) {
             if (force) {
                 deleteS3Bucket(bucketName);
             } else {
                 log.error("Bucket name is not available."
-                        + " Try again with a different Bucket name.");
+                    + " Try again with a different Bucket name.");
                 return;
             }
         }
-        bucketsCreated.put(bucketName, s3client.createBucket(bucketName));
+        s3client.createBucket(b -> b.bucket(bucketName));
+        bucketsCreated.add(bucketName);
     }
 
     /**
@@ -99,29 +85,32 @@ public class S3Utils {
      * @return true if exists, false otherwise
      */
     public boolean doesBucketExist(String bucketName) {
-        return s3client.doesBucketExistV2(bucketName);
+        return s3client.listBuckets(SdkBuilder::build).buckets().stream().anyMatch(b -> bucketName.equals(b.name()));
     }
 
     public void deleteS3Bucket(String bucketName) {
-        try {
-            final ObjectListing bucketObjects = s3client.listObjects(bucketName);
-            for (Iterator<?> iterator = bucketObjects.getObjectSummaries().iterator(); iterator.hasNext();) {
-                final S3ObjectSummary summary = (S3ObjectSummary) iterator.next();
-                s3client.deleteObject(bucketName, summary.getKey());
+        ListObjectsV2Request listObjectsV2Request = ListObjectsV2Request.builder().bucket(bucketName).build();
+        ListObjectsV2Response listObjectsV2Response;
+
+        do {
+            listObjectsV2Response = s3client.listObjectsV2(listObjectsV2Request);
+            for (S3Object s3Object : listObjectsV2Response.contents()) {
+                s3client.deleteObject(DeleteObjectRequest.builder().bucket(bucketName).key(s3Object.key()).build());
             }
-            s3client.deleteBucket(bucketName);
-            bucketsCreated.remove(bucketName);
-        } catch (AmazonServiceException e) {
-            log.error("Could not delete the S3 bucket: {}", e.getErrorMessage());
-        }
+
+            listObjectsV2Request = ListObjectsV2Request.builder().bucket(bucketName)
+                .continuationToken(listObjectsV2Response.nextContinuationToken())
+                .build();
+        } while (listObjectsV2Response.isTruncated());
+        s3client.deleteBucket(b -> b.bucket(bucketName));
     }
 
     /**
      * Creates a text file in the specified S3 bucket.
      *
-     * @param bucketName
-     * @param fileName
-     * @param text
+     * @param bucketName name of the bucket
+     * @param fileName filename that will be created in s3
+     * @param text file content
      */
     public void createTextFile(String bucketName, String fileName, String text) {
         try {
@@ -130,7 +119,7 @@ public class S3Utils {
             final BufferedWriter bw = new BufferedWriter(new FileWriter(temp));
             bw.write(text);
             bw.close();
-            s3client.putObject(bucketName, fileName, temp);
+            s3client.putObject(b -> b.bucket(bucketName).key(fileName), RequestBody.fromFile(temp));
         } catch (IOException ex) {
             log.error("Error with tmp file: " + ex);
         }
@@ -139,30 +128,20 @@ public class S3Utils {
     /**
      * Checks if the specified text file exists in specified S3 bucket.
      *
-     * @param bucketName
-     * @param fileName
-     * @return
+     * @param bucketName bucket name
+     * @param fileName file name
+     * @return true/false
      */
     public boolean checkFileExistsInBucket(String bucketName, String fileName) {
-
-        boolean fileExists = false;
-        final ObjectListing objectListing = s3client.listObjects(bucketName);
-        for (S3ObjectSummary os : objectListing.getObjectSummaries()) {
-            log.debug(os.getKey());
-            if (os.getKey().matches(fileName)) {
-                fileExists = true;
-                break;
-            }
-        }
-        return fileExists;
+        return s3client.listObjectsV2(b -> b.bucket(bucketName)).contents().stream().anyMatch(o -> fileName.equals(o.key()));
     }
 
     /**
      * Gets specified text file content from specified S3 bucket.
      *
-     * @param bucketName
-     * @param fileName
-     * @return
+     * @param bucketName bucket name
+     * @param fileName file name
+     * @return file content
      */
     public String readTextFileContentFromBucket(String bucketName, String fileName) {
         final StringWriter writer = new StringWriter();
@@ -183,24 +162,24 @@ public class S3Utils {
     }
 
     private InputStream getObjectInputStream(String bucketName, String fileName) {
-        return s3client.getObject(bucketName, fileName).getObjectContent();
+        return s3client.getObject(b -> b.bucket(bucketName).key(fileName), ResponseTransformer.toInputStream());
     }
 
     public String getFileNameWithPrefix(String bucketName, String prefix) {
-        Optional<S3ObjectSummary> s3Object = s3client.listObjects(bucketName).getObjectSummaries().stream()
-            .filter(os -> os.getKey().startsWith(prefix)).findFirst();
+        Optional<S3Object> s3Object = s3client.listObjectsV2(b -> b.bucket(bucketName)).contents()
+            .stream().filter(o -> o.key().startsWith(prefix)).findFirst();
         if (!s3Object.isPresent()) {
             fail("Unable to find file with " + prefix + " prefix");
         }
-        return s3Object.get().getKey();
+        return s3Object.get().key();
     }
 
     public int getFileCount(String bucketName) {
-        return s3client.listObjects(bucketName).getObjectSummaries().size();
+        return s3client.listObjectsV2(b -> b.bucket(bucketName)).contents().size();
     }
 
     public void cleanS3Bucket(String bucketName) {
-        s3client.listObjects(bucketName).getObjectSummaries().forEach(os -> s3client.deleteObject(bucketName, os.getKey()));
+        s3client.listObjectsV2(b -> b.bucket(bucketName)).contents().forEach(c -> s3client.deleteObject(b -> b.bucket(bucketName).key(c.key())));
     }
 
     /**
@@ -208,8 +187,7 @@ public class S3Utils {
      */
     @PreDestroy
     public void deleteAllBuckets() {
-        Set<String> bucketNames = new HashSet<>(bucketsCreated.keySet());
-        for (String bucketName : bucketNames) {
+        for (String bucketName : bucketsCreated) {
             deleteS3Bucket(bucketName);
         }
     }

@@ -1,11 +1,12 @@
 package io.syndesis.qe;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 
 import io.cucumber.spring.CucumberContextConfiguration;
 
 @CucumberContextConfiguration
-//@ComponentScan("io.syndesis.qe")
-@ContextConfiguration("classpath:cucumber.xml")
+@ContextConfiguration(classes = CucumberSpring.class)
+@ComponentScan(basePackages = {"io.syndesis.qe"})
 public class CucumberSpring {
 }

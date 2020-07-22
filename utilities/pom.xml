@@ -8,14 +8,22 @@
 		<groupId>io.syndesis.qe</groupId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
+
 	<artifactId>utilities</artifactId>
+	<name>utilities :: Utilities for Syndesis tests</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>io.syndesis.qe</groupId>
 			<artifactId>endpoints</artifactId>
-			<version>0.1-SNAPSHOT</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j-api.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>io.fabric8</groupId>
 			<artifactId>openshift-client</artifactId>
@@ -33,7 +41,24 @@
 
 		<dependency>
 			<groupId>io.cucumber</groupId>
+			<artifactId>cucumber-junit</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.cucumber</groupId>
 			<artifactId>cucumber-spring</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<dependency>
@@ -44,25 +69,31 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
+			<version>${commons.io.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
+			<version>${commons-lang3.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.google.apis</groupId>
 			<artifactId>google-api-services-gmail</artifactId>
-			<version>${google.apis.version}</version>
+			<version>${google.apis.gmail.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.apis</groupId>
@@ -79,105 +110,101 @@
 		<dependency>
 			<groupId>com.github.seratch</groupId>
 			<artifactId>jslack</artifactId>
+			<version>${jslack.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.mylyn.github</groupId>
 			<artifactId>org.eclipse.egit.github.core</artifactId>
+			<version>${github.core.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<!-- this means java6+ so do not panic :) -->
 			<artifactId>google-oauth-client-java6</artifactId>
+			<version>${google.oauth.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client-jetty</artifactId>
+			<version>${google.oauth.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.eclipse.paho</groupId>
 			<artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+			<version>${mqttv3.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
+			<version>${activemq.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.qpid</groupId>
 			<artifactId>qpid-jms-client</artifactId>
+			<version>${qpid.version}</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>io.atlassian.fugue</groupId>
 			<artifactId>fugue</artifactId>
+			<version>${jira.fugue.version}</version>
 		</dependency>
 
+		<!-- TODO: needed? -->
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.el</artifactId>
+			<version>${el.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.box</groupId>
 			<artifactId>box-java-sdk</artifactId>
+			<version>${box.version}</version>
 		</dependency>
 
+		<!-- Needed for getting box token -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
+			<version>${jsoup.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>sqs</artifactId>
+			<version>${aws.clients.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>dynamodb</artifactId>
+			<version>${aws.clients.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>${aws.clients.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-rest-java-client-core</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-client</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>${jira.client.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.atlassian.jira</groupId>
 			<artifactId>jira-rest-java-client-api</artifactId>
+			<version>${jira.client.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-s3</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-base</artifactId>
-			<version>${fhir.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-structures-dstu3</artifactId>
-			<version>${fhir.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>ca.uhn.hapi.fhir</groupId>
-			<artifactId>hapi-fhir-client</artifactId>
-			<version>${fhir.version}</version>
-		</dependency>
-
 	</dependencies>
 
 	<profiles>
@@ -192,6 +219,7 @@
 				<dependency>
 					<groupId>com.oracle.jdbc</groupId>
 					<artifactId>ojdbc8</artifactId>
+					<version>${oracle.version}</version>
 				</dependency>
 			</dependencies>
 		</profile>

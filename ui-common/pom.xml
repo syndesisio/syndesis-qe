@@ -10,17 +10,19 @@
 	</parent>
 
 	<artifactId>ui-common</artifactId>
+	<name>ui-common :: Common module for UI tests</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>io.syndesis.qe</groupId>
 			<artifactId>utilities</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>apicurio</groupId>
 			<artifactId>apicurito-tests</artifactId>
 			<classifier>tests</classifier>
-			<version>0.0.3-SNAPSHOT</version>
+			<version>${apicurito.tests.version}</version>
 			<type>test-jar</type>
 		</dependency>
 
@@ -28,31 +30,26 @@
 			<groupId>com.codeborne</groupId>
 			<artifactId>selenide</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
+			<version>${velocity.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy</artifactId>
+			<version>${bytebuddy.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>net.bytebuddy</groupId>
 			<artifactId>byte-buddy-agent</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>5.1.8.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<version>5.1.8.RELEASE</version>
+			<version>${bytebuddy.version}</version>
 		</dependency>
 	</dependencies>
+
 	<profiles>
 		<profile>
 			<id>download-drivers</id>

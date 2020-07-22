@@ -11,6 +11,7 @@ Feature: Operator Deployment
       And create pull secret
       And deploy Syndesis operator
 
+  @smoke
   @operator-deploy-default
   Scenario: Syndesis Operator - Deploy default configuration
     When deploy Syndesis CR from file "minimal.yml"

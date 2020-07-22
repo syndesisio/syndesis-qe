@@ -1,6 +1,6 @@
 package io.syndesis.qe.steps.other;
 
-import io.syndesis.qe.util.TelegramUtils;
+import io.syndesis.qe.utils.TelegramUtils;
 import io.syndesis.qe.utils.http.HTTPResponse;
 
 import org.assertj.core.api.Assertions;

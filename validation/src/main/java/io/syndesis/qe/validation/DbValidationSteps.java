@@ -7,7 +7,7 @@ import io.syndesis.qe.utils.DbUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.dballoc.DBAllocatorClient;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 

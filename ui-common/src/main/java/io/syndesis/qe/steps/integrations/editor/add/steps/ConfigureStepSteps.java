@@ -1,9 +1,6 @@
 package io.syndesis.qe.steps.integrations.editor.add.steps;
 
-import static org.junit.Assert.assertThat;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
 
 import static com.codeborne.selenide.Condition.visible;
 
@@ -27,9 +24,9 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.List;
 import java.util.Map;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import io.fabric8.kubernetes.client.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -102,7 +99,7 @@ public class ConfigureStepSteps {
         for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = jmsSubscribe.checkAndGetFieldTypeById(field);
-                assertThat(element, notNullValue());
+                assertThat(element).isNotNull();
                 jmsSubscribe.setElementValue(source.get(field), element);
             }
         }
@@ -115,7 +112,7 @@ public class ConfigureStepSteps {
             for (String field : source.keySet()) {
                 //shouldn't be here jmsRequest class used??
                 SelenideElement element = jmsSubscribe.checkAndGetFieldTypeById(field);
-                assertThat(element, notNullValue());
+                assertThat(element).isNotNull();
                 jmsSubscribe.setElementValue(source.get(field), element);
             }
         }
@@ -127,7 +124,7 @@ public class ConfigureStepSteps {
         for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = jmsPublish.checkAndGetFieldTypeById(field);
-                assertThat(element, notNullValue());
+                assertThat(element).isNotNull();
                 jmsPublish.setElementValue(source.get(field), element);
             }
         }
@@ -139,7 +136,7 @@ public class ConfigureStepSteps {
         for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = ftpDownload.checkAndGetFieldTypeByName(field);
-                assertThat(element, notNullValue());
+                assertThat(element).isNotNull();
                 ftpDownload.setElementValue(source.get(field), element);
             }
         }
@@ -151,7 +148,7 @@ public class ConfigureStepSteps {
         for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = ftpDataType.checkAndGetFieldTypeByName(field);
-                assertThat(element, notNullValue());
+                assertThat(element).isNotNull();
                 ftpDataType.setElementValue(source.get(field), element);
             }
         }
@@ -163,7 +160,7 @@ public class ConfigureStepSteps {
         for (Map<String, String> source : maps) {
             for (String field : source.keySet()) {
                 SelenideElement element = ftpUpload.checkAndGetFieldTypeByName(field);
-                assertThat(element, notNullValue());
+                assertThat(element).isNotNull();
                 ftpUpload.setElementValue(source.get(field), element);
             }
         }

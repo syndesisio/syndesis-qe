@@ -2,8 +2,9 @@ package io.syndesis.qe.utils;
 
 import io.syndesis.qe.utils.google.GoogleAccounts;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.google.api.services.calendar.model.Calendar;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
+@Lazy
 public class GoogleCalendarUtils {
     @Autowired
     private GoogleAccounts accounts;

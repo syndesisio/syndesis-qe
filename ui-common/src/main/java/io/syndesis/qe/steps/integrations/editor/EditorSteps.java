@@ -1,9 +1,8 @@
 package io.syndesis.qe.steps.integrations.editor;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
@@ -16,7 +15,6 @@ import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.assertj.core.api.Assertions;
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
@@ -26,9 +24,9 @@ import com.codeborne.selenide.SelenideElement;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,7 +68,7 @@ public class EditorSteps {
     public void verifyEditorOpenedFor(String integrationName) {
         this.verifyNewIntegrationEditorOpened();
         log.info("editor must display integration name {}", integrationName);
-        assertThat(flowViewComponent.getIntegrationName(), is(integrationName));
+        assertThat(flowViewComponent.getIntegrationName()).isEqualTo(integrationName);
     }
 
     @Deprecated
@@ -105,11 +103,11 @@ public class EditorSteps {
     @Then("^.*checks? that text \"([^\"]*)\" is \"([^\"]*)\" in hover table over \"([^\"]*)\" step$")
     public void checkTextInHoverTable(String text, String isVisible, String stepPosition) {
         if ("visible".equalsIgnoreCase(isVisible)) {
-            Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
+            assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
                 .isNotEmpty()
                 .containsIgnoringCase(text);
         } else {
-            Assertions.assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
+            assertThat(flowViewComponent.checkTextInHoverTable(stepPosition))
                 .isNotEmpty()
                 .doesNotContain(text);
         }
@@ -145,11 +143,11 @@ public class EditorSteps {
 
     public void doCheckTextInStepsWarningTable(String text, int position, boolean visible) {
         if (visible) {
-            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(position))
+            assertThat(flowViewComponent.getWarningTextFromStep(position))
                 .isNotEmpty()
                 .containsIgnoringCase(text);
         } else {
-            Assertions.assertThat(flowViewComponent.getWarningTextFromStep(position))
+            assertThat(flowViewComponent.getWarningTextFromStep(position))
                 .isNotEmpty()
                 .doesNotContain(text);
         }
@@ -160,10 +158,10 @@ public class EditorSteps {
         List<String> data = connectionsData.asList(String.class);
         String foundText = flowViewComponent.getConnectionPropertiesText(flowViewComponent.getStepOnPosition(stepPosition));
 
-        Assertions.assertThat(foundText).isNotEmpty();
+        assertThat(foundText).isNotEmpty();
 
         for (String column : data) {
-            Assertions.assertThat(foundText)
+            assertThat(foundText)
                 .containsIgnoringCase(column);
         }
     }
@@ -176,13 +174,13 @@ public class EditorSteps {
      */
     @Then(".*checks? that there is no warning inside of step number \"([^\"]*)\"$")
     public void checkIfWarningIsVisible(int position) {
-        Assertions.assertThat(flowViewComponent.getStepWarningElement(position).isDisplayed()).isFalse();
+        assertThat(flowViewComponent.getStepWarningElement(position).isDisplayed()).isFalse();
     }
 
     @Then(".*checks? that there is no warning inside of steps in range from \"([^\"]*)\" to \"([^\"]*)\"$")
     public void checkIfWarningIsVisibleInRange(int start, int finish) {
         for (int i = start; i <= finish; i++) {
-            Assertions.assertThat(flowViewComponent.getStepWarningElement(i).isDisplayed()).isFalse();
+            assertThat(flowViewComponent.getStepWarningElement(i).isDisplayed()).isFalse();
         }
     }
 
@@ -217,12 +215,12 @@ public class EditorSteps {
 
     @Then("^check there is a step with \"([^\"]*)\" title")
     public void checkStepTitle(String title) {
-        Assertions.assertThat(flowViewComponent.getStepsTitlesArray()).contains(title);
+        assertThat(flowViewComponent.getStepsTitlesArray()).contains(title);
     }
 
     @Then("^check that (\\w+). step has ([^\"]*) title")
     public void checkParticularStepTitle(int positionOfStep, String title) {
-        Assertions.assertThat(flowViewComponent.getStepsTitlesArray().get(positionOfStep - 1)).contains(title);
+        assertThat(flowViewComponent.getStepsTitlesArray().get(positionOfStep - 1)).contains(title);
     }
 
     @When("^edit integration step on position (\\d+)$")
@@ -256,14 +254,14 @@ public class EditorSteps {
 
     @Then("^validate that input datashape on step (\\d+) contains \"([^\"]*)\"$")
     public void validateInputDataShape(int stepPosition, String expectedDataShape) {
-        Assertions.assertThat(flowViewComponent.getStepOnPosition(stepPosition).$(Element.STEP_DATA_SHAPE).text())
+        assertThat(flowViewComponent.getStepOnPosition(stepPosition).$(Element.STEP_DATA_SHAPE).text())
             .isEqualToIgnoringCase(expectedDataShape);
     }
 
     @Then("^check that alert dialog contains text \"([^\"]*)\"$")
     public void checkAlertDialog(String expectedText) {
         ElementsCollection spans = editor.getDangerAlertElemet().findAll(By.tagName("span"));
-        Assertions.assertThat(spans.stream().anyMatch(span -> span.getText().contains(expectedText)))
+        assertThat(spans.stream().anyMatch(span -> span.getText().contains(expectedText)))
             .isTrue()
             .as("In the alert dialog is not expected text.");
     }
@@ -272,6 +270,6 @@ public class EditorSteps {
     public void checkAlertDialogDetails(String expectedDetailsText) {
         SelenideElement alertElemet = editor.getDangerAlertElemet();
         alertElemet.find(By.tagName("button")).click();
-        Assertions.assertThat(alertElemet.find(By.tagName("pre")).getText()).isEqualTo(expectedDetailsText);
+        assertThat(alertElemet.find(By.tagName("pre")).getText()).isEqualTo(expectedDetailsText);
     }
 }

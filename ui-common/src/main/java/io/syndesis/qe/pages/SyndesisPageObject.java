@@ -1,10 +1,7 @@
 package io.syndesis.qe.pages;
 
-import static org.junit.Assert.assertThat;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
-import static org.hamcrest.Matchers.is;
 
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
 import static com.codeborne.selenide.CollectionCondition.sizeGreaterThanOrEqual;
@@ -125,7 +122,7 @@ public abstract class SyndesisPageObject {
 
     public void selectFromDropDown(String selectId, String option) {
         SelenideElement select = this.getElementById(selectId).shouldBe(visible);
-        assertThat(select.getTagName(), is("select"));
+        assertThat(select.getTagName()).isEqualTo("select");
         select.selectOption(option);
     }
 
@@ -227,9 +224,9 @@ public abstract class SyndesisPageObject {
     }
 
     private void doFillInput(SelenideElement input, String value) {
-        assertThat(input.getTagName(), is("input"));
+        assertThat(input.getTagName()).isEqualTo("input");
         if (input.getAttribute("type").equals("checkbox")) {
-            input.setSelected(Boolean.valueOf(value));
+            input.setSelected(Boolean.parseBoolean(value));
         } else {
             input.shouldBe(visible).clear();
             input.shouldBe(visible).sendKeys(value);
@@ -238,7 +235,7 @@ public abstract class SyndesisPageObject {
 
     public void fillInput(SelenideElement input, String value) {
         if (input.getAttribute("type").equals("checkbox")) {
-            input.setSelected(Boolean.valueOf(value));
+            input.setSelected(Boolean.parseBoolean(value));
         } else {
             input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
             input.sendKeys(Keys.BACK_SPACE);

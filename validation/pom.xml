@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -10,21 +11,24 @@
 	</parent>
 
 	<artifactId>validation</artifactId>
+	<name>validation :: Validation module for Syndesis tests</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>io.syndesis.qe</groupId>
 			<artifactId>utilities</artifactId>
-			<version>0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
+			<version>${twitter4j.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.frejo</groupId>
 			<artifactId>force-rest-api</artifactId>
+			<version>${force.rest.api.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -32,41 +36,42 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
 		<dependency>
 			<groupId>com.dropbox.core</groupId>
 			<artifactId>dropbox-core-sdk</artifactId>
 			<version>${dropbox.core.sdk.version}</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.schwering</groupId>
 			<artifactId>irclib</artifactId>
+			<version>${irclib.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.awaitility</groupId>
 			<artifactId>awaitility</artifactId>
+			<version>${awaitility.version}</version>
 		</dependency>
+
 		<!-- FTP client -->
 		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
+			<version>${ftp.client.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
+			<version>${mongodb.driver.version}</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>com.hierynomus</groupId>
 			<artifactId>sshj</artifactId>
+			<version>${sshj.version}</version>
 		</dependency>
 
 		<dependency>

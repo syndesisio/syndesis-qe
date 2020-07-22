@@ -1,13 +1,12 @@
 package io.syndesis.qe.steps.other;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.google.EventForm;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.google.GetSpecificEvent;
 import io.syndesis.qe.steps.CommonSteps;
 import io.syndesis.qe.utils.GoogleCalendarUtils;
 
-import org.junit.Assert;
-
-import org.hamcrest.Matchers;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.api.services.calendar.model.Calendar;
@@ -47,8 +46,7 @@ public class GoogleCalendarSteps {
     }
 
     @When("^fill in update event form using calendar \"([^\"]*)\", summary \"([^\"]*)\" and description \"([^\"]*)\" for user \"([^\"]*)\"$")
-    public void fillInUpdateEventFormUsingCalendarSummaryAndDescription(String calendarName, String summary, String description, String ga)
-        throws Throwable {
+    public void fillInUpdateEventFormUsingCalendarSummaryAndDescription(String calendarName, String summary, String description, String ga) {
         fillInUpdateEventForm(calendarName, null, summary, description);
     }
 
@@ -58,9 +56,9 @@ public class GoogleCalendarSteps {
         String ga) throws Throwable {
         String aliasedCalendarName = gcu.getAliasedCalendarName(calendarName);
         Calendar c = gcu.getPreviouslyCreatedCalendar(ga, aliasedCalendarName);
-        Assert.assertThat(String.format("Calendar %s is not amongst the created calendars.", aliasedCalendarName), c, Matchers.notNullValue());
+        assertThat(c).as("Calendar %s is not amongst the created calendars.", aliasedCalendarName).isNotNull();
         Event e = gcu.getEventBySummary(ga, c.getId(), oldSummary);
-        Assert.assertThat(String.format("Event %s is not present in calendar %s.", oldSummary, aliasedCalendarName), e, Matchers.notNullValue());
+        assertThat(e).as(String.format("Event %s is not present in calendar %s.", oldSummary, aliasedCalendarName)).isNotNull();
         fillInUpdateEventForm(aliasedCalendarName, e.getId(), summary, description);
     }
 

@@ -4,7 +4,7 @@ import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.utils.TestUtils;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
