@@ -38,7 +38,7 @@ Feature: Operator Deployment
   Scenario: Syndesis Operator - Components - Server - Don't deploy integrations
     When deploy Syndesis CR from file "spec/components/server/deployIntegrations.yml"
       And wait for Syndesis to become ready
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
       And create integration with name: "deploy-integrations-check"
     Then verify that the integration with name "deploy-integrations-check" is not started
@@ -51,13 +51,13 @@ Feature: Operator Deployment
     Then check that the "syndesis-server-config" config map contains
       | application.yml |  maxIntegrationsPerUser: '2' |
       | application.yml |  maxDeploymentsPerUser: '2'  |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
       And create integration with name: "my-int-1"
-      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
       And create integration with name: "my-int-2"
-      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
       And create integration with name: "my-int-3"
     Then wait for integration with name: "my-int-1" to become active
@@ -90,7 +90,7 @@ Feature: Operator Deployment
     Then wait for Syndesis to become ready
       And check that the "syndesis-server-config" config map contains
         | application.yml | integration: camel-k |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
       And create integration with name: "sql-to-log"
     # Camel-K operator initially needs to download all dependencies and it takes time with combination with our nexus
@@ -144,7 +144,7 @@ Feature: Operator Deployment
   Scenario: Syndesis Operator - Addons - Jaeger
     When deploy Syndesis CR from file "spec/addons/jaeger.yml"
     Then wait for Syndesis to become ready
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add a split step
       And start mapper definition with name: "mapping 1"
       And MAP using Step 2 and field "/first_name" to "/<>/task"
@@ -159,7 +159,7 @@ Feature: Operator Deployment
   Scenario: Syndesis Operator - Addons - Jaeger - Sampler
     When deploy Syndesis CR from file "spec/addons/jaeger.sampler.yml"
     Then wait for Syndesis to become ready
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add a split step
       And start mapper definition with name: "mapping 1"
       And MAP using Step 2 and field "/first_name" to "/<>/task"
@@ -181,7 +181,7 @@ Feature: Operator Deployment
     When deploy Jaeger
     And deploy Syndesis CR from file "spec/addons/external-jaeger.yml"
     Then wait for Syndesis to become ready
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
     And add a split step
     And start mapper definition with name: "mapping 1"
     And MAP using Step 2 and field "/first_name" to "/<>/task"

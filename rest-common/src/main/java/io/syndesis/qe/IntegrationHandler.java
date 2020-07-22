@@ -49,12 +49,12 @@ public class IntegrationHandler {
     @Autowired
     private AtlasMapperGenerator amg;
 
-    @When("^create new integration with name: \"([^\"]*)\" and desiredState: \"([^\"]*)\"")
+    @When("create new integration with name: {string} and desiredState: {string}")
     public void createIntegrationFromGivenStepsWithState(String integrationName, String desiredState) {
         createIntegrationFromGivenStepsWithStateAndValidation(integrationName, desiredState, null);
     }
 
-    @When("^create integration with name: \"([^\"]*)\"( and without validating connections)?")
+    @When("^create integration with name: \"([^\"]*)\"( and without validating connections)?$")
     public void createIntegrationWithoutValidation(String name, String validate) {
         createIntegrationFromGivenStepsWithStateAndValidation(name, "Published", validate);
     }
@@ -99,7 +99,7 @@ public class IntegrationHandler {
         steps.flushStepDefinitions();
     }
 
-    @When("^set integration with name: \"([^\"]*)\" to desiredState: \"([^\"]*)\"")
+    @When("set integration with name: {string} to desiredState: {string}")
     public void changeIntegrationState(String integrationName, String desiredState) {
 
         String integrationId = integrationsEndpoint.getIntegrationId(integrationName).get();
@@ -117,7 +117,7 @@ public class IntegrationHandler {
         integrationsEndpoint.delete(integrationsEndpoint.getIntegrationId(integrationName).get());
     }
 
-    @Then("^try to create new integration with the same name: \"([^\"]*)\" and state: \"([^\"]*)\"$")
+    @Then("try to create new integration with the same name: {string} and state: {string}")
     public void sameNameIntegrationValidation(String integrationName, String desiredState) {
 
         final Integration integration = new Integration.Builder()
@@ -177,10 +177,7 @@ public class IntegrationHandler {
             for (StepDefinition mapper : mappers) {
                 List<StepDefinition> precedingSteps = steps.getStepDefinitions().subList(0, steps.getStepDefinitions().indexOf(mapper));
                 StepDefinition followingStep = steps.getStepDefinitions().get(steps.getStepDefinitions().indexOf(mapper) + 1);
-                if (mapper.getStep().getConfiguredProperties().containsKey("atlasmapping")) {
-                    //TODO(tplevko): think of some way to substitute placeholders for the step ID's
-                    reflectStepIdsInAtlasMapping(mapper, precedingSteps, followingStep);
-                } else {
+                if (!mapper.getStep().getConfiguredProperties().containsKey("atlasmapping")) {
                     //TODO(tplevko): fix for more than one preceding step.
                     amg.setSteps(mapper, precedingSteps, followingStep);
                     mapper.setStep(amg.getAtlasMappingStep());
@@ -209,10 +206,6 @@ public class IntegrationHandler {
                 }
             }
         }
-    }
-
-    private void reflectStepIdsInAtlasMapping(StepDefinition mapping, List<StepDefinition> precedingSteps, StepDefinition followingStep) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**

@@ -15,7 +15,7 @@ Feature: Integration - Monitoring
   Scenario: Metrics and activity log
     When insert into "contact" table
       | Josef3 | Stieranka | Istrochem | db |
-      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add a split step
       And add log step
       And start mapper definition with name: "mapping 1"

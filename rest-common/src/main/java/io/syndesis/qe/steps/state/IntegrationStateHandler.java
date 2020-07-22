@@ -18,7 +18,7 @@ public class IntegrationStateHandler {
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
 
-    @When("^rebuild integration with name \"([^\"]*)\"$")
+    @When("rebuild integration with name {string}")
     public void rebuildIntegration(String name) {
         Optional<String> integrationId = integrationsEndpoint.getIntegrationId(name);
         if (!integrationId.isPresent()) {

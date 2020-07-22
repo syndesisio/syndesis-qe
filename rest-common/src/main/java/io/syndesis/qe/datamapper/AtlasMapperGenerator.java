@@ -1,6 +1,6 @@
 package io.syndesis.qe.datamapper;
 
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.DataShapeKinds;
@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -85,7 +84,7 @@ public class AtlasMapperGenerator {
         precedingSteps.stream().filter(s -> s.getStep().getAction().isPresent()).forEach(s -> {
             String stepSpecification = s.getStep().getAction().get().getOutputDataShape().get().getSpecification();
             DataShapeKinds dsKind = s.getStep().getAction().get().getOutputDataShape().get().getKind();
-            s.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
+            s.setInspectionResponseFields(processDataShapeIntoFields(stepSpecification, dsKind));
         });
     }
 
@@ -96,7 +95,7 @@ public class AtlasMapperGenerator {
     private void processFollowingStep() {
         String stepSpecification = followingStep.getStep().getAction().get().getInputDataShape().get().getSpecification();
         DataShapeKinds dsKind = followingStep.getStep().getAction().get().getInputDataShape().get().getKind();
-        followingStep.setInspectionResponseFields(Optional.ofNullable(processDataShapeIntoFields(stepSpecification, dsKind)));
+        followingStep.setInspectionResponseFields(processDataShapeIntoFields(stepSpecification, dsKind));
     }
 
     /**
@@ -284,7 +283,7 @@ public class AtlasMapperGenerator {
     private List<BaseMapping> generateBaseMappings() {
         List<BaseMapping> baseMapping = new ArrayList<>();
 
-        for (DataMapperStepDefinition m : mapping.getDataMapperDefinition().get().getDataMapperStepDefinition()) {
+        for (DataMapperStepDefinition m : mapping.getDataMapperDefinition().getDataMapperStepDefinition()) {
             baseMapping.add(generateMapping(m));
         }
         return baseMapping;
@@ -321,13 +320,14 @@ public class AtlasMapperGenerator {
 
         for (int i = 0; i < mappingDef.getInputFields().size(); i++) {
             String def = mappingDef.getInputFields().get(i);
-            Field inField = precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
+            Field inField =
+                precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().stream().filter(f -> f.getPath().matches(def))
+                    .findFirst().get();
             inField.setIndex(i);
             in.add(inField);
         }
 
-        Field out = getField(followingStep.getInspectionResponseFields().get(), mappingDef.getOutputFields().get(0));
+        Field out = getField(followingStep.getInspectionResponseFields(), mappingDef.getOutputFields().get(0));
         if (out == null) {
             fail("Unable to find \"out\" field with path " + mappingDef.getOutputFields().get(0));
         }
@@ -347,12 +347,11 @@ public class AtlasMapperGenerator {
 
         for (int i = 0; i < mappingDef.getOutputFields().size(); i++) {
             String def = mappingDef.getOutputFields().get(i);
-            Field outField = followingStep.getInspectionResponseFields().get()
-                .stream().filter(f -> f.getPath().matches(def)).findFirst().get();
+            Field outField = followingStep.getInspectionResponseFields().stream().filter(f -> f.getPath().matches(def)).findFirst().get();
             outField.setIndex(i);
             out.add(outField);
         }
-        Field in = getField(precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get(), mappingDef.getInputFields().get(0));
+        Field in = getField(precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields(), mappingDef.getInputFields().get(0));
         if (in == null) {
             fail("Unable to find \"in\" field with path " + mappingDef.getInputFields().get(0));
         }
@@ -367,11 +366,11 @@ public class AtlasMapperGenerator {
      * @return mapping object
      */
     private Mapping generateMapMapping(DataMapperStepDefinition mappingDef) {
-        Field in = getField(precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields().get(), mappingDef.getInputFields().get(0));
+        Field in = getField(precedingSteps.get(mappingDef.getFromStep() - 1).getInspectionResponseFields(), mappingDef.getInputFields().get(0));
         if (in == null) {
             fail("Unable to find \"in\" field with path " + mappingDef.getInputFields().get(0));
         }
-        Field out = getField(followingStep.getInspectionResponseFields().get(), mappingDef.getOutputFields().get(0));
+        Field out = getField(followingStep.getInspectionResponseFields(), mappingDef.getOutputFields().get(0));
         if (out == null) {
             fail("Unable to find \"out\" field with path " + mappingDef.getOutputFields().get(0));
         }

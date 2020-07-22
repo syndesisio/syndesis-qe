@@ -16,7 +16,7 @@ public class ExtensionHandler {
     @Autowired
     private ExtensionsEndpoint extensionsEndpoint;
 
-    @Given("^import extensions from syndesis-extensions folder through API$")
+    @Given("import extensions from syndesis-extensions folder through API")
     public void importExtensionsFromSyndesisExtensionsFolder(DataTable properties) {
         List<String> extensions = properties.asList(String.class);
         for (String ext : extensions) {
@@ -27,7 +27,7 @@ public class ExtensionHandler {
         }
     }
 
-    @Given("^import extension from path \"([^\"]*)\"$")
+    @Given("import extension from path {string}")
     public void importExtensionFromPath(String path) {
         File extension = new File(path);
         assertThat(extension).exists();

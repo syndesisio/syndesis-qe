@@ -18,7 +18,7 @@ Feature: Integration - HTTP
         | Tony  | Do  | Syndesis-qe | db |
         | John  | Doe | Syndesis-qe | db |
         | Jeff  | Doe | Syndesis-qe | db |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "10000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 10000 ms
       And add a split step
       And create basic filter step for "last_name" with word "Doe" and operation "contains"
       And add an aggregate step

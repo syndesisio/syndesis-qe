@@ -43,7 +43,7 @@ Feature: Integration - File transfer
       And reset content of "BOX_IDS" table
       And execute SQL command "CREATE TABLE BOX_IDS(id varchar)"
       And insert box file ids to box id table
-    When create start DB periodic sql invocation action step with query "SELECT * FROM BOX_IDS" and period "600000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM BOX_IDS" and period 600000 ms
       And add a split step
       And start mapper definition with name: "sql-split-box"
       And MAP using Step 2 and field "/id" to "/fileId"
@@ -64,7 +64,7 @@ Feature: Integration - File transfer
   Scenario: SQL to Box upload
     Given reset content of "CONTACT" table
       And execute SQL command "INSERT INTO contact VALUES ('Joe', 'Jackson', 'Red Hat', 'db', current_timestamp)"
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "60000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 60000 ms
       And start mapper definition with name: "sql-box"
       And MAP using Step 1 and field "/<>/last_name" to "/text"
       And create Box upload action step with file name "box-upload.json"

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -19,19 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class StepsStorage {
-
-    private List<StepDefinition> stepDefinitions = null;
+    @Getter
+    private List<StepDefinition> stepDefinitions;
 
     public StepsStorage() {
         stepDefinitions = new ArrayList<>();
     }
 
-    public List<StepDefinition> getStepDefinitions() {
-        return stepDefinitions;
-    }
-
     public List<Step> getSteps() {
-        return stepDefinitions.stream().map(a -> a.getStep()).collect(Collectors.toList());
+        return stepDefinitions.stream().map(StepDefinition::getStep).collect(Collectors.toList());
     }
 
     public StepDefinition getLastStepDefinition() {

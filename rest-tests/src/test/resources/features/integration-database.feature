@@ -16,7 +16,7 @@ Feature: Integration - Database
       | Josef_first  | Stieranka_first  | Syndesis-qe | db |
       | Josef_second | Stieranka_second | Syndesis-qe | db |
 
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
     And add a split step
     And create basic filter step for "last_name" with word "first" and operation "contains"
     And start mapper definition with name: "mapping 1"
@@ -36,7 +36,7 @@ Feature: Integration - Database
   Scenario: Stored procedures
     Given execute SQL command "CREATE FUNCTION get_task(OUT id int, OUT task varchar, OUT completed integer) RETURNS SETOF record AS 'SELECT * FROM TODO;' LANGUAGE SQL;"
       And execute SQL command "CREATE FUNCTION create_contact(first_name varchar) RETURNS void AS 'INSERT INTO CONTACT(first_name) values($1);' LANGUAGE SQL;"
-    When create start DB periodic stored procedure invocation action step named "get_task" and period "30000" ms
+    When create start DB periodic stored procedure invocation action step named "get_task" and period 30000 ms
       And start mapper definition with name: "db-db"
       And MAP using Step 1 and field "/task" to "/first_name"
       And create finish DB invoke stored procedure "create_contact" action step

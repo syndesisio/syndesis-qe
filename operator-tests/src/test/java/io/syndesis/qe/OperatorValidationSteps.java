@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -53,6 +54,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.DoneablePersistentVolume;
+import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.PersistentVolumeFluent;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Quantity;
@@ -106,25 +108,29 @@ public class OperatorValidationSteps {
         ResourceFactory.get(Syndesis.class).deployOperator();
     }
 
-    @When("^deploy Syndesis CR from file \"([^\"]*)\"")
+    @When("^deploy Syndesis CR( from file \"([^\"]*)\")?")
     public void deployCrFromFile(String file) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
         try {
-            String content = FileUtils.readFileToString(new File("src/test/resources/operator/" + file), "UTF-8");
-            if (content.contains("REPLACE_REPO")) {
-                content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
-                    : TestConfiguration.upstreamRepository());
-            }
-            if (content.contains("REPLACE_QUERY_URL")) {
-                content = content.replace("REPLACE_QUERY_URL", ResourceFactory.get(Jaeger.class).getQueryServiceHost());
-            }
-            if (content.contains("REPLACE_COLLECTOR_URL")) {
-                content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
-            }
-            syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-            //don't do workarounds for external Jaeger
-            if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
-                syndesis.jaegerWorkarounds();
+            if (file == null) {
+                syndesis.deploySyndesisViaOperator();
+            } else {
+                String content = FileUtils.readFileToString(new File("src/test/resources/operator/" + file), "UTF-8");
+                if (content.contains("REPLACE_REPO")) {
+                    content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
+                        : TestConfiguration.upstreamRepository());
+                }
+                if (content.contains("REPLACE_QUERY_URL")) {
+                    content = content.replace("REPLACE_QUERY_URL", ResourceFactory.get(Jaeger.class).getQueryServiceHost());
+                }
+                if (content.contains("REPLACE_COLLECTOR_URL")) {
+                    content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
+                }
+                syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
+                //don't do workarounds for external Jaeger
+                if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+                    syndesis.jaegerWorkarounds();
+                }
             }
         } catch (IOException e) {
             fail("Unable to open file " + file, e);
@@ -513,5 +519,44 @@ public class OperatorValidationSteps {
     @Then("verify that there are {int} backups in S3")
     public void verifyBackups(int count) {
         assertThat(s3.getFileCount(S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX))).isEqualTo(count);
+    }
+
+    /**
+     * Checks whether pods contains com.redhat metering labels.
+     * It is a feature for Fuse Online product, therefore check runs only in case of the productized build.
+     */
+    @Then("verify new RedHat metering labels")
+    public void checkRedhatLabels() {
+        List<Pod> pods = OpenShiftUtils.getInstance().pods().withLabel("syndesis.io/component").list().getItems().stream()
+            .filter(p -> !"integration".equals(p.getMetadata().getLabels().get("syndesis.io/component")))
+            .collect(Collectors.toList());
+        assertThat(OpenShiftUtils.getAnyPod("name", "jaeger-operator")).isPresent();
+        pods.add(OpenShiftUtils.getAnyPod("name", "jaeger-operator").get());
+        for (Pod p : pods) {
+            if (p.getStatus().getPhase().contains("Running")) {
+                Map<String, String> labels = p.getMetadata().getLabels();
+                assertThat(labels).containsKey("com.redhat.product-name");
+                assertThat(labels).containsKey("com.redhat.product-version");
+                assertThat(labels).containsKey("com.redhat.component-name");
+                assertThat(labels).containsKey("com.redhat.component-version");
+            }
+        }
+    }
+
+    @Then("verify whether operator metrics endpoint is active")
+    public void checkEndpoint() {
+        Endpoints operatorEndpoint = OpenShiftUtils.getInstance().getEndpoint("syndesis-operator-metrics");
+        assertThat(operatorEndpoint.getSubsets()).isNotEmpty();
+    }
+
+    @Then("verify whether operator metrics endpoint includes version information")
+    public void checkMetricsVersion() {
+        try (LocalPortForward ignored = OpenShiftUtils.createLocalPortForward(
+            //skip syndesis-operator-{d}-deploy pods
+            OpenShiftUtils.getPod(p -> p.getMetadata().getName().matches("syndesis-operator-\\d-(?!deploy).*")), 8383, 8383)) {
+            assertThat(HTTPUtils.doGetRequest("http://localhost:8383/metrics").getBody()).contains("syndesis_version_info{operator_version");
+        } catch (IOException e) {
+            fail("Unable to create port forward: ", e);
+        }
     }
 }

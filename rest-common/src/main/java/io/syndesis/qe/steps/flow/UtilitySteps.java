@@ -8,7 +8,7 @@ import io.syndesis.qe.storage.StepsStorage;
 import io.cucumber.java.en.Given;
 
 public class UtilitySteps extends AbstractStep {
-    @Given("^change \"([^\"]*)\" datashape of previous step to \"([^\"]*)\" type with specification \'([^\']*)\'$")
+    @Given("change {string} datashape of previous step to {string} type with specification {string}")
     public void changeDatashapeTo(String direction, String type, String specification) {
         Step lastStep = super.getSteps().getLastStepDefinition().getStep();
         Step withDatashape = new Step.Builder().createFrom(lastStep).action(

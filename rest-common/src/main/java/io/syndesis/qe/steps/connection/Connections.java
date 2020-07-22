@@ -44,7 +44,7 @@ public class Connections {
         return connector.getId().orElseThrow(() -> new IllegalArgumentException("Connector ID is null"));
     }
 
-    @Given("^create connection$")
+    @Given("create connection")
     public void createConnection(DataTable connectionProperties) {
         List<List<String>> cells = connectionProperties.cells();
         Map<String, String> connectionPropertiesMap = new HashMap<>();
@@ -83,7 +83,7 @@ public class Connections {
         connectionsEndpoint.create(connection);
     }
 
-    @Given("^create ActiveMQ connection$")
+    @Given("create ActiveMQ connection")
     public void createActiveMQConnection() {
         account = accountsDirectory.get(Account.Name.ACTIVEMQ);
         createConnection(
@@ -96,7 +96,7 @@ public class Connections {
         );
     }
 
-    @Given("^create AMQP connection$")
+    @Given("create AMQP connection")
     public void createAMQPConnection() {
         account = accountsDirectory.get(Account.Name.AMQP);
         createConnection(
@@ -110,7 +110,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Box connection$")
+    @Given("create Box connection")
     public void createBoxConnection() {
         account = accountsDirectory.get(Account.Name.BOX);
         createConnection(
@@ -124,7 +124,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Dropbox connection$")
+    @Given("create Dropbox connection")
     public void createDropboxConnection() {
         account = accountsDirectory.get(Account.Name.DROPBOX);
         createConnection(
@@ -136,7 +136,7 @@ public class Connections {
         );
     }
 
-    @Given("^create DynamoDB connection$")
+    @Given("create DynamoDB connection")
     public void createDynamoDBConnection() {
         account = accountsDirectory.get(Account.Name.AWS);
         createConnection(
@@ -164,7 +164,7 @@ public class Connections {
         );
     }
 
-    @Given("^create FHIR connection$")
+    @Given("create FHIR connection")
     public void createFhirConnection() {
         createConnection(
             fromData(
@@ -173,7 +173,7 @@ public class Connections {
         );
     }
 
-    @Given("^create FTP connection$")
+    @Given("create FTP connection")
     public void createFTPConnection() {
         account = accountsDirectory.get(Account.Name.FTP);
         createConnection(
@@ -185,7 +185,7 @@ public class Connections {
         );
     }
 
-    @Given("^create HTTP connection$")
+    @Given("create HTTP connection")
     public void createHTTPConnection() {
         account = accountsDirectory.get(Account.Name.HTTP);
         createConnection(
@@ -196,7 +196,7 @@ public class Connections {
         );
     }
 
-    @Given("^create HTTPS connection$")
+    @Given("create HTTPS connection")
     public void createHTTPSConnection() {
         account = accountsDirectory.get(Account.Name.HTTPS);
         createConnection(
@@ -207,7 +207,7 @@ public class Connections {
         );
     }
 
-    @Given("^create IRC connection$")
+    @Given("create IRC connection")
     public void createIRCConnection() {
         account = accountsDirectory.get(Account.Name.IRC);
         createConnection(
@@ -219,7 +219,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Jira connection$")
+    @Given("create Jira connection")
     public void createJiraConnection() {
         createConnection(
             fromData(
@@ -229,7 +229,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Kafka connection$")
+    @Given("create Kafka connection")
     public void createKafkaConnection() {
         account = accountsDirectory.get(Account.Name.KAFKA);
         createConnection(
@@ -241,7 +241,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Kudu connection$")
+    @Given("create Kudu connection")
     public void createKuduConnection() {
         account = accountsDirectory.get(Account.Name.KUDU);
         createConnection(
@@ -252,7 +252,7 @@ public class Connections {
         );
     }
 
-    @Given("^create MongoDB connection$")
+    @Given("create MongoDB connection")
     public void createMongoDBConnection() {
         account = accountsDirectory.get(Account.Name.MONGODB36);
         createConnection(
@@ -278,7 +278,7 @@ public class Connections {
         );
     }
 
-    @Given("^create SalesForce connection$")
+    @Given("create SalesForce connection")
     public void createSalesForceConnection() {
         account = accountsDirectory.get(Account.Name.SALESFORCE);
         createConnection(
@@ -293,7 +293,7 @@ public class Connections {
         );
     }
 
-    @Given("^create ServiceNow connection$")
+    @Given("create ServiceNow connection")
     public void createServicenowConnection() {
         account = accountsDirectory.get(Account.Name.SERVICENOW);
         createConnection(
@@ -306,7 +306,7 @@ public class Connections {
         );
     }
 
-    @Given("^create SFTP connection$")
+    @Given("create SFTP connection")
     public void createSFTPConnection() {
         account = accountsDirectory.get(Account.Name.SFTP);
         createConnection(
@@ -320,7 +320,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Slack connection$")
+    @Given("create Slack connection")
     public void createSlackConnection() {
         account = accountsDirectory.get(Account.Name.SLACK);
         createConnection(
@@ -332,7 +332,7 @@ public class Connections {
         );
     }
 
-    @Given("^create SNS connection$")
+    @Given("create SNS connection")
     public void createSNSConnection() {
         account = accountsDirectory.get(Account.Name.AWS);
         createConnection(
@@ -345,7 +345,7 @@ public class Connections {
         );
     }
 
-    @Given("^create SQS connection$")
+    @Given("create SQS connection")
     public void createSQSConnection() {
         account = accountsDirectory.get(Account.Name.AWS);
         createConnection(
@@ -358,7 +358,7 @@ public class Connections {
         );
     }
 
-    @Given("^create S3 connection using \"([^\"]*)\" bucket$")
+    @Given("create S3 connection using {string} bucket")
     public void createS3Connection(String s3Bucket) {
         account = accountsDirectory.get(Account.Name.AWS);
         log.info("Bucket name: {}", S3BucketNameBuilder.getBucketName(s3Bucket));
@@ -375,7 +375,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Telegram connection$")
+    @Given("create Telegram connection")
     public void createTelegramConnection() {
         account = accountsDirectory.get(Account.Name.TELEGRAM);
         createConnection(
@@ -386,7 +386,7 @@ public class Connections {
         );
     }
 
-    @Given("^create Twitter connection using \"([^\"]*)\" account$")
+    @Given("create Twitter connection using {string} account")
     public void createTwitterConnection(String twitterAccount) {
         account = accountsDirectory.get(twitterAccount);
         createConnection(

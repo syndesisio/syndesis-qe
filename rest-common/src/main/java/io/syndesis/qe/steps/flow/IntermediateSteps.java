@@ -1,7 +1,7 @@
 package io.syndesis.qe.steps.flow;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Fail.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.common.model.DataShape;
 import io.syndesis.common.model.action.Action;
@@ -29,7 +29,7 @@ public class IntermediateSteps extends AbstractStep {
     @Autowired
     private ExtensionsEndpoint extensionsEndpoint;
 
-    @When("^add advanced filter step with \"([^\"]*)\" expression$")
+    @When("add advanced filter step with {string} expression")
     public void addAdvancedFilterStepWithExpression(String expression) {
         super.addProperty(StepProperty.KIND, StepKind.expressionFilter);
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map("filter", expression));
@@ -37,7 +37,7 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^create basic filter step for \"([^\"]*)\" with word \"([^\"]*)\" and operation \"([^\"]*)\"")
+    @When("create basic filter step for {string} with word {string} and operation {string}")
     public void createBasicFilterStepWord(String path, String value, String operation) {
         super.addProperty(StepProperty.KIND, StepKind.ruleFilter);
         super.addProperty(StepProperty.STEP_NAME, "Rule Filter " + path);
@@ -49,7 +49,7 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^add \"([^\"]*)\" extension step with \"([^\"]*)\" action with properties:$")
+    @When("add {string} extension step with {string} action with properties:")
     public void addExtensionIdWith(String name, String actionId, DataTable properties) {
         Optional<Extension> e = extensionsEndpoint.list().stream().filter(ex -> ex.getName().equalsIgnoreCase(name)).findFirst();
         assertThat(e).isPresent();
@@ -64,7 +64,7 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^add log step$")
+    @When("add log step")
     public void addLogStep() {
         super.addProperty(StepProperty.KIND, StepKind.log);
         super.addProperty(StepProperty.PROPERTIES, TestUtils.map("contextLoggingEnabled", "true",
@@ -73,7 +73,7 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^add a split step$")
+    @When("add a split step")
     public void addSplitStep() {
         final DataShape in = super.getSteps().getLastStepDefinition().getStep().getAction().get().getInputDataShape().get();
         final DataShape out = super.getSteps().getLastStepDefinition().getStep().getAction().get().getOutputDataShape().get();
@@ -85,7 +85,7 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
-    @When("^add an aggregate step$")
+    @When("add an aggregate step")
     public void addAggregateStep() {
         Step previousStepWithDatashapes = null;
         for (int i = super.getSteps().getSteps().size() - 1; i >= 0; i--) {

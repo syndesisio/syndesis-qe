@@ -6,7 +6,7 @@ Feature: Integration - Lifecycle
   Background: Create sample integration
     Given clean application state
     And clean all builds
-    And create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period "4000" ms
+    And create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period 4000 ms
     And add log step
 
   @integrations-lifecycle
@@ -36,7 +36,7 @@ Feature: Integration - Lifecycle
   Scenario: Create with same name
     When create new integration with name: "DB to DB rest same name" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest same name" to become active
-    Given create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period "4000" ms
+    Given create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period 4000 ms
     And add log step
     Then try to create new integration with the same name: "DB to DB rest same name" and state: "Unpublished"
 

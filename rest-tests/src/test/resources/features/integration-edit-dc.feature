@@ -13,7 +13,7 @@ Feature: Integration - Edit DC
   @ENTESB-11640
   @integration-edit-dc-replicas
   Scenario: Edit Integration DC - Replicas
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "20000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 20000 ms
       And add a split step
       And start mapper definition with name: "mapping 1"
       And MAP using Step 2 and field "/first_name" to "/<>/task"
@@ -40,7 +40,7 @@ Feature: Integration - Edit DC
   @ENTESB-10194
   @integration-edit-dc-env-var
   Scenario: Edit Integration DC - Env variable
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "20000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 20000 ms
       And add a split step
       And start mapper definition with name: "mapping 1"
       And MAP using Step 2 and field "/first_name" to "/<>/task"
@@ -69,7 +69,7 @@ Feature: Integration - Edit DC
   @ENTESB-11640
   @integration-edit-dc-autoscaler
   Scenario: Edit Integration DC - Autoscaler
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "20000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 20000 ms
       And add a split step
       And start mapper definition with name: "mapping 1"
       And MAP using Step 2 and field "/first_name" to "/<>/task"
