@@ -2,6 +2,7 @@
 
 @rest
 @database
+@delorean
 Feature: Integration - Database
 
   Background: Create sample integration

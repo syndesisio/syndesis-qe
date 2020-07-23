@@ -4,6 +4,7 @@
 @integration-db-to-db-monitoring
 @database
 @datamapper
+@delorean
 Feature: Integration - Monitoring
 
   Background: Clean application state
