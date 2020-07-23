@@ -58,6 +58,7 @@ Feature: Integration - File transfer
       And validate bucket with name "syndesis-server-bucket-to" contains file with name "test_dbx.txt" and text "Hello from Dropbox!"
       And delete file with path "/s3/test_dbx.txt" from Dropbox
 
+  @delorean
   @integration-ftp-ftp
   @ftp
   Scenario: FTP to FTP

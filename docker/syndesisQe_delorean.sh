@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "=============== Syndesis QE (rest) test suite (modified for usage in Delorean) ==============="
+TAGS="@smoke"
 echo "Environment variables:"
 echo "NAMESPACE: ${NAMESPACE}"
 echo "TAGS: ${TAGS}"

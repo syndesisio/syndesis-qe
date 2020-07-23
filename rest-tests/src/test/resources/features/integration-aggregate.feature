@@ -7,6 +7,7 @@
 @split
 @aggregate
 Feature: Integration - HTTP
+  @delorean
   @integration-db-amq-aggregate
   Scenario: SQL to AMQ with aggregate
     Given clean application state
