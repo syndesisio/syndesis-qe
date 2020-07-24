@@ -155,6 +155,9 @@ public class CommonSteps {
 
     @Given("^clean application state")
     public void resetState() {
+        if (TestConfiguration.isDeloreanEnvironment()) {
+            return;
+        }
         waitUntilClusterIsReachable();
         TestUtils.withRetry(() -> {
             TestSupport.getInstance().resetDB();

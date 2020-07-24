@@ -2,11 +2,16 @@ package io.syndesis.qe;
 
 import static org.junit.Assume.assumeTrue;
 
+import io.syndesis.common.model.connection.Connection;
+import io.syndesis.common.model.integration.Integration;
 import io.syndesis.qe.bdd.storage.StepsStorage;
 import io.syndesis.qe.bdd.validation.OperatorValidationSteps;
+import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.endpoints.IntegrationsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.Jaeger;
+import io.syndesis.qe.resource.impl.SyndesisDB;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.RestUtils;
 import io.syndesis.qe.utils.SampleDbConnectionManager;
@@ -35,6 +40,12 @@ public class RestTestHooks {
     @Autowired
     private StepsStorage stepStorage;
 
+    @Autowired
+    private IntegrationsEndpoint integrationsEndpoint;
+
+    @Autowired
+    private ConnectionsEndpoint connectionsEndpoint;
+
     @Before("@prod")
     public void skipProdForNightly() {
         // Skip prod tests when not running with productized build
@@ -51,6 +62,25 @@ public class RestTestHooks {
         stepStorage.flushStepDefinitions();
         log.debug("Flushed steps from steps storage");
         SampleDbConnectionManager.closeConnections();
+
+        if (TestConfiguration.isDeloreanEnvironment()) {
+            //delete all integrations and connections after the test. Only for Delorean since it doesn't support TEST_SUPPORT env
+            List<Integration> integrations = integrationsEndpoint.list();
+            for (Integration integration : integrations) {
+                integrationsEndpoint.delete(integration.getId().get());
+            }
+
+            List<Connection> connections = connectionsEndpoint.list();
+            for (Connection connection : connections) {
+                if (SyndesisDB.DEFAULT_PSQL_CONNECTION_ORIGINAL.equals(connection.getName()) ||
+                    SyndesisDB.DEFAULT_PSQL_CONNECTION_BACKUP.equals(connection.getName()) ||
+                    //for default connections (Webhook, Log, Flow, Timer, Api Provider etc.) We don't want to delete them
+                    connection.getTags().isEmpty()) {
+                    continue;
+                }
+                connectionsEndpoint.delete(connection.getId().get());
+            }
+        }
     }
 
     @After("@operator")

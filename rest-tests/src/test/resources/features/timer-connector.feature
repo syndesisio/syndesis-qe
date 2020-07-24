@@ -25,6 +25,7 @@ Feature: Integration - Timer
 
     Then verify that after "8" seconds there were "1" calls
 
+  @delorean
   @cron-timer
   Scenario: Cron Timer to GET
     And sleep for jenkins delay or "10" seconds

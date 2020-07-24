@@ -33,6 +33,7 @@ public class Account {
         SERVICENOW("Servicenow"),
         SLACK("QE Slack"),
         TELEGRAM("Telegram"),
+        SYNDESIS_DB("SyndesisDB"),
         TWITTER_LISTENER("Twitter Listener"),
         TWITTER_TALKY("twitter_talky"),
         ZENHUB("ZenHub");
