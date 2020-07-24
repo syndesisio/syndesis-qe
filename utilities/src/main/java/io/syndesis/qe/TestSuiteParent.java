@@ -1,5 +1,7 @@
 package io.syndesis.qe;
 
+import static org.junit.Assert.fail;
+
 import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.SyndesisDB;
@@ -33,11 +35,18 @@ public abstract class TestSuiteParent {
 
         if (TestConfiguration.enableTestSupport()) {
             log.info("Enabling test support");
-            if (OpenShiftUtils.dcContainsEnv("syndesis-operator", "TEST_SUPPORT") &&
-                OpenShiftUtils.envInDcContainsValue("syndesis-operator", "TEST_SUPPORT", "true")) {
+            if (OpenShiftUtils.dcContainsEnv("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED") &&
+                OpenShiftUtils.envInDcContainsValue("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED", "true")) {
                 log.info("TEST_SUPPORT is already enabled");
             } else {
-                OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-operator", "TEST_SUPPORT", "true");
+                // it doesn't work for Syndesis installed via OperatorHub since there is using Deployments and it is managed by ClusterServiceVersion
+                try {
+                    OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-operator", "TEST_SUPPORT", "true");
+                } catch (NullPointerException ex) {
+                    fail(
+                        "Syndesis-operator doesn't exist. The Syndesis is probably installed via OperatorHub. In that case you need to edit " +
+                            "ClusterServiceVersion manually");
+                }
                 try {
                     OpenShiftWaitUtils.waitForPodIsReloaded("syndesis-operator");
                     OpenShiftWaitUtils.waitForPodIsReloaded("syndesis-server");
