@@ -513,7 +513,7 @@ public class OperatorValidationSteps {
     @Then("check that connection {string} exists")
     public void checkConnection(String connection) {
         // This fails when it is not present, so we don't need the value
-        connections.getConnectionByName(connection);
+        assertThat(connections.getConnectionByName(connection)).isNotNull();
     }
 
     @Then("check that extension {string} exists")

@@ -204,7 +204,6 @@ public class SyndesisDB implements Resource {
             && OpenShiftUtils.getPodLogs(APP_NAME).contains("***** sampledb created"); //syndesisDB post script from configmap was successfully loaded
     }
 
-    @Override
     public boolean isDeployed() {
         return OpenShiftUtils.getAnyPod(LABEL_NAME, APP_NAME).isPresent();
     }
