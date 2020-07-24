@@ -1,5 +1,6 @@
 # @sustainer: tplevko@redhat.com
 
+@delorean
 Feature: Integration - Lifecycle
 
   Background: Create sample integration

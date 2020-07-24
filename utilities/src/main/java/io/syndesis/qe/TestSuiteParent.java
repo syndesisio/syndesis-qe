@@ -1,7 +1,10 @@
 package io.syndesis.qe;
 
+import static org.junit.Assert.fail;
+
 import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.SyndesisDB;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TestSuiteParent {
+
     @BeforeClass
     public static void beforeTests() {
         // Do this check only if installing syndesis
@@ -31,11 +35,18 @@ public abstract class TestSuiteParent {
 
         if (TestConfiguration.enableTestSupport()) {
             log.info("Enabling test support");
-            if (OpenShiftUtils.dcContainsEnv("syndesis-operator", "TEST_SUPPORT") &&
-                OpenShiftUtils.envInDcContainsValue("syndesis-operator", "TEST_SUPPORT", "true")) {
+            if (OpenShiftUtils.dcContainsEnv("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED") &&
+                OpenShiftUtils.envInDcContainsValue("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED", "true")) {
                 log.info("TEST_SUPPORT is already enabled");
             } else {
-                OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-operator", "TEST_SUPPORT", "true");
+                // it doesn't work for Syndesis installed via OperatorHub since there is using Deployments and it is managed by ClusterServiceVersion
+                try {
+                    OpenShiftUtils.updateEnvVarInDeploymentConfig("syndesis-operator", "TEST_SUPPORT", "true");
+                } catch (NullPointerException ex) {
+                    fail(
+                        "Syndesis-operator doesn't exist. The Syndesis is probably installed via OperatorHub. In that case you need to edit " +
+                            "ClusterServiceVersion manually");
+                }
                 try {
                     OpenShiftWaitUtils.waitForPodIsReloaded("syndesis-operator");
                     OpenShiftWaitUtils.waitForPodIsReloaded("syndesis-server");
@@ -47,6 +58,10 @@ public abstract class TestSuiteParent {
         }
 
         if (!TestConfiguration.namespaceCleanup()) {
+            if (OpenShiftUtils.getPodByPartialName("syndesis-server").isPresent() && !OpenShiftUtils.getPodByPartialName("syndesis-db").isPresent()) {
+                //syndesis server is in the namespace but the syndesis-db is not. Needs to deploy our own syndesis db and update default connection
+                ResourceFactory.create(SyndesisDB.class);
+            }
             return;
         }
 
