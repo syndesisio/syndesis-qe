@@ -2,6 +2,7 @@ package io.syndesis.qe;
 
 import io.syndesis.qe.bdd.CommonSteps;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.SyndesisDB;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public abstract class TestSuiteParent {
+
     @BeforeClass
     public static void beforeTests() {
         // Do this check only if installing syndesis
@@ -47,6 +49,10 @@ public abstract class TestSuiteParent {
         }
 
         if (!TestConfiguration.namespaceCleanup()) {
+            if (OpenShiftUtils.getPodByPartialName("syndesis-server").isPresent() && !OpenShiftUtils.getPodByPartialName("syndesis-db").isPresent()) {
+                //syndesis server is in the namespace but the syndesis-db is not. Needs to deploy our own syndesis db and update default connection
+                ResourceFactory.create(SyndesisDB.class);
+            }
             return;
         }
 

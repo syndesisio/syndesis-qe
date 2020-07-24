@@ -8,6 +8,7 @@ Feature: Integration - Edit DC
     Given clean application state
       And remove all records from table "CONTACT"
 
+  @delorean
   @ENTESB-11690
   @ENTESB-11640
   @integration-edit-dc-replicas
@@ -35,6 +36,7 @@ Feature: Integration - Edit DC
     Then wait for integration with name: "edit-dc-replicas" to become active
       And check that there are 2 pods for integration "edit-dc-replicas"
 
+  @delorean
   @ENTESB-10194
   @integration-edit-dc-env-var
   Scenario: Edit Integration DC - Env variable

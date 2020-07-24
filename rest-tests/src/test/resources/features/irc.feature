@@ -2,6 +2,7 @@
 
 @rest
 @irc
+@delorean
 Feature: Integration - IRC
 
   Background: Prepare
