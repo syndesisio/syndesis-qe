@@ -14,7 +14,7 @@ if [[ -z "${CREDENTIALS_URL}" ]]; then
 else
   if [[ ${CREDENTIALS_URL} == *"credentials.json" ]]; then
     echo "URL for credentials.json exist. That credentials will be used."
-    wget -N "${CREDENTIALS_URL}"
+    wget -N "${CREDENTIALS_URL}" --no-check-certificate
   else
     echo "The URL set in CREDENTIALS_URL doesn't contain credentials.json. The default credentials.json will be used. Tests that use 3rd party services will fail."
   fi
@@ -35,13 +35,10 @@ STATUS=$?
 
 echo "Status code from mvn command is: $STATUS . The test results will be stored into /test-run-results folder"
 
-mkdir /test-run-results
-mv ./rest-tests/target/cucumber/cucumber-html \
-   ./rest-tests/target/cucumber/cucumber-junit.xml \
-   ./rest-tests/target/cucumber/cucumber-mail \
-   ./rest-tests/target/cucumber/cucumber-report.json \
-   ./rest-tests/log/* \
+[ -d "/test-run-results" ] && rm -rf /test-run-results/cucumber /test-run-results/log || mkdir /test-run-results
+
+mv ./rest-tests/target/cucumber \
+   ./rest-tests/log/ \
    /test-run-results
-cp /test-run-results/cucumber-junit.xml /test-run-results/junit.xml
 
 exit $STATUS

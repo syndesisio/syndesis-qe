@@ -107,6 +107,10 @@ If you wish to run OAuth tests, we are using a static route for all oauth callba
 Due to --route option when installing syndesis and updated /etc/hosts file we don't
 have to update all third party applications and their callbacks for every minishift/openshift IP.
 
+You can obtain OpenShift cluster IP via `ping` command. Let's say that Syndesis with custom
+route `syndesis.my-minishift.syndesis.io` is running on some cluster. When you ping the cluster 
+web console `ping console-openshift-console.apps.<cluster>.com`, you will see there cluster IP. 
+
 #### Adding users to openshift clusters
 If you are using minishift, you can use following commands to create an admin user:
 ```
@@ -120,7 +124,7 @@ If you have some dedicated 3.11 cluster, you can add a new htpasswd entry to the
 
 If you have 4.x cluster, you can follow the docs for [configuring htpasswd](https://docs.openshift.com/container-platform/4.1/authentication/identity_providers/configuring-htpasswd-identity-provider.html)
 
-If you for some reason can't have 2 users (1 admin, 1 regular) - for example on eval clusters when the Syndesis is installed for you, you can use property `syndesis.config.one.user=true` to use only the regular user (specified by the config property `syndesis.config.ui.username`)
+If you for some reason can't have 2 users (1 admin, 1 regular) - for example on eval clusters when the Syndesis is installed for you, you can use property `syndesis.config.single.user=true` to use only the regular user (specified by the config property `syndesis.config.ui.username`)
 
 ### Scenarios
 Test scenarios are provided in Gherkin language in a BDD fashion. Located in `./resources`
@@ -241,6 +245,12 @@ credentials.json
 ```
 
 ### Execution
+
+For the quick execution, we provide a containerized version of the test suite. For more information, see Readme on DockerHub.
+
+Rest test suite https://hub.docker.com/r/syndesisqe/tests-rest
+
+UI test suite https://hub.docker.com/r/syndesisqe/tests-ui
 
 #### Before execution
 For the test execution at least `io.syndesis.common:common-model` and `io.syndesis.server:server-endpoint` modules are required in current version.
