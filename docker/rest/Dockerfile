@@ -1,10 +1,10 @@
 #================================================================================================================================
-# Default version, for now, is 1.10.x, `docker build -t syndesisqe .`
+# Default version, for now, is 1.10.x, `docker build -t syndesisqe/tests-rest .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
-# e.g. `docker build -t syndesisqe --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
+# e.g. `docker build -t docker.io/syndesisqe/tests-rest:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
 # e.g. For building an image for testing changes in the code base which are committed only in the owner repo:
-# `docker build -t syndesisqe --build-arg SYNDESIS_QE_BRANCH_VERSION=FUSEQE-9071_Containerizing-test-suite --build-arg SYNDESIS_QE_BRANCH_OWNER=mkralik3 .`
+# `docker build -t docker.io/syndesisqe/tests-rest:<tag> --build-arg SYNDESIS_QE_BRANCH_VERSION=FUSEQE-9071_Containerizing-test-suite --build-arg SYNDESIS_QE_BRANCH_OWNER=mkralik3 .`
 
 
 # You have to specify the cluster URL, NAMESPACE and admin credentials in the environment variables. When you don't specify tags, only the smoke test will be running.
@@ -17,9 +17,10 @@
 #   -e ADMIN_USERNAME='admin' \
 #   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
-#   syndesisqe
+#   syndesisqe/tests-rest:1.10.x
 #
-# For debugging, you have to expose port 5005
+# For debugging, you have to expose port 5005 by `-p 5005:5005`
+# For running tests with 3rd party services, use CREDENTIALS_URL env `-e CREDENTIALS_URL=http://.../credentials.json`
 #================================================================================================================================
 
 FROM alpine/git as gitRepos
@@ -77,10 +78,13 @@ RUN mvn -pl !ui-tests clean install -DskipTests
 COPY credentials_minimal.json /syndesis-qe/credentials.json
 
 ## the `mvn` command was moved to the script file in case the complex use case will be needed in the future
-## For building image for Delorean, use syndesisQe_delorean.sh entrypoint
-#COPY syndesisQe.sh /usr/local/bin/syndesisQe.sh
-COPY syndesisQe_delorean.sh /usr/local/bin/syndesisQe.sh
+## !!!!!!! For building image for Delorean, use syndesisQe_delorean.sh entrypoint !!!!!!!
+COPY syndesisQe.sh /usr/local/bin/syndesisQe.sh
+#COPY syndesisQe_delorean.sh /usr/local/bin/syndesisQe.sh
 
+# maven:3.6-jdk-8-slim image doesn't contain wget, it is needed for download credentials.json if it is provided
+RUN apt-get update -y
+RUN apt-get install -y wget
 
 RUN chmod +x /usr/local/bin/syndesisQe.sh
 ENTRYPOINT ["/usr/local/bin/syndesisQe.sh"]
