@@ -1,13 +1,12 @@
 package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Component;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +23,10 @@ import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.LocalPortForward;
+import io.fabric8.kubernetes.client.VersionInfo;
 import io.fabric8.kubernetes.client.dsl.PodResource;
 import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.fabric8.openshift.api.model.Route;
-import io.fabric8.openshift.api.model.RouteBuilder;
-import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Headers;
 
 /**
  * OpenShift utils.
@@ -96,51 +92,25 @@ public final class OpenShiftUtils {
         );
     }
 
-    /**
-     * @deprecated use OpenshiftUtils.getInstance()
-     */
-    @Deprecated
-    public static NamespacedOpenShiftClient client() {
-        return getInstance();
-    }
-
-    public static Route createRestRoute(String openShiftNamespace, String urlSuffix) {
-        final Route route = new RouteBuilder()
-            .withNewMetadata()
-            .withName(Component.SERVER.getName())
-            .endMetadata()
-            .withNewSpec()
-            .withPath("/api").withHost("rest-" + openShiftNamespace + "." + urlSuffix)
-            .withWildcardPolicy("None")
-            .withNewTls()
-            .withTermination("edge")
-            .endTls()
-            .withNewTo()
-            .withKind("Service").withName(Component.SERVER.getName())
-            .endTo()
-            .endSpec()
-            .build();
-        return client().resource(route).createOrReplace();
-    }
-
     public static LocalPortForward portForward(Pod pod, int remotePort, int localPort) {
         return getPodResource(pod).portForward(remotePort, localPort);
     }
 
     private static PodResource<Pod, DoneablePod> getPodResource(Pod pod) {
         if (pod.getMetadata().getNamespace() != null) {
-            return client().pods().inNamespace(pod.getMetadata().getNamespace()).withName(pod.getMetadata().getName());
+            return getInstance().pods().inNamespace(pod.getMetadata().getNamespace()).withName(pod.getMetadata().getName());
         } else {
-            return client().pods().withName(pod.getMetadata().getName());
+            return getInstance().pods().withName(pod.getMetadata().getName());
         }
     }
 
     public static Optional<Pod> getPodByPartialName(String partialName) {
-        return OpenShiftUtils.getInstance().getPods().stream()
-            .filter(p -> p.getMetadata().getName().contains(partialName))
-            .filter(p -> !p.getMetadata().getName().contains("deploy"))
-            .filter(p -> !p.getMetadata().getName().contains("build"))
-            .findFirst();
+        List<Pod> pods = findPodsByPredicates(
+            p -> p.getMetadata().getName().contains(partialName),
+            p -> !p.getMetadata().getName().contains("deploy"),
+            p -> !p.getMetadata().getName().contains("build")
+        );
+        return pods.size() > 0 ? Optional.of(pods.get(0)) : Optional.empty();
     }
 
     public static int extractPodSequenceNr(Pod pod) {
@@ -172,73 +142,6 @@ public final class OpenShiftUtils {
         }
         // this can not happen due to assert - make idea happy that it can't be null
         return "";
-    }
-
-    public static boolean arePodLogsEmpty(String podPartialName) {
-        // pod has to be in running state because pod in ContainerCreating state causes exception
-        OpenShiftWaitUtils.waitUntilPodIsRunning(podPartialName);
-
-        Optional<Pod> integrationPod = getPodByPartialName(podPartialName);
-        return integrationPod.map(pod -> OpenShiftUtils.getInstance().getPodLog(pod).isEmpty()).orElse(true);
-    }
-
-    /**
-     * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
-     *
-     * @param method HTTP method to use
-     * @param url api path
-     * @param body body to send as JSON
-     * @return response object
-     */
-    public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body) {
-        return invokeApi(method, url, body, null);
-    }
-
-    /**
-     * Invoke openshift's API. Only part behind master url is necessary and the path must start with slash.
-     *
-     * @param method HTTP method to use
-     * @param url api path
-     * @param body body to send as JSON
-     * @param headers headers to send, can be null
-     * @return response object
-     */
-    public static HTTPResponse invokeApi(HttpUtils.Method method, String url, String body, Headers headers) {
-        url = TestConfiguration.openShiftUrl() + url;
-        if (headers == null) {
-            headers = Headers.of("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken());
-        } else {
-            if (headers.get("Authorization") == null) {
-                headers =
-                    headers.newBuilder().add("Authorization", "Bearer " + OpenShiftUtils.getInstance().getConfiguration().getOauthToken()).build();
-            }
-        }
-
-        log.debug(url);
-        HTTPResponse response = null;
-        switch (method) {
-            case GET: {
-                response = HttpUtils.doGetRequest(url, headers);
-                break;
-            }
-            case POST: {
-                response = HttpUtils.doPostRequest(url, body, headers);
-                break;
-            }
-            case PUT: {
-                response = HttpUtils.doPutRequest(url, body, headers);
-                break;
-            }
-            case DELETE: {
-                response = HttpUtils.doDeleteRequest(url, headers);
-                break;
-            }
-            default: {
-                fail("Unable to use specified HTTP Method!");
-            }
-        }
-
-        return response;
     }
 
     /**
@@ -404,5 +307,56 @@ public final class OpenShiftUtils {
             .getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().stream().filter(env -> env.getName().equals(envName)).findAny()
             .get();
         return envValue.equals(envVar.getValue());
+    }
+
+    public static LocalPortForward createLocalPortForward(String podName, int remotePort, int localPort) {
+        try {
+            List<Pod> podsByPredicates = findPodsByPredicates(
+                p -> p.getMetadata().getName().contains(podName),
+                p -> "Running".equals(p.getStatus().getPhase())
+            );
+            if (podsByPredicates.size() == 0) {
+                log.warn("No pods in running state with name " + podName + " found!");
+                return null;
+            }
+            return portForward(podsByPredicates.get(0), remotePort, localPort);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(ex.getMessage() + ". Probably Syndesis is not in the namespace.");
+        }
+    }
+
+    public static LocalPortForward createLocalPortForward(Pod pod, int remotePort, int localPort) {
+        return portForward(pod, remotePort, localPort);
+    }
+
+    public static boolean isDcDeployed(String dcName) {
+        DeploymentConfig dc = getInstance().deploymentConfigs().withName(dcName).get();
+        return dc != null && dc.getStatus().getReadyReplicas() != null && dc.getStatus().getReadyReplicas() > 0;
+    }
+
+    public static void terminateLocalPortForward(LocalPortForward lpf) {
+        if (lpf == null) {
+            return;
+        }
+        if (lpf.isAlive()) {
+            try {
+                lpf.close();
+            } catch (IOException ex) {
+                log.error("Error: " + ex);
+            }
+        } else {
+            log.info("Local Port Forward already closed.");
+        }
+    }
+
+    /**
+     * Checks if the OpenShift version is 3.x
+     *
+     * @return true/false
+     */
+    public static boolean isOpenshift3() {
+        // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
+        VersionInfo version = getInstance().getVersion();
+        return version != null && version.getMinor().contains("11+");
     }
 }

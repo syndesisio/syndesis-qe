@@ -76,7 +76,7 @@ Feature: Quickstart db to db
     And publish integration
     And set integration name "DB-2-DB video"
     And publish integration
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
 
     And navigate to the "Integrations" page

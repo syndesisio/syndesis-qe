@@ -1,0 +1,264 @@
+package io.syndesis.qe.validation;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.AMQ;
+import io.syndesis.qe.resource.impl.FTP;
+import io.syndesis.qe.resource.impl.HTTPEndpoints;
+import io.syndesis.qe.resource.impl.IRC;
+import io.syndesis.qe.resource.impl.Kafka;
+import io.syndesis.qe.resource.impl.Kudu;
+import io.syndesis.qe.resource.impl.MongoDb36;
+import io.syndesis.qe.resource.impl.MySQL;
+import io.syndesis.qe.resource.impl.SFTP;
+import io.syndesis.qe.resource.impl.WildFlyS2i;
+import io.syndesis.qe.test.InfraFail;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.api.Assertions;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.TimeoutException;
+
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
+import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class OpenshiftValidationSteps {
+    @Then("check that pod {string} logs contain string {string}")
+    public void checkPodHasInLog(String podPartialName, String expectedText) {
+        Assertions.assertThat(OpenShiftUtils.getPodLogs(podPartialName))
+            .containsIgnoringCase(expectedText);
+    }
+
+    @Given("deploy FTP server")
+    public void deployFTPServer() {
+        ResourceFactory.create(FTP.class);
+    }
+
+    @Given("deploy SFTP server")
+    public void deploySFTPServer() {
+        ResourceFactory.create(SFTP.class);
+    }
+
+    @Given("deploy Kudu")
+    public void deployKudu() {
+        ResourceFactory.create(Kudu.class);
+    }
+
+    @Given("clean MySQL server")
+    public void cleanMySQLServer() {
+        ResourceFactory.destroy(MySQL.class);
+    }
+
+    @Given("deploy MySQL server")
+    public void deployMySQLServer() {
+        ResourceFactory.create(MySQL.class);
+    }
+
+    @Given("deploy ActiveMQ broker")
+    public void deployAMQBroker() {
+        ResourceFactory.create(AMQ.class);
+    }
+
+    @Given("create ActiveMQ accounts")
+    public void addActiveMQAccounts() {
+        ResourceFactory.get(AMQ.class).addAccounts();
+    }
+
+    @Given("deploy Kafka broker")
+    public void deployKafka() {
+        ResourceFactory.create(Kafka.class);
+    }
+
+    @Given("create Kafka accounts")
+    public void createKafkaAccounts() {
+        ResourceFactory.get(Kafka.class).addAccounts();
+    }
+
+    @Given("deploy HTTP endpoints")
+    public void deployHTTPEndpoints() {
+        ResourceFactory.create(HTTPEndpoints.class);
+    }
+
+    @Given("create HTTP accounts")
+    public void createHTTPAccounts() {
+        ResourceFactory.get(HTTPEndpoints.class).addAccounts();
+    }
+
+    @Given("deploy IRC server")
+    public void deployIRCServer() {
+        ResourceFactory.create(IRC.class);
+    }
+
+    @Given("create IRC account")
+    public void createIRCAccount() {
+        ResourceFactory.get(IRC.class).addAccount();
+    }
+
+    @Given("deploy OData server")
+    public void deployODataServer() {
+        WildFlyS2i wildFlyS2i = ResourceFactory.get(WildFlyS2i.class);
+        wildFlyS2i.setAppName("odata");
+        wildFlyS2i.setGitURL("https://github.com/syndesisio/syndesis-qe-olingo-sample-service.git");
+        wildFlyS2i.setBranch(null);
+        ResourceFactory.create(WildFlyS2i.class);
+    }
+
+    @Given("deploy MongoDB 3.6 database")
+    public void deployMongoDB36() {
+        ResourceFactory.create(MongoDb36.class);
+    }
+
+    @Given("create MongoDB account")
+    public void createMongoDBAccount() {
+        ResourceFactory.get(MongoDb36.class).addAccount();
+    }
+
+    @Given("create Kudu account")
+    public void createKuduAccount() {
+        ResourceFactory.get(Kudu.class).createAccount();
+    }
+
+    @Given("^create OData( HTTPS)? credentials$")
+    public void createODataHttpCredentials(String https) {
+        ResourceFactory.get(WildFlyS2i.class).createODataAccount(https != null && !https.isEmpty());
+    }
+
+    @Given("wait until {string} pod is reloaded")
+    public void waitUntilPodIsReloaded(String podName) {
+        try {
+            OpenShiftWaitUtils.waitForPodIsReloaded(podName);
+        } catch (InterruptedException | TimeoutException e) {
+            InfraFail.fail(e.getMessage());
+        }
+    }
+
+    @Then("check that the pod {string} is not redeployed by server")
+    public void checkThatPodIsNotRedeployed(String podName) {
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podName);
+        Assertions.assertThat(pod).isPresent();
+        int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
+        waitForStateCheckInterval();
+        // Check that there is no pod with higher number
+        Assertions.assertThat(OpenShiftUtils.podExists(
+            p -> p.getMetadata().getName().contains(podName),
+            p -> !StringUtils.containsAny(p.getMetadata().getName(), "build", "deploy"),
+            p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNr))
+            .as("There should be no pod with higher number")
+            .isFalse();
+    }
+
+    @When("wait for state check interval")
+    public void waitForStateCheckInterval() {
+        // Wait for a state check so that server can figure out that something is not right + a bit more for spawning a new pod
+        TestUtils.sleepIgnoreInterrupt((TestConfiguration.stateCheckInterval() + 60) * 1000L);
+    }
+
+    @When("edit replicas count for deployment config {string} to {int}")
+    public void editReplicasCount(String dcName, int replicas) {
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().withReplicas(replicas).endSpec().done();
+    }
+
+    @When("add following variables to the {string} deployment config:")
+    public void addEnvVarsToDc(String dcName, DataTable vars) {
+        Map<String, String> content = vars.asMap(String.class, String.class);
+        for (Map.Entry<String, String> keyValue : content.entrySet()) {
+            OpenShiftUtils.updateEnvVarInDeploymentConfig(dcName, keyValue.getKey(), keyValue.getValue());
+        }
+    }
+
+    @Then("check that the deployment config {string} contains variables:")
+    public void checkDcEnvVars(String dcName, DataTable vars) {
+        Assertions.assertThat(OpenShiftUtils.getInstance().getDeploymentConfigEnvVars(dcName))
+            .containsAllEntriesOf(vars.asMap(String.class, String.class));
+    }
+
+    @Then("^check that there (?:is|are) (\\d+) pods? for integration \"([^\"]*)\"$")
+    public void checkPodsForIntegration(int count, String integrationName) {
+        Assertions.assertThat(OpenShiftUtils.getInstance().getPods("i-" + integrationName)).hasSize(count);
+    }
+
+    @When("change deployment strategy for {string} deployment config to {string}")
+    public void changeDeploymentStrategy(String dcName, String strategy) {
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().editStrategy().withType(strategy).endStrategy().endSpec()
+            .done();
+    }
+
+    @Then("chech that the deployment strategy for {string} deployment config is {string}")
+    public void checkDeploymentStrategy(String dcName, String strategy) {
+        Assertions.assertThat(OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get().getSpec().getStrategy().getType())
+            .isEqualTo(strategy);
+    }
+
+    @When("create HPA for deployment config {string} with {int} replicas")
+    public void createHpaWithMinReplicas(String dcName, int replicas) {
+        OpenShiftUtils.getInstance().createHorizontalPodAutoscaler(
+            new HorizontalPodAutoscalerBuilder()
+                .withNewMetadata().withName("test-hpa").withNamespace(TestConfiguration.openShiftNamespace()).endMetadata()
+                .withNewSpec()
+                .withNewScaleTargetRef()
+                .withApiVersion("apps.openshift.io/v1")
+                .withKind("DeploymentConfig")
+                .withName(dcName)
+                .endScaleTargetRef()
+                .withMinReplicas(replicas)
+                .withMaxReplicas(replicas)
+                .endSpec()
+                .build()
+        );
+    }
+
+    @Then("^check that deployment config \"([^\"]*)\" (does|does not) exist$")
+    public void checkDeploymentConfig(String dcName, String shouldExist) {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig(dcName);
+        if ("does".equals(shouldExist)) {
+            Assertions.assertThat(dc).isNotNull();
+        } else {
+            Assertions.assertThat(dc).isNull();
+        }
+    }
+
+    @Then("^check that service \"([^\"]*)\" (does|does not) exist$")
+    public void checkService(String serviceName, String shouldExist) {
+        Service service = OpenShiftUtils.getInstance().getService(serviceName);
+        if ("does".equals(shouldExist)) {
+            Assertions.assertThat(service).isNotNull();
+        } else {
+            Assertions.assertThat(service).isNull();
+        }
+    }
+
+    @Then("check that SAR check is disabled")
+    public void checkSar() {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-oauthproxy");
+        Optional<String> sarArg = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getArgs().stream()
+            .filter(arg -> arg.contains("--openshift-sar")).findFirst();
+        assertThat(sarArg).isNotPresent();
+    }
+
+    @Then("check that SAR check is enabled for namespace {string}")
+    public void checkSar(String namespace) {
+        if (namespace.isEmpty()) {
+            namespace = TestConfiguration.openShiftNamespace();
+        }
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig("syndesis-oauthproxy");
+        Optional<String> sarArg = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getArgs().stream()
+            .filter(arg -> arg.contains("--openshift-sar")).findFirst();
+        assertThat(sarArg).isPresent();
+        assertThat(sarArg.get()).contains("\"namespace\":\"" + namespace + "\"");
+    }
+}

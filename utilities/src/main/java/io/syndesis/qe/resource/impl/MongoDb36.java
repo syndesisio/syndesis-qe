@@ -1,7 +1,7 @@
 package io.syndesis.qe.resource.impl;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
@@ -126,7 +126,7 @@ public class MongoDb36 implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(APP_NAME);
+        return OpenShiftUtils.isDcDeployed(APP_NAME);
     }
 
     public void addAccount() {

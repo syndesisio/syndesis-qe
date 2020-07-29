@@ -42,7 +42,7 @@ Feature: Data Mapper
   Scenario: Map values from collection to single entry
 
     Given truncate "todo" table
-    When inserts into "todo" table
+    When insert into "todo" table
       | task1 |
       | task2 |
       | task3 |
@@ -79,7 +79,7 @@ Feature: Data Mapper
 
     # validate that all items from db are present
     And wait until integration 11870 processed at least 1 message
-    And validate that number of all todos with task "task1 task2 task3" is "1"
+    And validate that number of all todos with task "task1 task2 task3" is 1
 
   @ENTESB-13935
   @data-mapper-reconfigure
@@ -122,4 +122,4 @@ Feature: Data Mapper
     And wait until integration "Datamapper-reconfigure" gets into "Running" state
     And invoke post request to webhook in integration Datamapper-reconfigure with token test-webhook and body {"author":"New Author","title":"Book Title"}
     And wait until integration Datamapper-reconfigure processed at least 1 message
-    Then validate that number of all todos with task "New Author" is greater than "0"
+    Then validate that number of all todos with task "New Author" is greater than 0

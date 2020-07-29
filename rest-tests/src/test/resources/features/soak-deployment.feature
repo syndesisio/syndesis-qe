@@ -6,7 +6,7 @@ Feature: soak deployment
 
   #scenario expects that web services are already deployed
   Scenario: create connections
-    When import extensions from syndesis-extensions folder
+    When import extensions from syndesis-extensions folder through API
       | syndesis-extension-delay |
 
     Given create connection

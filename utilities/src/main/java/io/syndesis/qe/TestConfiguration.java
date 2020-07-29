@@ -1,6 +1,6 @@
 package io.syndesis.qe;
 
-import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.image.Image;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,8 +43,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_ENABLE_TEST_SUPPORT = "syndesis.config.enableTestSupport";
     public static final String SYNDESIS_ENVIRONMENT_DELOREAN = "syndesis.config.environment.delorean";
 
-    public static final String SYNDESIS_REST_API_PATH = "syndesis.config.rest.api.path";
-    public static final String SYNDESIS_SERVER_ROUTE = "syndesis.config.server.route";
+    public static final String SYNDESIS_LOCAL_REST_URL = "syndesis.config.local.rest.url";
 
     public static final String SYNDESIS_CREDENTIALS_FILE = "syndesis.config.credentials.file";
     public static final String SYNDESIS_VERSIONS_FILE = "syndesis.config.versions.file";
@@ -215,8 +214,8 @@ public class TestConfiguration {
         return get().readValue(SYNDESIS_CALLBACK_URL_SUFFIX);
     }
 
-    public static String syndesisRestApiPath() {
-        return get().readValue(SYNDESIS_REST_API_PATH);
+    public static String syndesisLocalRestUrl() {
+        return get().readValue(SYNDESIS_LOCAL_REST_URL);
     }
 
     public static String syndesisCredentialsFile() {
@@ -265,10 +264,6 @@ public class TestConfiguration {
 
     public static boolean namespaceCleanup() {
         return Boolean.parseBoolean(get().readValue(OPENSHIFT_NAMESPACE_CLEANUP));
-    }
-
-    public static boolean useServerRoute() {
-        return Boolean.parseBoolean(get().readValue(SYNDESIS_SERVER_ROUTE));
     }
 
     public static String customResourcePlural() {
@@ -360,8 +355,7 @@ public class TestConfiguration {
 
         defaultProps.setProperty(OPENSHIFT_URL, "");
         defaultProps.setProperty(OPENSHIFT_TOKEN, "");
-        defaultProps.setProperty(SYNDESIS_REST_API_PATH, "/api/v1");
-        defaultProps.setProperty(SYNDESIS_SERVER_ROUTE, "false");
+        defaultProps.setProperty(SYNDESIS_LOCAL_REST_URL, "http://localhost:8080");
 
         defaultProps.setProperty(SYNDESIS_CREDENTIALS_FILE, "../credentials.json");
         defaultProps.setProperty(SYNDESIS_VERSIONS_FILE, "src/test/resources/dependencyVersions.properties");
@@ -445,7 +439,7 @@ public class TestConfiguration {
             defaultProps.setProperty(SYNDESIS_PULL_SECRET_NAME, "syndesis-pull-secret");
         }
 
-        defaultProps.setProperty(STATE_CHECK_INTERVAL, "" + (TestUtils.isJenkins() ? 150 : 60));
+        defaultProps.setProperty(STATE_CHECK_INTERVAL, "" + (System.getenv("WORKSPACE") != null ? 150 : 90));
         if (properties.getProperty(SNOOP_SELECTORS) == null) {
             defaultProps.setProperty(SNOOP_SELECTORS, "false");
         }
@@ -529,15 +523,18 @@ public class TestConfiguration {
     }
 
     /**
-     * @param key
-     * @param value
+     * Overrides the property held in test configuration.
+     *
+     * @param key key
+     * @param value value
      */
     public void overrideProperty(String key, String value) {
         properties.put(key, value);
     }
 
     /**
-     * @param key
+     * Clears the property from test configuration.
+     * @param key key
      */
     public void clearProperty(String key) {
         properties.remove(key);

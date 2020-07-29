@@ -40,10 +40,10 @@ Feature: Integration - File transfer
       And create ActiveMQ connection
       And upload file with name "file1.txt" and content "Hello from file1.txt!" to Box
       And upload file with name "file2.txt" and content "Hello from file2.txt!" to Box
-      And clean "BOX_IDS" table
+      And reset content of "BOX_IDS" table
       And execute SQL command "CREATE TABLE BOX_IDS(id varchar)"
       And insert box file ids to box id table
-    When create start DB periodic sql invocation action step with query "SELECT * FROM BOX_IDS" and period "600000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM BOX_IDS" and period 600000 ms
       And add a split step
       And start mapper definition with name: "sql-split-box"
       And MAP using Step 2 and field "/id" to "/fileId"
@@ -64,7 +64,7 @@ Feature: Integration - File transfer
   Scenario: SQL to Box upload
     Given reset content of "CONTACT" table
       And execute SQL command "INSERT INTO contact VALUES ('Joe', 'Jackson', 'Red Hat', 'db', current_timestamp)"
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "60000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 60000 ms
       And start mapper definition with name: "sql-box"
       And MAP using Step 1 and field "/<>/last_name" to "/text"
       And create Box upload action step with file name "box-upload.json"
@@ -73,7 +73,7 @@ Feature: Integration - File transfer
     Then wait for integration with name: "SQL-BOX" to become active
       And verify that file "box-upload.json" with content '{"text":"Jackson"}' is present in Box
     When execute SQL command "UPDATE CONTACT SET LAST_NAME='Doe' WHERE LAST_NAME='Jackson'"
-      And sleep for jenkins delay or "120" seconds
+      And sleep for jenkins delay or 120 seconds
     Then verify that file "box-upload.json" with content '{"text":"Doe"}' is present in Box
 
   @ENTESB-12553

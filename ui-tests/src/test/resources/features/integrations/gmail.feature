@@ -64,7 +64,7 @@ Feature: Google mail Connector
     When click on the "Save" link
     And set integration name "Integration_gmail_send"
     And publish integration
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
 
     Then Integration "Integration_gmail_send" is present in integrations list

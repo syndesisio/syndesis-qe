@@ -1,0 +1,326 @@
+package io.syndesis.qe.steps.integrations;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
+
+import static com.codeborne.selenide.Condition.visible;
+
+import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.pages.ModalDialogPage;
+import io.syndesis.qe.pages.integrations.IntegrationStartingStatus;
+import io.syndesis.qe.pages.integrations.Integrations;
+import io.syndesis.qe.pages.integrations.editor.add.steps.DataMapper;
+import io.syndesis.qe.pages.integrations.importt.ImportIntegration;
+import io.syndesis.qe.pages.integrations.summary.Details;
+import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.CamelK;
+import io.syndesis.qe.steps.CommonSteps;
+import io.syndesis.qe.utils.ExportedIntegrationJSONUtil;
+import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
+
+import org.assertj.core.api.Condition;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.cucumber.datatable.DataTable;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * Created by sveres on 11/15/17.
+ */
+@Slf4j
+public class IntegrationSteps {
+
+    private Details detailPage = new Details();
+    private Integrations integrations = new Integrations();
+    private DataMapper dataMapper = new DataMapper();
+    private ImportIntegration importIntegration = new ImportIntegration();
+
+    @Autowired
+    private CommonSteps commonSteps;
+
+    @When("^select the \"([^\"]*)\" integration.*$")
+    public void selectIntegration(String itegrationName) {
+        integrations.goToIntegrationDetail(itegrationName);
+    }
+
+    @When("^delete the \"([^\"]*)\" integration.*$")
+    public void deleteIntegration(String integrationName) {
+        integrations.deleteIntegration(integrationName);
+    }
+
+    @Then("^Integration \"([^\"]*)\" is present in integrations list$")
+    public void expectIntegrationPresent(String name) {
+        commonSteps.navigateTo("Integrations");
+        log.info("Verifying integration {} is present", name);
+        TestUtils.sleepForJenkinsDelayIfHigher(4);
+        assertThat(integrations.isIntegrationPresent(name)).isTrue();
+    }
+
+    @Then("^check that integration \"([^\"]*)\" is not visible$")
+    public void expectIntegrationNotPresent(String name) {
+        // DOES NOT WORK - THROWS ERROR AS getElement has assert that its > 0 and if it does not exists its 0 TODO
+        log.info("Verifying if integration {} is present", name);
+        assertThat(integrations.isIntegrationPresent(name)).isFalse();
+    }
+
+    /*
+     * State != starting state
+     * State is state of integration. e.g. "Running", "Stopped"
+     */
+    @Then("^wait until integration \"([^\"]*)\" gets into \"([^\"]*)\" state$")
+    public void waitForIntegrationState(String integrationName, String integrationStatus) {
+        commonSteps.navigateTo("Integrations");
+        SelenideElement integration = integrations.getIntegration(integrationName);
+        TestUtils.sleepForJenkinsDelayIfHigher(10);
+        if ("camelk".equalsIgnoreCase(TestConfiguration.syndesisRuntime())) {
+            ResourceFactory.get(CamelK.class).waitForContextToBuild(integrationName);
+            Selenide.refresh();
+            log.info("Integration platform status: {}", OpenShiftUtils.binary().execute("get", "integrationplatforms", "-o yaml"));
+        }
+        assertThat(TestUtils.waitForEvent(
+            status -> status.contains(integrationStatus),
+            () -> integrations.getIntegrationItemStatus(integrationName),
+            TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
+        ).isTrue();
+    }
+
+    /*
+     * State != starting state
+     * Starting state is state during publication of integration e.g.
+     * "Assembling ( 1 / 4 )", "Building ( 2 / 4 )" ,"Deploying ( 3 / 4 )", "Starting ( 4 / 4 )"
+     */
+    @Then("^wait until integration \"([^\"]*)\" starting status gets into \"([^\"]*)\" state$")
+    public void waitForIntegrationStartingState(String integrationName, String integrationStatus) {
+        commonSteps.navigateTo("Integrations");
+        SelenideElement integration = integrations.getIntegration(integrationName);
+        TestUtils.sleepForJenkinsDelayIfHigher(10);
+        assertThat(TestUtils.waitForEvent(
+            status -> status.equals(integrationStatus),
+            () -> integrations.getIntegrationItemStartingStatus(integration),
+            TimeUnit.MINUTES, 10, TimeUnit.MILLISECONDS, 30)
+        ).isTrue();
+    }
+
+    //Kebab menu test, #553 -> part #548, #549.
+    @When("^click on the kebab menu icon of each available Integration and checks whether menu is visible and has appropriate actions$")
+    public void clickOnAllKebabMenus() {
+        integrations.checkAllIntegrationsKebabButtons();
+    }
+
+    @When("^export the integrat?ion$")
+    public void exportIntegration() throws InterruptedException {
+        File exportedIntegrationFile = detailPage.exportIntegration();
+        assertThat(exportedIntegrationFile)
+            .exists()
+            .isFile()
+            .has(new Condition<>(f -> f.length() > 0, "File size should be greater than 0"));
+        ExportedIntegrationJSONUtil.testExportedFile(exportedIntegrationFile);
+    }
+
+    @When("^open CI/CD dialog")
+    public void openCiCdDialog() {
+        detailPage.clickOnKebabMenuAction("Manage CI/CD");
+    }
+
+    @When("^import the integration from file ([^\"]*)$")
+    public void importIntegration(String filePath) {
+        importIntegration.importIntegration(new File(getClass().getClassLoader().getResource(filePath).getFile()));
+    }
+
+    @When("^start integration \"([^\"]*)\"$")
+    public void startIntegration(String integrationName) {
+        detailPage.clickOnKebabMenuAction("Start");
+        ModalDialogPage modal = new ModalDialogPage();
+        modal.getButton("Start").shouldBe(visible).click();
+    }
+
+    @Then("^Wait until there is no integration pod with name \"([^\"]*)\"$")
+    public void waitForIntegrationPodShutdown(String integartionPodName) throws InterruptedException {
+        OpenShiftWaitUtils.assertEventually("Pod with name " + integartionPodName + "is still running.",
+            OpenShiftWaitUtils.areNoPodsPresent(integartionPodName), 1000, 5 * 60 * 1000);
+    }
+
+    @When("^.*open data bucket \"([^\"]*)\"$")
+    public void openDataBucket(String bucket) {
+        //check if it exists included
+        dataMapper.openBucket(bucket);
+    }
+
+    @When("^.*close data bucket \"([^\"]*)\"$")
+    public void closeDataBucket(String bucket) {
+        dataMapper.closeBucket(bucket);
+    }
+
+    @When("^.*perform action with data bucket")
+    public void performActionWithBucket(DataTable table) {
+        List<List<String>> rows = table.cells();
+        String action;
+
+        for (List<String> row : rows) {
+            action = row.get(1);
+            if ("open".equalsIgnoreCase(action)) {
+                dataMapper.openBucket(row.get(0));
+                assertThat(dataMapper.isDataBucketOpen(row.get(0))).isTrue();
+            } else if ("close".equalsIgnoreCase(action)) {
+                dataMapper.closeBucket(row.get(0));
+                assertThat(dataMapper.isDataBucketOpen(row.get(0))).isFalse();
+            } else {
+                //check if exists, condition visible is in used method
+                assertThat(dataMapper.getDataBucketElement(row.get(0)).is(visible)).isTrue();
+            }
+        }
+    }
+
+    @Then("^.*validate that logs of integration \"([^\"]*)\" contains string \"(.*)\"$")
+    public void checkThatLogsContain(final String integrationName, final String text) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getIntegrationLogs(integrationName).contains(text), 60 * 1000L);
+        } catch (TimeoutException | InterruptedException e) {
+            assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).containsIgnoringCase(text);
+        }
+    }
+
+    /**
+     * Version of checkThatLogsContain which accepts docstring
+     *
+     * @param integrationName
+     * @param text
+     */
+    @Then("validate that logs of integration {string} contains string:")
+    public void validateThatLogsOfIntegrationContainsString(String integrationName, String text) {
+        checkThatLogsContain(integrationName, text.trim());
+    }
+
+    @Then("^.*validate that logs of integration \"([^\"]*)\" doesn't contain string \"(.*)\"$")
+    public void checkThatLogsDoesNotContain(final String integrationName, final String text) {
+        try {
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getIntegrationLogs(integrationName).contains(text), 60 * 1000L);
+            fail("Log for integration: " + integrationName + " contains string: " + text);
+        } catch (TimeoutException | InterruptedException e) {
+            assertThat(OpenShiftUtils.getIntegrationLogs(integrationName)).doesNotContain(text);
+        }
+    }
+
+    @Then("^check starting integration ([^\"]*) status on Integrations page$")
+    public void checkStartingStatusOnIntegrationsPage(String integrationName) {
+        checkStartingStatus(integrationName, "Integrations");
+    }
+
+    //base starting status checking method used in step methods
+    public void checkStartingStatus(String integrationName, String checkedPage) {
+        List<IntegrationStartingStatus> statuses = new ArrayList<>();
+        statuses.add(IntegrationStartingStatus.ASSEMBLING);
+        statuses.add(IntegrationStartingStatus.BUILDING);
+        statuses.add(IntegrationStartingStatus.DEPLOYING);
+        statuses.add(IntegrationStartingStatus.STARTING);
+
+        int lastStatusIndex = 0;
+        int matchingStatesNumber = 0;
+        StringBuilder statusesMessage = new StringBuilder("");
+        String lastStatus = "";
+
+        //polling every 200 ms for 10 minutes
+        for (int i = 0; i < 5 * 60 * 10; i++) {
+            if (lastStatusIndex == statuses.size()) {
+                switch (checkedPage) {
+                    case "Home":
+                    case "Integrations":
+                        //sometimes, the Starting... is shown, wait until it disappears
+                        integrations.waitUntilStartingStatusDisappears();
+                        log.info("Status changed to: " + integrations.getIntegrationItemStatus(integrationName));
+                        assertThat(integrations.getIntegrationItemStatus(integrationName))
+                            .isEqualToIgnoringWhitespace("Running");
+                        break;
+                    case "Integration detail":
+                        //sometimes, the Starting... is shown, wait until it disappears
+                        detailPage.waitUntilStartingStatusDisappears();
+                        log.info("Status changed to: " + detailPage.getPublishedVersion().getText().trim());
+                        assertThat(detailPage.getPublishedVersion().getText()).isEqualToIgnoringWhitespace("Published version 1");
+                        break;
+                    default:
+                        fail("Integration status can't be checked on <" + checkedPage +
+                            "> page. Only valid options are [Integrations, Integration detail, Home]");
+                }
+                break;
+            }
+
+            String status = "";
+            try {
+                switch (checkedPage) {
+                    case "Home":
+                    case "Integrations":
+                        status = integrations.getIntegrationItemStartingStatus(integrations.getIntegration(integrationName));
+                        break;
+                    case "Integration detail":
+                        status = detailPage.getStartingStatus();
+                        break;
+                    default:
+                        fail("Integration status can't be checked on <" + checkedPage +
+                            "> page. Only valid options are [Integrations, Integration detail, Home]");
+                }
+            } catch (Throwable t) {
+                log.info("Starting status no longer visible, checking deployed integration status");
+                lastStatusIndex += 1;
+                continue;
+            }
+
+            if (!lastStatus.equals(status)) {
+                lastStatus = status;
+                statusesMessage.append(" " + status);
+            }
+
+            for (int j = lastStatusIndex; j < statuses.size(); j++) {
+                if (statuses.get(j).getStatus().equals(status)) {
+                    if (matchingStatesNumber == 0 || lastStatusIndex < j) {
+                        matchingStatesNumber++;
+                        lastStatusIndex = j;
+                        log.info("Status changed to: " + status);
+                    }
+                }
+            }
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        assertThat(matchingStatesNumber).isGreaterThanOrEqualTo(2).withFailMessage("Spotted statuses' order:" + statusesMessage.toString());
+    }
+
+    @Then("^verify there are ([0-9]+) flows in the integration$")
+    public void verifyThereAreNFlowsInTheIntegration(int numFlows) throws Throwable {
+        assertThat(detailPage.getFlowCount()).isEqualTo(numFlows);
+    }
+
+    @When("^edit integration$")
+    public void editIntegration() throws Throwable {
+        detailPage.editIntegration();
+    }
+
+    @Then("^validate that logs of integration \"([^\"]*)\" contains items with IDs \"([^\"]*)\"$")
+    public void validateThatLogsOfIntegrationContainsBodiesOfItems(String integrationName, String items) throws Throwable {
+        String searchedString = "[" + String.join(", ",
+            Arrays.stream(items.split(","))
+                .map(
+                    s -> String.format("{\"id\":%s}", s))
+                .collect(Collectors.toList())) + "]";
+        log.info("Searching log for string '{}'", searchedString);
+        checkThatLogsContain(integrationName, searchedString);
+    }
+}

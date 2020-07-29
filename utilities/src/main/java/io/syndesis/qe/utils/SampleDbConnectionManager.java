@@ -2,8 +2,8 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import org.assertj.core.api.Assertions;
 
@@ -12,7 +12,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import io.fabric8.kubernetes.api.model.Service;
@@ -48,7 +47,6 @@ public class SampleDbConnectionManager {
         return connectionsInfoMap.get(dbType).getDbConnection();
     }
 
-    //    AUXILIARIES:
     private static void handleExternalDatabases(String dbType) {
         DbWrapper wrap = SampleDbConnectionManager.getWrap(dbType);
         try {
@@ -72,8 +70,6 @@ public class SampleDbConnectionManager {
         connectionsInfoMap.clear();
     }
 
-    //AUXILIARIES:
-
     private static void handlePortForwardDatabases(String dbType, int remotePort, int localPort, String podName, String driver) {
         //        check whether portForward and connection are alive:
         DbWrapper wrap = SampleDbConnectionManager.getWrap(dbType);
@@ -91,7 +87,7 @@ public class SampleDbConnectionManager {
                 Assertions.assertThat(connectionsInfoMap).containsValue(wrap);
             }
         } catch (SQLException ex) {
-            log.error("ERROR: *{}* ", ex);
+            log.error("ERROR: *{0}* ", ex);
         }
     }
 
@@ -123,10 +119,7 @@ public class SampleDbConnectionManager {
 
         final Properties props = new Properties();
 
-        Optional<Account> optAccount = AccountsDirectory.getInstance().getAccount(dbType);
-        Assertions.assertThat(optAccount.isPresent()).isTrue();
-        Account account = optAccount.get();
-
+        Account account = AccountsDirectory.getInstance().get(dbType);
         props.setProperty("user", account.getProperty("user"));
         props.setProperty("password", account.getProperty("password"));
 
@@ -162,7 +155,7 @@ public class SampleDbConnectionManager {
             log.error("Error: " + ex);
         }
 
-        TestUtils.terminateLocalPortForward(wrap.getLocalPortForward());
+        OpenShiftUtils.terminateLocalPortForward(wrap.getLocalPortForward());
     }
 
     private static DbWrapper getWrap(String dbType) {

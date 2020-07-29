@@ -38,7 +38,7 @@ Feature: Jira Connector
   Background: Clean application state
     Given clean application state
     And reset content of "contact" table
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
     And reset content of "todo" table
     And log into the Syndesis

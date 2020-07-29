@@ -2,23 +2,23 @@ package io.syndesis.qe.resource.impl;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Addon;
-import io.syndesis.qe.Component;
-import io.syndesis.qe.Image;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.bdd.CommonSteps;
+import io.syndesis.qe.addon.Addon;
+import io.syndesis.qe.component.Component;
+import io.syndesis.qe.component.ComponentUtils;
+import io.syndesis.qe.image.Image;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,10 +49,10 @@ import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionFluent;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionVersion;
 import io.fabric8.kubernetes.api.model.apiextensions.DoneableCustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
-import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -111,8 +111,8 @@ public class Syndesis implements Resource {
 
     @Override
     public boolean isReady() {
-        EnumSet<Component> components = Component.getAllComponents();
-        List<Pod> syndesisPods = Component.getComponentPods();
+        EnumSet<Component> components = ComponentUtils.getAllComponents();
+        List<Pod> syndesisPods = ComponentUtils.getComponentPods();
         return syndesisPods.size() == components.size() && syndesisPods.stream().allMatch(OpenShiftWaitUtils::isPodReady);
     }
 
@@ -122,7 +122,7 @@ public class Syndesis implements Resource {
     }
 
     public boolean isUndeployed() {
-        List<Pod> syndesisPods = Component.getComponentPods();
+        List<Pod> syndesisPods = ComponentUtils.getComponentPods();
         // Either 0 pods when the namespace was empty before undeploying, or 1 pod (the operator)
         return syndesisPods.size() == 0 || (syndesisPods.size() == 1 && syndesisPods.get(0).getMetadata().getName().startsWith("syndesis-operator"));
     }
@@ -465,9 +465,9 @@ public class Syndesis implements Resource {
             log.error("Service account not found in resources");
         }
 
-        DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
-            .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
-            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
+        Deployment dc = (Deployment) resourceList.stream()
+            .filter(r -> "Deployment".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
+            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment in operator resources"));
 
         List<EnvVar> envVarsToAdd = new ArrayList<>();
         envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
@@ -525,7 +525,7 @@ public class Syndesis implements Resource {
             .waitFor();
     }
 
-    protected void deploySyndesisViaOperator() {
+    public void deploySyndesisViaOperator() {
         log.info("Deploying syndesis resource from " + crUrl);
         try (InputStream is = new URL(crUrl).openStream()) {
             JSONObject crJson = new JSONObject(getSyndesisCrClient().load(is));
@@ -670,8 +670,12 @@ public class Syndesis implements Resource {
         boolean needsReload = false;
         if ("camelk".equalsIgnoreCase(runtime)) {
             if (!ResourceFactory.get(CamelK.class).isReady()) {
-                CommonSteps.deployCamelK();
-                CommonSteps.waitForCamelK();
+                ResourceFactory.get(CamelK.class).deploy();
+                OpenShiftUtils.getInstance().waiters()
+                    .areExactlyNPodsReady(1, "camel.apache.org/component", "operator")
+                    .interval(TimeUnit.SECONDS, 20)
+                    .timeout(TimeUnit.MINUTES, 5)
+                    .waitFor();
             }
             Syndesis syndesis = ResourceFactory.get(Syndesis.class);
             if (!syndesis.isAddonEnabled(Addon.CAMELK)) {
@@ -702,7 +706,7 @@ public class Syndesis implements Resource {
             } catch (TimeoutException | InterruptedException e) {
                 InfraFail.fail("Syndesis server did not start in 300s with new variable", e);
             }
-            RestUtils.reset();
+            PortForwardUtils.createOrCheckPortForward();
         }
     }
 

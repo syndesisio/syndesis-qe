@@ -2,8 +2,8 @@ package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +52,7 @@ public class BoxUtils {
     @PostConstruct
     public void initClient() {
         log.info("Getting box access token");
-        boxAccount = AccountsDirectory.getInstance().getAccount(Account.Name.BOX)
-                .orElseThrow(() -> new IllegalArgumentException("Unable to find box account"));
+        boxAccount = AccountsDirectory.getInstance().get(Account.Name.BOX);
         String accessToken;
         try {
             accessToken = getAccessToken();

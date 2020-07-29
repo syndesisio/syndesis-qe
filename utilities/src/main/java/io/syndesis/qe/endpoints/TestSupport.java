@@ -3,13 +3,14 @@ package io.syndesis.qe.endpoints;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import io.syndesis.qe.Addon;
-import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.addon.Addon;
+import io.syndesis.qe.endpoint.Constants;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.RestUtils;
+import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import javax.ws.rs.ProcessingException;
@@ -30,14 +31,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class TestSupport {
-    private static final String ENDPOINT_NAME = "/test-support";
-    private static final String API_PATH = TestConfiguration.syndesisRestApiPath();
-    private static final String DV_RESET_URL = "http://localhost:8081/dv/v1/test-support/reset-db";
+    private static final String ENDPOINT_NAME = "test-support/reset-db";
+    private static final String DV_RESET_URL = "http://localhost:8081/dv/v1/" + ENDPOINT_NAME;
     private static Client client;
     private static TestSupport instance = null;
 
     private TestSupport() {
-        client = RestUtils.getClient();
+        client = EndpointClient.getClient();
     }
 
     public static TestSupport getInstance() {
@@ -52,6 +52,7 @@ public final class TestSupport {
      */
     public void resetDB() {
         TestUtils.withRetry(() -> {
+            PortForwardUtils.createOrCheckPortForward();
             if (resetDbWithResponse(getEndpointUrl()) == 204) {
                 log.info("Cleaning integration pods");
                 // wait till the integration pods are deleted
@@ -105,7 +106,7 @@ public final class TestSupport {
     }
 
     public String getEndpointUrl() {
-        String restEndpoint = String.format("%s%s%s%s", RestUtils.getRestUrl(), API_PATH, ENDPOINT_NAME, "/reset-db");
+        String restEndpoint = String.format("%s%s/%s", Constants.LOCAL_REST_URL, Constants.API_PATH, ENDPOINT_NAME);
         log.debug("Reset endpoint URL: *{}*", restEndpoint);
         return restEndpoint;
     }

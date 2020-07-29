@@ -58,7 +58,7 @@ Feature: API Provider Integration - Import Export
       | 2 - Response | body.id        |  | body.id        |
       | 2 - Response | body.completed |  | body.completed |
       | 2 - Response | body.task      |  | body.task      |
-    And sleep for jenkins delay or "2" seconds
+    And sleep for jenkins delay or 2 seconds
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -73,8 +73,8 @@ Feature: API Provider Integration - Import Export
      """
        {"id":1,"completed":1,"task":"task1"}
      """
-    And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
-    And validate that number of all todos with task "task1" is "1"
+    And validate that all todos with task "task1" have value completed 1, period in ms: 1000
+    And validate that number of all todos with task "task1" is 1
 
     # export integration
     And select the "TODO Integration" integration
@@ -98,7 +98,7 @@ Feature: API Provider Integration - Import Export
     When select the "TODO Integration" integration
 
     And check visibility of "Stopped" integration status on Integration Detail page
-    And sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or 3 seconds
 
     And click on the "Edit Integration" link
     And click on the "Save" link
@@ -115,8 +115,8 @@ Feature: API Provider Integration - Import Export
        {"id":2,"completed":2,"task":"task2"}
      """
 
-    And validate that all todos with task "task1" have value completed "1", period in ms: "1000"
-    And validate that all todos with task "task2" have value completed "2", period in ms: "1000"
+    And validate that all todos with task "task1" have value completed 1, period in ms: 1000
+    And validate that all todos with task "task2" have value completed 2, period in ms: 1000
 
-    And validate that number of all todos with task "task1" is "1"
-    And validate that number of all todos with task "task2" is "1"
+    And validate that number of all todos with task "task1" is 1
+    And validate that number of all todos with task "task2" is 1

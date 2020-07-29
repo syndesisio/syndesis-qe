@@ -17,23 +17,61 @@
 ### Structure
 
 ```bash
+├── checkstyle
+├── docker
 ├── docs
+├── endpoints
+├── hooks
+├── operator-tests
+├── rest-common
 ├── rest-tests
+├── ui-common
 ├── ui-tests
-└── utilities
+├── upgrade-tests
+├── utilities
+└── validation
 ```
+#### checkstyle
+Contains checkstyle configuration used in this project and intellij settings for this configuration.
+
+#### docker
+Dockerfile for containerized test suite that is capable of running the test suite in a docker container.
 
 #### docs
 On-going initiative to provide comprehensive guide to current code structure.
 Contains a script `generateDocs.py` which produces list of all defined steps in this project and a link to their definition.
 
+#### endpoints
+Collection of syndesis endpoints used in the test suite.
+
+#### hooks
+Git hooks that can should be used.
+
+#### operator-tests
+Cucumber scenarios for operator tests.
+
+#### rest-common
+Collection of gherkin steps that are shared between all rest-based tests.
+
 #### rest-tests
 Java based tests that use Cucumber scenarios.
 Test actions are executed directly to `syndesis-server` backend.
 
+#### ui-common
+Gherkin steps shared between all ui tests.
+
 #### ui-tests
 Java based tests that use Selenide and Cucumber BDD scenarios.
 Test actions are mainly UI driven with additional 3rd party validation like Salesforce, Twitter etc.
+
+#### upgrade-tests
+Cucumber scenarios for upgrade tests.
+
+#### utilities
+Utility classes.
+
+#### validation
+Gherkin steps for validating expected output in the tests.
 
 ### Prerequisites:
 - OpenShift cluster with at least 1 admin and 1 regular user
@@ -223,12 +261,13 @@ mvn clean install
 
 #### Test suite execution
 
-There're three Maven profiles: `all, rest, ui` to target the specific test suite.
+There are separate maven profiles that can be used to build and execute tests. For each *-tests module there is a profile named after the part that is being tested in given module.
 
 ```
-mvn clean test // default all profile
-mvn clean test -P ui
+mvn clean test -P operator
 mvn clean test -P rest
+mvn clean test -P ui
+mvn clean test -P upgrade
 ```
 
 #### Particular test execution
@@ -245,13 +284,13 @@ mvn clean test -P rest -Dtags="@integration-ftp-ftp or @integration-s3-ftp"
 You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy,ui) that sets the required parameters to clean the namespace and deploy Syndesis.
 
 ```
-mvn clean test -P deploy,rest -Dcucumber.options="--tags @integration-ftp-ftp"
+mvn clean test -P deploy,rest -Dtags="@integration-ftp-ftp"
 ```
 
 is the same as
 
 ```
-mvn clean test -P rest -Dcucumber.options="--tags @integration-ftp-ftp" -Dsyndesis.config.openshift.namespace.cleanup=true
+mvn clean test -P rest -Dtags="@integration-ftp-ftp" -Dsyndesis.config.openshift.namespace.cleanup=true
 ```
 
 To select syndesis version, add another maven parameter:
@@ -286,14 +325,14 @@ This secret will be linked to *syndesis-operator* service account automatically.
 
 When you want to debug code, just add following command
 ```
-"-Dmaven.surefire.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
+"-Dmaven.failsafe.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
 ```
 to the maven run command.
 
 E.g. for debugging slack tests:
 ```
-mvn "-Dmaven.surefire.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE" \
-        clean test -P ui "-Dcucumber.options=--tags @slack" \
+mvn "-Dmaven.failsafe.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE" \
+        clean test -P ui -Dtags="@slack" \
         -Dsyndesis.config.openshift.namespace.cleanup=true \
 ```
 
@@ -370,7 +409,7 @@ The following steps show how to debug and use it in the IntelliJ Idea.
     e.g.
     ```
     -ea
-    "-Dcucumber.options=--tags @slack-to-db"
+    -Dtags="@slack-to-db"
     -Dsyndesis.config.openshift.namespace.cleanup=true
     -Dsyndesis.version=master
     ```

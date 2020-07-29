@@ -116,7 +116,7 @@ Feature: Integration - Telegram to Telegram
     And publish integration
     And set integration name "telegram_integration_database_publish"
     And publish integration
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
 
 #

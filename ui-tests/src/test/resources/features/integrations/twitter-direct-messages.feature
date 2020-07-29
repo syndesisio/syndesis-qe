@@ -101,7 +101,7 @@ Feature: Integration - Twitter Direct Messages
     When publish integration
     And set integration name "twitter-direct-messages-test-send"
     And publish integration
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
 
     # start integration and check that DM exists

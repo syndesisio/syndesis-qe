@@ -66,10 +66,10 @@ Feature: MongoDB
       | id2 | v2    |
     And wait until integration Mongo to DB consume stream processed at least 2 messages
 
-    Then checks that query "select * from todo where task='v1'" has 1 row output
-    And checks that query "select * from todo where task='v2'" has 1 row output
-    And checks that query "select * from todo where task='v3'" has 0 row output
-    And checks that query "select * from todo where task='v4'" has 0 row output
+    Then check that query "select * from todo where task='v1'" has 1 row output
+    And check that query "select * from todo where task='v2'" has 1 row output
+    And check that query "select * from todo where task='v3'" has 0 row output
+    And check that query "select * from todo where task='v4'" has 0 row output
     And validate that logs of integration "Mongo to DB consume stream" contains string:
       """
         [[{ "_id" : "id1", "value" : "v1" }]]
@@ -84,10 +84,10 @@ Feature: MongoDB
       | id3 | v3    |
       | id4 | v4    |
     And wait until integration Mongo to DB consume stream processed at least 4 messages
-    Then checks that query "select * from todo where task='v1'" has 1 row output
-    And checks that query "select * from todo where task='v2'" has 1 row output
-    And checks that query "select * from todo where task='v3'" has 1 row output
-    And checks that query "select * from todo where task='v4'" has 1 row output
+    Then check that query "select * from todo where task='v1'" has 1 row output
+    And check that query "select * from todo where task='v2'" has 1 row output
+    And check that query "select * from todo where task='v3'" has 1 row output
+    And check that query "select * from todo where task='v4'" has 1 row output
     And validate that logs of integration "Mongo to DB consume stream" contains string:
       """
         [[{ "_id" : "id4", "value" : "v4" }]]
@@ -322,8 +322,8 @@ Feature: MongoDB
         [[{ "_id" : "id1", "value" : "v1" }, { "_id" : "id2", "value" : "v2" }]]
       """
 
-    And checks that query "select * from todo where task='v1'" has 1 row output
-    And checks that query "select * from todo where task='v2'" has 1 row output
+    And check that query "select * from todo where task='v1'" has 1 row output
+    And check that query "select * from todo where task='v2'" has 1 row output
 
   @mongodb-remove
   Scenario: MongoDB remove
@@ -643,8 +643,8 @@ Feature: MongoDB
       """
         { "_id" : "id1", "value" : "v1" }
       """
-    And checks that query "select * from todo where task='v1'" has 1 row output
-    And checks that query "select * from todo where task='v2'" has no output
+    And check that query "select * from todo where task='v1'" has 1 row output
+    And check that query "select * from todo where task='v2'" has no output
 
     # Try to find an element which doesn't exist
     When invoke post request to webhook in integration Webhook to Mongo find by id with token mongodb-webhook and body:

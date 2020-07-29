@@ -125,7 +125,7 @@ Feature: Google Calendar Connector
     And wait until integration "google_calendar_get_a_specific_event" gets into "Running" state
     And wait until integration google_calendar_get_a_specific_event processed at least 1 message
 
-    And validate that number of all todos with task "past_event1" is greater than "0"
+    And validate that number of all todos with task "past_event1" is greater than 0
 
   # Tests Update Event action for an action coming through the flow.
   # Partial update not yet possible due to #3814 and #3887. Mitigating by
@@ -318,7 +318,7 @@ Feature: Google Calendar Connector
       | description | new_description |
     And sleep for "35000" ms
     And check that query "SELECT * FROM TODO" has 3 rows output
-    And validate that number of all todos with task "past_event3" is greater than "0"
-    And validate that number of all todos with task "future_event3" is greater than "0"
-    And validate that number of all todos with task "past_event1" is greater than "0"
+    And validate that number of all todos with task "past_event3" is greater than 0
+    And validate that number of all todos with task "future_event3" is greater than 0
+    And validate that number of all todos with task "past_event1" is greater than 0
 

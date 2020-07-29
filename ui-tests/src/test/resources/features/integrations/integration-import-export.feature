@@ -67,7 +67,7 @@ Feature: Integration - Import Export
     And publish integration
     Then Integration "integration-import-export-classic-input" is present in integrations list
 
-    When inserts into "CONTACT" table
+    When insert into "CONTACT" table
       | Lorem | Ipsum | Red Hat | e_db |
 
     # wait for integration to get in active state
@@ -77,7 +77,7 @@ Feature: Integration - Import Export
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
     # Add a new contact
-    When inserts into "CONTACT" table
+    When insert into "CONTACT" table
       | Fedora | 28 | RH | f_db |
 
     # export the integration for import tests
@@ -157,7 +157,7 @@ Feature: Integration - Import Export
     And publish integration
     Then Integration "integration-import-export-dnd" is present in integrations list
 
-    When inserts into "CONTACT" table
+    When insert into "CONTACT" table
       | Lorem | Ipsum | Red Hat | e_db |
 
     # wait for integration to get in active state
@@ -167,7 +167,7 @@ Feature: Integration - Import Export
     Then check that last slack message equals "Red Hat" on channel "import_export_test"
 
     # Add a new contact
-    When inserts into "CONTACT" table
+    When insert into "CONTACT" table
       | Fedora | 28 | RH | f_db |
 
     # export the integration for import tests
@@ -175,7 +175,7 @@ Feature: Integration - Import Export
     Then check visibility of "integration-import-export-dnd" integration details
     And export the integraion
     #Add a new contact
-    When inserts into "CONTACT" table
+    When insert into "CONTACT" table
       | RHEL | 7 | New RH | g_db |
 
 #    And delete the "integration-import-export-dnd" integration
@@ -192,7 +192,7 @@ Feature: Integration - Import Export
     # check draft status after import
     When select the "integration-import-export-dnd" integration
     And check visibility of "Stopped" integration status on Integration Detail page
-    And sleep for jenkins delay or "3" seconds
+    And sleep for jenkins delay or 3 seconds
     # start integration and wait for active state
     When click on the "Edit Integration" link
     And click on the "Save" link
@@ -210,7 +210,7 @@ Feature: Integration - Import Export
   Scenario: Import from different syndesis instance
 
     #Add a new contact
-    When inserts into "CONTACT" table
+    When insert into "CONTACT" table
       | RedHat | HatRed | RHEL | h_db |
     # Indicate boundary that new test start because the last message from the last run could influence this run
     And send message "StartingNewTest" on channel "import_export_test"
@@ -221,7 +221,7 @@ Feature: Integration - Import Export
     Then import integration from relative file path "src/test/resources/integrations/Imported-integration-another-instance-export.zip"
 
     When navigate to the "Connections" page
-    And sleep for jenkins delay or "5" seconds
+    And sleep for jenkins delay or 5 seconds
     And click on the "Edit" kebab menu button of "QE Slack"
     Then check visibility of "QE Slack" connection details
 

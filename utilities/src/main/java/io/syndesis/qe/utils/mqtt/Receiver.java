@@ -14,17 +14,19 @@ public class Receiver implements MqttCallback {
         this.clientIdPrefix = clientIdPrefix;
     }
 
-
+    @Override
     public void connectionLost(Throwable throwable) {
         System.out.println("Consumer connection lost : " + throwable.getMessage());
     }
 
-    public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
+    @Override
+    public void messageArrived(String s, MqttMessage mqttMessage) {
         System.out.println("Message arrived from topic : " + s + " | Message : "
                 + new String(mqttMessage.getPayload()) + " | Message ID : " + mqttMessage.getId());
         RECEIVED_FLAG = 1;
     }
 
+    @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
         System.out.println("Delivery completed from : " + clientIdPrefix);
     }
