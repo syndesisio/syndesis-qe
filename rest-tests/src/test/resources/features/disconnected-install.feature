@@ -65,7 +65,7 @@ Feature: Disconnected install
     Then verify that integration "box" build is successful
 
   Scenario: Database
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "10000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 10000 ms
     And add log step
     And create integration with name: "db" and without validating connections
     Then verify that integration "db" build is successful
@@ -226,7 +226,7 @@ Feature: Disconnected install
   Scenario: Split/Aggregate
     Given create ActiveMQ accounts
       And create ActiveMQ connection
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "10000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 10000 ms
       And add a split step
       And create basic filter step for "last_name" with word "Doe" and operation "contains"
       And add an aggregate step
@@ -237,7 +237,7 @@ Feature: Disconnected install
   @camel-k
   Scenario: Camel-K
     Given change runtime to camelk
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "5000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
       And create integration with name: "camelk" and without validating connections
     Then verify that camel-k integration "camelk" build is successful

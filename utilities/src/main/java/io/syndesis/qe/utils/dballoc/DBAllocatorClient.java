@@ -1,6 +1,5 @@
 package io.syndesis.qe.utils.dballoc;
 
-
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
@@ -14,7 +13,6 @@ public class DBAllocatorClient {
     public void allocate(String label) {
         this.setDbAllocation(DBAllocationManager.allocate(label));
     }
-
 
     public void free() {
         DBAllocationManager.free(dbAllocation.getUuid());

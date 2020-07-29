@@ -1,7 +1,7 @@
 package io.syndesis.qe.resource.impl;
 
-import io.syndesis.qe.Addon;
 import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.utils.OpenShiftUtils;

@@ -1,19 +1,15 @@
 package io.syndesis.qe.resource.impl;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
-import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
-
-import org.junit.Assert;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
@@ -24,18 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FHIR implements Resource {
-
     private final String labelName = "app";
     public int fhirPort;
     private String appName;
 
-    public FHIR() {
-        this.initProperties();
-    }
-
     @Override
     public void deploy() {
-        if (!TestUtils.isDcDeployed(appName)) {
+        addAccount();
+        initProperties();
+        if (!OpenShiftUtils.isDcDeployed(appName)) {
 
             List<ContainerPort> ports = new LinkedList<>();
             ports.add(new ContainerPortBuilder()
@@ -103,26 +96,23 @@ public class FHIR implements Resource {
 
     @Override
     public boolean isDeployed() {
-        return TestUtils.isDcDeployed(appName);
+        return OpenShiftUtils.isDcDeployed(appName);
     }
 
     private void initProperties() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FHIR);
-        if (optional.isPresent()) {
-            Map<String, String> properties = new HashMap<>();
-            optional.get().getProperties().forEach((key, value) ->
-                properties.put(key.toLowerCase(), value)
-            );
-            appName = properties.get("host");
-            fhirPort = Integer.parseInt(properties.get("port"));
-        } else {
-            Assert.fail("Credentials for " + Account.Name.FHIR + " were not found!");
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.FHIR);
+        Map<String, String> properties = new HashMap<>();
+        account.getProperties().forEach((key, value) ->
+            properties.put(key.toLowerCase(), value)
+        );
+        appName = properties.get("host");
+        fhirPort = Integer.parseInt(properties.get("port"));
     }
 
-    public static void addAccount() {
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.FHIR);
-        if (!optional.isPresent()) {
+    public void addAccount() {
+        try {
+            AccountsDirectory.getInstance().get(Account.Name.FHIR);
+        } catch (IllegalStateException ex) {
             Account fhir = new Account();
             Map<String, String> fhirParameters = new HashMap<>();
             fhirParameters.put("port", "8080");

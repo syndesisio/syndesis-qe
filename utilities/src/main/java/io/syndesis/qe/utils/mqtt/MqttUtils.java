@@ -1,5 +1,8 @@
 package io.syndesis.qe.utils.mqtt;
 
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
+
 import org.assertj.core.api.Assertions;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -7,29 +10,20 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-import java.util.Optional;
-
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
 import lombok.extern.slf4j.Slf4j;
-
 
 @Slf4j
 public class MqttUtils {
-    private static final String broker = "tcp://localhost:1883";
-
+    private static final String BROKER = "tcp://localhost:1883";
 
     public MqttClient createReceiver(String clientName, String topic) throws MqttException {
-        MqttClient sampleClient = new MqttClient(broker, clientName, new MemoryPersistence());
+        MqttClient sampleClient = new MqttClient(BROKER, clientName, new MemoryPersistence());
         MqttConnectOptions connOpts = new MqttConnectOptions();
         connOpts.setCleanSession(false);
 
-        Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.MQTT);
-        if (optional.isPresent()) {
-            log.info("Setting username and password for QE MQTT client");
-            connOpts.setUserName(optional.get().getProperties().get("userName"));
-            connOpts.setPassword(optional.get().getProperties().get("password").toCharArray());
-        }
+        Account account = AccountsDirectory.getInstance().get(Account.Name.MQTT);
+        connOpts.setUserName(account.getProperties().get("userName"));
+        connOpts.setPassword(account.getProperties().get("password").toCharArray());
 
         sampleClient.connect(connOpts);
         sampleClient.subscribe(topic, 1);
@@ -41,16 +35,13 @@ public class MqttUtils {
         final String clientId = "syndesis-mqtt-sender";
         MqttClient sampleClient = null;
         try {
-            sampleClient = new MqttClient(broker, clientId, new MemoryPersistence());
+            sampleClient = new MqttClient(BROKER, clientId, new MemoryPersistence());
             MqttConnectOptions connOpts = new MqttConnectOptions();
             connOpts.setCleanSession(false);
 
-            Optional<Account> optional = AccountsDirectory.getInstance().getAccount(Account.Name.MQTT);
-            if (optional.isPresent()) {
-                log.info("Setting username and password for QE MQTT client");
-                connOpts.setUserName(optional.get().getProperties().get("userName"));
-                connOpts.setPassword(optional.get().getProperties().get("password").toCharArray());
-            }
+            Account account = AccountsDirectory.getInstance().get(Account.Name.MQTT);
+            connOpts.setUserName(account.getProperties().get("userName"));
+            connOpts.setPassword(account.getProperties().get("password").toCharArray());
 
             sampleClient.connect(connOpts);
             MqttMessage message = new MqttMessage(messageContent.getBytes());

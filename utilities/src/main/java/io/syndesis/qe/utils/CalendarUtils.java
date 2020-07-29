@@ -1,6 +1,6 @@
 package io.syndesis.qe.utils;
 
-import static org.assertj.core.api.Java6Assertions.fail;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.test.InfraFail;
 

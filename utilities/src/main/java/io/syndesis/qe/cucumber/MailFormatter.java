@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,20 +20,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import cucumber.api.Result;
-import cucumber.api.TestCase;
-import cucumber.api.event.EmbedEvent;
-import cucumber.api.event.EventListener;
-import cucumber.api.event.EventPublisher;
-import cucumber.api.event.TestCaseFinished;
-import cucumber.api.event.TestRunFinished;
-import cucumber.api.event.TestSourceRead;
-import gherkin.AstBuilder;
-import gherkin.Parser;
-import gherkin.ParserException;
-import gherkin.ast.Comment;
-import gherkin.ast.Feature;
-import gherkin.ast.GherkinDocument;
+import io.cucumber.core.gherkin.messages.internal.gherkin.GherkinDocumentBuilder;
+import io.cucumber.core.gherkin.messages.internal.gherkin.Parser;
+import io.cucumber.messages.IdGenerator;
+import io.cucumber.messages.Messages;
+import io.cucumber.plugin.EventListener;
+import io.cucumber.plugin.event.EmbedEvent;
+import io.cucumber.plugin.event.EventPublisher;
+import io.cucumber.plugin.event.Status;
+import io.cucumber.plugin.event.TestCase;
+import io.cucumber.plugin.event.TestCaseFinished;
+import io.cucumber.plugin.event.TestRunFinished;
+import io.cucumber.plugin.event.TestSourceRead;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,8 +45,8 @@ public class MailFormatter implements EventListener {
 
     private ObjectMapper mapper = new ObjectMapper();
 
-    private Map<String, String> sustainers = new HashMap<>();
-    private Map<String, Feature> features = new HashMap<>();
+    private Map<URI, String> sustainers = new HashMap<>();
+    private Map<URI, Messages.GherkinDocument.Feature> features = new HashMap<>();
     private Map<String, List<SimpleIssue>> scenarioIssues = new HashMap<>();
     private Set<String> recipients = new HashSet<>();
     private List<ScenarioResult> results = new ArrayList<>();
@@ -65,9 +64,9 @@ public class MailFormatter implements EventListener {
     }
 
     private void onEmbed(EmbedEvent t) {
-        if ("application/x.issues+json".equals(t.mimeType)) {
+        if ("application/x.issues+json".equals(t.getMediaType())) {
             try {
-                List<SimpleIssue> issues = mapper.readValue(t.data, new TypeReference<List<SimpleIssue>>() {
+                List<SimpleIssue> issues = mapper.readValue(t.getData(), new TypeReference<List<SimpleIssue>>() {
                 });
                 scenarioIssues.put(t.getTestCase().getScenarioDesignation(), issues);
             } catch (IOException e) {
@@ -77,27 +76,26 @@ public class MailFormatter implements EventListener {
         }
     }
 
-    private void onTestSourceRead(TestSourceRead t) {
-        GherkinDocument doc = parseGherkinSource(t.source);
-        if (doc != null) {
-            features.put(t.uri, doc.getFeature());
-            for (Comment c : doc.getComments()) {
-                Matcher matcher = SUSTAINER_PATTERN.matcher(c.getText());
-                if (matcher.matches()) {
-                    sustainers.put(t.uri, matcher.group(1));
-                }
+    private void onTestSourceRead(TestSourceRead t) {// called before running tests to read the features
+        Messages.GherkinDocument doc = parseGherkinSource(t.getSource());
+        features.put(t.getUri(), doc.getFeature()); //t.getUri() == classpath:features/check-metering-labels.feature
+        for (Messages.GherkinDocument.Comment c : doc.getCommentsList()) {
+            Matcher matcher = SUSTAINER_PATTERN.matcher(c.getText());
+            if (matcher.matches()) {
+                sustainers.put(t.getUri(), matcher.group(1));
             }
         }
     }
 
     private void onTestCaseFinished(TestCaseFinished t) {
-        String uri = t.getTestCase().getUri();
+        URI uri = t.getTestCase().getUri();
         results.add(
             new ScenarioResult(
-                features.get(uri), t.getTestCase(), t.result.getStatus(),
+                features.get(uri), t.getTestCase(), t.getResult().getStatus(),
                 sustainers.getOrDefault(uri, "NO SUSTAINER"), scenarioIssues.get(t.getTestCase().getScenarioDesignation()))
+            // scenario designation: "features/check-prod-versions.feature:12 # Check artifacts in integration"
         );
-        if (!t.result.getStatus().equals(Result.Type.PASSED) && sustainers.get(uri) != null) {
+        if (!t.getResult().getStatus().equals(Status.PASSED) && sustainers.get(uri) != null) {
             recipients.add(sustainers.get(uri));
         }
     }
@@ -144,22 +142,16 @@ public class MailFormatter implements EventListener {
         }
     }
 
-    private GherkinDocument parseGherkinSource(String source) {
-        Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
-        try {
-            return parser.parse(source);
-        } catch (ParserException e) {
-            log.error("Error parsing gherkin source", e);
-        }
-        return null;
+    private Messages.GherkinDocument parseGherkinSource(String source) {
+        return new Parser<>(new GherkinDocumentBuilder(new IdGenerator.Incrementing())).parse(source).build();
     }
 
     @Data
     @RequiredArgsConstructor
     private static class ScenarioResult {
-        private final Feature feature;
+        private final Messages.GherkinDocument.Feature feature;
         private final TestCase testCase;
-        private final Result.Type result;
+        private final Status result;
         private final String sustainer;
         private final List<SimpleIssue> issues;
 
@@ -173,12 +165,12 @@ public class MailFormatter implements EventListener {
                 .append(testCase.getName())
                 .append(" | ");
 
-            if (result.equals(Result.Type.PASSED)) {
+            if (result.equals(Status.PASSED)) {
                 sb
                     .append("<font color=\"green\">")
                     .append(result)
                     .append("</font>");
-            } else if (result.equals(Result.Type.SKIPPED)) {
+            } else if (result.equals(Status.SKIPPED)) {
                 sb
                     .append("<font color=\"yellow\">")
                     .append(result)

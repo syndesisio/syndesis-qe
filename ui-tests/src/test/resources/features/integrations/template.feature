@@ -15,7 +15,7 @@ Feature: Templates
     And create connections using oauth
       | Gmail | QE Google Mail |
     And reset content of "contact" table
-    And inserts into "contact" table
+    And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
 
   @db-template-send

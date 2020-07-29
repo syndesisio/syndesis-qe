@@ -1,7 +1,8 @@
 package io.syndesis.qe.utils;
 
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.qe.issue.IssueState;
 import io.syndesis.qe.issue.SimpleIssue;
 
@@ -18,7 +19,6 @@ import com.atlassian.jira.rest.client.api.RestClientException;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import javax.ws.rs.client.Client;
 import javax.ws.rs.core.MediaType;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import cucumber.api.Scenario;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,10 +41,10 @@ public class IssueHooksUtils {
         List<SimpleIssue> issues = new ArrayList<>();
         JiraRestClient jiraClient = getJiraClient(scenario);
 
-        IssueRestClient issueClient = jiraClient.getIssueClient();
         if (jiraClient == null) {
             return Collections.emptyList();
         }
+        IssueRestClient issueClient = jiraClient.getIssueClient();
 
         for (String tag : jiraIssues) {
             String issueName = tag.replaceFirst("^@", "");
@@ -52,8 +52,8 @@ public class IssueHooksUtils {
                 com.atlassian.jira.rest.client.api.domain.Issue issue = issueClient.getIssue(issueName).claim();
                 issues.add(transformJiraIssue(issue));
             } catch (RestClientException e) {
-                log.error("Couldn't obtain the Jira issue : ", tag);
-                scenario.embed("Error while processing Jira issues".getBytes(), "text/plain");
+                log.error("Couldn't obtain the Jira issue : {}", tag);
+                scenario.attach("Error while processing Jira issues".getBytes(), "text/plain", "ErrorMessage");
                 e.printStackTrace();
             }
         }
@@ -83,7 +83,7 @@ public class IssueHooksUtils {
             }
         } catch (IOException e) {
             log.error("Error while processing GitHub issues", e);
-            scenario.embed("Error while processing GitHub issues".getBytes(), "text/plain");
+            scenario.attach("Error while processing GitHub issues".getBytes(), "text/plain", "ErrorMessage");
             e.printStackTrace();
         }
 
@@ -138,8 +138,8 @@ public class IssueHooksUtils {
      * <p>
      * The "Closed" state represents single state - "Closed"
      *
-     * @param issue
-     * @return
+     * @param issue jira issue
+     * @return issue state
      */
     private static IssueState getJiraIssueState(com.atlassian.jira.rest.client.api.domain.Issue issue) {
 
@@ -157,8 +157,7 @@ public class IssueHooksUtils {
     }
 
     private static String getJiraIssueUrl(com.atlassian.jira.rest.client.api.domain.Issue jiraIssue) {
-        Optional<Account> account = AccountsDirectory.getInstance().getAccount(Account.Name.JIRA_HOOK);
-        return account.get().getProperty("instanceUrl") + "/browse/" + jiraIssue.getKey();
+        return AccountsDirectory.getInstance().get(Account.Name.JIRA_HOOK).getProperty("instanceUrl") + "/browse/" + jiraIssue.getKey();
     }
 
     private static String getZenHubPipeline(Scenario scenario, String issueNumber) {
@@ -175,9 +174,8 @@ public class IssueHooksUtils {
             }
         }
 
-        Client client = RestUtils.getClient();
         // hardcoded syndesis repo id for now
-        JsonNode jsonNode = client.target("https://api.zenhub.io/p1/repositories/105563335/issues/" + issueNumber)
+        JsonNode jsonNode = EndpointClient.getClient().target("https://api.zenhub.io/p1/repositories/105563335/issues/" + issueNumber)
             .request(MediaType.APPLICATION_JSON)
             .header("X-Authentication-Token", oauthToken)
             .get(JsonNode.class);
@@ -235,15 +233,14 @@ public class IssueHooksUtils {
         try {
             uri = new URI(instanceUrl);
         } catch (URISyntaxException e) {
-            log.error("URL $ is a malformed URL", instanceUrl);
+            log.error("URL {} is a malformed URL", instanceUrl);
             e.printStackTrace();
         }
-        JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, userName, password);
-        return client;
+        return factory.createWithBasicHttpAuthentication(uri, userName, password);
     }
 
     public static void logError(Scenario scenario, String message) {
-        scenario.embed(message.getBytes(), "text/plain");
+        scenario.attach(message.getBytes(), "text/plain", "ErrorMessage");
         log.error(message);
     }
 }

@@ -19,11 +19,11 @@ else
 fi
 
 mvn clean test -P rest \
-		-Dcucumber.options="--tags '""${TAGS}""'" \
+		-Dtags="${TAGS}" \
 		-Dsyndesis.config.openshift.namespace="${NAMESPACE}" \
 		-Dsyndesis.config.openshift.namespace.lock=false \
 		-Dsyndesis.config.openshift.namespace.cleanup=false \
-		-Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE" \
+		-Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE" \
 		-Dsyndesis.config.environment.delorean=true
 
 STATUS=$?

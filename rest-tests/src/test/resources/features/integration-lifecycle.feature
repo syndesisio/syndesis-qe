@@ -6,7 +6,7 @@ Feature: Integration - Lifecycle
   Background: Create sample integration
     Given clean application state
     And clean all builds
-    And create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period "4000" ms
+    And create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period 4000 ms
     And add log step
 
   @integrations-lifecycle
@@ -36,7 +36,7 @@ Feature: Integration - Lifecycle
   Scenario: Create with same name
     When create new integration with name: "DB to DB rest same name" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest same name" to become active
-    Given create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period "4000" ms
+    Given create start DB periodic sql invocation action step with query "SELECT * FROM TODO" and period 4000 ms
     And add log step
     Then try to create new integration with the same name: "DB to DB rest same name" and state: "Unpublished"
 
@@ -45,7 +45,7 @@ Feature: Integration - Lifecycle
   Scenario: Activate-Deactivate switch 3 times
     When create new integration with name: "DB to DB rest test act-deact-long" and desiredState: "Published"
     Then wait for integration with name: "DB to DB rest test act-deact-long" to become active
-    Then switch Inactive and Active state on integration "DB to DB rest test act-deact-long" for 3 times and check pods up/down
+    Then switch Inactive and Active state on integration "DB to DB rest test act-deact-long" for 3 times and check pods
 
   @ENTESB-12493
   Scenario: Recreate integration with the same name

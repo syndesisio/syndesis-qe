@@ -33,7 +33,7 @@ Feature: Integration - ServiceNow-amq/log
       | limit | 1                |
       | query | number={number1} |
     And click on the "Next" button
-    And sleep for jenkins delay or "10" seconds
+    And sleep for jenkins delay or 10 seconds
     Then check that position of connection to fill is "Finish"
 
     When select the "AMQ" connection
@@ -44,7 +44,7 @@ Feature: Integration - ServiceNow-amq/log
       | destinationtype | Queue     |
     And click on the "Next" button
     And click on the "Done" button
-    And sleep for jenkins delay or "30" seconds
+    And sleep for jenkins delay or 30 seconds
 
     When publish integration
     And set integration name "service-now-2-amq"

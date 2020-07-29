@@ -13,12 +13,12 @@ Feature: Integration - HTTP
     Given clean application state
       And deploy ActiveMQ broker
       And create ActiveMQ connection
-      And clean "CONTACT" table
-      And inserts into "CONTACT" table
+      And reset content of "CONTACT" table
+      And insert into "CONTACT" table
         | Tony  | Do  | Syndesis-qe | db |
         | John  | Doe | Syndesis-qe | db |
         | Jeff  | Doe | Syndesis-qe | db |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "10000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 10000 ms
       And add a split step
       And create basic filter step for "last_name" with word "Doe" and operation "contains"
       And add an aggregate step

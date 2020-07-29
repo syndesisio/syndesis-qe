@@ -44,7 +44,7 @@ Feature: Integration - DB to API
 
   @DB-custom-api-connector-integration
   Scenario: Create an integration with custom API connector as finish step
-    When inserts into "contact" table
+    When insert into "contact" table
       | Joe | Jackson | Red Hat | db |
     And click on the "Create Integration" link to create a new integration.
     And select the "PostgresDB" connection

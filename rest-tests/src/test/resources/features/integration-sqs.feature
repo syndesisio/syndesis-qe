@@ -226,11 +226,11 @@ Feature: Integration - SQS
   @datamapper
   @integration-db-sqs-fifo-deduplication-exchangeid
   Scenario: DB to SQS FIFO ExchangeID deduplication
-    Given inserts into "CONTACT" table
+    Given insert into "CONTACT" table
       | X1 | Y1 | Z1 | db |
       | X2 | Y2 | Z2 | db |
       | X3 | Y3 | Z3 | db |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "300000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 300000 ms
       And add a split step
       And start mapper definition with name: "http-sqs"
       And MAP using Step 2 and field "/first_name" to "/<>/message"
@@ -247,11 +247,11 @@ Feature: Integration - SQS
   @database
   @integration-db-sqs-fifo-deduplication-content-based
   Scenario: DB to SQS FIFO ContentBased deduplication
-    Given inserts into "CONTACT" table
+    Given insert into "CONTACT" table
       | X1 | Y1 | Z1 | db |
       | X1 | Y1 | Z1 | db |
       | X1 | Y1 | Z1 | db |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period "60000" ms
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 60000 ms
       And add a split step
       And create SQS "send-object" action step with properties
         | queueNameOrArn                           | syndesis-out-content-based.fifo |

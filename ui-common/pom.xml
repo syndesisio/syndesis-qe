@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.syndesis.qe</groupId>
+		<artifactId>syndesis-qe-parent</artifactId>
+		<version>0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<artifactId>ui-common</artifactId>
+	<name>ui-common :: Common module for UI tests</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.syndesis.qe</groupId>
+			<artifactId>utilities</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>apicurio</groupId>
+			<artifactId>apicurito-tests</artifactId>
+			<classifier>tests</classifier>
+			<version>${apicurito.tests.version}</version>
+			<type>test-jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>selenide</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>${velocity.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy</artifactId>
+			<version>${bytebuddy.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.bytebuddy</groupId>
+			<artifactId>byte-buddy-agent</artifactId>
+			<version>${bytebuddy.version}</version>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>download-drivers</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.github.webdriverextensions</groupId>
+						<artifactId>webdriverextensions-maven-plugin</artifactId>
+						<version>${webdriverextensions.version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>install-drivers</goal>
+								</goals>
+								<phase>package</phase>
+							</execution>
+						</executions>
+
+						<configuration>
+							<installationDirectory>${basedir}/../drivers</installationDirectory>
+							<drivers>
+								<driver>
+									<name>chromedriver</name>
+									<version>${chrome.driver.version}</version>
+								</driver>
+								<driver>
+									<name>geckodriver</name>
+									<version>${firefox.driver.version}</version>
+								</driver>
+							</drivers>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+</project>

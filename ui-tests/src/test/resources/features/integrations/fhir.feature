@@ -6,7 +6,6 @@ Feature: Integration - FHIR - all actions
 
   Background: Clean application state
     Given clean application state
-    And add FHIR account
     And deploy FHIR server
     When delete all relevant entities on FHIR server
     And reset content of "todo" table
@@ -18,7 +17,7 @@ Feature: Integration - FHIR - all actions
   @fhir-0-create
   Scenario: FHIR create operation
 
-    And inserts into "CONTACT" table
+    And insert into "CONTACT" table
       | Emil | Hacik | Red Hat | db |
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.

@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.syndesis.common.model.integration.Integration;
 import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 import io.syndesis.qe.TestConfiguration;
-import io.syndesis.qe.endpoints.ActivityIntegrationsEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsEndpoint;
-import io.syndesis.qe.endpoints.IntegrationsMetricsEndpoint;
+import io.syndesis.qe.endpoint.ActivityIntegrationsEndpoint;
+import io.syndesis.qe.endpoint.IntegrationsEndpoint;
+import io.syndesis.qe.endpoint.IntegrationsMetricsEndpoint;
 import io.syndesis.server.endpoint.v1.handler.activity.Activity;
 
 import org.springframework.beans.factory.annotation.Autowired;
