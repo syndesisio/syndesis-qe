@@ -1,9 +1,9 @@
 package io.syndesis.qe.resource.impl;
 
 import io.syndesis.common.model.connection.Connection;
-import io.syndesis.qe.accounts.Account;
-import io.syndesis.qe.accounts.AccountsDirectory;
-import io.syndesis.qe.endpoints.ConnectionsEndpoint;
+import io.syndesis.qe.account.Account;
+import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
