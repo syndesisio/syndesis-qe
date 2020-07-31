@@ -1,8 +1,7 @@
 package io.syndesis.qe.validation;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
+import static org.assertj.core.api.Assertions.fail;
+
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
@@ -20,14 +19,17 @@ import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.assertj.core.api.Assertions.fail;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CommonSteps {
@@ -82,16 +84,11 @@ public class CommonSteps {
     @When("^(enable|disable) monitoring addon$")
     public void toggleMonitoring(String state) {
         boolean enable = "enable".equalsIgnoreCase(state);
-        ResourceFactory.create(Ops.class);
-    }
-
-    @Then("^wait for DV to become ready$")
-    public void waitForDv() {
-        OpenShiftUtils.getInstance().waiters()
-            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
-            .interval(TimeUnit.SECONDS, 20)
-            .timeout(TimeUnit.MINUTES, 5)
-            .waitFor();
+        if (enable) {
+            ResourceFactory.create(Ops.class);
+        } else {
+            ResourceFactory.destroy(Ops.class);
+        }
     }
 
     @When("deploy Jaeger")

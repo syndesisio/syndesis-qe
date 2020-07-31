@@ -58,10 +58,4 @@ public class CommonHooks {
         ResourceFactory.destroy(FHIR.class);
         FhirClientManager.closeClient();
     }
-
-    @After("@addon-ops")
-    public void cleanMonitoringOps() {
-        log.info("Cleaning up Ops addon");
-        //        ResourceFactory.destroy(Ops.class);
-    }
 }

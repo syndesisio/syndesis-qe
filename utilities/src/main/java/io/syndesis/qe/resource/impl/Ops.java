@@ -1,15 +1,5 @@
 package io.syndesis.qe.resource.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Streams;
-import com.google.common.io.Files;
-import com.google.gson.Gson;
-import cz.xtf.core.openshift.OpenShifts;
-import io.fabric8.kubernetes.api.model.ContainerStatus;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
-import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
-import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
-import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.endpoint.client.EndpointClient;
@@ -17,13 +7,20 @@ import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
+
 import org.junit.Assert;
+
+import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Streams;
+import com.google.common.io.Files;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,14 +33,24 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import cz.xtf.core.openshift.OpenShifts;
+import io.fabric8.kubernetes.api.model.ContainerStatus;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
+import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
+import io.fabric8.openshift.client.NamespacedOpenShiftClient;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class Ops implements Resource {
 
     private static final String NAMESPACE = "application-monitoring";
     private static final String TMP_FOLDER = "/tmp/application-monitoring-operator";
+    private static final String CRB_NAME = "application-monitoring-anonymous-view";
 
     private CustomResourceDefinitionContext getApplicationMonitoringContext() {
-        return getGenericContext(OpenShiftUtils.getInstance().customResourceDefinitions().withName("applicationmonitorings.applicationmonitoring.integreatly.org").get());
+        return getGenericContext(
+            OpenShiftUtils.getInstance().customResourceDefinitions().withName("applicationmonitorings.applicationmonitoring.integreatly.org").get());
     }
 
     private CustomResourceDefinitionContext getGenericContext(CustomResourceDefinition crd) {
@@ -79,45 +86,56 @@ public class Ops implements Resource {
         });
     }
 
+    private void ensureApplicationMonitoringIsPulled() throws IOException, InterruptedException {
+        if (!new File(TMP_FOLDER).exists()) {
+            Process p;
+            p = new ProcessBuilder()
+                .directory(new File("/tmp"))
+                .redirectOutput(new File("/tmp/gitout"))
+                .command("git", "clone", "--depth", "1", "--branch", TestConfiguration.appMonitoringVersion(),
+                    "https://github.com/integr8ly/application-monitoring-operator")
+                .start();
+            p.waitFor();
+            //Use oc used by the testsuite
+            Path scriptPath = Paths.get(TMP_FOLDER, "scripts", "install.sh");
+            String script = IOUtils.toString(Files.newReader(scriptPath.toFile(), Charset.defaultCharset()));
+            String ocReplaced = script.replaceAll("oc", OpenShifts.getBinaryPath());
+            Files.write(ocReplaced.getBytes(Charset.defaultCharset()), scriptPath.toFile());
+        }
+    }
+
     @Override
     public void deploy() {
         final NamespacedOpenShiftClient ocp = getMonitoringNamespace();
         log.info("Installing monitoring applications");
+        try {
+            ensureApplicationMonitoringIsPulled();
+        } catch (InterruptedException | IOException e) {
+            log.error("Git pull failed", e);
+        }
         if (!isDeployed()) {
+            log.info("Ops is already deployed");
             try {
                 Process p;
-                if (!new File(TMP_FOLDER).exists()) {
-                    p = new ProcessBuilder()
-                        .directory(new File("/tmp"))
-                        .redirectOutput(new File("/tmp/gitout"))
-                        .command("git", "clone", "--depth", "1", "--branch", TestConfiguration.appMonitoringVersion(), "https://github.com/integr8ly/application-monitoring-operator")
-                        .start();
-                    p.waitFor();
-                    //Use oc used by the testsuite
-                    Path scriptPath = Paths.get(TMP_FOLDER, "scripts", "install.sh");
-                    String script = IOUtils.toString(Files.newReader(scriptPath.toFile(), Charset.defaultCharset()));
-                    String ocReplaced = script.replaceAll("oc", OpenShifts.getBinaryPath());
-                    Files.write(ocReplaced.getBytes(Charset.defaultCharset()), scriptPath.toFile());
-                }
-                //Oc can be logged in to only one cluster at a time, this ensures the OC is really logged in
-                new ProcessBuilder().command(
-                    OpenShifts.getBinaryPath(),
-                    "login",
-                    TestConfiguration.openShiftUrl(),
-                    "-u", TestConfiguration.adminUsername(),
-                    "-p", TestConfiguration.adminPassword()
-                ).start().waitFor();
+                //this needs to be a process to create the required configs for the oc binary
+                p = new ProcessBuilder()
+                    .command(OpenShifts.getBinaryPath(), "login", "-u=" + TestConfiguration.adminUsername(),
+                        "-p=" + TestConfiguration.adminPassword())
+                    .start();
+                p.waitFor();
                 p = new ProcessBuilder()
                     .directory(new File(TMP_FOLDER))
                     .redirectOutput(new File("/tmp/out"))
                     .command("make", "cluster/install")
                     .start();
-                int ret = p.waitFor();
+                Process finalP = p;
+                TestUtils.waitFor(() -> !finalP.isAlive(), 1, 3 * 60, "Application monitoring operator installation didn't finish in time");
+                int ret = p.exitValue();
+                log.info("Installation finished with return code {}", ret);
                 if (ret != 0) {
                     log.error("Installation process finished with code {}", ret);
                     InfraFail.fail("Application monitoring stack installation failed with following log: {}",
-                        IOUtils.toString(new URL("/tmp/out").openStream(), Charset.defaultCharset())
-                    );
+                        IOUtils.toString(new URL("/tmp/out").openStream(), Charset.defaultCharset()));
                 }
                 OpenShiftWaitUtils.waitFor(() -> ocp.routes().list().getItems().size() >= 3);
             } catch (IOException | InterruptedException | TimeoutException e) {
@@ -125,14 +143,30 @@ public class Ops implements Resource {
                 Assert.fail("Monitoring applications deployment failed \n" + e.getMessage());
             }
         }
-        OpenShiftUtils.binary().execute("adm", "policy", "add-cluster-role-to-user", "view", "system:anonymous");
-        OpenShiftUtils.binary().execute("adm", "policy", "add-cluster-role-to-user", "cluster-admin", "system:serviceaccount:mmuzikar:prometheus-operator");
+        OpenShiftUtils.getInstance().rbac().clusterRoleBindings().createOrReplaceWithNew()
+            .withNewMetadata()
+            .withName(CRB_NAME)
+            .endMetadata()
+            .addNewSubject()
+            .withName("system:anonymous")
+            .withKind("User")
+            .endSubject()
+            .withNewRoleRef()
+            .withName("view")
+            .withKind("ClusterRole")
+            .endRoleRef()
+            .done();
         OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit()
             .editMetadata()
             .addToLabels("monitoring-key", "middleware")
             .endMetadata()
             .done();
         finalizerWorkaround();
+        try {
+            OpenShiftWaitUtils.waitFor(() -> ocp.pods().list().getItems().size() > 4);
+        } catch (InterruptedException | TimeoutException e) {
+            log.error("Waiting for installation of application monitoring failed", e);
+        }
         ResourceFactory.get(Syndesis.class).updateAddon(Addon.OPS, true);
     }
 
@@ -143,18 +177,26 @@ public class Ops implements Resource {
             .removeFromLabels("monitoring-key")
             .endMetadata()
             .done();
+        OpenShiftUtils.getInstance().clusterRoleBindings().withName(CRB_NAME).delete();
         if (!OpenShiftWaitUtils.isAPodReady("syndesis.io/component", "operator").getAsBoolean()) {
-            OpenShiftUtils.getInstance().deploymentConfigs().inNamespace(TestConfiguration.openShiftNamespace()).withName("syndesis-operator").scale(1);
-            OpenShiftUtils.getInstance().deploymentConfigs().inNamespace(TestConfiguration.openShiftNamespace()).withName("syndesis-db").scale(1);
-            OpenShiftWaitUtils.waitUntilPodIsRunning("syndesis-db");
+            OpenShiftUtils.scale("syndesis-operator", 1);
+            OpenShiftUtils.scale("syndesis-db", 1);
         }
-        ResourceFactory.get(Syndesis.class).updateAddon(Addon.OPS, false);
-        final NamespacedOpenShiftClient ocp = getMonitoringNamespace();
-        if (new Gson().toJson(ocp.customResource(getApplicationMonitoringContext()).list().get("items")).contains("example-applicationmonitoring")) {
-            ocp.customResource(getApplicationMonitoringContext()).delete(NAMESPACE, "example-applicationmonitoring");
+        if (ResourceFactory.get(Syndesis.class).isAddonEnabled(Addon.OPS)) {
+            ResourceFactory.get(Syndesis.class).updateAddon(Addon.OPS, false);
         }
-        if (ocp.namespaces().withName(NAMESPACE).get().getStatus().getPhase().equalsIgnoreCase("Active")) {
-            ocp.namespaces().withName(NAMESPACE).delete();
+        try {
+            Process p = new ProcessBuilder()
+                .directory(new File(TMP_FOLDER))
+                .command("make", "cluster/clean")
+                .start();
+            p.waitFor();
+            if (p.exitValue() != 0) {
+                throw new IllegalStateException(IOUtils.toString(p.getErrorStream(), Charset.defaultCharset())
+                    + "\n" + IOUtils.toString(p.getInputStream(), Charset.defaultCharset()));
+            }
+        } catch (IOException | InterruptedException | IllegalStateException e) {
+            log.error("Something went wrong with cleaning up after the application-monitoring stack", e);
         }
     }
 
@@ -162,14 +204,14 @@ public class Ops implements Resource {
         Invocation.Builder invocation = EndpointClient.getClient().target(getPrometheusRoute()).path("api").path("v1").path("targets")
             .property("disable-logging", true)
             .request(MediaType.APPLICATION_JSON);
-        JsonNode ret = invocation.get(JsonNode.class);
-        return ret;
+        return invocation.get(JsonNode.class);
     }
 
     @Override
     public boolean isReady() {
         final NamespacedOpenShiftClient ocp = getMonitoringNamespace();
-        boolean podsDeployed = ocp.pods().list().getItems().stream().allMatch(p -> p.getStatus().getContainerStatuses().stream().allMatch(ContainerStatus::getReady));
+        boolean podsDeployed =
+            ocp.pods().list().getItems().stream().allMatch(p -> p.getStatus().getContainerStatuses().stream().allMatch(ContainerStatus::getReady));
         boolean targetsDiscovered = Streams.stream(getTargets().get("data").get("activeTargets").elements())
             .filter(node -> node.get("labels").get("namespace").asText().equals(TestConfiguration.openShiftNamespace()))
             .map(node -> node.get("labels").get("service").asText())
@@ -185,5 +227,4 @@ public class Ops implements Resource {
     public String getPrometheusRoute() {
         return "https://" + getMonitoringNamespace().routes().withName("prometheus-route").get().getSpec().getHost();
     }
-
 }

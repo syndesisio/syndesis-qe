@@ -29,8 +29,7 @@ public class PrometheusQueryEndpoint {
         Invocation.Builder invocation = getClient().target(prometheusEndpoint()).path("api").path("v1").path("query")
             .queryParam("query", UriComponent.encode(query, UriComponent.Type.QUERY_PARAM))
             .request(MediaType.APPLICATION_JSON);
-        JsonNode ret = invocation.get(JsonNode.class);
-        return ret;
+        return invocation.get(JsonNode.class);
     }
 
     public JsonNode executeQueryOnRange(String query, int offsetSecs, Integer stepSize) {
@@ -42,22 +41,19 @@ public class PrometheusQueryEndpoint {
             .queryParam("end", UriComponent.encode(end.toString(ISODateTimeFormat.dateTime()), UriComponent.Type.QUERY_PARAM))
             .queryParam("step", UriComponent.encode(stepSize.toString(), UriComponent.Type.QUERY_PARAM))
             .request(MediaType.APPLICATION_JSON);
-        JsonNode ret = invocation.get(JsonNode.class);
-        return ret;
+        return invocation.get(JsonNode.class);
     }
 
     public JsonNode getAlertRules() {
         Invocation.Builder invocation = getClient().target(prometheusEndpoint()).path("api").path("v1").path("rules")
             .queryParam("type", UriComponent.encode("alert", UriComponent.Type.QUERY_PARAM))
             .request(MediaType.APPLICATION_JSON);
-        JsonNode ret = invocation.get(JsonNode.class);
-        return ret;
+        return invocation.get(JsonNode.class);
     }
 
     public JsonNode getAlerts() {
         Invocation.Builder invocation = getClient().target(prometheusEndpoint()).path("api").path("v1").path("alerts")
             .request(MediaType.APPLICATION_JSON);
-        JsonNode ret = invocation.get(JsonNode.class);
-        return ret;
+        return invocation.get(JsonNode.class);
     }
 }

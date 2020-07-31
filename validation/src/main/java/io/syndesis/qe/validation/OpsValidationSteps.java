@@ -1,4 +1,4 @@
-package io.syndesis.qe.bdd.validation;
+package io.syndesis.qe.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,19 +42,6 @@ public class OpsValidationSteps {
 
     @Autowired
     private ConnectionsEndpoint connectionsEndpoint;
-
-    @Then("verify Prometheus query {string} results in {string}")
-    public void validateQuery(String query, String result) {
-        JsonNode res = queryEndpoint.executeQuery(query);
-        assertThat(res.get("status").asText()).isEqualToIgnoringCase("success");
-    }
-
-    @Then("verify Prometheus query {string} contains {string}")
-    public void queryContains(String query, String result) {
-        JsonNode res = queryEndpoint.executeQuery(query);
-        assertThat(res.get("status").asText()).isEqualToIgnoringCase("success");
-        assertThat(res.get("data").asText()).containsIgnoringCase(result);
-    }
 
     @Then("^verify Prometheus query \"([^\"]*)\" (decreases|increases) in (\\d+) seconds$")
     public void queryValueChanging(String query, String type, Integer timeout) {
@@ -128,14 +115,14 @@ public class OpsValidationSteps {
         Map<String, Object> prometheusDS =
             OpenShiftUtils.getInstance().customResource(grafanaDSContext()).get("application-monitoring", "prometheus");
         sa.assertThat(((Map<String, Object>) prometheusDS.get("status")).get("message")).isEqualTo("success");
-        Map<String, Object> spec = ((Map<String, Object>) prometheusDS.get("spec"));
+        Map<String, Object> spec = (Map<String, Object>) prometheusDS.get("spec");
         List<Map<String, Object>> datasources = (List<Map<String, Object>>) spec.get("datasources");
         sa.assertThat(datasources).size().isNotZero();
         sa.assertThat(datasources).anyMatch(map -> "prometheus".equals(map.get("type")));
         sa.assertAll();
 
         Map<String, Object> list = OpenShiftUtils.getInstance().customResource(dashboardContext()).list(TestConfiguration.openShiftNamespace());
-        List<Map<String, Object>> items = ((List<Map<String, Object>>) list.get("items"));
+        List<Map<String, Object>> items = (List<Map<String, Object>>) list.get("items");
         dashboards.asList().forEach(it -> {
             sa.assertThat(items).anyMatch(map -> it.equals(((Map<String, Object>) map.get("metadata")).get("name")));
         });
@@ -151,7 +138,7 @@ public class OpsValidationSteps {
         for (List<String> row : panels.asLists()) {
             Map<String, Object> res =
                 OpenShiftUtils.getInstance().customResource(dashboardContext()).get(TestConfiguration.openShiftNamespace(), row.get(0));
-            JsonNode dashboard = new ObjectMapper().readTree(((String) ((Map<String, Object>) res.get("spec")).get("json")));
+            JsonNode dashboard = new ObjectMapper().readTree((String) ((Map<String, Object>) res.get("spec")).get("json"));
             JsonNode panelsList = dashboard.get("panels");
             Optional<JsonNode> optPanel =
                 panelsList.findParents("title").stream().filter(it -> row.get(1).equals(it.get("title").asText())).findFirst();
@@ -169,14 +156,8 @@ public class OpsValidationSteps {
         assertThat(res.get("status").asText()).isEqualToIgnoringCase("success");
         JsonNode alerts = res.get("data").get("alerts");
         assertThat(Streams.stream(alerts.elements())).anyMatch(alert ->
-                                                                   name.equals(alert.get("labels").get("alertname").asText()) &&
-                                                                       alert.get("state").asText().matches("pending|firing"));
-    }
-
-    private static void scaleDown(String name) {
-        log.info("Scaling down {}", name);
-        OpenShiftUtils.getInstance().deploymentConfigs().inNamespace(TestConfiguration.openShiftNamespace()).withName(name).scale(0);
-        OpenShiftWaitUtils.waitUntilPodIsDeleted(name);
+            name.equals(alert.get("labels").get("alertname").asText()) &&
+                alert.get("state").asText().matches("pending|firing"));
     }
 
     private boolean wasAlertRaised(String alertName) {
@@ -186,28 +167,30 @@ public class OpsValidationSteps {
 
     @Then("verify monitoring alerts are working correctly")
     public void verifyAlerts() throws TimeoutException, InterruptedException {
-        scaleDown("syndesis-operator");
-        scaleDown("syndesis-db");
-        OpenShiftWaitUtils.waitFor(() -> wasAlertRaised("FuseOnlineDatabaseInstanceDown"), 10 * 1000 * 60);
-        verifyAlertIsRaised("FuseOnlineDatabaseInstanceDown");
-        verifyAlertIsRaised("FuseOnlinePostgresExporterDown");
-        log.info("Database tests passed\n Executing REST requests and waiting for endpoint alerts");
-        for (int i = 0; i < 1000; i++) {
-            if (wasAlertRaised("FuseOnlineRestApiHighEndpointErrorRate")) {
-                break;
+        try {
+            OpenShiftUtils.scale("syndesis-operator", 0);
+            OpenShiftUtils.scale("syndesis-db", 0);
+            OpenShiftWaitUtils.waitFor(() -> wasAlertRaised("FuseOnlineDatabaseInstanceDown"), 10 * 1000 * 60);
+            verifyAlertIsRaised("FuseOnlineDatabaseInstanceDown");
+            verifyAlertIsRaised("FuseOnlinePostgresExporterDown");
+            log.info("Database tests passed\n Executing REST requests and waiting for endpoint alerts");
+            for (int i = 0; i < 1000; i++) {
+                if (wasAlertRaised("FuseOnlineRestApiHighEndpointErrorRate")) {
+                    break;
+                }
+                EndpointClient.getClient()
+                    .property("disable-logging", true)
+                    .target(Constants.LOCAL_REST_URL).path("api").path("v1").path("connections")
+                    .request()
+                    .header("X-Forwarded-User", "pista")
+                    .header("X-Forwarded-Access-Token", "kral")
+                    .header("SYNDESIS-XSRF-TOKEN", "awesome")
+                    .get();
             }
-            EndpointClient.getClient()
-                .property("disable-logging", true)
-                .target(Constants.LOCAL_REST_URL).path("api").path("v1").path("connections")
-                .request()
-                .header("X-Forwarded-User", "pista")
-                .header("X-Forwarded-Access-Token", "kral")
-                .header("SYNDESIS-XSRF-TOKEN", "awesome")
-                .get();
+            verifyAlertIsRaised("FuseOnlineRestApiHighEndpointErrorRate");
+        } finally {
+            OpenShiftUtils.scale("syndesis-operator", 1);
+            OpenShiftUtils.scale("syndesis-db", 1);
         }
-        verifyAlertIsRaised("FuseOnlineRestApiHighEndpointErrorRate");
-        OpenShiftUtils.getInstance().deploymentConfigs().inNamespace(TestConfiguration.openShiftNamespace()).withName("syndesis-operator").scale(1);
-        OpenShiftUtils.getInstance().deploymentConfigs().inNamespace(TestConfiguration.openShiftNamespace()).withName("syndesis-db").scale(1);
-        OpenShiftWaitUtils.waitUntilPodIsRunning("syndesis-db");
     }
 }
