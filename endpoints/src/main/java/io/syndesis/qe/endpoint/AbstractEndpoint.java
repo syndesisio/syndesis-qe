@@ -140,9 +140,9 @@ public abstract class AbstractEndpoint<T> {
 
     protected Invocation.Builder createInvocation(String id) {
         return new RetryingInvocationBuilder(client
-            .target(getEndpointUrl(Optional.ofNullable(id)))
-            .request(MediaType.APPLICATION_JSON)
-            .headers(commonHeaders));
+                                                 .target(getEndpointUrl(Optional.ofNullable(id)))
+                                                 .request(MediaType.APPLICATION_JSON)
+                                                 .headers(commonHeaders));
     }
 
     protected T transformJsonNode(JsonNode json, Class<T> t) {

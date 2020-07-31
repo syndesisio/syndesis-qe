@@ -52,7 +52,7 @@ public class CommonSteps {
             ComponentUtils.getAllComponents().forEach(c -> log.error("  " + c.getName()));
             log.error("Found following component pods:");
             ComponentUtils.getComponentPods().forEach(p -> log.error("  " + p.getMetadata().getName()
-                + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
+                                                                         + " [ready: " + OpenShiftWaitUtils.isPodReady(p) + "]"));
             InfraFail.fail("Wait for Syndesis failed, check error logs for details.", e);
         }
     }

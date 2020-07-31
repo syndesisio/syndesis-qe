@@ -1,7 +1,8 @@
 package io.syndesis.qe.validation;
 
-import static org.assertj.core.api.Assertions.fail;
-
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
@@ -10,6 +11,7 @@ import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.Jaeger;
+import io.syndesis.qe.resource.impl.Ops;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.test.InfraFail;
@@ -18,17 +20,14 @@ import io.syndesis.qe.utils.PortForwardUtils;
 import io.syndesis.qe.utils.PublicApiUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPUtils;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import lombok.extern.slf4j.Slf4j;
+import static org.assertj.core.api.Assertions.fail;
 
 @Slf4j
 public class CommonSteps {
@@ -78,6 +77,21 @@ public class CommonSteps {
     @When("^change runtime to (springboot|camelk)$")
     public static void changeRuntime(String runtime) {
         ResourceFactory.get(Syndesis.class).changeRuntime(runtime);
+    }
+
+    @When("^(enable|disable) monitoring addon$")
+    public void toggleMonitoring(String state) {
+        boolean enable = "enable".equalsIgnoreCase(state);
+        ResourceFactory.create(Ops.class);
+    }
+
+    @Then("^wait for DV to become ready$")
+    public void waitForDv() {
+        OpenShiftUtils.getInstance().waiters()
+            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
+            .interval(TimeUnit.SECONDS, 20)
+            .timeout(TimeUnit.MINUTES, 5)
+            .waitFor();
     }
 
     @When("deploy Jaeger")
