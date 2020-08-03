@@ -20,7 +20,6 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.api.Assertions;
 
 import java.util.Map;
 import java.util.Optional;
@@ -40,8 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OpenshiftValidationSteps {
     @Then("check that pod {string} logs contain string {string}")
     public void checkPodHasInLog(String podPartialName, String expectedText) {
-        Assertions.assertThat(OpenShiftUtils.getPodLogs(podPartialName))
-            .containsIgnoringCase(expectedText);
+        assertThat(OpenShiftUtils.getPodLogs(podPartialName)).containsIgnoringCase(expectedText);
     }
 
     @Given("deploy FTP server")
@@ -150,11 +148,11 @@ public class OpenshiftValidationSteps {
     @Then("check that the pod {string} is not redeployed by server")
     public void checkThatPodIsNotRedeployed(String podName) {
         Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podName);
-        Assertions.assertThat(pod).isPresent();
+        assertThat(pod).isPresent();
         int currentNr = OpenShiftUtils.extractPodSequenceNr(pod.get());
         waitForStateCheckInterval();
         // Check that there is no pod with higher number
-        Assertions.assertThat(OpenShiftUtils.podExists(
+        assertThat(OpenShiftUtils.podExists(
             p -> p.getMetadata().getName().contains(podName),
             p -> !StringUtils.containsAny(p.getMetadata().getName(), "build", "deploy"),
             p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNr))
@@ -183,13 +181,13 @@ public class OpenshiftValidationSteps {
 
     @Then("check that the deployment config {string} contains variables:")
     public void checkDcEnvVars(String dcName, DataTable vars) {
-        Assertions.assertThat(OpenShiftUtils.getInstance().getDeploymentConfigEnvVars(dcName))
+        assertThat(OpenShiftUtils.getInstance().getDeploymentConfigEnvVars(dcName))
             .containsAllEntriesOf(vars.asMap(String.class, String.class));
     }
 
     @Then("^check that there (?:is|are) (\\d+) pods? for integration \"([^\"]*)\"$")
     public void checkPodsForIntegration(int count, String integrationName) {
-        Assertions.assertThat(OpenShiftUtils.getInstance().getPods("i-" + integrationName)).hasSize(count);
+        assertThat(OpenShiftUtils.getInstance().getPods("i-" + integrationName)).hasSize(count);
     }
 
     @When("change deployment strategy for {string} deployment config to {string}")
@@ -200,7 +198,7 @@ public class OpenshiftValidationSteps {
 
     @Then("chech that the deployment strategy for {string} deployment config is {string}")
     public void checkDeploymentStrategy(String dcName, String strategy) {
-        Assertions.assertThat(OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get().getSpec().getStrategy().getType())
+        assertThat(OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).get().getSpec().getStrategy().getType())
             .isEqualTo(strategy);
     }
 
@@ -226,9 +224,9 @@ public class OpenshiftValidationSteps {
     public void checkDeploymentConfig(String dcName, String shouldExist) {
         DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig(dcName);
         if ("does".equals(shouldExist)) {
-            Assertions.assertThat(dc).isNotNull();
+            assertThat(dc).isNotNull();
         } else {
-            Assertions.assertThat(dc).isNull();
+            assertThat(dc).isNull();
         }
     }
 
@@ -236,9 +234,9 @@ public class OpenshiftValidationSteps {
     public void checkService(String serviceName, String shouldExist) {
         Service service = OpenShiftUtils.getInstance().getService(serviceName);
         if ("does".equals(shouldExist)) {
-            Assertions.assertThat(service).isNotNull();
+            assertThat(service).isNotNull();
         } else {
-            Assertions.assertThat(service).isNull();
+            assertThat(service).isNull();
         }
     }
 
