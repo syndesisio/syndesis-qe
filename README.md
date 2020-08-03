@@ -95,6 +95,10 @@ For IntelliJ Idea you can use these plugins:
 - [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok-plugin)
 - [Cucumber](https://plugins.jetbrains.com/plugin/7212-cucumber-for-java)
 
+**NOTE**
+When you imported the whole test suite to the Intellij Idea, you need to select which maven profiles you want to use.
+Open Maven view (in the right panel), check all profiles (ui, rest, operator, upgrade) and click `Reload All Maven Projects`
+
 For more information ask `mcada@redhat.com` or `avano@redhat.com` or `tplevko@redhat.com`
 
 #### Make static route available
@@ -173,7 +177,12 @@ If you want to use your custom route, you need to specify `syndesis.config.opens
 You can also use the `syndesis.config.test.properties` system property to specify a different location of the `test.properties` file, relative to the repo root. This can be useful in case you want to quickly switch between e.g. a local minishift instance and a remote openshift instance.
 
 #### Use correct webdriver version for selected browser
-By default the testsuite will not download any drivers when running tests. To download drivers, you need to use profile `download-drivers`, for example `mvn clean install -DskipTests -Pdownload-drivers`.
+By default the testsuite will not download any drivers when running tests. To download drivers, you need to use profile `download-drivers` in ui-common module, 
+e.g.
+```
+cd ui-common
+mvn clean package -Pdownload-drivers
+```
 
 By default the testsuite will download latest drivers which may not work with older browsers.
 To use older webdriver, find supported version for your browser and set the system property `chrome.driver.version` or `firefox.driver.version` depending the browser of your choice.
@@ -274,10 +283,10 @@ mvn clean install
 There are separate maven profiles that can be used to build and execute tests. For each *-tests module there is a profile named after the part that is being tested in given module.
 
 ```
-mvn clean test -P operator
-mvn clean test -P rest
-mvn clean test -P ui
-mvn clean test -P upgrade
+mvn clean verify -P operator
+mvn clean verify -P rest
+mvn clean verify -P ui
+mvn clean verify -P upgrade
 ```
 
 #### Particular test execution
@@ -285,22 +294,22 @@ mvn clean test -P upgrade
 When you want to run only the particular tests or scenarios, just use their **tags**. The following example runs `@integration-ftp-ftp` and `@integration-s3-ftp` scenarios from the rest suite
 
 ```
-mvn clean test -P rest -Dtags="@integration-ftp-ftp or @integration-s3-ftp"
+mvn clean verify -P rest -Dtags="@integration-ftp-ftp or @integration-s3-ftp"
 ```
 
 #### Additional parameters
 
 ##### Deploying Syndesis via the testsuite
-You can use profile `-P deploy` **with some other profile** (ie. mvn clean test -P deploy,ui) that sets the required parameters to clean the namespace and deploy Syndesis.
+You can use profile `-P deploy` **with some other profile** (ie. mvn clean verify -P deploy,ui) that sets the required parameters to clean the namespace and deploy Syndesis.
 
 ```
-mvn clean test -P deploy,rest -Dtags="@integration-ftp-ftp"
+mvn clean verify -P deploy,rest -Dtags="@integration-ftp-ftp"
 ```
 
 is the same as
 
 ```
-mvn clean test -P rest -Dtags="@integration-ftp-ftp" -Dsyndesis.config.openshift.namespace.cleanup=true
+mvn clean verify -P rest -Dtags="@integration-ftp-ftp" -Dsyndesis.config.openshift.namespace.cleanup=true
 ```
 
 To select syndesis version, add another maven parameter:

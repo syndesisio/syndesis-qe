@@ -1,5 +1,5 @@
 #================================================================================================================================
-# Default version, for now, is 1.10.x, `docker build -t syndesisqe/tests-ui .`
+# Default version, for now, is 1.11.x, `docker build -t syndesisqe/tests-ui:1.11.x .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
 # e.g. `docker build -t docker.io/syndesisqe/tests-ui:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
@@ -19,7 +19,7 @@
 #   -e UI_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
 #   --shm-size=2g \
-#   syndesisqe/tests-ui:1.10.x
+#   syndesisqe/tests-ui:1.11.x
 #
 #
 # For debugging, you have to expose port 5005 by `-p 5005:5005`
@@ -28,20 +28,35 @@
 # your local machine (/tmp/syndesisQe in the example) to the container. `-v <your folder in localhost>:/test-run-results:Z`
 #================================================================================================================================
 
-FROM alpine/git as gitRepos
+FROM alpine/git as gitRepoSyndesis
 
 ARG SYNDESIS_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_BRANCH_VERSION=1.10.x
-
-ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_QE_BRANCH_VERSION=1.10.x
-
-ARG APICURIO_QE_BRANCH_OWNER=Apicurio
-ARG APICURIO_QE_BRANCH_VERSION=1.10.x
+ARG SYNDESIS_BRANCH_VERSION=1.11.x
 
 WORKDIR /syndesis
 RUN git clone https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
 RUN git checkout ${SYNDESIS_BRANCH_VERSION}
+
+#================================================================================================================================
+## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
+# for some reason, the syndesis build doesn't work on alpine image
+FROM maven:3.6-jdk-8-slim as buildSyndesis
+## Syndesis build needs git for some reason
+RUN apt-get update -y
+RUN apt-get install -y git
+## Build only dependencies that the test suite needs
+COPY --from=gitRepoSyndesis /syndesis /syndesis
+WORKDIR /syndesis/app
+RUN mvn clean install -P flash --projects :common-model,:server-endpoint --also-make
+
+#================================================================================================================================
+FROM alpine/git as gitRepoSyndesisQe
+
+ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
+ARG SYNDESIS_QE_BRANCH_VERSION=1.11.x
+
+ARG APICURIO_QE_BRANCH_OWNER=Apicurio
+ARG APICURIO_QE_BRANCH_VERSION=1.11.x
 
 WORKDIR /syndesis-qe
 RUN git clone --recurse-submodules https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe
@@ -55,31 +70,29 @@ WORKDIR /syndesis-qe/syndesis-extensions
 RUN git checkout master
 
 #================================================================================================================================
-## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
-# for some reason, the syndesis build doesn't work on alpine image
-FROM maven:3.6-jdk-8-slim as buildSyndesis
-## Syndesis build needs git for some reason
-RUN apt-get update -y
-RUN apt-get install -y git
-## Build only dependencies that the test suite needs
-COPY --from=gitRepos /syndesis /syndesis
-WORKDIR /syndesis/app
-RUN mvn clean install -P flash --projects :common-model,:server-endpoint --also-make
-
-#================================================================================================================================
-FROM maven:3.6-jdk-8-slim as buildApicurio
-COPY --from=gitRepos /apicurio /apicurio
-WORKDIR /apicurio
-RUN mvn clean install -DskipTests=true
+# TODO skip for now, see next TODO
+#FROM maven:3.6-jdk-8-slim as buildApicurio
+#COPY --from=gitRepoSyndesisQe /apicurio /apicurio
+#WORKDIR /apicurio
+#RUN mvn clean install -DskipTests=true
 
 #================================================================================================================================
 FROM maven:3.6-jdk-8-slim as buildSyndesisQE
 
 ## Copy builded Syndesis and Apicurio dependencies
 COPY --from=buildSyndesis /root/.m2/repository/io/syndesis /root/.m2/repository/io/syndesis
-COPY --from=buildApicurio /root/.m2/repository/apicurio /root/.m2/repository/apicurio
 
-COPY --from=gitRepos /syndesis-qe /syndesis-qe
+# TODO, once marketplace-utilities is pushed to github or central, the apicurito can be build manually, for now, fill the internal repository url bellow
+#COPY --from=buildApicurio /root/.m2/repository/apicurio /root/.m2/repository/apicurio
+RUN mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:get \
+    -DremoteRepositories=<! FILL HERE INTERNAL REPO URL WHERE APICURIO 0.0.3 IS !> \
+    -DartifactId=apicurito-tests \
+    -Dclassifier=tests \
+    -DgroupId=apicurio \
+    -Dversion=0.0.3-SNAPSHOT \
+    -Dtype=test-jar
+
+COPY --from=gitRepoSyndesisQe /syndesis-qe /syndesis-qe
 WORKDIR /syndesis-qe
 
 ## Build syndesis extensions which are used in the test suite
@@ -87,8 +100,10 @@ WORKDIR /syndesis-qe
 #RUN mvn clean package -B -f syndesis-extensions/pom.xml --also-make --projects :syndesis-library-jdbc-driver,:syndesis-extension-log-body,:syndesis-extension-body
 
 ## Build syndesis-qe tests (To download all dependencies during the building phase. not during the running phase)
-RUN mvn -pl utilities clean install
-RUN mvn clean install -DskipTests -Pdownload-drivers
+RUN mvn -P ui clean install  -DskipTests
+
+WORKDIR /syndesis-qe/ui-common
+RUN mvn clean package -Pdownload-drivers
 
 ## This file has not contained 3rd party services. It is copied into the test suite in order to the tests which use self-deployed services work (AMQ broker, MongoDB).
 ## In the future, the external credential.json (with 3rd party services credential) can be pass to the image as an environment variable.

@@ -18,7 +18,7 @@ else
   fi
 fi
 
-mvn clean test -P rest \
+mvn clean verify -P rest \
 		-Dtags="${TAGS}" \
 		-Dsyndesis.config.openshift.namespace="${NAMESPACE}" \
 		-Dsyndesis.config.openshift.namespace.lock=false \
