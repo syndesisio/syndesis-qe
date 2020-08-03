@@ -38,8 +38,8 @@ else
 
 Xvfb :99 -ac &
 
-./mvnw clean test -P ui \
-		-Dcucumber.options="--tags '""${TAGS}""'" \
+./mvnw clean verify -P ui \
+		-Dtags="${TAGS}" \
 		-Dsyndesis.config.openshift.url="${URL}" \
 		-Dsyndesis.config.admin.username="${ADMIN_USERNAME}" \
 		-Dsyndesis.config.admin.password="${ADMIN_PASSWORD}" \
@@ -49,7 +49,7 @@ Xvfb :99 -ac &
 		-Dsyndesis.config.openshift.namespace.lock=false \
 		-Dsyndesis.config.openshift.namespace.cleanup=false \
 	    $(echo ${UI_URL_CONFIG}) \
-		-Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE" \
+		-Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE" \
 		-Dsyndesis.config.enableTestSupport=true \
 		-Dsyndesis.config.ui.browser=firefox
 

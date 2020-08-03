@@ -1,5 +1,5 @@
 #================================================================================================================================
-# Default version, for now, is 1.10.x, `docker build -t syndesisqe/tests-rest .`
+# Default version, for now, is 1.11.x, `docker build -t syndesisqe/tests-rest:1.11.x .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
 # e.g. `docker build -t docker.io/syndesisqe/tests-rest:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
@@ -17,30 +17,20 @@
 #   -e ADMIN_USERNAME='admin' \
 #   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
-#   syndesisqe/tests-rest:1.10.x
+#   syndesisqe/tests-rest:1.11.x
 #
 # For debugging, you have to expose port 5005 by `-p 5005:5005`
 # For running tests with 3rd party services, use CREDENTIALS_URL env `-e CREDENTIALS_URL=http://.../credentials.json`
 #================================================================================================================================
 
-FROM alpine/git as gitRepos
+FROM alpine/git as gitRepoSyndesis
 
 ARG SYNDESIS_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_BRANCH_VERSION=1.10.x
-
-ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_QE_BRANCH_VERSION=1.10.x
+ARG SYNDESIS_BRANCH_VERSION=1.11.x
 
 WORKDIR /syndesis
 RUN git clone https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
 RUN git checkout ${SYNDESIS_BRANCH_VERSION}
-
-WORKDIR /syndesis-qe
-RUN git clone --recurse-submodules https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe
-RUN git checkout ${SYNDESIS_QE_BRANCH_VERSION}
-
-WORKDIR /syndesis-qe/syndesis-extensions
-RUN git checkout master
 
 #================================================================================================================================
 ## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
@@ -50,9 +40,22 @@ FROM maven:3.6-jdk-8-slim as buildSyndesis
 RUN apt-get update -y
 RUN apt-get install -y git
 ## Build only dependencies that the test suite needs
-COPY --from=gitRepos /syndesis /syndesis
+COPY --from=gitRepoSyndesis /syndesis /syndesis
 WORKDIR /syndesis/app
 RUN mvn clean install -P flash --projects :common-model,:server-endpoint --also-make
+
+#================================================================================================================================
+FROM alpine/git as gitRepoSyndesisQe
+
+ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
+ARG SYNDESIS_QE_BRANCH_VERSION=1.11.x
+
+WORKDIR /syndesis-qe
+RUN git clone --recurse-submodules https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe
+RUN git checkout ${SYNDESIS_QE_BRANCH_VERSION}
+
+WORKDIR /syndesis-qe/syndesis-extensions
+RUN git checkout master
 
 #================================================================================================================================
 FROM maven:3.6-jdk-8-slim as buildSyndesisQE
@@ -63,7 +66,7 @@ ENV TAGS '@smoke'
 ## Copy builded Syndesis dependencies
 COPY --from=buildSyndesis /root/.m2/repository/io/syndesis /root/.m2/repository/io/syndesis
 
-COPY --from=gitRepos /syndesis-qe /syndesis-qe
+COPY --from=gitRepoSyndesisQe /syndesis-qe /syndesis-qe
 WORKDIR /syndesis-qe
 
 ## Build syndesis extensions which are used in the test suite

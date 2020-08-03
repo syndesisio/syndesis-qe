@@ -20,7 +20,7 @@ else
   fi
 fi
 
-mvn clean test -P rest \
+mvn clean verify -P rest \
 		-Dtags="${TAGS}" \
 		-Dsyndesis.config.openshift.url="${URL}" \
 		-Dsyndesis.config.admin.username="${ADMIN_USERNAME}" \
