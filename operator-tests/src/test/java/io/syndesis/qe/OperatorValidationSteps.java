@@ -559,4 +559,14 @@ public class OperatorValidationSteps {
             fail("Unable to create port forward: ", e);
         }
     }
+
+    @Then("check that the build config {string} contains variables:")
+    public void checkBcVariables(String bcName, DataTable variables) {
+        assertThat(OpenShiftUtils.getInstance().getBuildConfigEnvVars(bcName)).containsAllEntriesOf(variables.asMap(String.class, String.class));
+    }
+
+    @Then("check that the build log {string} contains {string}")
+    public void checkBuildLog(String buildName, String expected) {
+        assertThat(OpenShiftUtils.getInstance().getBuildLog(OpenShiftUtils.getInstance().getLatestBuild(buildName))).contains(expected);
+    }
 }
