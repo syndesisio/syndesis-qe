@@ -48,7 +48,7 @@ public class IssueHooks {
 
             for (SimpleIssue issue : issues) {
                 // assumeFalse will skip the test if the argument evaluates to true, i.e. when the issue is open
-                Assumptions.assumeThat(issue.getState()).isEqualTo(IssueState.OPEN);
+                Assumptions.assumeThat(issue.getState()).isNotEqualTo(IssueState.OPEN);
             }
         }
     }
