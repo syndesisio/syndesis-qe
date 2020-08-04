@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UITestsHooks {
 
-    @AfterStep
+    @AfterStep(order = 10001)
     public void afterScreenshot(Scenario scenario) {
         if (scenario.isFailed() && WebDriverRunner.hasWebDriverStarted()) {
             byte[] screenshotAsBytes = ((TakesScreenshot) WebDriverRunner.getWebDriver()).getScreenshotAs(OutputType.BYTES);

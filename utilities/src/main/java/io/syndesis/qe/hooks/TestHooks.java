@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.cucumber.java.After;
+import io.cucumber.java.AfterStep;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -26,10 +27,10 @@ public class TestHooks {
         Assumptions.assumeThat(TestConfiguration.syndesisVersion()).contains("redhat");
     }
 
-    @After
+    @AfterStep
     public void getLogs(Scenario scenario) {
         if (scenario.isFailed()) {
-            TestUtils.printPods();
+            TestUtils.printPods(scenario);
             log.warn("Scenario {} failed, saving integration logs to scenario", scenario.getName());
             // There can be multiple integration pods for one test
             List<Pod> integrationPods = OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
@@ -39,21 +40,22 @@ public class TestHooks {
             ).collect(Collectors.toList());
             for (Pod integrationPod : integrationPods) {
                 try {
-                    scenario.attach(String.format("%s\n\n%s", integrationPod.getMetadata().getName(),
-                        OpenShiftUtils.getInstance().getPodLog(integrationPod)).getBytes(), "text/plain", "ErrorMessage");
+                    scenario.attach(OpenShiftUtils.getInstance().getPodLog(integrationPod).getBytes(), "text/plain",
+                        String.format("Integration %s log", integrationPod.getMetadata().getName()));
                 } catch (KubernetesClientException ex) {
                     //when the build failed, the integration pod is not ready (`ImagePullBackOff`) In that case, the pod doesn't contain log. That
                     // causes that OpenShiftUtils has thrown KubernetesClientException
                 }
             }
-            log.warn("Adding all failed build to the log");
+            log.info("Adding all failed build to the log");
             List<Pod> failedBuilds = OpenShiftUtils.getInstance().pods().list().getItems().stream().filter(
                 p -> p.getMetadata().getName().contains("build")
                     && p.getStatus().getContainerStatuses().stream().anyMatch(c -> c.getState().getTerminated().getReason().equals("Error"))
             ).collect(Collectors.toList());
             for (Pod failedBuild : failedBuilds) {
-                log.warn("Build with name {} failed. Failed pod log:", failedBuild.getMetadata().getName());
-                log.error(OpenShiftUtils.getInstance().getPodLog(failedBuild));
+                scenario.attach(String.format("%s\n\n%s", failedBuild.getMetadata().getName(),
+                    OpenShiftUtils.getInstance().getPodLog(failedBuild)).getBytes(), "text/plain",
+                    "Log of failed build " + failedBuild.getMetadata().getName());
             }
         }
     }
