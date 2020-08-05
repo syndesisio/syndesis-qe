@@ -27,6 +27,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import io.cucumber.java.Scenario;
 import io.fabric8.kubernetes.api.model.Pod;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
@@ -257,11 +258,14 @@ public final class TestUtils {
      *
      * @return output of oc get pods
      */
-    public static String printPods() {
+    public static String printPods(Scenario scenario) {
         // Use oc client directly, as it has nice output
         final String output = OpenShiftUtils.binary().execute(
             "get", "pods", "-n", TestConfiguration.openShiftNamespace()
         );
+        if (scenario != null) {
+            scenario.attach(output.getBytes(), "text/plain", "Status of pods");
+        }
         log.error(output);
         return output;
     }
@@ -299,7 +303,7 @@ public final class TestUtils {
         final String separator = "-----------------------\n";
         final String fileName = "error-" + new Date().getTime() + ".log";
         final StringBuilder content = new StringBuilder();
-        content.append(TestUtils.printPods()).append("\n").append(separator);
+        content.append(TestUtils.printPods(null)).append("\n").append(separator);
         Optional<Pod> server = OpenShiftUtils.getPodByPartialName("syndesis-server");
         if (server.isPresent()) {
             content.append("Server logs:\n");
