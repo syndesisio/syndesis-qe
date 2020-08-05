@@ -119,6 +119,22 @@ Feature: Operator Deployment
       And check that the "syndesis-server-config" config map doesn't contain
         | application.yml | repo-02-redhat-ga: https://maven.repository.redhat.com/ga/ |
 
+  @ENTESB-14068
+  @operator-maven-additional-arguments
+  @operator-server
+  Scenario: Syndesis Operator - Components - Server - Additional maven arguments
+    When deploy Syndesis CR from file "spec/components/server/additionalMavenArguments.yml"
+    Then wait for Syndesis to become ready
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
+      And add log step
+      And create integration with name: "additional-arguments"
+      And wait for integration with name: "additional-arguments" to become active
+    Then check that the "syndesis-server-config" config map contains
+      | application.yml | additionalMavenArguments: "--strict-checksums -DtestProperty=testValue" |
+      And check that the build config "i-additional-arguments" contains variables:
+        | MAVEN_ARGS_APPEND | --strict-checksums -DtestProperty=testValue |
+      And check that the build log "i-additional-arguments" contains "-DtestProperty=testValue"
+
   @ENTESB-12418
   @operator-addons-dv
   @operator-addons
