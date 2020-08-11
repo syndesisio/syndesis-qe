@@ -24,7 +24,7 @@ Feature: Testing authentication options of API client
 
     And check visibility of page "Upload Swagger Specification"
     And upload swagger file
-      | url | http://petstore.swagger.io/v2/swagger.json |
+      | url | https://petstore.swagger.io/v2/swagger.json |
 
     And click on the "Next" button
     And click on the "Review/Edit" link
@@ -98,7 +98,7 @@ Feature: Testing authentication options of API client
 
     And check visibility of page "Upload Swagger Specification"
     And upload swagger file
-      | url | http://petstore.swagger.io/v2/swagger.json |
+      | url | https://petstore.swagger.io/v2/swagger.json |
 
     And click on the "Next" button
     And click on the "Review/Edit" link
