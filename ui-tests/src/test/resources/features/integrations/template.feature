@@ -211,7 +211,7 @@ Feature: Templates
 
   @gh-6149
   @template-brackets
-  Scenario Outline: Create a template surrounded by brackets
+  Scenario: Create a template surrounded by brackets
     #create integration
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
@@ -232,7 +232,7 @@ Feature: Templates
 
     #adding <template_type> template to format the mail
     # Then check visibility of page "Add to Integration"
-    And add integration step on position "1"
+    And add integration step on position "0"
     And select "Template" integration step
     And set the template type to "Mustache"
     And set the template to "({{firstName}}) -{{lastName}}-"
@@ -240,7 +240,7 @@ Feature: Templates
 
     #add data mapper step for template
     # Then check visibility of page "Add to Integration"
-    And add integration step on position "1"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
@@ -258,4 +258,4 @@ Feature: Templates
     And wait until integration "Template-brackets" gets into "Running" state
     And wait until integration Template-brackets processed at least 1 message
 
-    Then check that pod "i-Template-brackets" logs contain string "(Joe) -Jackson-"
+    Then check that pod "i-template-brackets" logs contain string "(Joe) -Jackson-"
