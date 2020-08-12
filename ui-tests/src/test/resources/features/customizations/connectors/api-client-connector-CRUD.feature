@@ -17,7 +17,7 @@ Feature: Customization - API Connector CRUD
     And click on the "Create API Connector" link
     And check visibility of page "Upload Swagger Specification"
     Then upload swagger file
-      | url | http://petstore.swagger.io/v2/swagger.json |
+      | url | https://petstore.swagger.io/v2/swagger.json |
 
     And click on the "Next" button
     Then check visibility of page "Review Actions"
