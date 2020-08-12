@@ -264,17 +264,21 @@ public class Syndesis implements Resource {
      */
     public void checkRoute() {
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get() != null, 120000L);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().routes().withName("syndesis").get()
-                .getStatus().getIngress() != null, 120000L);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getRoute("syndesis") != null
+                    && OpenShiftUtils.getInstance().getRoute("syndesis").getStatus().getIngress() != null
+                    && OpenShiftUtils.getInstance().getRoute("syndesis").getStatus().getIngress().size() > 0
+                    && OpenShiftUtils.getInstance().getRoute("syndesis").getStatus().getIngress().get(0).getConditions() != null
+                    && OpenShiftUtils.getInstance().getRoute("syndesis").getStatus().getIngress().get(0).getConditions().size() > 0,
+                120000L);
         } catch (TimeoutException | InterruptedException e) {
-            InfraFail.fail("Unable to find syndesis route in 120s");
+            log.debug("Syndesis route: " + OpenShiftUtils.getInstance().getRoute("syndesis"));
+            InfraFail.fail("There was a problem with provisioning of syndesis route");
         }
 
         if ("false".equalsIgnoreCase(
-            OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getStatus())) {
+            OpenShiftUtils.getInstance().getRoute("syndesis").getStatus().getIngress().get(0).getConditions().get(0).getStatus())) {
             InfraFail.fail("Syndesis route failed to provision because of: " +
-                OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getConditions().get(0).getMessage());
+                OpenShiftUtils.getInstance().getRoute("syndesis").getStatus().getIngress().get(0).getConditions().get(0).getMessage());
         }
     }
 
