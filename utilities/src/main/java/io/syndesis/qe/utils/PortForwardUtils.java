@@ -27,54 +27,33 @@ public final class PortForwardUtils {
     public static void createOrCheckPortForward() {
         if (localPortForward == null) {
             setupLocalPortForward();
-            waitForPortForward();
         } else {
             // Check if the port forward is working
-            HTTPResponse httpResponse = null;
-            try {
-                httpResponse = HTTPUtils.doGetRequest(CHECK_URL, null, false);
-            } catch (Exception ignore) {
-                // ignore
-            }
-            if (httpResponse == null || httpResponse.getCode() != 200) {
+            if (!isWorking()) {
                 log.error("Port-forward was created, but seems it isn't working, recreating it");
                 setupLocalPortForward();
-                waitForPortForward();
             }
         }
-    }
-
-    private static void waitForPortForward() {
-        if (localPortForward == null) {
-            return;
-        }
-        TestUtils.waitFor(() -> {
-            HTTPResponse response = null;
-            try {
-                response = HTTPUtils.doGetRequest(CHECK_URL, null, false);
-            } catch (Exception ex) {
-                log.debug("Exception while waiting for port forward: " + ex);
-            }
-            log.debug("Wait for port-forward response code: " + (response == null ? -1 : response.getCode()));
-            return response != null && response.getCode() == 200;
-        }, 5, 90, "Port-forward not working after 90 seconds");
     }
 
     private static void setupLocalPortForward() {
-        if (localPortForward != null) {
-            try {
-                localPortForward.close();
-                localPortForward = null;
-            } catch (IOException e) {
-                log.error("Unable to terminate local port forward: ", e);
+        TestUtils.withRetry(() -> {
+            if (localPortForward != null) {
+                try {
+                    localPortForward.close();
+                    localPortForward = null;
+                } catch (IOException e) {
+                    log.error("Unable to terminate local port forward: ", e);
+                }
             }
-        }
-        if (!OpenShiftUtils.podExists(p -> p.getMetadata().getName().contains(Component.SERVER.getName()))) {
-            return;
-        }
-        log.debug("creating local port forward for pod syndesis-server");
-        localPortForward = OpenShiftUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
-        TestUtils.sleepIgnoreInterrupt(15000L);
+            if (!OpenShiftUtils.podExists(p -> p.getMetadata().getName().contains(Component.SERVER.getName()))) {
+                return true;
+            }
+            log.debug("creating local port forward for pod syndesis-server");
+            localPortForward = OpenShiftUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
+            TestUtils.sleepIgnoreInterrupt(30000L);
+            return isWorking();
+        }, 5, 0, "Unable to create working port-forward after 5 tries");
     }
 
     /**
@@ -83,5 +62,16 @@ public final class PortForwardUtils {
     public static void reset() {
         OpenShiftUtils.terminateLocalPortForward(localPortForward);
         localPortForward = null;
+    }
+
+    private static boolean isWorking() {
+        HTTPResponse response = null;
+        try {
+            response = HTTPUtils.doGetRequest(CHECK_URL, null, false);
+        } catch (Exception ex) {
+            log.debug("Exception while waiting for port forward: " + ex);
+        }
+        log.debug("Wait for port-forward response code: " + (response == null ? -1 : response.getCode()));
+        return response != null && response.getCode() == 200;
     }
 }
