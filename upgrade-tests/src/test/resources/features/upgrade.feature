@@ -12,6 +12,7 @@
 @syndesis-upgrade
 Feature: Syndesis Upgrade Using Operator
   @syndesis-upgrade-basic
+  @smoke
   Scenario: Syndesis Upgrade - basic
     Given prepare upgrade
       And clean default namespace
