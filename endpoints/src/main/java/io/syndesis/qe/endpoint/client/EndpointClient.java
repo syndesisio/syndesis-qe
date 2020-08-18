@@ -8,7 +8,8 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient43Engine;
+import org.jboss.resteasy.client.jaxrs.internal.LocalResteasyProviderFactory;
 import org.jboss.resteasy.plugins.providers.InputStreamProvider;
 import org.jboss.resteasy.plugins.providers.StringTextStar;
 import org.jboss.resteasy.plugins.providers.jackson.ResteasyJackson2Provider;
@@ -90,16 +91,19 @@ public class EndpointClient {
     }
 
     public static Client getClient(ResteasyJackson2Provider jackson2Provider) {
-        return new ResteasyClientBuilder()
-            .providerFactory(
-                new ResteasyProviderFactory()) // this is needed otherwise default jackson2provider is used, which causes problems with JDK8 Optional
-            .register(jackson2Provider)
+        final ApacheHttpClient43Engine engine = new ApacheHttpClient43Engine(createAllTrustingClient());
+
+        final ResteasyProviderFactory providerFactory = new LocalResteasyProviderFactory();
+        providerFactory.register(jackson2Provider)
             .register(new InputStreamProvider()) // needed for GET application/octet-stream in PublicAPI to export zip
             .register(new MultipartFormDataWriter()) // needed to POST mutipart form data (necessary for API provider + PublicAPI)
             .register(new StringTextStar()) // needed to serialize text/plain (again for API provider)
-            .register(new ErrorLogger())
-            .httpEngine(new ApacheHttpClient4Engine(createAllTrustingClient()))
-            .build();
+            .register(new ErrorLogger());
+
+        ResteasyClientBuilder clientBuilder = (ResteasyClientBuilder) ResteasyClientBuilder.newBuilder();
+        clientBuilder.providerFactory(providerFactory);
+        clientBuilder.httpEngine(engine);
+        return clientBuilder.build();
     }
 
     public static Client getClient() {
