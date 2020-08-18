@@ -432,6 +432,13 @@ public class TestConfiguration {
         // Set jackson properties for productized build
         System.setProperty("jackson.deserialization.whitelist.packages", "io.syndesis.common.model,io.atlasmap");
 
+        /*
+         * Resteasy 4.4 uses 2.10 jackson that has this security feature due to CVEs and the only option is to use system properties for that
+         * Needed for atlasmap to be able to deserialize inspection response
+         */
+        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", "*");
+        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", "*");
+
         if (properties.getProperty(SYNDESIS_RUNTIME) == null) {
             defaultProps.setProperty(SYNDESIS_RUNTIME, "springboot");
         }
