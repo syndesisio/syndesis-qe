@@ -1,4 +1,4 @@
-# @sustainer: sveres@redhat.com
+# @sustainer: tplevko@redhat.com
 
 # Kudu server docker image:   https://hub.docker.com/r/lgarciaac/kudu-docker
 # Kudu server github:         https://github.com/lgarciaaco/kudu-docker
