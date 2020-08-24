@@ -1,4 +1,4 @@
-# @sustainer: sveres@redhat.com
+# @sustainer: mkralik@redhat.com
 
 @ui
 @fhir
