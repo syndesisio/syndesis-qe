@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Kafka implements Resource {
+    private static final String KAFKA_CRDS = Paths.get("../utilities/src/main/resources/kafka/kafka-crds.yaml").toAbsolutePath().toString();
     private static final String KAFKA_RESOURCES = Paths.get("../utilities/src/main/resources/kafka/strimzi-deployment.yaml")
         .toAbsolutePath().toString();
     private static final String KAFKA_CR = Paths.get("../utilities/src/main/resources/kafka/kafka-ephemeral.yaml").toAbsolutePath().toString();
@@ -27,11 +28,10 @@ public class Kafka implements Resource {
 
     @Override
     public void deploy() {
-
         // Replace namespace in the resources
         TestUtils.replaceInFile(Paths.get(KAFKA_RESOURCES).toFile(), "\\$NAMESPACE\\$", TestConfiguration.openShiftNamespace());
 
-        for (String resource : Arrays.asList(KAFKA_RESOURCES, KAFKA_CR)) {
+        for (String resource : Arrays.asList(KAFKA_CRDS, KAFKA_RESOURCES, KAFKA_CR)) {
             log.info("Creating " + resource);
             OpenShiftUtils.create(resource);
         }
@@ -43,7 +43,6 @@ public class Kafka implements Resource {
 
     @Override
     public void undeploy() {
-
         deleteClusterRole();
 
         for (String resource : Arrays.asList(KAFKA_RESOURCES, KAFKA_CR)) {
@@ -135,8 +134,12 @@ public class Kafka implements Resource {
 
     private static void deleteClusterRole() {
         final ClusterRoleBinding kafkaCrb = OpenShiftUtils.getInstance().rbac().clusterRoleBindings().withName(OCP_KAFKA_VIEW_ROLE).get();
-        OpenShiftUtils.getInstance().rbac().clusterRoleBindings().delete(kafkaCrb);
+        if (kafkaCrb != null) {
+            OpenShiftUtils.getInstance().rbac().clusterRoleBindings().delete(kafkaCrb);
+        }
         final ClusterRole kafkaCr = OpenShiftUtils.getInstance().rbac().clusterRoles().withName(OCP_KAFKA_VIEW_ROLE).get();
-        OpenShiftUtils.getInstance().rbac().clusterRoles().delete(kafkaCr);
+        if (kafkaCr != null) {
+            OpenShiftUtils.getInstance().rbac().clusterRoles().delete(kafkaCr);
+        }
     }
 }
