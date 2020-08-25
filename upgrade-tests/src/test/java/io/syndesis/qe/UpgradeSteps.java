@@ -10,6 +10,7 @@ import io.syndesis.qe.resource.impl.PreviousSyndesis;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.SampleDbConnectionManager;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
@@ -179,6 +180,11 @@ public class UpgradeSteps {
         TestUtils.sleepIgnoreInterrupt(10000L);
         String logsAfter = OpenShiftUtils.getIntegrationLogs(name);
         assertThat(logsAfter.substring(logsAfter.indexOf(lastLine))).contains("[[options]]");
+    }
+
+    @When("close DB connections")
+    public void closeDbConnections() {
+        SampleDbConnectionManager.closeConnections();
     }
 
     private String getPreviousVersion(String current, List<String> tags) {

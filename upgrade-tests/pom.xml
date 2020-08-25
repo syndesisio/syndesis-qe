@@ -20,6 +20,10 @@
 		</dependency>
 		<dependency>
 			<groupId>io.syndesis.qe</groupId>
+			<artifactId>ui-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.syndesis.qe</groupId>
 			<artifactId>validation</artifactId>
 		</dependency>
 		<dependency>
