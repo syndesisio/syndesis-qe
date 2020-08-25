@@ -351,6 +351,7 @@
 				<module>utilities</module>
 				<module>validation</module>
 				<module>rest-common</module>
+				<module>ui-common</module>
 				<module>upgrade-tests</module>
 			</modules>
 		</profile>
