@@ -535,10 +535,14 @@ public class OperatorValidationSteps {
         for (Pod p : pods) {
             if (p.getStatus().getPhase().contains("Running")) {
                 Map<String, String> labels = p.getMetadata().getLabels();
-                assertThat(labels).containsKey("com.redhat.product-name");
-                assertThat(labels).containsKey("com.redhat.product-version");
-                assertThat(labels).containsKey("com.redhat.component-name");
-                assertThat(labels).containsKey("com.redhat.component-version");
+                assertThat(labels).containsKey("com.company");
+                assertThat(labels).containsKey("rht.prod_name");
+                assertThat(labels).containsKey("rht.prod_ver");
+                assertThat(labels).containsKey("rht.comp");
+                assertThat(labels).containsKey("rht.comp_ver");
+                assertThat(labels).containsKey("rht.subcomp");
+                assertThat(labels).containsKey("rht.subcomp_t");
+
             }
         }
     }
