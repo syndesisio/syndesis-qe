@@ -12,13 +12,13 @@ if [[ -z "${CREDENTIALS_URL}" ]]; then
 else
   if [[ ${CREDENTIALS_URL} == *"credentials.json" ]]; then
     echo "URL for credentials.json exist. That credentials will be used."
-    wget -N "${CREDENTIALS_URL}"
+    wget -N "${CREDENTIALS_URL}" --no-check-certificate
   else
     echo "The URL set in CREDENTIALS_URL doesn't contain credentials.json. The default credentials.json will be used. Tests that use 3rd party services will fail."
   fi
 fi
 
-mvn clean test -P rest \
+mvn clean verify -P rest \
 		-Dtags="${TAGS}" \
 		-Dsyndesis.config.openshift.namespace="${NAMESPACE}" \
 		-Dsyndesis.config.openshift.namespace.lock=false \
