@@ -2,6 +2,7 @@
 
 @docs-verification
 @ENTESB-13763
+@prod
 
 Feature: Documentation verification
 
