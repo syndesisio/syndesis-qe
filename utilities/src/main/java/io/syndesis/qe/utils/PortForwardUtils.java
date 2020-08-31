@@ -56,7 +56,7 @@ public final class PortForwardUtils {
             localPortForward = OpenShiftUtils.createLocalPortForward(Component.SERVER.getName(), 8080, 8080);
             TestUtils.sleepIgnoreInterrupt(30000L);
             return isWorking();
-        }, 5, 0, "Unable to create working port-forward after 5 tries");
+        }, 5, 20, "Unable to create working port-forward after 5 tries");
     }
 
     /**

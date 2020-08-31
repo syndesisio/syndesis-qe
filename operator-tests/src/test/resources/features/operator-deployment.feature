@@ -393,3 +393,63 @@ Feature: Operator Deployment
       | spec/backup.yml             | manual   | standard | minimal.yml                            |
       | spec/backup-external-db.yml | operator | external |spec/components/database/externalDb.yml |
       | spec/backup-external-db.yml | manual   | external |spec/components/database/externalDb.yml |
+
+  @operator-affinity
+  @operator-affinity-infra
+  @ENTESB-13803
+  Scenario: Syndesis operator - Affinity - Infra
+    When deploy Syndesis CR from file "spec/affinityInfra.yml"
+    Then wait for Syndesis to become ready
+    When sleep for jenkins delay or 60 seconds
+    Then wait for Syndesis to become ready
+      And check affinity for infra pods
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
+      And add log step
+      And create integration with name: "affinity-test"
+    Then wait for integration with name: "affinity-test" to become active
+      And check affinity not set for integration pods
+
+  @operator-affinity
+  @operator-affinity-integration
+  @ENTESB-13803
+  Scenario: Syndesis operator - Affinity - Integration
+    When deploy Syndesis CR from file "spec/affinityIntegration.yml"
+    Then wait for Syndesis to become ready
+    When sleep for jenkins delay or 60 seconds
+    Then wait for Syndesis to become ready
+      And check affinity not set for infra pods
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
+      And add log step
+      And create integration with name: "affinity-test"
+    Then wait for integration with name: "affinity-test" to become active
+      And check affinity for integration pods
+
+  @operator-tolerations
+  @operator-tolerations-infra
+  @ENTESB-13803
+  Scenario: Syndesis operator - Tolerations - Infra
+    When deploy Syndesis CR from file "spec/tolerationsInfra.yml"
+      Then wait for Syndesis to become ready
+    When sleep for jenkins delay or 60 seconds
+    Then wait for Syndesis to become ready
+      And check tolerations for infra pods
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
+      And add log step
+      And create integration with name: "tolerations-test"
+    Then wait for integration with name: "tolerations-test" to become active
+      And check tolerations not set for integration pods
+
+  @operator-tolerations
+  @operator-tolerations-integration
+  @ENTESB-13803
+  Scenario: Syndesis operator - Tolerations - Integration
+    When deploy Syndesis CR from file "spec/tolerationsIntegration.yml"
+    Then wait for Syndesis to become ready
+    When sleep for jenkins delay or 60 seconds
+    Then wait for Syndesis to become ready
+      And check tolerations not set for infra pods
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
+      And add log step
+      And create integration with name: "tolerations-test"
+    Then wait for integration with name: "tolerations-test" to become active
+      And check tolerations for integration pods
