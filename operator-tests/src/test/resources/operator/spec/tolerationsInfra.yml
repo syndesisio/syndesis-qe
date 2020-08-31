@@ -1,0 +1,18 @@
+apiVersion: syndesis.io/v1beta2
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  infraScheduling:
+    tolerations:
+      - key: node.kubernetes.io/network-unavailable
+        value: "False"
+        operator: Equal
+        effect: PreferNoSchedule
+  components:
+    server:
+      features:
+        maven:
+          append: true
+          repositories:
+            nexus: "REPLACE_REPO"
