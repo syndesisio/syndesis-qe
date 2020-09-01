@@ -14,8 +14,8 @@ import com.codeborne.selenide.SelenideElement;
 
 import java.util.List;
 
-import io.cucumber.java.en.Then;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.Then;
 
 public class DetailSteps {
 
@@ -31,7 +31,7 @@ public class DetailSteps {
             String selectorValue = dataRow.get(0);
             String expectedText = dataRow.get(1);
             SelenideElement element = this.getElement(selector, selectorValue);
-            assertThat(element.shouldBe(Condition.visible).getAttribute("value")).containsIgnoringCase(expectedText);
+            assertThat(element.shouldBe(Condition.visible).getText()).containsIgnoringCase(expectedText);
         }
     }
 
