@@ -163,9 +163,9 @@ public class Syndesis implements Resource {
     public void jaegerWorkarounds() {
         new Thread(() -> {
             try {
-                OpenShiftWaitUtils.waitUntilPodAppears("jaeger-operator");
+                OpenShiftWaitUtils.waitUntilAnyPodAppears("jaeger-operator", "syndesis-jaeger");
                 ensureImagePullForJaegerOperator();
-                OpenShiftWaitUtils.waitUntilPodAppears("syndesis-jaeger");
+                OpenShiftWaitUtils.waitUntilAnyPodAppears("syndesis-jaeger");
                 ensureImagePullForSyndesisJaeger();
                 Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
                 OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
