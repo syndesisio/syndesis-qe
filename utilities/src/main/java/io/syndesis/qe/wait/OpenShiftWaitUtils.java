@@ -260,14 +260,12 @@ public class OpenShiftWaitUtils {
     }
 
     /**
-     * Method waits until pod with @param podPartialName appears
+     * Method waits until at least one pod with @param podsPartialName appears
      * Build and deploy pods are ignored
-     *
-     * @param podPartialName pod partial name
      */
-    public static void waitUntilPodAppears(String podPartialName) {
+    public static void waitUntilAnyPodAppears(String... podsPartialName) {
         try {
-            waitFor(() -> isPodPresent(podPartialName), 5 * 60 * 1000);
+            waitFor(() -> isAnyPodPresent(podsPartialName), 5 * 60 * 1000);
         } catch (TimeoutException | InterruptedException e) {
             InfraFail.fail("Error thrown while checking if pod exists", e);
         }
@@ -292,6 +290,15 @@ public class OpenShiftWaitUtils {
 
     private static boolean isPodPresent(String podPartialName) {
         return OpenShiftUtils.getPodByPartialName(podPartialName).isPresent();
+    }
+
+    private static boolean isAnyPodPresent(String... podsPartialName) {
+        for (String podPartialName : podsPartialName) {
+            if (OpenShiftUtils.getPodByPartialName(podPartialName).isPresent()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

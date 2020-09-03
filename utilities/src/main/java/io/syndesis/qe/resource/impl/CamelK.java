@@ -166,7 +166,7 @@ public class CamelK implements Resource {
             InfraFail.fail("Unable to invoke kamel binary", e);
         }
 
-        OpenShiftWaitUtils.waitUntilPodAppears("camel-k-operator");
+        OpenShiftWaitUtils.waitUntilAnyPodAppears("camel-k-operator");
         ResourceFactory.get(Syndesis.class).ensureImagePull("camel-k-operator", "camel-k-operator");
     }
 

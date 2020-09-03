@@ -11,7 +11,7 @@ Feature: OData Connector
     And create OData credentials
     And log into the Syndesis
     And created connections
-      | OData | odata | OData | sample OData service |
+      | OData V4 | odata | OData | sample OData service |
     And navigate to the "Home" page
     And reset OData service
 
@@ -291,5 +291,5 @@ Feature: OData Connector
     When create OData HTTPS credentials
     And log into the Syndesis
     And created connections
-      | OData | odataHttps | ODataHttps | sample OData service |
+      | OData V4 | odataHttps | ODataHttps | sample OData service |
     Then check visibility of the "ODataHttps" connection

@@ -69,16 +69,16 @@ Feature: Customization - API Connector CRUD
 
     When click on the "Edit" button
     And fill in values by element data-testid
-      | name        | Swagger Petstore-1           |
-      | description | Description-1                |
-      | host        | http://petstore.swagger.io-1 |
-      | basepath    | /v2-1                        |
+      | api-connector-name-field        | Swagger Petstore-1           |
+      | api-connector-description-field | Description-1                |
+      | api-connector-host-field        | http://petstore.swagger.io-1 |
+      | api-connector-baseurl-field     | /v2-1                        |
     And click on the "Save" button
     Then validate connector detail values by "data-testid"
-      | name        | Swagger Petstore-1           |
-      | description | Description-1                |
-      | host        | http://petstore.swagger.io-1 |
-      | basepath    | /v2-1                        |
+      | api-connector-detail-config-name        | Swagger Petstore-1           |
+      | api-connector-detail-config-description | Description-1                |
+      | api-connector-detail-config-host        | http://petstore.swagger.io-1 |
+      | api-connector-detail-config-path        | /v2-1                        |
 
   @ENTESB-13605
   @create-delete-api-connector
