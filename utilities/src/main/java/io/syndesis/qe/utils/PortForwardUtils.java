@@ -46,7 +46,10 @@ public final class PortForwardUtils {
                     log.error("Unable to terminate local port forward: ", e);
                 }
             }
-            if (!OpenShiftUtils.podExists(p -> p.getMetadata().getName().contains(Component.SERVER.getName()))) {
+            if (!OpenShiftUtils.podExists(
+                p -> p.getMetadata().getName().contains(Component.SERVER.getName()),
+                p -> !p.getMetadata().getName().contains("deploy"))
+            ) {
                 return true;
             }
             log.debug("creating local port forward for pod syndesis-server");
