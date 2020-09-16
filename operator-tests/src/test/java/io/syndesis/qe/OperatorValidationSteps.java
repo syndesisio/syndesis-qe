@@ -249,53 +249,32 @@ public class OperatorValidationSteps {
         softAssertions.assertAll();
     }
 
-    @Then("check correct volume capacity")
-    public void checkVolumeCapacity() {
-        final String file = "src/test/resources/operator/spec/components/resources.volumeCapacity.yml";
-        Yaml yaml = new Yaml();
-        Object data = null;
-        try (FileInputStream fis = FileUtils.openInputStream(new File(file))) {
-            data = yaml.load(fis);
-        } catch (IOException e) {
-            fail("Unable to load file " + file, e);
-        }
-
-        JSONObject components = new JSONObject((Map) data).getJSONObject("spec").getJSONObject("components");
-        components.keySet().forEach(component -> {
-            final String pvcName = "syndesis-" + ("database".equals(component) ? "db" : component);
-            final String expectedCapacity = components.getJSONObject(component).getJSONObject("resources").getString("volumeCapacity");
-            final Quantity currentCapacity = OpenShiftUtils.getInstance().persistentVolumeClaims().withName(pvcName).get()
-                .getSpec().getResources().getRequests().get("storage");
-            assertThat(currentCapacity.getAmount() + currentCapacity.getFormat()).as(component).isEqualTo(expectedCapacity);
-        });
-    }
-
-    @Then("check that database persistent volume capacity is greater or equals to {string}")
-    public void checkDbPvCapacity(String expected) {
+    @Then("check that {string} persistent volume capacity is greater or equals to {string}")
+    public void checkDbPvCapacity(String pvc, String expected) {
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim(pvc) != null);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim(pvc)
                 .getStatus().getPhase().equals("Bound"));
         } catch (TimeoutException | InterruptedException e) {
-            fail("Unable to get syndesis-db pvc: ", e);
+            fail("Unable to get " + pvc + " pvc: ", e);
         }
 
-        final Quantity capacity = OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db").getStatus().getCapacity().get("storage");
+        final Quantity capacity = OpenShiftUtils.getInstance().getPersistentVolumeClaim(pvc).getStatus().getCapacity().get("storage");
         assertThat(capacity.getFormat()).isEqualTo("Gi");
         assertThat(Integer.parseInt(capacity.getAmount()))
             .isGreaterThanOrEqualTo(Integer.parseInt(expected.replaceAll("[a-zA-Z]", "")));
     }
 
-    @Then("check that test persistent volume is claimed by syndesis-db")
-    public void checkDbPv() {
+    @Then("check that test persistent volume is claimed by {string}")
+    public void checkDbPv(String pvc) {
         try {
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db") != null);
-            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db")
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim(pvc) != null);
+            OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getPersistentVolumeClaim(pvc)
                 .getStatus().getPhase().equals("Bound"));
         } catch (TimeoutException | InterruptedException e) {
             fail("Unable to get syndesis-db pvc: ", e);
         }
-        assertThat(OpenShiftUtils.getInstance().getPersistentVolumeClaim("syndesis-db").getSpec().getVolumeName()).isEqualTo(TEST_PV_NAME);
+        assertThat(OpenShiftUtils.getInstance().getPersistentVolumeClaim(pvc).getSpec().getVolumeName()).isEqualTo(TEST_PV_NAME);
     }
 
     @Given("create test persistent volumes with {string} storage class name")

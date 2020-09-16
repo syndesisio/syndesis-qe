@@ -79,25 +79,6 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
     Then check that deployment config "todo" does exist
 
-  @ENTESB-12177
-  @ENTESB-12421
-  @operator-addons-camelk
-  @operator-addons
-  Scenario: Syndesis Operator - Addons - Camel K
-    When deploy Camel-K
-    Then wait for Camel-K to become ready
-    When deploy Syndesis CR from file "spec/addons/camelk.yml"
-    Then wait for Syndesis to become ready
-      And check that the "syndesis-server-config" config map contains
-        | application.yml | integration: camel-k |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
-      And add log step
-      And create integration with name: "sql-to-log"
-    # Camel-K operator initially needs to download all dependencies and it takes time with combination with our nexus
-    # Especially when the artifacts are not cached on nexus yet
-    Then wait max 30 minutes for integration with name: "sql-to-log" to become active
-      And check that pod "i-sql-to-log" logs contain string "Jackson"
-
   @operator-maven-repositories
   @operator-server
   Scenario: Syndesis Operator - Components - Server - Maven Repositories - Append
@@ -134,18 +115,6 @@ Feature: Operator Deployment
       And check that the build config "i-additional-arguments" contains variables:
         | MAVEN_ARGS_APPEND | --strict-checksums -DtestProperty=testValue |
       And check that the build log "i-additional-arguments" contains "-DtestProperty=testValue"
-
-  @ENTESB-12418
-  @operator-addons-dv
-  @operator-addons
-  Scenario: Syndesis Operator - Addons - Data Virtualization
-    When deploy Syndesis CR from file "spec/addons/dv.yml"
-      And deploy DV
-    Then wait for Syndesis to become ready
-      And check that the "syndesis-ui-config" config map contains
-        | config.json | "enabled": 1 |
-      And check that deployment config "syndesis-dv" does exist
-      And wait for DV to become ready
 
   @operator-addons-ops
   @operator-addons
@@ -217,66 +186,104 @@ Feature: Operator Deployment
   @ENTESB-12418
   @ENTESB-12618
   @operator-components-limits-memory
-  @operator-addons-dv
   @operator-db
   @operator-meta
   @operator-server
   @operator-prometheus
   Scenario: Syndesis Operator - Components - Memory limits
     When deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
-      And deploy DV
     Then wait for Syndesis to become ready
       And check correct memory limits
 
+  @ENTESB-13622
+  @ENTESB-13623
+  @operator-components-volumes
   @operator-components-volume-capacity
+  @operator-db
   @operator-meta
   @operator-prometheus
-  Scenario: Syndesis Operator - Components - Volume Capacity
-    When deploy Syndesis CR from file "spec/components/resources.volumeCapacity.yml"
-    Then wait for Syndesis to become ready
-      And check correct volume capacity
-
-  @operator-components-database-volumes
-  @operator-components-database-volume-capacity
-  @operator-db
-  Scenario: Syndesis Operator - Components - Database - Volume Capacity
+  Scenario Outline: Syndesis Operator - Components - <component> - Volume Capacity
     When create test persistent volumes with "" storage class name
-      And deploy Syndesis CR from file "spec/components/database/volumeCapacity.yml"
-    Then check that database persistent volume capacity is greater or equals to "3Gi"
+      And deploy Syndesis CR from file "<file>"
+    Then check that "<pvcName>" persistent volume capacity is greater or equals to "3Gi"
 
-  @operator-components-database-volumes
-  @operator-components-database-volume-name
+    Examples:
+      | component  | file                                          | pvcName             |
+      | Database   | spec/components/database/volumeCapacity.yml   | syndesis-db         |
+      | Meta       | spec/components/meta/volumeCapacity.yml       | syndesis-meta       |
+      | Prometheus | spec/components/prometheus/volumeCapacity.yml | syndesis-prometheus |
+
+  @ENTESB-13622
+  @ENTESB-13623
+  @operator-components-volumes
+  @operator-components-volume-name
   @operator-db
-  Scenario: Syndesis Operator - Components - Database - Volume Name
+  @operator-meta
+  @operator-prometheus
+  Scenario Outline: Syndesis Operator - Components - <component> - Volume Name
     When create test persistent volumes with "" storage class name
-      And deploy Syndesis CR from file "spec/components/database/volumeName.yml"
-    Then check that test persistent volume is claimed by syndesis-db
+      And deploy Syndesis CR from file "<file>"
+    Then check that test persistent volume is claimed by "<pvcName>"
+
+    Examples:
+      | component  | file                                      | pvcName             |
+      | Database   | spec/components/database/volumeName.yml   | syndesis-db         |
+      | Meta       | spec/components/meta/volumeName.yml       | syndesis-meta       |
+      | Prometheus | spec/components/prometheus/volumeName.yml | syndesis-prometheus |
 
   @ENTESB-12533
-  @operator-components-database-volumes
-  @operator-components-database-volume-access-modes
+  @ENTESB-13622
+  @ENTESB-13623
+  @operator-components-volumes
+  @operator-components-volume-access-modes
   @operator-db
-  Scenario: Syndesis Operator - Components - Database - Volume Access Modes
+  @operator-meta
+  @operator-prometheus
+  Scenario Outline: Syndesis Operator - Components - <component> - Volume Access Modes
     When create test persistent volumes with "" storage class name
-      And deploy Syndesis CR from file "spec/components/database/volumeAccessModes.yml"
-    Then check that test persistent volume is claimed by syndesis-db
+      And deploy Syndesis CR from file "<file>"
+    Then check that test persistent volume is claimed by "<pvcName>"
+
+    Examples:
+      | component  | file                                             | pvcName             |
+      | Database   | spec/components/database/volumeAccessModes.yml   | syndesis-db         |
+      | Meta       | spec/components/meta/volumeAccessModes.yml       | syndesis-meta       |
+      | Prometheus | spec/components/prometheus/volumeAccessModes.yml | syndesis-prometheus |
 
   @ENTESB-12533
-  @operator-components-database-volumes
-  @operator-components-database-volume-labels
+  @ENTESB-13622
+  @ENTESB-13623
+  @operator-components-volumes
+  @operator-components-volume-labels
   @operator-db
-  Scenario: Syndesis Operator - Components - Database - Volume Labels
+  @operator-meta
+  @operator-prometheus
+  Scenario Outline: Syndesis Operator - Components - <component> - Volume Labels
     When create test persistent volumes with "" storage class name
-      And deploy Syndesis CR from file "spec/components/database/volumeLabels.yml"
-    Then check that test persistent volume is claimed by syndesis-db
+      And deploy Syndesis CR from file "<file>"
+    Then check that test persistent volume is claimed by "<pvcName>"
 
-  @operator-components-database-volume-storage-class
-  @operator-components-database-volumes
+    Examples:
+      | component  | file                                        | pvcName             |
+      | Database   | spec/components/database/volumeLabels.yml   | syndesis-db         |
+      | Meta       | spec/components/meta/volumeLabels.yml       | syndesis-meta       |
+      | Prometheus | spec/components/prometheus/volumeLabels.yml | syndesis-prometheus |
+
+  @ENTESB-13622
+  @ENTESB-13623
+  @operator-components-volume-storage-class
+  @operator-components-volumes
   @operator-db
-  Scenario: Syndesis Operator - Components - Database - Volume Storage Class
+  Scenario Outline: Syndesis Operator - Components - <component> - Volume Storage Class
     When create test persistent volumes with "filesystem" storage class name
-      And deploy Syndesis CR from file "spec/components/database/volumeStorageClass.yml"
-    Then check that test persistent volume is claimed by syndesis-db
+      And deploy Syndesis CR from file "<file>"
+    Then check that test persistent volume is claimed by "<pvcName>"
+
+    Examples:
+      | component  | file                                              | pvcName             |
+      | Database   | spec/components/database/volumeStorageClass.yml   | syndesis-db         |
+      | Meta       | spec/components/meta/volumeStorageClass.yml       | syndesis-meta       |
+      | Prometheus | spec/components/prometheus/volumeStorageClass.yml | syndesis-prometheus |
 
   @ENTESB-12424
   @operator-components-external-db
@@ -305,11 +312,6 @@ Feature: Operator Deployment
     When deploy Syndesis CR from file "spec/components/oauth/sarNamespace.yml"
     Then wait for Syndesis to become ready
       And check that SAR check is enabled for namespace "testNamespace"
-
-  @operator-components-prometheus-rules
-  @operator-prometheus
-  Scenario: Syndesis Operator - Components - Prometheus - Rules
-    When todo
 
   @ENTESB-12280
   @operator-components-3scale
