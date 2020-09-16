@@ -4,9 +4,13 @@ metadata:
   name: app
 spec:
   components:
+    database:
+      resources:
+        volumeCapacity: 5Gi
     meta:
       resources:
-        volumeCapacity: "215Mi"
+        volumeCapacity: 5Gi
     prometheus:
       resources:
-        volumeCapacity: "999Mi"
+        volumeLabels:
+          operator: test

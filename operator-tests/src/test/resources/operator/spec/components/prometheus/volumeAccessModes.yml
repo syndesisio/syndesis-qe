@@ -6,11 +6,12 @@ spec:
   components:
     database:
       resources:
-        volumeLabels:
-          operator: test
+        volumeCapacity: 5Gi
     meta:
       resources:
         volumeCapacity: 5Gi
     prometheus:
       resources:
-        volumeCapacity: 5Gi
+        volumeAccessMode: ReadWriteMany
+        volumeLabels:
+          operator: test

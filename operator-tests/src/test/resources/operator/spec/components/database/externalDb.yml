@@ -3,9 +3,6 @@ kind: Syndesis
 metadata:
   name: app
 spec:
-  addons:
-    dv:
-      enabled: true
   components:
     database:
       externalDbURL: postgresql://custom-postgres:5432
