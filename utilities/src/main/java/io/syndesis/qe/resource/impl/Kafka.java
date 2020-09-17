@@ -13,8 +13,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
-import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -23,8 +21,6 @@ public class Kafka implements Resource {
     private static final String KAFKA_RESOURCES = Paths.get("../utilities/src/main/resources/kafka/strimzi-deployment.yaml")
         .toAbsolutePath().toString();
     private static final String KAFKA_CR = Paths.get("../utilities/src/main/resources/kafka/kafka-ephemeral.yaml").toAbsolutePath().toString();
-    private static final String OCP_KAFKA_VIEW_ROLE = "kafkas.kafka.strimzi.io-view";
-    private static final String OCP_SERVICE_ACCOUNT = "syndesis-server";
 
     @Override
     public void deploy() {
@@ -35,16 +31,11 @@ public class Kafka implements Resource {
             log.info("Creating " + resource);
             OpenShiftUtils.create(resource);
         }
-
-        addClusterRole();
-
         addAccounts();
     }
 
     @Override
     public void undeploy() {
-        deleteClusterRole();
-
         for (String resource : Arrays.asList(KAFKA_RESOURCES, KAFKA_CR)) {
             log.info("Deleting " + resource);
             OpenShiftUtils.delete(resource);
@@ -53,7 +44,9 @@ public class Kafka implements Resource {
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-kafka-0"));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-kafka-0"))
+            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-zookeeper-0"))
+            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("strimzi.io/name", "my-cluster-entity-operator"));
     }
 
     @Override
@@ -98,48 +91,5 @@ public class Kafka implements Resource {
         brokersGeneratedName.append(".svc:");
         brokersGeneratedName.append(port.toString());
         return brokersGeneratedName.toString();
-    }
-
-    private static void addClusterRole() {
-        OpenShiftUtils.getInstance().rbac().clusterRoles().createOrReplaceWithNew()
-            .withNewMetadata()
-            .withName(OCP_KAFKA_VIEW_ROLE)
-            .endMetadata()
-            .addNewRule()
-            .addToApiGroups("apiextensions.k8s.io")
-            .addToResources("customresourcedefinitions")
-            .addToVerbs("get", "list")
-            .endRule()
-            .addNewRule()
-            .addToApiGroups("kafka.strimzi.io")
-            .addToResources("kafkas")
-            .addToVerbs("get", "list")
-            .endRule()
-            .done();
-
-        //create new clusterrolebinding to our service account:
-        OpenShiftUtils.getInstance().rbac().clusterRoleBindings().createOrReplaceWithNew()
-            .withNewMetadata()
-            .withName(OCP_KAFKA_VIEW_ROLE)
-            .endMetadata()
-            .withNewRoleRef()
-            .withName(OCP_KAFKA_VIEW_ROLE)
-            .withKind("ClusterRole")
-            .endRoleRef()
-            .addNewSubject()
-            .withKind("ServiceAccount").withName(OCP_SERVICE_ACCOUNT).withNamespace(OpenShiftUtils.getInstance().getNamespace())
-            .endSubject()
-            .done();
-    }
-
-    private static void deleteClusterRole() {
-        final ClusterRoleBinding kafkaCrb = OpenShiftUtils.getInstance().rbac().clusterRoleBindings().withName(OCP_KAFKA_VIEW_ROLE).get();
-        if (kafkaCrb != null) {
-            OpenShiftUtils.getInstance().rbac().clusterRoleBindings().delete(kafkaCrb);
-        }
-        final ClusterRole kafkaCr = OpenShiftUtils.getInstance().rbac().clusterRoles().withName(OCP_KAFKA_VIEW_ROLE).get();
-        if (kafkaCr != null) {
-            OpenShiftUtils.getInstance().rbac().clusterRoles().delete(kafkaCr);
-        }
     }
 }
