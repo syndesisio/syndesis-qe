@@ -3,14 +3,18 @@
 @rest
 @integration-kafka
 @kafka
-@salesforce
-@datamapper
-@amqbroker
-@activemq
 Feature: Integration - Kafka
   Background:
-    Given clean SF, removes all leads with email: "test@integration-kafka.feature"
+    Given clean application state
       And deploy Kafka broker
+
+  @salesforce
+  @datamapper
+  @amqbroker
+  @activemq
+  @integration-kafka-to-sf
+  Scenario: SalesForce to Kafka to AMQ
+    Given clean SF, removes all leads with email: "test@integration-kafka.feature"
       And deploy ActiveMQ broker
       And create ActiveMQ connection
       And create SalesForce connection
@@ -29,8 +33,18 @@ Feature: Integration - Kafka
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sf-leads"
     When create integration with name: "Kafka-AMQ"
     Then wait for integration with name: "Kafka-AMQ" to become active
-
-  @integration-kafka-to-sf
-  Scenario: SalesForce to Kafka to AMQ
     When create SF lead with first name: "John", last name: "Doe", email: "test@integration-kafka.feature" and company: "ACME"
     Then verify that lead json object was received from queue "sf-leads"
+
+  @ENTESB-13846
+  @kafka-extra-options
+  Scenario: Kafka Extra Options
+    When create Kafka connection with extra options
+      | clientId         | myclient |
+      | sessionTimeoutMs | 66666    |
+      And create Kafka "subscribe" step with topic "test"
+      And add log step
+    When create integration with name: "kafka-extra-options"
+    Then wait for integration with name: "kafka-extra-options" to become active
+      And check that kafka option "client.id" is set to "myclient" in "kafka-extra-options" integration
+      And check that kafka option "session.timeout.ms" is set to "66666" in "kafka-extra-options" integration

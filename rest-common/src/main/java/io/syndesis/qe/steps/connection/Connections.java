@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -236,6 +237,23 @@ public class Connections {
             fromData(
                 keyValue("connector", "kafka"),
                 keyValue("transportProtocol", "PLAINTEXT"),
+                accountProperty("brokers")
+            )
+        );
+    }
+
+    @Given("create Kafka connection with extra options")
+    public void createKafkaConnection(DataTable extraOptions) {
+        Map<String, String> extra = extraOptions.asMap(String.class, String.class);
+        account = accountsDirectory.get(Account.Name.KAFKA);
+        String extraOpts = "[" +
+            extra.entrySet().stream().map(e -> "{\"key\":\"" + e.getKey() + "\",\"value\":\"" + e.getValue() + "\"}").collect(Collectors.joining(","))
+            + "]";
+        createConnection(
+            fromData(
+                keyValue("connector", "kafka"),
+                keyValue("transportProtocol", "PLAINTEXT"),
+                keyValue("extraOptions", extraOpts),
                 accountProperty("brokers")
             )
         );
