@@ -1,0 +1,39 @@
+apiVersion: syndesis.io/v1beta2
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  addons:
+  components:
+    database:
+      resources:
+        limit:
+          memory: 270Mi
+          cpu: 800m
+        request:
+          memory: 270Mi
+          cpu: 800m
+    meta:
+      resources:
+        limit:
+          memory: 300Mi
+          cpu: 300m
+        request:
+          memory: 300Mi
+          cpu: 300m
+    server:
+      resources:
+        limit:
+          memory: 810Mi
+          cpu: 810m
+        request:
+          memory: 810Mi
+          cpu: 810m
+    prometheus:
+      resources:
+        limit:
+          memory: 525Mi
+          cpu: 525m
+        request:
+          memory: 525Mi
+          cpu: 525m
