@@ -89,3 +89,33 @@ Feature: Integration - Edit DC
       And insert into "CONTACT" table
         | X | Y | Z | db |
     Then validate that number of all todos with task "X" is 2
+
+  @ENTESB-14015
+  Scenario: Edit Integration DC - CPU / Memory
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 20000 ms
+      And add a split step
+      And start mapper definition with name: "mapping 1"
+      And MAP using Step 2 and field "/first_name" to "/<>/task"
+      And create finish DB invoke sql action step with query "INSERT INTO TODO (task) VALUES (:#task)"
+    Then create integration with name: "edit-dc-cpu-mem"
+      And wait for integration with name: "edit-dc-cpu-mem" to become active
+    When remove all records from table "TODO"
+      And insert into "CONTACT" table
+        | X | Y | Z | db |
+    Then validate that number of all todos with task "X" is 1
+    When set resources for deployment config "i-edit-dc-cpu-mem"
+      | limits  | cpu    | 500m  |
+      | request | cpu    | 500m  |
+      | limits  | memory | 500Mi |
+      | request | memory | 500Mi |
+      And rebuild integration with name "edit-dc-cpu-mem"
+      And wait for integration with name: "edit-dc-cpu-mem" to become active
+      And remove all records from table "CONTACT"
+      And remove all records from table "TODO"
+      And insert into "CONTACT" table
+        | X | Y | Z | db |
+    Then validate that number of all todos with task "X" is 1
+      And verify that the deployment config "i-edit-dc-cpu-mem" has the cpu limits set to "500m"
+      And verify that the deployment config "i-edit-dc-cpu-mem" has the cpu requests set to "500m"
+      And verify that the deployment config "i-edit-dc-cpu-mem" has the memory limits set to "500Mi"
+      And verify that the deployment config "i-edit-dc-cpu-mem" has the memory requests set to "500Mi"
