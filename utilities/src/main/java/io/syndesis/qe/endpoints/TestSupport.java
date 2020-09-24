@@ -1,8 +1,5 @@
 package io.syndesis.qe.endpoints;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-
 import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.endpoint.Constants;
 import io.syndesis.qe.endpoint.client.EndpointClient;
@@ -18,10 +15,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 
-import java.io.IOException;
 import java.util.stream.Collectors;
 
-import io.fabric8.kubernetes.client.LocalPortForward;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class TestSupport {
     private static final String ENDPOINT_NAME = "test-support/reset-db";
-    private static final String DV_RESET_URL = "http://localhost:8081/dv/v1/" + ENDPOINT_NAME;
     private static Client client;
     private static TestSupport instance = null;
 
@@ -109,18 +103,5 @@ public final class TestSupport {
         String restEndpoint = String.format("%s%s/%s", Constants.LOCAL_REST_URL, Constants.API_PATH, ENDPOINT_NAME);
         log.debug("Reset endpoint URL: *{}*", restEndpoint);
         return restEndpoint;
-    }
-
-    public void resetDv() {
-        if (OpenShiftUtils.getInstance().getService("syndesis-dv") != null) {
-            // Create port forward for syndesis-dv
-            try (LocalPortForward pf = OpenShiftUtils.getInstance().services().withName("syndesis-dv").portForward(8080, 8081)) {
-                assertThat(resetDbWithResponse(DV_RESET_URL)).isEqualTo(200);
-            } catch (IOException e) {
-                fail("Unable to reset DV", e);
-            }
-        } else {
-            log.debug("syndesis-dv service not present, skipping DV reset");
-        }
     }
 }

@@ -7,7 +7,6 @@ import lombok.Getter;
  */
 public enum Addon {
     CAMELK("camelk"),
-    DV("dv"),
     JAEGER("jaeger"),
     PUBLIC_API("publicApi"),
     OPS("ops"),
