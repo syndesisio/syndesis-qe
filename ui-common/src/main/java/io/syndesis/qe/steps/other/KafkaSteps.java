@@ -103,13 +103,17 @@ public class KafkaSteps {
     }
 
     private String extractValue(String word, String input) {
-        final String pattern = String.format(".*%s=.*?,", word);
+        final String pattern = String.format("%s=(.*?),", word);
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(input);
 
         StringBuilder sb = new StringBuilder();
         while (m.find()) {
-            sb.append(m.group(0).replaceAll(String.format(".*%s=", word), "").replaceAll("[,}]", ""));
+            if (m.group(1).contains("{}")) {
+                // since OCP 4.5, yaml contains metadata.managedFields so crt is there twice and one is empty. Ignore empty one.
+                continue;
+            }
+            sb.append(m.group(1));
         }
         return decode(sb.toString());
     }
