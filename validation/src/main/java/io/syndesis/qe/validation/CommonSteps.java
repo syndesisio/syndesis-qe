@@ -7,7 +7,6 @@ import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.CamelK;
-import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.Jaeger;
@@ -81,15 +80,6 @@ public class CommonSteps {
         ResourceFactory.get(Syndesis.class).changeRuntime(runtime);
     }
 
-    @Then("wait for DV to become ready")
-    public void waitForDv() {
-        OpenShiftUtils.getInstance().waiters()
-            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
-            .interval(TimeUnit.SECONDS, 20)
-            .timeout(TimeUnit.MINUTES, 5)
-            .waitFor();
-    }
-
     @When("deploy Jaeger")
     public void deployJaeger() {
         ResourceFactory.create(Jaeger.class);
@@ -98,11 +88,6 @@ public class CommonSteps {
     @When("deploy custom database")
     public void deployDb() {
         ResourceFactory.create(ExternalDatabase.class);
-    }
-
-    @When("deploy DV")
-    public void deployDv() {
-        ResourceFactory.create(DV.class);
     }
 
     @When("deploy public oauth proxy")
@@ -130,7 +115,6 @@ public class CommonSteps {
             TestSupport.getInstance().resetDB();
             return connectionsEndpoint.list().stream().anyMatch(s -> s.getName().equals("PostgresDB"));
         }, 10, 1000L, "Default PostgresDB connection has not been created");
-        TestSupport.getInstance().resetDv();
     }
 
     /**
