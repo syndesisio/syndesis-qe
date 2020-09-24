@@ -281,7 +281,15 @@ public class CommonSteps {
                 "no validation".equalsIgnoreCase(connectionDescription))) {
 
                 clickOnButton("Validate");
-                successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");
+                TestUtils
+                    .waitFor(() -> $$(Alert.ALL.getBy()).size() > 0,
+                        2, 20, "Any notification appears!");
+                if (getAllAlerts(connectionType + " does not support validation", "info").size() > 0) {
+                    log.warn("Connection type " + connectionType +
+                        " doesn't support validation. The test suite assumes that set credentials are correct.");
+                } else {
+                    successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");
+                }
                 scrollTo("top", "right");
                 clickOnButton("Next");
             } else if ("no validation".equalsIgnoreCase(connectionDescription)) {
@@ -542,11 +550,13 @@ public class CommonSteps {
         TestUtils
             .waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage))).size() == 1,
                 2, 20, "Success notification not found!");
-
-        ElementsCollection successList =
-            $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage)));
+        ElementsCollection successList = getAllAlerts(textMessage, type);
         assertThat(successList).hasSize(1);
         log.info("Text message {} was found.", textMessage);
+    }
+
+    private ElementsCollection getAllAlerts(String textMessage, String type) {
+        return $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage)));
     }
 
     /**
