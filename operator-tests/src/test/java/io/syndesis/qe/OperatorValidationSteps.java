@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -190,15 +189,6 @@ public class OperatorValidationSteps {
             );
         }
         asserts.assertAll();
-    }
-
-    @Then("check that datavirt is deployed")
-    public void checkDv() {
-        OpenShiftUtils.getInstance().waiters()
-            .areExactlyNPodsReady(1, "syndesis.io/component", "syndesis-dv")
-            .interval(TimeUnit.SECONDS, 20)
-            .timeout(TimeUnit.MINUTES, 5)
-            .waitFor();
     }
 
     @Then("^check that jaeger pod \"([^\"]*)\" (is|is not) collecting metrics for integration \"([^\"]*)\"$")

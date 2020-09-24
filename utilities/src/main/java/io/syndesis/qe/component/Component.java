@@ -11,7 +11,6 @@ public enum Component {
     UI("syndesis-ui"),
     META("syndesis-meta"),
     OPERATOR("syndesis-operator"),
-    DV("syndesis-dv"),
     TODO("todo"),
     JAEGER("syndesis-jaeger");
 

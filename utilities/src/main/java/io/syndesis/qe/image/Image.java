@@ -10,6 +10,5 @@ public enum Image {
     S2I,
     UPGRADE,
     PSQL_EXPORTER,
-    DV,
     CAMELK
 }

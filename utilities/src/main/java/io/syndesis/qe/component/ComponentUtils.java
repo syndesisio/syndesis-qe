@@ -1,7 +1,6 @@
 package io.syndesis.qe.component;
 
 import static io.syndesis.qe.component.Component.DB;
-import static io.syndesis.qe.component.Component.DV;
 import static io.syndesis.qe.component.Component.JAEGER;
 import static io.syndesis.qe.component.Component.META;
 import static io.syndesis.qe.component.Component.OAUTH;
@@ -42,10 +41,6 @@ public class ComponentUtils {
 
         if (syndesis.isAddonEnabled(Addon.TODO)) {
             components.add(TODO);
-        }
-
-        if (syndesis.isAddonEnabled(Addon.DV)) {
-            components.add(DV);
         }
 
         if (syndesis.isAddonEnabled(Addon.JAEGER)) {
