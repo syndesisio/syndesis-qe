@@ -15,13 +15,13 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vdurmont.semver4j.Semver;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -59,9 +59,11 @@ public class UpgradeSteps {
             // separate job
             assumeThat(TestConfiguration.upgradePreviousVersion()).isNotNull();
             String majorMinorMavenVersion = getMajorMinor(TestConfiguration.upgradePreviousVersion());
-            BigDecimal majorMinorImageVersion = new BigDecimal(majorMinorMavenVersion).subtract(new BigDecimal("0.3"));
+            String major = StringUtils.substringBefore(majorMinorMavenVersion, ".");
+            // From 1.10 we need to make 1.7, so parse the decimal part to integer and subtract 3
+            int minor = Integer.parseInt(StringUtils.substringAfter(majorMinorMavenVersion, ".")) - 3;
             // Parse the previous tag from maven artifacts
-            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + majorMinorImageVersion.toPlainString());
+            syndesis.setOperatorImage(RELEASED_OPERATOR_IMAGE + ":" + major + "." + minor);
             TestConfiguration.get().overrideProperty(TestConfiguration.SYNDESIS_UPGRADE_CURRENT_VERSION, TestConfiguration.syndesisVersion());
             // Previous version needs to be specified manually via system properties
         } else {
