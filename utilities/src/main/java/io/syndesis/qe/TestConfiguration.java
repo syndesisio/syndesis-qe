@@ -412,12 +412,9 @@ public class TestConfiguration {
 
         // When the single user property is set (for the env where the syndesis is already deployed and you are not an admin)
         // Make the user "admin" anyway, as that user is used in all k8s client invocations by default
-        if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
+        if (Boolean.parseBoolean(properties.getProperty(SYNDESIS_SINGLE_USER, "false"))) {
             //need to be in the main properties because it will be used for xtf settings
             properties.setProperty(SYNDESIS_ADMIN_USERNAME, properties.getProperty(SYNDESIS_UI_USERNAME));
-        }
-        if (properties.getProperty(SYNDESIS_SINGLE_USER) != null) {
-            //need to be in the main properties because it will be used for xtf settings
             properties.setProperty(SYNDESIS_ADMIN_PASSWORD, properties.getProperty(SYNDESIS_UI_PASSWORD));
         }
 
