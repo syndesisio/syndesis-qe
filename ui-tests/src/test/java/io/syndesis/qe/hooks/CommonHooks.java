@@ -2,7 +2,6 @@ package io.syndesis.qe.hooks;
 
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
-import io.syndesis.qe.resource.impl.DV;
 import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
@@ -51,12 +50,6 @@ public class CommonHooks {
     public void default3scaleAnnotation() {
         log.info("Removing 3scale discovery functionality");
         cs.disable3scaleEnvVar();
-    }
-
-    @After("@dv")
-    public void cleanDv() {
-        log.info("Deleting DV addon");
-        ResourceFactory.destroy(DV.class);
     }
 
     @After("@fhir")
