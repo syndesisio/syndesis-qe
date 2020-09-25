@@ -29,7 +29,7 @@ public abstract class TestSuiteParent {
                 + " specified in test properties doesn't have admin priviledges (if this shouldn't happen, check debug logs for more info");
         }
 
-        if (TestUtils.isUserAdmin(TestConfiguration.syndesisUsername())) {
+        if (TestUtils.isUserAdmin(TestConfiguration.syndesisUsername()) && !TestConfiguration.isSingleUser()) {
             throw new IllegalArgumentException("Syndesis user " + TestConfiguration.syndesisUsername() + " shouldn't have admin priviledges");
         }
 

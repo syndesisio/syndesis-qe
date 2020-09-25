@@ -355,6 +355,10 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_APPEND_REPOSITORY, "false"));
     }
 
+    public static boolean isSingleUser() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_SINGLE_USER, "false"));
+    }
+
     private Properties defaultValues() {
         final Properties defaultProps = new Properties();
 
