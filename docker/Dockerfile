@@ -39,28 +39,30 @@ ARG SYNDESIS_QE_BRANCH_VERSION=1.10.x
 ARG APICURIO_QE_BRANCH_OWNER=Apicurio
 ARG APICURIO_QE_BRANCH_VERSION=1.10.x
 
-WORKDIR /syndesis
-RUN git clone https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
-RUN git checkout ${SYNDESIS_BRANCH_VERSION}
+ARG INSTALL_TAG=1.10
 
-WORKDIR /syndesis-qe
-RUN git clone --recurse-submodules https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe
-RUN git checkout ${SYNDESIS_QE_BRANCH_VERSION}
-
-WORKDIR /apicurio
-RUN git clone https://github.com/${APICURIO_QE_BRANCH_OWNER}/apicurio-qe.git /apicurio
-RUN git checkout ${APICURIO_QE_BRANCH_VERSION}
-
-WORKDIR /syndesis-qe/syndesis-extensions
-RUN git checkout master
+RUN git clone https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis \
+	&& cd /syndesis \
+	&& git checkout ${SYNDESIS_BRANCH_VERSION} \
+	&& git clone --recurse-submodules https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe \
+	&& cd /syndesis-qe \
+	&& git checkout ${SYNDESIS_QE_BRANCH_VERSION} \
+	&& cd /syndesis-qe/syndesis-extensions \
+	&& git checkout master \
+	&& git clone https://github.com/${APICURIO_QE_BRANCH_OWNER}/apicurio-qe.git /apicurio \
+	&& cd /apicurio \
+	&& git checkout ${APICURIO_QE_BRANCH_VERSION} \
+	&& git clone https://github.com/${SYNDESIS_BRANCH_OWNER}/fuse-online-install.git /fuse-online-install \
+	&& cd /fuse-online-install \
+	&& git checkout ${INSTALL_TAG}
 
 #================================================================================================================================
 ## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
 # for some reason, the syndesis build doesn't work on alpine image
 FROM maven:3.6-jdk-8-slim as buildSyndesis
 ## Syndesis build needs git for some reason
-RUN apt-get update -y
-RUN apt-get install -y git
+RUN apt-get update -y \
+	&& apt-get install -y git
 ## Build only dependencies that the test suite needs
 COPY --from=gitRepos /syndesis /syndesis
 WORKDIR /syndesis/app
@@ -87,8 +89,8 @@ WORKDIR /syndesis-qe
 #RUN mvn clean package -B -f syndesis-extensions/pom.xml --also-make --projects :syndesis-library-jdbc-driver,:syndesis-extension-log-body,:syndesis-extension-body
 
 ## Build syndesis-qe tests (To download all dependencies during the building phase. not during the running phase)
-RUN mvn -pl utilities clean install
-RUN mvn clean install -DskipTests -Pdownload-drivers
+RUN mvn -pl utilities clean install \
+	&& mvn clean install -DskipTests -Pdownload-drivers
 
 ## This file has not contained 3rd party services. It is copied into the test suite in order to the tests which use self-deployed services work (AMQ broker, MongoDB).
 ## In the future, the external credential.json (with 3rd party services credential) can be pass to the image as an environment variable.
@@ -97,19 +99,27 @@ COPY credentials_minimal.json /syndesis-qe/credentials.json
 #================================================================================================================================
 FROM selenium/standalone-firefox:78.0 as runningEnv
 
-WORKDIR /syndesis-qe
+WORKDIR /home/seluser
 COPY --from=buildSyndesisQE /root/.m2/repository/ /home/seluser/.m2/repository/
-COPY --from=buildSyndesisQE /syndesis-qe /syndesis-qe
+COPY --from=buildSyndesisQE /syndesis-qe /home/seluser/syndesis-qe
+COPY --from=gitRepos /fuse-online-install /home/seluser/fuse-online-install
+COPY entrypoint.sh /home/seluser/entrypoint.sh
 ## Default environment variables values
 ENV TAGS '@smoke'
+ENV MODULE 'all'
+ENV MODE 'full'
 
 USER root
-RUN apt update -y
-RUN apt install -y openjdk-8-jdk
+RUN apt update -y \
+	&& apt install -y openjdk-8-jdk \
+	&& wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz -O /tmp/oc.tar.gz \
+	&& tar -xvf /tmp/oc.tar.gz oc \
+	&& mv oc /usr/local/bin \
+	&& rm -f /tmp/oc.tar.gz \
+	&& chown -R seluser:seluser /home/seluser
+
 # the root cannot be used, the webdriver would fail after start
 USER seluser
+WORKDIR /home/seluser/syndesis-qe
 
-COPY syndesisQe_ui.sh /usr/local/bin/syndesisQe.sh
-RUN chmod +x /usr/local/bin/syndesisQe.sh
-
-ENTRYPOINT ["/usr/local/bin/syndesisQe.sh"]
+ENTRYPOINT ["/home/seluser/entrypoint.sh"]
