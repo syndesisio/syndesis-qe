@@ -206,8 +206,7 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if (StringUtils.containsAny(currentUrl, "rhcloud", "crc", "rhocf", "ocp4", "fuse-qe.eng", "osp")
-            && currentUrl.contains("oauth/authorize")) {
+        } else if (currentUrl.contains("oauth/authorize")) {
             String linkText = "htpasswd";
             if (currentUrl.contains("osp")) {
                 linkText = "HTPasswd";
