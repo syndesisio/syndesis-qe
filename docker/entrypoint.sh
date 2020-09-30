@@ -79,11 +79,13 @@ if [ "${MODE,,}" = "full" ]; then
 	./install_ocp.sh
 
 	oc patch syndesis app -p '{"spec": {"addons": {"todo": {"enabled": true}}}}' --type=merge
+	until [[ ! "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
+	SERVER_POD="$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')"
 	oc set env dc/syndesis-operator TEST_SUPPORT=true
+	echo "Waiting until server pod is reloaded"
+	until [[ ! "$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')" == *"${SERVER_POD}"* ]]; do sleep 5; done
 
 	echo "Waiting until all pods are ready"
-	sleep 60
-	until [[ ! "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
 	until [[ ! "$(oc get pods -l syndesis.io/component -o jsonpath='{.items[*].status.containerStatuses[0].ready}' 2>/dev/null || echo false)" == *"false"* ]]; do sleep 5; done
 	popd
 elif [ "${MODE,,}" = "delorean" ]; then
