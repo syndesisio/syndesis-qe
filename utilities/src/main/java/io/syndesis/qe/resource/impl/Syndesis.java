@@ -501,7 +501,15 @@ public class Syndesis implements Resource {
                 fail("Unable to get operator deployment config", e);
             }
 
-            OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
+            TestUtils.withRetry(() -> {
+                try {
+                    OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
+                    return true;
+                } catch (KubernetesClientException kce) {
+                    log.debug("Caught KubernetesClientException: " + kce);
+                    return false;
+                }
+            }, 3, 30000L, "Unable to scale operator deployment config after 3 tries");
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
@@ -509,16 +517,25 @@ public class Syndesis implements Resource {
                 fail("Operator pod shouldn't be present after scaling down", e);
             }
 
-            OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
-            try {
-                OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
-            } catch (KubernetesClientException ex) {
-                // retry one more time after a slight delay
-                log.warn("Caught KubernetesClientException: " + ex);
-                log.warn("Will retry in 30 seconds");
-                TestUtils.sleepIgnoreInterrupt(30000L);
-                OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
-            }
+            TestUtils.withRetry(() -> {
+                try {
+                    OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
+                    return true;
+                } catch (KubernetesClientException kce) {
+                    log.debug("Caught KubernetesClientException: " + kce);
+                    return false;
+                }
+            }, 3, 30000L, "Unable to update operator deployment config after 3 tries");
+
+            TestUtils.withRetry(() -> {
+                try {
+                    OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
+                    return true;
+                } catch (KubernetesClientException kce) {
+                    log.debug("Caught KubernetesClientException: " + kce);
+                    return false;
+                }
+            }, 3, 30000L, "Unable to scale operator deployment config after 3 tries");
         }
 
         log.info("Waiting for syndesis-operator to be ready");
