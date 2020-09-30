@@ -74,16 +74,18 @@ if [ "${MODE,,}" = "full" ]; then
 	oc project ${NAMESPACE}
 	if [ -n "${PULL_SECRET}" ]; then
 		base64 -d <<< "${PULL_SECRET}" > /tmp/secret
-		oc create secret generic syndesis-pull-secret --from-file /tmp/secret
+		oc create secret generic syndesis-pull-secret --from-file=.dockerconfigjson=/tmp/secret --type=kubernetes.io/dockerconfigjson
 	fi
 	./install_ocp.sh
 
 	oc patch syndesis app -p '{"spec": {"addons": {"todo": {"enabled": true}}}}' --type=merge
+	until [[ ! "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
+	SERVER_POD="$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')"
 	oc set env dc/syndesis-operator TEST_SUPPORT=true
+	echo "Waiting until server pod is reloaded"
+	until [[ ! "$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')" == *"${SERVER_POD}"* ]]; do sleep 5; done
 
 	echo "Waiting until all pods are ready"
-	sleep 60
-	until [[ ! "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
 	until [[ ! "$(oc get pods -l syndesis.io/component -o jsonpath='{.items[*].status.containerStatuses[0].ready}' 2>/dev/null || echo false)" == *"false"* ]]; do sleep 5; done
 	popd
 elif [ "${MODE,,}" = "delorean" ]; then
@@ -117,15 +119,12 @@ syndesis.config.enableTestSupport=true
 EOF
 fi
 
-./mvnw clean test -P "${PROFILE}" -Dcucumber.options="--tags '""${TAGS}""'" -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
-
-STATUS=$?
-
-echo "Status code from mvn command is: $STATUS . The test results will be stored into /test-run-results folder"
+./mvnw clean test -fn -P "${PROFILE}" -Dcucumber.options="--tags '""${TAGS}""'" -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
 
 [ -d "/test-run-results" ] && sudo rm -rf /test-run-results/* || sudo mkdir /test-run-results
 
 while read -r FILE; do sudo mkdir -p /test-run-results/$(dirname $FILE); sudo cp $FILE /test-run-results/$(dirname $FILE); done <<< "$(find * -type f -name "*.log")"
 while read -r DIR; do sudo mkdir -p /test-run-results/$DIR; sudo cp -r $DIR/* /test-run-results/$DIR; done <<< "$(find * -maxdepth 2 -type d -wholename "*target/cucumber*")"
 
-exit $STATUS
+HAS_FAILURES="$(grep -R "failure message" /test-run-results || :)"
+[ -z "${HAS_FAILURES}" ] && exit 0 || exit 1
