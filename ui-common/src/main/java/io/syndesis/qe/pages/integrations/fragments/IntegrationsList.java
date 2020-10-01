@@ -81,7 +81,10 @@ public class IntegrationsList extends RowList {
     public String getStartingStatus(SelenideElement item) {
         String text = item.$(Element.STARTING_STATUS).shouldBe(visible).getText().trim();
         if (!text.contains("Starting...") || text.contains("Stopping...")) {
-            text = item.$(Element.STARTING_STATUS_WITH_PROGRESS_BAR).shouldBe(visible).getText().trim();
+            SelenideElement progressBar = item.$(Element.STARTING_STATUS_WITH_PROGRESS_BAR);
+            if (progressBar.exists()) {
+                text = progressBar.getText().trim();
+            }
         }
         return text;
     }
