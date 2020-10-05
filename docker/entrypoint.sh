@@ -29,6 +29,7 @@ echo "ONE_USER: ${ONE_USER}"
 echo "MODULE: ${PROFILE}"
 echo "MODE: ${MODE}"
 echo "USER: $(whoami)"
+echo "RETRIES: ${RETRIES}"
 
 if [[ -z "${CREDENTIALS_URL}" ]]; then
   echo "URL for credentials.json with 3rd party services credentials was not set in CREDENTIALS_URL env. Tests that use 3rd party services will fail."
@@ -119,12 +120,18 @@ syndesis.config.enableTestSupport=true
 EOF
 fi
 
-./mvnw clean test -fn -P "${PROFILE}" -Dcucumber.options="--tags '""${TAGS}""'" -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
+CURRENT_RETRIES=0
+while [ ${CURRENT_RETRIES} -lt ${RETRIES} ]; do
+	./mvnw clean test -fn -P "${PROFILE}" -Dcucumber.options="--tags '""${TAGS}""'" -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
+
+	HAS_FAILURES="$(grep -R --exclude-dir docker "failure message" . || :)"
+	[ -z "${HAS_FAILURES}" ] && break
+	(( CURRENT_RETRIES++ ))
+done
 
 [ -d "/test-run-results" ] && sudo rm -rf /test-run-results/* || sudo mkdir /test-run-results
 
 while read -r FILE; do sudo mkdir -p /test-run-results/$(dirname $FILE); sudo cp $FILE /test-run-results/$(dirname $FILE); done <<< "$(find * -type f -name "*.log")"
 while read -r DIR; do sudo mkdir -p /test-run-results/$DIR; sudo cp -r $DIR/* /test-run-results/$DIR; done <<< "$(find * -maxdepth 2 -type d -wholename "*target/cucumber*")"
 
-HAS_FAILURES="$(grep -R "failure message" /test-run-results || :)"
 [ -z "${HAS_FAILURES}" ] && exit 0 || exit 1

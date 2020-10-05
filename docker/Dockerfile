@@ -108,6 +108,7 @@ COPY entrypoint.sh /home/seluser/entrypoint.sh
 ENV TAGS '@smoke'
 ENV MODULE 'all'
 ENV MODE 'full'
+ENV RETRIES '3'
 
 USER root
 RUN apt update -y \
