@@ -13,7 +13,7 @@ Feature: Upgrade Syndesis
       | task1 |
     And log into the Syndesis
 
-  Scenario: Upgrade Syndesis
+  Scenario: Upgrade Syndesis - check UI
     When click on the "Create Integration" link to create a new integration.
     Then check that position of connection to fill is "Start"
 
