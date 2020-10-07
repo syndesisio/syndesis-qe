@@ -204,13 +204,14 @@ Feature: Operator Deployment
 
   @ENTESB-12418
   @ENTESB-12618
+  @ENTESB-14015
   @operator-components-limits-memory
   @operator-db
   @operator-meta
   @operator-server
   @operator-prometheus
   Scenario: Syndesis Operator - Components - Memory limits
-    When deploy Syndesis CR from file "spec/components/resources.limits.memory.yml"
+    When deploy Syndesis CR from file "spec/components/resources.limits.requests.memory.cpu.yml"
     Then wait for Syndesis to become ready
       And check correct memory limits
 
