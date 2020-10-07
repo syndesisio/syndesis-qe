@@ -21,6 +21,8 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
@@ -31,6 +33,8 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.HorizontalPodAutoscalerBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Quantity;
+import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -258,5 +262,46 @@ public class OpenshiftValidationSteps {
             .filter(arg -> arg.contains("--openshift-sar")).findFirst();
         assertThat(sarArg).isPresent();
         assertThat(sarArg.get()).contains("\"namespace\":\"" + namespace + "\"");
+    }
+
+    @When("set resources for deployment config {string}")
+    public void setResourceValues(String dcName, DataTable dataTable) {
+        DeploymentConfig dc = OpenShiftUtils.getInstance().getDeploymentConfig(dcName);
+        Map<String, Quantity> currentLimits = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits();
+        Map<String, Quantity> currentRequests = dc.getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests();
+        Map<String, Quantity> limits = currentLimits == null ? new HashMap<>() : new HashMap<>(currentLimits);
+        Map<String, Quantity> requests = currentRequests == null ? new HashMap<>() : new HashMap<>(currentRequests);
+        for (List<String> l : dataTable.asLists()) {
+            if ("limits".equals(l.get(0))) {
+                limits.put(l.get(1), new Quantity(l.get(2)));
+            } else {
+                requests.put(l.get(1), new Quantity(l.get(2)));
+            }
+        }
+        // @formatter:off
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit()
+            .editSpec()
+                .editTemplate()
+                    .editSpec()
+                        .editFirstContainer()
+                            .editResources()
+                                .withLimits(limits)
+                                .withRequests(requests)
+                            .endResources()
+                        .endContainer()
+                    .endSpec()
+                .endTemplate()
+            .endSpec()
+        .done();
+        // @formatter:on
+    }
+
+    @Then("^verify that the deployment config \"([^\"]*)\" has the (cpu|memory) (limits|requests) set to \"([^\"]*)\"$")
+    public void verifyResourceValues(String dcName, String which, String what, String value) {
+        ResourceRequirements resources = OpenShiftUtils.getInstance().getDeploymentConfig(dcName).getSpec().getTemplate().getSpec().getContainers().get(0).getResources();
+        Map<String, Quantity> check = "limits".equals(what) ? resources.getLimits() : resources.getRequests();
+        assertThat(check).isNotNull();
+        assertThat(check).containsKey(which);
+        assertThat(check.get(which).getAmount() + check.get(which).getFormat()).isEqualTo(value);
     }
 }

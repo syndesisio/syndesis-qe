@@ -215,7 +215,7 @@ public class OperatorValidationSteps {
 
     @Then("check correct memory limits")
     public void checkMemoryLimits() {
-        final String file = "src/test/resources/operator/spec/components/resources.limits.memory.yml";
+        final String file = "src/test/resources/operator/spec/components/resources.limits.requests.memory.cpu.yml";
         Yaml yaml = new Yaml();
         Object data = null;
         try (FileInputStream fis = FileUtils.openInputStream(new File(file))) {
@@ -227,14 +227,37 @@ public class OperatorValidationSteps {
         SoftAssertions softAssertions = new SoftAssertions();
         JSONObject components = new JSONObject((Map) data).getJSONObject("spec").getJSONObject("components");
         components.keySet().forEach(component -> {
-            String expectedLimit = components.getJSONObject(component).getJSONObject("resources").getString("memory");
+            String expectedMemoryLimit = components.getJSONObject(component).getJSONObject("resources").getJSONObject("limit").getString("memory");
+            String expectedCpuLimit = components.getJSONObject(component).getJSONObject("resources").getJSONObject("limit").getString("cpu");
+            String expectedMemoryRequests = components.getJSONObject(component).getJSONObject("resources").getJSONObject("request").getString("memory");
+            String expectedCpuRequests = components.getJSONObject(component).getJSONObject("resources").getJSONObject("request").getString("cpu");
             List<DeploymentConfig> dcList = OpenShiftUtils.getInstance().deploymentConfigs()
                 .withLabel("syndesis.io/component", "syndesis-" + ("database".equals(component) ? "db" : component)).list().getItems();
             softAssertions.assertThat(dcList).hasSize(1);
-            final Quantity currentLimit = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0)
-                .getResources().getLimits().get("memory");
-            softAssertions.assertThat(currentLimit.getAmount() + currentLimit.getFormat())
-                .as(component).isEqualTo(expectedLimit);
+            final Quantity currentMemoryLimit = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits().get("memory");
+            softAssertions.assertThat(currentMemoryLimit).as(component + " memory limit is null").isNotNull();
+            if (currentMemoryLimit != null) {
+                softAssertions.assertThat(currentMemoryLimit.getAmount() + currentMemoryLimit.getFormat())
+                    .as(component + " memory limit").isEqualTo(expectedMemoryLimit);
+            }
+            final Quantity currentCpuLimit = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits().get("cpu");
+            softAssertions.assertThat(currentCpuLimit).as(component + " cpu limit is null").isNotNull();
+            if (currentCpuLimit != null) {
+                softAssertions.assertThat(currentCpuLimit.getAmount() + currentCpuLimit.getFormat())
+                    .as(component + " cpu limit").isEqualTo(expectedCpuLimit);
+            }
+            final Quantity currentMemoryRequests = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests().get("memory");
+            softAssertions.assertThat(currentMemoryRequests).as(component + " memory requests is null").isNotNull();
+            if (currentMemoryRequests != null) {
+                softAssertions.assertThat(currentMemoryRequests.getAmount() + currentMemoryRequests.getFormat())
+                    .as(component + " memory requests").isEqualTo(expectedMemoryRequests);
+            }
+            final Quantity currentCpuRequests = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests().get("cpu");
+            softAssertions.assertThat(currentCpuRequests).as(component + " cpu requests is null").isNotNull();
+            if (currentCpuRequests != null) {
+                softAssertions.assertThat(currentCpuRequests.getAmount() + currentCpuRequests.getFormat())
+                    .as(component + " cpu requests").isEqualTo(expectedCpuRequests);
+            }
         });
         softAssertions.assertAll();
     }
