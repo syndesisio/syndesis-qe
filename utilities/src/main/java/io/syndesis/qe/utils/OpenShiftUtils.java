@@ -49,7 +49,15 @@ public final class OpenShiftUtils {
 
     public static OpenShiftBinary binary() {
         if (binary == null) {
-            binary = OpenShifts.masterBinary(TestConfiguration.openShiftNamespace());
+            log.debug("Downloading OpenShift binary");
+            TestUtils.withRetry(() -> {
+                try {
+                    binary = OpenShifts.masterBinary(TestConfiguration.openShiftNamespace());
+                    return true;
+                } catch (Exception e) {
+                    return false;
+                }
+            }, 3, 30000, "Unable to get OpenShift binary");
         }
         return binary;
     }
