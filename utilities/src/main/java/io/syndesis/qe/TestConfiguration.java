@@ -1,6 +1,10 @@
 package io.syndesis.qe;
 
 import io.syndesis.qe.image.Image;
+import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
+import io.syndesis.qe.marketplace.openshift.OpenShiftService;
+import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
+import io.syndesis.qe.marketplace.quay.QuayUser;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -96,6 +100,17 @@ public class TestConfiguration {
     private static final String CAMEL_VERSION = "camel.version";
 
     private static final String SYNDESIS_APPEND_REPOSITORY = "syndesis.config.append.repository";
+
+    private static final String APP_MONITORING_VERSION = "syndesis.config.monitoring.version";
+
+    private static final String QUAY_USERNAME = "syndesis.config.quay.username";
+    private static final String QUAY_PASSWORD = "syndesis.config.quay.password";
+    private static final String QUAY_NAMESPACE = "syndesis.config.quay.namespace";
+    private static final String QUAY_AUTH_TOKEN = "syndesis.config.quay.auth.token";
+    private static final String QUAY_OPSRC_TOKEN = "syndesis.config.quay.opsrc.token";
+    private static final String INDEX_IMAGE = "syndesis.config.index.image";
+    private static final String BUNDLE_IMAGE = "syndesis.config.bundle.image";
+    private static final String QUAY_PULL_SECRET = "syndesis.config.quay.pullsecret";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -350,6 +365,46 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_APPEND_REPOSITORY, "false"));
     }
 
+    public static String appMonitoringVersion() {
+        return get().readValue(APP_MONITORING_VERSION, "v1.1.6");
+    }
+
+    public static boolean isSingleUser() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_SINGLE_USER, "false"));
+    }
+
+    public static String quayUsername() {
+        return get().readValue(QUAY_USERNAME);
+    }
+
+    public static String quayPassword() {
+        return get().readValue(QUAY_PASSWORD);
+    }
+
+    public static String quayNamespace() {
+        return get().readValue(QUAY_NAMESPACE);
+    }
+
+    public static String quayAuthToken() {
+        return get().readValue(QUAY_AUTH_TOKEN);
+    }
+
+    public static String quayOpsrcToken() {
+        return get().readValue(QUAY_OPSRC_TOKEN);
+    }
+
+    public static String getIndexImage() {
+        return get().readValue(INDEX_IMAGE);
+    }
+
+    public static String getBundleImage() {
+        return get().readValue(BUNDLE_IMAGE);
+    }
+
+    public static String getQuayPullSecret() {
+        return get().readValue(QUAY_PULL_SECRET);
+    }
+
     private Properties defaultValues() {
         final Properties defaultProps = new Properties();
 
@@ -534,9 +589,45 @@ public class TestConfiguration {
 
     /**
      * Clears the property from test configuration.
+     *
      * @param key key
      */
     public void clearProperty(String key) {
         properties.remove(key);
+    }
+
+    public static QuayUser getQuayUser() {
+        return new QuayUser(
+            TestConfiguration.quayUsername(),
+            TestConfiguration.quayPassword(),
+            TestConfiguration.quayNamespace(),
+            TestConfiguration.quayAuthToken()
+        );
+    }
+
+    public static OpenShiftService getOpenShiftService(String quayProject) {
+        OpenShiftUser defaultUser = new OpenShiftUser(
+            syndesisUsername(),
+            syndesisPassword(),
+            openShiftUrl()
+        );
+        OpenShiftUser adminUser = new OpenShiftUser(
+            adminUsername(),
+            adminPassword(),
+            openShiftUrl()
+        );
+        OpenShiftConfiguration openShiftConfiguration = OpenShiftConfiguration.builder()
+            .namespace(openShiftNamespace())
+            .pullSecretName(syndesisPullSecretName())
+            .pullSecret(syndesisPullSecret())
+            .quayOpsrcToken(quayOpsrcToken())
+            .build();
+        return new OpenShiftService(
+            quayNamespace(),
+            quayProject,
+            openShiftConfiguration,
+            adminUser,
+            defaultUser
+        );
     }
 }
