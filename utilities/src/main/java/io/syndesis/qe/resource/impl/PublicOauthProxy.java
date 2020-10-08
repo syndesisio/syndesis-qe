@@ -33,7 +33,7 @@ public class PublicOauthProxy implements Resource {
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("syndesis.io/component", POD_NAME));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("syndesis.io/component", POD_NAME)) && OpenShiftUtils.getPodLogs(POD_NAME).contains("HTTPS: listening on ");
     }
 
     @Override
