@@ -35,7 +35,7 @@ public abstract class TestSuiteParent {
                 throw new IllegalArgumentException("Syndesis user " + TestConfiguration.syndesisUsername() + " shouldn't have admin priviledges");
             }
 
-            if (TestConfiguration.enableTestSupport()) {
+            if (TestConfiguration.enableTestSupport() && TestConfiguration.getIndexImage() == null && TestConfiguration.getBundleImage() == null) {
                 log.info("Enabling test support");
                 if (OpenShiftUtils.dcContainsEnv("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED") &&
                     OpenShiftUtils.envInDcContainsValue("syndesis-server", "ENDPOINTS_TEST_SUPPORT_ENABLED", "true")) {
