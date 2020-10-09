@@ -351,7 +351,7 @@ to the maven run command.
 E.g. for debugging slack tests:
 ```
 mvn "-Dmaven.failsafe.debug=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE" \
-        clean test -P ui -Dtags="@slack" \
+        clean verify -P ui -Dtags="@slack" \
         -Dsyndesis.config.openshift.namespace.cleanup=true \
 ```
 
