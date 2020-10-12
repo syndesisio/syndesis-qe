@@ -108,7 +108,7 @@ public class UpgradeSteps {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
         syndesis.defaultValues();
         syndesis.pullOperatorImage();
-        syndesis.deployCrd();
+        syndesis.installCluster();
         syndesis.grantPermissions();
         syndesis.deployOperator();
     }
