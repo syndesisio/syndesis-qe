@@ -46,9 +46,7 @@ import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionFluent;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionVersion;
-import io.fabric8.kubernetes.api.model.apiextensions.DoneableCustomResourceDefinition;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
@@ -89,7 +87,6 @@ public class Syndesis implements Resource {
         log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
         log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
         createPullSecret();
-        deployCrd();
         pullOperatorImage();
         installCluster();
         grantPermissions();
@@ -368,62 +365,6 @@ public class Syndesis implements Resource {
             .withScope(syndesisCrd.getSpec().getScope())
             .withVersion(version);
         return builder.build();
-    }
-
-    public void deployCrd() {
-        log.info("Creating custom resource definition from " + crdUrl);
-        CustomResourceDefinition newCrd;
-        try (InputStream is = new URL(crdUrl).openStream()) {
-            newCrd = OpenShiftUtils.getInstance().customResourceDefinitions().load(is).get();
-        } catch (IOException ex) {
-            throw new IllegalArgumentException("Unable to load CRD", ex);
-        }
-
-        CustomResourceDefinition existingCrd = OpenShiftUtils.getInstance().customResourceDefinitions()
-            .withName(newCrd.getMetadata().getName()).get();
-        if (existingCrd == null) {
-            // Just create a new CRD
-            OpenShiftUtils.getInstance().customResourceDefinitions().create(newCrd);
-        } else {
-            // Edit the existing CRD, if it doesn't contain the version we want to deploy now
-            // else do nothing, as the existing crd and new crd are probably the same
-            List<CustomResourceDefinitionVersion> versions = OpenShiftUtils.getInstance().customResourceDefinitions()
-                .withName(existingCrd.getMetadata().getName()).get().getSpec().getVersions();
-            if (existingCrd.getSpec().getVersions().stream().noneMatch(v -> newCrd.getSpec().getVersion().equals(v.getName()))) {
-                CustomResourceDefinitionFluent.SpecNested<DoneableCustomResourceDefinition> crd =
-                    OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
-                        .edit()
-                        .editSpec()
-                        // Add a new version
-                        .addNewVersion()
-                        .withName(newCrd.getSpec().getVersion())
-                        .withServed(true)
-                        .withStorage(true)
-                        .endVersion();
-                versions.stream().filter(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
-                    .forEach(v -> crd.editMatchingVersion(mv -> mv.getName().equals(v.getName())).withServed(true).withStorage(false).endVersion());
-                crd.endSpec()
-                    .editStatus()
-                    // Also add it to stored versions
-                    .addToStoredVersions(newCrd.getSpec().getVersion())
-                    .endStatus()
-                    .done();
-            } else {
-                // We need to make "current" CRD version "served" and with "storage"
-                CustomResourceDefinitionFluent.SpecNested<DoneableCustomResourceDefinition> crd =
-                    OpenShiftUtils.getInstance().customResourceDefinitions().withName(existingCrd.getMetadata().getName())
-                        .edit()
-                        .editSpec()
-                        // Edit the version we want to deploy now
-                        .editMatchingVersion(v -> v.getName().equals(newCrd.getSpec().getVersion()))
-                        .withServed(true)
-                        .withStorage(true)
-                        .endVersion();
-                versions.stream().filter(v -> !v.getName().equals(newCrd.getSpec().getVersion()))
-                    .forEach(v -> crd.editMatchingVersion(mv -> mv.getName().equals(v.getName())).withServed(true).withStorage(false).endVersion());
-                crd.endSpec().done();
-            }
-        }
     }
 
     public List<HasMetadata> getOperatorResources() {

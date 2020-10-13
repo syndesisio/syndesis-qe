@@ -12,8 +12,8 @@ public class PreviousSyndesis extends Syndesis {
         log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
         log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
         super.createPullSecret();
-        super.deployCrd();
         super.pullOperatorImage();
+        super.installCluster();
         super.grantPermissions();
         super.deployOperator();
         deploySyndesisViaOperator();
