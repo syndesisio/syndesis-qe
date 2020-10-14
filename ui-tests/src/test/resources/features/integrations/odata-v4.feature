@@ -1,24 +1,24 @@
 # @sustainer: jsafarik@redhat.com
 
 @ui
-@odata
+@odata-v4
 @long-running
-Feature: OData Connector
+Feature: OData V4 Connector
 
   Background: Clean application state and get new key from sample service
     Given clean application state
-    And deploy OData server
-    And create OData credentials
+    And deploy OData v4 server
+    And create OData v4 credentials
     And log into the Syndesis
     And created connections
-      | OData V4 | odata | OData | sample OData service |
+      | OData V4 | odata V4 | OData | sample OData service |
     And navigate to the "Home" page
-    And reset OData service
+    And reset OData v4 service
 
 #
 # 1. Parameterized tests for read action.
 #
-  @integrations-odata-read
+  @integrations-odata-v4-read
   Scenario Outline: Read <name> from OData service tests
 
     # Create new integration
@@ -72,7 +72,7 @@ Feature: OData Connector
   #
   # 2. Parametrized tests for Create and Update operations
   #
-  @integrations-odata-create
+  @integrations-odata-v4-create
   Scenario: Create entity in OData service
 
     When reset content of "contact" table
@@ -119,7 +119,7 @@ Feature: OData Connector
   #
   @gh-4889
   @reproducer
-  @integrations-odata-delete
+  @integrations-odata-v4-delete
   Scenario: Delete entity in OData service
 
     When click on the "Create Integration" link to create a new integration
@@ -149,7 +149,7 @@ Feature: OData Connector
     And click on the "Done" button
 
     # Executing this step just to make sure the entity is present before deleting it.
-    And check that "1" entity in "Products" collection contains
+    And check that OData "1" entity in "Products" collection contains
       |  |
     When click on the "Publish" link
     And set integration name "OData_Delete"
@@ -162,7 +162,7 @@ Feature: OData Connector
 
   # Those bugs were very similar in reproducing - created one scenario outline for all of them
   @reproducer
-    @integrations-odata-read-update
+  @integrations-odata-v4-read-update
   Scenario Outline: Read <name> from OData service tests
 
     # Create new integration
@@ -234,7 +234,7 @@ Feature: OData Connector
 
   @gh-5060
   @reproducer
-  @integrations-odata-read-update
+  @integrations-odata-v4-read-update
   Scenario: Read enum mapping from OData service tests
 
     # Create new integration
@@ -281,14 +281,14 @@ Feature: OData Connector
     And wait until integration Enum processed at least 1 message
 
     #Validate logs output
-    Then check that "whatever" entity in "Users" collection contains
+    Then check that OData "whatever" entity in "Users" collection contains
       | Gender | MALE |
 
   @gh-5559
   @reproducer
-  @odata-server-certificate
+  @odata-v4-server-certificate
   Scenario: OData connector needs server certificate
-    When create OData HTTPS credentials
+    When create OData HTTPS v4 credentials
     And log into the Syndesis
     And created connections
       | OData V4 | odataHttps | ODataHttps | sample OData service |

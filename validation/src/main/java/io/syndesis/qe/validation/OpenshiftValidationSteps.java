@@ -111,7 +111,7 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(IRC.class).addAccount();
     }
 
-    @Given("deploy OData server")
+    @Given("deploy OData v4 server")
     public void deployODataServer() {
         WildFlyS2i wildFlyS2i = ResourceFactory.get(WildFlyS2i.class);
         wildFlyS2i.setAppName("odata");
@@ -135,9 +135,14 @@ public class OpenshiftValidationSteps {
         ResourceFactory.get(Kudu.class).createAccount();
     }
 
-    @Given("^create OData( HTTPS)? credentials$")
-    public void createODataHttpCredentials(String https) {
-        ResourceFactory.get(WildFlyS2i.class).createODataAccount(https != null && !https.isEmpty());
+    @Given("^create OData( HTTPS)? v4 credentials$")
+    public void createODataV4HttpCredentials(String https) {
+        ResourceFactory.get(WildFlyS2i.class).createODataV4Account(https != null && !https.isEmpty());
+    }
+
+    @Given("^create OData v2 credentials$")
+    public void createODataV2HttpCredentials() {
+        ResourceFactory.get(WildFlyS2i.class).createODataV2Account();
     }
 
     @Given("wait until {string} pod is reloaded")
