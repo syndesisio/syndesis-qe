@@ -9,6 +9,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,7 +92,7 @@ public class WildFlyS2i implements Resource {
         return appName != null && OpenShiftUtils.isDcDeployed(appName);
     }
 
-    public void createODataAccount(boolean https) {
+    public void createODataV4Account(boolean https) {
         Account oData = new Account();
         oData.setService("OData");
         Map<String, String> properties = new HashMap<>();
@@ -104,12 +105,26 @@ public class WildFlyS2i implements Resource {
             key = "odataHttps";
         } else {
             serviceUri = ODataUtils.getOpenshiftService();
-            key = "odata";
+            key = "odata V4";
         }
 
         properties.put("serviceUri", serviceUri);
         oData.setProperties(properties);
         AccountsDirectory.getInstance().addAccount(key, oData);
         log.info("Created new Account: {}", key);
+    }
+
+    public void createODataV2Account() {
+        Account oData = new Account();
+        oData.setService("OData");
+
+        Map<String, String> properties = Collections.singletonMap(
+            "serviceUri",
+            // The service at this point doesn't matter as it should be reset in the next step
+            "https://services.odata.org/V2/(S(readwrite))/OData/OData.svc/");
+
+        oData.setProperties(properties);
+        AccountsDirectory.getInstance().addAccount(Account.Name.ODATA_V2.getId(), oData);
+        log.info("Created new Account: {}", "odata");
     }
 }
