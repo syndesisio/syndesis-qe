@@ -82,7 +82,7 @@ public class OperatorValidationSteps {
 
     @Given("^deploy Syndesis CRD$")
     public void deployCRD() {
-        ResourceFactory.get(Syndesis.class).deployCrd();
+        ResourceFactory.get(Syndesis.class).installCluster();
     }
 
     @Given("^install cluster resources$")
