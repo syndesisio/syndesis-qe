@@ -39,14 +39,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MailFormatter implements EventListener {
 
+    private final FeaturesInformationStore featuresInformationStore = FeaturesInformationStore.getInstance();
+
     private static final Pattern SUSTAINER_PATTERN = Pattern.compile(".*@sustainer: ([a-zA-Z@.]+)");
 
     private final String path;
 
     private ObjectMapper mapper = new ObjectMapper();
-
-    private Map<URI, String> sustainers = new HashMap<>();
-    private Map<URI, Messages.GherkinDocument.Feature> features = new HashMap<>();
     private Map<String, List<SimpleIssue>> scenarioIssues = new HashMap<>();
     private Set<String> recipients = new HashSet<>();
     private List<ScenarioResult> results = new ArrayList<>();
@@ -76,13 +75,13 @@ public class MailFormatter implements EventListener {
         }
     }
 
-    private void onTestSourceRead(TestSourceRead t) {// called before running tests to read the features
+    private void onTestSourceRead(TestSourceRead t) { // called before running tests to read the features
         Messages.GherkinDocument doc = parseGherkinSource(t.getSource());
-        features.put(t.getUri(), doc.getFeature()); //t.getUri() == classpath:features/check-metering-labels.feature
+        featuresInformationStore.getFeatures().put(t.getUri(), doc.getFeature()); //t.getUri() == classpath:features/check-metering-labels.feature
         for (Messages.GherkinDocument.Comment c : doc.getCommentsList()) {
             Matcher matcher = SUSTAINER_PATTERN.matcher(c.getText());
             if (matcher.matches()) {
-                sustainers.put(t.getUri(), matcher.group(1));
+                featuresInformationStore.getSustainers().put(t.getUri(), matcher.group(1));
             }
         }
     }
@@ -91,12 +90,14 @@ public class MailFormatter implements EventListener {
         URI uri = t.getTestCase().getUri();
         results.add(
             new ScenarioResult(
-                features.get(uri), t.getTestCase(), t.getResult().getStatus(),
-                sustainers.getOrDefault(uri, "NO SUSTAINER"), scenarioIssues.get(t.getTestCase().getScenarioDesignation()))
+                featuresInformationStore.getFeatures().get(uri), t.getTestCase(), t.getResult().getStatus(),
+                featuresInformationStore.getSustainers().getOrDefault(uri, "NO SUSTAINER"),
+                scenarioIssues.get(t.getTestCase().getScenarioDesignation()))
             // scenario designation: "features/check-prod-versions.feature:12 # Check artifacts in integration"
         );
-        if (!t.getResult().getStatus().equals(Status.PASSED) && sustainers.get(uri) != null) {
-            recipients.add(sustainers.get(uri));
+
+        if (!t.getResult().getStatus().equals(Status.PASSED) && featuresInformationStore.getSustainers().get(uri) != null) {
+            recipients.add(featuresInformationStore.getSustainers().get(uri));
         }
     }
 

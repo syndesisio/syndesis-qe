@@ -31,6 +31,17 @@ Feature: Support page
     When navigates to the "About" page in help menu
     Then check that build id exists in about page
 
+  @reportPortal
+  Scenario: ReportPortalTest
+    When navigates to the "About1" page in help menu
+
+  @reportPortal
+  Scenario: ReportPortalTest2
+    When navigates to the "About" page in help menu
+
+  @reportPortal
+  Scenario: ReportPortalTest3
+    When navigates to the "About2" page in help menu
 #
 #  2. download all diagnostic info
 #
