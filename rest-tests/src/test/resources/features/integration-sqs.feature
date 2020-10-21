@@ -133,9 +133,11 @@ Feature: Integration - SQS
       | Message 1 |
       | Message 2 |
       | Message 3 |
-    Then verify that the SQS queue "syndesis-out" has 1 message after 45 seconds
-      And verify that the SQS queue "syndesis-out" has 2 messages after 30 seconds
-      And verify that the SQS queue "syndesis-out" has 3 messages after 30 seconds
+      | Message 4 |
+      | Message 5 |
+    Then verify that the SQS queue "syndesis-out" has max 1 message after 45 seconds
+      And verify that the SQS queue "syndesis-out" has max 2 messages after 30 seconds
+      And verify that the SQS queue "syndesis-out" has max 3 messages after 30 seconds
 
   @amqbroker
   @activemq

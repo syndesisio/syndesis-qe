@@ -25,6 +25,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -106,35 +107,49 @@ public class HTTPValidationSteps {
             OpenShiftUtils.getInstance().deploymentConfigs().withLabel("syndesis.io/type", "integration").list().getItems();
         Assertions.assertThat(integrationDcs).as("There should be only one integration deployment config").hasSize(1);
         DeploymentConfig dc = integrationDcs.get(0);
-        //@formatter:off
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(dc.getMetadata().getName()).edit()
-            .editSpec()
-                .editTemplate()
+        log.debug("Waiting until next integration state check interval");
+        String serverLog = OpenShiftUtils.getPodLogs("syndesis-server");
+        while (serverLog.equals(OpenShiftUtils.getPodLogs("syndesis-server"))) {
+            TestUtils.sleepIgnoreInterrupt(5000L);
+        }
+
+        TestUtils.withRetry(() -> {
+            try {
+                //@formatter:off
+                OpenShiftUtils.getInstance().deploymentConfigs().withName(dc.getMetadata().getName()).edit()
                     .editSpec()
-                        .addNewVolume()
-                            .withName("keystore")
-                            .withNewSecret()
-                                .withSecretName(HTTPEndpoints.KEYSTORE_SECRET_NAME)
-                            .endSecret()
-                        .endVolume()
-                        .editFirstContainer()
-                            .addNewVolumeMount()
-                                .withNewMountPath("/opt/jboss/")
-                                .withName("keystore")
-                            .endVolumeMount()
-                            .addToEnv(new EnvVar(
-                                "JAVA_OPTIONS",
-                                "-Djackson.deserialization.whitelist.packages=io.syndesis.common.model,io.atlasmap" +
-                                    " -Djavax.net.ssl.trustStore=/opt/jboss/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
-                                null
-                            ))
-                        .endContainer()
+                        .editTemplate()
+                            .editSpec()
+                                .addNewVolume()
+                                    .withName("keystore")
+                                    .withNewSecret()
+                                        .withSecretName(HTTPEndpoints.KEYSTORE_SECRET_NAME)
+                                    .endSecret()
+                                .endVolume()
+                                .editFirstContainer()
+                                    .addNewVolumeMount()
+                                        .withNewMountPath("/opt/jboss/")
+                                        .withName("keystore")
+                                    .endVolumeMount()
+                                    .addToEnv(new EnvVar(
+                                        "JAVA_OPTIONS",
+                                        "-Djackson.deserialization.whitelist.packages=io.syndesis.common.model,io.atlasmap" +
+                                        " -Djavax.net.ssl.trustStore=/opt/jboss/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
+                                        null
+                                    ))
+                                .endContainer()
+                            .endSpec()
+                        .endTemplate()
                     .endSpec()
-                .endTemplate()
-            .endSpec()
-            .done();
-        //@formatter:on
-        // Just to be sure, delete the integration pod if it exists, so that the change in DC is picked up
-        OpenShiftUtils.getInstance().deletePods("syndesis.io/type", "integration");
+                .done();
+                //@formatter:on
+                // Just to be sure, delete the integration pod if it exists, so that the change in DC is picked up
+                OpenShiftUtils.getInstance().deletePods("syndesis.io/type", "integration");
+                return true;
+            } catch (KubernetesClientException kce) {
+                log.debug("Caught KubernetesClientException: ", kce);
+                return false;
+            }
+        }, 3, 30000L, "Unable to edit deployment config");
     }
 }

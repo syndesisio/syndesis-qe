@@ -7,7 +7,6 @@ import io.syndesis.qe.utils.aws.SQSUtils;
 import io.syndesis.qe.utils.jms.JMSUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.assertj.core.api.Assertions;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -60,15 +59,19 @@ public class SQSValidationSteps {
         }
     }
 
-    @Then("verify that the SQS queue {string} has {int} message(s) after {int} second(s)")
-    public void verifyQueueSize(String queueName, int size, int timeout) {
+    @Then("^verify that the SQS queue \"([^\"]*)\" has (max )?(\\d+) messages? after (\\d+) seconds?$")
+    public void verifyQueueSize(String queueName, String max, int size, int timeout) {
         TestUtils.sleepIgnoreInterrupt(timeout * 1000L);
-        Assertions.assertThat(sqs.getQueueSize(queueName)).isEqualTo(size);
+        if (max != null) {
+            assertThat(sqs.getQueueSize(queueName)).isLessThanOrEqualTo(size);
+        } else {
+            assertThat(sqs.getQueueSize(queueName)).isEqualTo(size);
+        }
     }
 
     @Then("verify that the message from SQS queue {string} has content {string}")
     public void verifyMessageContent(String queue, String content) {
-        Assertions.assertThat(sqs.getMessages(queue).get(0).body()).isEqualTo(content);
+        assertThat(sqs.getMessages(queue).get(0).body()).isEqualTo(content);
     }
 
     @Then("verify that {int} messages were received from AMQ {string} {string} and are in order")
@@ -87,14 +90,14 @@ public class SQSValidationSteps {
 
         int lastMsgBody = 0;
         for (String message : messages) {
-            Assertions.assertThat(new JSONObject(message).getInt("body")).isEqualTo(lastMsgBody++);
+            assertThat(new JSONObject(message).getInt("body")).isEqualTo(lastMsgBody++);
         }
     }
 
     @Then("verify that all messages in SQS queue {string} have groupId {string}")
     public void verifySameGroupId(String queueName, String groupId) {
         for (Message message : sqs.getMessages(queueName)) {
-            Assertions.assertThat(message.attributes().get(MessageSystemAttributeName.MESSAGE_GROUP_ID)).isEqualTo(groupId);
+            assertThat(message.attributes().get(MessageSystemAttributeName.MESSAGE_GROUP_ID)).isEqualTo(groupId);
         }
     }
 
