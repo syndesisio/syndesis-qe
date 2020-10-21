@@ -54,6 +54,7 @@
 							junit:target/cucumber/cucumber-junit.xml,
 							json:target/cucumber/cucumber-report.json,
 							io.syndesis.qe.cucumber.MailFormatter:target/cucumber/cucumber-mail,
+							io.syndesis.qe.cucumber.ReportPortalFormatter:target/cucumber/reportPortal,
 							io.syndesis.qe.hooks.ClassTransformerHook
 						</cucumber.plugin>
 					</systemPropertyVariables>
