@@ -14,7 +14,7 @@ Feature: Email connector
     And navigate to the "Home" page
 
   @email-send
-  Scenario Outline: Send an e-mail
+  Scenario Outline: Send an e-mail with <security>
 
     Given created connections
       | Send Email (smtp) | Email SMTP With <security> | Send Email with <security> QE | Send email test |
@@ -79,7 +79,7 @@ Feature: Email connector
 
 
   @email-receive
-  Scenario Outline: Receive Email with SSL
+  Scenario Outline: Receive Email with SSL with <protocol>
 
     Given created connections
       | Receive Email (imap or pop3) | Email <protocol> With SSL | Receive Email with <protocol> QE | Receive email test |

@@ -16,7 +16,7 @@ Feature: Integration - FTP to FTP
 #  1. download - upload
 #
   @ftp-download-ftp-upload
-  Scenario: Create
+  Scenario: Download and upload data to FTP
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

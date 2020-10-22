@@ -151,7 +151,7 @@ Feature: Metrics
     And check that startdate for metrics-test pod is valid
 
   @metrics-error
-  Scenario: Check error
+  Scenario: Check metrics with error
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

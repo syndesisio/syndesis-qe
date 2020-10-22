@@ -17,7 +17,7 @@ Feature: Integration - SFTP to SFTP
 #  1. download - upload
 #
   @sftp-download-sftp-upload
-  Scenario: Create
+  Scenario: Download and upload data to sftp
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

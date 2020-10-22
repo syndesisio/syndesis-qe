@@ -10,7 +10,7 @@ Feature: Simple soak test
     Given created connections
       | Red Hat AMQ | AMQ | AMQ | AMQ connection |
 
-  Scenario Outline: Timer Publish to queue
+  Scenario Outline: Timer Publish to queue <number>
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -48,7 +48,7 @@ Feature: Simple soak test
       | 3      |
 
 
-  Scenario Outline: Read from Queue
+  Scenario Outline: Read from Queue <number>
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
