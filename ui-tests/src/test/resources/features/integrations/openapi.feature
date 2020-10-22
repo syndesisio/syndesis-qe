@@ -348,7 +348,7 @@ Feature: OpenApi support
     And verify API spec warnings contain "All callbacks will be ignored."
 
   @openapi-link-warnings
-  Scenario: Warning when user uses specification with callbacks
+  Scenario: Warning when user uses specification with links
     When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"

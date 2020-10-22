@@ -54,7 +54,7 @@ Feature: Customization - Extensions CRUD
 
 
   @extension-CRUD-delete
-  Scenario: Delete
+  Scenario: Delete extension
 
     Given import extensions from syndesis-extensions folder
       | syndesis-extension-log-body |

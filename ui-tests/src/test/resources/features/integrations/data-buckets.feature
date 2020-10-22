@@ -77,7 +77,7 @@ Feature: Integration - Databucket
   @ENTESB-11787
   @gh-5042
   @data-buckets-usage
-  Scenario: Create
+  Scenario: Create data buckets
     When click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
     And check that position of connection to fill is "Start"

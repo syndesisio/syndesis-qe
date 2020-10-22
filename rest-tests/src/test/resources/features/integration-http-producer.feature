@@ -16,7 +16,7 @@ Feature: Integration - HTTP
       And create HTTPS connection
 
   @integration-http-producer-get
-  Scenario Outline: AMQ to GET
+  Scenario Outline: AMQ to <protocol> GET
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-get-input"
       And create <protocol> "GET" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-get-output"
@@ -33,7 +33,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-post
-  Scenario Outline: AMQ to POST
+  Scenario Outline: AMQ to <protocol> POST
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-post-input"
       And create <protocol> "POST" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-post-output"
@@ -50,7 +50,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-put
-  Scenario Outline: AMQ to PUT
+  Scenario Outline: AMQ to <protocol> PUT
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-put-input"
       And create <protocol> "PUT" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-put-output"
@@ -67,7 +67,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-delete
-  Scenario Outline: AMQ to DELETE
+  Scenario Outline: AMQ to <protocol> DELETE
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-delete-input1"
       And create <protocol> "DELETE" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-delete-output1"
@@ -85,7 +85,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-patch
-  Scenario Outline: AMQ to PATCH
+  Scenario Outline: AMQ to <protocol> PATCH
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-patch-input"
       And create <protocol> "PATCH" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-patch-output"
@@ -102,7 +102,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-options
-  Scenario Outline: AMQ to OPTIONS
+  Scenario Outline: AMQ to <protocol> OPTIONS
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-options-input"
       And create <protocol> "OPTIONS" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-options-output"
@@ -119,7 +119,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-trace
-  Scenario Outline: AMQ to TRACE
+  Scenario Outline: AMQ to <protocol> TRACE
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-trace-input"
       And create <protocol> "POST" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-trace-output"
@@ -135,7 +135,7 @@ Feature: Integration - HTTP
       | HTTPS    |
 
   @integration-http-producer-head
-  Scenario Outline: AMQ to HEAD
+  Scenario Outline: AMQ to <protocol> HEAD
     Given create ActiveMQ "subscribe" action step with destination type "queue" and destination name "<protocol>-producer-head-input"
       And create <protocol> "HEAD" step
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "<protocol>-producer-head-output"

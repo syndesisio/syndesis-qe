@@ -47,7 +47,7 @@ Feature: Integration - AMQ to REST
       | Todo connector | todo     | TODO connection | no validation    |
 
   @integrations-amq-to-rest-xml-message
-  Scenario: Publish subscribe on topic
+  Scenario: Publish subscribe on amq topic
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

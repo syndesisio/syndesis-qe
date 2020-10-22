@@ -17,7 +17,7 @@ Feature: Integration - AMQP to AMQP
 #  1. publish-subscribe-request
 #
   @amqp-connection-publish-subscribe-request
-  Scenario: Publish subscribe on topic
+  Scenario: Publish subscribe on amqp topic
     When navigate to the "Home" page
     And click on the "Create Integration" link
     Then check visibility of visual integration editor

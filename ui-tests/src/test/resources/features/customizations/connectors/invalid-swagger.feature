@@ -10,7 +10,7 @@ Feature: Customization - API Connector - Invalid swagger
     Given clean application state
 
   @check-invalid-swagger-messages
-  Scenario: Create from local file
+  Scenario: Check invalid swagger from local file
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page
     And click on the "Create API Connector" link

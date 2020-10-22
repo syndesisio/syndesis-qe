@@ -17,7 +17,7 @@ Feature: Integration - MQTT to MQTT
 #  1. publish-subscribe-request
 #
   @mqtt-connection-publish-subscribe-request
-  Scenario: Publish subscribe on topic
+  Scenario: Publish subscribe on mqtt topic
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

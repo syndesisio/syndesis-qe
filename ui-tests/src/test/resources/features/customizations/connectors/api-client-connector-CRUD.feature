@@ -29,7 +29,7 @@ Feature: Customization - API Connector CRUD
     Then check visibility of the new connector "Swagger Petstore"
 
   @create-api-connector-from-file-test
-  Scenario: Create from local file
+  Scenario: Create api from local file
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page
     And click on the "Create API Connector" link
@@ -82,7 +82,7 @@ Feature: Customization - API Connector CRUD
 
   @ENTESB-13605
   @create-delete-api-connector
-  Scenario: Delete
+  Scenario: Delete api connector
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page
     And click on the "Create API Connector" link
