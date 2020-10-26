@@ -29,7 +29,7 @@ public class InvokeHttpRequest {
      */
     @When("^invoke post request to webhook in integration (.*) with token (.*) and body (.*)$")
     public void invokeWebhookRequestCannotFail(String nameOfIntegration, String token, String body) {
-        assertThat(this.invokeWebhookRequest(nameOfIntegration, token, body).getCode()).isEqualTo(204);
+        assertThat(this.invokeWebhookRequest(nameOfIntegration, token, body).getCode()).isEqualTo(200);
     }
 
     /**
