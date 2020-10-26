@@ -113,6 +113,10 @@ public class OperatorValidationSteps {
         try {
             if (file == null) {
                 syndesis.deploySyndesisViaOperator();
+                //don't do workarounds for external Jaeger
+                if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+                    syndesis.jaegerWorkarounds();
+                }
             } else {
                 String content = FileUtils.readFileToString(new File("src/test/resources/operator/" + file), "UTF-8");
                 if (content.contains("REPLACE_REPO")) {
@@ -522,8 +526,6 @@ public class OperatorValidationSteps {
         List<Pod> pods = OpenShiftUtils.getInstance().pods().withLabel("syndesis.io/component").list().getItems().stream()
             .filter(p -> !"integration".equals(p.getMetadata().getLabels().get("syndesis.io/component")))
             .collect(Collectors.toList());
-        assertThat(OpenShiftUtils.getAnyPod("name", "jaeger-operator")).isPresent();
-        pods.add(OpenShiftUtils.getAnyPod("name", "jaeger-operator").get());
         for (Pod p : pods) {
             if (p.getStatus().getPhase().contains("Running")) {
                 Map<String, String> labels = p.getMetadata().getLabels();
