@@ -50,7 +50,7 @@ public class ExternalDatabase implements Resource {
                 new DeploymentTriggerPolicyBuilder()
                     .withNewImageChangeParams()
                     .withContainerNames(NAME)
-                    .withFrom(new ObjectReferenceBuilder().withKind("ImageStreamTag").withName("postgresql:9.6").withNamespace("openshift").build())
+                    .withFrom(new ObjectReferenceBuilder().withKind("ImageStreamTag").withName("postgresql:10").withNamespace("openshift").build())
                     .withAutomatic(true)
                     .endImageChangeParams()
                     .withNewType("ImageChange")

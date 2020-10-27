@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import cz.xtf.core.waiting.WaiterException;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
@@ -165,8 +166,16 @@ public class Syndesis implements Resource {
                 OpenShiftWaitUtils.waitUntilAnyPodAppears("syndesis-jaeger");
                 ensureImagePullForSyndesisJaeger();
                 Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
-                OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
-                    .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+                TestUtils.withRetry(() -> {
+                    try {
+                        OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
+                            .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+                        return true;
+                    } catch (KubernetesClientException kce) {
+                        log.debug("Exception thrown while editing jaeger pod: ", kce);
+                        return false;
+                    }
+                }, 3, 30000, "Unable to edit jaeger pod, check debug logs");
             } catch (Exception e) {
                 log.warn("Syndesis-jaeger pod never reached ready state! " +
                     "Ignore when the Syndesis is configured to use external Jaeger instance or old DB activity tracking. Exception in case of " +
@@ -480,11 +489,15 @@ public class Syndesis implements Resource {
         }
 
         log.info("Waiting for syndesis-operator to be ready");
-        OpenShiftUtils.getInstance().waiters()
-            .areExactlyNPodsReady(1, "syndesis.io/component", operatorResourcesName)
-            .interval(TimeUnit.SECONDS, 20)
-            .timeout(TimeUnit.MINUTES, 10)
-            .waitFor();
+        try {
+            OpenShiftUtils.getInstance().waiters()
+                .areExactlyNPodsReady(1, "syndesis.io/component", operatorResourcesName)
+                .interval(TimeUnit.SECONDS, 20)
+                .timeout(TimeUnit.MINUTES, 10)
+                .waitFor();
+        } catch (WaiterException e) {
+            InfraFail.fail("Unable to find operator pod in 10 minutes");
+        }
     }
 
     public void deploySyndesisViaOperator() {
