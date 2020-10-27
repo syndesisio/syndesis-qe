@@ -13,15 +13,8 @@ public class PreviousSyndesis extends Syndesis {
         log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
         super.createPullSecret();
         super.pullOperatorImage();
-        super.installCluster();
         super.grantPermissions();
         super.deployOperator();
         deploySyndesisViaOperator();
-    }
-
-    @Override
-    public void deploySyndesisViaOperator() {
-        // currently the deployment methods are the same, but keep this method here in case of future diverge of deployment methods
-        super.deploySyndesisViaOperator();
     }
 }
