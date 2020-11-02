@@ -172,37 +172,37 @@ Feature: Conditional flows - content base routing
 
     When select the "integrations-conditional-flows-functional-test" integration
     And invoke post request to webhook
-      | integrations-conditional-flows-functional-test | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"John"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 1 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 0 row output
     And check that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Shaco"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 1 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And check that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Clone"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 1 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     And invoke post request to webhook
-      | integrations-conditional-flows-functional-test | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"John"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Shaco"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test | test-webhook | {"message":"Clone"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 2 row output
@@ -257,37 +257,37 @@ Feature: Conditional flows - content base routing
 
     When select the "integrations-conditional-flows-functional-test2" integration
     And invoke post request to webhook
-      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"John"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 1 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 0 row output
     And check that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Shaco"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 1 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And check that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Clone"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 1 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"John"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 1 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Shaco"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-functional-test2 | test-webhook | {"message":"Clone"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 2 row output
@@ -443,43 +443,43 @@ Feature: Conditional flows - content base routing
 
     When select the "integrations-conditional-flows-add-delete-step" integration
     And invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"John"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 0 row output
     And check that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Shaco"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 2 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 0 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 3 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 1 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone2"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone2"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 4 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 2 row output
 
     And invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"John"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"John"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 6 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 2 row output
     And check that query "select * from contact where first_name='Clone was here'" has 2 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Shaco"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Shaco"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 6 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 4 row output
     And check that query "select * from contact where first_name='Clone was here'" has 2 row output
 
     When invoke post request to webhook
-      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone"} | 204 |
+      | integrations-conditional-flows-add-delete-step | test-webhook | {"message":"Clone"} | 200 |
     Then check that query "select * from contact where first_name='Noone was here'" has 7 row output
     And check that query "select * from contact where first_name='Shaco was here'" has 4 row output
     And check that query "select * from contact where first_name='Clone was here'" has 3 row output
