@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.addon.Addon;
+import io.syndesis.qe.component.ComponentUtils;
 import io.syndesis.qe.endpoint.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
@@ -42,6 +43,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -52,12 +54,18 @@ import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.fabric8.kubernetes.api.model.Affinity;
 import io.fabric8.kubernetes.api.model.DoneablePersistentVolume;
 import io.fabric8.kubernetes.api.model.Endpoints;
+import io.fabric8.kubernetes.api.model.Node;
+import io.fabric8.kubernetes.api.model.NodeAffinity;
+import io.fabric8.kubernetes.api.model.NodeSelector;
+import io.fabric8.kubernetes.api.model.NodeSelectorTerm;
 import io.fabric8.kubernetes.api.model.PersistentVolumeFluent;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
+import io.fabric8.kubernetes.api.model.Toleration;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -128,6 +136,14 @@ public class OperatorValidationSteps {
                 }
                 if (content.contains("REPLACE_COLLECTOR_URL")) {
                     content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
+                }
+                if (content.contains("REPLACE_NODE")) {
+                    Optional<Node> worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
+                        .filter(n -> n.getMetadata().getName().contains("worker") && n.getSpec().getTaints().isEmpty()).findFirst();
+                    if (!worker.isPresent()) {
+                        fail("There are no worker nodes with empty taints!");
+                    }
+                    content = content.replace("REPLACE_NODE", worker.get().getMetadata().getName());
                 }
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
                 //don't do workarounds for external Jaeger
@@ -536,7 +552,6 @@ public class OperatorValidationSteps {
                 assertThat(labels).containsKey("rht.comp_ver");
                 assertThat(labels).containsKey("rht.subcomp");
                 assertThat(labels).containsKey("rht.subcomp_t");
-
             }
         }
     }
@@ -566,5 +581,38 @@ public class OperatorValidationSteps {
     @Then("check that the build log {string} contains {string}")
     public void checkBuildLog(String buildName, String expected) {
         assertThat(OpenShiftUtils.getInstance().getBuildLog(OpenShiftUtils.getInstance().getLatestBuild(buildName))).contains(expected);
+    }
+
+    @When("^check (affinity|tolerations)( not set)? for (infra|integration) pods$")
+    public void checkAffinity(String test, String notSet, String method) {
+        List<Pod> pods = "infra".equals(method)
+            ? ComponentUtils.getComponentPods().stream().filter(p -> !p.getMetadata().getName().contains("operator")).collect(Collectors.toList())
+            : OpenShiftUtils.findPodsByPredicates(p -> "integration".equals(p.getMetadata().getLabels().get("syndesis.io/type")));
+        for (Pod p : pods) {
+            String name = p.getMetadata().getName();
+            if ("affinity".equals(test)) {
+                Affinity podAffinity = p.getSpec().getAffinity();
+                if (notSet == null) {
+                    assertThat(podAffinity).as(name + ": affinity is null").isNotNull();
+                    NodeAffinity nodeAffinity = podAffinity.getNodeAffinity();
+                    assertThat(nodeAffinity).as(name + ": node affinity is null").isNotNull();
+                    NodeSelector selector = nodeAffinity.getRequiredDuringSchedulingIgnoredDuringExecution();
+                    assertThat(selector).as(name + ": required is null").isNotNull();
+                    List<NodeSelectorTerm> terms = selector.getNodeSelectorTerms();
+                    assertThat(terms).as(name + ": node selector is null").isNotNull();
+                    assertThat(terms).as(name + ": node selector size isn't 1").hasSize(1);
+                } else {
+                    assertThat(podAffinity).isNull();
+                }
+            } else {
+                Optional<Toleration> toleration = p.getSpec().getTolerations().stream()
+                    .filter(t -> "node.kubernetes.io/network-unavailable".equals(t.getKey())).findAny();
+                if (notSet == null) {
+                    assertThat(toleration).as(name + ": Expected toleration setting is not present").isPresent();
+                } else {
+                    assertThat(toleration).as(name + ": Toleration shouldn't be present").isNotPresent();
+                }
+            }
+        }
     }
 }
