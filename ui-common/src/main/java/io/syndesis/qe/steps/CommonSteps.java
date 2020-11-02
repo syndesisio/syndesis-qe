@@ -26,6 +26,7 @@ import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.login.GitHubLogin;
+import io.syndesis.qe.pages.login.KeyCloakLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.report.selector.ExcludeFromSelectorReports;
@@ -216,6 +217,10 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+        } else if (currentUrl.contains("osd4") && currentUrl.contains("oauth/authorize")) {
+            $(By.partialLinkText("OpenID_keycloak")).click();
+            KeyCloakLogin kcLogin = new KeyCloakLogin();
+            kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("oauth/authorize")) {
             String linkText = "htpasswd";
             if (currentUrl.contains("osp")) {
