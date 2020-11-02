@@ -26,7 +26,7 @@ Feature: Integration - DB to DB
 #  1. select - update
 #
   @db-to-kafka-to-db
-  Scenario: from database to kafka topic
+  Scenario: From database to kafka topic
 #    A.db to kafka:
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
