@@ -6,6 +6,7 @@
 @database
 @datamapper
 @integration-activity
+@long-running
 Feature: Activity
 
   Background: Clean application state
