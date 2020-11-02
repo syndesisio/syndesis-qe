@@ -1,0 +1,22 @@
+apiVersion: syndesis.io/v1beta2
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  integrationScheduling:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: kubernetes.io/hostname
+                  operator: In
+                  values:
+                    - REPLACE_NODE
+  components:
+    server:
+      features:
+        maven:
+          append: true
+          repositories:
+            nexus: "REPLACE_REPO"
