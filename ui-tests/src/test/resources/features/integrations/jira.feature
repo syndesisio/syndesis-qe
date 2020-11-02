@@ -139,7 +139,7 @@ Feature: Jira Connector
     When close all issues with summary "Test Jira Issue Created From Syndesis" and description "Red Hat"
 
   @jira-transition-issue
-  Scenario: Comment on a Jira issue
+  Scenario: Transition a Jira issue
 
     Given create a new jira issue in project "MTP"
 

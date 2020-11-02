@@ -18,7 +18,7 @@ Feature: Integration - Dropbox to Dropbox
 #
   @ENTESB-11791
   @dropbox-integration
-  Scenario: Create
+  Scenario: Upload and download files from dropbox
     # upload file
     When upload file with path "/testInputFile.txt" and content "some content" on Dropbox
     Then check that file with path "/testInputFile.txt" exists on Dropbox

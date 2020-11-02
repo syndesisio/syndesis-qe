@@ -412,7 +412,8 @@
 							pretty,
 							junit:target/cucumber/cucumber-junit.xml,
 							json:target/cucumber/cucumber-report.json,
-							io.syndesis.qe.cucumber.MailFormatter:target/cucumber/cucumber-mail
+							io.syndesis.qe.cucumber.MailFormatter:target/cucumber/cucumber-mail,
+							io.syndesis.qe.cucumber.ReportPortalFormatter:target/cucumber/reportPortal
 						</cucumber.plugin>
 						<syndesis.version>${syndesis.version}</syndesis.version>
 					</systemPropertyVariables>

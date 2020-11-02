@@ -207,7 +207,7 @@ Feature: Activity
   @gh-4192
   @ENTESB-13811
   @activity-error
-  Scenario: Check error
+  Scenario: Check activity with error
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

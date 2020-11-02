@@ -128,7 +128,7 @@ Feature: Conditional flows - content base routing
 
   @disconnected-install
   @integrations-conditional-flows-functional-test
-  Scenario: Conditional flows - functional test
+  Scenario: Conditional flows - functional test - disconnected
     And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
@@ -208,7 +208,7 @@ Feature: Conditional flows - content base routing
     And check that query "select * from contact where first_name='Clone was here'" has 2 row output
 
   @integrations-conditional-flows-functional-test2
-  Scenario: Conditional flows - functional test
+  Scenario: Conditional flows - functional test2
     And select "Basic expression builder" integration action
     When Add another condition
     And fill in values by element data-testid

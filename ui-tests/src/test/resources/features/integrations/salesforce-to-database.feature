@@ -21,7 +21,7 @@ Feature: Integration - Salesforce to DB
 
   @integrations-salesforce-to-database-scenario
   @ENTESB-12415
-  Scenario: Create
+  Scenario: Consume data from salesforce
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

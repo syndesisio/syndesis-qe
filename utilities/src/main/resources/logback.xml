@@ -40,6 +40,7 @@
 		</encoder>
 	</appender>
 	<appender name="asyncDefaulAppender" class="ch.qos.logback.classic.AsyncAppender">
+		<filter class="io.syndesis.qe.cucumber.LogInterceptor" />
 		<queueSize>300</queueSize>
 		<includeCallerData>true</includeCallerData>
 		<appender-ref ref="defaulAppender"/>

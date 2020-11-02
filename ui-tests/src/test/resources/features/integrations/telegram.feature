@@ -80,7 +80,7 @@ Feature: Integration - Telegram to Telegram
 #  in channel "testBotSyndesis". The message should be sent every minute.
 #
   @telegram-database-publish
-  Scenario: Telegram receive and send a message
+  Scenario: Telegram receive from DB and send a message
     When navigate to the "Integrations" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor
@@ -134,7 +134,7 @@ Feature: Integration - Telegram to Telegram
 #  3. read table:  `select * from contact;` :)
 
   @telegram-receive-database
-  Scenario: Telegram receive and send a message
+  Scenario: Telegram receive save and send a message
     When navigate to the "Integrations" page
     And click on the "Create Integration" link to create a new integration.
     Then check visibility of visual integration editor

@@ -17,7 +17,7 @@ Feature: Integration - DB to DB with extension
 
   @ENTESB-12415
   @tech-extension-create-integration-with-new-tech-extension
-  Scenario: Create
+  Scenario: Create integration with extension
     Then insert into "contact" table
       | Josef | Stieranka | Istrochem | db |
     And navigate to the "Home" page

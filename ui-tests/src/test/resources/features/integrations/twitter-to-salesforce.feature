@@ -20,7 +20,7 @@ Feature: Integration - Twitter to Salesforce
       | Twitter    | Twitter Listener |
       | Salesforce | QE Salesforce    |
 
-  Scenario: Create
+  Scenario: Twitter to salesforce integration
     # create integration
     When navigate to the "Home" page
     And click on the "Create Integration" link to create a new integration.
