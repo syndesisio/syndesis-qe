@@ -97,6 +97,8 @@ public class TestConfiguration {
 
     private static final String SYNDESIS_APPEND_REPOSITORY = "syndesis.config.append.repository";
 
+    private static final String APP_MONITORING_VERSION = "syndesis.config.monitoring.version";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -348,6 +350,10 @@ public class TestConfiguration {
 
     public static boolean appendRepository() {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_APPEND_REPOSITORY, "false"));
+    }
+
+    public static String appMonitoringVersion() {
+        return get().readValue(APP_MONITORING_VERSION, "v1.1.6");
     }
 
     private Properties defaultValues() {

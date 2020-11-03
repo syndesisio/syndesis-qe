@@ -66,6 +66,9 @@ public class EndpointClient {
     private static class ErrorLogger implements ClientResponseFilter {
         @Override
         public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
+            if (requestContext.getProperty("disable-logging") != null) {
+                return;
+            }
             if (responseContext.getStatus() > 299 && !requestContext.getUri().toString().contains("reset-db")) {
                 log.error("Error while invoking " + requestContext.getUri().toString());
                 log.error("  Request:");

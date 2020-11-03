@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class TestSuiteParent {
     @BeforeClass
     public static void beforeTests() {
+        Runtime.getRuntime().addShutdownHook(new Thread(ResourceFactory::cleanup));
         try {
             // Do this check only if installing syndesis
             if (TestConfiguration.namespaceCleanup() && !TestUtils.isUserAdmin(TestConfiguration.adminUsername())) {

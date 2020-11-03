@@ -450,16 +450,7 @@ public class Syndesis implements Resource {
             } catch (TimeoutException | InterruptedException e) {
                 fail("Unable to get operator deployment config", e);
             }
-
-            TestUtils.withRetry(() -> {
-                try {
-                    OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
-                    return true;
-                } catch (KubernetesClientException kce) {
-                    log.debug("Caught KubernetesClientException: " + kce);
-                    return false;
-                }
-            }, 3, 30000L, "Unable to scale operator deployment config after 3 tries");
+            OpenShiftUtils.scale(operatorResourcesName, 0);
 
             try {
                 OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
@@ -477,15 +468,7 @@ public class Syndesis implements Resource {
                 }
             }, 3, 30000L, "Unable to update operator deployment config after 3 tries");
 
-            TestUtils.withRetry(() -> {
-                try {
-                    OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
-                    return true;
-                } catch (KubernetesClientException kce) {
-                    log.debug("Caught KubernetesClientException: " + kce);
-                    return false;
-                }
-            }, 3, 30000L, "Unable to scale operator deployment config after 3 tries");
+            OpenShiftUtils.scale(operatorResourcesName, 1);
         }
 
         log.info("Waiting for syndesis-operator to be ready");

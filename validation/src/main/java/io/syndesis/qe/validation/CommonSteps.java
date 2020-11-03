@@ -10,6 +10,7 @@ import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.Jaeger;
+import io.syndesis.qe.resource.impl.Ops;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
 import io.syndesis.qe.resource.impl.Syndesis;
 import io.syndesis.qe.test.InfraFail;
@@ -78,6 +79,16 @@ public class CommonSteps {
     @When("^change runtime to (springboot|camelk)$")
     public static void changeRuntime(String runtime) {
         ResourceFactory.get(Syndesis.class).changeRuntime(runtime);
+    }
+
+    @When("^(enable|disable) monitoring addon$")
+    public void toggleMonitoring(String state) {
+        boolean enable = "enable".equalsIgnoreCase(state);
+        if (enable) {
+            ResourceFactory.create(Ops.class);
+        } else {
+            ResourceFactory.destroy(Ops.class);
+        }
     }
 
     @When("deploy Jaeger")
