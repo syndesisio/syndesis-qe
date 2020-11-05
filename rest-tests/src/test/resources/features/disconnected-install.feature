@@ -1,5 +1,9 @@
 # @sustainer: avano@redhat.com
 
+# Meant to be run on disconnected environment with test support enabled
+# Tries to build integrations with all the connectors that are not touching external services when creating steps in the integration
+# Required parameter for mongo deployment is "mongo.docker.registry" that should point to the docker registry visible from the cluster
+
 @rest
 @disconnected-install
 @ignore
@@ -7,37 +11,12 @@ Feature: Disconnected install
   Background:
     Given clean application state
 
-  Scenario: Amazon DynamoDB
-    Given create DynamoDB connection
-    When add "timer" endpoint with connector id "timer" and "timer-action" action and with properties:
-      | action       | period |
-      | timer-action | 10000   |
-      And create DynamoDB "query" action step with properties:
-        | filter | {"company" : "S", "email" : "S"} |
-      And create integration with name: "dynamodb" and without validating connections
-    Then verify that integration "dynamodb" build is successful
-
   Scenario: Amazon S3
     Given create S3 connection using "asd" bucket
     When create S3 polling START action step with bucket: "asd"
     And add log step
     And create integration with name: "s3" and without validating connections
     Then verify that integration "s3" build is successful
-
-  Scenario: Amazon SNS
-    Given create SNS connection
-    When create SNS publish action step with topic "asd"
-    And add log step
-    And create integration with name: "sns" and without validating connections
-    Then verify that integration "sns" build is successful
-
-  Scenario: Amazon SQS
-    Given create SQS connection
-    When create SQS "polling" action step with properties
-      | queueNameOrArn | arn:syndesis-in |
-    And add log step
-    And create integration with name: "sqs" and without validating connections
-    Then verify that integration "sqs" build is successful
 
   Scenario: AMQP Message Broker
     Given create ActiveMQ accounts
@@ -145,23 +124,13 @@ Feature: Disconnected install
     Then verify that integration "kafka" build is successful
 
   Scenario: MongoDB
-    # todo
-    When todo deploy mongodb in disconnected install job
-    Given create MongoDB account
+    Given deploy MongoDB 3.6 database
+      And create MongoDB account
       And create MongoDB connection
     When create MongoDB "consumer-tail" with collection "test"
       And add log step
       And create integration with name: "mongo" and without validating connections
     Then verify that integration "mongo" build is successful
-
-  Scenario: OData
-    Given create OData HTTPS credentials
-      And create OData HTTPS connection
-    When create OData "read" action with properties
-      | resourcePath | test |
-      And add log step
-      And create integration with name: "odata" and without validating connections
-    Then verify that integration "odata" build is successful
 
   Scenario: Red Hat AMQ
     Given create ActiveMQ accounts
@@ -171,22 +140,6 @@ Feature: Disconnected install
       And create integration with name: "amq" and without validating connections
     Then verify that integration "amq" build is successful
 
-  Scenario: Salesforce
-    Given create SalesForce connection
-    When create SF "salesforce-on-create" action step with properties
-      | sObjectName | Lead |
-      And add log step
-      And create integration with name: "salesforce" and without validating connections
-    Then verify that integration "salesforce" build is successful
-
-  Scenario: ServiceNow
-    Given create ServiceNow connection
-    When create ServiceNow "retrieve" action with properties
-      | table | test |
-      And add log step
-      And create integration with name: "servicenow" and without validating connections
-    Then verify that integration "servicenow" build is successful
-
   Scenario: SFTP
     Given create SFTP connection
     When create SFTP "download" action with values
@@ -195,14 +148,6 @@ Feature: Disconnected install
       And add log step
       And create integration with name: "sftp" and without validating connections
     Then verify that integration "sftp" build is successful
-
-  Scenario: Slack
-    Given create Slack connection
-    When create Slack "channel-consumer" action with properties
-      | channel | test |
-      And add log step
-      And create integration with name: "slack" and without validating connections
-    Then verify that integration "slack" build is successful
 
   Scenario: Telegram
     Given create Telegram connection
@@ -233,11 +178,3 @@ Feature: Disconnected install
       And add log step
       And create integration with name: "split-aggregate" and without validating connections
     Then verify that integration "split-aggregate" build is successful
-
-  @camel-k
-  Scenario: Camel-K
-    Given change runtime to camelk
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
-      And add log step
-      And create integration with name: "camelk" and without validating connections
-    Then verify that camel-k integration "camelk" build is successful
