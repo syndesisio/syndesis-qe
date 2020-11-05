@@ -30,7 +30,7 @@ public class MongoDb36 implements Resource {
     private static final String MONGODB_USER = "user";
     private static final String MONGODB_PASSWORD = "user";
     private static final String MONGODB_DATABASE = "sampledb";
-    private static final String MONGODB_IMAGE = "docker.io/bitnami/mongodb:3.6.16";
+    private static final String MONGODB_IMAGE = System.getProperty("mongo.docker.registry", "docker.io") + "/bitnami/mongodb:3.6.16";
     private static final String MONGDB_URL = "mongodb://user:user@mongodb/sampledb";
     private static final String MONGODB_REPLICA_SET_NAME = "rs0";
     private static final String MONGODB_REPLICA_SET_MODE = "primary";
