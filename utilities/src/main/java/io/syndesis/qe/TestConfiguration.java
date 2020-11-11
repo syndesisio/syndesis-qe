@@ -405,7 +405,7 @@ public class TestConfiguration {
         defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
 
         if (properties.getProperty(SYNDESIS_CR_URL) == null) {
-            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/master/default-cr.yml");
+            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.10.x/default-cr.yml");
         }
 
         defaultProps.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
