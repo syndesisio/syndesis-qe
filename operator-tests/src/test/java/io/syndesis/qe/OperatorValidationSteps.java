@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.addon.Addon;
+import io.syndesis.qe.component.Component;
 import io.syndesis.qe.component.ComponentUtils;
 import io.syndesis.qe.endpoint.IntegrationsEndpoint;
 import io.syndesis.qe.resource.ResourceFactory;
@@ -534,16 +535,23 @@ public class OperatorValidationSteps {
     }
 
     /**
-     * Checks whether pods contains com.redhat metering labels.
+     * Checks whether pods contains metering labels with correct values.
      * It is a feature for Fuse Online product, therefore check runs only in case of the productized build.
      */
-    @Then("verify new RedHat metering labels")
-    public void checkRedhatLabels() {
+    @Then("check that metering labels have correct values for \"([^\"]*)\"$")
+    public void checkThatMeteringLabelsHaveCorrectValues(Component component)  {
+        final String version = "7.8";
+        final String company = "Red_Hat";
+        final String prodName = "Red_Hat_Integration";
+        final String componentName = "Fuse";
+        final String subcomponent_t = "infrastructure";
+
         List<Pod> pods = OpenShiftUtils.getInstance().pods().withLabel("syndesis.io/component").list().getItems().stream()
             .filter(p -> !"integration".equals(p.getMetadata().getLabels().get("syndesis.io/component")))
             .collect(Collectors.toList());
+
         for (Pod p : pods) {
-            if (p.getStatus().getPhase().contains("Running")) {
+            if (p.getStatus().getPhase().contains("Running") && p.getMetadata().getName().contains(component.getName())) {
                 Map<String, String> labels = p.getMetadata().getLabels();
                 assertThat(labels).containsKey("com.company");
                 assertThat(labels).containsKey("rht.prod_name");
@@ -552,6 +560,14 @@ public class OperatorValidationSteps {
                 assertThat(labels).containsKey("rht.comp_ver");
                 assertThat(labels).containsKey("rht.subcomp");
                 assertThat(labels).containsKey("rht.subcomp_t");
+
+                assertThat(labels.get("com.company")).isEqualTo(company);
+                assertThat(labels.get("rht.prod_name")).isEqualTo(prodName);
+                assertThat(labels.get("rht.prod_ver")).isEqualTo(version);
+                assertThat(labels.get("rht.comp")).isEqualTo(componentName);
+                assertThat(labels.get("rht.comp_ver")).isEqualTo(version);
+                assertThat(labels.get("rht.subcomp")).isEqualTo(component.getName());
+                assertThat(labels.get("rht.subcomp_t")).isEqualTo(subcomponent_t);
             }
         }
     }
