@@ -49,6 +49,11 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("add {string} extension step with {string} action")
+    public void addExtensionIdWith(String name, String actionId) {
+        addExtensionIdWith(name, actionId, null);
+    }
+
     @When("add {string} extension step with {string} action with properties:")
     public void addExtensionIdWith(String name, String actionId, DataTable properties) {
         Optional<Extension> e = extensionsEndpoint.list().stream().filter(ex -> ex.getName().equalsIgnoreCase(name)).findFirst();
@@ -58,7 +63,9 @@ public class IntermediateSteps extends AbstractStep {
         assertThat(action).isPresent();
         super.addProperty(StepProperty.KIND, StepKind.extension);
         super.addProperty(StepProperty.ACTION, action.get());
-        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        if (properties != null) {
+            super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        }
         super.addProperty(StepProperty.STEP_NAME, name);
         super.addProperty(StepProperty.EXTENSION, e.get());
         super.createStep();
