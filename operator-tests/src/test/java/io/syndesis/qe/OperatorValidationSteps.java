@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -46,7 +47,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -630,5 +634,35 @@ public class OperatorValidationSteps {
                 }
             }
         }
+    }
+
+    @Then("check repositories used in integration {string} build")
+    public void checkRepositories(String build, DataTable expectedRepositories) {
+        String log = OpenShiftUtils.getInstance().getBuildLog(
+            OpenShiftUtils.getInstance().builds().list().getItems().stream().filter(b -> b.getMetadata().getName().contains(build)).findFirst().get());
+
+        Pattern regex = Pattern.compile(".*Downloading .*https:\\/\\/(.*)\\/org.*");
+        Set<String> downloads = Arrays.stream(log.split("\\n"))
+            // camel-lzf is the artifact defined in the extension
+            .filter(line -> line.contains("Downloading ") && line.contains("camel-lzf"))
+            .map(line -> {
+                Matcher matcher = regex.matcher(line);
+                if (matcher.find())  {
+                    return matcher.group(1);
+                } else {
+                    fail("Unable to parse line: " + line);
+                    return "";
+                }
+            })
+            .collect(Collectors.toSet());
+
+        SoftAssertions asserts = new SoftAssertions();
+        for (String repository : expectedRepositories.asList()) {
+            String repo = StringUtils.substringAfter(repository, "https://");
+            asserts.assertThat(downloads).contains(repo);
+            downloads.remove(repo);
+        }
+        asserts.assertThat(downloads).as("The artifact shouldn't be downloaded from other repositories than defined").isEmpty();
+        asserts.assertAll();
     }
 }

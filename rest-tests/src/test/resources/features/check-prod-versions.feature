@@ -14,5 +14,5 @@ Feature: Check productized build
     And add log step
     And create integration with name: "prod-check"
     Then wait for integration with name: "prod-check" to become active
-    And check that integration pom contains productized version in property "syndesis.version"
-    And check that integration pom contains productized version in property "camel.version"
+    And check that "prod-check" integration pom contains productized version in property "syndesis.version"
+    And check that "prod-check" integration pom contains productized version in property "camel.version"

@@ -25,6 +25,7 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Build;
 import lombok.extern.slf4j.Slf4j;
@@ -215,6 +216,21 @@ public class CommonValidationSteps {
             5,
             600,
             "Build pod for integration " + integrationName + " didn't finish successfully in 10 minutes"
+        );
+    }
+
+    @When("wait until build {string} is completed")
+    public void waitForBuild(String buildName) {
+        TestUtils.waitFor(
+            () -> OpenShiftUtils.podExists(
+                p -> p.getMetadata().getName().contains(buildName),
+                p -> p.getMetadata().getName().endsWith("-build"),
+                p -> !p.getStatus().getContainerStatuses().isEmpty(),
+                p -> p.getStatus().getContainerStatuses().get(0).getState().getTerminated() != null
+            ),
+            5,
+            300,
+            "Unable to find terminated build pod for " + buildName + " after 300 seconds"
         );
     }
 }
