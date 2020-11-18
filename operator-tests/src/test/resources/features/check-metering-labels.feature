@@ -15,4 +15,10 @@ Feature: check metering labels
   Scenario: check new com.redhat labels
     When deploy Syndesis CR
       And wait for Syndesis to become ready
-    Then verify new RedHat metering labels
+    Then check that metering labels have correct values for "DB"
+    And check that metering labels have correct values for "OAUTH"
+    And check that metering labels have correct values for "PROMETHEUS"
+    And check that metering labels have correct values for "SERVER"
+    And check that metering labels have correct values for "META"
+    And check that metering labels have correct values for "OPERATOR"
+    And check that metering labels have correct values for "JAEGER"
