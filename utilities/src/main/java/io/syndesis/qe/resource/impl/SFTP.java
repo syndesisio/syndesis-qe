@@ -17,6 +17,7 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,9 @@ public class SFTP implements Resource {
             .withNewMetadata()
             .withName(serviceAccountName)
             .endMetadata()
+            .addToImagePullSecrets(
+                new LocalObjectReference(TestConfiguration.syndesisPullSecretName())
+            )
             .done();
         OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
             .addNewUser("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
