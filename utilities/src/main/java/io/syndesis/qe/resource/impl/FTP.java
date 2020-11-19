@@ -63,7 +63,7 @@ public class FTP implements Resource {
                 .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(appName).withImage("syndesisqe/ftpd:latest").addAllToPorts(ports)
+                .addNewContainer().withName(appName).withImage("quay.io/syndesis_qe/ftpd:latest").addAllToPorts(ports)
                 .endContainer()
                 .endSpec()
                 .endTemplate()
