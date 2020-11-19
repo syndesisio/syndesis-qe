@@ -75,7 +75,7 @@ public class SFTP implements Resource {
                 .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(appName).withImage("syndesisqe/sftpd-alp:latest")
+                .addNewContainer().withName(appName).withImage("quay.io/syndesis_qe/sftpd-alp:latest")
                 .addAllToPorts(ports)
                 .addAllToEnv(templateParams)
                 .endContainer()
