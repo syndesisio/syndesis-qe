@@ -52,6 +52,9 @@ public class SFTP implements Resource {
         OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
             .addNewUser("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
             .done();
+        OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
+            .addToDefaultAddCapabilities("SYS_CHROOT")
+            .done();
 
         if (!isDeployed()) {
             List<ContainerPort> ports = new LinkedList<>();
