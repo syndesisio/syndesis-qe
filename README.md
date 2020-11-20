@@ -255,11 +255,7 @@ credentials.json
 
 ### Execution
 
-For the quick execution, we provide a containerized version of the test suite. For more information, see Readme on DockerHub.
-
-Rest test suite https://hub.docker.com/r/syndesisqe/tests-rest
-
-UI test suite https://hub.docker.com/r/syndesisqe/tests-ui
+For the quick execution, we provide a containerized version of the test suite. For more information, see Readme on [DockerHub](https://hub.docker.com/r/syndesisqe/syndesisqe-tests)
 
 #### Before execution
 For the test execution at least `io.syndesis.common:common-model` and `io.syndesis.server:server-endpoint` modules are required in current version.

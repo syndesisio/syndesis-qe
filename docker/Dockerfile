@@ -1,10 +1,10 @@
 #================================================================================================================================
-# Default version, for now, is 1.11.x, `docker build -t syndesisqe/tests-ui:1.11.x .`
+# Default version, for now, is 1.11.x, `docker build -t syndesisqe/syndesisqe-tests:1.11.x .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
-# e.g. `docker build -t docker.io/syndesisqe/tests-ui:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
+# e.g. `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
 # e.g. For building an image for testing changes in the code base which are committed only in the owner repo:
-# `docker build -t docker.io/syndesisqe/tests-ui:<tag> --build-arg SYNDESIS_QE_BRANCH_VERSION=FUSEQE-9071_Containerizing-test-suite --build-arg SYNDESIS_QE_BRANCH_OWNER=mkralik3 .`
+# `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_QE_BRANCH_VERSION=FUSEQE-9071_Containerizing-test-suite --build-arg SYNDESIS_QE_BRANCH_OWNER=mkralik3 .`
 
 
 # You have to specify the cluster URL, NAMESPACE and ui credentials in the environment variables. When you don't specify tags, only the smoke test will be running.
@@ -15,8 +15,8 @@
 ## e.g.
 #docker run \
 #   -e URL='https://192.168.42.236:8443' \
-#   -e UI_USERNAME='admin' \
-#   -e UI_PASSWORD='admin' \
+#   -e ADMIN_USERNAME='admin' \
+#   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
 #   --shm-size=2g \
 #   syndesisqe/tests-ui:1.11.x
@@ -32,22 +32,22 @@ FROM alpine/git as gitRepoSyndesis
 
 ARG SYNDESIS_BRANCH_OWNER=syndesisio
 ARG SYNDESIS_BRANCH_VERSION=1.11.x
+ARG INSTALL_TAG=1.11
 
-WORKDIR /syndesis
-RUN git clone https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
-RUN git checkout ${SYNDESIS_BRANCH_VERSION}
+RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis \
+	&& git clone -b ${INSTALL_TAG} https://github.com/${SYNDESIS_BRANCH_OWNER}/fuse-online-install.git /fuse-online-install
 
 #================================================================================================================================
 ## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
 # for some reason, the syndesis build doesn't work on alpine image
 FROM maven:3.6-jdk-8-slim as buildSyndesis
-## Syndesis build needs git for some reason
-RUN apt-get update -y
-RUN apt-get install -y git
-## Build only dependencies that the test suite needs
 COPY --from=gitRepoSyndesis /syndesis /syndesis
 WORKDIR /syndesis/app
-RUN mvn clean install -P flash --projects :common-model,:server-endpoint --also-make
+## Syndesis build needs git for some reason
+## Build only dependencies that the test suite needs
+RUN apt-get update -y \
+	&& apt-get install -y git \
+	&& mvn clean install -P flash --projects :common-model,:server-endpoint --also-make
 
 #================================================================================================================================
 FROM alpine/git as gitRepoSyndesisQe
@@ -58,52 +58,36 @@ ARG SYNDESIS_QE_BRANCH_VERSION=1.11.x
 ARG APICURIO_QE_BRANCH_OWNER=Apicurio
 ARG APICURIO_QE_BRANCH_VERSION=1.11.x
 
-WORKDIR /syndesis-qe
-RUN git clone --recurse-submodules https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe
-RUN git checkout ${SYNDESIS_QE_BRANCH_VERSION}
-
-WORKDIR /apicurio
-RUN git clone https://github.com/${APICURIO_QE_BRANCH_OWNER}/apicurio-qe.git /apicurio
-RUN git checkout ${APICURIO_QE_BRANCH_VERSION}
-
-WORKDIR /syndesis-qe/syndesis-extensions
-RUN git checkout master
+RUN git clone --recurse-submodules -b ${SYNDESIS_QE_BRANCH_VERSION} https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe \
+	&& git clone -b ${APICURIO_QE_BRANCH_VERSION} https://github.com/${APICURIO_QE_BRANCH_OWNER}/apicurio-qe.git /apicurio \
+	&& git clone https://github.com/jboss-fuse/marketplace-utilities /marketplace-utilities \
+	&& cd /syndesis-qe/syndesis-extensions \
+	&& git checkout 1.10.x
 
 #================================================================================================================================
-# TODO skip for now, see next TODO
-#FROM maven:3.6-jdk-8-slim as buildApicurio
-#COPY --from=gitRepoSyndesisQe /apicurio /apicurio
-#WORKDIR /apicurio
-#RUN mvn clean install -DskipTests=true
+FROM maven:3.6-jdk-8-slim as buildApicurio
+COPY --from=gitRepoSyndesisQe /marketplace-utilities /marketplace-utilities
+COPY --from=gitRepoSyndesisQe /apicurio /apicurio
+
+RUN mvn clean install -DskipTests=true -f /marketplace-utilities/pom.xml \
+	&& mvn clean install -DskipTests=true -f /apicurio/pom.xml
 
 #================================================================================================================================
-FROM maven:3.6-jdk-8-slim as buildSyndesisQE
+FROM maven:3.5-jdk-8-alpine as buildSyndesisQE
 
-## Copy builded Syndesis and Apicurio dependencies
+## Copy built Syndesis and Apicurio dependencies
 COPY --from=buildSyndesis /root/.m2/repository/io/syndesis /root/.m2/repository/io/syndesis
-
-# TODO, once marketplace-utilities is pushed to github or central, the apicurito can be build manually, for now, fill the internal repository url bellow
-#COPY --from=buildApicurio /root/.m2/repository/apicurio /root/.m2/repository/apicurio
-RUN mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.2:get \
-    -DremoteRepositories=<! FILL HERE INTERNAL REPO URL WHERE APICURIO 0.0.3 IS !> \
-    -DartifactId=apicurito-tests \
-    -Dclassifier=tests \
-    -DgroupId=apicurio \
-    -Dversion=0.0.3-SNAPSHOT \
-    -Dtype=test-jar
-
+COPY --from=buildApicurio /root/.m2/repository/apicurio /root/.m2/repository/apicurio
+COPY --from=buildApicurio /root/.m2/repository/io/syndesis/qe /root/.m2/repository/io/syndesis/qe
 COPY --from=gitRepoSyndesisQe /syndesis-qe /syndesis-qe
+
 WORKDIR /syndesis-qe
 
 ## Build syndesis extensions which are used in the test suite
-# TODO build extensions failed, skip for now
-#RUN mvn clean package -B -f syndesis-extensions/pom.xml --also-make --projects :syndesis-library-jdbc-driver,:syndesis-extension-log-body,:syndesis-extension-body
+RUN mvn clean package -B -f syndesis-extensions/pom.xml --also-make --projects :syndesis-library-jdbc-driver,:syndesis-extension-log-body,:syndesis-extension-body
 
 ## Build syndesis-qe tests (To download all dependencies during the building phase. not during the running phase)
-RUN mvn -P ui clean install  -DskipTests
-
-WORKDIR /syndesis-qe/ui-common
-RUN mvn clean package -Pdownload-drivers
+RUN mvn -P ui clean install -DskipTests -Dwebdriverextensions.version=3.1.3 -Pdownload-drivers
 
 ## This file has not contained 3rd party services. It is copied into the test suite in order to the tests which use self-deployed services work (AMQ broker, MongoDB).
 ## In the future, the external credential.json (with 3rd party services credential) can be pass to the image as an environment variable.
@@ -112,19 +96,28 @@ COPY credentials_minimal.json /syndesis-qe/credentials.json
 #================================================================================================================================
 FROM selenium/standalone-firefox:78.0 as runningEnv
 
-WORKDIR /syndesis-qe
+WORKDIR /home/seluser
 COPY --from=buildSyndesisQE /root/.m2/repository/ /home/seluser/.m2/repository/
-COPY --from=buildSyndesisQE /syndesis-qe /syndesis-qe
+COPY --from=buildSyndesisQE /syndesis-qe /home/seluser/syndesis-qe
+COPY --from=gitRepoSyndesis /fuse-online-install /home/seluser/fuse-online-install
+COPY entrypoint.sh /home/seluser/entrypoint.sh
 ## Default environment variables values
 ENV TAGS '@smoke'
+ENV MODULE 'all'
+ENV MODE 'full'
+ENV RETRIES '3'
 
 USER root
-RUN apt update -y
-RUN apt install -y openjdk-8-jdk
+RUN apt update -y \
+	&& apt install -y openjdk-8-jdk \
+	&& wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux.tar.gz -O /tmp/oc.tar.gz \
+	&& tar -xvf /tmp/oc.tar.gz oc \
+	&& mv oc /usr/local/bin \
+	&& rm -f /tmp/oc.tar.gz \
+	&& chown -R seluser:seluser /home/seluser
+
 # the root cannot be used, the webdriver would fail after start
 USER seluser
+WORKDIR /home/seluser/syndesis-qe
 
-COPY syndesisQe_ui.sh /usr/local/bin/syndesisQe.sh
-RUN chmod +x /usr/local/bin/syndesisQe.sh
-
-ENTRYPOINT ["/usr/local/bin/syndesisQe.sh"]
+ENTRYPOINT ["/home/seluser/entrypoint.sh"]

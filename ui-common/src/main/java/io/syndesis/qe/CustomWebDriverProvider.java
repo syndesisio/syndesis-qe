@@ -95,6 +95,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         ChromeOptions options = new ChromeOptions();
         options.setExperimentalOption("prefs", preferences);
         options.addArguments("--no-sandbox");
+        options.addArguments(TestConfiguration.syndesisUrl());
         options.setCapability("acceptInsecureCerts", true);
 
         TestConfiguration.browserBinary().map(options::setBinary);
@@ -122,7 +123,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
 
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setCapability("marionette", true);
-        firefoxOptions.addArguments("start-maximized");
+        firefoxOptions.addArguments(TestConfiguration.syndesisUrl());
 
         firefoxOptions.addPreference("browser.download.folderList", 2);
         firefoxOptions.addPreference("browser.download.manager.showWhenStarting", false);
