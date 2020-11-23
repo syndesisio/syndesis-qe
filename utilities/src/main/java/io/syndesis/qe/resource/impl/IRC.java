@@ -91,7 +91,7 @@ public class IRC implements Resource {
             .addToLabels(LABEL_NAME, SERVER_APP_NAME)
             .endMetadata()
             .editOrNewSpec()
-            .addNewContainer().withName(SERVER_APP_NAME).withImage("syndesisqe/irc:latest").addAllToPorts(ports)
+            .addNewContainer().withName(SERVER_APP_NAME).withImage("quay.io/syndesis_qe/irc:latest").addAllToPorts(ports)
 
             .endContainer()
             .endSpec()
@@ -144,7 +144,7 @@ public class IRC implements Resource {
             .addToLabels(LABEL_NAME, CONTROLLER_APP_NAME)
             .endMetadata()
             .editOrNewSpec()
-            .addNewContainer().withName(CONTROLLER_APP_NAME).withImage("syndesisqe/irc-controller:latest").addAllToPorts(ports).addAllToEnv(envVars)
+            .addNewContainer().withName(CONTROLLER_APP_NAME).withImage("quay.io/syndesis_qe/irc-controller:latest").addAllToPorts(ports).addAllToEnv(envVars)
 
             .endContainer()
             .endSpec()
