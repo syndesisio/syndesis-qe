@@ -50,7 +50,7 @@ public class FHIR implements Resource {
                 .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(appName).withImage("syndesisqe/hapi-fhir-fab:latest").addAllToPorts(ports)
+                .addNewContainer().withName(appName).withImage("quay.io/syndesis_qe/hapi-fhir-fab:latest").addAllToPorts(ports)
                 .endContainer()
                 .endSpec()
                 .endTemplate()

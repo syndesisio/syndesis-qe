@@ -34,7 +34,7 @@ public class HTTPEndpoints implements Resource {
         "https://github.com/syndesisio/syndesis-qe-HTTPEndpoints/blob/master/src/main/resources/keystore.p12?raw=true";
     private static final String LABEL_NAME = "app";
     private static final String APP_NAME = "httpendpoints";
-    private static final String IMAGE = "syndesisqe/httpendpoints";
+    private static final String IMAGE = "quay.io/syndesis_qe/httpendpoints";
     private static final String HTTP_SERVICE_NAME = "http-svc";
     private static final String HTTPS_SERVICE_NAME = "https-svc";
 
