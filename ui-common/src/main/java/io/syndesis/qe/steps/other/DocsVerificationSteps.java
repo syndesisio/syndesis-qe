@@ -15,23 +15,29 @@ import com.codeborne.selenide.Selenide;
 import io.cucumber.java.en.Then;
 
 public class DocsVerificationSteps {
-    final String syndesisVersion = "1.11";
-    final String docsVersion = "7.8";
+    final String latestReleasedVersion = "7.7";
+    final String currentVersion = "7.8";
 
     @Then("^check version in about page$")
     public void checkVersion() {
         By versionOnAboutPage = By.cssSelector("[data-testid=\"about-modal-content-version-list-item\"]");
-        assertThat($(versionOnAboutPage).shouldBe(visible).getText())
-            .isNotEmpty();
+        assertThat($(versionOnAboutPage).shouldBe(visible).getText()).isNotEmpty();
         assertThat($(versionOnAboutPage).getText()).isEqualTo(TestUtils.getSyndesisVersion());
-        assertThat($(versionOnAboutPage).getText().substring(0, 4)).isEqualTo(syndesisVersion);
     }
 
     @Then("verify whether the docs has right version")
     public void verifyDocsVersion() {
         Selenide.switchTo().window(1);
         TestUtils.waitFor(() -> url().contains(".redhat.com"), 1, 15, "URL was not found");
-        assertThat(url().split("/")[6]).isEqualTo(docsVersion);
+        By versionOnUserGuide = By.cssSelector(".productnumber");
+        assertThat($(versionOnUserGuide).shouldBe(visible).getText()).isNotEmpty();
+        if (TestUtils.isProdBuild()) {
+            assertThat(url().split("/")[6]).isEqualTo(currentVersion);
+            assertThat($(versionOnUserGuide).getText()).isEqualTo(currentVersion);
+        } else {
+            assertThat(url().split("/")[6]).isEqualTo(latestReleasedVersion);
+            assertThat($(versionOnUserGuide).getText()).isEqualTo(latestReleasedVersion);
+        }
         Selenide.closeWindow();
     }
 }
