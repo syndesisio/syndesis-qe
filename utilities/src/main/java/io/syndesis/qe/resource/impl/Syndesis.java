@@ -419,6 +419,11 @@ public class Syndesis implements Resource {
             log.error("Service account not found in resources");
         }
 
+        OpenShiftUtils.getInstance().serviceAccounts().withName("default")
+            .edit()
+                .addToImagePullSecrets(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()))
+            .done();
+
         DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
             .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
             .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
@@ -426,50 +431,20 @@ public class Syndesis implements Resource {
         List<EnvVar> envVarsToAdd = new ArrayList<>();
         envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
 
-        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
-
-        List<HasMetadata> finalResourceList = resourceList;
-        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(finalResourceList).createOrReplace());
-
-        Map<String, String> imagesEnvVars = new HashMap<>();
         // For upgrade, we want to override images only for "current" version
         if (operatorImage.equals(TestConfiguration.syndesisOperatorImage())) {
             Set<Image> images = EnumSet.allOf(Image.class);
             for (Image image : images) {
                 if (TestConfiguration.image(image) != null) {
-                    log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
-                    imagesEnvVars.put("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image));
+                    log.info("Overriding " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
+                    envVarsToAdd.add(new EnvVar("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image), null));
                 }
             }
         }
 
-        if (!imagesEnvVars.isEmpty()) {
-            log.info("Overriding images to be deployed");
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getDeploymentConfig(operatorResourcesName) != null);
-            } catch (TimeoutException | InterruptedException e) {
-                fail("Unable to get operator deployment config", e);
-            }
-            OpenShiftUtils.scale(operatorResourcesName, 0);
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
-            } catch (TimeoutException | InterruptedException e) {
-                fail("Operator pod shouldn't be present after scaling down", e);
-            }
-
-            TestUtils.withRetry(() -> {
-                try {
-                    OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
-                    return true;
-                } catch (KubernetesClientException kce) {
-                    log.debug("Caught KubernetesClientException: " + kce);
-                    return false;
-                }
-            }, 3, 30000L, "Unable to update operator deployment config after 3 tries");
-
-            OpenShiftUtils.scale(operatorResourcesName, 1);
-        }
+        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(resourceList).createOrReplace());
 
         log.info("Waiting for syndesis-operator to be ready");
         try {
