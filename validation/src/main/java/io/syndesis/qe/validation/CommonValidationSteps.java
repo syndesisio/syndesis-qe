@@ -14,6 +14,7 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
 import io.cucumber.java.en.Then;
@@ -196,27 +196,16 @@ public class CommonValidationSteps {
 
     @Then("^verify that (camel-k )?integration \"([^\"]*)\" build is successful$")
     public void verifyBuildIsSuccessful(String camelK, String integrationName) {
-        BooleanSupplier bs = (camelK != null && !camelK.isEmpty())
-            ? () -> OpenShiftUtils.podExists(p -> p.getMetadata().getName().startsWith("camel-k-ctx") && p.getMetadata().getName().endsWith("build"))
-            : () -> OpenShiftUtils.integrationPodExists(integrationName, pod -> pod.getMetadata().getName().endsWith("build"));
-        TestUtils.waitFor(
-            bs,
-            5,
-            300,
-            "Unable to find build pod for integration " + integrationName
-        );
+        waitForBuild(integrationName);
 
-        bs = (camelK != null && !camelK.isEmpty())
-            ? () -> "Succeeded".equals(OpenShiftUtils.getPod(p -> p.getMetadata().getName().startsWith("camel-k-ctx")
-            && p.getMetadata().getName().endsWith("build")).getStatus().getPhase())
-            : () -> "Succeeded".equals(OpenShiftUtils.getIntegrationPod(integrationName, pod -> pod.getMetadata().getName().endsWith("build"))
-            .getStatus().getPhase());
         TestUtils.waitFor(
-            bs,
+            () -> StringUtils.containsAny(OpenShiftUtils.getIntegrationPod(integrationName, pod -> pod.getMetadata().getName().endsWith("build")).getStatus().getPhase(),
+                "Succeeded", "Failed"),
             5,
             600,
             "Build pod for integration " + integrationName + " didn't finish successfully in 10 minutes"
         );
+        assertThat(OpenShiftUtils.getIntegrationPod(integrationName, pod -> pod.getMetadata().getName().endsWith("build")).getStatus().getPhase()).isEqualTo("Succeeded");
     }
 
     @When("wait until build {string} is completed")
