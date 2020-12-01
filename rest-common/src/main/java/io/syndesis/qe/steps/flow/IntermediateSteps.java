@@ -21,7 +21,9 @@ import java.util.Optional;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class IntermediateSteps extends AbstractStep {
     @Autowired
     private StepDescriptorEndpoint stepDescriptorEndpoint;
@@ -49,6 +51,11 @@ public class IntermediateSteps extends AbstractStep {
         super.createStep();
     }
 
+    @When("add {string} extension step with {string} action")
+    public void addExtensionIdWith(String name, String actionId) {
+        addExtensionIdWith(name, actionId, null);
+    }
+
     @When("add {string} extension step with {string} action with properties:")
     public void addExtensionIdWith(String name, String actionId, DataTable properties) {
         Optional<Extension> e = extensionsEndpoint.list().stream().filter(ex -> ex.getName().equalsIgnoreCase(name)).findFirst();
@@ -58,7 +65,9 @@ public class IntermediateSteps extends AbstractStep {
         assertThat(action).isPresent();
         super.addProperty(StepProperty.KIND, StepKind.extension);
         super.addProperty(StepProperty.ACTION, action.get());
-        super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        if (properties != null) {
+            super.addProperty(StepProperty.PROPERTIES, properties.asMap(String.class, String.class));
+        }
         super.addProperty(StepProperty.STEP_NAME, name);
         super.addProperty(StepProperty.EXTENSION, e.get());
         super.createStep();
@@ -109,6 +118,19 @@ public class IntermediateSteps extends AbstractStep {
         super.addProperty(StepProperty.KIND, StepKind.aggregate);
         super.addProperty(StepProperty.ACTION, super.generateStepAction(previousStepWithDatashapes.getAction().get(), sd));
         super.addProperty(StepProperty.STEP_NAME, "Aggregate");
+        super.createStep();
+    }
+
+    @When("create {string} template step with template {string}")
+    public void createTemplateStep(String type, String template) {
+        log.warn("Template step: Only initial implementation used in disconnected install tests to gather the dependencies, integration doesn't work");
+        super.addProperty(StepProperty.KIND, StepKind.template);
+        super.addProperty(StepProperty.STEP_NAME, "Template");
+        super.addProperty(StepProperty.PROPERTIES, TestUtils.map(
+            "language", type,
+            "template", template
+        ));
+
         super.createStep();
     }
 }

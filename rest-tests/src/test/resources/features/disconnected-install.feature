@@ -7,6 +7,7 @@
 @rest
 @disconnected-install
 @ignore
+@ENTESB-15064
 Feature: Disconnected install
   Background:
     Given clean application state
@@ -178,3 +179,28 @@ Feature: Disconnected install
       And add log step
       And create integration with name: "split-aggregate" and without validating connections
     Then verify that integration "split-aggregate" build is successful
+
+  Scenario: Advanced filter
+    Given create ActiveMQ accounts
+      And create ActiveMQ connection
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 10000 ms
+      And add advanced filter step with "${bodyAs(String)} contains 'number'" expression
+      And add log step
+      And create integration with name: "advanced-filter" and without validating connections
+    Then verify that integration "advanced-filter" build is successful
+
+  Scenario Outline: Templates - <template_type>
+    Given create ActiveMQ accounts
+      And create ActiveMQ connection
+    When create ActiveMQ "subscribe" action step with destination type "queue" and destination name "in"
+      And change "out" datashape of previous step to "JSON_INSTANCE" type with specification '{"msg":"hello"}'
+      And create "<template_type>" template step with template "<template_text>"
+      And add log step
+      And create integration with name: "<template_type>" and without validating connections
+    Then verify that integration "<template_type>" build is successful
+
+    Examples:
+      | template_type | template_text |
+      | mustache      | {{test}}      |
+      | freemarker    | ${test}       |
+      | velocity      | $test         |
