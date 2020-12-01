@@ -205,6 +205,12 @@
 			<artifactId>jira-rest-java-client-api</artifactId>
 			<version>${jira.client.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.syndesis.qe</groupId>
+			<artifactId>marketplace-utilities</artifactId>
+			<version>${marketplaceutils.version}</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>
