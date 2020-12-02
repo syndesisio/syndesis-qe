@@ -147,7 +147,7 @@ public class Syndesis implements Resource {
         if (getCrd() != null) {
             getCrNames().forEach((version, names) -> names.forEach(name -> undeployCustomResource(name, version)));
         }
-        if (Syndesis.subscriptionExists()) {
+        if (!OpenShiftUtils.isOpenshift3() && Syndesis.subscriptionExists()) {
             OpenShiftUtils.getInstance().customResource(getSubscriptionCRDContext()).delete(TestConfiguration.openShiftNamespace(), "fuse-online");
             try {
                 //For some reason the CSV is sometimes left over from deleting the subscription
