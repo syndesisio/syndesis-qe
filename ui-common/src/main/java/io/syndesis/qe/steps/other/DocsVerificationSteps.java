@@ -29,12 +29,12 @@ public class DocsVerificationSteps {
     public void verifyDocsVersion() {
         Selenide.switchTo().window(1);
         TestUtils.waitFor(() -> url().contains(".redhat.com"), 1, 15, "URL was not found");
-        By versionOnUserGuide = By.cssSelector(".productnumber");
-        assertThat($(versionOnUserGuide).shouldBe(visible).getText()).isNotEmpty();
         if (TestUtils.isProdBuild()) {
             assertThat(url().split("/")[6]).isEqualTo(currentVersion);
         } else {
             assertThat(url().split("/")[6]).isEqualTo(latestReleasedVersion);
+            By versionOnUserGuide = By.cssSelector(".productnumber");
+            assertThat($(versionOnUserGuide).shouldBe(visible).getText()).isNotEmpty();
             assertThat($(versionOnUserGuide).getText()).isEqualTo(latestReleasedVersion);
         }
         Selenide.closeWindow();
