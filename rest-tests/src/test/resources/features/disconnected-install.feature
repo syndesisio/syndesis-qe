@@ -189,6 +189,7 @@ Feature: Disconnected install
       And create integration with name: "advanced-filter" and without validating connections
     Then verify that integration "advanced-filter" build is successful
 
+  @ENTESB-15064
   Scenario Outline: Templates - <template_type>
     Given create ActiveMQ accounts
       And create ActiveMQ connection
