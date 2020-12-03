@@ -102,13 +102,13 @@ public class Syndesis implements Resource {
         createPullSecret();
         pullOperatorImage();
         installCluster();
+        grantPermissions();
         deployOperator();
         deployCrAndRoutes();
     }
 
     public void deployCrAndRoutes() {
         log.info("Deploying Syndesis CR");
-        grantPermissions();
         deploySyndesisViaOperator();
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
