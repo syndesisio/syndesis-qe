@@ -824,18 +824,19 @@ public class Syndesis implements Resource {
             } else {
                 Bundle.createSubscription(ocpSvc, "fuse-online", "fuse-online-v7.8.x", "''", "fuse-online-test-catalog");
             }
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning("name", "syndesis-operator", 1));
         } catch (IOException | TimeoutException | InterruptedException e) {
             e.printStackTrace();
         }
         createPullSecret();
         if (TestConfiguration.enableTestSupport()) {
-            enableTestSupport();
+            TestUtils.withRetry(this::enableTestSupport, 5, 10, "Failed to patch CSV");
         }
         deployCrAndRoutes();
         CommonSteps.waitForSyndesis();
     }
 
-    private void enableTestSupport() {
+    private boolean enableTestSupport() {
         TestUtils.waitFor(() -> "AtLatestKnown".equalsIgnoreCase(getSubscription().getJSONObject("status").getString("state")), 2, 60 * 3,
             "CSV didn't get installed in time");
         JSONObject json = new JSONObject(
@@ -849,8 +850,10 @@ public class Syndesis implements Resource {
         try {
             OpenShiftUtils.getInstance().customResource(getCSVContext())
                 .edit(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0", json.toMap());
-        } catch (IOException e) {
+            return true;
+        } catch (Exception e) {
             log.error("Couldn't edit Syndesis CSV", e);
+            return false;
         }
     }
 }
