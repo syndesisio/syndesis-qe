@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -177,22 +178,23 @@ public class TestConfiguration {
             if (get().readValue(SYNDESIS_UI_URL) != null && get().readValue(SYNDESIS_UI_URL).contains("syndesis.my-minishift.syndesis.io")) {
                 //for jenkins
                 get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, "my-minishift.syndesis.io");
-            } else if (openShiftUrl().endsWith("8443")) {
-                //OCP 3.11
-                if (openShiftUrl().matches("https:\\/\\/(\\d{1,4}\\.){3}\\d{1,4}:8443")) {
-                    //minishift
-                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":8443") + ".nip.io");
-                } else {
-                    //remote instance
-                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":8443"));
-                }
-            } else {
+            } else if (openShiftUrl().endsWith("6443")) {
                 //OCP 4.x
                 if (openShiftUrl().contains("https://api.crc.testing:6443")) {
                     //CRC
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, "apps-crc.testing");
                 } else {
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
+                }
+            } else {
+                //OCP 3.11
+                String port = Arrays.asList(openShiftUrl().split(":")).stream().filter(part -> part.contains("443")).findFirst().orElse("8443");
+                if (openShiftUrl().matches("https:\\/\\/(\\d{1,4}\\.){3}\\d{1,4}:" + port)) {
+                    //minishift
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":" + port) + ".nip.io");
+                } else {
+                    //remote instance
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":" + port));
                 }
             }
         }

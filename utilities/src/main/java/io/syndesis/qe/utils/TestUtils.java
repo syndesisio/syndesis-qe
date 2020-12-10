@@ -137,6 +137,7 @@ public final class TestUtils {
     /**
      * Same as {@link #waitFor(BooleanSupplier, int, int, String)}, but does not fail in case of timeout,
      * instead it has return value that determines whether wait condition ended with success
+     *
      * @return true if condition was satisfied, false otherwise
      */
     public static boolean waitForNoFail(BooleanSupplier condition, int checkIntervalInSeconds, int timeoutInSeconds) {
@@ -220,10 +221,18 @@ public final class TestUtils {
         }
         try {
             return OpenShiftUtils.getInstance().clusterRoleBindings().inAnyNamespace().list().getItems().stream()
-                .filter(crb -> crb.getMetadata().getName().startsWith("cluster-admin") && crb.getUserNames() != null)
-                .anyMatch(
-                    crb -> crb.getUserNames().contains(user)
-                );
+                .filter(crb -> crb.getMetadata().getName().startsWith("cluster-admin"))
+                .anyMatch(crb -> {
+                    if (crb.getUserNames() != null && crb.getUserNames().contains(user)) {
+                        return true;
+                    }
+                    if (crb.getGroupNames() != null) {
+                        return OpenShiftUtils.getInstance().groups().inAnyNamespace().list().getItems().stream()
+                            .filter(group -> crb.getGroupNames().contains(group.getMetadata().getName()))
+                            .anyMatch(group -> group.getUsers().contains(user));
+                    }
+                    return false;
+                });
         } catch (Exception e) {
             log.debug("Exception thrown while checking if user is admin: " + e);
             return false;
