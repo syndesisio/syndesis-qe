@@ -45,7 +45,6 @@ import io.syndesis.qe.utils.google.GoogleAccount;
 import io.syndesis.qe.utils.google.GoogleAccounts;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -197,6 +196,17 @@ public class CommonSteps {
 
             RHDevLogin rhDevLogin = new RHDevLogin();
             rhDevLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+        } else if (currentUrl.contains("api-qe") && currentUrl.contains("oauth/authorize")) {
+            // cluster provided by 3scale
+            String linkText = "HTPasswd";
+            if (currentUrl.contains("master")) {
+                // 3.11
+                linkText = "Service accounts";
+            }
+
+            $(By.partialLinkText(linkText)).click();
+            MinishiftLogin minishiftLogin = new MinishiftLogin();
+            minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains(":8443/login")) {
             log.info("Minishift cluster login page");
 

@@ -46,7 +46,7 @@ public class CommonHooks {
         ResourceFactory.destroy(MySQL.class);
     }
 
-    @After("@3scale")
+    @After("@3scale,~@3scale-discovery")
     public void default3scaleAnnotation() {
         log.info("Removing 3scale discovery functionality");
         cs.disable3scaleEnvVar();
