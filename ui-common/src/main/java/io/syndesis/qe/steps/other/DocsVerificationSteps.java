@@ -33,7 +33,6 @@ public class DocsVerificationSteps {
         assertThat($(versionOnUserGuide).shouldBe(visible).getText()).isNotEmpty();
         if (TestUtils.isProdBuild()) {
             assertThat(url().split("/")[6]).isEqualTo(currentVersion);
-            assertThat($(versionOnUserGuide).getText()).isEqualTo(currentVersion);
         } else {
             assertThat(url().split("/")[6]).isEqualTo(latestReleasedVersion);
             assertThat($(versionOnUserGuide).getText()).isEqualTo(latestReleasedVersion);
