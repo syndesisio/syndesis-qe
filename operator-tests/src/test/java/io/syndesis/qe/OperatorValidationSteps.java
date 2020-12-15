@@ -143,8 +143,9 @@ public class OperatorValidationSteps {
                     content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
                 }
                 if (content.contains("REPLACE_NODE")) {
+                    String workerName = OpenShiftUtils.isOpenshift3() ? "node" : "worker";
                     Optional<Node> worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
-                        .filter(n -> n.getMetadata().getName().contains("worker") && n.getSpec().getTaints().isEmpty()).findFirst();
+                        .filter(n -> n.getMetadata().getName().contains(workerName) && n.getSpec().getTaints().isEmpty()).findFirst();
                     if (!worker.isPresent()) {
                         fail("There are no worker nodes with empty taints!");
                     }
