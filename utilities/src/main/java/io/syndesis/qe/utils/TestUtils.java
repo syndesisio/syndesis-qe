@@ -214,6 +214,10 @@ public final class TestUtils {
      * @return true/false
      */
     public static boolean isUserAdmin(String user) {
+        // if you want to use default kubeadmin on crc as admin user
+        if ("kubeadmin".equals(user) && OpenShiftUtils.isCrc()) {
+            return true;
+        }
         try {
             return OpenShiftUtils.getInstance().clusterRoleBindings().inAnyNamespace().list().getItems().stream()
                 .filter(crb -> crb.getMetadata().getName().startsWith("cluster-admin") && crb.getUserNames() != null)
