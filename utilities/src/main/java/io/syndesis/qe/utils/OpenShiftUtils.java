@@ -365,9 +365,21 @@ public final class OpenShiftUtils {
      * @return true/false
      */
     public static boolean isOpenshift3() {
+        // minishift returns null, check differently
+        if (isMinishift()) {
+            return true;
+        }
         // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
         VersionInfo version = getInstance().getVersion();
         return version != null && version.getMinor().contains("11+");
+    }
+
+    public static boolean isCrc() {
+        return TestConfiguration.openShiftUrl().matches("^.*api\\.crc.*:6443$");
+    }
+
+    public static boolean isMinishift() {
+        return TestConfiguration.openShiftUrl().matches("^.*192\\.168\\.\\d{1,3}\\.\\d{1,3}:8443$");
     }
 
     public static void scale(String name, int replicas) {
