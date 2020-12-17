@@ -4,9 +4,15 @@ import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.addon.Addon;
+import io.syndesis.qe.common.CommonSteps;
 import io.syndesis.qe.component.Component;
 import io.syndesis.qe.component.ComponentUtils;
 import io.syndesis.qe.image.Image;
+import io.syndesis.qe.marketplace.manifests.Bundle;
+import io.syndesis.qe.marketplace.manifests.Index;
+import io.syndesis.qe.marketplace.manifests.Opm;
+import io.syndesis.qe.marketplace.openshift.OpenShiftService;
+import io.syndesis.qe.marketplace.quay.QuayUser;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.test.InfraFail;
@@ -48,10 +54,10 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionVersion;
-import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -87,11 +93,22 @@ public class Syndesis implements Resource {
         log.info("Deploying Syndesis");
         log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
         log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
+
+        if (TestConfiguration.getIndexImage() != null || TestConfiguration.getBundleImage() != null) {
+            deployViaBundle();
+            return;
+        }
+
         createPullSecret();
         pullOperatorImage();
         installCluster();
         grantPermissions();
         deployOperator();
+        deployCrAndRoutes();
+    }
+
+    public void deployCrAndRoutes() {
+        log.info("Deploying Syndesis CR");
         deploySyndesisViaOperator();
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
@@ -129,6 +146,25 @@ public class Syndesis implements Resource {
         // if we don't have CRD, we can't have CRs
         if (getCrd() != null) {
             getCrNames().forEach((version, names) -> names.forEach(name -> undeployCustomResource(name, version)));
+        }
+        if (!OpenShiftUtils.isOpenshift3() && Syndesis.subscriptionExists()) {
+            OpenShiftUtils.getInstance().customResource(getSubscriptionCRDContext()).delete(TestConfiguration.openShiftNamespace(), "fuse-online");
+            try {
+                //For some reason the CSV is sometimes left over from deleting the subscription
+                OpenShiftUtils.getInstance().customResource(new CustomResourceDefinitionContext.Builder()
+                    .withPlural("clusterserviceversions")
+                    .withGroup("operators.coreos.com")
+                    .withVersion("v1alpha1")
+                    .withScope("Namespaced")
+                    .build()
+                ).delete(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0");
+            } catch (KubernetesClientException e) {
+                log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
+            }
+        }
+        //The subscription created a deployment for the operator and it needs to be deleted
+        if (OpenShiftUtils.getInstance().apps().deployments().list().getItems().size() > 0) {
+            OpenShiftUtils.getInstance().apps().deployments().delete();
         }
     }
 
@@ -419,74 +455,32 @@ public class Syndesis implements Resource {
             log.error("Service account not found in resources");
         }
 
-        Deployment dc = (Deployment) resourceList.stream()
-            .filter(r -> "Deployment".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
-            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment in operator resources"));
+        OpenShiftUtils.getInstance().serviceAccounts().withName("default")
+            .edit()
+            .addToImagePullSecrets(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()))
+            .done();
+
+        DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
+            .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
+            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
 
         List<EnvVar> envVarsToAdd = new ArrayList<>();
         envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
 
-        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
-
-        List<HasMetadata> finalResourceList = resourceList;
-        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(finalResourceList).createOrReplace());
-
-        Map<String, String> imagesEnvVars = new HashMap<>();
         // For upgrade, we want to override images only for "current" version
         if (operatorImage.equals(TestConfiguration.syndesisOperatorImage())) {
             Set<Image> images = EnumSet.allOf(Image.class);
             for (Image image : images) {
                 if (TestConfiguration.image(image) != null) {
-                    log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
-                    imagesEnvVars.put("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image));
+                    log.info("Overriding " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
+                    envVarsToAdd.add(new EnvVar("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image), null));
                 }
             }
         }
 
-        if (!imagesEnvVars.isEmpty()) {
-            log.info("Overriding images to be deployed");
-            try {
-                OpenShiftWaitUtils.waitFor(() -> OpenShiftUtils.getInstance().getDeploymentConfig(operatorResourcesName) != null);
-            } catch (TimeoutException | InterruptedException e) {
-                fail("Unable to get operator deployment config", e);
-            }
+        dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
-            TestUtils.withRetry(() -> {
-                try {
-                    OpenShiftUtils.getInstance().scale(operatorResourcesName, 0);
-                    return true;
-                } catch (KubernetesClientException kce) {
-                    log.debug("Caught KubernetesClientException: " + kce);
-                    return false;
-                }
-            }, 3, 30000L, "Unable to scale operator deployment config after 3 tries");
-
-            try {
-                OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areNoPodsPresent(operatorResourcesName));
-            } catch (TimeoutException | InterruptedException e) {
-                fail("Operator pod shouldn't be present after scaling down", e);
-            }
-
-            TestUtils.withRetry(() -> {
-                try {
-                    OpenShiftUtils.getInstance().updateDeploymentConfigEnvVars(operatorResourcesName, imagesEnvVars);
-                    return true;
-                } catch (KubernetesClientException kce) {
-                    log.debug("Caught KubernetesClientException: " + kce);
-                    return false;
-                }
-            }, 3, 30000L, "Unable to update operator deployment config after 3 tries");
-
-            TestUtils.withRetry(() -> {
-                try {
-                    OpenShiftUtils.getInstance().scale(operatorResourcesName, 1);
-                    return true;
-                } catch (KubernetesClientException kce) {
-                    log.debug("Caught KubernetesClientException: " + kce);
-                    return false;
-                }
-            }, 3, 30000L, "Unable to scale operator deployment config after 3 tries");
-        }
+        OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(resourceList).createOrReplace());
 
         log.info("Waiting for syndesis-operator to be ready");
         try {
@@ -749,5 +743,117 @@ public class Syndesis implements Resource {
                 sa.getImagePullSecrets().add(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()));
                 OpenShiftUtils.getInstance().serviceAccounts().createOrReplace(sa);
             });
+    }
+
+    public Map<String, String> generateImageEnvVars() {
+        Map<String, String> imagesEnvVars = new HashMap<>();
+        Set<Image> images = EnumSet.allOf(Image.class);
+        for (Image image : images) {
+            if (TestConfiguration.image(image) != null) {
+                log.info("Will override " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
+                imagesEnvVars.put("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image));
+            }
+        }
+
+        return imagesEnvVars;
+    }
+
+    private static CustomResourceDefinitionContext getSubscriptionCRDContext() {
+        return new CustomResourceDefinitionContext.Builder()
+            .withGroup("operators.coreos.com")
+            .withPlural("subscriptions")
+            .withScope("Namespaced")
+            .withVersion("v1alpha1")
+            .build();
+    }
+
+    private static CustomResourceDefinitionContext getCSVContext() {
+        return new CustomResourceDefinitionContext.Builder()
+            .withGroup("operators.coreos.com")
+            .withPlural("clusterserviceversions")
+            .withScope("Namespaced")
+            .withVersion("v1alpha1")
+            .build();
+    }
+
+    private static JSONObject getSubscription() {
+        CustomResourceDefinitionContext context = getSubscriptionCRDContext();
+        JSONObject subs = new JSONObject(OpenShiftUtils.getInstance().customResource(context).list(TestConfiguration.openShiftNamespace()));
+        JSONArray items = subs.getJSONArray("items");
+        for (int i = 0; i < items.length(); i++) {
+            if (items.getJSONObject(i).getJSONObject("spec").getString("name").equals("fuse-online")) {
+                return items.getJSONObject(i);
+            }
+        }
+        return null;
+    }
+
+    public static boolean subscriptionExists() {
+        return getSubscription() != null;
+    }
+
+    private void deployViaBundle() {
+        if (subscriptionExists()) {
+            return;
+        }
+        Index index;
+        Bundle foBundle = null;
+        OpenShiftService ocpSvc;
+        Opm opm = new Opm();
+        QuayUser quayUser = TestConfiguration.getQuayUser();
+        if (TestConfiguration.getBundleImage() != null) {
+            //Deploy from bundle
+            index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion());
+            foBundle = index.addBundle(TestConfiguration.getBundleImage());
+            index.push(quayUser);
+            ocpSvc = TestConfiguration.getOpenShiftService("fuse-online-index");
+        } else {
+            //deploy from existing index image
+            index = opm.pullIndex(TestConfiguration.getIndexImage(), quayUser);
+            index.push(quayUser);
+            String[] parts = TestConfiguration.getIndexImage().split("/");
+            String quayProject = parts[parts.length - 1].split(":")[0];
+            ocpSvc = TestConfiguration.getOpenShiftService(quayProject);
+        }
+        try {
+            // OCP stuff - add index
+            ocpSvc.patchGlobalSecrets(TestConfiguration.getQuayPullSecret());
+            index.addIndexToCluster(ocpSvc, "fuse-online-test-catalog");
+            if (foBundle != null) {
+                foBundle.createSubscription(ocpSvc);
+            } else {
+                Bundle.createSubscription(ocpSvc, "fuse-online", "fuse-online-v7.8.x", "''", "fuse-online-test-catalog");
+            }
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning("name", "syndesis-operator", 1));
+        } catch (IOException | TimeoutException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        createPullSecret();
+        if (TestConfiguration.enableTestSupport()) {
+            TestUtils.withRetry(this::enableTestSupport, 5, 10, "Failed to patch CSV");
+        }
+        deployCrAndRoutes();
+        CommonSteps.waitForSyndesis();
+    }
+
+    private boolean enableTestSupport() {
+        TestUtils.waitFor(() -> "AtLatestKnown".equalsIgnoreCase(getSubscription().getJSONObject("status").getString("state")), 2, 60 * 3,
+            "CSV didn't get installed in time");
+        JSONObject json = new JSONObject(
+            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0"));
+        JSONObject operatorDeployment =
+            json.getJSONObject("spec").getJSONObject("install").getJSONObject("spec").getJSONArray("deployments").getJSONObject(0);
+        JSONArray envVars =
+            operatorDeployment.getJSONObject("spec").getJSONObject("template").getJSONObject("spec").getJSONArray("containers").getJSONObject(0)
+                .getJSONArray("env");
+        envVars.put(TestUtils.map("name", "TEST_SUPPORT", "value", "true"));
+        try {
+            OpenShiftUtils.getInstance().customResource(getCSVContext())
+                .edit(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0", json.toMap());
+            return true;
+        } catch (Exception e) {
+            log.error("Couldn't edit Syndesis CSV", e);
+            return false;
+        }
     }
 }

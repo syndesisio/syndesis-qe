@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +23,7 @@ import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.VersionInfo;
 import io.fabric8.kubernetes.client.dsl.PodResource;
@@ -363,8 +365,38 @@ public final class OpenShiftUtils {
      * @return true/false
      */
     public static boolean isOpenshift3() {
+        // minishift returns null, check differently
+        if (isMinishift()) {
+            return true;
+        }
         // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
         VersionInfo version = getInstance().getVersion();
         return version != null && version.getMinor().contains("11+");
+    }
+
+    public static boolean isCrc() {
+        return TestConfiguration.openShiftUrl().matches("^.*api\\.crc.*:6443$");
+    }
+
+    public static boolean isMinishift() {
+        return TestConfiguration.openShiftUrl().matches("^.*192\\.168\\.\\d{1,3}\\.\\d{1,3}:8443$");
+    }
+
+    public static void scale(String name, int replicas) {
+        log.info("Scaling {} to {}", name, replicas);
+        TestUtils.withRetry(() -> {
+            try {
+                OpenShiftUtils.getInstance().scale(name, replicas);
+                return true;
+            } catch (KubernetesClientException e) {
+                log.debug("Caught exception while scaling", e);
+                return false;
+            }
+        }, 3, 30000L, "Unable to set replicas for " + name + " to " + replicas);
+        try {
+            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPods(name, replicas), 2 * 60 * 1000);
+        } catch (InterruptedException | TimeoutException e) {
+            log.debug("Waited too long for " + name + " to get to " + replicas + " replicas", e);
+        }
     }
 }
