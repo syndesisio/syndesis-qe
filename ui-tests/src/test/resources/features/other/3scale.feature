@@ -49,4 +49,4 @@ Feature: 3scale integration
 
       And click on the "Save and publish" button
       And wait until integration "Task API" gets into "Running" state
-      And sleep for "10000" ms
+      And sleep for "1000" ms
