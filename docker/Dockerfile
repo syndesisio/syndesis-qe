@@ -19,7 +19,7 @@
 #   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
 #   --shm-size=2g \
-#   syndesisqe/tests-ui:1.11.x
+#   syndesisqe/syndesisqe-tests:1.11.x
 #
 #
 # For debugging, you have to expose port 5005 by `-p 5005:5005`
