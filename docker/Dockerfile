@@ -1,5 +1,5 @@
 #================================================================================================================================
-# Default version, for now, is 1.11.x, `docker build -t syndesisqe/syndesisqe-tests:1.11.x .`
+# Default version, for now, is 1.12.x, `docker build -t syndesisqe/syndesisqe-tests:1.12.x .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
 # e.g. `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
@@ -19,7 +19,7 @@
 #   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
 #   --shm-size=2g \
-#   syndesisqe/tests-ui:1.11.x
+#   syndesisqe/syndesisqe-tests:1.12.x
 #
 #
 # For debugging, you have to expose port 5005 by `-p 5005:5005`
@@ -31,8 +31,8 @@
 FROM alpine/git as gitRepoSyndesis
 
 ARG SYNDESIS_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_BRANCH_VERSION=1.11.x
-ARG INSTALL_TAG=1.11
+ARG SYNDESIS_BRANCH_VERSION=1.12.x
+ARG INSTALL_TAG=1.12
 
 RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis \
 	&& git clone -b ${INSTALL_TAG} https://github.com/${SYNDESIS_BRANCH_OWNER}/fuse-online-install.git /fuse-online-install
@@ -53,10 +53,10 @@ RUN apt-get update -y \
 FROM alpine/git as gitRepoSyndesisQe
 
 ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_QE_BRANCH_VERSION=1.11.x
+ARG SYNDESIS_QE_BRANCH_VERSION=1.12.x
 
 ARG APICURIO_QE_BRANCH_OWNER=Apicurio
-ARG APICURIO_QE_BRANCH_VERSION=1.11.x
+ARG APICURIO_QE_BRANCH_VERSION=1.12.x
 
 RUN git clone --recurse-submodules -b ${SYNDESIS_QE_BRANCH_VERSION} https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe \
 	&& git clone -b ${APICURIO_QE_BRANCH_VERSION} https://github.com/${APICURIO_QE_BRANCH_OWNER}/apicurio-qe.git /apicurio \
