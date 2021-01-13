@@ -239,6 +239,11 @@ public class OperatorValidationSteps {
         }
     }
 
+    @When("create jaeger cr from {string} file")
+    public void createJaegerCr(String cr) {
+        Jaeger.createJaegerCr(cr);
+    }
+
     @Then("check correct memory limits")
     public void checkMemoryLimits() {
         final String file = "src/test/resources/operator/spec/components/resources.limits.requests.memory.cpu.yml";

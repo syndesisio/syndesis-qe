@@ -25,4 +25,10 @@ public class CucumberHooks {
         log.info("Undeploying external Jaeger");
         ResourceFactory.get(Jaeger.class).undeploy();
     }
+
+    @After("@operator-addons-jaeger-hybrid")
+    public void deleteJaegerCr() {
+        log.info("Undeploying Jaeger cr");
+        OpenShiftUtils.binary().execute("delete", "jaeger.jaegertracing.io --selector syndesisqe=syndesis-jaeger-hybrid");
+    }
 }

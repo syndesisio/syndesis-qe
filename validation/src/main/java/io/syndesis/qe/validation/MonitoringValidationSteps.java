@@ -1,12 +1,14 @@
 package io.syndesis.qe.validation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import io.syndesis.common.model.metrics.IntegrationMetricsSummary;
 import io.syndesis.qe.utils.IntegrationUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.server.endpoint.v1.handler.activity.Activity;
 
-import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class MonitoringValidationSteps {
         TestUtils.sleepIgnoreInterrupt(ms);
 
         IntegrationMetricsSummary summary = integrationUtils.getIntegrationMetrics(integrationName);
-        Assertions.assertThat(summary.getMessages()).isGreaterThan(nr);
+        assertThat(summary.getMessages()).isGreaterThan(nr);
     }
 
     @When("^wait until integration (.*) processed at least (\\w+) messages?")
@@ -39,6 +41,17 @@ public class MonitoringValidationSteps {
 
         List<Activity> activityIntegrationLogs = integrationUtils.getAllIntegrationActivities(integrationName);
         String podName = activityIntegrationLogs.get(0).getPod();
-        Assertions.assertThat(OpenShiftUtils.getPodLogs(podName)).isNotEmpty().contains(contains);
+        assertThat(OpenShiftUtils.getPodLogs(podName)).isNotEmpty().contains(contains);
+    }
+
+    @Then("^validate that activity log (is|is not) working for integration \"([^\"]*)\"")
+    public void checkActivityLog(String shouldWork, String integrationName) {
+        if (shouldWork.contains("not")) {
+            assertThatExceptionOfType(io.syndesis.qe.endpoint.exception.RestClientException.class).isThrownBy(() -> {
+                integrationUtils.getAllIntegrationActivities(integrationName);
+            });
+        } else {
+            assertThat(integrationUtils.getAllIntegrationActivities(integrationName)).isNotNull();
+        }
     }
 }

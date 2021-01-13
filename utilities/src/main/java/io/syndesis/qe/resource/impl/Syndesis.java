@@ -597,6 +597,17 @@ public class Syndesis implements Resource {
         return new JSONObject(getCr()).getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue()).has(key);
     }
 
+    /**
+     * Test whether addon contains specific property and boolean value
+     */
+    public boolean containsAddonPropertyAndBooleanValue(Addon addon, String key, boolean value) {
+        JSONObject addonInJson = new JSONObject(getCr()).getJSONObject("spec").getJSONObject("addons").getJSONObject(addon.getValue());
+        if (!addonInJson.has(key)) {
+            return false;
+        }
+        return addonInJson.getBoolean(key) == value;
+    }
+
     public void updateAddon(Addon addon, boolean enabled) {
         updateAddon(addon, enabled, null);
     }
