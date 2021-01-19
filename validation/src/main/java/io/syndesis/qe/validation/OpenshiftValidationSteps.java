@@ -169,6 +169,21 @@ public class OpenshiftValidationSteps {
             .isFalse();
     }
 
+    @Then("^check that the pod \"([^\"]*)\" (has|has not) appeared$")
+    public void checkThatPodExist(String podPartialName, String shouldExist) {
+        Optional<Pod> pod = OpenShiftUtils.getPodByPartialName(podPartialName);
+        if (shouldExist.contains("not")) {
+            assertThat(pod).isEmpty();
+        } else {
+            assertThat(pod).isPresent();
+        }
+    }
+
+    @When("wait until {string} pod is running")
+    public void waitForPodIsRunning(String podPartialName) {
+        OpenShiftWaitUtils.waitUntilPodIsRunning(podPartialName);
+    }
+
     @When("wait for state check interval")
     public void waitForStateCheckInterval() {
         // Wait for a state check so that server can figure out that something is not right + a bit more for spawning a new pod

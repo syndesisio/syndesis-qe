@@ -1,0 +1,16 @@
+apiVersion: syndesis.io/v1beta2
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  addons:
+    jaeger:
+      enabled: true
+      operatorOnly: true
+  components:
+    server:
+      features:
+        maven:
+          append: true
+          repositories:
+            nexus: "REPLACE_REPO"

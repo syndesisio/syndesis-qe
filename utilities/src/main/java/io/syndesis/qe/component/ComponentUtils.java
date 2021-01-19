@@ -43,7 +43,8 @@ public class ComponentUtils {
             components.add(TODO);
         }
 
-        if (syndesis.isAddonEnabled(Addon.JAEGER)) {
+        // don't count jaeger addon when operatorOnly is set to true (Jaeger cr has to be created manually)
+        if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonPropertyAndBooleanValue(Addon.JAEGER, "operatorOnly", true)) {
             components.add(JAEGER);
         }
 
