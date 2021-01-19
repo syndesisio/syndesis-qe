@@ -77,7 +77,7 @@ public class Jaeger implements Resource {
         OpenShiftWaitUtils.waitUntilPodIsRunning("jaeger-operator");
         OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("jaeger-operator").get().getMetadata().getName())
             .edit().editMetadata().addToLabels("syndesis.io/component", "jaeger-operator").endMetadata().done();
-        OpenShiftUtils.create(Paths.get("src/test/resources/jaeger/jaeger.yml").toAbsolutePath().toString());
+        createJaegerCr("jaeger-external");
         OpenShiftWaitUtils.waitUntilPodIsRunning("jaeger-all-in-one");
 
         OpenShiftUtils.getInstance().createService(OpenShiftUtils.getInstance().services()
@@ -155,5 +155,13 @@ public class Jaeger implements Resource {
                 fail("Unable to process Jaeger resource " + jaegerResource, e);
             }
         }
+    }
+
+    /**
+     * Create Jaeger cr from /resources/jaeger/cr
+     * @param crName name of cr file
+     */
+    public static void createJaegerCr(String crName) {
+        OpenShiftUtils.create(Paths.get("src/test/resources/jaeger/cr/" + crName + ".yml").toAbsolutePath().toString());
     }
 }

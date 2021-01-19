@@ -191,7 +191,7 @@ Feature: Operator Deployment
   @operator-addons-jaeger
   Scenario: Syndesis Operator - Addons - Jaeger - external
     When deploy Jaeger
-    And deploy Syndesis CR from file "spec/addons/external-jaeger.yml"
+    And deploy Syndesis CR from file "spec/addons/jaeger-external.yml"
     Then wait for Syndesis to become ready
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
     And add a split step
@@ -201,6 +201,27 @@ Feature: Operator Deployment
     And create integration with name: "sql-sql-jaeger"
     Then wait for integration with name: "sql-sql-jaeger" to become active
     And check that jaeger pod "jaeger-all-in-one" is collecting metrics for integration "sql-sql-jaeger"
+
+  @ENTESB-15540
+  @operator-addons-jaeger-hybrid
+  @operator-addons
+  @operator-addons-jaeger
+  Scenario: Syndesis Operator - Addons - Jaeger - hybrid
+    When deploy Syndesis CR from file "spec/addons/jaeger-hybrid.yml"
+    Then wait for Syndesis to become ready
+      And check that the pod "syndesis-jaeger" has not appeared
+    When create jaeger cr from "jaeger-syndesis-for-hybrid" file
+    Then wait until "syndesis-jaeger" pod is running
+    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
+      And add a split step
+      And start mapper definition with name: "mapping 1"
+      And MAP using Step 2 and field "/first_name" to "/<>/task"
+      And create finish DB invoke sql action step with query "INSERT INTO TODO (task, completed) VALUES (:#task, 3)"
+      And create integration with name: "sql-sql-jaeger-hybrid"
+    Then wait for integration with name: "sql-sql-jaeger-hybrid" to become active
+      And check that jaeger pod "syndesis-jaeger" is collecting metrics for integration "sql-sql-jaeger-hybrid"
+      #ENTESB-15540
+      And validate that activity log is working for integration "sql-sql-jaeger-hybrid"
 
   @operator-addons-knative
   @operator-addons

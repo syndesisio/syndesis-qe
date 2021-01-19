@@ -1,0 +1,10 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  labels:
+    syndesisqe: syndesis-jaeger-hybrid
+  name: syndesis-jaeger
+spec:
+  strategy: allInOne
+  allInOne:
+    image: quay.io/app-sre/jaegertracing-all-in-one:1.17.0
