@@ -699,6 +699,13 @@ public class CommonSteps {
         new Form(new SyndesisRootPage().getRootElement()).forceFillByTestId(data.asMap(String.class, String.class));
     }
 
+    @Then("^validate values by element data-testid$")
+    public void validateValuesByTestID(DataTable dataTable) {
+        for (List<String> dataRow : dataTable.cells()) {
+            assertThat(new SyndesisRootPage().getRootElement().$(ByUtils.dataTestId(dataRow.get(0))).getValue()).isEqualTo(dataRow.get(1));
+        }
+    }
+
     // for CodeMirror text editor
     @When("^fill text into text-editor$")
     public void fillTextIntoTextEditor(DataTable data) {
