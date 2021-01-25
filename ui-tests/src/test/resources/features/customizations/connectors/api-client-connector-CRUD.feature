@@ -47,6 +47,7 @@ Feature: Customization - API Connector CRUD
     Then check visibility of the new connector "Swagger Petstore"
 
   @edit-api-connector
+  @ENTESB-15292
   Scenario: Edit parameters
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page
@@ -79,6 +80,14 @@ Feature: Customization - API Connector CRUD
       | api-connector-detail-config-description | Description-1                |
       | api-connector-detail-config-host        | http://petstore.swagger.io-1 |
       | api-connector-detail-config-path        | /v2-1                        |
+
+    When navigate to the "Connections" page
+    And click on the "Create Connection" link
+    And select "Swagger Petstore-1" connection type
+
+    Then validate values by element data-testid
+      | host     | http://petstore.swagger.io-1 |
+      | basepath | /v2-1                        |
 
   @ENTESB-13605
   @create-delete-api-connector

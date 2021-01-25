@@ -111,7 +111,59 @@ Feature: Integration - FHIR - all actions
 
   @ENTESB-14237
   @fhir-2-patch
-  Scenario: FHIR patch operation
+  Scenario: FHIR patch operation via data mapper
+
+    When create patient with name "Duro Mrdar" on FHIR and put it into DB
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    #start connection
+    When select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    Then check "Next" button is "Disabled"
+    Then fill in periodic query input with "SELECT * FROM CONTACT WHERE last_name = 'Mrdar'" value
+    Then fill in period input with "10" value
+    Then select "Minutes" from sql dropdown
+    And click on the "Next" button
+
+    #finish connection FHIR patch
+    When select the "FHIR" connection
+    And select "Patch" integration action
+    And select resource type "Patient"
+    And click on the "Next" button
+
+    #datamapper before FHIR patch
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    Then check visibility of data mapper ui
+    And create data mapper mappings
+      | lead_source | id |
+
+    # workaround for @ENTESB-14237
+    And define property "op" with value "replace" of type "String" in data mapper
+    And define property "path" with value "/name/0/family" of type "String" in data mapper
+    And define property "value" with value "Mestanek" of type "String" in data mapper
+    And create data mapper mappings
+      | op    | 1.op    |
+      | path  | 1.path  |
+      | value | 1.value |
+    And click on the "Done" button
+
+    #run the integration
+    When click on the "Save" link
+    And set integration name "FHIR_patch"
+    And publish integration
+    Then Integration "FHIR_patch" is present in integrations list
+    And wait until integration "FHIR_patch" gets into "Running" state
+
+    When sleep for "10000" ms
+    Then validate that last inserted patients name has been changed to "Duro Mestanek" in FHIR
+
+  @ENTESB-14237
+  @fhir-2-2-patch
+  Scenario: FHIR patch operation via JSON Patch
 
     When create patient with name "Duro Mrdar" on FHIR and put it into DB
     When navigate to the "Home" page
@@ -142,15 +194,6 @@ Feature: Integration - FHIR - all actions
     Then check visibility of data mapper ui
     And create data mapper mappings
       | lead_source | id |
-
-    # workaround for @ENTESB-14237
-    And define property "op" with value "replace" of type "String" in data mapper
-    And define property "path" with value "/name/0/family" of type "String" in data mapper
-    And define property "value" with value "Mestanek" of type "String" in data mapper
-    And create data mapper mappings
-      | op    | 1.op    |
-      | path  | 1.path  |
-      | value | 1.value |
     And click on the "Done" button
 
     #run the integration
@@ -162,7 +205,6 @@ Feature: Integration - FHIR - all actions
 
     When sleep for "10000" ms
     Then validate that last inserted patients name has been changed to "Duro Mestanek" in FHIR
-
 
   @fhir-3-read
   Scenario: FHIR read operation
