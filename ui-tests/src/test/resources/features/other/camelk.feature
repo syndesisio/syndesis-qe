@@ -1,5 +1,5 @@
 # @sustainer: mmuzikar@redhat.com
-@disable
+@disabled
 @camel-k
 Feature: Camel-k Runtime
 

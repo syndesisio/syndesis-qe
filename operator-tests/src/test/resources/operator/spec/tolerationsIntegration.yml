@@ -9,6 +9,7 @@ spec:
         value: "False"
         operator: Equal
         effect: PreferNoSchedule
+  demoData: true
   components:
     server:
       features:
