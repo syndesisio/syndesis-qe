@@ -15,7 +15,7 @@ import com.codeborne.selenide.Selenide;
 import io.cucumber.java.en.Then;
 
 public class DocsVerificationSteps {
-    final String latestReleasedVersion = "7.9";
+    final String latestReleasedVersion = "7.8";
     final String currentVersion = "8.0";
 
     @Then("^check version in about page$")
