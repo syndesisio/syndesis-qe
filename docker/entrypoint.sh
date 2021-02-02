@@ -75,7 +75,7 @@ if [ "${MODE,,}" = "full" ]; then
 	oc project ${NAMESPACE}
 	if [ -n "${PULL_SECRET}" ]; then
 		base64 -d <<< "${PULL_SECRET}" > /tmp/secret
-		oc create secret generic syndesis-pull-secret --from-file /tmp/secret
+		oc create secret generic syndesis-pull-secret --from-file=.dockerconfigjson=/tmp/secret --type=kubernetes.io/dockerconfigjson
 	fi
 	./install_ocp.sh
 
@@ -131,7 +131,7 @@ done
 
 [ -d "/test-run-results" ] && sudo rm -rf /test-run-results/* || sudo mkdir /test-run-results
 
-#while read -r FILE; do sudo mkdir -p /test-run-results/$(dirname $FILE); sudo cp $FILE /test-run-results/$(dirname $FILE); done <<< "$(find * -type f -name "*.log")"
-#while read -r DIR; do sudo mkdir -p /test-run-results/$DIR; sudo cp -r $DIR/* /test-run-results/$DIR; done <<< "$(find * -maxdepth 2 -type d -wholename "*target/cucumber*")"
+while read -r FILE; do sudo mkdir -p /test-run-results/$(dirname $FILE); sudo cp $FILE /test-run-results/$(dirname $FILE); done <<< "$(find * -type f -name "*.log")"
+while read -r DIR; do sudo mkdir -p /test-run-results/$DIR; sudo cp -r $DIR/* /test-run-results/$DIR; done <<< "$(find * -maxdepth 2 -type d -wholename "*target/cucumber*")"
 
 [ -z "${HAS_FAILURES}" ] && exit 0 || exit 1
