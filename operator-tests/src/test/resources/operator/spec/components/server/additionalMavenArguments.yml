@@ -3,6 +3,7 @@ kind: Syndesis
 metadata:
   name: app
 spec:
+  demoData: true
   components:
     server:
       features:

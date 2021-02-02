@@ -168,8 +168,8 @@ public class OpsValidationSteps {
     @Then("verify monitoring alerts are working correctly")
     public void verifyAlerts() throws TimeoutException, InterruptedException {
         try {
-            OpenShiftUtils.scale("syndesis-operator", 0);
-            OpenShiftUtils.scale("syndesis-db", 0);
+            OpenShiftUtils.scale("syndesis-operator", 0, OpenShiftUtils.ResourceType.DEPLOYMENT);
+            OpenShiftUtils.scale("syndesis-db", 0, OpenShiftUtils.ResourceType.DEPLOYMENT_CONFIG);
             OpenShiftWaitUtils.waitFor(() -> wasAlertRaised("FuseOnlineDatabaseInstanceDown"), 10 * 1000 * 60);
             verifyAlertIsRaised("FuseOnlineDatabaseInstanceDown");
             verifyAlertIsRaised("FuseOnlinePostgresExporterDown");
@@ -189,8 +189,8 @@ public class OpsValidationSteps {
             }
             verifyAlertIsRaised("FuseOnlineRestApiHighEndpointErrorRate");
         } finally {
-            OpenShiftUtils.scale("syndesis-operator", 1);
-            OpenShiftUtils.scale("syndesis-db", 1);
+            OpenShiftUtils.scale("syndesis-operator", 1, OpenShiftUtils.ResourceType.DEPLOYMENT);
+            OpenShiftUtils.scale("syndesis-db", 1, OpenShiftUtils.ResourceType.DEPLOYMENT_CONFIG);
         }
     }
 }

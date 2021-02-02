@@ -111,7 +111,7 @@ public class MongoDBValidationSteps {
             });
     }
 
-    @After("@mongodb,@10-integrations-complex")
+    @After("@mongodb or @10-integrations-complex")
     public void closeMongoConnection() {
         if (client != null) {
             client.close();

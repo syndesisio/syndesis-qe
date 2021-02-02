@@ -2,6 +2,7 @@ package io.syndesis.qe.steps.other;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.IntegrationUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.http.HTTPResponse;
@@ -9,10 +10,13 @@ import io.syndesis.qe.utils.http.HTTPUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.When;
+import io.fabric8.openshift.api.model.Route;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,14 +74,17 @@ public class InvokeHttpRequest {
     }
 
     public static String getUrlForWebhook(String nameOfIntegration, String token) {
-        return String.format("https://%s/webhook/%s",
-            OpenShiftUtils.getInstance().getRoutes().stream()
-                .filter(x -> x.getMetadata().getName()
-                    .contains(nameOfIntegration
-                        .replaceAll("_", "-")
-                        .replaceAll(" ", "-")
-                        .toLowerCase()
-                    ))
-                .findFirst().get().getSpec().getHost(), token);
+        Optional<Route> route = OpenShiftUtils.getInstance().getRoutes().stream()
+            .filter(x -> x.getMetadata().getName()
+                .contains(nameOfIntegration
+                    .replaceAll("_", "-")
+                    .replaceAll(" ", "-")
+                    .toLowerCase()
+                )).findFirst();
+        if (!route.isPresent()) {
+            InfraFail.fail("The route for integration " + nameOfIntegration + " doesn't exist. Available routes: " +
+                Arrays.toString(OpenShiftUtils.getInstance().getRoutes().stream().map(r -> r.getSpec().getHost()).toArray()));
+        }
+        return String.format("https://%s/webhook/%s", route.get().getSpec().getHost(), token);
     }
 }

@@ -1,6 +1,7 @@
 package io.syndesis.qe.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.test.InfraFail;
@@ -41,6 +42,11 @@ import lombok.extern.slf4j.Slf4j;
 public final class OpenShiftUtils {
     private static OpenShift xtfUtils = null;
     private static OpenShiftBinary binary = null;
+
+    public enum ResourceType {
+        DEPLOYMENT_CONFIG,
+        DEPLOYMENT
+    }
 
     public static OpenShift getInstance() {
         if (xtfUtils == null) {
@@ -382,11 +388,20 @@ public final class OpenShiftUtils {
         return TestConfiguration.openShiftUrl().matches("^.*192\\.168\\.\\d{1,3}\\.\\d{1,3}:8443$");
     }
 
-    public static void scale(String name, int replicas) {
+    public static void scale(String name, int replicas, ResourceType type) {
         log.info("Scaling {} to {}", name, replicas);
         TestUtils.withRetry(() -> {
             try {
-                OpenShiftUtils.getInstance().scale(name, replicas);
+                switch (type) {
+                    case DEPLOYMENT:
+                        OpenShiftUtils.getInstance().apps().deployments().withName(name).scale(replicas);
+                        break;
+                    case DEPLOYMENT_CONFIG:
+                        OpenShiftUtils.getInstance().scale(name, replicas);
+                        break;
+                    default:
+                        fail("Unknown resource type");
+                }
                 return true;
             } catch (KubernetesClientException e) {
                 log.debug("Caught exception while scaling", e);

@@ -179,8 +179,8 @@ public class Ops implements Resource {
             .done();
         OpenShiftUtils.getInstance().clusterRoleBindings().withName(CRB_NAME).delete();
         if (!OpenShiftWaitUtils.isAPodReady("syndesis.io/component", "operator").getAsBoolean()) {
-            OpenShiftUtils.scale("syndesis-operator", 1);
-            OpenShiftUtils.scale("syndesis-db", 1);
+            OpenShiftUtils.scale("syndesis-operator", 1, OpenShiftUtils.ResourceType.DEPLOYMENT);
+            OpenShiftUtils.scale("syndesis-db", 1, OpenShiftUtils.ResourceType.DEPLOYMENT_CONFIG);
         }
         if (ResourceFactory.get(Syndesis.class).isAddonEnabled(Addon.OPS)) {
             ResourceFactory.get(Syndesis.class).updateAddon(Addon.OPS, false);
