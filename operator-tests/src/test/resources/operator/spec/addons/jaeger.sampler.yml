@@ -8,6 +8,7 @@ spec:
       enabled: true
       samplerType: "probabilistic"
       samplerParam: "0.001"
+  demoData: true
   components:
     server:
       features:

@@ -13,6 +13,7 @@ spec:
                   operator: In
                   values:
                     - REPLACE_NODE
+  demoData: true
   components:
     server:
       features:

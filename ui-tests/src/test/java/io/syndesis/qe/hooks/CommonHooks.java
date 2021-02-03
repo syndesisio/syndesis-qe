@@ -21,14 +21,14 @@ public class CommonHooks {
 
     //we can close it after specific scenarios, but it will do nothing if connection == null and I do not know exactly all scenarios which opens DB
     // connection
-    //@After("@scenario1,@scenario2")
+    //@After("@scenario1 or @scenario2")
     @After
     public void closeDBConnection() {
         log.debug("Closing DB connection if it exists");
         SampleDbConnectionManager.closeConnections();
     }
 
-    @After("@integrations-mqtt,@integrations-amqp-to-amqp,@integrations-openwire-to-openwire")
+    @After("@integrations-mqtt or @integrations-amqp-to-amqp or @integrations-openwire-to-openwire")
     public void closeAMQBroker() {
         log.info("Deleting AMQ broker");
         ResourceFactory.destroy(AMQ.class);
@@ -46,7 +46,7 @@ public class CommonHooks {
         ResourceFactory.destroy(MySQL.class);
     }
 
-    @After("@3scale")
+    @After("@3scale and not @3scale-discovery")
     public void default3scaleAnnotation() {
         log.info("Removing 3scale discovery functionality");
         cs.disable3scaleEnvVar();
