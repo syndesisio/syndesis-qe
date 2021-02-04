@@ -153,7 +153,7 @@ Feature: Test maximum integration
     And set integration name "Integration10"
     And publish integration
     And navigate to the "Integrations" page
-    
+
     And wait until integration "Integration1" gets into "Running" state
     And wait until integration "Integration2" gets into "Running" state
     And wait until integration "Integration3" gets into "Running" state
@@ -550,19 +550,19 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define property "description" with value "MaxIntegrations Description" of type "String" in data mapper
-    And define property "impact" with value "1" of type "Integer" in data mapper
-    And define property "number" with value "MaxIntegrations" of type "String" in data mapper
-    And define property "urgency" with value "1" of type "String" in data mapper
-    And define property "short_description" with value "descript" of type "String" in data mapper
-    And define property "user_input" with value "ui" of type "String" in data mapper
+
+    And define constant "MaxIntegrationsDescription" of type "String" in data mapper
+    And define constant "1" of type "Integer" in data mapper
+    And define constant "2" of type "String" in data mapper
+    And define constant "descript" of type "String" in data mapper
+    And define constant "ui" of type "String" in data mapper
     And create data mapper mappings
-      | number            | u_number            |
-      | description       | u_description       |
-      | impact            | u_impact            |
-      | urgency           | u_urgency           |
-      | short_description | u_short_description |
-      | user_input        | u_user_input        |
+      | MaxIntegrationsDescription | u_description       |
+      | 1                          | u_impact            |
+      | 2                          | u_urgency           |
+      | descript                   | u_short_description |
+      | ui                         | u_user_input        |
+    And define modified service now number "MaxIntegrations" and map it to "u_number"
     And click on the "Done" button
 
     And publish integration
@@ -630,7 +630,7 @@ Feature: Test maximum integration
       | _id             | value           |
       | MaxIntegrations | MaxIntegrations |
     And check that email from "QE Google Mail" with subject "maxIntegrations" and text "MaxIntegrations" exists
-    And verify that incident with "MaxIntegrations" number has "MaxIntegrations Description" description
+    And verify that incident with "MaxIntegrations" number has "MaxIntegrationsDescription" description
     And check that query "select * from todo where task='MaxIntegrations'" has 1 row output
 
     When delete contact from SF with email: "test@maxIntegration.feature"

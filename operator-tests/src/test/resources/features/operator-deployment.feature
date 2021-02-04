@@ -79,73 +79,6 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
     Then check that deployment config "todo" does exist
 
-  @ENTESB-12177
-  @ENTESB-12421
-  @operator-addons-camelk
-  @operator-addons
-  Scenario: Syndesis Operator - Addons - Camel K
-    When deploy Camel-K
-    Then wait for Camel-K to become ready
-    When deploy Syndesis CR from file "spec/addons/camelk.yml"
-    Then wait for Syndesis to become ready
-      And check that the "syndesis-server-config" config map contains
-        | application.yml | integration: camel-k |
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
-      And add log step
-      And create integration with name: "sql-to-log"
-    # Camel-K operator initially needs to download all dependencies and it takes time with combination with our nexus
-    # Especially when the artifacts are not cached on nexus yet
-    Then wait max 30 minutes for integration with name: "sql-to-log" to become active
-      And check that pod "i-sql-to-log" logs contain string "Jackson"
-
-  @operator-maven-repositories
-  @operator-maven-repositories-append
-  @operator-server
-  @ENTESB-15063
-  Scenario: Syndesis Operator - Components - Server - Maven Repositories - Append
-    When deploy Syndesis CR from file "spec/components/server/mavenRepositories-append.yml"
-    Then wait for Syndesis to become ready
-      And check that the "syndesis-server-config" config map contains
-        | application.yml | central: https://repo.maven.apache.org/maven2/                          |
-        | application.yml | customRepo1: https://customRepo1                                        |
-        | application.yml | customRepo2: https://customRepo2                                        |
-        | application.yml | repo-02-redhat-ga: https://maven.repository.redhat.com/ga/              |
-        | application.yml | repo-03-jboss-ea: https://repository.jboss.org/nexus/content/groups/ea/ |
-    # https://github.com/avano/missing-artifact-extension
-    When import extension from path "./src/test/resources/extensions/missing-artifact-1.0-SNAPSHOT.jar"
-      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
-      And add "missing-artifact" extension step with "empty" action
-      And create integration with name: "repositories-append"
-      And wait until build "repositories-append" is completed
-    Then check repositories used in integration "repositories-append" build
-      | https://repo.maven.apache.org/maven2                 |
-      | https://maven.repository.redhat.com/ga               |
-      | https://repository.jboss.org/nexus/content/groups/ea |
-      | https://customRepo1                                  |
-      | https://customRepo2                                  |
-
-  @operator-maven-repositories
-  @operator-maven-repositories-dont-append
-  @operator-server
-  @ENTESB-15063
-  Scenario: Syndesis Operator - Components - Server - Maven Repositories - Don't append
-    When deploy Syndesis CR from file "spec/components/server/mavenRepositories.yml"
-    Then wait for Syndesis to become ready
-      And check that the "syndesis-server-config" config map contains
-        | application.yml | customRepo1: https://customRepo1 |
-        | application.yml | customRepo2: https://customRepo2 |
-      And check that the "syndesis-server-config" config map doesn't contain
-        | application.yml | repo-02-redhat-ga: https://maven.repository.redhat.com/ga/ |
-    # https://github.com/avano/missing-artifact-extension
-    When import extension from path "./src/test/resources/extensions/missing-artifact-1.0-SNAPSHOT.jar"
-      And create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
-      And add "missing-artifact" extension step with "empty" action
-      And create integration with name: "repositories-dont-append"
-      And wait until build "repositories-dont-append" is completed
-    Then check repositories used in integration "repositories-dont-append" build
-      | https://customRepo1 |
-      | https://customRepo2 |
-
   @ENTESB-14068
   @operator-maven-additional-arguments
   @operator-server
@@ -354,7 +287,6 @@ Feature: Operator Deployment
       | Prometheus | spec/components/prometheus/volumeStorageClass.yml | syndesis-prometheus |
 
   @ENTESB-12424
-  @ENTESB-15311
   @operator-components-external-db
   @operator-db
   Scenario: Syndesis Operator - Components - Database - External Database

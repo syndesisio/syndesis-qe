@@ -63,7 +63,7 @@ public class ServiceNowValidationSteps {
 
     @Then("verify that incident with {string} number has {string} description")
     public void verifyIncidentsWithNumber(String numbers, String description) {
-        List<Incident> list = ServiceNow.getFilteredIncidents("number=" + numbers, 1);
+        List<Incident> list = ServiceNow.getFilteredIncidents("number=" + snUtils.modifySNNumber(numbers), 1);
         Assertions.assertThat(list).isNotEmpty();
 
         Incident created = list.get(0);

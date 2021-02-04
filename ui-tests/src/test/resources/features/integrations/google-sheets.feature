@@ -71,7 +71,6 @@ Feature: Google Sheets Connector
     And sleep for 3 seconds
     Then verify that spreadsheet was created
 
-
   @spreadsheet-append
   Scenario: Append messages from DB
     When clear test spreadsheet
@@ -101,9 +100,8 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define spreadsheetID as property in data mapper
+    And define spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | spreadsheetId | spreadsheetId |
       | first_name    | A             |
       | last_name     | B             |
       | company       | C             |
@@ -151,9 +149,8 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define spreadsheetID as property in data mapper
+    And define spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | spreadsheetId | spreadsheetId |
       | first_name    | A             |
       | last_name     | B             |
       | company       | C             |
@@ -204,9 +201,8 @@ Feature: Google Sheets Connector
     And add integration step on position "1"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define spreadsheetID as property in data mapper
+    And define spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | spreadsheetId | spreadsheetId |
       | first_name    | #1            |
       | last_name     | #2            |
       | company       | #3            |
@@ -250,45 +246,44 @@ Feature: Google Sheets Connector
 
     When add integration step on position "0"
     And select the "Data Mapper" connection
-    And define test spreadsheetID as property in data mapper
-    And define property "sheetId" with value "31438639" of type "String" in data mapper
-    And define property "label" with value "countries" of type "String" in data mapper
-    And define property "range" with value "A2:E36625" of type "String" in data mapper
-    And define property "sourceSheetId" with value "0" of type "Integer" in data mapper
-    And define property "sourceGroupColumn" with value "C" of type "String" in data mapper
-    And define property "sourceValuesColumn" with value "D" of type "String" in data mapper
+    And define constant "31438639" of type "String" in data mapper
+    And define constant "countries" of type "String" in data mapper
+    And define constant "A2:E36625" of type "String" in data mapper
+    And define constant "0" of type "Integer" in data mapper
+    And define constant "C" of type "String" in data mapper
+    And define constant "D" of type "String" in data mapper
+    And define test spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | spreadsheetId      | spreadsheetId             |
-      | sheetId            | sheetId                   |
-      | sourceGroupColumn  | columnGroups.sourceColumn |
-      | sourceValuesColumn | valueGroups.sourceColumn  |
-      | label              | columnGroups.label        |
-      | range              | sourceRange               |
-      | sourceSheetId      | sourceSheetId             |
+      | 31438639      | sheetId                   |
+      | countries     | columnGroups.sourceColumn |
+      | A2:E36625     | valueGroups.sourceColumn  |
+      | 0             | columnGroups.label        |
+      | C             | sourceRange               |
+      | D             | sourceSheetId             |
     Then click on the "Done" button
 
     When add integration step on position "2"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define property "sheetId" with value "789378340" of type "String" in data mapper
-    And define property "label" with value "countries" of type "String" in data mapper
-    And define property "range" with value "A2:R36625" of type "String" in data mapper
-    And define property "sourceSheetId" with value "0" of type "Integer" in data mapper
-    And define property "sourceGroupColumn" with value "C" of type "String" in data mapper
-    And define property "sourceValuesColumn" with value "R" of type "String" in data mapper
-    And define property "layout" with value "vertical" of type "String" in data mapper
-    And define property "start" with value "A1" of type "String" in data mapper
+    And define constant "31438639" of type "String" in data mapper
+    And define constant "R" of type "String" in data mapper
+    And define constant "countries" of type "String" in data mapper
+    And define constant "A2:R36625" of type "String" in data mapper
+    And define constant "0" of type "Integer" in data mapper
+    And define constant "C" of type "String" in data mapper
+    And define constant "A1" of type "String" in data mapper
+    And define constant "vertical" of type "String" in data mapper
 
     And create data mapper mappings with data bucket
-      | 2 - PivotTable | spreadsheetId      |  | spreadsheetId            |
-      | Properties     | sheetId            |  | sheetId                  |
-      | Properties     | sourceValuesColumn |  | valueGroups.sourceColumn |
-      | Properties     | label              |  | rowGroups.label          |
-      | Properties     | range              |  | sourceRange              |
-      | Properties     | sourceSheetId      |  | sourceSheetId            |
-      | Properties     | sourceGroupColumn  |  | rowGroups.sourceColumn   |
-      | Properties     | start              |  | start                    |
-      | Properties     | layout             |  | valueLayout              |
+      | 2 - PivotTable | spreadsheetId |  | spreadsheetId            |
+      | Constants      | 31438639      |  | sheetId                  |
+      | Constants      | R             |  | valueGroups.sourceColumn |
+      | Constants      | countries     |  | rowGroups.label          |
+      | Constants      | A2:R36625     |  | sourceRange              |
+      | Constants      | 0             |  | sourceSheetId            |
+      | Constants      | C             |  | rowGroups.sourceColumn   |
+      | Constants      | A1            |  | start                    |
+      | Constants      | vertical      |  | valueLayout              |
     Then click on the "Done" button
 
     When publish integration
@@ -337,13 +332,11 @@ Feature: Google Sheets Connector
     And sleep for 3 seconds
     Then verify that spreadsheet title match "updated-title"
 
-
   Scenario: get properties of sheet
     When click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values by element data-testid
-      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in data-testid field "spreadsheetid" from property "testDataSheetId" of credentials "QE Google Sheets"
     Then click on the "Done" button
 
     When select the "AMQ" connection
@@ -379,8 +372,7 @@ Feature: Google Sheets Connector
     When click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values by element data-testid
-      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in data-testid field "spreadsheetid" from property "testDataSheetId" of credentials "QE Google Sheets"
     Then click on the "Done" button
 
     When select the "google-sheets" connection
@@ -391,14 +383,14 @@ Feature: Google Sheets Connector
     And select the "Data Mapper" connection
     Then check visibility of data mapper ui
 
-    When define property "sheetId" with value "789378340" of type "String" in data mapper
-    And define property "dataRange" with value "B1:B20" of type "String" in data mapper
-    And define property "domainRange" with value "A1:A20" of type "String" in data mapper
+    When define constant "789378340" of type "String" in data mapper
+    And define constant "B1:B20" of type "String" in data mapper
+    And define constant "A1:A20" of type "String" in data mapper
     And create data mapper mappings
       | spreadsheetId | spreadsheetId          |
-      | sheetId       | sourceSheetId          |
-      | dataRange     | basicChart.dataRange   |
-      | domainRange   | basicChart.domainRange |
+      | 789378340     | sourceSheetId          |
+      | B1:B20        | basicChart.dataRange   |
+      | A1:A20        | basicChart.domainRange |
     Then click on the "Done" button
 
     When publish integration
@@ -415,8 +407,7 @@ Feature: Google Sheets Connector
     When click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
     And select "Get spreadsheet properties" integration action
-    And fill in values by element data-testid
-      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
+    And fill in data-testid field "spreadsheetid" from property "testDataSheetId" of credentials "QE Google Sheets"
     Then click on the "Done" button
 
     When select the "google-sheets" connection
@@ -426,14 +417,14 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define property "sheetId" with value "789378340" of type "String" in data mapper
-    And define property "dataRange" with value "B1:B20" of type "String" in data mapper
-    And define property "domainRange" with value "A1:A20" of type "String" in data mapper
+    And define constant "789378340" of type "String" in data mapper
+    And define constant "B1:B20" of type "String" in data mapper
+    And define constant "A1:A20" of type "String" in data mapper
     And create data mapper mappings
       | spreadsheetId | spreadsheetId        |
-      | sheetId       | sourceSheetId        |
-      | dataRange     | pieChart.dataRange   |
-      | domainRange   | pieChart.domainRange |
+      | 789378340     | sourceSheetId        |
+      | B1:B20        | pieChart.dataRange   |
+      | A1:A20        | pieChart.domainRange |
     Then click on the "Done" button
 
     When publish integration
@@ -451,8 +442,8 @@ Feature: Google Sheets Connector
     And click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
     And select "Get sheet values" integration action
+    And fill in data-testid field "spreadsheetid" from property "testDataSheetId" of credentials "QE Google Sheets"
     And fill in values by element data-testid
-      | spreadsheetid | 1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw |
       | range         | A:I                                          |
       | maxresults    | 25000                                        |
     And click on the "Next" button

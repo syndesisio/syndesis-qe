@@ -522,7 +522,7 @@ public class TestConfiguration {
         }
 
         if (properties.getProperty(JAEGER_VERSION) == null) {
-            defaultProps.setProperty(JAEGER_VERSION, "v1.17.0");
+            defaultProps.setProperty(JAEGER_VERSION, "v1.20.0");
         }
 
         if (properties.getProperty(SYNDESIS_APPEND_REPOSITORY) == null) {
