@@ -1,6 +1,6 @@
 package io.syndesis.qe.utils;
 
-import io.syndesis.qe.TestConfiguration;
+import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.utils.google.GoogleAccounts;
 
 import org.assertj.core.api.Assertions;
@@ -34,9 +34,6 @@ public class GoogleSheetsUtils {
     @Getter
     @Setter
     private String testSheetId = "";
-
-    private static final String TEST_DATA_SPREAD_SHEET = "1_OLTcj_y8NwST9KHhg8etB10xr6t3TrzaFXwW2dhpXw";
-    private static final String TEST_DATA_SPREAD_SHEET_FIREFOX = "1yzYO6cV-YbtyJW8POQwjLVu86I3AU45QEmGs3_HalYg";
 
     private Sheets getSheets() {
         if (sheets == null) {
@@ -131,7 +128,7 @@ public class GoogleSheetsUtils {
     }
 
     public String getTestDataSpreadSheet() {
-        return "firefox".equals(TestConfiguration.syndesisBrowser()) ? TEST_DATA_SPREAD_SHEET_FIREFOX : TEST_DATA_SPREAD_SHEET;
+        return AccountsDirectory.getInstance().get("QE Google Sheets").getProperty("testDataSheetId");
     }
 
     public Spreadsheet getSpreadSheet(String id) {
@@ -149,11 +146,11 @@ public class GoogleSheetsUtils {
     }
 
     public List<Sheet> getSheetsFromDataSpreadsheet() {
-        return getSheets(TEST_DATA_SPREAD_SHEET);
+        return getSheets(getTestDataSpreadSheet());
     }
 
     public void clearSheetInDataSpreadsheet(Integer sheetId) {
-        clearSheet(TEST_DATA_SPREAD_SHEET, sheetId);
+        clearSheet(getTestDataSpreadSheet(), sheetId);
     }
 
     public Spreadsheet getSpreadSheet() {

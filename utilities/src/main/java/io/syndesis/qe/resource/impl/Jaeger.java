@@ -57,7 +57,10 @@ public class Jaeger implements Resource {
 
         processedResources.forEach(res -> {
             try {
-                OpenShiftUtils.getInstance().resource(res).createOrReplace();
+                // TODO problem with creation CRD on our clusters (stream was reset: NO_ERROR), skip, the CRD is there after the first syndesis install anyway
+                if (!(res instanceof CustomResourceDefinition)) {
+                    OpenShiftUtils.getInstance().resource(res).createOrReplace();
+                }
             } catch (KubernetesClientException ex) {
                 // When the CRD for jaeger already exists, the request fails with "Invalid value: 0x0: must be specified for an update.",
                 // so ignore it
@@ -159,6 +162,7 @@ public class Jaeger implements Resource {
 
     /**
      * Create Jaeger cr from /resources/jaeger/cr
+     *
      * @param crName name of cr file
      */
     public static void createJaegerCr(String crName) {
