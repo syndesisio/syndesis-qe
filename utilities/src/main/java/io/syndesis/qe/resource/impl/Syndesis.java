@@ -58,6 +58,7 @@ import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
+import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -460,10 +461,6 @@ public class Syndesis implements Resource {
             .addToImagePullSecrets(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()))
             .done();
 
-        Deployment deployment = (Deployment) resourceList.stream()
-            .filter(r -> "Deployment".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
-            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment in operator resources"));
-
         List<EnvVar> envVarsToAdd = new ArrayList<>();
         envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
 
@@ -478,7 +475,18 @@ public class Syndesis implements Resource {
             }
         }
 
-        deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
+        if ((TestUtils.isProdBuild() && getOperatorImage().contains("1.8")) || getOperatorImage().contains("1.11")) {
+            // needs for upgrade test when previous version is 1.11
+            DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
+                .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
+                .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
+            dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
+        } else {
+            Deployment deployment = (Deployment) resourceList.stream()
+                .filter(r -> "Deployment".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
+                .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment in operator resources"));
+            deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
+        }
 
         OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(resourceList).createOrReplace());
 
