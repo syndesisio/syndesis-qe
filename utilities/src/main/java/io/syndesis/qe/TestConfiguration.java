@@ -15,6 +15,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -58,6 +59,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_CR_URL = "syndesis.config.cr.url";
 
     public static final String SYNDESIS_BUILD_PROPERTIES_URL = "syndesis.config.build.properties.url";
+    public static final String SYNDESIS_DOCKER_REGISTRY = "syndesis.config.docker.registry";
 
     public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
     public static final String SYNDESIS_PULL_SECRET_NAME = "syndesis.config.pull.secret.name";
@@ -177,22 +179,23 @@ public class TestConfiguration {
             if (get().readValue(SYNDESIS_UI_URL) != null && get().readValue(SYNDESIS_UI_URL).contains("syndesis.my-minishift.syndesis.io")) {
                 //for jenkins
                 get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, "my-minishift.syndesis.io");
-            } else if (openShiftUrl().endsWith("8443")) {
-                //OCP 3.11
-                if (openShiftUrl().matches("https:\\/\\/(\\d{1,4}\\.){3}\\d{1,4}:8443")) {
-                    //minishift
-                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":8443") + ".nip.io");
-                } else {
-                    //remote instance
-                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":8443"));
-                }
-            } else {
+            } else if (openShiftUrl().endsWith("6443")) {
                 //OCP 4.x
                 if (openShiftUrl().contains("https://api.crc.testing:6443")) {
                     //CRC
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, "apps-crc.testing");
                 } else {
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://api.", ":6443"));
+                }
+            } else {
+                //OCP 3.11
+                String port = Arrays.asList(openShiftUrl().split(":")).stream().filter(part -> part.contains("443")).findFirst().orElse("8443");
+                if (openShiftUrl().matches("https:\\/\\/(\\d{1,4}\\.){3}\\d{1,4}:" + port)) {
+                    //minishift
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":" + port) + ".nip.io");
+                } else {
+                    //remote instance
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":" + port));
                 }
             }
         }
@@ -447,7 +450,15 @@ public class TestConfiguration {
         } else {
             operatorVersion = "latest";
         }
-        defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
+
+        if (properties.getProperty(SYNDESIS_DOCKER_REGISTRY) == null) {
+            defaultProps.setProperty(SYNDESIS_DOCKER_REGISTRY, "quay.io");
+            defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE,
+                String.format("%s/syndesis/syndesis-operator:%s", defaultProps.get(SYNDESIS_DOCKER_REGISTRY), operatorVersion));
+        } else {
+            defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE,
+                String.format("%s/syndesis/syndesis-operator:%s", properties.get(SYNDESIS_DOCKER_REGISTRY), operatorVersion));
+        }
 
         if (properties.getProperty(SYNDESIS_CR_URL) == null) {
             defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/master/default-cr.yml");
@@ -487,6 +498,13 @@ public class TestConfiguration {
         // Set jackson properties for productized build
         System.setProperty("jackson.deserialization.whitelist.packages", "io.syndesis.common.model,io.atlasmap");
 
+        /*
+         * Resteasy 4.4 uses 2.10 jackson that has this security feature due to CVEs and the only option is to use system properties for that
+         * Needed for atlasmap to be able to deserialize inspection response
+         */
+        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", "*");
+        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", "*");
+
         if (properties.getProperty(SYNDESIS_RUNTIME) == null) {
             defaultProps.setProperty(SYNDESIS_RUNTIME, "springboot");
         }
@@ -506,13 +524,6 @@ public class TestConfiguration {
         if (properties.getProperty(JAEGER_VERSION) == null) {
             defaultProps.setProperty(JAEGER_VERSION, "v1.17.0");
         }
-
-        /**
-         * Resteasy 4.4 uses 2.10 jackson that has this security feature due to CVEs and the only option is to use system properties for that
-         * Needed for atlasmap to be able to deserialize inspection response
-         */
-        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfBaseType.prefix", "*");
-        System.setProperty("resteasy.jackson.deserialization.whitelist.allowIfSubType.prefix", "*");
 
         if (properties.getProperty(SYNDESIS_APPEND_REPOSITORY) == null) {
             defaultProps.setProperty(SYNDESIS_APPEND_REPOSITORY, "true");

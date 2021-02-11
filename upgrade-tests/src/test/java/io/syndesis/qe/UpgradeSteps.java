@@ -1,5 +1,7 @@
 package io.syndesis.qe;
 
+import static io.syndesis.qe.TestConfiguration.SYNDESIS_DOCKER_REGISTRY;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assumptions.assumeThat;
@@ -37,8 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UpgradeSteps {
     private static final String RELEASED_OPERATOR_IMAGE = "registry.redhat.io/fuse7/fuse-online-operator";
-    private static final String UPSTREAM_OPERATOR_IMAGE = "syndesis/syndesis-operator";
-    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://hub.docker.com/v2/repositories/syndesis/syndesis-server/tags/?page_size=100";
+    private static final String UPSTREAM_OPERATOR_IMAGE =
+        String.format("%s/syndesis/syndesis-operator", TestConfiguration.get().readValue(SYNDESIS_DOCKER_REGISTRY));
+    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://quay.io/api/v1/repository/syndesis/syndesis-server/tag/?limit=100";
 
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
@@ -75,7 +78,7 @@ public class UpgradeSteps {
             List<String> tags = new ArrayList<>();
             while (next != null) {
                 JSONObject response = new JSONObject(HTTPUtils.doGetRequest(next).getBody());
-                response.getJSONArray("results").forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
+                response.getJSONArray("tags").forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
                 try {
                     next = response.getString("next");
                 } catch (JSONException ex) {
@@ -175,6 +178,15 @@ public class UpgradeSteps {
         assertThat(found).as("The pull secret should be linked to service account, but wasn't").isTrue();
     }
 
+    @Then("verify upgrade integration {string}")
+    public void checkIntegration(String name) {
+        String[] lines = OpenShiftUtils.getIntegrationLogs(name).split("\n");
+        final String lastLine = lines[lines.length - 1];
+        TestUtils.sleepIgnoreInterrupt(10000L);
+        String logsAfter = OpenShiftUtils.getIntegrationLogs(name);
+        assertThat(logsAfter.substring(logsAfter.indexOf(lastLine))).contains("[[options]]");
+    }
+
     @When("close DB connections")
     public void closeDbConnections() {
         SampleDbConnectionManager.closeConnections();
@@ -195,9 +207,8 @@ public class UpgradeSteps {
             // For lambda to be final
             Semver finalIncrement = increment;
             // Check if this tag exists, an if yes, use the "latest" as the version
-            // TODO(avano): For 1.10.x there is no 1.10 tag, so temporarily grab latest daily
             String previousTag = tags.stream()
-                .filter(t -> t.matches("^" + getMajorMinor(finalIncrement.toString()).replaceAll("\\.", "\\\\.") + "(\\.\\d+)?-\\d{8}$")
+                .filter(t -> t.matches("^" + getMajorMinor(finalIncrement.toString()).replaceAll("\\.", "\\\\.") + "(\\.\\d+)?$")
             ).reduce((first, second) -> second).orElse(null);
 
             // If this tag exists, save it
