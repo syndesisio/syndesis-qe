@@ -59,6 +59,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_CR_URL = "syndesis.config.cr.url";
 
     public static final String SYNDESIS_BUILD_PROPERTIES_URL = "syndesis.config.build.properties.url";
+    public static final String SYNDESIS_DOCKER_REGISTRY = "syndesis.config.docker.registry";
 
     public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
     public static final String SYNDESIS_PULL_SECRET_NAME = "syndesis.config.pull.secret.name";
@@ -194,7 +195,8 @@ public class TestConfiguration {
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":" + port) + ".nip.io");
                 } else {
                     //remote instance
-                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":" + port));
+                    get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX,
+                        prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":" + port));
                 }
             }
         }
@@ -449,7 +451,15 @@ public class TestConfiguration {
         } else {
             operatorVersion = "latest";
         }
-        defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE, "syndesis/syndesis-operator" + ':' + operatorVersion);
+
+        if (properties.getProperty(SYNDESIS_DOCKER_REGISTRY) == null) {
+            defaultProps.setProperty(SYNDESIS_DOCKER_REGISTRY, "quay.io");
+            defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE,
+                String.format("%s/syndesis/syndesis-operator:%s", defaultProps.get(SYNDESIS_DOCKER_REGISTRY), operatorVersion));
+        } else {
+            defaultProps.setProperty(SYNDESIS_OPERATOR_IMAGE,
+                String.format("%s/syndesis/syndesis-operator:%s", properties.get(SYNDESIS_DOCKER_REGISTRY), operatorVersion));
+        }
 
         if (properties.getProperty(SYNDESIS_CR_URL) == null) {
             defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.12.x/default-cr.yml");
