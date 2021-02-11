@@ -354,6 +354,7 @@ Feature: Operator Deployment
       | Prometheus | spec/components/prometheus/volumeStorageClass.yml | syndesis-prometheus |
 
   @ENTESB-12424
+  @ENTESB-15311
   @operator-components-external-db
   @operator-db
   Scenario: Syndesis Operator - Components - Database - External Database
