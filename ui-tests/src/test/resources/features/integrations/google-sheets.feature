@@ -102,11 +102,11 @@ Feature: Google Sheets Connector
     And check visibility of data mapper ui
     And define spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | first_name    | A             |
-      | last_name     | B             |
-      | company       | C             |
-      | lead_source   | D             |
-      | create_date   | E             |
+      | first_name  | A |
+      | last_name   | B |
+      | company     | C |
+      | lead_source | D |
+      | create_date | E |
     Then click on the "Done" button
 
     When publish integration
@@ -151,11 +151,11 @@ Feature: Google Sheets Connector
     And check visibility of data mapper ui
     And define spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | first_name    | A             |
-      | last_name     | B             |
-      | company       | C             |
-      | lead_source   | D             |
-      | create_date   | E             |
+      | first_name  | A |
+      | last_name   | B |
+      | company     | C |
+      | lead_source | D |
+      | create_date | E |
     Then click on the "Done" button
 
     When publish integration
@@ -203,11 +203,11 @@ Feature: Google Sheets Connector
     And check visibility of data mapper ui
     And define spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | first_name    | #1            |
-      | last_name     | #2            |
-      | company       | #3            |
-      | lead_source   | #4            |
-      | create_date   | #5            |
+      | first_name  | #1 |
+      | last_name   | #2 |
+      | company     | #3 |
+      | lead_source | #4 |
+      | create_date | #5 |
     Then click on the "Done" button
 
     When publish integration
@@ -247,25 +247,25 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And define constant "31438639" of type "String" in data mapper
+    And define constant "C" of type "String" in data mapper
+    And define constant "D" of type "String" in data mapper
     And define constant "countries" of type "String" in data mapper
     And define constant "A2:E36625" of type "String" in data mapper
     And define constant "0" of type "Integer" in data mapper
-    And define constant "C" of type "String" in data mapper
-    And define constant "D" of type "String" in data mapper
     And define test spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | 31438639      | sheetId                   |
-      | countries     | columnGroups.sourceColumn |
-      | A2:E36625     | valueGroups.sourceColumn  |
-      | 0             | columnGroups.label        |
-      | C             | sourceRange               |
-      | D             | sourceSheetId             |
+      | 31438639  | sheetId                   |
+      | C         | columnGroups.sourceColumn |
+      | D         | valueGroups.sourceColumn  |
+      | countries | columnGroups.label        |
+      | A2:E36625 | sourceRange               |
+      | 0         | sourceSheetId             |
     Then click on the "Done" button
 
     When add integration step on position "2"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define constant "31438639" of type "String" in data mapper
+    And define constant "789378340" of type "String" in data mapper
     And define constant "R" of type "String" in data mapper
     And define constant "countries" of type "String" in data mapper
     And define constant "A2:R36625" of type "String" in data mapper
@@ -276,7 +276,7 @@ Feature: Google Sheets Connector
 
     And create data mapper mappings with data bucket
       | 2 - PivotTable | spreadsheetId |  | spreadsheetId            |
-      | Constants      | 31438639      |  | sheetId                  |
+      | Constants      | 789378340     |  | sheetId                  |
       | Constants      | R             |  | valueGroups.sourceColumn |
       | Constants      | countries     |  | rowGroups.label          |
       | Constants      | A2:R36625     |  | sourceRange              |
@@ -444,8 +444,8 @@ Feature: Google Sheets Connector
     And select "Get sheet values" integration action
     And fill in data-testid field "spreadsheetid" from property "testDataSheetId" of credentials "QE Google Sheets"
     And fill in values by element data-testid
-      | range         | A:I                                          |
-      | maxresults    | 25000                                        |
+      | range      | A:I   |
+      | maxresults | 25000 |
     And click on the "Next" button
     And fill in values by element data-testid
       | columnnames | A,B,C,D,E,F,G,H,I |
