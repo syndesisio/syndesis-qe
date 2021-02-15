@@ -1,5 +1,7 @@
 package io.syndesis.qe.resource.impl;
 
+import static io.syndesis.qe.TestConfiguration.SYNDESIS_DOCKER_REGISTRY;
+
 import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
@@ -469,8 +471,24 @@ public class Syndesis implements Resource {
             Set<Image> images = EnumSet.allOf(Image.class);
             for (Image image : images) {
                 if (TestConfiguration.image(image) != null) {
+                    // override image, e.g. from BUILD_PROPERTIES
                     log.info("Overriding " + image.name().toLowerCase() + " image with " + TestConfiguration.image(image));
                     envVarsToAdd.add(new EnvVar("RELATED_IMAGE_" + image.name(), TestConfiguration.image(image), null));
+                } else {
+                    // use images from Quay instead of DockerHub for Syndesis components
+                    switch (image) {
+                        case META:
+                        case S2I:
+                        case UI:
+                        case SERVER:
+                        case UPGRADE:
+                            log.info("Overriding " + image.name().toLowerCase() + " image with quay variant");
+                            String version =
+                                TestConfiguration.syndesisInstallVersion() != null ? TestConfiguration.syndesisInstallVersion() : "latest";
+                            envVarsToAdd.add(new EnvVar("RELATED_IMAGE_" + image.name(),
+                                String.format("%s/syndesis/syndesis-%s:%s", TestConfiguration.get().readValue(SYNDESIS_DOCKER_REGISTRY),
+                                    image.name().toLowerCase(), version), null));
+                    }
                 }
             }
         }

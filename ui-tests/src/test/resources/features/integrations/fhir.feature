@@ -142,13 +142,14 @@ Feature: Integration - FHIR - all actions
       | lead_source | id |
 
     # workaround for @ENTESB-14237
-    And define property "op" with value "replace" of type "String" in data mapper
-    And define property "path" with value "/name/0/family" of type "String" in data mapper
-    And define property "value" with value "Mestanek" of type "String" in data mapper
+    And define constant "replace" of type "String" in data mapper
+    And define constant "/name/0/family" of type "String" in data mapper
+    And define constant "Mestanek" of type "String" in data mapper
+
     And create data mapper mappings
-      | op    | 1.op    |
-      | path  | 1.path  |
-      | value | 1.value |
+      | replace    | 1.op    |
+      | /name/0/family  | 1.path  |
+      | Mestanek | 1.value |
     And click on the "Done" button
 
     #run the integration

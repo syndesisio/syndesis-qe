@@ -45,12 +45,12 @@ public class DataMapper extends SyndesisPageObject {
 
         public static final By CONNECT_TO_MAPPING_BUTTON = ByUtils.dataTestId("connect-to-the-selected-mapping-button");
         public static final By CREATE_NEW_MAPPING_BUTTON = ByUtils.dataTestId("create-new-mapping-button");
+        public static final By ADD_NEW_MAPPING_BUTTON = ByUtils.dataTestId("add-new-mapping-button");
 
         public static final By CLOSING_MAPPING_DETAIL_BUTTON = ByUtils.dataTestId("close-mapping-detail-button");
 
-        public static final By CREATE_PROPERTY_BUTTON = ByUtils.dataTestId("create-property-button");
+        public static final By CREATE_PROPERTY_BUTTON = ByUtils.dataTestId("create-source-property-button");
         public static final String PROPERTY_NAME = "property-name-text-input";
-        public static final String PROPERTY_VALUE = "property-value-text-input";
         public static final String PROPERTY_TYPE = "property-type-form-select";
 
         public static final By CREATE_CONSTANT_BUTTON = ByUtils.dataTestId("create-constant-button");
@@ -114,12 +114,11 @@ public class DataMapper extends SyndesisPageObject {
         getSourceElementColumn().find(By.className("pf-c-title")).click();
     }
 
-    public void addProperty(String name, String value, String type) {
+    public void addProperty(String name, String type) {
         getSourceElementColumn().find(Element.CREATE_PROPERTY_BUTTON).shouldBe(visible).click();
         ModalDialogPage modalDialogPage = new ModalDialogPage();
         assertThat(modalDialogPage.getTitleText()).contains("Create Property");
         modalDialogPage.fillInputByDataTestid(Element.PROPERTY_NAME, name);
-        modalDialogPage.fillInputByDataTestid(Element.PROPERTY_VALUE, value);
         modalDialogPage.selectValueByDataTestid(Element.PROPERTY_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
@@ -142,6 +141,10 @@ public class DataMapper extends SyndesisPageObject {
      */
     private void createNewMapping(String sourceBucket, String source, String targetBucket, String target) {
         log.info("Mapping {} -> {}", source, target);
+
+        // create a brand new mapping
+        getRootElement().find(Element.ADD_NEW_MAPPING_BUTTON).shouldBe(visible).click();
+
         SelenideElement src = this.getSourceElementColumn();
         SelenideElement dest = this.getTargetElementColumn();
 

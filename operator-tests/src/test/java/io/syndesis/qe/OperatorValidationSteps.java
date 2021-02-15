@@ -197,9 +197,10 @@ public class OperatorValidationSteps {
         } catch (TimeoutException | InterruptedException | IOException e) {
             fail("Unable to check route: ", e);
         }
-
+        TestUtils.sleepForJenkinsDelayIfHigher(3);
         assertThat(OpenShiftUtils.getInstance().routes().withName("syndesis").get().getStatus().getIngress().get(0).getHost())
-            .isEqualTo(expectedRoute);
+            .isEqualTo(expectedRoute)
+            .as("Route doesn't contain expected hostname. Route: " + OpenShiftUtils.getInstance().routes().withName("syndesis").get().toString());
     }
 
     @Then("^check that the \"([^\"]*)\" config map (contains|doesn't contain)$")
