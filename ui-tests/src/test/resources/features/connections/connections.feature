@@ -126,3 +126,22 @@ Feature: Connection - CRUD
     And check that 2. tooltip contains text "Username for the database connection."
     And check that 3. tooltip contains text "Password for the database connection."
     And check that 4. tooltip contains text "Database schema."
+
+  @reproducer
+  @ENTESB-11603
+  Scenario: The previous values are fill in
+    And navigate to the "Connections" page
+    And click on the "Create Connection" link
+    And select "SFTP" connection type
+    And fill in values by element data-testid
+      | host     | my-host |
+      | username | Joe     |
+      | password | test    |
+      | binary   | No      |
+    When click on the "Next" button
+    And click on element with data-testid "connection-creator-layout-back-button"
+    Then validate values by element data-testid
+      | host     | my-host |
+      | username | Joe     |
+      | binary   | false   |
+    
