@@ -92,8 +92,8 @@ public class DataMapperSteps {
     }
 
     @ExcludeFromSelectorReports
-    @When("^define property \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
-    public void definePropertyWithValueOfTypeInDataMapper(String name, String value, String type) {
-        mapper.addProperty(name, value, type);
+    @When("^define property \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
+    public void definePropertyOfTypeInDataMapper(String name, String type) {
+        mapper.addProperty(name, type);
     }
 }
