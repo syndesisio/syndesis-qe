@@ -48,7 +48,7 @@ Feature: Integration - SQS
       | Message 2 |
       | Message 3 |
       | Message 4 |
-    Then verify that the SQS queue "syndesis-out" has 4 messages after 30 seconds
+    Then verify that the SQS queue "syndesis-out" has 4 messages after 60 seconds
       And verify that the SQS queue "syndesis-in" has 0 messages after 0 seconds
 
   @amqbroker
@@ -182,7 +182,7 @@ Feature: Integration - SQS
     Then wait for integration with name: "AMQ-SQS-send-delay" to become active
     When publish message with content "Hello!" to "queue" with name "sqs-in"
     Then verify that the SQS queue "syndesis-out" has 0 messages after 35 seconds
-      And verify that the SQS queue "syndesis-out" has 1 message after 15 seconds
+      And verify that the SQS queue "syndesis-out" has 1 message after 30 seconds
 
   @amqbroker
   @activemq
