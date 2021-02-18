@@ -60,9 +60,21 @@ public class IntegrationUtils {
         waitForMessage(integrationName, numberOfMessages, TestConfiguration.getConfigTimeout());
     }
 
+    public void waitForNewMessage(String integrationName, int numberOfMessages) {
+        waitForMessage(integrationName, numberOfMessages, TestConfiguration.getConfigTimeout());
+    }
+
     public void waitForMessage(String integrationName, int numberOfMessages, int timeoutInSeconds) {
         TestUtils.waitFor(() ->
                 this.numberOfMessages(integrationName) >= numberOfMessages, 3, timeoutInSeconds,
+            String.format("The message doesn't go through integration in time. Expected messages: %s, actual: %s", numberOfMessages,
+                this.numberOfMessages(integrationName)));
+    }
+
+    public void waitForNewMessage(String integrationName, int numberOfMessages, int timeoutInSeconds) {
+        int numberOfMessagesBefore = this.numberOfMessages(integrationName);
+        TestUtils.waitFor(() ->
+                this.numberOfMessages(integrationName) >= numberOfMessagesBefore + numberOfMessages, 3, timeoutInSeconds,
             String.format("The message doesn't go through integration in time. Expected messages: %s, actual: %s", numberOfMessages,
                 this.numberOfMessages(integrationName)));
     }
