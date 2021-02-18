@@ -593,7 +593,7 @@ public class OperatorValidationSteps {
     public void checkMetricsVersion() {
         try (LocalPortForward ignored = OpenShiftUtils.createLocalPortForward(
             //skip syndesis-operator-{d}-deploy pods
-            OpenShiftUtils.getPod(p -> p.getMetadata().getName().matches("syndesis-operator-\\d-(?!deploy).*")), 8383, 8383)) {
+            OpenShiftUtils.getPod(p -> p.getMetadata().getName().matches("syndesis-operator-[a-zA-Z0-9]*-(?!deploy).*")), 8383, 8383)) {
             assertThat(HTTPUtils.doGetRequest("http://localhost:8383/metrics").getBody()).contains("syndesis_version_info{operator_version");
         } catch (IOException e) {
             fail("Unable to create port forward: ", e);
