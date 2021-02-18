@@ -836,22 +836,24 @@ public class Syndesis implements Resource {
         Index index;
         Bundle foBundle = null;
         OpenShiftService ocpSvc;
-        Opm opm = new Opm();
+        if (TestConfiguration.getBundleImage() != null) {
+            ocpSvc = TestConfiguration.getOpenShiftService("fuse-online-index");
+        } else {
+            String[] parts = TestConfiguration.getIndexImage().split("/");
+            String quayProject = parts[parts.length - 1].split(":")[0];
+            ocpSvc = TestConfiguration.getOpenShiftService(quayProject);
+        }
+        Opm opm = new Opm(ocpSvc);
         QuayUser quayUser = TestConfiguration.getQuayUser();
         if (TestConfiguration.getBundleImage() != null) {
             //Deploy from bundle
             index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion());
             foBundle = index.addBundle(TestConfiguration.getBundleImage());
-            index.push(quayUser);
-            ocpSvc = TestConfiguration.getOpenShiftService("fuse-online-index");
         } else {
             //deploy from existing index image
             index = opm.pullIndex(TestConfiguration.getIndexImage(), quayUser);
-            index.push(quayUser);
-            String[] parts = TestConfiguration.getIndexImage().split("/");
-            String quayProject = parts[parts.length - 1].split(":")[0];
-            ocpSvc = TestConfiguration.getOpenShiftService(quayProject);
         }
+        index.push(quayUser);
         try {
             // OCP stuff - add index
             ocpSvc.patchGlobalSecrets(TestConfiguration.getQuayPullSecret());
