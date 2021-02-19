@@ -36,6 +36,11 @@ public class MonitoringValidationSteps {
         integrationUtils.waitForMessage(integrationName, numberOfMessages, 60);
     }
 
+    @When("^wait until integration (.*) processed at least (\\w+) new messages?")
+    public void waitForNewMessage(String integrationName, int numberOfMessages) {
+        integrationUtils.waitForNewMessage(integrationName, numberOfMessages, 60);
+    }
+
     @Then("validate that log of integration {string} has been created and contains {string}")
     public void validateThatLogOfIntegrationHasBeenCreatedPeriodInMs(String integrationName, String contains) {
 
