@@ -24,6 +24,7 @@ import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.kubernetes.client.VersionInfo;
@@ -129,6 +130,13 @@ public final class OpenShiftUtils {
         return pods.size() > 0 ? Optional.of(pods.get(0)) : Optional.empty();
     }
 
+    public static Optional<Deployment> getDeploymentByPartialName(String partialName) {
+        List<Deployment> deployments = findDeploymentsByPredicates(
+            p -> p.getMetadata().getName().contains(partialName)
+        );
+        return deployments.size() > 0 ? Optional.of(deployments.get(0)) : Optional.empty();
+    }
+
     public static int extractPodSequenceNr(Pod pod) {
         String podFullName = pod.getMetadata().getName();
         Pattern regex = Pattern.compile(".*-(\\d+)-[a-z0-9]{5}$");
@@ -205,6 +213,21 @@ public final class OpenShiftUtils {
     }
 
     /**
+     * Returns all Deployments that match the given predicates.
+     *
+     * @param predicates predicates to match
+     * @return list of deployments that match the given predicates.
+     */
+    @SafeVarargs
+    public static List<Deployment> findDeploymentsByPredicates(Predicate<Deployment>... predicates) {
+        Stream<Deployment> deploymentStream = OpenShiftUtils.getInstance().apps().deployments().list().getItems().stream();
+        for (Predicate<Deployment> predicate : predicates) {
+            deploymentStream = deploymentStream.filter(predicate);
+        }
+        return deploymentStream.collect(Collectors.toList());
+    }
+
+    /**
      * Returns the first pod that matches the predicates, or fails if none matches.
      *
      * @param predicates predicates to match
@@ -245,6 +268,21 @@ public final class OpenShiftUtils {
             podStream = podStream.filter(predicate);
         }
         return podStream.findAny().isPresent();
+    }
+
+    /**
+     * Checks if the deployment with given predicates exist.
+     *
+     * @param predicates predicates to match
+     * @return true/false
+     */
+    @SafeVarargs
+    public static boolean deploymentExists(Predicate<Deployment>... predicates) {
+        Stream<Deployment> deploymentStream = OpenShiftUtils.getInstance().apps().deployments().list().getItems().stream();
+        for (Predicate<Deployment> predicate : predicates) {
+            deploymentStream = deploymentStream.filter(predicate);
+        }
+        return deploymentStream.findAny().isPresent();
     }
 
     /**
