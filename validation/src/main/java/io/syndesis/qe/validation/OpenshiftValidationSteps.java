@@ -36,6 +36,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.ResourceRequirements;
 import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
 
@@ -166,6 +167,21 @@ public class OpenshiftValidationSteps {
             p -> !StringUtils.containsAny(p.getMetadata().getName(), "build", "deploy"),
             p -> OpenShiftUtils.extractPodSequenceNr(p) > currentNr))
             .as("There should be no pod with higher number")
+            .isFalse();
+    }
+
+    @Then("check that the pod {string} is not redeployed by its deployment")
+    public void checkThatPodIsNotRedeployedByDeployment(String deploymentName) {
+        Optional<Deployment> deployment = OpenShiftUtils.getDeploymentByPartialName(deploymentName);
+        assertThat(deployment).isPresent();
+        int currentNr = deployment.get().getMetadata().getGeneration().intValue();
+        waitForStateCheckInterval();
+
+        // Check that deployment generation is not higher
+        assertThat(OpenShiftUtils.deploymentExists(
+            p -> p.getMetadata().getName().contains(deploymentName),
+            p -> p.getMetadata().getGeneration().intValue() > currentNr))
+            .as("There should be no deployment with higher generation number")
             .isFalse();
     }
 
