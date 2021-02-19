@@ -113,6 +113,7 @@ public class TestConfiguration {
     private static final String INDEX_IMAGE = "syndesis.config.index.image";
     private static final String BUNDLE_IMAGE = "syndesis.config.bundle.image";
     private static final String QUAY_PULL_SECRET = "syndesis.config.quay.pullsecret";
+    private static final String OPERATORHUB_ICSP_SCRIPT_URL = "syndesis.config.icsp.url";
 
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
@@ -408,6 +409,10 @@ public class TestConfiguration {
         return get().readValue(QUAY_PULL_SECRET);
     }
 
+    public static String operatorhubIcspScriptURL() {
+        return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
+    }
+
     private Properties defaultValues() {
         final Properties defaultProps = new Properties();
 
@@ -632,6 +637,7 @@ public class TestConfiguration {
             .pullSecretName(syndesisPullSecretName())
             .pullSecret(syndesisPullSecret())
             .quayOpsrcToken(quayOpsrcToken())
+            .icspConfigURL(operatorhubIcspScriptURL())
             .build();
         return new OpenShiftService(
             quayNamespace(),

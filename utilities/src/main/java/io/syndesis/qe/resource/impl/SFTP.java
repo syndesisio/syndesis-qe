@@ -123,7 +123,8 @@ public class SFTP implements Resource {
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName));
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod(labelName, appName)) &&
+            OpenShiftUtils.getPodLogs(appName).contains("Server listening on :: port 22.");
     }
 
     @Override

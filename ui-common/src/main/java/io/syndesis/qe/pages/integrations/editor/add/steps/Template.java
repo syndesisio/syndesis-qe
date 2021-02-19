@@ -149,7 +149,7 @@ public class Template extends AbstractStep {
         //Selects the label of selected option radio button
         SelenideElement selectedType = getRootElement().find(Elements.TEMPLATE_LANGUAGES).find(Elements.CHECKED_TEMPLATE_LANGUAGE).parent();
         By highlightSelector = CodeEditor.CODE_HIGHLIGHT_MAP.get(selectedType.innerText());
-        return getRootElement().findAll(CodeEditor.CODE_EDITOR_LINES).stream()
+        return getRootElement().findAll(CodeEditor.CODE_EDITOR_LINES).exclude(Conditions.STALE_ELEMENT).stream()
             .map(line -> line.findAll(highlightSelector)).flatMap(Collection::stream)
             .map(SelenideElement::innerText).collect(Collectors.toList());
     }
