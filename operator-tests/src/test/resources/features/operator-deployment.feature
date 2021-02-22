@@ -453,3 +453,22 @@ Feature: Operator Deployment
       And create integration with name: "tolerations-test"
     Then wait for integration with name: "tolerations-test" to become active
       And check tolerations for integration pods
+
+  @ENTESB-14875
+  @server-respin
+  @operator-server
+  Scenario Outline: Syndesis Operator - Components - Server - <name> - Don't respin on configmap update
+    When deploy Syndesis CR from file "minimal.yml"
+      And wait for Syndesis to become ready
+    Then check that the "syndesis-server-config" config map doesn't contain
+      | application.yml | <newValue> |
+    When update CR with "<crFile>" file
+    Then check that the pod "syndesis-server" is not redeployed by server
+      And check that the "syndesis-server-config" config map contains
+        | application.yml | <newValue> |
+
+    Examples:
+      | name              | crFile                                              | newValue                                                                |
+      | Integration Limit | spec/components/server/integrationLimit.yml         | maxIntegrationsPerUser: '2'                                             |
+      | Maven Args        | spec/components/server/additionalMavenArguments.yml | additionalMavenArguments: "--strict-checksums -DtestProperty=testValue" |
+      | Maven Repo        | spec/components/server/mavenRepositories-append.yml | customRepo2: https://customRepo2                                        |
