@@ -131,26 +131,7 @@ public class OperatorValidationSteps {
                     syndesis.jaegerWorkarounds();
                 }
             } else {
-                String content = FileUtils.readFileToString(new File("src/test/resources/operator/" + file), "UTF-8");
-                if (content.contains("REPLACE_REPO")) {
-                    content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
-                        : TestConfiguration.upstreamRepository());
-                }
-                if (content.contains("REPLACE_QUERY_URL")) {
-                    content = content.replace("REPLACE_QUERY_URL", ResourceFactory.get(Jaeger.class).getQueryServiceHost());
-                }
-                if (content.contains("REPLACE_COLLECTOR_URL")) {
-                    content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
-                }
-                if (content.contains("REPLACE_NODE")) {
-                    String workerName = OpenShiftUtils.isOpenshift3() ? "node" : "worker";
-                    Optional<Node> worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
-                        .filter(n -> n.getMetadata().getName().contains(workerName) && n.getSpec().getTaints().isEmpty()).findFirst();
-                    if (!worker.isPresent()) {
-                        fail("There are no worker nodes with empty taints!");
-                    }
-                    content = content.replace("REPLACE_NODE", worker.get().getMetadata().getName());
-                }
+                String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
                 //don't do workarounds for external Jaeger
                 if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
@@ -158,8 +139,37 @@ public class OperatorValidationSteps {
                 }
             }
         } catch (IOException e) {
-            fail("Unable to open file " + file, e);
+            fail("Couldn't create CR from provided file", e);
         }
+    }
+
+    private String getCrFromFileAsString(String file) {
+        String content = null;
+        try {
+            content = FileUtils.readFileToString(new File("src/test/resources/operator/" + file), "UTF-8");
+        } catch (IOException e) {
+            fail("Custom resource " + file + " not found", e);
+        }
+        if (content.contains("REPLACE_REPO")) {
+            content = content.replace("REPLACE_REPO", TestUtils.isProdBuild() ? TestConfiguration.prodRepository()
+                : TestConfiguration.upstreamRepository());
+        }
+        if (content.contains("REPLACE_QUERY_URL")) {
+            content = content.replace("REPLACE_QUERY_URL", ResourceFactory.get(Jaeger.class).getQueryServiceHost());
+        }
+        if (content.contains("REPLACE_COLLECTOR_URL")) {
+            content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
+        }
+        if (content.contains("REPLACE_NODE")) {
+            String workerName = OpenShiftUtils.isOpenshift3() ? "node" : "worker";
+            Optional<Node> worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
+                .filter(n -> n.getMetadata().getName().contains(workerName) && n.getSpec().getTaints().isEmpty()).findFirst();
+            if (!worker.isPresent()) {
+                fail("There are no worker nodes with empty taints!");
+            }
+            content = content.replace("REPLACE_NODE", worker.get().getMetadata().getName());
+        }
+        return content;
     }
 
     @Then("^check deployed syndesis version$")
@@ -671,5 +681,12 @@ public class OperatorValidationSteps {
         }
         asserts.assertThat(downloads).as("The artifact shouldn't be downloaded from other repositories than defined").isEmpty();
         asserts.assertAll();
+    }
+
+    @When("update CR with {string} file")
+    public void updateCustomResource(String file) {
+        Syndesis syndesis = ResourceFactory.get(Syndesis.class);
+        syndesis.editCr(getCrFromFileAsString(file));
+
     }
 }

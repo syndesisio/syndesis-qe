@@ -353,6 +353,17 @@ public class Syndesis implements Resource {
         });
     }
 
+    public void editCr(String cr) {
+        RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient();
+        OpenShiftUtils.asRegularUser(() -> {
+            try {
+                syndesisCrClient.edit(TestConfiguration.openShiftNamespace(), CR_NAME, cr);
+            } catch (IOException e) {
+                fail("Unable to modify CR: " + e);
+            }
+        });
+    }
+
     private void deleteCr(String name, String version) {
         log.info("Undeploying custom resource \"{}\" in version \"{}\"", name, version);
         RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient(version);
