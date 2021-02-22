@@ -1,6 +1,7 @@
 package io.syndesis.qe.validation;
 
 import io.syndesis.qe.utils.GoogleCalendarUtils;
+import io.syndesis.qe.utils.IntegrationUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,9 @@ public class GoogleCalendarSteps {
 
     @Autowired
     private GoogleCalendarUtils gcu;
+
+    @Autowired
+    private IntegrationUtils integrationUtils;
 
     @When("create calendars")
     public void createCalendar(DataTable calendarsData) throws IOException {
@@ -116,6 +120,15 @@ public class GoogleCalendarSteps {
             e.set(key, value);
         }
         gcu.updateEvent(account, calendarId, e);
+    }
+
+    @When("^wait until google calendar integration (.*) with considerlastupdate on (.*) processed at least (\\w+) new messages?")
+    public void waitForNewMessage(String integrationName, boolean considerlastupdate, int numberOfMessages) {
+        if(considerlastupdate){
+            // there aren't any new event
+            return;
+        }
+        integrationUtils.waitForNewMessage(integrationName, numberOfMessages, 60);
     }
 
 }
