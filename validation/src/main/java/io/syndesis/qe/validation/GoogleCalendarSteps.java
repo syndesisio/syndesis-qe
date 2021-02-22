@@ -1,6 +1,7 @@
 package io.syndesis.qe.validation;
 
 import io.syndesis.qe.utils.GoogleCalendarUtils;
+import io.syndesis.qe.utils.IntegrationUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +26,9 @@ public class GoogleCalendarSteps {
     @Autowired
     private GoogleCalendarUtils gcu;
 
+    @Autowired
+    private IntegrationUtils integrationUtils;
+
     @When("create calendars")
     public void createCalendar(DataTable calendarsData) throws IOException {
         List<Map<String, String>> valueRows = calendarsData.asMaps(String.class, String.class);
@@ -44,7 +48,8 @@ public class GoogleCalendarSteps {
     }
 
     @When("create following {string} events in calendar {string} with account {string}")
-    public void createFollowingEventsInCalendarWithAccount(String eventTime, String calendarName, String account, DataTable events) throws IOException {
+    public void createFollowingEventsInCalendarWithAccount(String eventTime, String calendarName, String account, DataTable events)
+        throws IOException {
         List<Map<String, String>> valueRows = events.asMaps(String.class, String.class);
         String prefix = (("all".equalsIgnoreCase(eventTime)) ? "" : eventTime).trim();
         for (Map<String, String> row : valueRows) {
@@ -76,8 +81,8 @@ public class GoogleCalendarSteps {
      * Method that returns EventDateTime instance based on the row defined in table for the step.
      *
      * @param prefix either "start" or "end"
-     * @param row    the row with data (expecting presence of either prefix+"_date" or prefix+"_time"),
-     *               if none provided, time is defined as now()+24h for "start" and now()+25h for "end" times
+     * @param row the row with data (expecting presence of either prefix+"_date" or prefix+"_time"),
+     * if none provided, time is defined as now()+24h for "start" and now()+25h for "end" times
      * @return EventDateTime instance with either prefix+"_date" or prefix+"_time" fields set
      */
     private EventDateTime getDateOrDateTime(String prefix, Map<String, String> row) {
@@ -102,7 +107,8 @@ public class GoogleCalendarSteps {
     }
 
     @When("update event {string} in calendar {string} for user {string} with values")
-    public void updateEventInCalendarForUserWithValues(String eventSummary, String calendarName, String account, DataTable properties) throws Throwable {
+    public void updateEventInCalendarForUserWithValues(String eventSummary, String calendarName, String account, DataTable properties)
+        throws Throwable {
         String aliasedCalendarName = gcu.getAliasedCalendarName(calendarName);
         String calendarId = gcu.getPreviouslyCreatedCalendar(account, aliasedCalendarName).getId();
         Event e = gcu.getEventBySummary(account, calendarId, eventSummary);
@@ -118,4 +124,12 @@ public class GoogleCalendarSteps {
         gcu.updateEvent(account, calendarId, e);
     }
 
+    @When("^wait until google calendar integration (.*) with considerlastupdate on (.*) processed at least (\\w+) new messages?")
+    public void waitForNewMessage(String integrationName, boolean considerlastupdate, int numberOfMessages) {
+        if (considerlastupdate) {
+            // there aren't any new event
+            return;
+        }
+        integrationUtils.waitForNewMessage(integrationName, numberOfMessages, 60);
+    }
 }

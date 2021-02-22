@@ -235,7 +235,7 @@ Feature: Google Calendar Connector
 
     And check that query "SELECT * FROM TODO" has <expected_num_rows_fst> output
     And reset content of "TODO" table
-    And wait until integration google_calendar_<name>_on_<events_to_create>_events processed at least <integration_messages> new message
+    And wait until google calendar integration google_calendar_<name>_on_<events_to_create>_events with considerlastupdate on <from_last_event_update> processed at least <integration_messages> new messages
     And check that query "SELECT * FROM TODO" has <expected_num_rows_snd> output
 
     Examples:
