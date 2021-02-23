@@ -164,10 +164,10 @@ public class Syndesis implements Resource {
             } catch (KubernetesClientException e) {
                 log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
             }
-        }
-        //The subscription created a deployment for the operator and it needs to be deleted
-        if (OpenShiftUtils.getInstance().apps().deployments().list().getItems().size() > 0) {
-            OpenShiftUtils.getInstance().apps().deployments().delete();
+            //The subscription created a deployment for the operator and it needs to be deleted
+            if (OpenShiftUtils.getInstance().apps().deployments().list().getItems().size() > 0) {
+                OpenShiftUtils.getInstance().apps().deployments().delete();
+            }
         }
     }
 
