@@ -161,13 +161,20 @@ public class OperatorValidationSteps {
             content = content.replace("REPLACE_COLLECTOR_URL", ResourceFactory.get(Jaeger.class).getCollectorServiceHost());
         }
         if (content.contains("REPLACE_NODE")) {
-            String workerName = OpenShiftUtils.isOpenshift3() ? "node" : "worker";
-            Optional<Node> worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
-                .filter(n -> n.getMetadata().getName().contains(workerName) && n.getSpec().getTaints().isEmpty()).findFirst();
+            Optional<Node> worker;
+            if (OpenShiftUtils.isOpenshift3()) {
+                worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
+                    .filter(n -> n.getMetadata().getName().contains("node") && n.getSpec().getTaints().isEmpty()).findFirst();
+            } else {
+                // OCP and OSD
+                worker = OpenShiftUtils.getInstance().nodes().list().getItems().stream()
+                    .filter(n -> n.getMetadata().getLabels().containsKey("node-role.kubernetes.io/worker") && n.getSpec().getTaints().isEmpty())
+                    .findFirst();
+            }
             if (!worker.isPresent()) {
                 fail("There are no worker nodes with empty taints!");
             }
-            content = content.replace("REPLACE_NODE", worker.get().getMetadata().getName());
+            content = content.replace("REPLACE_NODE", worker.get().getMetadata().getLabels().get("kubernetes.io/hostname"));
         }
         return content;
     }
@@ -271,30 +278,35 @@ public class OperatorValidationSteps {
         components.keySet().forEach(component -> {
             String expectedMemoryLimit = components.getJSONObject(component).getJSONObject("resources").getJSONObject("limit").getString("memory");
             String expectedCpuLimit = components.getJSONObject(component).getJSONObject("resources").getJSONObject("limit").getString("cpu");
-            String expectedMemoryRequests = components.getJSONObject(component).getJSONObject("resources").getJSONObject("request").getString("memory");
+            String expectedMemoryRequests =
+                components.getJSONObject(component).getJSONObject("resources").getJSONObject("request").getString("memory");
             String expectedCpuRequests = components.getJSONObject(component).getJSONObject("resources").getJSONObject("request").getString("cpu");
             List<DeploymentConfig> dcList = OpenShiftUtils.getInstance().deploymentConfigs()
                 .withLabel("syndesis.io/component", "syndesis-" + ("database".equals(component) ? "db" : component)).list().getItems();
             softAssertions.assertThat(dcList).hasSize(1);
-            final Quantity currentMemoryLimit = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits().get("memory");
+            final Quantity currentMemoryLimit =
+                dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits().get("memory");
             softAssertions.assertThat(currentMemoryLimit).as(component + " memory limit is null").isNotNull();
             if (currentMemoryLimit != null) {
                 softAssertions.assertThat(currentMemoryLimit.getAmount() + currentMemoryLimit.getFormat())
                     .as(component + " memory limit").isEqualTo(expectedMemoryLimit);
             }
-            final Quantity currentCpuLimit = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits().get("cpu");
+            final Quantity currentCpuLimit =
+                dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getLimits().get("cpu");
             softAssertions.assertThat(currentCpuLimit).as(component + " cpu limit is null").isNotNull();
             if (currentCpuLimit != null) {
                 softAssertions.assertThat(currentCpuLimit.getAmount() + currentCpuLimit.getFormat())
                     .as(component + " cpu limit").isEqualTo(expectedCpuLimit);
             }
-            final Quantity currentMemoryRequests = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests().get("memory");
+            final Quantity currentMemoryRequests =
+                dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests().get("memory");
             softAssertions.assertThat(currentMemoryRequests).as(component + " memory requests is null").isNotNull();
             if (currentMemoryRequests != null) {
                 softAssertions.assertThat(currentMemoryRequests.getAmount() + currentMemoryRequests.getFormat())
                     .as(component + " memory requests").isEqualTo(expectedMemoryRequests);
             }
-            final Quantity currentCpuRequests = dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests().get("cpu");
+            final Quantity currentCpuRequests =
+                dcList.get(0).getSpec().getTemplate().getSpec().getContainers().get(0).getResources().getRequests().get("cpu");
             softAssertions.assertThat(currentCpuRequests).as(component + " cpu requests is null").isNotNull();
             if (currentCpuRequests != null) {
                 softAssertions.assertThat(currentCpuRequests.getAmount() + currentCpuRequests.getFormat())
@@ -363,7 +375,11 @@ public class OperatorValidationSteps {
         // The default storage class for OCP3 is empty, for OCP4 is "standard", so if the className is empty, we should use the default one
         if ("".equals(className)) {
             if (!OpenShiftUtils.isOpenshift3()) {
-                pv.withStorageClassName("standard");
+                if (OpenShiftUtils.isOSD()) {
+                    pv.withStorageClassName("gp2");
+                } else {
+                    pv.withStorageClassName("standard");
+                }
             }
         } else {
             pv.withStorageClassName(className);
@@ -387,7 +403,11 @@ public class OperatorValidationSteps {
 
             if (!OpenShiftUtils.isOpenshift3()) {
                 // This should always be the default value despite the actual value of className - that is used only in "test-pv" intentionally
-                pv.withStorageClassName("standard");
+                if (OpenShiftUtils.isOSD()) {
+                    pv.withStorageClassName("gp2");
+                } else {
+                    pv.withStorageClassName("standard");
+                }
             }
             pv.endSpec().done();
         }
@@ -560,7 +580,7 @@ public class OperatorValidationSteps {
      * It is a feature for Fuse Online product, therefore check runs only in case of the productized build.
      */
     @Then("check that metering labels have correct values for \"([^\"]*)\"$")
-    public void checkThatMeteringLabelsHaveCorrectValues(Component component)  {
+    public void checkThatMeteringLabelsHaveCorrectValues(Component component) {
         final String version = "7.9";
         final String company = "Red_Hat";
         final String prodName = "Red_Hat_Integration";
@@ -656,7 +676,8 @@ public class OperatorValidationSteps {
     @Then("check repositories used in integration {string} build")
     public void checkRepositories(String build, DataTable expectedRepositories) {
         String log = OpenShiftUtils.getInstance().getBuildLog(
-            OpenShiftUtils.getInstance().builds().list().getItems().stream().filter(b -> b.getMetadata().getName().contains(build)).findFirst().get());
+            OpenShiftUtils.getInstance().builds().list().getItems().stream().filter(b -> b.getMetadata().getName().contains(build)).findFirst()
+                .get());
 
         Pattern regex = Pattern.compile(".*Downloading .*https:\\/\\/(.*)\\/org.*");
         Set<String> downloads = Arrays.stream(log.split("\\n"))
@@ -664,7 +685,7 @@ public class OperatorValidationSteps {
             .filter(line -> line.contains("Downloading ") && line.contains("camel-lzf"))
             .map(line -> {
                 Matcher matcher = regex.matcher(line);
-                if (matcher.find())  {
+                if (matcher.find()) {
                     return matcher.group(1);
                 } else {
                     fail("Unable to parse line: " + line);
@@ -687,6 +708,5 @@ public class OperatorValidationSteps {
     public void updateCustomResource(String file) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
         syndesis.editCr(getCrFromFileAsString(file));
-
     }
 }
