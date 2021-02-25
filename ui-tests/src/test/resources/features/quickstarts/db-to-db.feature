@@ -1,5 +1,5 @@
 # @sustainer: mkralik@redhat.com
-# https://github.com/syndesisio/syndesis-quickstarts/tree/master/db-2-db
+# https://github.com/syndesisio/syndesis-quickstarts/tree/trunk/db-2-db
 
 @quickstart
 @database
