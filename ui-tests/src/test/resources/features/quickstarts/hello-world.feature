@@ -1,5 +1,5 @@
 # @sustainer: mkralik@redhat.com
-# https://github.com/syndesisio/syndesis-quickstarts/tree/master/hello-world
+# https://github.com/syndesisio/syndesis-quickstarts/tree/trunk/hello-world
 
 @quickstart
 @quickstart-hello-world
