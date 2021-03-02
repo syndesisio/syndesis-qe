@@ -31,6 +31,9 @@ Feature: 3scale integration
     And click on the "Save and publish" button
     Then Integration "threeScaleIntegration" is present in integrations list
     And wait until integration "threeScaleIntegration" gets into "Running" state
+    # Wait for some time to see if there wont be any runtime problem
+    And wait for state check interval
+    And wait until integration "threeScaleIntegration" gets into "Running" state
     And check that 3scale annotations are present on integration "threeScaleIntegration"
 
     @manual
@@ -48,5 +51,8 @@ Feature: 3scale integration
       And click on the "Save" link
 
       And click on the "Save and publish" button
+      And wait until integration "Task API" gets into "Running" state
+      # Wait for some time to see if there wont be any runtime problem
+      And wait for state check interval
       And wait until integration "Task API" gets into "Running" state
       And sleep for "1000" ms
