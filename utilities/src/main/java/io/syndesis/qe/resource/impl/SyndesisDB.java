@@ -88,7 +88,7 @@ public class SyndesisDB implements Resource {
             .addToLabels(LABEL_NAME, APP_NAME)
             .endMetadata()
             .editOrNewSpec()
-            .addNewContainer().withName(APP_NAME).withImage("centos/postgresql-96-centos7").addAllToPorts(ports).addAllToEnv(templateParams)
+            .addNewContainer().withName(APP_NAME).withImage("quay.io/syndesis_qe/postgresql-10-centos7:latest").addAllToPorts(ports).addAllToEnv(templateParams)
 
             // Post start script for creating all databases and procedures in syndesisDB
             .editOrNewLifecycle()

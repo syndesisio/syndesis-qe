@@ -26,6 +26,7 @@ import io.syndesis.qe.pages.SyndesisPage;
 import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.login.GitHubLogin;
+import io.syndesis.qe.pages.login.KeyCloakLogin;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.report.selector.ExcludeFromSelectorReports;
@@ -45,7 +46,6 @@ import io.syndesis.qe.utils.google.GoogleAccount;
 import io.syndesis.qe.utils.google.GoogleAccounts;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -53,7 +53,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
@@ -135,7 +134,6 @@ public class CommonSteps {
     private GoogleAccounts googleAccounts;
 
     @Autowired
-    @Lazy
     private CalendarUtils calendarUtils;
 
     @When("^log out from Syndesis")
@@ -206,8 +204,11 @@ public class CommonSteps {
 
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if (StringUtils.containsAny(currentUrl, "rhcloud", "crc", "rhocf", "ocp4", "fuse-qe.eng", "osp")
-            && currentUrl.contains("oauth/authorize")) {
+        } else if (currentUrl.contains("osd4") && currentUrl.contains("oauth/authorize")) {
+            $(By.partialLinkText("OpenID_keycloak")).click();
+            KeyCloakLogin kcLogin = new KeyCloakLogin();
+            kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+        } else if (currentUrl.contains("oauth/authorize")) {
             String linkText = "htpasswd";
             if (currentUrl.contains("osp")) {
                 linkText = "HTPasswd";

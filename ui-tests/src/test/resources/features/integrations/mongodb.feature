@@ -5,6 +5,7 @@
 @webhook
 @database
 @integrations-mongodb
+@long-running
 Feature: MongoDB
 
   Background: Clean application state

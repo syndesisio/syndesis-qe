@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsHistoryRequest;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsHistoryResponse;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
+import com.github.seratch.jslack.api.methods.request.conversations.ConversationsHistoryRequest;
+import com.github.seratch.jslack.api.methods.request.conversations.ConversationsListRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
-import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.methods.response.conversations.ConversationsHistoryResponse;
+import com.github.seratch.jslack.api.methods.response.conversations.ConversationsListResponse;
+import com.github.seratch.jslack.api.model.Conversation;
 import com.github.seratch.jslack.api.model.Message;
 
 import java.io.IOException;
@@ -54,9 +54,9 @@ public class SlackUtils {
      */
     public ChatPostMessageResponse sendMessage(String message, String channelName) throws IOException, SlackApiException {
         // find all channels in the workspace
-        ChannelsListResponse channelsResponse = SLACK.methods().channelsList(ChannelsListRequest.builder().token(token).build());
+        ConversationsListResponse conversationsList = SLACK.methods().conversationsList(ConversationsListRequest.builder().token(token).build());
         // find channelName
-        Channel chann = channelsResponse.getChannels().stream()
+        Conversation chann = conversationsList.getChannels().stream()
                 .filter(c -> c.getName().equals(channelName)).findFirst().get();
 
         // https://slack.com/api/chat.postMessage
@@ -81,14 +81,14 @@ public class SlackUtils {
     public void checkLastMessageFromChannel(String expectedMessage, String channelName) throws IOException, SlackApiException {
 
         // find all channels in the workspace
-        ChannelsListResponse channelsResponse = SLACK.methods().channelsList(ChannelsListRequest.builder().token(token).build());
-        Assertions.assertThat(channelsResponse.isOk()).isTrue();
+        ConversationsListResponse conversationsList = SLACK.methods().conversationsList(ConversationsListRequest.builder().token(token).build());
+        Assertions.assertThat(conversationsList.isOk()).isTrue();
         // find channelName
-        Channel chann = channelsResponse.getChannels().stream()
-                .filter(c -> c.getName().equals(channelName)).findFirst().get();
+        Conversation chann = conversationsList.getChannels().stream()
+            .filter(c -> c.getName().equals(channelName)).findFirst().get();
 
         // fetch history
-        ChannelsHistoryResponse history = SLACK.methods().channelsHistory(ChannelsHistoryRequest.builder()
+        ConversationsHistoryResponse history = SLACK.methods().conversationsHistory(ConversationsHistoryRequest.builder()
                 .token(token)
                 .channel(chann.getId())
                 .build());

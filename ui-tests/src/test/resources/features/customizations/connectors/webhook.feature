@@ -4,6 +4,7 @@
 @webhook
 @database
 @webhook-extension
+@long-running
 Feature: Webhook extension
 
   Background: Clean application state

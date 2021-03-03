@@ -4,6 +4,7 @@
 @database
 @datamapper
 @integrations-db-to-db
+@long-running
 Feature: Integration - DB to DB
 
   Background: Clean application state

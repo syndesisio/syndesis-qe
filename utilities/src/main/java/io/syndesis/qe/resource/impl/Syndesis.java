@@ -164,10 +164,10 @@ public class Syndesis implements Resource {
             } catch (KubernetesClientException e) {
                 log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
             }
-        }
-        //The subscription created a deployment for the operator and it needs to be deleted
-        if (OpenShiftUtils.getInstance().apps().deployments().list().getItems().size() > 0) {
-            OpenShiftUtils.getInstance().apps().deployments().delete();
+            //The subscription created a deployment for the operator and it needs to be deleted
+            if (OpenShiftUtils.getInstance().apps().deployments().list().getItems().size() > 0) {
+                OpenShiftUtils.getInstance().apps().deployments().delete();
+            }
         }
     }
 
@@ -503,8 +503,12 @@ public class Syndesis implements Resource {
                 }
             }
         }
-
         if ((TestUtils.isProdBuild() && getOperatorImage().contains("1.8")) || getOperatorImage().contains("1.11")) {
+            // apply this hotfix for 1.8 prod version, needs for OSD because it doesn't see proxy eng repo
+            if (TestUtils.isProdBuild()) {
+                envVarsToAdd.add(new EnvVar("RELATED_IMAGE_PSQL_EXPORTER",
+                    "registry.redhat.io/fuse7/fuse-postgres-exporter-rhel7:1.8", null));
+            }
             // needs for upgrade test when previous version is 1.11
             DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
                 .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))

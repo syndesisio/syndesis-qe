@@ -75,7 +75,7 @@ public class IntegrationUtils {
         int numberOfMessagesBefore = this.numberOfMessages(integrationName);
         TestUtils.waitFor(() ->
                 this.numberOfMessages(integrationName) >= numberOfMessagesBefore + numberOfMessages, 3, timeoutInSeconds,
-            String.format("The message doesn't go through integration in time. Expected messages: %s, actual: %s", numberOfMessages,
-                this.numberOfMessages(integrationName)));
+            String.format("The new message doesn't go through integration in time. Expected new messages: %s, actual mesages: %s, messages before: %s", numberOfMessages,
+                this.numberOfMessages(integrationName), numberOfMessagesBefore));
     }
 }

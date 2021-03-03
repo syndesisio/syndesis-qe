@@ -452,4 +452,8 @@ public final class OpenShiftUtils {
             log.debug("Waited too long for " + name + " to get to " + replicas + " replicas", e);
         }
     }
+
+    public static boolean isOSD() {
+        return getInstance().getOpenshiftUrl().toString().contains("osd4");
+    }
 }
