@@ -104,6 +104,7 @@ public class CommonSteps {
     @When("deploy public oauth proxy")
     public void deployApiOauthProxy() {
         ResourceFactory.create(PublicOauthProxy.class);
+        TestUtils.sleepForJenkinsDelayIfHigher(5);
     }
 
     @Given("deploy FHIR server")

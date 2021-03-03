@@ -28,7 +28,7 @@ Feature: Integration - SNS
     Then wait for integration with name: "AMQ-SNS-<topicName>" to become active
     When publish message with content '{"header":"Hello", "text":"First message!"}' to queue "amq-sns-in"
       And publish message with content '{"header":"Hi", "text":"Second message."}' to queue "amq-sns-in"
-    Then verify that the SQS queue "syndesis-sns-out" has 2 messages after 10 seconds
+    Then wait until integration syndesis-sns-out processed at least 2 messages
       And verify that the SQS queue "syndesis-sns-out" contains notifications related to
         | Hello | First message!  |
         | Hi    | Second message. |
