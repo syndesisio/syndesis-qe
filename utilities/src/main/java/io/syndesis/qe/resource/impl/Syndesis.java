@@ -160,7 +160,7 @@ public class Syndesis implements Resource {
                     .withVersion("v1alpha1")
                     .withScope("Namespaced")
                     .build()
-                ).delete(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0");
+                ).delete(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0");
             } catch (KubernetesClientException e) {
                 log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
             }
@@ -876,7 +876,7 @@ public class Syndesis implements Resource {
             if (foBundle != null) {
                 foBundle.createSubscription(ocpSvc);
             } else {
-                Bundle.createSubscription(ocpSvc, "fuse-online", "fuse-online-v7.8.x", "''", "fuse-online-test-catalog");
+                Bundle.createSubscription(ocpSvc, "fuse-online", "fuse-online-7.9.x", "''", "fuse-online-test-catalog");
             }
             OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning("name", "syndesis-operator", 1));
         } catch (IOException | TimeoutException | InterruptedException e) {
@@ -894,7 +894,7 @@ public class Syndesis implements Resource {
         TestUtils.waitFor(() -> "AtLatestKnown".equalsIgnoreCase(getSubscription().getJSONObject("status").getString("state")), 2, 60 * 3,
             "CSV didn't get installed in time");
         JSONObject json = new JSONObject(
-            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0"));
+            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0"));
         JSONObject operatorDeployment =
             json.getJSONObject("spec").getJSONObject("install").getJSONObject("spec").getJSONArray("deployments").getJSONObject(0);
         JSONArray envVars =
@@ -903,7 +903,7 @@ public class Syndesis implements Resource {
         envVars.put(TestUtils.map("name", "TEST_SUPPORT", "value", "true"));
         try {
             OpenShiftUtils.getInstance().customResource(getCSVContext())
-                .edit(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.8.0", json.toMap());
+                .edit(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0", json.toMap());
             return true;
         } catch (Exception e) {
             log.error("Couldn't edit Syndesis CSV", e);
