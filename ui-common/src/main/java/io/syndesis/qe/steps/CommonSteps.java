@@ -167,7 +167,31 @@ public class CommonSteps {
 
     @Given("^log into the Syndesis after logout$")
     public void loginAfterLogOut() {
+        if (OpenShiftUtils.isOSD()) {
+            //when SSO is used, the session needs to be deleted on KeyCloak too in order to fill credentials again.
+            WebDriver driver = WebDriverRunner.getWebDriver();
+            //open new tab and use it
+            JavascriptExecutor jse = (JavascriptExecutor) driver;
+            jse.executeScript("window.open()");
+            ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+            driver.switchTo().window(tabs.get(1));
+
+            String keyCloakLogoutUrl =
+                String.format("https://keycloak-%s.%s/auth/realms/%s/protocol/openid-connect/logout", TestConfiguration.keycloakNamespace(),
+                    TestConfiguration.openShiftRouteSuffix(), TestConfiguration.keyCloakSyndesisRealm());
+
+            driver.navigate().to(keyCloakLogoutUrl);
+            TestUtils.sleepForJenkinsDelayIfHigher(3);
+            driver.close();
+            driver.switchTo().window(tabs.get(0));
+        }
         doLogin(true);
+    }
+
+    @Given("^log into the Syndesis after logout with SSO$")
+    public void loginAfterLogOutWithSSO() {
+        $(By.partialLinkText(TestConfiguration.keyCloakIdpName())).click();
+        //token on KeyCloak should be still valid so the user doesn't need fill their credentials
     }
 
     /**
@@ -218,7 +242,7 @@ public class CommonSteps {
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("osd4") && currentUrl.contains("oauth/authorize")) {
-            $(By.partialLinkText("OpenID_keycloak")).click();
+            $(By.partialLinkText(TestConfiguration.keyCloakIdpName())).click();
             KeyCloakLogin kcLogin = new KeyCloakLogin();
             kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("oauth/authorize")) {
