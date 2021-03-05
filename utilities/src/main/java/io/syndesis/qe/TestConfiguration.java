@@ -115,6 +115,10 @@ public class TestConfiguration {
     private static final String QUAY_PULL_SECRET = "syndesis.config.quay.pullsecret";
     private static final String OPERATORHUB_ICSP_SCRIPT_URL = "syndesis.config.icsp.url";
 
+    private static final String KEYCLOAK_NAMESPACE = "keycloak.namespace";
+    private static final String KEYCLOAK_SYNDESIS_REALM = "keycloak.syndesis.realm";
+    private static final String KEYCLOAK_IDP_NAME = "keycloak.idp.name";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -414,6 +418,19 @@ public class TestConfiguration {
         return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
     }
 
+    public static String keycloakNamespace() {
+        return get().readValue(KEYCLOAK_NAMESPACE);
+    }
+
+    public static String keyCloakSyndesisRealm() {
+        return get().readValue(KEYCLOAK_SYNDESIS_REALM);
+    }
+
+    public static String keyCloakIdpName() {
+        return get().readValue(KEYCLOAK_IDP_NAME);
+    }
+
+
     private Properties defaultValues() {
         final Properties defaultProps = new Properties();
 
@@ -530,6 +547,18 @@ public class TestConfiguration {
 
         if (properties.getProperty(SYNDESIS_APPEND_REPOSITORY) == null) {
             defaultProps.setProperty(SYNDESIS_APPEND_REPOSITORY, "true");
+        }
+
+        if (properties.getProperty(KEYCLOAK_NAMESPACE) == null) {
+            defaultProps.setProperty(KEYCLOAK_NAMESPACE, "keycloak");
+        }
+
+        if (properties.getProperty(KEYCLOAK_SYNDESIS_REALM) == null) {
+            defaultProps.setProperty(KEYCLOAK_SYNDESIS_REALM, "syndesis");
+        }
+
+        if (properties.getProperty(KEYCLOAK_IDP_NAME) == null) {
+            defaultProps.setProperty(KEYCLOAK_IDP_NAME, "OpenID_keycloak");
         }
         return defaultProps;
     }

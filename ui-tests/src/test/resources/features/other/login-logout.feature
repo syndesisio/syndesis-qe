@@ -40,6 +40,18 @@ Feature: Login logout
     When click on the "View" kebab menu button of "Twitter Listener"
     Then check visibility of "Twitter Listener" connection details
 
+#
+#  3. logout -> login with sso
+#
+  @osd
+  @logout-test-logout-login-sso
+  Scenario: Log out and log in with sso
+    Then check visibility of Syndesis home page
+
+    When log out from Syndesis
+    And log into the Syndesis after logout with SSO
+    Then check visibility of Syndesis home page
+
 
 #
 #  TODO: 3. logout -> login as a different OpeShift user without access to namespace - manual test for now
