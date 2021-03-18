@@ -334,6 +334,10 @@ Feature: Integration - DB to DB
 
     When click on the "Next" link
     Then check visibility of page "Specify Security"
+    #fill in dummy credentials
+    And fill in values by element ID
+      | username | dummy |
+      | password | dummy |
 
     When set up api connector security
       | authType | HTTP Basic Authentication |

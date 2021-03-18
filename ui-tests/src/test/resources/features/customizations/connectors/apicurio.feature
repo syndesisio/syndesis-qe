@@ -30,6 +30,7 @@ Feature: Customization - API Connector - ApicurIO GUI
 
   @gh-3459
   @ENTESB-11443
+  @ENTESB-16061
   @apicurio-check-warnings-change
   Scenario: Check if warnings change is propagated into connector review page from ApicurIO GUI
     When remove warning via apicurio gui

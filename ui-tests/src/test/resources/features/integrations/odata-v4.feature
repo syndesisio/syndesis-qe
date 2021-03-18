@@ -19,7 +19,7 @@ Feature: OData V4 Connector
 # 1. Parameterized tests for read action.
 #
   @integrations-odata-v4-read
-  Scenario Outline: Read <name> from OData service tests
+  Scenario Outline: Read <name> from OData v4 service tests
 
     # Create new integration
     When click on the "Create Integration" link to create a new integration
@@ -46,16 +46,16 @@ Feature: OData V4 Connector
 
     # Save integration and publish it
     When click on the "Publish" link
-    And set integration name "OData_Read_2_Log_<name>"
+    And set integration name "OData_Read_4_Log_<name>"
     And publish integration
-    Then Integration "OData_Read_2_Log_<name>" is present in integrations list
-    And wait until integration "OData_Read_2_Log_<name>" gets into "Running" state
+    Then Integration "OData_Read_4_Log_<name>" is present in integrations list
+    And wait until integration "OData_Read_4_Log_<name>" gets into "Running" state
 
     #Validate logs output
-    When wait until integration OData_Read_2_Log_<name> processed at least 1 message
+    When wait until integration OData_Read_4_Log_<name> processed at least 1 message
 
-    Then validate that logs of integration "OData_Read_2_Log_<name>" <does_contain_1> string "<validate_string_1>"
-    And validate that logs of integration "OData_Read_2_Log_<name>" <does_contain_2> string "<validate_string_2>"
+    Then validate that logs of integration "OData_Read_4_Log_<name>" <does_contain_1> string "<validate_string_1>"
+    And validate that logs of integration "OData_Read_4_Log_<name>" <does_contain_2> string "<validate_string_2>"
 
     Examples:
       | name               | key_predicate | query                                                       | does_contain_1 | validate_string_1                                       | does_contain_2  | validate_string_2        |
@@ -106,11 +106,11 @@ Feature: OData V4 Connector
 
     #Then check visibility of page "add to integration"
     When click on the "Publish" link
-    And set integration name "OData_Create"
+    And set integration name "OData_4_Create"
     And publish integration
-    Then Integration "OData_Create" is present in integrations list
-    And wait until integration "OData_Create" gets into "Running" state
-    And wait until integration OData_Create processed at least 1 message
+    Then Integration "OData_4_Create" is present in integrations list
+    And wait until integration "OData_4_Create" gets into "Running" state
+    And wait until integration OData_4_Create processed at least 1 message
 
     Then validate that OData service contains entity with "Name":"Jianathan" property:value pair in "Products" collection
 
@@ -152,18 +152,18 @@ Feature: OData V4 Connector
     And check that OData "1" entity in "Products" collection contains
       |  |
     When click on the "Publish" link
-    And set integration name "OData_Delete"
+    And set integration name "OData_4_Delete"
     And publish integration
-    Then Integration "OData_Delete" is present in integrations list
-    And wait until integration "OData_Delete" gets into "Running" state
-    And wait until integration OData_Delete processed at least 1 message
+    Then Integration "OData_4_Delete" is present in integrations list
+    And wait until integration "OData_4_Delete" gets into "Running" state
+    And wait until integration OData_4_Delete processed at least 1 message
 
     Then check that entity "1" is not present in "Products" collection on OData service
 
   # Those bugs were very similar in reproducing - created one scenario outline for all of them
   @reproducer
   @integrations-odata-v4-read-update
-  Scenario Outline: Read <name> from OData service tests
+  Scenario Outline: Read <name> from OData v4 service tests
 
     # Create new integration
     When click on the "Create Integration" link to create a new integration
@@ -200,13 +200,13 @@ Feature: OData V4 Connector
 
     # Save integration and publish it
     When publish integration
-    And set integration name "<name>"
+    And set integration name "Odata_v4_<name>"
     And publish integration
-    Then Integration "<name>" is present in integrations list
-    And wait until integration "<name>" gets into "Running" state
+    Then Integration "Odata_v4_<name>" is present in integrations list
+    And wait until integration "Odata_v4_<name>" gets into "Running" state
 
     #Validate logs output
-    And wait until integration <name> processed at least 1 message
+    And wait until integration Odata_v4_<name> processed at least 1 message
 
     Then validate that OData service contains entity with "<key>":"<value>" property:value pair in "<resource_collection>" collection
 
@@ -274,11 +274,11 @@ Feature: OData V4 Connector
 
     # Save integration and publish it
     When publish integration
-    And set integration name "Enum"
+    And set integration name "Enum_v4"
     And publish integration
-    Then Integration "Enum" is present in integrations list
-    And wait until integration "Enum" gets into "Running" state
-    And wait until integration Enum processed at least 1 message
+    Then Integration "Enum_v4" is present in integrations list
+    And wait until integration "Enum_v4" gets into "Running" state
+    And wait until integration Enum_v4 processed at least 1 message
 
     #Validate logs output
     Then check that OData "whatever" entity in "Users" collection contains
