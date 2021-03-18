@@ -54,7 +54,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final String PROPERTY_TYPE = "property-type-form-select";
 
         public static final By CREATE_CONSTANT_BUTTON = ByUtils.dataTestId("create-constant-button");
-        public static final String CONSTANT_NAME = "constant-name-text-input";
+        public static final String CONSTANT_NAME = "constant-value-text-input";
         public static final String CONSTANT_TYPE = "constant-type-form-select";
     }
 

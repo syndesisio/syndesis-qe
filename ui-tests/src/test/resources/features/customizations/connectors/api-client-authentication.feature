@@ -160,4 +160,78 @@ Feature: Testing authentication options of API client
     And wait until integration "api-key-header" gets into "Running" state
     And wait until integration api-key-header processed at least 1 message
     Then check that pod "i-api-key-header" logs contain string "Zerik"
-    
+
+  @api-client-auth-basic-password
+  Scenario: Basic password used in API client
+    Given deploy HTTP endpoints
+    And reset content of "todo" table
+    When navigate to the "Home" page
+    And click on the "Customizations" link
+    And click on the "API Client Connectors" link
+    And click on the "Create API Connector" link
+
+    And check visibility of page "Upload Swagger Specification"
+    And upload swagger file
+      | url | https://petstore.swagger.io/v2/swagger.json |
+
+    And click on the "Next" button
+    And click on the "Review/Edit" link
+    And change frame to "apicurio"
+    And add security schema BASIC via apicurio gui
+    And change frame to "syndesis"
+    And click on the "Save" link
+    When clicks on the "Next" link
+    Then check that api connector authentication section contains security type "HTTP Basic Authentication"
+    And fill in values by element ID
+      | authenticationType  | HTTP Basic Authentication - ImmovableName |
+      | host                | http://http-svc:8080                      |
+      | basepath            | /auth                                     |
+    And click on the "Next" button
+    And fill in values by element data-testid
+      | host     | http://http-svc:8080 |
+      | basepath | /auth                |
+    And click on the "Save" button
+
+    And navigate to the "Connections" page
+    And click on the "Create Connection" link
+    And select "Swagger Petstore" connection type
+    And fill in values by element data-testid
+      | username | username             |
+      | password | password             |
+      | host     | http://http-svc:8080 |
+      | basepath | /auth                |
+    And click on the "Next" button
+    And click on the "Save" button
+
+    And navigate to the "Home" page
+    And click on the "Create Integration" link
+    And select "Timer" integration step
+    And select "Simple" integration action
+    And click on the "Next" button
+    And select "Log" integration step
+    And sleep for jenkins delay or 2 seconds
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Next" button
+
+    And add integration step on position "0"
+    And select "Swagger Petstore" integration step
+    And select "Find pet by ID" integration action
+    And click on the "Next" button
+
+    And add integration step on position "0"
+    And select "Data Mapper" integration step
+    And define constant "1" of type "Integer" in data mapper
+    And open data bucket "parameters"
+    And create data mapper mappings
+      | 1 | parameters.petId |
+    And click on the "Done" button
+
+    And click on the "Publish" link
+    And set integration name "basic-password"
+    And publish integration
+
+    Then Integration "basic-password" is present in integrations list
+    And wait until integration "basic-password" gets into "Running" state
+    And wait until integration basic-password processed at least 1 message
+    Then check that pod "i-basic-password" logs contain string "Zerik"

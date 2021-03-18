@@ -27,6 +27,12 @@ public class TestHooks {
         Assumptions.assumeThat(TestConfiguration.syndesisVersion()).contains("redhat");
     }
 
+    @Before("@osd")
+    public void skipIfNotOSD() {
+        // Skip test if environment is not OSD (with SSO)
+        Assumptions.assumeThat(OpenShiftUtils.isOSD()).isTrue();
+    }
+
     @AfterStep
     public void getLogs(Scenario scenario) {
         if (scenario.isFailed()) {
