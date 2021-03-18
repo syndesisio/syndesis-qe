@@ -18,7 +18,7 @@ Feature: OData V2 Connector
 # 1. Parameterized tests for read action.
 #
   @integrations-odata-v2-read
-  Scenario Outline: Read <name> from OData service tests
+  Scenario Outline: Read <name> from OData v2 service tests
 
     # Create new integration
     When click on the "Create Integration" link to create a new integration

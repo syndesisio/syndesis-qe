@@ -135,16 +135,6 @@ Feature: SQL Connector
       | test6 | id <= :#id AND id > 1 | 3     | 2,3     |
       | test7 | id BETWEEN :#id AND 4 | 2     | 2,3,4   |
       | test8 | id <= :#id OR id = 5  | 3     | 1,2,3,5 |
-    @gh-5084
-    @ENTESB-11487
-    Examples:
-      | name   | predicate        | value | result |
-      | test9  | :#id > id        | 3     | 1,2    |
-      | test10 | (id+1) < :#id    | 4     | 1,2    |
-      | test11 | id in (1, :#id)  | 4     | 1,4    |
-      | test12 | id = floor(:#id) | 4     | 4      |
-
-
 
   @reproducer
   @gh-4466
