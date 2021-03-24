@@ -28,13 +28,13 @@ Feature: Testing authentication options of API client
 
     And click on the "Next" button
     And click on the "Review/Edit" link
-    And switch context to apicurio
+    And change frame to "apicurio"
     And configure the "api_key" security schema
     And fill in values by element ID
       | in20   | Query Parameter |
       | name20 | api_key         |
     And click on the "Save" button
-    And leave apicurio context
+    And change frame to "syndesis"
     And click on the "Save" link
     And click on the "Next" link
     And click on the "Next" button
@@ -59,6 +59,7 @@ Feature: Testing authentication options of API client
     And select "Simple" integration action
     And click on the "Next" button
     And select "Log" integration step
+    And sleep for jenkins delay or 2 seconds
     And fill in values by element data-testid
       | bodyloggingenabled | true |
     And click on the "Next" button
@@ -71,7 +72,7 @@ Feature: Testing authentication options of API client
     And add integration step on position "0"
     And select "Data Mapper" integration step
     And define constant "1" of type "Integer" in data mapper
-    And sleep for jenkins delay or 2 seconds
+    And open data bucket "parameters"
     And create data mapper mappings
       | 1 | parameters.petId |
     And click on the "Done" button
@@ -102,13 +103,13 @@ Feature: Testing authentication options of API client
 
     And click on the "Next" button
     And click on the "Review/Edit" link
-    And switch context to apicurio
+    And change frame to "apicurio"
     And configure the "apikey" security schema
     And fill in values by element ID
       | in20   | HTTP header |
       | name20 | apikey      |
     And click on the "Save" button
-    And leave apicurio context
+    And change frame to "syndesis"
     And click on the "Save" link
     And click on the "Next" link
     And click on the "Next" button
