@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import apicurito.tests.configuration.TestConfiguration;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -358,17 +357,6 @@ public class ApicurioSteps {
         log.info("searching for button {}", buttonTitle);
         return $(Elements.SYNDESIS_ROOT).shouldBe(visible).findAll(By.tagName("button"))
             .filter(Condition.matchText("(\\s*)" + buttonTitle + "(\\s*)")).shouldHave(sizeGreaterThanOrEqual(1)).first();
-    }
-
-    @When("switch context to apicurio")
-    public void switchContextOn() {
-        Selenide.switchTo().frame($(Elements.APICURIO_ROOT));
-        log.info("Apicurito app root: {}", TestConfiguration.getAppRoot());
-    }
-
-    @When("leave apicurio context")
-    public void switchContextOff() {
-        Selenide.switchTo().parentFrame();
     }
 
     @When("^click on the \"([^\"]*)\" apicurio button*$")
