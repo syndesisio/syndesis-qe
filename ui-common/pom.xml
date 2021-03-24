@@ -19,14 +19,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>apicurio</groupId>
-			<artifactId>apicurito-tests</artifactId>
-			<classifier>tests</classifier>
-			<version>${apicurito.tests.version}</version>
-			<type>test-jar</type>
-		</dependency>
-
-		<dependency>
 			<groupId>com.codeborne</groupId>
 			<artifactId>selenide</artifactId>
 		</dependency>
