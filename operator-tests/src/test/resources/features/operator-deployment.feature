@@ -400,8 +400,6 @@ Feature: Operator Deployment
   Scenario: Syndesis operator - Affinity - Infra
     When deploy Syndesis CR from file "spec/affinityInfra.yml"
     Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
-    Then wait for Syndesis to become ready
       And check affinity for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
@@ -415,8 +413,6 @@ Feature: Operator Deployment
   Scenario: Syndesis operator - Affinity - Integration
     When deploy Syndesis CR from file "spec/affinityIntegration.yml"
     Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
-    Then wait for Syndesis to become ready
       And check affinity not set for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
@@ -429,8 +425,6 @@ Feature: Operator Deployment
   @ENTESB-13803
   Scenario: Syndesis operator - Tolerations - Infra
     When deploy Syndesis CR from file "spec/tolerationsInfra.yml"
-      Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
     Then wait for Syndesis to become ready
       And check tolerations for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
@@ -444,8 +438,6 @@ Feature: Operator Deployment
   @ENTESB-13803
   Scenario: Syndesis operator - Tolerations - Integration
     When deploy Syndesis CR from file "spec/tolerationsIntegration.yml"
-    Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
     Then wait for Syndesis to become ready
       And check tolerations not set for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
