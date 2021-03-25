@@ -3,6 +3,9 @@ kind: Syndesis
 metadata:
   name: app
 spec:
+  addons:
+    jaeger:
+      enabled: true
   infraScheduling:
     affinity:
       nodeAffinity:
