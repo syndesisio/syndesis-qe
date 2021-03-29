@@ -67,6 +67,7 @@
 		<ws.rs-api.version>2.1</ws.rs-api.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<slf4j-api.version>1.7.30</slf4j-api.version>
+		<apicurito.tests.version>0.0.3-SNAPSHOT</apicurito.tests.version>
 		<fhir.version>4.1.0</fhir.version>
 		<cluecumber.version>2.5.0</cluecumber.version>
 		<okhttp.client.version>3.12.6</okhttp.client.version>

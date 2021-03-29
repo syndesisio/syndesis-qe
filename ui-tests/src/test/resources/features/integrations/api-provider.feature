@@ -219,7 +219,7 @@ Feature: API Provider Integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And sleep for 2 seconds
+    And sleep for "2000" ms
     And create data mapper mappings
       | id        | body.id        |
       | completed | body.completed |
@@ -583,7 +583,7 @@ Feature: API Provider Integration
     And sleep for jenkins delay or 3 seconds
     And start integration "TODO Integration import export"
     And navigate to the "Integrations" page
-    And sleep for 20 seconds
+    And sleep for "20000" ms
     Then wait until integration "TODO Integration import export" gets into "Running" state
 
     When execute GET on API Provider route i-todo-integration-import-export endpoint "/api/1"
@@ -880,7 +880,7 @@ Feature: API Provider Integration
     And create data mapper mappings
       | parameters.id | body.id |
     And sleep for jenkins delay or 2 seconds
-    And sleep for 2 seconds
+    And sleep for "2000" ms
     And check "Done" button is "visible"
     And click on the "Done" button
 
@@ -900,7 +900,7 @@ Feature: API Provider Integration
       | id        | body.id        |
       | completed | body.completed |
       | task      | body.task      |
-    And sleep for 2 seconds
+    And sleep for "2000" ms
     And check "Done" button is "visible"
     And click on the "Done" button
 
