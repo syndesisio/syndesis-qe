@@ -59,7 +59,7 @@ Feature: MongoDB
     And publish integration
     And navigate to the "Integrations" page
     And wait until integration "Mongo to DB consume stream" gets into "Running" state
-    And sleep for 10 seconds
+    And sleep for "10000" ms
 
     And insert the following documents into mongodb collection "insert_stream"
       | _id | value |

@@ -28,7 +28,7 @@ Feature: Data Mapper
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And sleep for 2 seconds
+    And sleep for "2000" ms
     And create data mapper mappings
       | task | task |
     And click on the "Done" button
