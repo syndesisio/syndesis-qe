@@ -1,6 +1,7 @@
 package io.syndesis.qe.utils;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 
@@ -29,6 +30,18 @@ public class Conditions {
                 return false;
             } catch (StaleElementReferenceException expected) {
                 return true;
+            }
+        }
+    };
+
+    public static final Condition FIELD_IS_MAPPED = new Condition("Data Mapper field is mapped") {
+        @Override
+        public boolean apply(Driver driver, WebElement webElement) {
+            try {
+                webElement.findElement(ByUtils.containsLabel("This field is connected"));
+                return true;
+            } catch (NoSuchElementException expected) {
+                return false;
             }
         }
     };
