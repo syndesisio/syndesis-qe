@@ -2,6 +2,7 @@
 
 @ui
 @api-provider
+@apicurio
 @todo-app
 @database
 @datamapper
@@ -796,7 +797,7 @@ Feature: API Provider Integration
       """
         {"id":2,"task":"task2"}
       """
-    
+
     # go back to the integration and edit
 
     When select the "TODO Integration edit implemented" integration
