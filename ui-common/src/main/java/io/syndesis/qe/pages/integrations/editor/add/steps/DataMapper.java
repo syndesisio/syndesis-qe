@@ -276,9 +276,7 @@ public class DataMapper extends SyndesisPageObject {
         ElementsCollection rowsWithName = containerElement
             .findAll(Element.MAPPING_FIELD_ITEM_ROW)
             .filter(Condition.attribute("aria-level", String.valueOf(nestedLevel)))
-            // if the row has same name or the name is a part of sentence (must be space before and after, for properties in datamapper `properties
-            // = value`)
-            .filter(Condition.matchText("^(.* )?" + name + "( .*)?$"));
+            .filter(Condition.matchText(name + "\\n\\([A-Z]+\\)$"));
         if (rowsWithName.size() == 0) {
             return null;
         } else if (rowsWithName.size() > 1) {
