@@ -45,6 +45,10 @@ public class ByUtils {
         return By.cssSelector(String.format("*[class*=\"%s\"]", id));
     }
 
+    public static By containsLabel(String label) {
+        return By.cssSelector(String.format("*[label*=\"%s\"]", label));
+    }
+
     private static class ByPartialText extends By {
 
         private final String partialText;
