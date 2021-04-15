@@ -52,6 +52,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final By CREATE_PROPERTY_BUTTON = ByUtils.dataTestId("create-source-property-button");
         public static final String PROPERTY_NAME = "property-name-text-input";
         public static final String PROPERTY_TYPE = "property-type-form-select";
+        public static final String PROPERTY_SCOPE = "property-scope-form-select";
 
         public static final By CREATE_CONSTANT_BUTTON = ByUtils.dataTestId("create-constant-button");
         public static final String CONSTANT_NAME = "constant-value-text-input";
@@ -114,12 +115,13 @@ public class DataMapper extends SyndesisPageObject {
         getSourceElementColumn().find(By.className("pf-c-title")).click();
     }
 
-    public void addProperty(String name, String type) {
+    public void addProperty(String name, String type, String scope) {
         getSourceElementColumn().find(Element.CREATE_PROPERTY_BUTTON).shouldBe(visible).click();
         ModalDialogPage modalDialogPage = new ModalDialogPage();
         assertThat(modalDialogPage.getTitleText()).contains("Create Property");
         modalDialogPage.fillInputByDataTestid(Element.PROPERTY_NAME, name);
         modalDialogPage.selectValueByDataTestid(Element.PROPERTY_TYPE, type);
+        modalDialogPage.selectValueByDataTestid(Element.PROPERTY_SCOPE, scope);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
         //when the modalDialog is closed, the tooltip remains open, maybe it causes instability on chrome
@@ -127,19 +129,38 @@ public class DataMapper extends SyndesisPageObject {
     }
 
     public void doCreateMapping(String source, String target) {
-        createNewMapping(null, source, null, target);
+        doCreateMapping(source, target, false);
+    }
+
+    /**
+     * @param source - source field
+     * @param target - target field
+     * @param ignoreFieldWithSameNameAlreadyMapped when true and there are fields with the same name in the same databucket (e.g. in the
+     * properties), the field which is not already mapped is chosen.
+     * This happens only when two or more fields with the same name exist. It doesn't ignore all mapped fields!
+     * e.g.
+     * ignoreFieldAlreadyMapped==false; field1 (mapped), field1 => the error is thrown (two or more fields with the same name in a particular level)
+     * ignoreFieldAlreadyMapped==true; field1 (mapped), field1 => the second field1 is chosen
+     * ignoreFieldAlreadyMapped==true; field1, field1 => the error is thrown (two or more fields with the same name in a particular level) (you
+     * need to map the first field before you create the second one with the same name)
+     */
+    public void doCreateMapping(String source, String target, boolean ignoreFieldWithSameNameAlreadyMapped) {
+        createNewMapping(null, source, null, target, ignoreFieldWithSameNameAlreadyMapped);
         getRootElement().find(Element.CLOSING_MAPPING_DETAIL_BUTTON).shouldBe(visible).click();
     }
 
     public void doCreateMappingWithDataBucket(String sourceBucket, String source, String targetBucket, String target) {
-        createNewMapping(sourceBucket, source, targetBucket, target);
+        createNewMapping(sourceBucket, source, targetBucket, target, false);
         getRootElement().find(Element.CLOSING_MAPPING_DETAIL_BUTTON).shouldBe(visible).click();
     }
 
     /**
      * Parse multiple properties e.g. first_name ; last_name etc.
+     *
+     * @param ignoreFieldWithSameNameAlreadyMapped see JavaDoc for {@link #doCreateMapping(String, String, boolean)}
      */
-    private void createNewMapping(String sourceBucket, String source, String targetBucket, String target) {
+    private void createNewMapping(String sourceBucket, String source, String targetBucket, String target,
+        boolean ignoreFieldWithSameNameAlreadyMapped) {
         log.info("Mapping {} -> {}", source, target);
 
         // create a brand new mapping
@@ -159,23 +180,23 @@ public class DataMapper extends SyndesisPageObject {
             String[] array = source.split(";");
             log.info("Switching to the Data Mapper SOURCE column");
             for (String str : array) {
-                this.selectMapping(str.trim(), src);
+                this.selectMapping(str.trim(), src, ignoreFieldWithSameNameAlreadyMapped);
             }
             log.info("Switching to the Data Mapper TARGET column");
-            this.selectMapping(target, dest);
+            this.selectMapping(target, dest, ignoreFieldWithSameNameAlreadyMapped);
         } else if (target.contains(";")) {
             log.info("Switching to the Data Mapper SOURCE column");
-            this.selectMapping(source, src);
+            this.selectMapping(source, src, ignoreFieldWithSameNameAlreadyMapped);
             log.info("Switching to the Data Mapper TARGET column");
             String[] array = target.split(";");
             for (String str : array) {
-                this.selectMapping(str.trim(), dest);
+                this.selectMapping(str.trim(), dest, ignoreFieldWithSameNameAlreadyMapped);
             }
         } else {
             log.info("Switching to the Data Mapper SOURCE column");
-            this.selectMapping(source, src);
+            this.selectMapping(source, src, ignoreFieldWithSameNameAlreadyMapped);
             log.info("Switching to the Data Mapper TARGET column");
-            this.selectMapping(target, dest);
+            this.selectMapping(target, dest, ignoreFieldWithSameNameAlreadyMapped);
         }
     }
 
@@ -184,11 +205,12 @@ public class DataMapper extends SyndesisPageObject {
      *
      * @param mappingName for instance "User.ScreenName"
      * @param containerElement start searching mapping fields from here
+     * @param ignoreFieldWithSameNameAlreadyMapped see JavaDoc for {@link #doCreateMapping(String, String, boolean)}
      */
-    public void selectMapping(String mappingName, SelenideElement containerElement) {
+    public void selectMapping(String mappingName, SelenideElement containerElement, boolean ignoreFieldWithSameNameAlreadyMapped) {
         log.info("Selecting '{}' mapping field", mappingName);
         int nestedLevel = 1; // root level
-        SelenideElement mappingItemRow = getMappingItemRow(mappingName, containerElement, nestedLevel);
+        SelenideElement mappingItemRow = getMappingItemRow(mappingName, containerElement, nestedLevel, ignoreFieldWithSameNameAlreadyMapped);
         if (mappingItemRow == null) {
             // Mapping field doesn't exist, it can be a part of collection on any nested level.
             // First, it needs to select only parent container (collection) and find out nested level of the mapping field
@@ -208,14 +230,15 @@ public class DataMapper extends SyndesisPageObject {
                     parentContainer = getCollectionElement(separatedElement.get(i), parentContainer, nestedLevel);
                     nestedLevel++;
                     log.info("In the {}. parent on the {} nested level. Parent (Collection) name is '{}'", i + 1, nestedLevel,
-                             separatedElement.get(i));
+                        separatedElement.get(i));
                 }
             }
-            mappingItemRow = getMappingItemRow(separatedElement.get(separatedElement.size() - 1), parentContainer, nestedLevel);
+            mappingItemRow = getMappingItemRow(separatedElement.get(separatedElement.size() - 1), parentContainer, nestedLevel,
+                ignoreFieldWithSameNameAlreadyMapped);
         }
         if (mappingItemRow == null) {
             fail("The mapping field '" + mappingName + "' cannot be found! Check log and screenshot whether DataMapper contains that field." +
-                     " If it is a part of nested collection, you have to add all parent names. See mapping step's JavaDoc");
+                " If it is a part of nested collection, you have to add all parent names. See mapping step's JavaDoc");
         }
         mappingItemRow.scrollIntoView(true);
         TestUtils.sleepIgnoreInterrupt(500);
@@ -241,9 +264,11 @@ public class DataMapper extends SyndesisPageObject {
      * @param name - field name
      * @param containerElement - element for searching
      * @param nestedLevel - on which nested level the mapping field is located (e.g. 'name' field can be in the root level (level 1)
+     * @param ignoreFieldWithSameNameAlreadyMapped see JavaDoc for {@link #doCreateMapping(String, String, boolean)}
      * and also in the collection body.name (level2))
      */
-    private SelenideElement getMappingItemRow(String name, SelenideElement containerElement, int nestedLevel) {
+    private SelenideElement getMappingItemRow(String name, SelenideElement containerElement, int nestedLevel,
+        boolean ignoreFieldWithSameNameAlreadyMapped) {
         // if parent element has not been expanded yet
         if ("false".equals(containerElement.getAttribute("aria-expanded"))) {
             containerElement.click();
@@ -257,10 +282,18 @@ public class DataMapper extends SyndesisPageObject {
         if (rowsWithName.size() == 0) {
             return null;
         } else if (rowsWithName.size() > 1) {
-            fail("Too many rows with the same name. Name: " + name + " Nested Level: " + nestedLevel +
-                     ". Probably more data buckets have the field element with the same name. In that case, use different step when explicitly " +
-                     "select " +
-                     "data bucket");
+            if (ignoreFieldWithSameNameAlreadyMapped) {
+                log.info(
+                    "Two or more fields with the same name were found. ignoreFieldWithSameNameAlreadyMapped was set to true so the fields which are" +
+                        " already mapped will be ignored");
+                rowsWithName = rowsWithName.exclude(Conditions.FIELD_IS_MAPPED);
+            }
+            if (rowsWithName.size() > 1) {
+                fail("Too many rows with the same name. Name: " + name + " Nested Level: " + nestedLevel +
+                    ". Probably more data buckets have the field element with the same name. In that case, use different step when explicitly " +
+                    "select " +
+                    "data bucket");
+            }
         }
         return rowsWithName.get(0);
     }
@@ -290,8 +323,8 @@ public class DataMapper extends SyndesisPageObject {
             fail("Collection with the name: " + name + " doesn't exist on the nested Level: " + nestedLevel);
         } else if (rowsWithName.size() > 1) {
             fail("Too many rows with the same name. " +
-                     "Probably the element contains more collections with the same name in the different nested level." +
-                     "Searched collection name: " + name + " Actual nested level: " + nestedLevel);
+                "Probably the element contains more collections with the same name in the different nested level." +
+                "Searched collection name: " + name + " Actual nested level: " + nestedLevel);
         }
         return rowsWithName.get(0);
     }

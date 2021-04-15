@@ -53,6 +53,7 @@ public class DataMapperSteps {
     /**
      * Same table as "create data mapper mappings step but with data bucket names"
      * SourceDataBucket | SourceMapping | TargetDataBucket | TargetMapping
+     *
      * @param table
      */
     @ExcludeFromSelectorReports
@@ -92,8 +93,16 @@ public class DataMapperSteps {
     }
 
     @ExcludeFromSelectorReports
-    @When("^define property \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
-    public void definePropertyOfTypeInDataMapper(String name, String type) {
-        mapper.addProperty(name, type);
+    @When("^define property \"([^\"]*)\" of type \"([^\"]*)\"  from scope \"([^\"]*)\" in data mapper$")
+    public void definePropertyOfTypeInDataMapper(String name, String type, String scope) {
+        mapper.addProperty(name, type, scope);
+    }
+
+    @ExcludeFromSelectorReports
+    @When("^create data mapping for duplicate property fields \"([^\"]*)\" to \"([^\"]*)\"$")
+    public void createMappingForProperty(String source, String target) {
+        // automatically open all collections for data mapping
+        mapper.openDataMapperCollectionElement();
+        mapper.doCreateMapping(source, target, true);
     }
 }
