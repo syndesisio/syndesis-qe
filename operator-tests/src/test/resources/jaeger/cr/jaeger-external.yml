@@ -5,4 +5,4 @@ metadata:
 spec:
   strategy: allInOne
   allInOne:
-    image: quay.io/app-sre/jaegertracing-all-in-one:1.17.0
+    image: quay.io/app-sre/jaegertracing-all-in-one:1.20.0

@@ -332,7 +332,7 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
       And wait for backup with 5s interval
     When clean backup S3 bucket
-    Then sleep for jenkins delay or 200 seconds
+    Then sleep for jenkins delay or 600 seconds
       And verify that there are 3 backups in S3
 
   @ENTESB-12114

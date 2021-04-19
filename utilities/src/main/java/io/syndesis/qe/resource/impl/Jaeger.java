@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
 import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.api.model.rbac.Subject;
@@ -57,7 +58,8 @@ public class Jaeger implements Resource {
 
         processedResources.forEach(res -> {
             try {
-                // TODO problem with creation CRD on our clusters (stream was reset: NO_ERROR), skip, the CRD is there after the first syndesis install anyway
+                // TODO problem with creation CRD on our clusters (stream was reset: NO_ERROR), skip, the CRD is there after the first syndesis
+                //  install anyway
                 if (!(res instanceof CustomResourceDefinition)) {
                     OpenShiftUtils.getInstance().resource(res).createOrReplace();
                 }
@@ -140,7 +142,7 @@ public class Jaeger implements Resource {
 
     private void processResources() {
         for (String jaegerResource : JAEGER_RESOURCES) {
-            jaegerResource = String.format(jaegerResource, TestConfiguration.jaegerVersion());
+            jaegerResource = String.format(jaegerResource, "v" + TestConfiguration.jaegerVersion()); // version 1.20.0 ==> repo v1.20.0
             log.info("Processing " + jaegerResource);
             try (InputStream is = new URL(jaegerResource).openStream()) {
                 List<HasMetadata> resources = OpenShiftUtils.getInstance().load(is).get();
@@ -153,6 +155,12 @@ public class Jaeger implements Resource {
                     }
                     resource.getMetadata().setNamespace(TestConfiguration.openShiftNamespace());
                     processedResources.add(resource);
+
+                    // change docker image to quay
+                    if (resource instanceof Deployment) {
+                        ((Deployment) resource).getSpec().getTemplate().getSpec().getContainers().get(0)
+                            .setImage("quay.io/jaegertracing/jaeger-operator:" + TestConfiguration.jaegerVersion());
+                    }
                 }
             } catch (IOException e) {
                 fail("Unable to process Jaeger resource " + jaegerResource, e);

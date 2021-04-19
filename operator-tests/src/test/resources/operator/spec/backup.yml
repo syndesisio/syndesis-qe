@@ -5,7 +5,7 @@ metadata:
 spec:
   demoData: true
   backup:
-    schedule: "every 10m"
+    schedule: "every 3m"
   components:
     server:
       features:
