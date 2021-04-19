@@ -132,8 +132,11 @@ Feature: Data Mapper
       | Red Hat AMQ | AMQ | AMQ | AMQ connection |
     And navigate to the "Home" page
 
-    Given truncate "todo" table
-    When insert into "todo" table
+    Given truncate "contact" table
+    And truncate "todo" table
+    And insert into "contact" table
+      | Joe | Jackson | Red Hat | db |
+    And insert into "todo" table
       | task1 |
       | task2 |
       | task3 |
