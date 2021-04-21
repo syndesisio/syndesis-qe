@@ -376,8 +376,7 @@ Feature: Operator Deployment
 
     # Restore backup
     When perform "<method>" "<type>" restore from backup
-
-      And sleep for jenkins delay or 5 seconds
+      And sleep for jenkins delay or 30 seconds
       And refresh server port-forward
 
     # Ideally the connection should be updated so that the password is encrypted with the current key
