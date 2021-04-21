@@ -627,11 +627,11 @@ Feature: API Provider Integration
       | v2/{id} | false |
     And select path "/v2/{id}"
 
-    And create path parameter "id"
-    And set description "id of task" for path parameter "id"
+    And create path parameter "id" on "path" page
+    And set description "id of task" for path parameter "id" on "path" page
 
-    And set path parameter type "Integer" for path parameter "id"
-    And set path parameter type as "Integer" for path parameter "id"
+    And set path parameter type "Integer" for path parameter "id" on "path" page
+    And set path parameter type as "Integer" for path parameter "id" on "path" page
 
     And create new "GET" operation
     And select operation "GET"
