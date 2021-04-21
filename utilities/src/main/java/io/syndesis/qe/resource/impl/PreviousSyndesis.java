@@ -14,6 +14,7 @@ public class PreviousSyndesis extends Syndesis {
         super.createPullSecret();
         super.pullOperatorImage();
         super.grantPermissions();
+        super.installCluster();
         super.deployOperator();
         deploySyndesisViaOperator();
     }
