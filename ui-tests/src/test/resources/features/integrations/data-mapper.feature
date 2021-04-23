@@ -28,7 +28,7 @@ Feature: Data Mapper
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And sleep for 2 seconds
+    And sleep for "2000" ms
     And create data mapper mappings
       | task | task |
     And click on the "Done" button
@@ -123,3 +123,64 @@ Feature: Data Mapper
     And invoke post request to webhook in integration Datamapper-reconfigure with token test-webhook and body {"author":"New Author","title":"Book Title"}
     And wait until integration Datamapper-reconfigure processed at least 1 message
     Then validate that number of all todos with task "New Author" is greater than 0
+
+  @ENTESB-14340
+  @data-mapper-properties
+  Scenario: Mapping Camel message headers
+    Given deploy ActiveMQ broker
+    And created connections
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection |
+    And navigate to the "Home" page
+
+    Given truncate "contact" table
+    And truncate "todo" table
+    And insert into "contact" table
+      | Joe | Jackson | Red Hat | db |
+    And insert into "todo" table
+      | task1 |
+      | task2 |
+      | task3 |
+
+    When click on the "Create Integration" link to create a new integration
+    And check that position of connection to fill is "Start"
+
+    When select the "PostgresDB" connection
+    And select "Periodic SQL invocation" integration action
+    And fill in invoke query input with "SELECT * from todo" value
+    And click on the "Next" button
+
+    When select the "AMQ" connection
+    And select "Publish Messages" integration action
+    And fill in values by element data-testid
+      | destinationname | dmprop |
+      | destinationtype | Queue  |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"firstStep":3,"secondStep":1,"previousStep":1} |
+    And click on the "Next" button
+
+    When add integration step on position "0"
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "SELECT * from contact" value
+    And click on the "Next" button
+
+    When add integration step on position "1"
+    And select "Data Mapper" integration step
+    And define property "CamelSqlRowCount" of type "Integer"  from scope "1 - SQL Result" in data mapper
+    And create data mapping for duplicate property fields "CamelSqlRowCount" to "firstStep"
+    And define property "CamelSqlRowCount" of type "Integer"  from scope "2 - SQL Result" in data mapper
+    And create data mapping for duplicate property fields "CamelSqlRowCount" to "secondStep"
+    And define property "CamelSqlRowCount" of type "Integer"  from scope "Current Message Header" in data mapper
+    And create data mapping for duplicate property fields "CamelSqlRowCount" to "previousStep"
+    And click on the "Done" button
+
+    When click on the "Publish" link
+    And set integration name "datamapper-properties"
+    And publish integration
+    And wait until integration "datamapper-properties" gets into "Running" state
+    And wait until integration datamapper-properties processed at least 1 message
+
+    Then verify that JMS message with content '{"firstStep":3,"secondStep":1,"previousStep":1}' was received from "queue" "dmprop"

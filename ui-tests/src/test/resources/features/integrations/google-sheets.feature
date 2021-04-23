@@ -68,7 +68,7 @@ Feature: Google Sheets Connector
     And navigate to the "Integrations" page
     And wait until integration "create-sheet" gets into "Running" state
     And wait until integration create-sheet processed at least 1 message
-    And sleep for 3 seconds
+    And sleep for "3000" ms
     Then verify that spreadsheet was created
 
   @spreadsheet-append
@@ -115,7 +115,7 @@ Feature: Google Sheets Connector
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets" gets into "Running" state
     And wait until integration from-db-to-sheets processed at least 1 message
-    And sleep for 3 seconds
+    And sleep for "3000" ms
     Then verify that test sheet contains values on range "A1:E5"
       | Matej | Foo    | Red Hat | db |
       | Matej | Bar    | Red Hat | db |
@@ -161,11 +161,11 @@ Feature: Google Sheets Connector
     When publish integration
     And set integration name "from-db-to-sheets-update"
     And publish integration
-    And sleep for 10 seconds
+    And sleep for "10000" ms
     And Integration "from-db-to-sheets-update" is present in integrations list
     And wait until integration "from-db-to-sheets-update" gets into "Running" state
     And wait until integration from-db-to-sheets-update processed at least 1 message
-    And sleep for 3 seconds
+    And sleep for "3000" ms
     Then verify that test sheet contains values on range "A2:D2"
       | New | Updated | Red Hat | db |
 
@@ -216,7 +216,7 @@ Feature: Google Sheets Connector
     And navigate to the "Integrations" page
     And wait until integration "from-db-to-sheets-update-column" gets into "Running" state
     And wait until integration from-db-to-sheets-update-column processed at least 1 message
-    And sleep for 3 seconds
+    And sleep for "3000" ms
     Then verify that test sheet contains values on range "E1:E5"
       | Fuse   |
       | Online |
@@ -292,7 +292,7 @@ Feature: Google Sheets Connector
     And navigate to the "Integrations" page
     And wait until integration "pivot-table" gets into "Running" state
     And wait until integration pivot-table processed at least 1 message
-    And sleep for 3 seconds
+    And sleep for "3000" ms
     Then verify that data test sheet contains values on range "'pivot rows'!A1:B90"
       | LAFAYETTE COUNTY | 223   |
       | LAKE COUNTY      | 364   |
@@ -329,7 +329,7 @@ Feature: Google Sheets Connector
     And navigate to the "Integrations" page
     And wait until integration "update-sheet-title" gets into "Running" state
     And wait until integration update-sheet-title processed at least 1 message
-    And sleep for 3 seconds
+    And sleep for "3000" ms
     Then verify that spreadsheet title match "updated-title"
 
   Scenario: get properties of sheet

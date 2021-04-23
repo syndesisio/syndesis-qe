@@ -212,6 +212,10 @@ Feature: Test maximum integration
     Then check visibility of page "Review Actions"
     When click on the "Next" link
     Then check visibility of page "Specify Security"
+    #fill in dummy credentials
+    And fill in values by element ID
+      | username | dummy |
+      | password | dummy |
     When click on the "Next" button
     And fill in values by element data-testid
       | name     | Todo connector |

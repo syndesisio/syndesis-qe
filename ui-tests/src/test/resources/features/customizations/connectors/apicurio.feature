@@ -30,6 +30,7 @@ Feature: Customization - API Connector - ApicurIO GUI
 
   @gh-3459
   @ENTESB-11443
+  @ENTESB-16061
   @apicurio-check-warnings-change
   Scenario: Check if warnings change is propagated into connector review page from ApicurIO GUI
     When remove warning via apicurio gui
@@ -167,13 +168,11 @@ Feature: Customization - API Connector - ApicurIO GUI
     And navigate to the "Connections" page
     And click on the "Create Connection" link
     And select "Kie Server API" connection type
-    Then check that apicurio connection authentication type contains only fields:
+    And click on element with data-testid "connection-creator-settings"
+    And click on the "Confirm" button
+    Then check that OAuth fields exists for connection "Kie Server API"
       | clientid              |
       | clientsecret          |
-      | accesstoken           |
-      | refreshtoken          |
       | authorizationendpoint |
       | tokenendpoint         |
       | oauthscopes           |
-      | host                  |
-      | basepath              |

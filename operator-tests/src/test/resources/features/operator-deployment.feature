@@ -332,7 +332,7 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
       And wait for backup with 5s interval
     When clean backup S3 bucket
-    Then sleep for jenkins delay or 200 seconds
+    Then sleep for jenkins delay or 600 seconds
       And verify that there are 3 backups in S3
 
   @ENTESB-12114
@@ -376,8 +376,7 @@ Feature: Operator Deployment
 
     # Restore backup
     When perform "<method>" "<type>" restore from backup
-
-      And sleep for jenkins delay or 5 seconds
+      And sleep for jenkins delay or 30 seconds
       And refresh server port-forward
 
     # Ideally the connection should be updated so that the password is encrypted with the current key
@@ -400,8 +399,6 @@ Feature: Operator Deployment
   Scenario: Syndesis operator - Affinity - Infra
     When deploy Syndesis CR from file "spec/affinityInfra.yml"
     Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
-    Then wait for Syndesis to become ready
       And check affinity for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
@@ -415,8 +412,6 @@ Feature: Operator Deployment
   Scenario: Syndesis operator - Affinity - Integration
     When deploy Syndesis CR from file "spec/affinityIntegration.yml"
     Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
-    Then wait for Syndesis to become ready
       And check affinity not set for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
       And add log step
@@ -429,8 +424,6 @@ Feature: Operator Deployment
   @ENTESB-13803
   Scenario: Syndesis operator - Tolerations - Infra
     When deploy Syndesis CR from file "spec/tolerationsInfra.yml"
-      Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
     Then wait for Syndesis to become ready
       And check tolerations for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
@@ -444,8 +437,6 @@ Feature: Operator Deployment
   @ENTESB-13803
   Scenario: Syndesis operator - Tolerations - Integration
     When deploy Syndesis CR from file "spec/tolerationsIntegration.yml"
-    Then wait for Syndesis to become ready
-    When sleep for jenkins delay or 60 seconds
     Then wait for Syndesis to become ready
       And check tolerations not set for infra pods
     When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms

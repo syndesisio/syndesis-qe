@@ -3,6 +3,7 @@
 @ui
 @openapi
 @api-provider
+@apicurio
 @api-client
 Feature: OpenApi support
 
