@@ -18,7 +18,6 @@ import io.syndesis.qe.utils.http.HTTPUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,7 +40,7 @@ public class UpgradeSteps {
     private static final String RELEASED_OPERATOR_IMAGE = "registry.redhat.io/fuse7/fuse-online-operator";
     private static final String UPSTREAM_OPERATOR_IMAGE =
         String.format("%s/syndesis/syndesis-operator", TestConfiguration.get().readValue(SYNDESIS_DOCKER_REGISTRY));
-    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://quay.io/api/v1/repository/syndesis/syndesis-server/tag/?limit=100";
+    private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://quay.io/api/v1/repository/syndesis/syndesis-server/tag/?limit=100&page=%d";
 
     @Autowired
     private IntegrationsEndpoint integrationsEndpoint;
@@ -74,17 +73,15 @@ public class UpgradeSteps {
                 + TestConfiguration.SYNDESIS_INSTALL_VERSION + " property set!").isNotNull();
 
             // List all the tags from docker hub
-            String next = DOCKER_HUB_SYNDESIS_TAGS_URL;
             List<String> tags = new ArrayList<>();
-            while (next != null) {
-                JSONObject response = new JSONObject(HTTPUtils.doGetRequest(next).getBody());
+            int page = 0;
+            boolean nextPage = false;
+            do {
+                String tagUrl = String.format(DOCKER_HUB_SYNDESIS_TAGS_URL, ++page);
+                JSONObject response = new JSONObject(HTTPUtils.doGetRequest(tagUrl).getBody());
                 response.getJSONArray("tags").forEach(tag -> tags.add(((JSONObject) tag).getString("name")));
-                try {
-                    next = response.getString("next");
-                } catch (JSONException ex) {
-                    next = null;
-                }
-            }
+                nextPage = response.getBoolean("has_additional");
+            } while (nextPage);
             Collections.sort(tags);
 
             String previousTag = getPreviousVersion(getMajorMinor(TestConfiguration.syndesisInstallVersion()), tags);
