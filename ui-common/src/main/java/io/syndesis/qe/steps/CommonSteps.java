@@ -935,7 +935,7 @@ public class CommonSteps {
         Account account = AccountsDirectory.getInstance().get(s);
 
         // change language if needs
-        if (!WebDriverRunner.getWebDriver().getCurrentUrl().contains("&hl=en&")) {
+        if ($(ByUtils.customAttribute("data-value", "en")).has(Condition.attribute("tabindex", "-1"))) {
             $(By.id("lang-chooser")).click();
             TestUtils.sleepIgnoreInterrupt(2000);
             $(By.id("lang-chooser")).$$(ByUtils.customAttribute("data-value", "en")).filter(Condition.visible).get(0).click();
