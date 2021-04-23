@@ -52,6 +52,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
@@ -61,6 +62,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
+import com.codeborne.selenide.ex.ElementNotFound;
 
 import java.io.File;
 import java.io.IOException;
@@ -820,13 +822,21 @@ public class CommonSteps {
     private void waitForWindowToShowUrl() {
         TestUtils.waitFor(() -> {
             try {
-                WebDriverRunner.getWebDriver().getCurrentUrl();
+                String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
+                if ("about:blank".equals(currentUrl)) {
+                    return false;
+                }
             } catch (WebDriverException e) {
                 return false;
             }
 
             return true;
         }, 1, 20, "Window has not returned valid url");
+    }
+
+    private void waitTillPageIsLoaded() {
+        new WebDriverWait(WebDriverRunner.getWebDriver(), 300).until(
+            webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
     }
 
     @ExcludeFromSelectorReports
@@ -861,6 +871,7 @@ public class CommonSteps {
 
         // need to wait a bit until window is able to return url
         waitForWindowToShowUrl();
+        waitTillPageIsLoaded();
 
         if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
             WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
@@ -933,7 +944,32 @@ public class CommonSteps {
         }
 
         waitForCallbackRedirect("google");
-        fillAndValidateGoogleAccount(s);
+
+        Account account = AccountsDirectory.getInstance().get(s);
+
+        // change language if needs
+        if (!WebDriverRunner.getWebDriver().getCurrentUrl().contains("&hl=en&")) {
+            $(By.id("lang-chooser")).click();
+            TestUtils.sleepIgnoreInterrupt(2000);
+            $(By.id("lang-chooser")).$$(ByUtils.customAttribute("data-value", "en")).filter(Condition.visible).get(0).click();
+            TestUtils.sleepIgnoreInterrupt(2000);
+        }
+
+        // test if multi accounts table is shown ( https://accounts.google.com/accountchooser )
+        SelenideElement loginView = $(By.id("initialView"));
+        if (loginView.text().contains("Choose an account")) {
+            log.info("More Google accounts are available. Choosing the correct one:" + account.getProperty("email"));
+            try {
+                loginView.$(ByUtils.customAttribute("data-email", account.getProperty("email"))).should(Condition.exist).click();
+            } catch (ElementNotFound ex) {
+                log.warn("That account is not in the Google multi-accounts table. It needs to fill in the credentials.");
+                loginView.$$(ByUtils.hasEqualText("div", "Use another account")).filter(visible).last().click(); // use another account button
+                fillAndValidateGoogleAccount(account);
+            }
+        } else {
+            fillAndValidateGoogleAccount(account);
+        }
+        TestUtils.sleepIgnoreInterrupt(5000L);
     }
 
     private void fillAndValidateTwitter() {
@@ -975,25 +1011,11 @@ public class CommonSteps {
         TestUtils.sleepForJenkinsDelayIfHigher(10);
     }
 
-    /**
-     * This is a special method for this page https://accounts.google.com/accountchooser
-     * The last option leads to normal login window
-     */
-    private void selectGoogleAccountIfNeeded() {
-        if ($(By.cssSelector(".y77zqe")).exists()) {
-            $$(By.cssSelector(".OVnw0d")).last().click();
-        }
-    }
-
-    private void fillAndValidateGoogleAccount(String googleAccount) {
-        Account account = AccountsDirectory.getInstance().get(googleAccount);
-
-        selectGoogleAccountIfNeeded();
-
-        $(By.id("identifierId")).shouldBe(visible).sendKeys(account.getProperty("email"));
+    private void fillAndValidateGoogleAccount(Account googleAccount) {
+        $(By.id("identifierId")).shouldBe(visible).sendKeys(googleAccount.getProperty("email"));
         $(By.id("identifierNext")).shouldBe(visible).click();
 
-        $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(account.getProperty("password"));
+        $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(googleAccount.getProperty("password"));
         $(By.id("passwordNext")).shouldBe(visible).click();
     }
 
