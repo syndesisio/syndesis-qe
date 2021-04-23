@@ -5,4 +5,4 @@ metadata:
 spec:
   demoData: true
   backup:
-    schedule: "every 1m"
+    schedule: "every 3m"

@@ -52,8 +52,8 @@ Feature: Integration - FHIR - all actions
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
-      | first_name | Patient.name.given.tns:value  |
-      | last_name  | Patient.name.family.tns:value |
+      | first_name | Patient.name.given.value  |
+      | last_name  | Patient.name.family.value |
     And click on the "Done" button
 
     #run the integration
@@ -351,11 +351,11 @@ Feature: Integration - FHIR - all actions
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
-      | lead_source | Transaction.Patient.id.tns:value          |
-      | first_name  | Transaction.Patient.name.given.tns:value  |
-      | last_name   | Transaction.Patient.name.family.tns:value |
-      | id          | Transaction.Basic.id.tns:value            |
-      | task        | Transaction.Basic.language.tns:value      |
+      | lead_source | Transaction.Patient.id.value          |
+      | first_name  | Transaction.Patient.name.given.value  |
+      | last_name   | Transaction.Patient.name.family.value |
+      | id          | Transaction.Basic.id.value            |
+      | task        | Transaction.Basic.language.value      |
     And click on the "Done" button
 
     #run the integration
@@ -399,9 +399,9 @@ Feature: Integration - FHIR - all actions
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     And create data mapper mappings
-      | lead_source | Patient.id.tns:value          |
-      | first_name  | Patient.name.given.tns:value  |
-      | last_name   | Patient.name.family.tns:value |
+      | lead_source | Patient.id.value          |
+      | first_name  | Patient.name.given.value  |
+      | last_name   | Patient.name.family.value |
     And click on the "Done" button
 
     #run the integration

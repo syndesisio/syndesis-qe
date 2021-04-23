@@ -7,11 +7,15 @@ import static com.codeborne.selenide.Condition.visible;
 
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.settings.SettingsPage;
+import io.syndesis.qe.utils.ByUtils;
 
 import org.assertj.core.api.SoftAssertions;
 
 import com.codeborne.selenide.SelenideElement;
 
+import java.util.List;
+
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
@@ -88,5 +92,19 @@ public class SettingsSteps {
             .contains(String.format("Are you sure you want to remove the OAuth credentials for '%s'?", itemTitle));
         modalDialogPage.getButton("Remove").shouldBe(enabled).click();
         settingsPage.closeCurrentlyExpandedSettings();
+    }
+
+    @Then("^check that OAuth fields exists for connection \"([^\"]*)\"$")
+    public void checkFieldsExistence(String itemTitle, DataTable fields) {
+        SelenideElement item = settingsPage.getSettingsItem(itemTitle);
+        item.shouldBe(visible);
+        settingsPage.openSettings(itemTitle);
+
+        List<List<String>> dataRows = fields.cells();
+        for (List<String> row : dataRows) {
+            item.find(ByUtils.dataTestId(row.get(0))).exists();
+        }
+        settingsPage.closeCurrentlyExpandedSettings();
+
     }
 }
