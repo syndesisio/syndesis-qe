@@ -879,13 +879,12 @@ public class Syndesis implements Resource {
         QuayUser quayUser = TestConfiguration.getQuayUser();
         if (TestConfiguration.getBundleImage() != null) {
             //Deploy from bundle
-            index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion());
+            index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion(), quayUser);
             foBundle = index.addBundle(TestConfiguration.getBundleImage());
         } else {
             //deploy from existing index image
             index = opm.pullIndex(TestConfiguration.getIndexImage(), quayUser);
         }
-        index.push(quayUser);
         try {
             // OCP stuff - add index
             ocpSvc.patchGlobalSecrets(TestConfiguration.getQuayPullSecret());

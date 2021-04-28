@@ -110,10 +110,10 @@ public class TestConfiguration {
     private static final String QUAY_NAMESPACE = "syndesis.config.quay.namespace";
     private static final String QUAY_AUTH_TOKEN = "syndesis.config.quay.auth.token";
     private static final String QUAY_OPSRC_TOKEN = "syndesis.config.quay.opsrc.token";
+    private static final String OPERATORHUB_ICSP_CONFIG_URL = "syndesis.config.icsp.url";
     private static final String INDEX_IMAGE = "syndesis.config.index.image";
     private static final String BUNDLE_IMAGE = "syndesis.config.bundle.image";
     private static final String QUAY_PULL_SECRET = "syndesis.config.quay.pullsecret";
-    private static final String OPERATORHUB_ICSP_SCRIPT_URL = "syndesis.config.icsp.url";
 
     private static final String KEYCLOAK_NAMESPACE = "keycloak.namespace";
     private static final String KEYCLOAK_SYNDESIS_REALM = "keycloak.syndesis.realm";
@@ -414,10 +414,6 @@ public class TestConfiguration {
         return get().readValue(QUAY_PULL_SECRET);
     }
 
-    public static String operatorhubIcspScriptURL() {
-        return get().readValue(OPERATORHUB_ICSP_SCRIPT_URL);
-    }
-
     public static String keycloakNamespace() {
         return get().readValue(KEYCLOAK_NAMESPACE);
     }
@@ -430,6 +426,9 @@ public class TestConfiguration {
         return get().readValue(KEYCLOAK_IDP_NAME);
     }
 
+    public static String getICSPUrl() {
+        return get().readValue(OPERATORHUB_ICSP_CONFIG_URL);
+    }
 
     private Properties defaultValues() {
         final Properties defaultProps = new Properties();
@@ -664,7 +663,7 @@ public class TestConfiguration {
             .pullSecretName(syndesisPullSecretName())
             .pullSecret(syndesisPullSecret())
             .quayOpsrcToken(quayOpsrcToken())
-            .icspConfigURL(operatorhubIcspScriptURL())
+            .icspConfigURL(getICSPUrl())
             .build();
         return new OpenShiftService(
             quayNamespace(),
