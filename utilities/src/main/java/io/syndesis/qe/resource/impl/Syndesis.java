@@ -24,20 +24,29 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.assertj.core.util.Strings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
+import com.google.common.collect.Maps;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +56,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import cz.xtf.core.waiting.WaiterException;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -68,6 +78,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
+    public static final String CSV_NAME = "fuse-online.v7.10.0";
 
     @Setter
     @Getter
@@ -80,6 +91,8 @@ public class Syndesis implements Resource {
     private String crUrl;
 
     private String crApiVersion;
+
+    private Bundle currentBundle, previousBundle;
 
     public Syndesis() {
         defaultValues();
@@ -161,7 +174,7 @@ public class Syndesis implements Resource {
                     .withVersion("v1alpha1")
                     .withScope("Namespaced")
                     .build()
-                ).delete(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0");
+                ).delete(TestConfiguration.openShiftNamespace(), CSV_NAME);
             } catch (KubernetesClientException | IOException e) {
                 log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
             }
@@ -909,7 +922,6 @@ public class Syndesis implements Resource {
             return;
         }
         Index index;
-        Bundle foBundle = null;
         OpenShiftService ocpSvc;
         if (TestConfiguration.getBundleImage() != null) {
             ocpSvc = TestConfiguration.getOpenShiftService("fuse-online-index");
@@ -918,23 +930,29 @@ public class Syndesis implements Resource {
             String quayProject = parts[parts.length - 1].split(":")[0];
             ocpSvc = TestConfiguration.getOpenShiftService(quayProject);
         }
+        prepareDockerConfig();
+
         Opm opm = new Opm(ocpSvc);
         QuayUser quayUser = TestConfiguration.getQuayUser();
         if (TestConfiguration.getBundleImage() != null) {
             //Deploy from bundle
-            index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion());
-            foBundle = index.addBundle(TestConfiguration.getBundleImage());
+            index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion(), quayUser);
+            index.addBundle("registry.redhat.io/fuse7/fuse-online-operator-bundle:1.8");
+            previousBundle = index.addBundle("registry.redhat.io/fuse7/fuse-online-rhel8-operator-bundle:1.9");
+            currentBundle = index.addBundle(TestConfiguration.getBundleImage());
+            //TODO: move to a step?
+            checkBundle(currentBundle);
         } else {
             //deploy from existing index image
             index = opm.pullIndex(TestConfiguration.getIndexImage(), quayUser);
         }
-        index.push(quayUser);
+
         try {
             // OCP stuff - add index
-            ocpSvc.patchGlobalSecrets(TestConfiguration.getQuayPullSecret());
-            index.addIndexToCluster(ocpSvc, "fuse-online-test-catalog");
-            if (foBundle != null) {
-                foBundle.createSubscription(ocpSvc);
+            index.addIndexToCluster("fuse-online-test-catalog");
+            ocpSvc.refreshOperators();
+            if (currentBundle != null) {
+                currentBundle.createSubscription();
             } else {
                 Bundle.createSubscription(ocpSvc, "fuse-online", "fuse-online-7.9.x", "''", "fuse-online-test-catalog");
             }
@@ -943,18 +961,48 @@ public class Syndesis implements Resource {
             e.printStackTrace();
         }
         createPullSecret();
-        if (TestConfiguration.enableTestSupport()) {
-            TestUtils.withRetry(this::enableTestSupport, 5, 10, "Failed to patch CSV");
-        }
+        TestUtils.withRetry(this::enableTestSupport, 5, 10, "Failed to patch CSV");
         deployCrAndRoutes();
+        OpenShiftUtils.getInstance().addRoleToUser("view", TestConfiguration.syndesisUsername());
         CommonSteps.waitForSyndesis();
+    }
+
+    private void checkBundle(Bundle foBundle) {
+        if (System.getProperty(TestConfiguration.SYNDESIS_BUILD_PROPERTIES_URL) != null) {
+            prepareDockerConfig();
+            final Map<String, String> imgMap = new HashMap<>();
+            for (Image img : Image.values()) {
+                if (img == Image.CAMELK) {
+                    continue;
+                }
+                imgMap.put(img.name().toLowerCase(), TestConfiguration.image(img));
+            }
+            imgMap.put("syndesis-operator", TestConfiguration.syndesisOperatorImage());
+            foBundle.assertSameImages(imgMap);
+        }
+    }
+
+    private void prepareDockerConfig() {
+        if (System.getProperty("DOCKER_CONFIG") == null) {
+            try {
+                final Path configFolder = Files.createTempDirectory("syndesis-qe");
+                final File dockerCfg = new File(configFolder.toFile(), "config.json");
+                try (FileWriter wf = new FileWriter(dockerCfg)) {
+                    IOUtils.write(new String(Base64.decodeBase64(TestConfiguration.syndesisPullSecret())), wf);
+                }
+                System.setProperty("DOCKER_CONFIG", configFolder.toAbsolutePath().toString());
+                configFolder.toFile().deleteOnExit();
+            } catch (IOException e) {
+                log.error("Failed to write docker config for bundle tests", e);
+            }
+        }
     }
 
     private boolean enableTestSupport() {
         TestUtils.waitFor(() -> "AtLatestKnown".equalsIgnoreCase(getSubscription().getJSONObject("status").getString("state")), 2, 60 * 3,
             "CSV didn't get installed in time");
         JSONObject json = new JSONObject(
-            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0"));
+            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), CSV_NAME));
         JSONObject operatorDeployment =
             json.getJSONObject("spec").getJSONObject("install").getJSONObject("spec").getJSONArray("deployments").getJSONObject(0);
         JSONArray envVars =
@@ -963,7 +1011,7 @@ public class Syndesis implements Resource {
         envVars.put(TestUtils.map("name", "TEST_SUPPORT", "value", "true"));
         try {
             OpenShiftUtils.getInstance().customResource(getCSVContext())
-                .edit(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0", json.toMap());
+                .edit(TestConfiguration.openShiftNamespace(), CSV_NAME, json.toMap());
             return true;
         } catch (Exception e) {
             log.error("Couldn't edit Syndesis CSV", e);

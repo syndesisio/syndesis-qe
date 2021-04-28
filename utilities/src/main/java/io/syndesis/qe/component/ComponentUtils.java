@@ -1,6 +1,7 @@
 package io.syndesis.qe.component;
 
 import static io.syndesis.qe.component.Component.DB;
+import static io.syndesis.qe.component.Component.FUSE_ONLINE_OPERATOR;
 import static io.syndesis.qe.component.Component.JAEGER;
 import static io.syndesis.qe.component.Component.META;
 import static io.syndesis.qe.component.Component.OAUTH;
@@ -10,6 +11,7 @@ import static io.syndesis.qe.component.Component.SERVER;
 import static io.syndesis.qe.component.Component.TODO;
 import static io.syndesis.qe.component.Component.UI;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.addon.Addon;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.Syndesis;
@@ -51,6 +53,12 @@ public class ComponentUtils {
         if (!syndesis.isAddonEnabled(Addon.EXTERNAL_DB)) {
             components.add(DB);
         }
+
+        if (TestConfiguration.getBundleImage() != null || TestConfiguration.getIndexImage() != null) {
+            components.remove(OPERATOR);
+            components.add(FUSE_ONLINE_OPERATOR);
+        }
+
         return components;
     }
 

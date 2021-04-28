@@ -70,7 +70,8 @@
 		<fhir.version>4.1.0</fhir.version>
 		<cluecumber.version>2.5.0</cluecumber.version>
 		<okhttp.client.version>3.12.6</okhttp.client.version>
-		<marketplaceutils.version>1.1</marketplaceutils.version>
+		<marketplaceutils.version>1.2-1</marketplaceutils.version>
+
 		<!-- Placeholder for user defined cucumber tags that should be run -->
 		<!--suppress UnresolvedMavenProperty -->
 		<tags>not @manual and not @wip and not @ignore and not @disabled and not @apicuritoTests</tags>
