@@ -56,9 +56,6 @@ public class Details extends SyndesisPageObject {
     }
 
     public static final class Actions {
-        public static final String START = "Start Integration";
-        public static final String STOP = "Stop Integration";
-        public static final String DELETE = "Delete Integration";
         public static final String EDIT = "Edit Integration";
     }
 
@@ -81,31 +78,12 @@ public class Details extends SyndesisPageObject {
         return this.getElementText(Element.TITLE);
     }
 
-    public void deleteIntegration() {
-        this.getButton(Actions.DELETE).shouldBe(visible).click();
-        modal.getButton("OK").shouldBe(visible).click();
-    }
-
     public void editIntegration() {
         this.getLink(Actions.EDIT).shouldBe(visible).click();
     }
 
     public void done() {
         this.getButton("Done").shouldBe(visible).click();
-    }
-
-    public void toggleIntegrationState() {
-        String status = getStatus();
-
-        if (status.equals(Status.DRAFT) || status.equals(Status.INACTIVE)) {
-            this.getButton(Actions.START).shouldBe(visible).click();
-            modal.getButton("OK").shouldBe(visible).click();
-        } else if (status.equals(Status.ACTIVE)) {
-            this.getButton(Actions.STOP).shouldBe(visible).click();
-            modal.getButton("OK").shouldBe(visible).click();
-        } else {
-            log.error("Integration state {} cant be toggled!", status);
-        }
     }
 
     public String getStatus() {

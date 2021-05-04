@@ -606,6 +606,23 @@ public class Syndesis implements Resource {
         serverFeatures.put("maven", mavenConfiguration);
     }
 
+    public void updateServerFeature(String feature, Object value) {
+        JSONObject cr = new JSONObject(getCr());
+        cr.getJSONObject("spec").getJSONObject("components")
+            .getJSONObject("server").getJSONObject("features").put(feature, value);
+        this.editCr(cr.toMap());
+    }
+
+    public boolean isServerFeatureEnabled(String feature) {
+        JSONObject features =
+            new JSONObject(getCr()).getJSONObject("spec").getJSONObject("components").getJSONObject("server").getJSONObject("features");
+        if (features.has(feature)) {
+            return features.getBoolean(feature);
+        } else {
+            return false;
+        }
+    }
+
     /**
      * Checks if the given addon is enabled in the CR.
      *

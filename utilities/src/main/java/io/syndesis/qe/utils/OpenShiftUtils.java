@@ -168,6 +168,15 @@ public final class OpenShiftUtils {
         return "";
     }
 
+    public static String getPodLogs(String podPartialName, int numberOfLastCharacters) {
+        String log = getPodLogs(podPartialName);
+        if (log.length() <= numberOfLastCharacters) {
+            return log;
+        } else {
+            return log.substring(log.length() - numberOfLastCharacters);
+        }
+    }
+
     /**
      * Creates the resource using binary oc client.
      *
