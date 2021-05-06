@@ -75,6 +75,7 @@
 									<version>${firefox.driver.version}</version>
 								</driver>
 							</drivers>
+							<repositoryUrl>https://raw.githubusercontent.com/mkralik3/webdriverextensions-maven-plugin-repository/syndesis/repository-3.0.json</repositoryUrl>
 						</configuration>
 					</plugin>
 				</plugins>
