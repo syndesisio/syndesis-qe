@@ -2,6 +2,7 @@ package io.syndesis.qe.steps.integrations.summary;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.summary.Details;
 import io.syndesis.qe.steps.integrations.IntegrationSteps;
 import io.syndesis.qe.steps.other.InvokeHttpRequest;
@@ -26,7 +27,9 @@ public class DetailsSteps {
 
     @When("^delete the integration on detail page.*$")
     public void deleteIntegrationOnDetailPage() {
-        detailPage.deleteIntegration();
+        detailPage.clickOnKebabMenuAction("Delete");
+        ModalDialogPage dialog = new ModalDialogPage();
+        dialog.getButton("Delete").click();
     }
 
     @Then("^check visibility of \"([^\"]*)\" integration status on Integration Detail page$")

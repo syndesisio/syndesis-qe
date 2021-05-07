@@ -463,3 +463,32 @@ Feature: Operator Deployment
       | Integration Limit | spec/components/server/integrationLimit.yml         | maxIntegrationsPerUser: '2'                                             |
       | Maven Args        | spec/components/server/additionalMavenArguments.yml | additionalMavenArguments: "--strict-checksums -DtestProperty=testValue" |
       | Maven Repo        | spec/components/server/mavenRepositories-append.yml | customRepo2: https://customRepo2                                        |
+
+  @operator-auditing
+  Scenario: Syndesis Operator - auditing
+    When deploy Syndesis CR from file "spec/components/server/auditing.yml"
+    And wait for Syndesis to become ready
+    And deploy ActiveMQ broker
+    And create ActiveMQ connection
+    And sleep for jenkins delay or 5 seconds
+    Then check that the last audit record contains following parameters
+      | type       | connection       |
+      | name       | Fuse QE ACTIVEMQ |
+      | user       | pista            |
+      | recordType | created          |
+    And check that the last audit record contains the event with the following parameters
+      | type     | set              |
+      | property | name             |
+      | current  | Fuse QE ACTIVEMQ |
+    And check that the last audit record contains the event with the following parameters
+      | type     | set                            |
+      | property | configuredProperties.brokerUrl |
+      | current  | tcp://syndesis-amq-tcp:61616   |
+    And check that the last audit record contains the event with the following parameters
+      | type     | set                           |
+      | property | configuredProperties.username |
+      | current  | amq                           |
+    And check that the last audit record contains the event with the following parameters
+      | type     | set                           |
+      | property | configuredProperties.password |
+      | current  | **********                    |

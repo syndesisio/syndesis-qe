@@ -6,6 +6,7 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoint.ConnectionsEndpoint;
 import io.syndesis.qe.endpoints.TestSupport;
 import io.syndesis.qe.resource.ResourceFactory;
+import io.syndesis.qe.resource.impl.Auditing;
 import io.syndesis.qe.resource.impl.CamelK;
 import io.syndesis.qe.resource.impl.ExternalDatabase;
 import io.syndesis.qe.resource.impl.FHIR;
@@ -105,6 +106,13 @@ public class CommonSteps {
     public void deployApiOauthProxy() {
         ResourceFactory.create(PublicOauthProxy.class);
         TestUtils.sleepForJenkinsDelayIfHigher(5);
+    }
+
+    @When("enable auditing")
+    public void enableAuditing() {
+        if (!ResourceFactory.get(Syndesis.class).isServerFeatureEnabled("auditing")) {
+            ResourceFactory.create(Auditing.class);
+        }
     }
 
     @Given("deploy FHIR server")

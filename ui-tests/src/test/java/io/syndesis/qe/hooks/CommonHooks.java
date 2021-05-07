@@ -2,6 +2,7 @@ package io.syndesis.qe.hooks;
 
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.resource.impl.AMQ;
+import io.syndesis.qe.resource.impl.Auditing;
 import io.syndesis.qe.resource.impl.FHIR;
 import io.syndesis.qe.resource.impl.MySQL;
 import io.syndesis.qe.resource.impl.PublicOauthProxy;
@@ -57,5 +58,11 @@ public class CommonHooks {
         log.info("Removing FHIR");
         ResourceFactory.destroy(FHIR.class);
         FhirClientManager.closeClient();
+    }
+
+    @After("@auditing")
+    public void disableAuditing() {
+        log.info("Disabling auditing");
+        ResourceFactory.destroy(Auditing.class);
     }
 }
