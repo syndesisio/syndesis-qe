@@ -171,8 +171,11 @@ public class CommonSteps {
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
+            log.info(String.format("Testing if project is clean, CRD instances: %d , RemovableResources: %d", crdInstances, removableResources));
             return crdInstances == 0 &
-                removableResources <= 1; // <=1 because configMap can be there on OCP 4.7, see https://github.com/xtf-cz/xtf/issues/406
+                removableResources <= 3;
+            // +1 because configMap can be there on OCP 4.7, see https://github.com/xtf-cz/xtf/issues/406 ,
+            // +2 resources from jaeger operator if there was a jaeger in this namespace before and there is another namespace with jaeger operator
         }, TimeUnit.MILLISECONDS, WaitingConfig.timeoutCleanup(), "Cleaning project.");
     }
 }
