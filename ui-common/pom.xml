@@ -48,46 +48,10 @@
 			<artifactId>byte-buddy-agent</artifactId>
 			<version>${bytebuddy.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.github.bonigarcia</groupId>
+			<artifactId>webdrivermanager</artifactId>
+			<version>${webdrivermanager.version}</version>
+		</dependency>
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<id>download-drivers</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>com.github.webdriverextensions</groupId>
-						<artifactId>webdriverextensions-maven-plugin</artifactId>
-						<version>${webdriverextensions.version}</version>
-						<executions>
-							<execution>
-								<goals>
-									<goal>install-drivers</goal>
-								</goals>
-								<phase>package</phase>
-							</execution>
-						</executions>
-
-						<configuration>
-							<installationDirectory>${basedir}/../drivers</installationDirectory>
-							<drivers>
-								<driver>
-									<name>chromedriver</name>
-									<version>${chrome.driver.version}</version>
-								</driver>
-								<driver>
-									<name>geckodriver</name>
-									<version>${firefox.driver.version}</version>
-								</driver>
-							</drivers>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
 </project>
