@@ -177,15 +177,7 @@ If you want to use your custom route, you need to specify `syndesis.config.opens
 You can also use the `syndesis.config.test.properties` system property to specify a different location of the `test.properties` file, relative to the repo root. This can be useful in case you want to quickly switch between e.g. a local minishift instance and a remote openshift instance.
 
 #### Use correct webdriver version for selected browser
-By default the testsuite will not download any drivers when running tests. To download drivers, you need to use profile `download-drivers` in ui-common module, 
-e.g.
-```
-cd ui-common
-mvn clean package -Pdownload-drivers
-```
-
-By default the testsuite will download latest drivers which may not work with older browsers.
-To use older webdriver, find supported version for your browser and set the system property `chrome.driver.version` or `firefox.driver.version` depending the browser of your choice.
+The correct version of browser driver is automatically detected and downloaded by [WebDriverManager](https://github.com/bonigarcia/webdrivermanager)
 
 ##### Chrome
 Find supported driver version for chrome browser here: http://chromedriver.chromium.org/downloads

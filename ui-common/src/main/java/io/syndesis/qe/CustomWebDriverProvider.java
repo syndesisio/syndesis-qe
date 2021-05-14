@@ -11,12 +11,12 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import com.codeborne.selenide.WebDriverProvider;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Hashtable;
 import java.util.Map;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -43,41 +43,6 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     }
 
     /**
-     * Helper function to find out path of web driver which was downloaded with
-     * command `mvn webdriverextensions:install-drivers`
-     *
-     * @return path of currently set web driver
-     */
-    private String findDriverPath() {
-
-        // plugin will download drivers to user.dir/drivers
-        File folder = new File(System.getProperty("user.dir") + "/../drivers");
-
-        //filter to find out which driver we need as we do not know the exact name of driver file
-        FilenameFilter fnf = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                Boolean isChrome = TestConfiguration.syndesisBrowser().contentEquals("chrome");
-
-                return !name.contains("version") &&
-                    ((isChrome && name.contains("chrome")) || (!isChrome && name.contains("geckodriver")));
-            }
-        };
-        File[] match = folder.listFiles(fnf);
-
-        //if there is more than one driver or zero - something is wrong and we have to exit
-        if (match.length != 1) {
-            log.error("We found " + match.length + "drivers");
-            log.error("Something is wrong with web drivers, did you run `mvn webdriverextensions:install-drivers`" +
-                "before running ui-tests?");
-            throw new RuntimeException("Problem with setting webdriver");
-        }
-        //we know that based on filter there will be just one match
-        log.info("We found out that you want to use driver: " + match[0].getAbsolutePath());
-
-        return match[0].getAbsolutePath();
-    }
-
-    /**
      * Method will prepare chrome driver with custom profile
      *
      * @return
@@ -85,7 +50,8 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     private ChromeDriver prepareChromeWebDriver() {
         log.info("setting chrome profile");
 
-        System.setProperty("webdriver.chrome.driver", findDriverPath());
+        WebDriverManager.chromedriver().setup();
+        log.info("Chrome driver version is: " + WebDriverManager.chromedriver().getDownloadedDriverVersion());
 
         Map<String, Object> preferences = new Hashtable<String, Object>();
         preferences.put("profile.default_content_settings.popups", 0);
@@ -119,7 +85,8 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     private FirefoxDriver prepareFirefoxDriver() {
         //so far we only use firefox and chrome so lets set up firefox here
         log.info("setting firefox profile");
-        System.setProperty("webdriver.gecko.driver", findDriverPath());
+        WebDriverManager.firefoxdriver().setup();
+        log.info("Firefox driver version is: " + WebDriverManager.firefoxdriver().getDownloadedDriverVersion());
 
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setCapability("marionette", true);
@@ -149,7 +116,7 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     }
 
     /**
-     * Cleaning webdriver download folder
+     * Cleaning a browser download folder
      */
     public static void cleanDownloadFolder() throws IOException {
         try {
