@@ -276,7 +276,7 @@ public class DataMapper extends SyndesisPageObject {
         ElementsCollection rowsWithName = containerElement
             .findAll(Element.MAPPING_FIELD_ITEM_ROW)
             .filter(Condition.attribute("aria-level", String.valueOf(nestedLevel)))
-            .filter(Condition.matchText("^" + name + "(\\n\\([A-Z\\_]+\\))?$")); //constants have only text, fields have also datatype e.g. `\n(COMPLEX)\n`
+            .filter(Condition.matchText("^" + name + "(\\n\\([A-Za-z\\_]+\\))?$")); //constants have only text, fields have also datatype e.g. `\n(COMPLEX)\n`
         if (rowsWithName.size() == 0) {
             return null;
         } else if (rowsWithName.size() > 1) {
