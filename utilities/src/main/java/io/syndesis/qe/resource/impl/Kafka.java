@@ -4,48 +4,72 @@ import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.account.Account;
 import io.syndesis.qe.account.AccountsDirectory;
 import io.syndesis.qe.resource.Resource;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Kafka implements Resource {
-    private static final String KAFKA_CRDS = Paths.get("../utilities/src/main/resources/kafka/kafka-crds.yaml").toAbsolutePath().toString();
-    private static final String KAFKA_RESOURCES = Paths.get("../utilities/src/main/resources/kafka/strimzi-deployment.yaml")
-        .toAbsolutePath().toString();
+
+    private static final String RESOURCES_FOLDER =
+        Paths.get("../utilities/src/main/resources/kafka/amq-streams-1.7-cluster-operator").toAbsolutePath().toString();
     private static final String KAFKA_CR = Paths.get("../utilities/src/main/resources/kafka/kafka-ephemeral.yaml").toAbsolutePath().toString();
 
     @Override
     public void deploy() {
         // Replace namespace in the resources
-        TestUtils.replaceInFile(Paths.get(KAFKA_RESOURCES).toFile(), "\\$NAMESPACE\\$", TestConfiguration.openShiftNamespace());
-
-        for (String resource : Arrays.asList(KAFKA_CRDS, KAFKA_RESOURCES, KAFKA_CR)) {
-            log.info("Creating " + resource);
-            OpenShiftUtils.create(resource);
+        File folder = new File(RESOURCES_FOLDER);
+        for (String resourceName : folder.list()) {
+            File resource = new File(RESOURCES_FOLDER, resourceName);
+            if (resourceName.contains("RoleBinding")) {
+                TestUtils.replaceInFile(resource, "namespace: .*\n", String.format("namespace: %s\n", TestConfiguration.openShiftNamespace()));
+            }
+            try (FileInputStream resourceIS = new FileInputStream(resource)) {
+                OpenShiftUtils.getInstance().load(resourceIS).get().forEach(res -> {
+                    OpenShiftUtils.getInstance().resource(res).createOrReplace();
+                });
+            } catch (IOException e) {
+                InfraFail.fail("IO exception during creating Kafka resource", e);
+            }
         }
+        OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("strimzi.io/kind", "cluster-operator"));
+        OpenShiftUtils.create(KAFKA_CR);
         addAccounts();
     }
 
     @Override
     public void undeploy() {
-        for (String resource : Arrays.asList(KAFKA_RESOURCES, KAFKA_CR)) {
-            log.info("Deleting " + resource);
-            OpenShiftUtils.delete(resource);
+        OpenShiftUtils.delete(KAFKA_CR);
+        File folder = new File(RESOURCES_FOLDER);
+        for (String resourceName : folder.list()) {
+            try (FileInputStream resourceIS = new FileInputStream(new File(RESOURCES_FOLDER, resourceName))) {
+                OpenShiftUtils.getInstance().load(resourceIS).get().forEach(res -> {
+                    if (!(res instanceof CustomResourceDefinition || res instanceof ClusterRole)) {
+                        OpenShiftUtils.getInstance().resource(res).cascading(true).delete();
+                    }
+                });
+            } catch (IOException e) {
+                InfraFail.fail("IO exception during undeploying Kafka resource", e);
+            }
         }
     }
 
     @Override
     public boolean isReady() {
-        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-kafka-0"))
-            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("statefulset.kubernetes.io/pod-name", "my-cluster-zookeeper-0"))
+        return OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("strimzi.io/name", "my-cluster-zookeeper"))
+            && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("strimzi.io/name", "my-cluster-kafka"))
             && OpenShiftWaitUtils.isPodReady(OpenShiftUtils.getAnyPod("strimzi.io/name", "my-cluster-entity-operator"));
     }
 
