@@ -45,7 +45,7 @@ public class CommonValidationSteps {
 
     @Then("wait for integration with name: {string} to become active")
     public void waitForIntegrationToBeActive(String integrationName) {
-        waitForIntegrationToBeActive(9, integrationName);
+        waitForIntegrationToBeActive(20, integrationName);
     }
 
     @Then("wait max {int} minutes for integration with name: {string} to become active")
