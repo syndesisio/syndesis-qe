@@ -34,9 +34,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.cucumber.datatable.DataTable;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -95,7 +95,7 @@ public class IntegrationSteps {
         assertThat(TestUtils.waitForEvent(
             status -> status.contains(integrationStatus),
             () -> integrations.getIntegrationItemStatus(integrationName),
-            TimeUnit.MINUTES, 10, TimeUnit.SECONDS, 20)
+            TimeUnit.MINUTES, 20, TimeUnit.SECONDS, 20)
         ).isTrue();
     }
 
@@ -112,7 +112,7 @@ public class IntegrationSteps {
         assertThat(TestUtils.waitForEvent(
             status -> status.equals(integrationStatus),
             () -> integrations.getIntegrationItemStartingStatus(integration),
-            TimeUnit.MINUTES, 10, TimeUnit.MILLISECONDS, 30)
+            TimeUnit.MINUTES, 20, TimeUnit.MILLISECONDS, 30)
         ).isTrue();
     }
 
