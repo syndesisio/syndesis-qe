@@ -34,7 +34,7 @@ Feature: Integration - Import Export
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
-    And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
+    And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit 1" value
     And fill in period input with "10" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button
@@ -128,7 +128,7 @@ Feature: Integration - Import Export
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
-    And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit(1)" value
+    And fill in periodic query input with "SELECT company FROM CONTACT ORDER BY lead_source DESC limit 1" value
     And fill in period input with "60" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button

@@ -29,7 +29,7 @@ Feature: Log Connector
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
 
-    When fill in periodic query input with "select * from contact limit(1)" value
+    When fill in periodic query input with "select * from contact limit 1" value
     And fill in period input with "1" value
     And select "Minutes" from sql dropdown
     And click on the "Next" button
@@ -76,7 +76,7 @@ Feature: Log Connector
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
 
-    When fill in periodic query input with "select * from contact limit(1)" value
+    When fill in periodic query input with "select * from contact limit 1" value
     And fill in period input with "1" value
     And select "Minutes" from sql dropdown
     And click on the "Next" button

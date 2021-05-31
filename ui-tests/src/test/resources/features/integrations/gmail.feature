@@ -32,7 +32,7 @@ Feature: Google mail Connector
 
     When select the "PostgresDB" connection
     And select "Periodic SQL Invocation" integration action
-    And fill in periodic query input with "select company from contact limit(1)" value
+    And fill in periodic query input with "select company from contact limit 1" value
     And fill in period input with "10" value
     And select "Minutes" from sql dropdown
     And click on the "Done" button
