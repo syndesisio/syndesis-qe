@@ -18,7 +18,7 @@ Feature: Integration - import-edit
     And click on the "Edit Integration" link
     And edit integration step on position 1
     And fill in values by element data-testid
-      | query | select * from contact limit(1) |
+      | query | select * from contact limit 1 |
     And click on the "Next" button
     And publish integration
     And click on the "Save and publish" button

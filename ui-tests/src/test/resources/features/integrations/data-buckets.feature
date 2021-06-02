@@ -87,7 +87,7 @@ Feature: Integration - Databucket
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
 
-    When fill in periodic query input with "select * from contact limit(1)" value
+    When fill in periodic query input with "select * from contact limit 1" value
     And fill in period input with "10" value
     And select "Minutes" from sql dropdown
     And click on the "Next" button
@@ -102,7 +102,7 @@ Feature: Integration - Databucket
     When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
-    And fill in invoke query input with "select company as firma from contact limit(1);" value
+    And fill in invoke query input with "select company as firma from contact limit 1;" value
     And click on the "Next" button
 
     #And check that there is no warning inside of step number "2"
@@ -150,7 +150,7 @@ Feature: Integration - Databucket
     And select "Periodic SQL Invocation" integration action
     Then check "Next" button is "Disabled"
 
-    When fill in periodic query input with "select company as firma from contact limit(1);" value
+    When fill in periodic query input with "select company as firma from contact limit 1;" value
     And fill in period input with "10" value
     And select "Seconds" from sql dropdown
     And click on the "Next" button
@@ -160,7 +160,7 @@ Feature: Integration - Databucket
 
     When select the "PostgresDB" connection
     And select "Invoke SQL" integration action
-    Then fill in invoke query input with "select * from contact where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME and lead_source = :#LEAD limit(1);" value
+    Then fill in invoke query input with "select * from contact where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME and lead_source = :#LEAD limit 1;" value
     And click on the "Next" button
 
     ##################### step NEW step ##################################
@@ -168,7 +168,7 @@ Feature: Integration - Databucket
     When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
-    And fill in invoke query input with "select first_name as myName from contact where company = :#COMPANY and last_name = :#MYSURNAME limit(1);" value
+    And fill in invoke query input with "select first_name as myName from contact where company = :#COMPANY and last_name = :#MYSURNAME limit 1;" value
     And click on the "Next" button
 
     ##################### step NEW step step ##################################
@@ -176,7 +176,7 @@ Feature: Integration - Databucket
     When add integration step on position "0"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
-    And fill in invoke query input with "select last_name as mySurname from contact where company = :#COMPANY limit(1);" value
+    And fill in invoke query input with "select last_name as mySurname from contact where company = :#COMPANY limit 1;" value
     And click on the "Next" button
 
     ##################### step step step NEW step ##################################
@@ -184,7 +184,7 @@ Feature: Integration - Databucket
     When add integration step on position "2"
     And select the "PostgresDB" connection
     And select "Invoke SQL" integration action
-    And fill in invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit(1);" value
+    And fill in invoke query input with "select lead_source as myLeadSource from CONTACT where company = :#COMPANY and first_name = :#MYNAME and last_name = :#MYSURNAME limit 1;" value
     And click on the "Next" button
 
     ##################### step step step step NEW step ##################################

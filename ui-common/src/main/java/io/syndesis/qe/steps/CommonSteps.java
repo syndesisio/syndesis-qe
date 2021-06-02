@@ -725,6 +725,7 @@ public class CommonSteps {
 
     @Then("^fill in data-testid field \"([^\"]*)\" from property \"([^\"]*)\" of credentials \"([^\"]*)\"")
     public void fillFormByTestIdFromCreds(String testId, String property, String credentials) {
+        Form.waitForInputs(20);
         Account account = AccountsDirectory.getInstance().get(credentials);
         Map<String, String> map = new HashMap<>();
         map.put(testId, account.getProperty(property));
