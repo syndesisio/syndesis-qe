@@ -88,6 +88,7 @@ public class Syndesis implements Resource {
         crdUrl = TestConfiguration.syndesisCrdUrl();
         operatorImage = TestConfiguration.syndesisOperatorImage();
         crUrl = TestConfiguration.syndesisCrUrl();
+        crApiVersion = null;
     }
 
     @Override
