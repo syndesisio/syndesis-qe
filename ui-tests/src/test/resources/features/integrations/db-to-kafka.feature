@@ -5,6 +5,7 @@
 @datamapper
 @kafka
 @integrations-db-to-kafka-to-db
+@notIgnoreOpenIssue
 @ENTESB-13113
 Feature: Integration - DB to DB
 
