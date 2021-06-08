@@ -20,15 +20,11 @@ Feature: Google Sheets Connector
       | Google Sheets | google-sheets |
     And created connections
       | Red Hat AMQ | AMQ | AMQ | AMQ connection |
+    And create or clean test spreadsheet
     And navigate to the "Home" page
 
 
   @create-spreadsheet
-  @big-spreadsheet-copy
-  @big-spreadsheet-db
-  @spreadsheet-append
-  @from-db-rows
-  @from-db-columns
   Scenario: create spreadsheet
     When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
@@ -53,7 +49,7 @@ Feature: Google Sheets Connector
     And select the "google-sheets" connection
     And select "Create spreadsheet" integration action
     And fill in values by element data-testid
-      | title | brand-new-spreadsheet |
+      | title | brand-new-spreadsheet-syndesis-tests |
     Then click on the "Next" button
 
     When add integration step on position "1"
@@ -73,8 +69,7 @@ Feature: Google Sheets Connector
 
   @spreadsheet-append
   Scenario: Append messages from DB
-    When clear test spreadsheet
-    And insert into "contact" table
+    When insert into "contact" table
       | Matej | Foo    | Red Hat | db |
       | Matej | Bar    | Red Hat | db |
       | Fuse  | Online | Red Hat | db |
@@ -140,7 +135,6 @@ Feature: Google Sheets Connector
     And fill in values by element data-testid
       | range          | A2:E3                                        |
       | majordimension | Rows                                         |
-      | spreadsheetid  | 1RdaQ1sb90ugxAh1Z6oZD87XhgmmhKs6tDturft_wsAk |
     And click on the "Next" button
     And fill in values by element data-testid
       | columnnames | A,B,C,D,E |
@@ -307,7 +301,7 @@ Feature: Google Sheets Connector
       |               | ALACHUA COUNTY | BAKER COUNTY | BAY COUNTY  |
       | SUM of 498960 | 424134760.5    | 2854645.2    | 640241168.4 |
 
-
+  @update-sheet-title
   Scenario: Update title
     When click on the "Create Integration" link to create a new integration.
     And select the "Timer" connection
@@ -320,7 +314,7 @@ Feature: Google Sheets Connector
     And select "Update spreadsheet properties" integration action
     And fill spreadsheet ID
     And fill in values by element data-testid
-      | title | updated-title |
+      | title | updated-title-syndesis-tests |
     Then click on the "Done" button
 
     When publish integration
@@ -330,8 +324,9 @@ Feature: Google Sheets Connector
     And wait until integration "update-sheet-title" gets into "Running" state
     And wait until integration update-sheet-title processed at least 1 message
     And sleep for "3000" ms
-    Then verify that spreadsheet title match "updated-title"
+    Then verify that spreadsheet title match "updated-title-syndesis-tests"
 
+  @get-sheet-property
   Scenario: get properties of sheet
     When click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
@@ -438,8 +433,7 @@ Feature: Google Sheets Connector
 
   @big-spreadsheet-copy
   Scenario: Copy big spreadsheet using split/aggregate
-    When clear test spreadsheet
-    And click on the "Create Integration" link to create a new integration.
+    When click on the "Create Integration" link to create a new integration.
     And select the "google-sheets" connection
     And select "Get sheet values" integration action
     And fill in data-testid field "spreadsheetid" from property "testDataSheetId" of credentials "QE Google Sheets"

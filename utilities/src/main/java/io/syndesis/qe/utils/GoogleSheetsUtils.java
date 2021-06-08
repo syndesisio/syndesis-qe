@@ -1,6 +1,7 @@
 package io.syndesis.qe.utils;
 
 import io.syndesis.qe.account.AccountsDirectory;
+import io.syndesis.qe.test.InfraFail;
 import io.syndesis.qe.utils.google.GoogleAccounts;
 
 import org.assertj.core.api.Assertions;
@@ -14,6 +15,7 @@ import com.google.api.services.sheets.v4.model.DeleteSheetRequest;
 import com.google.api.services.sheets.v4.model.Request;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.SpreadsheetProperties;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.IOException;
@@ -75,10 +77,6 @@ public class GoogleSheetsUtils {
             return false;
         }
         return true;
-    }
-
-    public boolean spreadSheetExists() {
-        return spreadSheetExists(testSheetId);
     }
 
     public List<String> getSpreadSheetValues(String id, String range) {
@@ -155,5 +153,17 @@ public class GoogleSheetsUtils {
 
     public Spreadsheet getSpreadSheet() {
         return getSpreadSheet(testSheetId);
+    }
+
+    public void createTestSheet() {
+        Spreadsheet spreadsheet = new Spreadsheet()
+            .setProperties(new SpreadsheetProperties()
+                .setTitle("syndesis-sheet-" + System.currentTimeMillis())
+            );
+        try {
+            setTestSheetId(getSheets().spreadsheets().create(spreadsheet).setFields("spreadsheetId").execute().getSpreadsheetId());
+        } catch (IOException e) {
+            InfraFail.fail("IOException during creating a spreadsheet" + e);
+        }
     }
 }

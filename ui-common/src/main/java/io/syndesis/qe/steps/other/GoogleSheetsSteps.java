@@ -17,6 +17,15 @@ public class GoogleSheetsSteps {
     @Autowired
     private GoogleSheetsUtils gcu;
 
+    @When("create or clean test spreadsheet")
+    public void createSpreadSheet() {
+        if (gcu.getTestSheetId() == null || "".equals(gcu.getTestSheetId())) {
+            gcu.createTestSheet();
+        } else {
+            gcu.clearSpreadSheetValues("A1:Z500000");
+        }
+    }
+
     @When("define spreadsheetID as constant in data mapper and map it to {string}")
     public void defineSpreadaheetIDAsPropertyInDataMapper(String mapTo) {
         defineSpreadsheetIdInDatamapper(gcu.getTestSheetId(), mapTo);
@@ -30,11 +39,6 @@ public class GoogleSheetsSteps {
     @Given("^clear range \"([^\"]*)\" in data test spreadsheet$")
     public void clearRangeInDataTestSpreadsheet(String range) {
         gcu.clearSpreadSheetValues(gcu.getTestDataSpreadSheet(), range);
-    }
-
-    @When("^clear test spreadsheet$")
-    public void clearTestSpreadsheet() {
-        gcu.clearSpreadSheetValues("A1:Z500000");
     }
 
     @When("define test spreadsheetID as constant in data mapper and map it to {string}")
