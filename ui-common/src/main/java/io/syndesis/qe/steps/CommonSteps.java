@@ -247,12 +247,14 @@ public class CommonSteps {
             $(By.partialLinkText(TestConfiguration.keyCloakIdpName())).click();
             KeyCloakLogin kcLogin = new KeyCloakLogin();
             kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if (currentUrl.contains("oauth/authorize")) {
+        } else if (currentUrl.contains("oauth/authorize") || currentUrl.contains("oauth%2Fauthorize")) {
             String linkText = "htpasswd";
             if (currentUrl.contains("osp")) {
                 linkText = "HTPasswd";
             }
-            $(By.partialLinkText(linkText)).click();
+            if (!currentUrl.contains("apps-crc.testing")) { // for CRC 1.27, no IDP chooser
+                $(By.partialLinkText(linkText)).click();
+            }
             MinishiftLogin minishiftLogin = new MinishiftLogin();
             minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         }

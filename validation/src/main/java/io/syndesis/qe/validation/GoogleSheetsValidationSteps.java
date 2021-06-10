@@ -25,11 +25,9 @@ public class GoogleSheetsValidationSteps {
 
     @Then("verify that spreadsheet was created")
     public void verifyThatSpreadsheetWasCreated() {
-        if (sheetsUtils.getTestSheetId() == null || "".equals(sheetsUtils.getTestSheetId())) {
-            sheetsUtils.setTestSheetId(JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, "sheets").split(":")[1].split("\"")[1]);
-            log.info("Spreadsheet ID " + sheetsUtils.getTestSheetId());
-        }
-        Assertions.assertThat(sheetsUtils.spreadSheetExists());
+        String sheetID = JMSUtils.getMessageText(JMSUtils.Destination.QUEUE, "sheets").split(":")[1].split("\"")[1];
+        log.info("Spreadsheet ID " + sheetID);
+        assertThat(sheetsUtils.spreadSheetExists(sheetID)).isTrue();
     }
 
     @Then("verify that test sheet contains values on range {string}")
