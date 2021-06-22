@@ -1159,7 +1159,7 @@ Feature: API Provider Integration
     And navigate to the "Integrations" page
     Then wait until integration "TODO Integration base path" gets into "Running" state
     When select the "TODO Integration base path" integration
-    Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-syndesis.*/api$
+    Then verify the displayed API Provider URL matches regex ^https://i-todo-integration-base-path-PROJECT.*/api$
 
   @conditional-flow
   @api-provider-conditional-flow

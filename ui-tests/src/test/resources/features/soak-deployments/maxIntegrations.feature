@@ -483,6 +483,20 @@ Feature: Test maximum integration
       | MaxIntegrations | value |
     And click on the "Done" button
 
+    And add integration step on position "2"
+    And select the "Mongo36" connection
+    And select "Find" integration action
+    And fill in values by element data-testid
+      | collection | save_collection |
+      | filter     | {"_id": ":#id"} |
+    And click on the "Next" button
+
+    And add integration step on position "2"
+    And select "Data Mapper" integration step
+    And create data mapper mappings
+      | id | id |
+    And click on the "Done" button
+
     And publish integration
     And set integration name "Integration7_mongo"
     And publish integration

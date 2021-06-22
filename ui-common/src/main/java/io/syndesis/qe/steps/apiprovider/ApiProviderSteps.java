@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.endpoint.client.EndpointClient;
 import io.syndesis.qe.endpoint.util.RetryingInvocationBuilder;
 import io.syndesis.qe.pages.integrations.editor.apiprovider.ApiProviderToolbar;
@@ -218,6 +219,7 @@ public class ApiProviderSteps {
 
     @Then("^verify the displayed API Provider URL matches regex (.*)$")
     public void verifyTheDisplayedURLMatchesHttpITodoIntegrationApi$(String regex) {
+        regex = regex.replace("PROJECT", TestConfiguration.openShiftNamespace());
         String apiUrl = new Details().getApiUrl();
         assertThat(apiUrl).matches(regex);
     }
