@@ -26,7 +26,7 @@ public class SalesforceAccount {
                         .setForceURL(salesforceAccount.getProperty("loginUrl")));
                     return true;
                 } catch (Exception ex) {
-                    log.error("Unable to connect to salesforce, will retry in 5 minutes");
+                    log.error("Unable to connect to salesforce, will retry in 5 minutes. Ex:\n" + ex);
                     return false;
                 }
             }, 3, 300000L, "Unable to connect to SalesForce");
