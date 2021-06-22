@@ -43,6 +43,10 @@ public class CommonSteps {
         try {
             OpenShiftUtils.getInstance().clean();
             //OpenShiftUtils.getInstance().waiters().isProjectClean().waitFor(); //workaround for 4.7 is need. see description of the next function
+            // workaround for Jaeger installed by OLM
+            OpenShiftUtils.binary().execute("delete", "subscriptions", "jaeger-product");
+            OpenShiftUtils.binary().execute("delete", "csv", "jaeger-operator.v1.20.3");
+
             isProjectClean().waitFor();
         } catch (WaiterException e) {
             log.warn("Project was not clean after 20s, retrying once again");
