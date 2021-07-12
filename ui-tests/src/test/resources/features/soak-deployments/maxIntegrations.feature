@@ -271,7 +271,19 @@ Feature: Test maximum integration
       | destinationname | integration2 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
+
+    And add integration step on position "0"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
+    And click on the "Done" button
 
     And publish integration
     And set integration name "Integration1_webhook"
@@ -294,6 +306,10 @@ Feature: Test maximum integration
       | destinationname | integration3 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -308,6 +324,14 @@ Feature: Test maximum integration
     And open data bucket "Constants"
     And create data mapper mappings
       | MaxIntegrations | message |
+    And click on the "Done" button
+
+    And add integration step on position "2"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
     And click on the "Done" button
 
     And publish integration
@@ -331,6 +355,10 @@ Feature: Test maximum integration
       | destinationname | integration4 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -338,6 +366,14 @@ Feature: Test maximum integration
     And select "Invoke SQL" integration action
     And fill in invoke query input with "insert into contact values ('MaxIntegrations', 'Jackson', 'MaxIntegrations', 'db', '2018-03-23');" value
     And click on the "Next" button
+
+    And add integration step on position "1"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
+    And click on the "Done" button
 
     And publish integration
     And set integration name "Integration3_db"
@@ -360,6 +396,10 @@ Feature: Test maximum integration
       | destinationname | integration5 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -367,6 +407,14 @@ Feature: Test maximum integration
     And fill in values by element data-testid
       | customtext | MaxIntegrations |
     And click on the "Next" button
+
+    And add integration step on position "1"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
+    And click on the "Done" button
 
     And publish integration
     And set integration name "Integration4_log"
@@ -389,6 +437,10 @@ Feature: Test maximum integration
       | destinationname | integration6 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -412,6 +464,14 @@ Feature: Test maximum integration
       | test@maxIntegration.feature | Email                |
     And click on the "Done" button
 
+    And add integration step on position "2"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
+    And click on the "Done" button
+
     And publish integration
     And set integration name "Integration5_sf"
     And publish integration
@@ -433,6 +493,10 @@ Feature: Test maximum integration
       | destinationname | integration7 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -442,6 +506,14 @@ Feature: Test maximum integration
       | message | MaxIntegrations |
     And fill username for "twitter_talky" account
     And click on the "Next" button
+
+    And add integration step on position "1"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
+    And click on the "Done" button
 
     And publish integration
     And set integration name "Integration6_tw"
@@ -464,6 +536,10 @@ Feature: Test maximum integration
       | destinationname | integration8 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -484,17 +560,11 @@ Feature: Test maximum integration
     And click on the "Done" button
 
     And add integration step on position "2"
-    And select the "Mongo36" connection
-    And select "Find" integration action
-    And fill in values by element data-testid
-      | collection | save_collection |
-      | filter     | {"_id": ":#id"} |
-    And click on the "Next" button
-
-    And add integration step on position "2"
     And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
     And create data mapper mappings
-      | id | id |
+      | ok | previous |
     And click on the "Done" button
 
     And publish integration
@@ -518,6 +588,10 @@ Feature: Test maximum integration
       | destinationname | integration9 |
       | destinationtype | Queue        |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -535,6 +609,14 @@ Feature: Test maximum integration
     And create data mapper mappings
       | MaxIntegrations | text |
     And scroll "top" "right"
+    And click on the "Done" button
+
+    And add integration step on position "2"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
     And click on the "Done" button
 
     And publish integration
@@ -558,6 +640,10 @@ Feature: Test maximum integration
       | destinationname | integration10 |
       | destinationtype | Queue         |
     And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | JSON Instance |
+    And fill text into text-editor
+      | {"previous":"ok"} |
     And click on the "Next" button
 
     And add integration step on position "0"
@@ -581,6 +667,14 @@ Feature: Test maximum integration
       | descript                   | u_short_description |
       | ui                         | u_user_input        |
     And define modified service now number "MaxIntegrations" and map it to "u_number"
+    And click on the "Done" button
+
+    And add integration step on position "2"
+    And select "Data Mapper" integration step
+    And define constant "ok" of type "String" in data mapper
+    And open data bucket "Constants"
+    And create data mapper mappings
+      | ok | previous |
     And click on the "Done" button
 
     And publish integration
