@@ -167,7 +167,7 @@ public class S3Utils {
 
     public String getFileNameWithPrefix(String bucketName, String prefix) {
         Optional<S3Object> s3Object = s3client.listObjectsV2(b -> b.bucket(bucketName)).contents()
-            .stream().filter(o -> o.key().startsWith(prefix)).findFirst();
+            .stream().filter(o -> o.key().contains(prefix)).findFirst();
         if (!s3Object.isPresent()) {
             fail("Unable to find file with " + prefix + " prefix");
         }
