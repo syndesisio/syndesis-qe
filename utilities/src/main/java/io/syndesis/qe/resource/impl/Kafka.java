@@ -23,9 +23,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Kafka implements Resource {
 
-    private static final String RESOURCES_FOLDER =
-        Paths.get("../utilities/src/main/resources/kafka/amq-streams-1.7-cluster-operator").toAbsolutePath().toString();
-    private static final String KAFKA_CR = Paths.get("../utilities/src/main/resources/kafka/kafka-ephemeral.yaml").toAbsolutePath().toString();
+    private static String RESOURCES_FOLDER = "../utilities/src/main/resources/kafka/amq-streams-%s-cluster-operator";
+    private static String KAFKA_CR = "../utilities/src/main/resources/kafka/kafka-ephemeral-%s.yaml";
+
+    public Kafka() {
+        if (OpenShiftUtils.isOpenshift3()) {
+            RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.6")).toAbsolutePath().toString();
+            KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.6")).toAbsolutePath().toString();
+        } else {
+            RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.7")).toAbsolutePath().toString();
+            KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.7")).toAbsolutePath().toString();
+        }
+    }
 
     @Override
     public void deploy() {
