@@ -502,6 +502,10 @@ public class Syndesis implements Resource {
                     }
                 }
             }
+            if (TestUtils.isProdBuild() && OpenShiftUtils.isOpenshift3()){
+                //Workaround for https://issues.redhat.com/browse/ENTESB-17075
+                envVarsToAdd.add(new EnvVar("RELATED_IMAGE_PROMETHEUS", "registry.redhat.io/openshift3/prometheus:v3.9", null));
+            }
         }
         if ((TestUtils.isProdBuild() && getOperatorImage().contains("1.8")) || getOperatorImage().contains("1.11")) {
             // apply this hotfix for 1.8 prod version, needs for OSD because it doesn't see proxy eng repo
