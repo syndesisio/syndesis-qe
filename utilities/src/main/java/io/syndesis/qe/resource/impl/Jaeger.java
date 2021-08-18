@@ -5,8 +5,12 @@ import static org.assertj.core.api.Assertions.fail;
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -31,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Jaeger implements Resource {
+
+    private static final String VERSION_FOR_OCP3 = "1.17.0";
     private static final String[] JAEGER_RESOURCES = new String[] {
         "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/crds/jaegertracing.io_jaegers_crd.yaml",
         "https://raw.githubusercontent.com/jaegertracing/jaeger-operator/%s/deploy/service_account.yaml",
@@ -118,8 +124,8 @@ public class Jaeger implements Resource {
     public void undeploy() {
         // Don't delete clusterwide resources
         OpenShiftUtils.getInstance().resourceList(processedResources.stream()
-            .filter(res -> !(res instanceof CustomResourceDefinition || res instanceof ClusterRole))
-            .collect(Collectors.toList()))
+                .filter(res -> !(res instanceof CustomResourceDefinition || res instanceof ClusterRole))
+                .collect(Collectors.toList()))
             .cascading(true).delete();
 
         OpenShiftUtils.getInstance().services().withName(COLLECTOR_SERVICE_NAME).delete();
@@ -142,7 +148,8 @@ public class Jaeger implements Resource {
 
     private void processResources() {
         for (String jaegerResource : JAEGER_RESOURCES) {
-            jaegerResource = String.format(jaegerResource, "v" + TestConfiguration.jaegerVersion()); // version 1.20.0 ==> repo v1.20.0
+            String jaegerVersion = OpenShiftUtils.isOpenshift3() ? VERSION_FOR_OCP3 : TestConfiguration.jaegerVersion();
+            jaegerResource = String.format(jaegerResource, "v" + jaegerVersion); // version 1.20.0 ==> repo v1.20.0
             log.info("Processing " + jaegerResource);
             try (InputStream is = new URL(jaegerResource).openStream()) {
                 List<HasMetadata> resources = OpenShiftUtils.getInstance().load(is).get();
@@ -159,7 +166,7 @@ public class Jaeger implements Resource {
                     // change docker image to quay
                     if (resource instanceof Deployment) {
                         ((Deployment) resource).getSpec().getTemplate().getSpec().getContainers().get(0)
-                            .setImage("quay.io/jaegertracing/jaeger-operator:" + TestConfiguration.jaegerVersion());
+                            .setImage("quay.io/jaegertracing/jaeger-operator:" + jaegerVersion);
                     }
                 }
             } catch (IOException e) {
@@ -174,6 +181,7 @@ public class Jaeger implements Resource {
      * @param crName name of cr file
      */
     public static void createJaegerCr(String crName) {
+        TestUtils.replaceInFile(new File("src/test/resources/jaeger/cr/" + crName + ".yml"), "REPLACE_VERSION", OpenShiftUtils.isOpenshift3() ? VERSION_FOR_OCP3 : TestConfiguration.jaegerVersion());
         OpenShiftUtils.create(Paths.get("src/test/resources/jaeger/cr/" + crName + ".yml").toAbsolutePath().toString());
     }
 }
