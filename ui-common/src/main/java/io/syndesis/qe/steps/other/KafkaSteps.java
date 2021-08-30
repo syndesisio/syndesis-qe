@@ -66,9 +66,15 @@ public class KafkaSteps {
         TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
         selectConnectionTypeSteps.selectConnectionType(connectionType);
 
-        //select autodiscovered broker url:
-        commonSteps.clickOnButtonByCssClassName("pf-c-select__toggle-button");
-        commonSteps.clickOnButton(kafkaAccount.getProperty("brokers"));
+        if(OpenShiftUtils.isOpenshift3()){
+            // test uses older AMQ Streams on 3.11 so autodiscover function is not working
+            connectionsPage.fillInput($(ByUtils.containsId("-select-typeahead")), kafkaAccount.getProperty("brokers"));
+            commonSteps.clickOnButton("Create \"" + kafkaAccount.getProperty("brokers") + "\"");
+        } else {
+            //select autodiscovered broker url:
+            commonSteps.clickOnButtonByCssClassName("pf-c-select__toggle-button");
+            commonSteps.clickOnButton(kafkaAccount.getProperty("brokers"));
+        }
         commonSteps.selectsFromDropdown(kafkaAccount.getProperty("transportprotocol"), "transportprotocol");
         if ("TLS".equals(securityMode)) {
             $(ByUtils.dataTestId("brokercertificate")).shouldBe(visible).sendKeys(kafkaAccount.getProperty("brokercertificate"));

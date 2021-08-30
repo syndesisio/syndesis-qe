@@ -27,9 +27,10 @@ public class AuditingUtils {
         if (allAuditMessages.isEmpty()) {
             InfraFail.fail(
                 "The last 7000 characters from the syndesis server log don't contain any event record. Either the auditing feature is disabled or " +
-                    "some error was throwed after the audit record. Check the server log.");
+                    "some error was thrown after the audit record. Check the server log.");
         }
         JSONObject result = new JSONObject(allAuditMessages.get(allAuditMessages.size() - 1));
+        log.info("Last auditing message is: " + result);
         lastStoredMessageId = result.getString("id");
         return result;
     }

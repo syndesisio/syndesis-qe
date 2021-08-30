@@ -5,6 +5,7 @@ import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
 import io.syndesis.qe.marketplace.openshift.OpenShiftService;
 import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
 import io.syndesis.qe.marketplace.quay.QuayUser;
+import io.syndesis.qe.utils.OpenShiftUtils;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -542,7 +543,7 @@ public class TestConfiguration {
         }
 
         if (properties.getProperty(JAEGER_VERSION) == null) {
-            defaultProps.setProperty(JAEGER_VERSION, "1.20.0");
+            defaultProps.setProperty(JAEGER_VERSION, "1.24.0");
         }
 
         if (properties.getProperty(SYNDESIS_APPEND_REPOSITORY) == null) {
