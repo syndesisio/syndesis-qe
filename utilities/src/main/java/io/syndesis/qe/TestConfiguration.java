@@ -485,7 +485,7 @@ public class TestConfiguration {
         }
 
         if (properties.getProperty(SYNDESIS_CR_URL) == null) {
-            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.12.x/default-cr.yml");
+            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.13.x/default-cr.yml");
         }
 
         defaultProps.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
