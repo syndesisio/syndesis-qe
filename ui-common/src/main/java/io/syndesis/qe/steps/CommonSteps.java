@@ -46,6 +46,7 @@ import io.syndesis.qe.utils.google.GoogleAccount;
 import io.syndesis.qe.utils.google.GoogleAccounts;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -177,10 +178,11 @@ public class CommonSteps {
             jse.executeScript("window.open()");
             ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
             driver.switchTo().window(tabs.get(1));
+            String osdSuffix = "apps." + StringUtils.substringBetween(TestConfiguration.openShiftUrl(), "https://api.", ":6443");
 
             String keyCloakLogoutUrl =
                 String.format("https://keycloak-%s.%s/auth/realms/%s/protocol/openid-connect/logout", TestConfiguration.keycloakNamespace(),
-                    TestConfiguration.openShiftRouteSuffix(), TestConfiguration.keyCloakSyndesisRealm());
+                    osdSuffix, TestConfiguration.keyCloakSyndesisRealm());
 
             driver.navigate().to(keyCloakLogoutUrl);
             TestUtils.sleepForJenkinsDelayIfHigher(3);

@@ -68,6 +68,7 @@ Feature: Integration - SQS
       And create ActiveMQ "publish" action step with destination type "queue" and destination name "sqs-out"
       And create integration with name: "SQS-AMQ-dont-delete-after-read"
     Then wait for integration with name: "SQS-AMQ-dont-delete-after-read" to become active
+      And wait until integration SQS-AMQ-dont-delete-after-read processed at least 1 messages
       And verify that 1 message was received from JMS queue "sqs-out"
       And verify that the SQS queue "syndesis-in" has 1 messages after 0 seconds
 
