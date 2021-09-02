@@ -179,23 +179,7 @@ You can also use the `syndesis.config.test.properties` system property to specif
 #### Use correct webdriver version for selected browser
 The correct version of browser driver is automatically detected and downloaded by [WebDriverManager](https://github.com/bonigarcia/webdrivermanager)
 
-##### Chrome
-Find supported driver version for chrome browser here: http://chromedriver.chromium.org/downloads
-
-Use following maven parameter when starting the tests: `-Dchrome.driver.version=<selected_version>`
-
-For Chrome version 75, the parameter would be `75.0.3770.8`
-
-For Chrome version 74, the parameter would be `74.0.3729.6`
-
-For Chrome version 73, the parameter would be `73.0.3683.68`
-
-##### Firefox
-Find supported driver version for your firefox browser here: https://firefox-source-docs.mozilla.org/testing/geckodriver/geckodriver/Support.html
-
-Use following maven parameter when starting the tests: `-Dfirefox.driver.version=<selected_version>`
-
-For firefox 57 the parameter would be `0.24.0`
+If you need to specify drivers manually or set something else, look to the WebDriverManager [documentation](https://bonigarcia.dev/webdrivermanager/#advanced-configuration) for a particular configuration property (Configuration key).
 
 #### Example of credentials.json
 File `credentials.json` should be located in root of syndesis-qe folder.
