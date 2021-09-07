@@ -32,17 +32,6 @@ Feature: Operator Deployment
       And wait for Syndesis to become ready
       # TODO once ENTESB-12104 is done
 
-  @ENTESB-12106
-  @operator-deploy-integrations
-  @operator-server
-  Scenario: Syndesis Operator - Components - Server - Don't deploy integrations
-    When deploy Syndesis CR from file "spec/components/server/deployIntegrations.yml"
-      And wait for Syndesis to become ready
-    When create start DB periodic sql invocation action step with query "SELECT * FROM CONTACT" and period 5000 ms
-      And add log step
-      And create integration with name: "deploy-integrations-check"
-    Then verify that the integration with name "deploy-integrations-check" is not started
-
   @operator-integration-limit
   @operator-server
   Scenario: Syndesis Operator - Components - Server - Integration Limit

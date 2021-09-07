@@ -88,7 +88,8 @@ public class SettingsSteps {
         settingsPage.clickButton(itemTitle, "Remove");
         //confirm
         ModalDialogPage modalDialogPage = new ModalDialogPage();
-        assertThat(modalDialogPage.getTitleText())
+        assertThat(modalDialogPage.getTitleText()).isEqualTo("Confirm Remove?");
+        assertThat(modalDialogPage.getModalText())
             .contains(String.format("Are you sure you want to remove the OAuth credentials for '%s'?", itemTitle));
         modalDialogPage.getButton("Remove").shouldBe(enabled).click();
         settingsPage.closeCurrentlyExpandedSettings();

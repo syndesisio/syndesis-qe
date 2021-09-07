@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.pages.integrations.CiCd.ManageCICDPage;
+import io.syndesis.qe.utils.ByUtils;
+
+import org.openqa.selenium.By;
 
 import com.codeborne.selenide.Condition;
 
@@ -39,7 +42,8 @@ public class ManageCiCdPageSteps {
     public void deleteTag(String tagName) {
         ciCdPage.clickOnRemoveButton(tagName);
         ModalDialogPage warning = new ModalDialogPage();
-        assertThat(warning.getTitleText()).isEqualTo("Are you sure you want to remove the tag?");
+        assertThat(warning.getTitleText()).isEqualTo("Confirm Remove?");
+        assertThat(warning.getModalText()).contains("Are you sure you want to remove the tag?");
         new ModalDialogPage().getButton("Yes").click();
     }
 

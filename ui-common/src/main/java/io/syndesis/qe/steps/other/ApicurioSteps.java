@@ -39,7 +39,7 @@ public class ApicurioSteps {
                     .getClickableLink("Add a path", ApicurioUtils.getAppRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
                     .click();
             } else {
-                ApicurioUtils.getNewPlusSignButton("section path-section panel-group",
+                ApicurioUtils.getNewPlusSignButton("panel-group path-section section",
                     ApicurioUtils.getAppRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
                     .click();
             }
@@ -145,7 +145,7 @@ public class ApicurioSteps {
     public void setResponseWithPlusSign(DataTable table) {
         for (List<String> dataRow : table.cells()) {
             if (Boolean.parseBoolean(dataRow.get(2))) {
-                ApicurioUtils.getNewPlusSignButton("section responses-section panel-group",
+                ApicurioUtils.getNewPlusSignButton("panel-group responses-section section",
                     ApicurioUtils.getOperationRoot().shouldBe(visible, enabled).shouldNotHave(attribute("disabled")))
                     .click();
             } else {

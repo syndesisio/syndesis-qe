@@ -51,7 +51,6 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         log.info("setting chrome profile");
 
         WebDriverManager.chromedriver().setup();
-        log.info("Chrome driver version is: " + WebDriverManager.chromedriver().getDownloadedDriverVersion());
 
         Map<String, Object> preferences = new Hashtable<String, Object>();
         preferences.put("profile.default_content_settings.popups", 0);
@@ -86,7 +85,6 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         //so far we only use firefox and chrome so lets set up firefox here
         log.info("setting firefox profile");
         WebDriverManager.firefoxdriver().setup();
-        log.info("Firefox driver version is: " + WebDriverManager.firefoxdriver().getDownloadedDriverVersion());
 
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions.setCapability("marionette", true);

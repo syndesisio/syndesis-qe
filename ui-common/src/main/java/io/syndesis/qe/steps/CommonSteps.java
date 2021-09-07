@@ -209,9 +209,10 @@ public class CommonSteps {
             Selenide.open(TestConfiguration.syndesisUrl());
         }
 
-        if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
-            WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
-        }
+        WebDriverRunner.getWebDriver().manage().window().maximize();
+//        if ("firefox".equalsIgnoreCase(TestConfiguration.syndesisBrowser())) {
+//            WebDriverRunner.getWebDriver().manage().window().setSize(new Dimension(1920, 1080));
+//        }
 
         String currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
 
@@ -490,7 +491,7 @@ public class CommonSteps {
         }
         SelenideElement button = syndesisRootPage.getButton(buttonTitle);
         log.info(button.toString());
-        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).click();
+        button.shouldBe(visible, enabled).shouldNotHave(attribute("disabled")).scrollIntoView(false).click();
     }
 
     public void clickOnButtonByCssClassName(String buttonCssClass) {
@@ -518,12 +519,16 @@ public class CommonSteps {
 
     @When(".*clicks? on the \"([^\"]*)\" link.*$")
     public void clickOnLink(String linkTitle) {
-        if ("Customizations".equals(linkTitle) &&
-            $(ByUtils.dataTestId("ui-api-client-connectors")).isDisplayed()) {
-            //do not click when customizations menu is already visible
-            return;
+        if ("Customizations".equals(linkTitle)) {
+            if ($(ByUtils.dataTestId("ui-api-client-connectors")).isDisplayed()) {
+                //do not click when customizations menu is already visible
+                return;
+            } else {
+                $(ByUtils.partialLinkText("Customizations")).click();
+            }
+        } else {
+            new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();
         }
-        new SyndesisRootPage().getLink(linkTitle).shouldBe(visible).click();
     }
 
     @When(".*click on element with data-testid \"([^\"]*)\"$")
@@ -674,9 +679,9 @@ public class CommonSteps {
     }
 
     @Then("^check visibility of dialog page \"(.*)\"$")
-    public void isPresentedWithDialogPage(String title) {
-        String titleText = new ModalDialogPage().getTitleText();
-        assertThat(titleText).isEqualToIgnoringCase(title);
+    public void isPresentedWithDialogPage(String dialogText) {
+        String text = new ModalDialogPage().getModalText();
+        assertThat(text).isEqualToIgnoringCase(dialogText);
     }
 
     @Then("^removes? file \"([^\"]*)\" if it exists$")
