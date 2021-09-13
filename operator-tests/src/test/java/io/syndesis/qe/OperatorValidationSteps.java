@@ -635,6 +635,14 @@ public class OperatorValidationSteps {
         assertThat(OpenShiftUtils.getInstance().getBuildConfigEnvVars(bcName)).containsAllEntriesOf(variables.asMap(String.class, String.class));
     }
 
+    @Then("check that the pod {string} contains variables:")
+    public void checkPodVariables(String pod, DataTable variables) {
+        Map<String, String> envMap = new HashMap<>(); // due to null values, the Collector.toMap cannot be used ( https://bugs.openjdk.java.net/browse/JDK-8148463 )
+        OpenShiftUtils.getPodByPartialName(pod).get().getSpec().getContainers().get(0).getEnv()
+            .forEach((envVar) -> envMap.put(envVar.getName(), envVar.getValue()));
+        assertThat(envMap).containsAllEntriesOf(variables.asMap(String.class, String.class));
+    }
+
     @Then("check that the build log {string} contains {string}")
     public void checkBuildLog(String buildName, String expected) {
         assertThat(OpenShiftUtils.getInstance().getBuildLog(OpenShiftUtils.getInstance().getLatestBuild(buildName))).contains(expected);
