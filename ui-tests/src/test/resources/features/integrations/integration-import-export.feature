@@ -228,7 +228,7 @@ Feature: Integration - Import Export
     When fill in "QE Slack" connection details
 
     And click on the "Validate" button
-    Then check visibility of "Slack has been successfully validated" in alert-info notification
+    Then check visibility of "Slack has been successfully validated" in alert-all notification
 
     When click on the "Save" button
     And navigate to the "Integrations" page

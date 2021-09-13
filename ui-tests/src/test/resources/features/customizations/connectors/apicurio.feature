@@ -51,6 +51,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     Then check that apicurio shows 219 imported operations
 
   @gh-4910
+  @ENTESB-17281
   @apicurio-check-operations-change-add-with-error
   Scenario: Check if operations change with an error is propagated into connector review page from ApicurIO GUI
     When add an operation with error via apicurio gui

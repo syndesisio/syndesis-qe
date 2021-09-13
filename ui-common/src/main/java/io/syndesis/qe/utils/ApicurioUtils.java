@@ -55,13 +55,10 @@ public class ApicurioUtils {
     public static SelenideElement getPathWithName(String pathName) {
         log.info("Getting path with name {}", pathName);
 
-        ElementsCollection allPaths = getAppRoot().$$("div")
-            .filter(attribute("class", "section-body")).first()
-            .findAll(By.cssSelector("div[class*=\"api-path\" ]"));
+        ElementsCollection allPaths = getAppRoot().$("section[type=\"path\"]").findAll(By.cssSelector("div[class=\"api-path-item\"]"));
         for (SelenideElement path : allPaths) {
-            String actualPathName = path.$$("div").filter(attribute("path-item")).first().getText();
-            if (actualPathName.equals(pathName)) {
-                return path.$("div");
+            if (path.getText().equals(pathName)) {
+                return path;
             }
         }
         //path is not found
