@@ -1,0 +1,10 @@
+apiVersion: syndesis.io/v1beta3
+kind: Syndesis
+metadata:
+  name: app
+spec:
+  components:
+    oauth:
+      environment:
+        myEnv1: myEnv1Val
+        myEnv2: myEnv2Val

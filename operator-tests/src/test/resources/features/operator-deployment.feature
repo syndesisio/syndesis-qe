@@ -303,6 +303,15 @@ Feature: Operator Deployment
     Then wait for Syndesis to become ready
       And check that SAR check is enabled for namespace "testNamespace"
 
+  @ENTESB-17153
+  @operator-components-oauth-env
+  Scenario: Syndesis Operator - Components - OAuth - Environment variables
+    When deploy Syndesis CR from file "spec/components/oauth/environments.yml"
+    And wait for Syndesis to become ready
+    Then check that the pod "syndesis-oauthproxy" contains variables:
+      | myEnv1 | myEnv1Val |
+      | myEnv2 | myEnv2Val |
+
   @ENTESB-12280
   @operator-components-3scale
   Scenario: Syndesis Operator - Components - Server - 3Scale
