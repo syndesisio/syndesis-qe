@@ -13,6 +13,7 @@ import io.syndesis.qe.utils.Alert;
 import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.utils.TestUtils;
+import io.syndesis.qe.utils.UIUtils;
 
 import org.openqa.selenium.By;
 
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DataMapper extends SyndesisPageObject {
 
     private static final class Element {
-        public static final By ROOT = ByUtils.dataTestId("datamapper-root-view");
+        public static final By ROOT = ByUtils.dataTestId("data-mapper-root-element");
         public static final By COLLECTION_ROOT = ByUtils.containsId("field-atlas:");
 
         public static final By SOURCE_COLUMN = ByUtils.dataTestId("column-source-area");
@@ -55,8 +56,14 @@ public class DataMapper extends SyndesisPageObject {
         public static final String PROPERTY_SCOPE = "property-scope-form-select";
 
         public static final By CREATE_CONSTANT_BUTTON = ByUtils.dataTestId("create-constant-button");
-        public static final String CONSTANT_NAME = "constant-value-text-input";
+        public static final String CONSTANT_NAME = "constant-name-text-input";
+        public static final String CONSTANT_VALUE = "constant-value-text-input";
         public static final String CONSTANT_TYPE = "constant-type-form-select";
+    }
+
+    public DataMapper(){
+        super();
+        validate();
     }
 
     @Override
@@ -66,6 +73,7 @@ public class DataMapper extends SyndesisPageObject {
 
     @Override
     public boolean validate() {
+        UIUtils.ensureDataMapperUILoaded();
         return getRootElement().is(visible);
     }
 
@@ -108,6 +116,7 @@ public class DataMapper extends SyndesisPageObject {
         ModalDialogPage modalDialogPage = new ModalDialogPage();
         assertThat(modalDialogPage.getTitleText()).contains("Create Constant");
         modalDialogPage.fillInputByDataTestid(Element.CONSTANT_NAME, value);
+        modalDialogPage.fillInputByDataTestid(Element.CONSTANT_VALUE, value);
         modalDialogPage.selectValueByDataTestid(Element.CONSTANT_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();
         this.removeAllAlertsFromPage(Alert.WARNING);
