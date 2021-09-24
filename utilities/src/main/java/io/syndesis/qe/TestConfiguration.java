@@ -200,9 +200,9 @@ public class TestConfiguration {
                     //minishift
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX, StringUtils.substringBetween(openShiftUrl(), "https://", ":" + port) + ".nip.io");
                 } else {
-                    //remote instance
+                    //remote instance (openShiftUrl() cannot be used anymore since the current instance uses internal and external dns)
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX,
-                        prefix + StringUtils.substringBetween(openShiftUrl(), "https://master.", ":" + port));
+                        prefix + StringUtils.substringAfter(OpenShiftUtils.getInstance().inNamespace("default").routes().list().getItems().get(0).getSpec().getHost(), "apps."));
                 }
             }
         }

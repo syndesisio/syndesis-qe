@@ -13,7 +13,6 @@ public class ModalDialogPage extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("pf-c-modal-box");
-        public static final By TITLE_OLD = By.className("pf-c-title"); // workaround until PF will be updated in AtlasMap
         public static final By TITLE = By.className("pf-c-modal-box__title");
         public static final By TEXT = By.className("pf-c-modal-box__body");
     }
@@ -30,8 +29,7 @@ public class ModalDialogPage extends SyndesisPageObject {
     }
 
     public String getTitleText() {
-        SelenideElement title = getRootElement().find(Element.TITLE);
-        return title.exists() ? title.shouldBe(visible).getText(): getRootElement().find(Element.TITLE_OLD).shouldBe(visible).getText();
+        return getRootElement().find(Element.TITLE).shouldBe(visible).getText();
     }
 
     public String getModalText() {

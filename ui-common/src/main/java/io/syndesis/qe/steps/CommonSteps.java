@@ -996,6 +996,14 @@ public class CommonSteps {
         $(By.id("username_or_email")).shouldBe(visible).sendKeys(account.getProperty("login"));
         $(By.id("password")).shouldBe(visible).sendKeys(account.getProperty("password"));
         $(By.id("allow")).shouldBe(visible).click();
+
+        //WIP the dialog is not appeared again.
+        if (!$$(ByUtils.customAttribute("name", "username")).isEmpty()){
+            $(ByUtils.customAttribute("name", "username")).shouldBe(visible).sendKeys(account.getProperty("screenName"));
+            $$(ByUtils.customAttribute("role", "button")).stream().filter(p -> "Next".equals(p.text())).findFirst().get().click();
+            $(ByUtils.customAttribute("name", "password")).shouldBe(visible).sendKeys(account.getProperty("password"));
+            $$(ByUtils.customAttribute("role", "button")).stream().filter(p -> "Log in".equals(p.text())).findFirst().get().click();
+        }
     }
 
     private void fillAndValidateSalesforce() {

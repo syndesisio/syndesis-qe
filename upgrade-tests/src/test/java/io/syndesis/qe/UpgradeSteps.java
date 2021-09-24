@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class UpgradeSteps {
-    private static final String RELEASED_OPERATOR_IMAGE = "registry.redhat.io/fuse7/fuse-online-operator";
+    private static final String RELEASED_OPERATOR_IMAGE = "registry.redhat.io/fuse7/fuse-online-rhel8-operator";
     private static final String UPSTREAM_OPERATOR_IMAGE =
         String.format("%s/syndesis/syndesis-operator", TestConfiguration.get().readValue(SYNDESIS_DOCKER_REGISTRY));
     private static final String DOCKER_HUB_SYNDESIS_TAGS_URL = "https://quay.io/api/v1/repository/syndesis/syndesis-server/tag/?limit=100&page=%d";
