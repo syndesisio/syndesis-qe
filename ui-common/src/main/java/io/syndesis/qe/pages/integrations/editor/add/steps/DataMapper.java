@@ -61,19 +61,14 @@ public class DataMapper extends SyndesisPageObject {
         public static final String CONSTANT_TYPE = "constant-type-form-select";
     }
 
-    public DataMapper(){
-        super();
-        validate();
-    }
-
     @Override
     public SelenideElement getRootElement() {
+        UIUtils.ensureDataMapperUILoaded();
         return $(Element.ROOT).shouldBe(visible);
     }
 
     @Override
     public boolean validate() {
-        UIUtils.ensureDataMapperUILoaded();
         return getRootElement().is(visible);
     }
 
