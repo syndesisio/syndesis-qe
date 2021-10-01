@@ -87,9 +87,9 @@ public class DataMapperSteps {
     }
 
     @ExcludeFromSelectorReports
-    @When("^define constant \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
-    public void defineConstantOfTypeInDataMapper(String value, String type) {
-        mapper.addConstant(value, type);
+    @When("^define constant \"([^\"]*)\" with value \"([^\"]*)\" of type \"([^\"]*)\" in data mapper$")
+    public void defineConstantOfTypeInDataMapper(String name, String value, String type) {
+        mapper.addConstant(name, value, type);
     }
 
     @ExcludeFromSelectorReports

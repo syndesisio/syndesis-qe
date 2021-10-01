@@ -63,7 +63,7 @@ Feature: Integration info
     And check that alert dialog contains details "NoDuplicateIntegration"
 
   @integration-labels
-  Scenario:
+  Scenario: Check integration labels
     When navigate to the "Integrations" page
     And select the "integration1" integration
     And click on the "Edit Integration" link

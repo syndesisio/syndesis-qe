@@ -45,12 +45,12 @@ Feature: Integration - Twitter to Salesforce
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    And define constant "integrations@salesforce.com" of type "String" in data mapper
+    And define constant "email" with value "integrations@salesforce.com" of type "String" in data mapper
     When create data mapper mappings
-      | user.screenName             | TwitterScreenName__c |
-      | text                        | Description          |
-      | user.name                   | FirstName; LastName  |
-      | integrations@salesforce.com | Email                |
+      | user.screenName | TwitterScreenName__c |
+      | text            | Description          |
+      | user.name       | FirstName; LastName  |
+      | email           | Email                |
 
     And scroll "top" "right"
     And click on the "Done" button

@@ -82,11 +82,11 @@ Feature: Slack Connector
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When define constant "syndesis-bot" of type "String" in data mapper
+    When define constant "autor" with value "syndesis-bot" of type "String" in data mapper
 
     And create data mapper mappings
-      | syndesis-bot | AUTOR   |
-      | text         | COMPANY |
+      | autor | AUTOR   |
+      | text  | COMPANY |
     And click on the "Done" button
     And add integration step on position "0"
     And select "Basic Filter" integration step
@@ -139,11 +139,11 @@ Feature: Slack Connector
     When add integration step on position "0"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When define constant "syndesis-bot" of type "String" in data mapper
+    When define constant "autor" with value "syndesis-bot" of type "String" in data mapper
 
     And create data mapper mappings
-      | syndesis-bot | AUTOR   |
-      | text         | COMPANY |
+      | autor | AUTOR   |
+      | text  | COMPANY |
     And click on the "Done" button
 
     # finish and save integration

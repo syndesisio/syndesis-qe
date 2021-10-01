@@ -195,9 +195,9 @@ Feature: OpenApi support
 
     And add integration step on position "0"
     And select the "Data Mapper" connection
-    And define constant "12" of type "Integer" in data mapper
+    And define constant "id" with value "12" of type "Integer" in data mapper
     And create data mapper mappings
-      | 12 | parameters.id |
+      | id | parameters.id |
     And click on the "Done" button
 
     And click on the "Publish" link

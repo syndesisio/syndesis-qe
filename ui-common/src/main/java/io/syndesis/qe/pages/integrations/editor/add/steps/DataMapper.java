@@ -106,11 +106,11 @@ public class DataMapper extends SyndesisPageObject {
         }
     }
 
-    public void addConstant(String value, String type) {
+    public void addConstant(String name, String value, String type) {
         getSourceElementColumn().find(Element.CREATE_CONSTANT_BUTTON).shouldBe(visible).click();
         ModalDialogPage modalDialogPage = new ModalDialogPage();
         assertThat(modalDialogPage.getTitleText()).contains("Create Constant");
-        modalDialogPage.fillInputByDataTestid(Element.CONSTANT_NAME, value);
+        modalDialogPage.fillInputByDataTestid(Element.CONSTANT_NAME, name);
         modalDialogPage.fillInputByDataTestid(Element.CONSTANT_VALUE, value);
         modalDialogPage.selectValueByDataTestid(Element.CONSTANT_TYPE, type);
         modalDialogPage.getButton("Confirm").shouldBe(visible).click();

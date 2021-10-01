@@ -1210,9 +1210,9 @@ Feature: API Provider Integration
     #The tests don't care about the response body, only the behavior of Conditional flows
     And add integration step on position "1"
     And select the "Data Mapper" connection
-    And define constant "1" of type "Integer" in data mapper
+    And define constant "id" with value "1" of type "Integer" in data mapper
     And create data mapper mappings
-      | 1 | body.id |
+      | id | body.id |
     And click on the "Done" button
 
     And click on the "Save" link

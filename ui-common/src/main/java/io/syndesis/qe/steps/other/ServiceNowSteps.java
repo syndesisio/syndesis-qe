@@ -31,8 +31,8 @@ public class ServiceNowSteps {
     public void mapModifiedNumberToIncidentNumber(String incidentNumber, String mapTo) {
         String modifiedNumber = snUtils.modifySNNumber(incidentNumber);
         DataMapper mapper = new DataMapper();
-        mapper.addConstant(modifiedNumber, "String");
+        mapper.addConstant("number", modifiedNumber, "String");
         mapper.openDataMapperCollectionElement();
-        mapper.doCreateMapping(modifiedNumber, mapTo);
+        mapper.doCreateMapping("number", mapTo);
     }
 }

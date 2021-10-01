@@ -279,7 +279,7 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -321,15 +321,15 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "MaxIntegrations" of type "String" in data mapper
+    And define constant "message" with value "MaxIntegrations" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
-      | MaxIntegrations | message |
+      | message | message |
     And click on the "Done" button
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -371,7 +371,7 @@ Feature: Test maximum integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -413,7 +413,7 @@ Feature: Test maximum integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -457,20 +457,20 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "MaxIntegrations" of type "String" in data mapper
-    And define constant "test@maxIntegration.feature" of type "String" in data mapper
+    And define constant "message" with value "MaxIntegrations" of type "String" in data mapper
+    And define constant "email" with value "test@maxIntegration.feature" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
-      | MaxIntegrations             | TwitterScreenName__c |
-      | MaxIntegrations             | Description          |
-      | MaxIntegrations             | FirstName            |
-      | MaxIntegrations             | LastName             |
-      | test@maxIntegration.feature | Email                |
+      | message | TwitterScreenName__c |
+      | message | Description          |
+      | message | FirstName            |
+      | message | LastName             |
+      | email   | Email                |
     And click on the "Done" button
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -514,7 +514,7 @@ Feature: Test maximum integration
 
     And add integration step on position "1"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -558,16 +558,16 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "MaxIntegrations" of type "String" in data mapper
+    And define constant "id" with value "MaxIntegrations" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
-      | MaxIntegrations | id    |
-      | MaxIntegrations | value |
+      | id | id    |
+      | id | value |
     And click on the "Done" button
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -611,16 +611,16 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "MaxIntegrations" of type "String" in data mapper
+    And define constant "message" with value "MaxIntegrations" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
-      | MaxIntegrations | text |
+      | message | text |
     And scroll "top" "right"
     And click on the "Done" button
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -663,23 +663,23 @@ Feature: Test maximum integration
     And add integration step on position "0"
     And select "Data Mapper" integration step
 
-    And define constant "MaxIntegrationsDescription" of type "String" in data mapper
-    And define constant "1" of type "Integer" in data mapper
-    And define constant "2" of type "String" in data mapper
-    And define constant "descript" of type "String" in data mapper
-    And define constant "ui" of type "String" in data mapper
+    And define constant "desc" with value "MaxIntegrationsDescription" of type "String" in data mapper
+    And define constant "imp" with value "1" of type "Integer" in data mapper
+    And define constant "urgency" with value "2" of type "String" in data mapper
+    And define constant "desc" with value "description" of type "String" in data mapper
+    And define constant "input" with value "ui" of type "String" in data mapper
     And create data mapper mappings
-      | MaxIntegrationsDescription | u_description       |
-      | 1                          | u_impact            |
-      | 2                          | u_urgency           |
-      | descript                   | u_short_description |
-      | ui                         | u_user_input        |
+      | desc    | u_description       |
+      | imp     | u_impact            |
+      | urgency | u_urgency           |
+      | desc    | u_short_description |
+      | input   | u_user_input        |
     And define modified service now number "MaxIntegrations" and map it to "u_number"
     And click on the "Done" button
 
     And add integration step on position "2"
     And select "Data Mapper" integration step
-    And define constant "ok" of type "String" in data mapper
+    And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
       | ok | previous |
@@ -707,10 +707,10 @@ Feature: Test maximum integration
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "MaxIntegrations" of type "String" in data mapper
+    And define constant "text" with value "MaxIntegrations" of type "String" in data mapper
     And open data bucket "Constants"
     And create data mapper mappings
-      | MaxIntegrations | body.task |
+      | text | body.task |
     And click on the "Done" button
 
     And publish integration
