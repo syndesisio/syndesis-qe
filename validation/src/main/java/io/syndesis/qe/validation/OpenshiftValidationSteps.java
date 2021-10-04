@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -317,27 +318,44 @@ public class OpenshiftValidationSteps {
         // @formatter:off
         OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit()
             .editSpec()
-                .editTemplate()
-                    .editSpec()
-                        .editFirstContainer()
-                            .editResources()
-                                .withLimits(limits)
-                                .withRequests(requests)
-                            .endResources()
-                        .endContainer()
-                    .endSpec()
-                .endTemplate()
+            .editTemplate()
+            .editSpec()
+            .editFirstContainer()
+            .editResources()
+            .withLimits(limits)
+            .withRequests(requests)
+            .endResources()
+            .endContainer()
             .endSpec()
-        .done();
+            .endTemplate()
+            .endSpec()
+            .done();
         // @formatter:on
     }
 
     @Then("^verify that the deployment config \"([^\"]*)\" has the (cpu|memory) (limits|requests) set to \"([^\"]*)\"$")
     public void verifyResourceValues(String dcName, String which, String what, String value) {
-        ResourceRequirements resources = OpenShiftUtils.getInstance().getDeploymentConfig(dcName).getSpec().getTemplate().getSpec().getContainers().get(0).getResources();
+        ResourceRequirements resources =
+            OpenShiftUtils.getInstance().getDeploymentConfig(dcName).getSpec().getTemplate().getSpec().getContainers().get(0).getResources();
         Map<String, Quantity> check = "limits".equals(what) ? resources.getLimits() : resources.getRequests();
         assertThat(check).isNotNull();
         assertThat(check).containsKey(which);
         assertThat(check.get(which).getAmount() + check.get(which).getFormat()).isEqualTo(value);
+    }
+
+    @Then("check that the pod {string} contains variables:")
+    public void checkPodVariables(String pod, DataTable variables) {
+        Map<String, String> envMap =
+            new HashMap<>(); // due to null values, the Collector.toMap cannot be used ( https://bugs.openjdk.java.net/browse/JDK-8148463 )
+        OpenShiftUtils.getPodByPartialName(pod).get().getSpec().getContainers().get(0).getEnv()
+            .forEach(envVar -> envMap.put(envVar.getName(), envVar.getValue()));
+        assertThat(envMap).containsAllEntriesOf(variables.asMap(String.class, String.class));
+    }
+
+    @Then("check that the pod {string} contains labels")
+    public void checkPodLabels(String pod, DataTable expectedLabels) {
+        Map<String, String> podLabels = OpenShiftUtils.getPodByPartialName(pod).get().getMetadata().getLabels();
+        List<String> labelsValues = podLabels.keySet().stream().map(key -> key + "=" + podLabels.get(key)).collect(Collectors.toList());
+        assertThat(labelsValues).containsAll(expectedLabels.cells().get(0));
     }
 }

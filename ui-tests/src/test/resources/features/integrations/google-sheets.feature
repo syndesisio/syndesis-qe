@@ -133,8 +133,8 @@ Feature: Google Sheets Connector
     When select the "google-sheets" connection
     And select "Update sheet values" integration action
     And fill in values by element data-testid
-      | range          | A2:E3                                        |
-      | majordimension | Rows                                         |
+      | range          | A2:E3 |
+      | majordimension | Rows  |
     And click on the "Next" button
     And fill in values by element data-testid
       | columnnames | A,B,C,D,E |
@@ -240,44 +240,45 @@ Feature: Google Sheets Connector
 
     When add integration step on position "0"
     And select the "Data Mapper" connection
-    And define constant "31438639" of type "String" in data mapper
-    And define constant "C" of type "String" in data mapper
-    And define constant "D" of type "String" in data mapper
-    And define constant "countries" of type "String" in data mapper
-    And define constant "A2:E36625" of type "String" in data mapper
-    And define constant "0" of type "Integer" in data mapper
+    And define constant "sheetId" with value "31438639" of type "String" in data mapper
+    And define constant "CsourceC" with value "C" of type "String" in data mapper
+    And define constant "VsourceC" with value "D" of type "String" in data mapper
+    And define constant "countries" with value "countries" of type "String" in data mapper
+    And define constant "sourceRange" with value "A2:E36625" of type "String" in data mapper
+    And define constant "sourceSheetId" with value "0" of type "Integer" in data mapper
     And define test spreadsheetID as constant in data mapper and map it to "spreadsheetId"
     And create data mapper mappings
-      | 31438639  | sheetId                   |
-      | C         | columnGroups.sourceColumn |
-      | D         | valueGroups.sourceColumn  |
-      | countries | columnGroups.label        |
-      | A2:E36625 | sourceRange               |
-      | 0         | sourceSheetId             |
+      | sheetId       | sheetId                   |
+      | CsourceC      | columnGroups.sourceColumn |
+      | VsourceC      | valueGroups.sourceColumn  |
+      | countries     | columnGroups.label        |
+      | sourceRange   | sourceRange               |
+      | sourceSheetId | sourceSheetId             |
     Then click on the "Done" button
 
     When add integration step on position "2"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define constant "789378340" of type "String" in data mapper
-    And define constant "R" of type "String" in data mapper
-    And define constant "countries" of type "String" in data mapper
-    And define constant "A2:R36625" of type "String" in data mapper
-    And define constant "0" of type "Integer" in data mapper
-    And define constant "C" of type "String" in data mapper
-    And define constant "A1" of type "String" in data mapper
-    And define constant "vertical" of type "String" in data mapper
+    And define constant "sheetId" with value "789378340" of type "String" in data mapper
+    And define constant "VsourceC" with value "R" of type "String" in data mapper
+    And define constant "countries" with value "countries" of type "String" in data mapper
+    And define constant "sourceR" with value "A2:R36625" of type "String" in data mapper
+    And define constant "sSheetId" with value "0" of type "String" in data mapper
+    And define constant "RsourceC" with value "C" of type "String" in data mapper
+    And define constant "start" with value "A1" of type "String" in data mapper
+    And define constant "valueL" with value "vertical" of type "String" in data mapper
+
 
     And create data mapper mappings with data bucket
       | 2 - PivotTable | spreadsheetId |  | spreadsheetId            |
-      | Constants      | 789378340     |  | sheetId                  |
-      | Constants      | R             |  | valueGroups.sourceColumn |
+      | Constants      | sheetId       |  | sheetId                  |
+      | Constants      | VsourceC      |  | valueGroups.sourceColumn |
       | Constants      | countries     |  | rowGroups.label          |
-      | Constants      | A2:R36625     |  | sourceRange              |
-      | Constants      | 0             |  | sourceSheetId            |
-      | Constants      | C             |  | rowGroups.sourceColumn   |
-      | Constants      | A1            |  | start                    |
-      | Constants      | vertical      |  | valueLayout              |
+      | Constants      | sourceR       |  | sourceRange              |
+      | Constants      | sSheetId      |  | sourceSheetId            |
+      | Constants      | RsourceC      |  | rowGroups.sourceColumn   |
+      | Constants      | start         |  | start                    |
+      | Constants      | valueL        |  | valueLayout            @add-chart-basic-chart-to-spreadsheet  |
     Then click on the "Done" button
 
     When publish integration
@@ -378,14 +379,14 @@ Feature: Google Sheets Connector
     And select the "Data Mapper" connection
     Then check visibility of data mapper ui
 
-    When define constant "789378340" of type "String" in data mapper
-    And define constant "B1:B20" of type "String" in data mapper
-    And define constant "A1:A20" of type "String" in data mapper
+    When define constant "sourceSheet" with value "789378340" of type "String" in data mapper
+    And define constant "bDataRange" with value "B1:B20" of type "String" in data mapper
+    And define constant "bDomainRange" with value "A1:A20" of type "String" in data mapper
     And create data mapper mappings
       | spreadsheetId | spreadsheetId          |
-      | 789378340     | sourceSheetId          |
-      | B1:B20        | basicChart.dataRange   |
-      | A1:A20        | basicChart.domainRange |
+      | sourceSheet     | sourceSheetId          |
+      | bDataRange        | basicChart.dataRange   |
+      | bDomainRange        | basicChart.domainRange |
     Then click on the "Done" button
 
     When publish integration
@@ -412,14 +413,14 @@ Feature: Google Sheets Connector
     When add integration step on position "0"
     And select the "Data Mapper" connection
     And check visibility of data mapper ui
-    And define constant "789378340" of type "String" in data mapper
-    And define constant "B1:B20" of type "String" in data mapper
-    And define constant "A1:A20" of type "String" in data mapper
+    And define constant "sourceSheet" with value "789378340" of type "String" in data mapper
+    And define constant "pDataRange" with value "B1:B20" of type "String" in data mapper
+    And define constant "pDomainRange" with value "A1:A20" of type "String" in data mapper
     And create data mapper mappings
       | spreadsheetId | spreadsheetId        |
-      | 789378340     | sourceSheetId        |
-      | B1:B20        | pieChart.dataRange   |
-      | A1:A20        | pieChart.domainRange |
+      | bDomainRange     | sourceSheetId        |
+      | pDataRange        | pieChart.dataRange   |
+      | pDomainRange        | pieChart.domainRange |
     Then click on the "Done" button
 
     When publish integration

@@ -17,10 +17,10 @@ Feature: Integration - Twitter
     And create basic filter step for "text" with word "#backend" and operation "contains"
 
     And start mapper definition with name: "mapping 1"
-    Then SEPARATE using Step 1 and strategy "Space" and source "//user/name" into targets
+    Then SEPARATE using Step 1 and strategy "Space" and source "/user/name" into targets
         | /FirstName | /LastName |
-    Then MAP using Step 1 and field "//user/screenName" to "/TwitterScreenName__c"
-    Then MAP using Step 1 and field "//text" to "/Email"
+    Then MAP using Step 1 and field "/user/screenName" to "/TwitterScreenName__c"
+    Then MAP using Step 1 and field "/text" to "/Email"
 
     When create SF "create-sobject" action step with properties
         | sObjectName | Contact |

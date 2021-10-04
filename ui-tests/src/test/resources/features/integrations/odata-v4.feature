@@ -62,7 +62,7 @@ Feature: OData V4 Connector
       | entity collection  |               |                                                             | contains       | 1UMTS PDA                                               | contains        | Notebook Professional 17 |
       | single entity      | 2             |                                                             | contains       | 1UMTS PDA                                               | doesn't contain | Notebook Professional 17 |
       | property of entity | 2/Description |                                                             | contains       | Ultrafast 3G UMTS/HSDPA Pocket PC, supports GSM network | doesn't contain | 1UMTS PDA                |
-      | with expand query |               | $filter=Name eq 'Notebook Professional 17'&$expand=Category | contains       | Notebooks                                               | doesn't contain | 1UMTS PDA                |
+      | with expand query  |               | $filter=Name eq 'Notebook Professional 17'&$expand=Category | contains       | Notebooks                                               | doesn't contain | 1UMTS PDA                |
 
     @gh-5067
     Examples:
@@ -162,7 +162,7 @@ Feature: OData V4 Connector
 
   # Those bugs were very similar in reproducing - created one scenario outline for all of them
   @reproducer
-  @integrations-odata-v4-read-update
+    @integrations-odata-v4-read-update
   Scenario Outline: Read <name> from OData v4 service tests
 
     # Create new integration
@@ -266,10 +266,10 @@ Feature: OData V4 Connector
     # Add Data mapper (checks output datashape of OData read action is correct)
     When add integration step on position "0"
     And select "Data Mapper" integration step
-    When define constant "whatever" of type "String" in data mapper
+    When define constant "key" with value "whatever" of type "String" in data mapper
     And create data mapper mappings
-      | Gender   | Gender       |
-      | whatever | keyPredicate |
+      | Gender | Gender       |
+      | key    | keyPredicate |
     And click on the "Done" button
 
     # Save integration and publish it

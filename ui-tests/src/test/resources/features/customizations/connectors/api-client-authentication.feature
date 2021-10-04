@@ -71,10 +71,10 @@ Feature: Testing authentication options of API client
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "1" of type "Integer" in data mapper
+    And define constant "id" with value "1" of type "Integer" in data mapper
     And open data bucket "parameters"
     And create data mapper mappings
-      | 1 | parameters.petId |
+      | id | parameters.petId |
     And click on the "Done" button
 
     And click on the "Publish" link
@@ -147,10 +147,10 @@ Feature: Testing authentication options of API client
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "1" of type "Integer" in data mapper
+    And define constant "id" with value "1" of type "Integer" in data mapper
     And open data bucket "parameters"
     And create data mapper mappings
-      | 1 | parameters.petId |
+      | id | parameters.petId |
     And click on the "Done" button
 
     And click on the "Publish" link
@@ -184,9 +184,9 @@ Feature: Testing authentication options of API client
     When clicks on the "Next" link
     Then check that api connector authentication section contains security type "HTTP Basic Authentication"
     And fill in values by element ID
-      | authenticationType  | HTTP Basic Authentication - ImmovableName |
-      | host                | http://http-svc:8080                      |
-      | basepath            | /auth                                     |
+      | authenticationType | HTTP Basic Authentication - ImmovableName |
+      | host               | http://http-svc:8080                      |
+      | basepath           | /auth                                     |
     And click on the "Next" button
     And fill in values by element data-testid
       | host     | http://http-svc:8080 |
@@ -222,10 +222,10 @@ Feature: Testing authentication options of API client
 
     And add integration step on position "0"
     And select "Data Mapper" integration step
-    And define constant "1" of type "Integer" in data mapper
+    And define constant "id" with value "1" of type "Integer" in data mapper
     And open data bucket "parameters"
     And create data mapper mappings
-      | 1 | parameters.petId |
+      | id | parameters.petId |
     And click on the "Done" button
 
     And click on the "Publish" link

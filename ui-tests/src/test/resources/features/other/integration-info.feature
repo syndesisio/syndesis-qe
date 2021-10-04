@@ -61,3 +61,46 @@ Feature: Integration info
     And click on the "Save" button
     Then check that alert dialog contains text "Integration name 'integration1' is not unique"
     And check that alert dialog contains details "NoDuplicateIntegration"
+
+  @integration-labels
+  Scenario: Check integration labels
+    When navigate to the "Integrations" page
+    And select the "integration1" integration
+    And click on the "Edit Integration" link
+    And click on the "Save" link
+    And add integration label "label1=value1"
+    Then check that integration contains labels
+      | label1=value1 |
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains labels
+      | label1=value1 |
+    When add integration label "label2=value2"
+    Then check that integration contains labels
+      | label1=value1 | label2=value2 |
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains labels
+      | label1=value1 | label2=value2 |
+    When publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "integration1" gets into "Running" state
+    ## check label
+    And check that the pod "integration1" contains labels
+      | label1=value1 | label2=value2 |
+
+    When select the "integration1" integration
+    And click on the "Edit Integration" link
+    And click on the "Save" link
+    And delete integration label "label2=value2"
+    Then check that integration contains labels
+      | label1=value1 |
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains labels
+      | label1=value1 |
+    When publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "integration1" gets into "Running" state
+    And check that the pod "integration1" contains labels
+      | label1=value1 |

@@ -11,6 +11,10 @@ import org.openqa.selenium.Keys;
 
 import com.codeborne.selenide.SelenideElement;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -18,20 +22,20 @@ public class CreateIntegration extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = By.className("integration-editor-layout__contentOuter");
+        public static final By LABELS_ROOT = ByUtils.dataTestId("integration-label-select");
+        public static final By LABEL_ELEMENT = By.className("pf-c-chip");
+        public static final By DELETE_LABEL_BUTTON = ByUtils.customAttribute("data-ouia-component-id", "Remove");
     }
 
     private static final class Input {
         public static final By NAME = ByUtils.dataTestId("input", "name");
-    }
-
-    private static final class TextArea {
         public static final By DESCRIPTION = By.cssSelector("textarea[name='description']");
+        public static final By NEW_LABEL = By.className("pf-c-select__toggle-typeahead");
     }
 
     @Override
     public SelenideElement getRootElement() {
-        SelenideElement elementRoot = $(Element.ROOT).shouldBe(visible);
-        return elementRoot;
+        return $(Element.ROOT).shouldBe(visible);
     }
 
     @Override
@@ -49,6 +53,27 @@ public class CreateIntegration extends SyndesisPageObject {
 
     public void setDescription(String description) {
         log.debug("Setting integration description to {}", description);
-        this.getRootElement().find(TextArea.DESCRIPTION).shouldBe(visible).sendKeys(description);
+        this.getRootElement().find(Input.DESCRIPTION).shouldBe(visible).sendKeys(description);
+    }
+
+    public SelenideElement getLabelsRootElement() {
+        return getRootElement().find(Element.LABELS_ROOT).should(visible);
+    }
+
+    public void addLabel(String label) {
+        SelenideElement labelsElement = getLabelsRootElement().find(Input.NEW_LABEL).shouldBe(visible);
+        labelsElement.click();
+        labelsElement.sendKeys(label);
+        getLabelsRootElement().find(ByUtils.partialLinkText(label)).shouldBe(visible).click();
+    }
+
+    public void deleteLabel(String label) {
+        Optional<SelenideElement> first =
+            getLabelsRootElement().findAll(Element.LABEL_ELEMENT).stream().filter(e -> e.getText().contains(label)).findFirst();
+        first.get().find(Element.DELETE_LABEL_BUTTON).click();
+    }
+
+    public List<String> getAllLabels() {
+        return getLabelsRootElement().findAll(Element.LABEL_ELEMENT).stream().map(SelenideElement::text).collect(Collectors.toList());
     }
 }

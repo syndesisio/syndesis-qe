@@ -48,8 +48,8 @@ public class GoogleSheetsSteps {
 
     private void defineSpreadsheetIdInDatamapper(String id, String mapTo) {
         DataMapper mapper = new DataMapper();
-        mapper.addConstant(id, "String");
+        mapper.addConstant("gId", id, "String");
         mapper.openDataMapperCollectionElement();
-        mapper.doCreateMapping(id, mapTo);
+        mapper.doCreateMapping("gId", mapTo);
     }
 }
