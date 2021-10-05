@@ -999,7 +999,7 @@ public class CommonSteps {
 
         TestUtils.sleepIgnoreInterrupt(5000);
         //WIP the dialog is not appeared again.
-        if (!$$(ByUtils.customAttribute("name", "username")).isEmpty()){
+        if (!$$(ByUtils.customAttribute("name", "username")).isEmpty()) {
             $(ByUtils.customAttribute("name", "username")).shouldBe(visible).sendKeys(account.getProperty("screenName"));
             $$(ByUtils.customAttribute("role", "button")).stream().filter(p -> "Next".equals(p.text())).findFirst().get().click();
             TestUtils.sleepIgnoreInterrupt(5000);

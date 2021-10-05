@@ -2,6 +2,7 @@
 
 @ui
 @oauth
+@twitter
 @logout-test
 Feature: Login logout
 
