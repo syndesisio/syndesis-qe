@@ -32,6 +32,8 @@ public class DataMapper extends SyndesisPageObject {
 
     private static final class Element {
         public static final By ROOT = ByUtils.dataTestId("data-mapper-root-element");
+        public static final By ROOT_7_9 = ByUtils.dataTestId("datamapper-root-view");
+
         public static final By COLLECTION_ROOT = ByUtils.containsId("field-atlas:");
 
         public static final By SOURCE_COLUMN = ByUtils.dataTestId("column-source-area");
@@ -64,7 +66,13 @@ public class DataMapper extends SyndesisPageObject {
     @Override
     public SelenideElement getRootElement() {
         UIUtils.ensureDataMapperUILoaded();
-        return $(Element.ROOT).shouldBe(visible);
+        SelenideElement root = $(Element.ROOT);
+        if (!root.exists()){
+            log.info("DataMapper ROOT element doesn't exist. Trying to find root element for 7.9 version for upgrade test.");
+            return $(Element.ROOT_7_9).shouldBe(visible);
+        } else {
+            return root.shouldBe(visible);
+        }
     }
 
     @Override
