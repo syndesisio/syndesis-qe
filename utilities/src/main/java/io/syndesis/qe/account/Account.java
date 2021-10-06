@@ -30,6 +30,7 @@ public class Account {
         IRC("irc"),
         JIRA_HOOK("Jira Hook"),
         KAFKA("kafka"),
+        MANAGED_KAFKA("Managed Kafka"),
         KUDU("kudu"),
         MONGODB36("mongodb36"),
         MQTT("QE MQTT"),

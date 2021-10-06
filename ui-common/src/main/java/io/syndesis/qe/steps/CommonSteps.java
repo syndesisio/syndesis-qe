@@ -364,6 +364,9 @@ public class CommonSteps {
         List<List<String>> allAccountsWithDetailsList = new ArrayList<>();
 
         accounts.keySet().forEach(key -> {
+            if ("Managed Kafka".equals(key)) {
+                return; // skip validation for managed kafka credential
+            }
             List<String> accountWithDetailsInList = new ArrayList<>();
             Account currentAccount;
             try {
