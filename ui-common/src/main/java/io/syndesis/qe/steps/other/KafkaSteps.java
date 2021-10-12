@@ -22,14 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.codeborne.selenide.ElementsCollection;
 
 import java.util.Base64;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.cucumber.datatable.DataTable;
-import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.Secret;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,42 +41,52 @@ public class KafkaSteps {
 
     // this method is preliminary, since auto-detection dropdown doesn't have data-testid yet and
     // thus does not fit ...fillConnectionDetails(...) method of CommonSteps.createConnections()
-    @Given("created Kafka connection using AMQ streams auto detection using \"([^\"]*)\" security$")
-    public void createdKafkaConnectionUsingAMQStreamsAutoDetection(String securityMode, DataTable connectionsData) {
-
-        final List<List<String>> dataTable = connectionsData.cells();
-
-        final List<String> dataRow = dataTable.get(0);
-        String connectionType = dataRow.get(0);
-        String connectionName = dataRow.get(2);
-        String description = dataRow.get(3);
-
-        Account kafkaAccount = AccountsDirectory.getInstance().get("kafka-autodetect-" + securityMode.toLowerCase());
+    @When("^created Kafka connection using \"([^\"]*)\" security with name \"([^\"]*)\"( with SASL mechanism (PLAIN|OAUTHBEARER))?$")
+    public void createdKafkaConnectionUsingAMQStreamsAutoDetection(String securityMode, String connectionName, String saslMechanism) {
+            String connectionType = "Kafka Message Broker";
+        String description = "Kafka Streams Auto Detection";
 
         commonSteps.navigateTo("Connections");
         commonSteps.validatePage("Connections");
-
         ElementsCollection connections = connectionsPage.getAllConnections();
         connections = connections.filter(exactText(connectionName));
         assertThat(connections.isEmpty()).isTrue();
-
         commonSteps.clickOnLink("Create Connection");
         TestUtils.sleepIgnoreInterrupt(TestConfiguration.getJenkinsDelay() * 1000);
         selectConnectionTypeSteps.selectConnectionType(connectionType);
 
-        if(OpenShiftUtils.isOpenshift3()){
-            // test uses older AMQ Streams on 3.11 so autodiscover function is not working
-            connectionsPage.fillInput($(ByUtils.containsId("-select-typeahead")), kafkaAccount.getProperty("brokers"));
-            commonSteps.clickOnButton("Create \"" + kafkaAccount.getProperty("brokers") + "\"");
+        Account kafkaAccount = null;
+        if ("SASL_SSL".equals(securityMode)) {
+            // Managed kafka
+            kafkaAccount = AccountsDirectory.getInstance().get(Account.Name.MANAGED_KAFKA);
+            connectionsPage.fillInput($(ByUtils.containsId("-select-typeahead")), TestConfiguration.managedKafkaBootstrapUrl());
+            commonSteps.clickOnButton("Create \"" + TestConfiguration.managedKafkaBootstrapUrl() + "\"");
+            connectionsPage.fillInput($(ByUtils.containsId("username")), kafkaAccount.getProperty("clientID"));
+            connectionsPage.fillInput($(ByUtils.containsId("password")), kafkaAccount.getProperty("clientSecret"));
+            if (saslMechanism.contains("OAUTHBEARER")) {
+                commonSteps.selectsFromDropdown("OAUTHBEARER", "saslmechanism");
+            } else {
+                commonSteps.selectsFromDropdown("PLAIN", "saslmechanism");
+                connectionsPage.fillInput($(ByUtils.containsId("sasllogincallbackhandlerclass")), "");
+                connectionsPage.fillInput($(ByUtils.containsId("oauthtokenendpointuri")), "");
+            }
         } else {
-            //select autodiscovered broker url:
-            commonSteps.clickOnButtonByCssClassName("pf-c-select__toggle-button");
-            commonSteps.clickOnButton(kafkaAccount.getProperty("brokers"));
+            // Kafka on cluster
+            kafkaAccount = AccountsDirectory.getInstance().get("kafka-autodetect-" + securityMode.toLowerCase());
+            if (OpenShiftUtils.isOpenshift3()) {
+                // test uses older AMQ Streams on 3.11 so autodiscover function is not working
+                connectionsPage.fillInput($(ByUtils.containsId("-select-typeahead")), kafkaAccount.getProperty("brokers"));
+                commonSteps.clickOnButton("Create \"" + kafkaAccount.getProperty("brokers") + "\"");
+            } else {
+                //select autodiscovered broker url:
+                commonSteps.clickOnButtonByCssClassName("pf-c-select__toggle-button");
+                commonSteps.clickOnButton(kafkaAccount.getProperty("brokers"));
+            }
+            if ("TLS".equals(securityMode)) {
+                $(ByUtils.dataTestId("brokercertificate")).shouldBe(visible).sendKeys(kafkaAccount.getProperty("brokercertificate"));
+            }
         }
         commonSteps.selectsFromDropdown(kafkaAccount.getProperty("transportprotocol"), "transportprotocol");
-        if ("TLS".equals(securityMode)) {
-            $(ByUtils.dataTestId("brokercertificate")).shouldBe(visible).sendKeys(kafkaAccount.getProperty("brokercertificate"));
-        }
         commonSteps.clickOnButton("Validate");
 
         commonSteps.successNotificationIsPresentWithError(connectionType + " has been successfully validated", "success");

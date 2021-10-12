@@ -7,6 +7,8 @@ import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
 import io.syndesis.qe.marketplace.quay.QuayUser;
 import io.syndesis.qe.utils.OpenShiftUtils;
 
+import org.junit.Assert;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -120,6 +122,8 @@ public class TestConfiguration {
     private static final String KEYCLOAK_SYNDESIS_REALM = "keycloak.syndesis.realm";
     private static final String KEYCLOAK_IDP_NAME = "keycloak.idp.name";
 
+    private static final String MANAGED_KAFKA_BOOTSTRAP_SERVER = "managed.kafka.bootstrap.server";
+
     private static final TestConfiguration INSTANCE = new TestConfiguration();
 
     private final Properties properties = new Properties();
@@ -202,7 +206,8 @@ public class TestConfiguration {
                 } else {
                     //remote instance (openShiftUrl() cannot be used anymore since the current instance uses internal and external dns)
                     get().overrideProperty(OPENSHIFT_ROUTE_SUFFIX,
-                        prefix + StringUtils.substringAfter(OpenShiftUtils.getInstance().inNamespace("default").routes().list().getItems().get(0).getSpec().getHost(), "apps."));
+                        prefix + StringUtils.substringAfter(
+                            OpenShiftUtils.getInstance().inNamespace("default").routes().list().getItems().get(0).getSpec().getHost(), "apps."));
                 }
             }
         }
@@ -431,6 +436,13 @@ public class TestConfiguration {
         return get().readValue(KEYCLOAK_IDP_NAME);
     }
 
+    public static String managedKafkaBootstrapUrl() {
+        String url = get().readValue(MANAGED_KAFKA_BOOTSTRAP_SERVER);
+        if (url == null) {
+            Assert.fail(String.format("Managed Kafka Bootstrap URL was not set via -D%s='<URL>' property", MANAGED_KAFKA_BOOTSTRAP_SERVER));
+        }
+        return url;
+    }
 
     private Properties defaultValues() {
         final Properties defaultProps = new Properties();
