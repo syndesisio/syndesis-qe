@@ -54,8 +54,8 @@ import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionVersion;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionVersion;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -147,12 +147,13 @@ public class Syndesis implements Resource {
 
     public void undeployCustomResources() {
         // if we don't have CRD, we can't have CRs
-        if (getCrd() != null) {
+        if (getCrd() != null || getCrdOnOcp3() != null) {
             getCrNames().forEach((version, names) -> names.forEach(name -> undeployCustomResource(name, version)));
         }
         if (!OpenShiftUtils.isOpenshift3() && Syndesis.subscriptionExists()) {
-            OpenShiftUtils.getInstance().customResource(getSubscriptionCRDContext()).delete(TestConfiguration.openShiftNamespace(), "fuse-online");
             try {
+                OpenShiftUtils.getInstance().customResource(getSubscriptionCRDContext())
+                    .delete(TestConfiguration.openShiftNamespace(), "fuse-online");
                 //For some reason the CSV is sometimes left over from deleting the subscription
                 OpenShiftUtils.getInstance().customResource(new CustomResourceDefinitionContext.Builder()
                     .withPlural("clusterserviceversions")
@@ -161,7 +162,7 @@ public class Syndesis implements Resource {
                     .withScope("Namespaced")
                     .build()
                 ).delete(TestConfiguration.openShiftNamespace(), "fuse-online-operator.v7.9.0");
-            } catch (KubernetesClientException e) {
+            } catch (KubernetesClientException | IOException e) {
                 log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
             }
             //The subscription created a deployment for the operator and it needs to be deleted
@@ -367,7 +368,13 @@ public class Syndesis implements Resource {
     private void deleteCr(String name, String version) {
         log.info("Undeploying custom resource \"{}\" in version \"{}\"", name, version);
         RawCustomResourceOperationsImpl syndesisCrClient = getSyndesisCrClient(version);
-        OpenShiftUtils.asRegularUser(() -> syndesisCrClient.delete(TestConfiguration.openShiftNamespace(), name));
+        OpenShiftUtils.asRegularUser(() -> {
+            try {
+                syndesisCrClient.delete(TestConfiguration.openShiftNamespace(), name);
+            } catch (IOException e) {
+                fail("Unable to delete CR. IO exception: " + e);
+            }
+        });
     }
 
     private Map<String, Set<String>> getCrNames() {
@@ -375,16 +382,31 @@ public class Syndesis implements Resource {
         Map<String, Object> crs = new HashMap<>();
         // CustomResourceDefinition can have multiple versions, so loop over all versions and gather all custom resources in this namespace
         // (There should be always only one, but to be bullet-proof)
-        for (CustomResourceDefinitionVersion version : getCrd().getSpec().getVersions()) {
-            try {
-                crs.putAll(getSyndesisCrClient(version.getName()).list(TestConfiguration.openShiftNamespace()));
-            } catch (KubernetesClientException kce) {
-                // If there are no custom resources with this version, ignore
-                if (!kce.getMessage().contains("404")) {
-                    throw kce;
+        if (OpenShiftUtils.isOpenshift3()) {
+            for (io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinitionVersion version : getCrdOnOcp3().getSpec()
+                .getVersions()) {
+                try {
+                    crs.putAll(getSyndesisCrClient(version.getName()).list(TestConfiguration.openShiftNamespace()));
+                } catch (KubernetesClientException kce) {
+                    // If there are no custom resources with this version, ignore
+                    if (!kce.getMessage().contains("404")) {
+                        throw kce;
+                    }
+                }
+            }
+        } else {
+            for (CustomResourceDefinitionVersion version : getCrd().getSpec().getVersions()) {
+                try {
+                    crs.putAll(getSyndesisCrClient(version.getName()).list(TestConfiguration.openShiftNamespace()));
+                } catch (KubernetesClientException kce) {
+                    // If there are no custom resources with this version, ignore
+                    if (!kce.getMessage().contains("404")) {
+                        throw kce;
+                    }
                 }
             }
         }
+
         JSONArray items = new JSONArray();
         try {
             items = new JSONObject(crs).getJSONArray("items");
@@ -409,7 +431,11 @@ public class Syndesis implements Resource {
     }
 
     public CustomResourceDefinition getCrd() {
-        return OpenShiftUtils.getInstance().customResourceDefinitions().withName("syndesises.syndesis.io").get();
+        return OpenShiftUtils.getInstance().apiextensions().v1().customResourceDefinitions().withName("syndesises.syndesis.io").get();
+    }
+
+    public io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition getCrdOnOcp3() {
+        return OpenShiftUtils.getInstance().apiextensions().v1beta1().customResourceDefinitions().withName("syndesises.syndesis.io").get();
     }
 
     private CustomResourceDefinitionContext makeSyndesisContext() {
@@ -417,13 +443,25 @@ public class Syndesis implements Resource {
     }
 
     private CustomResourceDefinitionContext makeSyndesisContext(String version) {
-        CustomResourceDefinition syndesisCrd = getCrd();
-        CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
-            .withGroup(syndesisCrd.getSpec().getGroup())
-            .withPlural(syndesisCrd.getSpec().getNames().getPlural())
-            .withScope(syndesisCrd.getSpec().getScope())
-            .withVersion(version);
-        return builder.build();
+        CustomResourceDefinitionContext context;
+        if (OpenShiftUtils.isOpenshift3()) {
+            io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition syndesisCrd = getCrdOnOcp3();
+            CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
+                .withGroup(syndesisCrd.getSpec().getGroup())
+                .withPlural(syndesisCrd.getSpec().getNames().getPlural())
+                .withScope(syndesisCrd.getSpec().getScope())
+                .withVersion(version);
+            context = builder.build();
+        } else {
+            CustomResourceDefinition syndesisCrd = getCrd();
+            CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
+                .withGroup(syndesisCrd.getSpec().getGroup())
+                .withPlural(syndesisCrd.getSpec().getNames().getPlural())
+                .withScope(syndesisCrd.getSpec().getScope())
+                .withVersion(version);
+            context = builder.build();
+        }
+        return context;
     }
 
     public List<HasMetadata> getOperatorResources() {
@@ -502,7 +540,7 @@ public class Syndesis implements Resource {
                     }
                 }
             }
-            if (TestUtils.isProdBuild() && OpenShiftUtils.isOpenshift3()){
+            if (TestUtils.isProdBuild() && OpenShiftUtils.isOpenshift3()) {
                 //Workaround for https://issues.redhat.com/browse/ENTESB-17075
                 envVarsToAdd.add(new EnvVar("RELATED_IMAGE_PROMETHEUS", "registry.redhat.io/openshift3/prometheus:v3.9", null));
             }

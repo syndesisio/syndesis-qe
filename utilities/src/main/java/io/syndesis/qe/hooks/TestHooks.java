@@ -34,6 +34,12 @@ public class TestHooks {
         Assumptions.assumeThat(OpenShiftUtils.isOSD()).isTrue();
     }
 
+    @Before("@ocp3-only")
+    public void skipIfNotOCP3() {
+        // Skip test if environment is not OSD (with SSO)
+        Assumptions.assumeThat(OpenShiftUtils.isOpenshift3()).isTrue();
+    }
+
     @AfterStep
     public void getLogs(Scenario scenario) {
         if (scenario.isFailed()) {

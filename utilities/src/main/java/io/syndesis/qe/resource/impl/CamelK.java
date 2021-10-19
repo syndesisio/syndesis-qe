@@ -32,7 +32,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import cz.xtf.core.openshift.OpenShift;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionVersion;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.openshift.api.model.ImageStream;
 import lombok.extern.slf4j.Slf4j;
@@ -120,12 +121,13 @@ public class CamelK implements Resource {
     }
 
     private CustomResourceDefinitionContext getCamelKCRD() {
-        CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().withName("integrations.camel.apache.org").get();
+        CustomResourceDefinition crd =
+            OpenShiftUtils.getInstance().apiextensions().v1().customResourceDefinitions().withName("integrations.camel.apache.org").get();
         CustomResourceDefinitionContext.Builder builder = new CustomResourceDefinitionContext.Builder()
             .withGroup(crd.getSpec().getGroup())
             .withPlural(crd.getSpec().getNames().getPlural())
             .withScope(crd.getSpec().getScope())
-            .withVersion(crd.getSpec().getVersion());
+            .withVersion(crd.getSpec().getVersions().stream().filter(CustomResourceDefinitionVersion::getServed).findFirst().get().getName());
         return builder.build();
     }
 
