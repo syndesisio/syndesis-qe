@@ -8,8 +8,6 @@ import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +19,7 @@ import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
@@ -66,7 +64,8 @@ public class Jaeger implements Resource {
             try {
                 // TODO problem with creation CRD on our clusters (stream was reset: NO_ERROR), skip, the CRD is there after the first syndesis
                 //  install anyway
-                if (!(res instanceof CustomResourceDefinition)) {
+                if (!(res instanceof CustomResourceDefinition ||
+                    res instanceof io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinitionVersion)) {
                     OpenShiftUtils.getInstance().resource(res).createOrReplace();
                 }
             } catch (KubernetesClientException ex) {
@@ -124,7 +123,8 @@ public class Jaeger implements Resource {
     public void undeploy() {
         // Don't delete clusterwide resources
         OpenShiftUtils.getInstance().resourceList(processedResources.stream()
-                .filter(res -> !(res instanceof CustomResourceDefinition || res instanceof ClusterRole))
+                .filter(res -> !(res instanceof CustomResourceDefinition ||
+                    res instanceof io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinitionVersion || res instanceof ClusterRole))
                 .collect(Collectors.toList()))
             .cascading(true).delete();
 
@@ -181,7 +181,13 @@ public class Jaeger implements Resource {
      * @param crName name of cr file
      */
     public static void createJaegerCr(String crName) {
-        TestUtils.replaceInFile(new File("src/test/resources/jaeger/cr/" + crName + ".yml"), "REPLACE_VERSION", OpenShiftUtils.isOpenshift3() ? VERSION_FOR_OCP3 : TestConfiguration.jaegerVersion());
+        if (OpenShiftUtils.isOpenshift3()) {
+            TestUtils.replaceInFile(new File("src/test/resources/jaeger/cr/" + crName + ".yml"), "REPLACE_IMAGE",
+                "docker.io/jaegertracing/all-in-one:" + VERSION_FOR_OCP3);
+        } else {
+            TestUtils.replaceInFile(new File("src/test/resources/jaeger/cr/" + crName + ".yml"), "REPLACE_IMAGE",
+                "quay.io/jaegertracing/all-in-one:" + TestConfiguration.jaegerVersion());
+        }
         OpenShiftUtils.create(Paths.get("src/test/resources/jaeger/cr/" + crName + ".yml").toAbsolutePath().toString());
     }
 }

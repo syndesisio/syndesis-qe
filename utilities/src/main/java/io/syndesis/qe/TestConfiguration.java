@@ -271,6 +271,9 @@ public class TestConfiguration {
     }
 
     public static String syndesisCrdUrl() {
+        if (OpenShiftUtils.isOpenshift3()) {
+            return TestConfiguration.class.getClassLoader().getResource("syndesis-crd-3.11.yaml").toString();
+        }
         return get().readValue(SYNDESIS_CRD_URL);
     }
 
