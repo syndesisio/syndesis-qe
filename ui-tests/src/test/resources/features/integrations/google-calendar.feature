@@ -59,8 +59,8 @@ Feature: Google Calendar Connector
     And add integration step on position "1"
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
-    When define constant "new_event" of type "String" in data mapper
-    And define constant "about_the_event" of type "String" in data mapper
+    When define constant "new_event" with value "new_event" of type "String" in data mapper
+    And define constant "about_the_event" with value "about_the_event" of type "String" in data mapper
     And create data mapper mappings
       | new_event       | title       |
       | about_the_event | description |

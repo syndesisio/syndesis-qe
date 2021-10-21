@@ -53,7 +53,7 @@ public class DataMapper extends SyndesisPageObject {
         public static final By CLOSING_MAPPING_DETAIL_BUTTON = ByUtils.dataTestId("close-mapping-detail-button");
 
         public static final By CREATE_PROPERTY_BUTTON = ByUtils.dataTestId("create-source-property-button");
-        public static final String PROPERTY_NAME = "property-name-text-input";
+        public static final String PROPERTY_NAME = "property-name-text-input-tooltip";
         public static final String PROPERTY_TYPE = "property-type-form-select";
         public static final String PROPERTY_SCOPE = "property-scope-form-select";
 

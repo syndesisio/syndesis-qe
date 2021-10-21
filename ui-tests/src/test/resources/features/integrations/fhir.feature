@@ -298,7 +298,7 @@ Feature: Integration - FHIR - all actions
     And wait until integration "FHIR_search" gets into "Running" state
 
     When sleep for "10000" ms
-    Then validate that logs of integration "FHIR_search" contains string "<name><family value="Matrtaj"/><given value="Palo"/></name>"
+    Then validate that logs of integration "FHIR_search" contains string "<name><family value="Matrtaj"></family><given value="Palo"></given></name>"
 
 
   @fhir-5-transaction

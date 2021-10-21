@@ -114,7 +114,7 @@ Feature: Integration - DB to DB via Kafka
     And wait until integration db-to-kafka-<type> E2E processed at least 1 message
     And wait until integration kafka-to-db-<type> E2E processed at least 1 message
 
-    Then check that query "SELECT task FROM TODO WHERE task = 'Joe-tls' limit 1" has 1 row output
+    Then check that query "SELECT task FROM TODO WHERE task = 'Joe-<type>' limit 1" has 1 row output
 
     Examples:
       | type  |

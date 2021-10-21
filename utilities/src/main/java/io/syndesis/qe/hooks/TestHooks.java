@@ -9,6 +9,7 @@ import io.syndesis.qe.utils.TestUtils;
 import org.assertj.core.api.Assumptions;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.cucumber.java.After;
@@ -63,6 +64,10 @@ public class TestHooks {
                     OpenShiftUtils.getInstance().getPodLog(failedBuild)).getBytes(), "text/plain",
                     "Log of failed build " + failedBuild.getMetadata().getName());
             }
+            log.info("Adding server log");
+            Optional<Pod> server = OpenShiftUtils.getPodByPartialName("syndesis-server");
+            server.ifPresent(pod -> scenario.attach(OpenShiftUtils.getInstance().getPodLog(pod).getBytes(), "text/plain",
+                    String.format("Server %s log", pod.getMetadata().getName())));
         }
     }
 
