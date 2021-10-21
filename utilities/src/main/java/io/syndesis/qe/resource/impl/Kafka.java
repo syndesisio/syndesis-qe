@@ -31,8 +31,8 @@ public class Kafka implements Resource {
             RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.6")).toAbsolutePath().toString();
             KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.6")).toAbsolutePath().toString();
         } else {
-            RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.7")).toAbsolutePath().toString();
-            KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.7")).toAbsolutePath().toString();
+            RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.8")).toAbsolutePath().toString();
+            KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.8")).toAbsolutePath().toString();
         }
     }
 
