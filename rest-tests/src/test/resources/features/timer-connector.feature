@@ -23,7 +23,7 @@ Feature: Integration - Timer
     And create integration with name: "timer-to-http-1"
     And wait for integration with name: "timer-to-http-1" to become active
 
-    Then verify that after 8 seconds there was 1 call
+    Then verify that after 9 seconds there was 2 call
 
   @delorean
   @cron-timer

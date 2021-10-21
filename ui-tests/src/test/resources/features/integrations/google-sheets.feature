@@ -278,7 +278,7 @@ Feature: Google Sheets Connector
       | Constants      | sSheetId      |  | sourceSheetId            |
       | Constants      | RsourceC      |  | rowGroups.sourceColumn   |
       | Constants      | start         |  | start                    |
-      | Constants      | valueL        |  | valueLayout            @add-chart-basic-chart-to-spreadsheet  |
+      | Constants      | valueL        |  | valueLayout              |
     Then click on the "Done" button
 
     When publish integration
@@ -418,7 +418,7 @@ Feature: Google Sheets Connector
     And define constant "pDomainRange" with value "A1:A20" of type "String" in data mapper
     And create data mapper mappings
       | spreadsheetId | spreadsheetId        |
-      | bDomainRange     | sourceSheetId        |
+      | sourceSheet     | sourceSheetId        |
       | pDataRange        | pieChart.dataRange   |
       | pDomainRange        | pieChart.domainRange |
     Then click on the "Done" button
