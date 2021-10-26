@@ -13,7 +13,9 @@ spec:
                   operator: In
                   values:
                     - REPLACE_NODE
-  demoData: true
+  addons:
+    todo:
+      enabled: true
   components:
     server:
       features:

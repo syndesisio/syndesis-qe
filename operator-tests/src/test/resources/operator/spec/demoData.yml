@@ -1,6 +1,0 @@
-apiVersion: syndesis.io/v1beta3
-kind: Syndesis
-metadata:
-  name: app
-spec:
-  demoData: false

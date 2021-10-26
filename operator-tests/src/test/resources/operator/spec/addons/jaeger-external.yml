@@ -10,7 +10,8 @@ spec:
       operatorOnly: false
       queryUri: http://REPLACE_QUERY_URL/api
       collectorUri: http://REPLACE_COLLECTOR_URL/api/traces
-  demoData: true
+    todo:
+      enabled: true
   components:
     server:
       features:

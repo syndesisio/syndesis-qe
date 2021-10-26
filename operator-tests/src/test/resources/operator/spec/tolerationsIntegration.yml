@@ -9,7 +9,9 @@ spec:
         value: "False"
         operator: Equal
         effect: PreferNoSchedule
-  demoData: true
+  addons:
+    todo:
+      enabled: true
   components:
     server:
       features:
