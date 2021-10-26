@@ -560,9 +560,6 @@ public class Syndesis implements Resource {
             // set the route
             crJson.getJSONObject("spec").put("routeHostname", StringUtils.substringAfter(TestConfiguration.syndesisUrl(), "https://"));
 
-            // set demodata: true to have the sampledb connection present
-            crJson.getJSONObject("spec").put("demoData", true);
-
             createCr(crJson.toMap());
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);

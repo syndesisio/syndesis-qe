@@ -6,7 +6,8 @@ spec:
   addons:
     jaeger:
       enabled: true
-  demoData: true
+    todo:
+      enabled: true
   components:
     server:
       features:

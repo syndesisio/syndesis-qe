@@ -3,6 +3,8 @@ kind: Syndesis
 metadata:
   name: app
 spec:
-  demoData: true
+  addons:
+    todo:
+      enabled: true
   backup:
     schedule: "every 3m"

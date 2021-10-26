@@ -25,13 +25,6 @@ Feature: Operator Deployment
     When deploy Syndesis CR from file "spec/routeHostname.yml"
       And check the deployed route
 
-  @ENTESB-12104
-  @operator-demodata
-  Scenario: Syndesis Operator - Demo data
-    When deploy Syndesis CR from file "spec/demoData.yml"
-      And wait for Syndesis to become ready
-      # TODO once ENTESB-12104 is done
-
   @operator-integration-limit
   @operator-server
   Scenario: Syndesis Operator - Components - Server - Integration Limit
@@ -61,12 +54,15 @@ Feature: Operator Deployment
     Then check that the "syndesis-server-config" config map contains
       | application.yml |  integrationStateCheckInterval: '111' |
 
+  @ENTESB-15863
+  @ENTESB-12104
   @operator-addons-todo
   @operator-addons
   Scenario: Syndesis Operator - Addons - Todo
     When deploy Syndesis CR from file "spec/addons/todo.yml"
       And wait for Syndesis to become ready
     Then check that deployment config "todo" does exist
+      And execute SQL command "SELECT * FROM TODO"
 
   @ENTESB-14068
   @operator-maven-additional-arguments

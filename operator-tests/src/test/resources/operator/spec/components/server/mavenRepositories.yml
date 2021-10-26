@@ -3,7 +3,9 @@ kind: Syndesis
 metadata:
   name: app
 spec:
-  demoData: true
+  addons:
+    todo:
+      enabled: true
   components:
     server:
       features:
