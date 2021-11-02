@@ -62,6 +62,7 @@ Feature: Integration info
     Then check that alert dialog contains text "Integration name 'integration1' is not unique"
     And check that alert dialog contains details "NoDuplicateIntegration"
 
+  @ENTESB-14559
   @integration-labels
   Scenario: Check integration labels
     When navigate to the "Integrations" page
@@ -104,3 +105,83 @@ Feature: Integration info
     Then wait until integration "integration1" gets into "Running" state
     And check that the pod "integration1" contains labels
       | label1=value1 |
+
+  @ENTESB-16398
+  @integration-envs
+  Scenario: Check integration env
+    When navigate to the "Integrations" page
+    And select the "integration1" integration
+    And click on the "Edit Integration" link
+    And click on the "Save" link
+    And add environment variables
+      | ENV1 | VALUE1 |
+    Then check that integration contains environment variables and they values
+      | ENV1 | VALUE1 |
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains environment variables and they values
+      | ENV1 | VALUE1 |
+    And add environment variables
+      | ENV2 | VALUE2 |
+    Then check that integration contains environment variables and they values
+      | ENV1 | VALUE1 |
+      | ENV2 | VALUE2 |
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains environment variables and they values
+      | ENV1 | VALUE1 |
+      | ENV2 | VALUE2 |
+    When publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "integration1" gets into "Running" state
+    Then check that the pod "integration1" contains variables:
+      | ENV1 | VALUE1 |
+      | ENV2 | VALUE2 |
+
+    #delete
+    When select the "integration1" integration
+    And click on the "Edit Integration" link
+    And click on the "Save" link
+    And delete environment variable "ENV2"
+    Then check that integration contains environment variables and they values
+      | ENV1 | VALUE1 |
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains environment variables and they values
+      | ENV1 | VALUE1 |
+    And add environment variables
+      | ENV3 | VALUE3 |
+      | ENV4 | VALUE4 |
+    When publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "integration1" gets into "Running" state
+    Then check that the pod "integration1" contains variables:
+      | ENV1 | VALUE1 |
+      | ENV3 | VALUE3 |
+      | ENV4 | VALUE4 |
+    And check that the pod "integration1" doesn't contain variables:
+      | ENV2 | VALUE2 |
+
+    #update
+    When select the "integration1" integration
+    And click on the "Edit Integration" link
+    And click on the "Save" link
+    And update environment "ENV3" variable to "VALUE3UPDATED"
+    And update environment "ENV4" name to "ENV4NAMEUPDATED"
+    And update environment "ENV4NAMEUPDATED" variable to "VALUE4UPDATED"
+    When click on the "Save" button
+    And click on the "Save" link
+    Then check that integration contains environment variables and they values
+      | ENV1            | VALUE1        |
+      | ENV3            | VALUE3UPDATED |
+      | ENV4NAMEUPDATED | VALUE4UPDATED |
+    When publish integration
+    And navigate to the "Integrations" page
+    Then wait until integration "integration1" gets into "Running" state
+    Then check that the pod "integration1" contains variables:
+      | ENV1            | VALUE1        |
+      | ENV3            | VALUE3UPDATED |
+      | ENV4NAMEUPDATED | VALUE4UPDATED |
+    And check that the pod "integration1" doesn't contain variables:
+      | ENV3 | VALUE3 |
+      | ENV4 | VALUE4 |
