@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Then;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -90,7 +90,8 @@ public class OpsValidationSteps {
     }
 
     private static CustomResourceDefinitionContext dashboardContext() {
-        CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().withName("grafanadashboards.integreatly.org").get();
+        CustomResourceDefinition
+            crd = OpenShiftUtils.getInstance().apiextensions().v1beta1().customResourceDefinitions().withName("grafanadashboards.integreatly.org").get();
         return new CustomResourceDefinitionContext.Builder()
             .withGroup(crd.getSpec().getGroup())
             .withPlural(crd.getSpec().getNames().getPlural())
@@ -100,7 +101,7 @@ public class OpsValidationSteps {
     }
 
     private static CustomResourceDefinitionContext grafanaDSContext() {
-        CustomResourceDefinition crd = OpenShiftUtils.getInstance().customResourceDefinitions().withName("grafanadatasources.integreatly.org").get();
+        CustomResourceDefinition crd = OpenShiftUtils.getInstance().apiextensions().v1beta1().customResourceDefinitions().withName("grafanadatasources.integreatly.org").get();
         return new CustomResourceDefinitionContext.Builder()
             .withGroup(crd.getSpec().getGroup())
             .withPlural(crd.getSpec().getNames().getPlural())

@@ -96,7 +96,11 @@ public class UpgradeSteps {
         }
 
         // We want to deploy "previous" version first
-        syndesis.setCrdUrl(getClass().getClassLoader().getResource("upgrade/syndesis-crd-previous.yaml").toString());
+        if (OpenShiftUtils.isOpenshift3()) {
+            syndesis.setCrdUrl(getClass().getClassLoader().getResource("upgrade/syndesis-crd-previous-3.11.yaml").toString());
+        } else {
+            syndesis.setCrdUrl(getClass().getClassLoader().getResource("upgrade/syndesis-crd-previous.yaml").toString());
+        }
 
         log.info("Upgrade properties:");
         log.info("  Previous version: " + TestConfiguration.upgradePreviousVersion());
