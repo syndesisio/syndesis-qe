@@ -352,6 +352,17 @@ public class OpenshiftValidationSteps {
         assertThat(envMap).containsAllEntriesOf(variables.asMap(String.class, String.class));
     }
 
+    @Then("check that the pod {string} doesn't contain variables:")
+    public void checkPodVariablesNotExist(String pod, DataTable variables) {
+        Map<String, String> envMap =
+            new HashMap<>(); // due to null values, the Collector.toMap cannot be used ( https://bugs.openjdk.java.net/browse/JDK-8148463 )
+        OpenShiftUtils.getPodByPartialName(pod).get().getSpec().getContainers().get(0).getEnv()
+            .forEach(envVar -> envMap.put(envVar.getName(), envVar.getValue()));
+        for (List<String> cell : variables.cells()) {
+            assertThat(envMap).doesNotContainEntry(cell.get(0), cell.get(1));
+        }
+    }
+
     @Then("check that the pod {string} contains labels")
     public void checkPodLabels(String pod, DataTable expectedLabels) {
         Map<String, String> podLabels = OpenShiftUtils.getPodByPartialName(pod).get().getMetadata().getLabels();
