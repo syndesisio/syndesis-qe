@@ -663,13 +663,13 @@ Feature: Test maximum integration
     And add integration step on position "0"
     And select "Data Mapper" integration step
 
-    And define constant "desc" with value "MaxIntegrationsDescription" of type "String" in data mapper
+    And define constant "maxDesc" with value "MaxIntegrationsDescription" of type "String" in data mapper
     And define constant "imp" with value "1" of type "Integer" in data mapper
     And define constant "urgency" with value "2" of type "String" in data mapper
     And define constant "desc" with value "description" of type "String" in data mapper
     And define constant "input" with value "ui" of type "String" in data mapper
     And create data mapper mappings
-      | desc    | u_description       |
+      | maxDesc | u_description       |
       | imp     | u_impact            |
       | urgency | u_urgency           |
       | desc    | u_short_description |
