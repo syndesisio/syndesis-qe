@@ -108,6 +108,8 @@ public class CreateIntegration extends SyndesisPageObject {
     public void updateEnvironmentVariable(String integrationEnv, String newValue) {
         SelenideElement input =
             getRootElement().find(ByUtils.containsDataTestId(String.format(Input.NEW_ENV_VALUE, getEnvPosition(integrationEnv))));
+        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+        input.sendKeys(Keys.BACK_SPACE);
         input.clear();
         input.sendKeys(newValue);
     }
@@ -115,6 +117,8 @@ public class CreateIntegration extends SyndesisPageObject {
     public void updateEnvironmentName(String integrationEnv, String newName) {
         SelenideElement input =
             getRootElement().find(ByUtils.containsDataTestId(String.format(Input.NEW_ENV_NAME, getEnvPosition(integrationEnv))));
+        input.sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME));
+        input.sendKeys(Keys.BACK_SPACE);
         input.clear();
         input.sendKeys(newName);
     }
