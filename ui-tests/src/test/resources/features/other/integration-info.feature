@@ -159,8 +159,8 @@ Feature: Integration info
       | ENV1 | VALUE1 |
       | ENV3 | VALUE3 |
       | ENV4 | VALUE4 |
-#    And check that the pod "integration1" doesn't contain variables:
-#     | ENV2 | VALUE2 |
+    And check that the pod "integration1" doesn't contain variables:
+     | ENV2 | VALUE2 |
 
     #update
     When select the "integration1" integration
@@ -184,4 +184,4 @@ Feature: Integration info
       | ENV4NAMEUPDATED | VALUE4UPDATED |
     And check that the pod "integration1" doesn't contain variables:
       | ENV3 | VALUE3 |
-#      | ENV4 | VALUE4 |
+      | ENV4 | VALUE4 |
