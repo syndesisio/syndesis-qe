@@ -8,6 +8,7 @@ import io.syndesis.qe.pages.integrations.editor.add.connection.ChooseAction;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.InvokeSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.database.PeriodicSql;
 import io.syndesis.qe.pages.integrations.editor.add.connection.actions.fragments.ConfigureAction;
+import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.TestUtils;
 
 import io.cucumber.java.en.Then;
@@ -64,5 +65,10 @@ public class ConnectionActionSteps {
     public void checkQuery(String query) {
         TestUtils.sleepForJenkinsDelayIfHigher(3);
         assertThat(invokeSql.getSqlValue()).isEqualTo(query);
+    }
+
+    @When("^open Data Type parameters dialog$")
+    public void openDataTypeDialog() {
+        configureAction.getRootElement().find(ByUtils.dataTestId("describe-data-shape-form-parameters-button")).shouldBe(visible).click();
     }
 }
