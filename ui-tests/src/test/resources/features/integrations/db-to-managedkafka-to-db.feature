@@ -46,6 +46,7 @@ Feature: Integration - DB to DB via Managed Kafka
     And fill in values by element data-testid
       | topic | fuse-online-<type> |
     And click on the "Next" button
+    And sleep for "15000" ms
     And fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Schema |
     And fill in values by element data-testid
@@ -77,6 +78,7 @@ Feature: Integration - DB to DB via Managed Kafka
     Then fill in values by element data-testid
       | topic | fuse-online-<type> |
     And click on the "Next" button
+    And sleep for "15000" ms
     And fill in values by element data-testid
       | describe-data-shape-form-kind-input | JSON Schema |
     And fill in values by element data-testid
@@ -107,7 +109,7 @@ Feature: Integration - DB to DB via Managed Kafka
     And wait until integration db-to-managed-kafka-<type> E2E processed at least 1 message
     And wait until integration managed-kafka-to-db-<type> E2E processed at least 1 message
 
-    Then check that query "SELECT task FROM TODO WHERE task = 'Joe-tls' limit 1" has 1 row output
+    Then check that query "SELECT task FROM TODO WHERE task = 'Joe-<type>' limit 1" has 1 row output
 
     Examples:
       | type        |

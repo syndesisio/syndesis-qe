@@ -13,7 +13,8 @@ Feature: Integration - DB to DB oracle12
     Given log into the Syndesis
     Given import extensions from syndesis-extensions folder
       | syndesis-library-jdbc-driver |
-    And wait until "meta" pod is reloaded
+#    And wait until "meta" pod is reloaded  TODO: OCP4.9 the pod is reloaded to early, so the code use that actual pod as previous
+    And sleep for "30000" ms
     Given create standard table schema on "oracle12" driver
     When insert into "contact" table on "oracle12"
       | Josef_oracle12 | Stieranka | Istrochem | db |
