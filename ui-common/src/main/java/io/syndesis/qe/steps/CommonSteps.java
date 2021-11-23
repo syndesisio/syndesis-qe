@@ -227,16 +227,11 @@ public class CommonSteps {
             RHDevLogin rhDevLogin = new RHDevLogin();
             rhDevLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("api-qe") && currentUrl.contains("oauth/authorize")) {
-            // cluster provided by 3scale
-            String linkText = "HTPasswd";
-            if (currentUrl.contains("master")) {
-                // 3.11
-                linkText = "Service accounts";
-            }
-
+            // 3.11 cluster provided by 3scale
+            String linkText = "Kerberos PSI";
             $(By.partialLinkText(linkText)).click();
-            MinishiftLogin minishiftLogin = new MinishiftLogin();
-            minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+            KeyCloakLogin kcLogin = new KeyCloakLogin();
+            kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains(":8443/login")) {
             log.info("Minishift cluster login page");
 
