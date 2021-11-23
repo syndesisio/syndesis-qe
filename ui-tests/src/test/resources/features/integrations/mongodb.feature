@@ -73,11 +73,11 @@ Feature: MongoDB
     And check that query "select * from todo where task='v4'" has 0 row output
     And validate that logs of integration "Mongo to DB consume stream" contains string:
       """
-        [[{ "_id" : "id1", "value" : "v1" }]]
+        [[{"_id": "id1", "value": "v1"}]]
       """
     And validate that logs of integration "Mongo to DB consume stream" contains string:
       """
-        [[{ "_id" : "id2", "value" : "v2" }]]
+        [[{"_id": "id2", "value": "v2"}]]
       """
 
     When insert the following documents into mongodb collection "insert_stream"
@@ -91,11 +91,7 @@ Feature: MongoDB
     And check that query "select * from todo where task='v4'" has 1 row output
     And validate that logs of integration "Mongo to DB consume stream" contains string:
       """
-        [[{ "_id" : "id4", "value" : "v4" }]]
-      """
-    And validate that logs of integration "Mongo to DB consume stream" contains string:
-      """
-        [[{ "_id" : "id4", "value" : "v4" }]]
+        [[{"_id": "id4", "value": "v4"}]]
       """
 
   @mongodb-insert
@@ -162,7 +158,7 @@ Feature: MongoDB
       | v1    |
     And validate that logs of integration "Mongo to Mongo insert" contains string:
       """
-        "value" : "v1" }
+        "value": "v1"
       """
     And verify that mongodb collection "insert_collection" has 0 document matching
       | value |
@@ -176,7 +172,7 @@ Feature: MongoDB
       | v2    |
     And validate that logs of integration "Mongo to Mongo insert" contains string:
       """
-        "value" : "v2" }
+        "value": "v2"
       """
 
   @mongodb-update
@@ -320,7 +316,7 @@ Feature: MongoDB
 
     Then validate that logs of integration "Webhook to Mongo find all" contains string:
       """
-        [[{ "_id" : "id1", "value" : "v1" }, { "_id" : "id2", "value" : "v2" }]]
+        [[{"_id": "id1", "value": "v1"}, {"_id": "id2", "value": "v2"}]]
       """
 
     And check that query "select * from todo where task='v1'" has 1 row output
@@ -642,7 +638,7 @@ Feature: MongoDB
       """
     Then validate that logs of integration "Webhook to Mongo find by id" contains string:
       """
-        { "_id" : "id1", "value" : "v1" }
+        {"_id": "id1", "value": "v1"}
       """
     And check that query "select * from todo where task='v1'" has 1 row output
     And check that query "select * from todo where task='v2'" has no output
