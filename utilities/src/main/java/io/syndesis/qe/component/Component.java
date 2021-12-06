@@ -11,6 +11,7 @@ public enum Component {
     UI("syndesis-ui"),
     META("syndesis-meta"),
     OPERATOR("syndesis-operator"),
+    FUSE_ONLINE_OPERATOR("fuse-online-operator"),
     TODO("todo"),
     JAEGER("syndesis-jaeger");
 
