@@ -236,7 +236,7 @@ public class Syndesis implements Resource {
      */
     public void pullOperatorImage() {
         log.info("Pulling operator image {}", operatorImage);
-        ProcessBuilder dockerPullPb = new ProcessBuilder("docker",
+        ProcessBuilder dockerPullPb = new ProcessBuilder(TestConfiguration.containerTool(),
             "pull",
             operatorImage
         );
@@ -278,7 +278,7 @@ public class Syndesis implements Resource {
 
     public Process executeOperatorCommand(String... param) {
         Process result = null;
-        final String[] dockerCommand = {"docker",
+        final String[] dockerCommand = {TestConfiguration.containerTool(),
             "run",
             "--rm",
             "-v",

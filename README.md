@@ -250,6 +250,11 @@ cd syndesis-extensions
 mvn clean install
 ```
 
+#### Container tool
+
+The test suite expected that the `docker` command is on path. If you want to use `podman`, you can create an alias `alias docker=podman` or 
+you can also explicitly specify `podman` by `-Dsyndesis.config.container.tool=podman` (in case you use both and want to run the test suite with podman)
+
 #### Test suite execution
 
 There are separate maven profiles that can be used to build and execute tests. For each *-tests module there is a profile named after the part that is being tested in given module.

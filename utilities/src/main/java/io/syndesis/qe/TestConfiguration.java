@@ -63,6 +63,7 @@ public class TestConfiguration {
 
     public static final String SYNDESIS_BUILD_PROPERTIES_URL = "syndesis.config.build.properties.url";
     public static final String SYNDESIS_DOCKER_REGISTRY = "syndesis.config.docker.registry";
+    public static final String SYNDESIS_CONTAINER_TOOL = "syndesis.config.container.tool";
 
     public static final String SYNDESIS_PULL_SECRET = "syndesis.config.pull.secret";
     public static final String SYNDESIS_PULL_SECRET_NAME = "syndesis.config.pull.secret.name";
@@ -439,6 +440,10 @@ public class TestConfiguration {
         return get().readValue(KEYCLOAK_IDP_NAME);
     }
 
+    public static String containerTool() {
+        return get().readValue(SYNDESIS_CONTAINER_TOOL);
+    }
+
     public static String managedKafkaBootstrapUrl() {
         String url = get().readValue(MANAGED_KAFKA_BOOTSTRAP_SERVER);
         if (url == null) {
@@ -575,6 +580,10 @@ public class TestConfiguration {
 
         if (properties.getProperty(KEYCLOAK_IDP_NAME) == null) {
             defaultProps.setProperty(KEYCLOAK_IDP_NAME, "OpenID_keycloak");
+        }
+
+        if (properties.getProperty(SYNDESIS_CONTAINER_TOOL) == null) {
+            defaultProps.setProperty(SYNDESIS_CONTAINER_TOOL, "docker");
         }
         return defaultProps;
     }

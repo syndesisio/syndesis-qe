@@ -505,7 +505,7 @@ public class OperatorValidationSteps {
 
     public void performOperatorRestore() {
         try {
-            new ProcessBuilder("docker",
+            new ProcessBuilder(TestConfiguration.containerTool(),
                 "run",
                 "--rm",
                 "-v",
