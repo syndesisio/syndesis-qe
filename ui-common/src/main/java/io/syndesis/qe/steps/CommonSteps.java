@@ -27,6 +27,7 @@ import io.syndesis.qe.pages.SyndesisRootPage;
 import io.syndesis.qe.pages.connections.Connections;
 import io.syndesis.qe.pages.login.GitHubLogin;
 import io.syndesis.qe.pages.login.KeyCloakLogin;
+import io.syndesis.qe.pages.login.Login;
 import io.syndesis.qe.pages.login.MinishiftLogin;
 import io.syndesis.qe.pages.login.RHDevLogin;
 import io.syndesis.qe.report.selector.ExcludeFromSelectorReports;
@@ -226,12 +227,6 @@ public class CommonSteps {
 
             RHDevLogin rhDevLogin = new RHDevLogin();
             rhDevLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
-        } else if (currentUrl.contains("api-qe") && currentUrl.contains("oauth/authorize")) {
-            // 3.11 cluster provided by 3scale
-            String linkText = "Kerberos PSI";
-            $(By.partialLinkText(linkText)).click();
-            KeyCloakLogin kcLogin = new KeyCloakLogin();
-            kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains(":8443/login")) {
             log.info("Minishift cluster login page");
 
@@ -246,15 +241,25 @@ public class CommonSteps {
             KeyCloakLogin kcLogin = new KeyCloakLogin();
             kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("oauth/authorize") || currentUrl.contains("oauth%2Fauthorize")) {
+            Login login = new MinishiftLogin();
+
             String linkText = "htpasswd";
-            if (currentUrl.contains("osp")) {
+
+            // 3scale login
+            if (currentUrl.contains("osp") || currentUrl.contains("api-qe")) {
                 linkText = "HTPasswd";
+                // 3.11 clusters contain only Kerberos identity provider
+                if (!$(By.partialLinkText(linkText)).exists()) {
+                    linkText = "Kerberos PSI";
+                    login = new KeyCloakLogin();
+                }
             }
+
             if (!currentUrl.contains("apps-crc.testing")) { // for CRC 1.27, no IDP chooser
                 $(By.partialLinkText(linkText)).click();
             }
-            MinishiftLogin minishiftLogin = new MinishiftLogin();
-            minishiftLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+
+            login.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         }
 
         currentUrl = WebDriverRunner.getWebDriver().getCurrentUrl();
