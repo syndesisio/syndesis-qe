@@ -148,6 +148,11 @@ public class DbValidationSteps {
         new DbUtils("postgresql").executeSQLGetUpdateNumber(sqlCmd);
     }
 
+    @Given("execute SQL command {string} on {string} driver")
+    public void executeSqlOnDriver(String sqlCmd, String dbType) {
+        new DbUtils(dbType).executeSQLGetUpdateNumber(sqlCmd);
+    }
+
     @Given("create standard table schema on {string} driver")
     public void createStandardDBSchemaOn(String dbType) {
         new DbUtils(dbType).createEmptyTableSchema();
