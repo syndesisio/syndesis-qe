@@ -184,3 +184,185 @@ Feature: Data Mapper
     And wait until integration datamapper-properties processed at least 1 message
 
     Then verify that JMS message with content '{"firstStep":3,"secondStep":1,"previousStep":1}' was received from "queue" "dmprop"
+
+  @ENTESB-15928
+  @data-mapper-csv-E2E
+  Scenario: Data mapper CSV
+    Given deploy ActiveMQ broker
+    And created connections
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection |
+    And navigate to the "Home" page
+    And truncate "todo" table
+
+    When click on the "Create Integration" link to create a new integration
+    And select the "Webhook" connection
+    And select "Incoming Webhook" integration action
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | CSV Instance |
+    And fill text into text-editor
+      | name,surname,number\nJohn,Doe,1\nJane,Doe,2 |
+    And open Data Type parameters dialog
+    And add Data Type parameters
+      | First Record As Header | true |
+      | Ignore Header Case     | true |
+    And confirm Data Type parameters dialog
+    And click on the "Next" button
+    Then check that position of connection to fill is "Finish"
+
+    When select the "AMQ" connection
+    And select "Publish Messages" integration action
+    And fill in values by element data-testid
+      | destinationname | csvInput |
+      | destinationtype | Queue    |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | CSV Instance |
+    And fill text into text-editor
+      | sourceString,number\ntest1,1\ntest2,2 |
+    And open Data Type parameters dialog
+    And add Data Type parameters
+      | First Record As Header | true |
+    And confirm Data Type parameters dialog
+    And click on the "Next" button
+
+    And add integration step on position "0"
+    And select "Log" integration step
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Done" button
+
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    Then create data mapper mappings
+      | name   | sourceString |
+      | number | number       |
+    And click on the "Done" button
+
+    And add integration step on position "0"
+    And select "Log" integration step
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Done" button
+
+    And publish integration
+    And set integration name "webhook-to-amq"
+    And publish integration
+
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    And check that position of connection to fill is "Start"
+    When select the "AMQ" connection
+    And select "Subscribe for Messages" integration action
+    And fill in values by element data-testid
+      | destinationname | csvInput |
+      | destinationtype | Queue    |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | CSV Instance |
+    And fill text into text-editor
+      | sourceString,number\ntest1,1\ntest2,2 |
+    And open Data Type parameters dialog
+    And add Data Type parameters
+      | First Record As Header | true |
+      | Null String            | Baby |
+    And confirm Data Type parameters dialog
+    And click on the "Next" button
+
+    And select the "PostgresDB" connection
+    And select "Invoke SQL" integration action
+    Then fill in invoke query input with "insert into todo (task) values (:#val);" value
+    Then click on the "Done" button
+
+    And add integration step on position "0"
+    And select "Log" integration step
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Done" button
+
+    When add integration step on position "0"
+    And select "Data Mapper" integration step
+    Then create data mapper mappings
+      | sourceString; number | val |
+    And click on the "Done" button
+
+    And add integration step on position "0"
+    And select "Log" integration step
+    And fill in values by element data-testid
+      | bodyloggingenabled | true |
+    And click on the "Done" button
+
+    And publish integration
+    And set integration name "amq-to-db"
+    And publish integration
+
+    And wait until integration "webhook-to-amq" gets into "Running" state
+    And wait until integration "amq-to-db" gets into "Running" state
+
+    When invoke post request to webhook in integration webhook-to-amq with token test-webhook and body:
+      """
+name,surname,number
+John,Doe,1
+Jane,Doe,2
+Baby,Doe,3
+      """
+    And wait until integration webhook-to-amq processed at least 1 message
+    And wait until integration amq-to-db processed at least 1 message
+
+    Then check that query "SELECT task FROM TODO WHERE task = 'John Jane  1 2 3'" has 1 row output
+
+  @ENTESB-17734
+  @data-mapper-dialog-crud
+  Scenario: Data mapper CSV dialog CRUD
+    Given deploy ActiveMQ broker
+    And created connections
+      | Red Hat AMQ | AMQ | AMQ | AMQ connection |
+    And navigate to the "Home" page
+    And truncate "todo" table
+
+    When click on the "Create Integration" link to create a new integration
+    And select the "Webhook" connection
+    And select "Incoming Webhook" integration action
+    And fill in values by element data-testid
+      | contextpath | test-webhook |
+    And click on the "Next" button
+    And force fill in values by element data-testid
+      | describe-data-shape-form-kind-input | CSV Instance |
+    And fill text into text-editor
+      | name,surname,number\nJohn,Doe,1\nJane,Doe,2 |
+    And open Data Type parameters dialog
+    And add Data Type parameters
+      | First Record As Header | true |
+      | Ignore Header Case     | true |
+    And confirm Data Type parameters dialog
+
+    And open Data Type parameters dialog
+    Then verify Data Type parameters and values
+      | First Record As Header | true |
+      | Ignore Header Case     | true |
+    When add Data Type parameters
+      | Ignore Empty Lines | false |
+    And confirm Data Type parameters dialog
+
+    And open Data Type parameters dialog
+    Then verify Data Type parameters and values
+      | First Record As Header | true  |
+      | Ignore Empty Lines     | false |
+      | Ignore Header Case     | true  |
+    When delete Data Type parameter "Ignore Header Case"
+    And confirm Data Type parameters dialog
+
+    And open Data Type parameters dialog
+    Then verify Data Type parameters and values
+      | First Record As Header | true  |
+      | Ignore Empty Lines     | false |
+    When update Data Type parameters
+      | Ignore Empty Lines | true |
+    And confirm Data Type parameters dialog
+
+    And open Data Type parameters dialog
+    Then verify Data Type parameters and values
+      | First Record As Header | true |
+      | Ignore Empty Lines     | true |
