@@ -67,3 +67,50 @@ Feature: Integration - DB to DB oracle12
     Then validate that all todos with task "Josef_oracle12" have value completed 2, period in ms: 5000 on "oracle12"
 
     And free allocated "oracle12cR1" database
+
+  @reproducer
+  @ENTESB-17710
+  @db-oracle12-lowercase-table-name
+  Scenario: Read and create operations on oracle
+    When execute SQL command "CREATE TABLE todo2 ( id int, task VARCHAR(250), completed int)" on "oracle12" driver
+    And execute SQL command "INSERT INTO todo2(task) VALUES('test1')" on "oracle12" driver
+
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
+    Then check visibility of visual integration editor
+    And check that position of connection to fill is "Start"
+
+    When select the "Timer" connection
+    And select "Simple" integration action
+    And fill in values by element data-testid
+      | period        | 1       |
+      | select-period | Minutes |
+    And click on the "Next" button
+
+    When select the "Log" connection
+    And fill in values by element data-testid
+      | contextloggingenabled | false |
+      | bodyloggingenabled    | true  |
+    Then click on the "Next" button
+
+        #FHIR transaction
+    When add integration step on position "0"
+    And select the "Oracle12" connection
+    And select "Invoke SQL" integration action
+    And fill in invoke query input with "SELECT * FROM todo2 WHERE task=:#name" value
+    And click on the "Done" button
+
+    When add integration step on position "0"
+    And select the "Data Mapper" connection
+    When define constant "param" with value "test1" of type "String" in data mapper
+    And create data mapper mappings
+      | param | name |
+    Then click on the "Done" button
+
+    When publish integration
+    And set integration name "reproducer-17710"
+    And publish integration
+    And navigate to the "Integrations" page
+    And wait until integration "reproducer-17710" gets into "Running" state
+    And wait until integration reproducer-17710 processed at least 1 message
+    Then validate that logs of integration "reproducer-17710" contains string "test1"

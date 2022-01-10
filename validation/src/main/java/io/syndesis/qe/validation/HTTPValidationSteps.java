@@ -78,6 +78,7 @@ public class HTTPValidationSteps {
     @Then("^verify that after (\\d+) seconds there (?:were|was) (\\d+) calls?$")
     public void verifyThatAfterSecondsWasCalls(int seconds, int calls) {
         clear();
+        HTTPUtils.doGetRequest("http://localhost:28080/events"); // don't know why but first call returns only one event every time.
         TestUtils.sleepIgnoreInterrupt((long) seconds * 1000);
         HTTPResponse r = HTTPUtils.doGetRequest("http://localhost:28080/events");
         Map<Long, String> events = new Gson().fromJson(r.getBody(), Map.class);
