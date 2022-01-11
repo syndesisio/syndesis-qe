@@ -10,25 +10,23 @@ import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.utils.TestUtils;
 
-import org.assertj.core.util.Sets;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.Data;
@@ -45,13 +43,13 @@ public class Template extends AbstractStep {
 
     private static final class CodeEditor {
         public static final By CODE_EDITOR_LINES = By.cssSelector(".CodeMirror-code > div");
-        public static final By CODE_EDITOR_WARNINGS = By.cssSelector(".CodeMirror-gutter-elt > *");
+        public static final By CODE_EDITOR_WARNINGS = By.className("CodeMirror-lint-marker-warning");
+        public static final By CODE_EDITOR_ERRORS = By.className("CodeMirror-lint-marker-error");
         public static final By CODE_EDITOR_TOOLTIP = By.cssSelector(".CodeMirror-lint-tooltip");
-        public static final By LINE_GUTTER = By.cssSelector(".CodeMirror-gutter-wrapper");
+        public static final By LINE_GUTTER = By.className("CodeMirror-gutter-wrapper");
 
         //CSS classes for checking elements in code editor
         public static final String ERROR_MESSAGE_CLASS = "CodeMirror-lint-message-error";
-        public static final Set<String> WARNINGS = Sets.newTreeSet("CodeMirror-lint-marker-error", "CodeMirror-lint-marker-warning");
         public static final Map<String, By> CODE_HIGHLIGHT_MAP = new ImmutableMap.Builder<String, By>()
             .put("Freemarker", By.className("cm-freemarker"))
             .put("Mustache", By.className("cm-mustache"))
@@ -84,7 +82,7 @@ public class Template extends AbstractStep {
                 .anyMatch(selenideElement -> {
                     log.debug("Lint marker: {}", selenideElement);
                     log.debug(selenideElement.attr("class"));
-                    return CodeEditor.ERROR_MESSAGE_CLASS.equals(selenideElement.attr("class"));
+                    return Objects.requireNonNull(selenideElement.attr("class")).contains(CodeEditor.ERROR_MESSAGE_CLASS);
                 });
             return new CodeEditorWarning(isError ? WarningType.ERROR : WarningType.WARNING, messages);
         }
@@ -194,7 +192,11 @@ public class Template extends AbstractStep {
         SelenideElement line = getRootElement().$$(CodeEditor.CODE_EDITOR_LINES).get(lineNum - 1);
         if (line.find(CodeEditor.LINE_GUTTER).findAll("*").size() > 1) {
             //Line contains marker indicating warnings
-            hoverOnErrorMarker(line.find(CodeEditor.CODE_EDITOR_WARNINGS));
+            SelenideElement warning = line.find(CodeEditor.CODE_EDITOR_WARNINGS);
+            if (!warning.exists()) {
+                warning = line.find(CodeEditor.CODE_EDITOR_ERRORS);
+            }
+            hoverOnErrorMarker(warning);
             return Optional.of(CodeEditorWarning.getWarningMessage());
         }
 
@@ -202,20 +204,13 @@ public class Template extends AbstractStep {
     }
 
     public List<CodeEditorWarning> getAllWarnings() {
-        /*
-            In .CodeMirror-code every line is represented by one div
-            If the line doesn't have any errors there is just pre.CodeMirror-line inside the div
-            But if there is any error there are also divs for displaying the error marker
-         */
-        return getRootElement().$$(CodeEditor.CODE_EDITOR_LINES).exclude(Conditions.STALE_ELEMENT).stream()
-            .map(element -> element.$$("div"))
-            .filter(((Predicate<ElementsCollection>) (ElementsCollection::isEmpty)).negate())
-            .flatMap(ElementsCollection::stream)
-            .filter(el -> CodeEditor.WARNINGS.contains(el.attr("class")))
-            .map(el -> {
-                hoverOnErrorMarker(el);
-                return CodeEditorWarning.getWarningMessage();
-            }).collect(Collectors.toList());
+        List<CodeEditorWarning> result = new ArrayList<>();
+        int size = getRootElement().$$(CodeEditor.CODE_EDITOR_LINES).exclude(Conditions.STALE_ELEMENT).size();
+        for (int i = 1; i <= size; i++) {
+            Optional<CodeEditorWarning> warningsOnLine = getWarningsOnLine(i);
+            warningsOnLine.ifPresent(result::add);
+        }
+        return result;
     }
 
     private void hoverOnErrorMarker(SelenideElement marker) {
