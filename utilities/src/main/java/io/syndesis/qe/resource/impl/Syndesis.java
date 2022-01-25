@@ -558,23 +558,10 @@ public class Syndesis implements Resource {
                 envVarsToAdd.add(new EnvVar("RELATED_IMAGE_PROMETHEUS", "registry.redhat.io/openshift3/prometheus:v3.9", null));
             }
         }
-        if ((TestUtils.isProdBuild() && getOperatorImage().contains("1.8")) || getOperatorImage().contains("1.11")) {
-            // apply this hotfix for 1.8 prod version, needs for OSD because it doesn't see proxy eng repo
-            if (TestUtils.isProdBuild()) {
-                envVarsToAdd.add(new EnvVar("RELATED_IMAGE_PSQL_EXPORTER",
-                    "registry.redhat.io/fuse7/fuse-postgres-exporter-rhel7:1.8", null));
-            }
-            // needs for upgrade test when previous version is 1.11
-            DeploymentConfig dc = (DeploymentConfig) resourceList.stream()
-                .filter(r -> "DeploymentConfig".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
-                .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment config in operator resources"));
-            dc.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
-        } else {
-            Deployment deployment = (Deployment) resourceList.stream()
-                .filter(r -> "Deployment".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
-                .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment in operator resources"));
-            deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
-        }
+        Deployment deployment = (Deployment) resourceList.stream()
+            .filter(r -> "Deployment".equals(r.getKind()) && operatorResourcesName.equals(r.getMetadata().getName()))
+            .findFirst().orElseThrow(() -> new RuntimeException("Unable to find deployment in operator resources"));
+        deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
         OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(resourceList).createOrReplace());
 
