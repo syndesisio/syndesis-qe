@@ -1,6 +1,7 @@
 # @maintainer: mmuzikar@redhat.com
 
 @addon-ops
+@ocp3-only
 Feature: Monitoring addon tests
 
   Background:

@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -50,7 +50,9 @@ public class Ops implements Resource {
 
     private CustomResourceDefinitionContext getApplicationMonitoringContext() {
         return getGenericContext(
-            OpenShiftUtils.getInstance().customResourceDefinitions().withName("applicationmonitorings.applicationmonitoring.integreatly.org").get());
+            OpenShiftUtils.getInstance().apiextensions().v1beta1().customResourceDefinitions()
+                .withName("applicationmonitorings.applicationmonitoring.integreatly.org").get()
+        );
     }
 
     private CustomResourceDefinitionContext getGenericContext(CustomResourceDefinition crd) {

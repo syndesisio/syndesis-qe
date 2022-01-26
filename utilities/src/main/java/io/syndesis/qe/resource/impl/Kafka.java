@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,7 +65,8 @@ public class Kafka implements Resource {
         for (String resourceName : folder.list()) {
             try (FileInputStream resourceIS = new FileInputStream(new File(RESOURCES_FOLDER, resourceName))) {
                 OpenShiftUtils.getInstance().load(resourceIS).get().forEach(res -> {
-                    if (!(res instanceof CustomResourceDefinition || res instanceof ClusterRole)) {
+                    if (!(res instanceof CustomResourceDefinition ||
+                        res instanceof io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinitionVersion || res instanceof ClusterRole)) {
                         OpenShiftUtils.getInstance().resource(res).cascading(true).delete();
                     }
                 });
