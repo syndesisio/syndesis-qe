@@ -126,7 +126,7 @@ fi
 
 CURRENT_RETRIES=0
 while [ ${CURRENT_RETRIES} -lt ${RETRIES} ]; do
-	./mvnw clean verify -fn -P "${PROFILE}",download-drivers -Dtags="${TAGS}" -Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
+	./mvnw clean verify -fn -P "${PROFILE}" -Dtags="${TAGS}" -Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
 
 	HAS_FAILURES="$(grep -R --exclude-dir docker "<failure message" . || :)"
 	[ -z "${HAS_FAILURES}" ] && break
