@@ -115,4 +115,6 @@ RUN apt update -y \
 USER seluser
 WORKDIR /home/seluser/syndesis-qe
 
+COPY default-cr.yml /home/seluser/fuse-online-install/
+
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
