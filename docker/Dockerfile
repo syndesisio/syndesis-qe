@@ -1,5 +1,5 @@
 #================================================================================================================================
-# Default version, for now, is 1.13.x, `docker build -t syndesisqe/syndesisqe-tests:1.13.x .`
+# Default version, for now, is 1.14.x, `docker build -t syndesisqe/syndesisqe-tests:1.14.x .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
 # e.g. `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
@@ -19,7 +19,7 @@
 #   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
 #   --shm-size=2g \
-#   syndesisqe/syndesisqe-tests:1.13.x
+#   syndesisqe/syndesisqe-tests:1.14.x
 #
 #
 # For debugging, you have to expose port 5005 by `-p 5005:5005`
@@ -31,8 +31,8 @@
 FROM alpine/git as gitRepoSyndesis
 
 ARG SYNDESIS_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_BRANCH_VERSION=1.13.x
-ARG INSTALL_TAG=1.13
+ARG SYNDESIS_BRANCH_VERSION=1.14.x
+ARG INSTALL_TAG=1.14
 
 RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis \
 	&& git clone -b ${INSTALL_TAG} https://github.com/${SYNDESIS_BRANCH_OWNER}/fuse-online-install.git /fuse-online-install
@@ -53,32 +53,27 @@ RUN apt-get update -y \
 FROM alpine/git as gitRepoSyndesisQe
 
 ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_QE_BRANCH_VERSION=1.13.x
+ARG SYNDESIS_QE_BRANCH_VERSION=1.14.x
 
-ARG APICURIO_QE_BRANCH_OWNER=Apicurio
-ARG APICURIO_QE_BRANCH_VERSION=1.13.x
+ARG MARKETPLACE_BRANCH_VERSION=upgrade-functionality
 
 RUN git clone --recurse-submodules -b ${SYNDESIS_QE_BRANCH_VERSION} https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe \
-	&& git clone -b ${APICURIO_QE_BRANCH_VERSION} https://github.com/${APICURIO_QE_BRANCH_OWNER}/apicurio-qe.git /apicurio \
-	&& git clone https://github.com/jboss-fuse/marketplace-utilities /marketplace-utilities \
+	&& git clone -b ${MARKETPLACE_BRANCH_VERSION} https://github.com/jboss-fuse/marketplace-utilities /marketplace-utilities \
 	&& cd /syndesis-qe/syndesis-extensions \
-	&& git checkout 1.10.x
+	&& git checkout master
 
 #================================================================================================================================
-FROM maven:3.6-jdk-8-slim as buildApicurio
+FROM maven:3.6-jdk-8-slim as buildMarketplace
 COPY --from=gitRepoSyndesisQe /marketplace-utilities /marketplace-utilities
-COPY --from=gitRepoSyndesisQe /apicurio /apicurio
 
-RUN mvn clean install -DskipTests=true -f /marketplace-utilities/pom.xml \
-	&& mvn clean install -DskipTests=true -f /apicurio/pom.xml
+RUN mvn clean install -DskipTests=true -f /marketplace-utilities/pom.xml
 
 #================================================================================================================================
-FROM maven:3.5-jdk-8-alpine as buildSyndesisQE
+FROM maven:3.6-jdk-8-slim as buildSyndesisQE
 
 ## Copy built Syndesis and Apicurio dependencies
 COPY --from=buildSyndesis /root/.m2/repository/io/syndesis /root/.m2/repository/io/syndesis
-COPY --from=buildApicurio /root/.m2/repository/apicurio /root/.m2/repository/apicurio
-COPY --from=buildApicurio /root/.m2/repository/io/syndesis/qe /root/.m2/repository/io/syndesis/qe
+COPY --from=buildMarketplace /root/.m2/repository/io/syndesis/qe/marketplace-utilities /root/.m2/repository/io/syndesis/qe/marketplace-utilities
 COPY --from=gitRepoSyndesisQe /syndesis-qe /syndesis-qe
 
 WORKDIR /syndesis-qe
@@ -87,7 +82,7 @@ WORKDIR /syndesis-qe
 RUN mvn clean package -B -f syndesis-extensions/pom.xml --also-make --projects :syndesis-library-jdbc-driver,:syndesis-extension-log-body,:syndesis-extension-body
 
 ## Build syndesis-qe tests (To download all dependencies during the building phase. not during the running phase)
-RUN mvn -P ui clean install -DskipTests -Dwebdriverextensions.version=3.1.3 -Pdownload-drivers
+RUN mvn -P ui clean install -DskipTests
 
 ## This file has not contained 3rd party services. It is copied into the test suite in order to the tests which use self-deployed services work (AMQ broker, MongoDB).
 ## In the future, the external credential.json (with 3rd party services credential) can be pass to the image as an environment variable.
@@ -119,5 +114,7 @@ RUN apt update -y \
 # the root cannot be used, the webdriver would fail after start
 USER seluser
 WORKDIR /home/seluser/syndesis-qe
+
+COPY default-cr.yml /home/seluser/fuse-online-install/
 
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
