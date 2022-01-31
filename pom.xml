@@ -25,7 +25,7 @@
 		<org.json.version>20160810</org.json.version>
 		<commons.io.version>2.7</commons.io.version>
 		<resteasy.version>4.5.6.Final</resteasy.version>
-		<jackson.version>2.11.2</jackson.version>
+		<jackson.version>2.12.6</jackson.version>
 		<twitter4j.version>4.0.7</twitter4j.version>
 		<logback.classic.version>1.2.3</logback.classic.version>
 		<force.rest.api.version>0.0.37</force.rest.api.version>
