@@ -78,7 +78,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
-    public static final String CSV_NAME = "fuse-online.v7.10.0";
+    public static final String CSV_NAME = "fuse-online.v7.10.1";
 
     @Setter
     @Getter
@@ -939,6 +939,7 @@ public class Syndesis implements Resource {
             index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion(), quayUser);
             index.addBundle("registry.redhat.io/fuse7/fuse-online-operator-bundle:1.8");
             previousBundle = index.addBundle("registry.redhat.io/fuse7/fuse-online-rhel8-operator-bundle:1.9");
+            index.addBundle("registry.redhat.io/fuse7/fuse-online-rhel8-operator-bundle:1.10-24");
             currentBundle = index.addBundle(TestConfiguration.getBundleImage());
             //TODO: move to a step?
             checkBundle(currentBundle);
