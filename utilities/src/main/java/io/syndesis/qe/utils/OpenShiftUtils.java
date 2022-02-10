@@ -424,7 +424,7 @@ public final class OpenShiftUtils {
         }
         // on our openstack clusters 1.11+ is 3.11 and 1.14+ is 4.2
         VersionInfo version = getInstance().getVersion();
-        return version != null && version.getMinor().contains("11+");
+        return version != null && version.getMinor() != null && version.getMinor().contains("11+");
     }
 
     public static boolean isCrc() {
