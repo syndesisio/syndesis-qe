@@ -89,7 +89,7 @@ RUN mvn -P ui clean install -DskipTests
 COPY credentials_minimal.json /syndesis-qe/credentials.json
 
 #================================================================================================================================
-FROM selenium/standalone-firefox:78.0 as runningEnv
+FROM docker.io/selenium/standalone-firefox:96.0 as runningEnv
 
 WORKDIR /home/seluser
 COPY --from=buildSyndesisQE /root/.m2/repository/ /home/seluser/.m2/repository/
@@ -101,6 +101,7 @@ ENV TAGS '@smoke'
 ENV MODULE 'all'
 ENV MODE 'full'
 ENV RETRIES '3'
+ENV VNC 'false'
 
 USER root
 RUN apt update -y \
