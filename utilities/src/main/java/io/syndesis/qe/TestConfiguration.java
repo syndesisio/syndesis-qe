@@ -4,7 +4,6 @@ import io.syndesis.qe.image.Image;
 import io.syndesis.qe.marketplace.openshift.OpenShiftConfiguration;
 import io.syndesis.qe.marketplace.openshift.OpenShiftService;
 import io.syndesis.qe.marketplace.openshift.OpenShiftUser;
-import io.syndesis.qe.marketplace.quay.QuayUser;
 import io.syndesis.qe.utils.OpenShiftUtils;
 
 import org.junit.Assert;
@@ -103,20 +102,14 @@ public class TestConfiguration {
     private static final String SYNDESIS_RUNTIME = "syndesis.config.runtime";
 
     private static final String JAEGER_VERSION = "syndesis.jaeger.version";
-    private static final String CAMEL_VERSION = "camel.version";
 
     private static final String SYNDESIS_APPEND_REPOSITORY = "syndesis.config.append.repository";
 
     private static final String APP_MONITORING_VERSION = "syndesis.config.monitoring.version";
 
-    private static final String QUAY_USERNAME = "syndesis.config.quay.username";
-    private static final String QUAY_PASSWORD = "syndesis.config.quay.password";
-    private static final String INDEX_IMAGE = "syndesis.config.index.image";
-    private static final String BUNDLE_IMAGE = "syndesis.config.bundle.image";
-    private static final String BUNDLE_ICSP_FILE = "syndesis.config.bundle.icsp.file.url";
-    private static final String BUNDLE_REPOSITORY = "syndesis.config.bundle.repository.name";
-    private static final String BUNDLE_REPOSITORY_USERNAME = "syndesis.config.bundle.repository.username";
-    private static final String BUNDLE_REPOSITORY_PASSWORD = "syndesis.config.bundle.repository.password";
+    private static final String INSTALL_VIA_OPERATORHUB = "syndesis.config.install.operatorhub";
+    private static final String OPERATORHUB_CATALOG_SOURCE = "syndesis.config.operatorhub.catalogsource";
+    private static final String OPERATORHUB_CSV_NAME = "syndesis.config.operatorhub.csv.name";
 
     private static final String KEYCLOAK_NAMESPACE = "keycloak.namespace";
     private static final String KEYCLOAK_SYNDESIS_REALM = "keycloak.syndesis.realm";
@@ -391,36 +384,17 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_SINGLE_USER, "false"));
     }
 
-    public static String quayUsername() {
-        return get().readValue(QUAY_USERNAME);
+    public static boolean isOperatorHubInstall() {
+        return Boolean.parseBoolean(get().readValue(INSTALL_VIA_OPERATORHUB, "false"));
     }
 
-    public static String quayPassword() {
-        return get().readValue(QUAY_PASSWORD);
+    // if user doesn't set catalog source, the official catalog is used
+    public static String getOperatorHubCatalogSource() {
+        return get().readValue(OPERATORHUB_CATALOG_SOURCE, "redhat-operators");
     }
 
-    public static String getIndexImage() {
-        return get().readValue(INDEX_IMAGE);
-    }
-
-    public static String getBundleImage() {
-        return get().readValue(BUNDLE_IMAGE);
-    }
-
-    public static String getBundleRepository() {
-        return get().readValue(BUNDLE_REPOSITORY);
-    }
-
-    public static String getBundleRepositoryUsername() {
-        return get().readValue(BUNDLE_REPOSITORY_USERNAME);
-    }
-
-    public static String getBundleRepositoryPassword() {
-        return get().readValue(BUNDLE_REPOSITORY_PASSWORD);
-    }
-
-    public static String getIcspFile() {
-        return get().readValue(BUNDLE_ICSP_FILE);
+    public static String getOperatorHubCSVName() {
+        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-online.v7.11.0");
     }
 
     public static String keycloakNamespace() {
@@ -659,14 +633,7 @@ public class TestConfiguration {
         properties.remove(key);
     }
 
-    public static QuayUser getQuayUser() {
-        return new QuayUser(
-            TestConfiguration.quayUsername(),
-            TestConfiguration.quayPassword()
-        );
-    }
-
-    public static OpenShiftService getOpenShiftService(String quayProject) {
+    public static OpenShiftService getOpenShiftService() {
         OpenShiftUser defaultUser = new OpenShiftUser(
             syndesisUsername(),
             syndesisPassword(),
@@ -679,10 +646,6 @@ public class TestConfiguration {
         );
         OpenShiftConfiguration openShiftConfiguration = OpenShiftConfiguration.builder()
             .namespace(openShiftNamespace())
-            .dockerUsername(getBundleRepositoryUsername())
-            .dockerPassword(getBundleRepositoryPassword())
-            .dockerRegistry(getBundleRepository())
-            .icspFile(getIcspFile())
             .build();
         return new OpenShiftService(
             openShiftConfiguration,

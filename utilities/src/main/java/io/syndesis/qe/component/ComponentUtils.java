@@ -54,7 +54,7 @@ public class ComponentUtils {
             components.add(DB);
         }
 
-        if (TestConfiguration.getBundleImage() != null || TestConfiguration.getIndexImage() != null) {
+        if (TestConfiguration.isOperatorHubInstall()) {
             components.remove(OPERATOR);
             components.add(FUSE_ONLINE_OPERATOR);
         }

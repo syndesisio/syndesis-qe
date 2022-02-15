@@ -11,10 +11,6 @@ import io.syndesis.qe.component.Component;
 import io.syndesis.qe.component.ComponentUtils;
 import io.syndesis.qe.image.Image;
 import io.syndesis.qe.marketplace.manifests.Bundle;
-import io.syndesis.qe.marketplace.manifests.Index;
-import io.syndesis.qe.marketplace.manifests.Opm;
-import io.syndesis.qe.marketplace.openshift.OpenShiftService;
-import io.syndesis.qe.marketplace.quay.QuayUser;
 import io.syndesis.qe.resource.Resource;
 import io.syndesis.qe.resource.ResourceFactory;
 import io.syndesis.qe.test.InfraFail;
@@ -24,29 +20,20 @@ import io.syndesis.qe.utils.TestUtils;
 import io.syndesis.qe.utils.TodoUtils;
 import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.assertj.core.util.Strings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.yaml.snakeyaml.Yaml;
 
-import com.google.common.collect.Maps;
-
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,7 +43,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 import cz.xtf.core.waiting.WaiterException;
 import io.fabric8.kubernetes.api.model.EnvVar;
@@ -78,7 +64,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Syndesis implements Resource {
     private static final String CR_NAME = "app";
-    public static final String CSV_NAME = "fuse-online.v7.11.0";
+    public static final String SUBSCRIPTION_NAME = "fuse-online";
 
     @Setter
     @Getter
@@ -110,7 +96,7 @@ public class Syndesis implements Resource {
         log.info("  Cluster:   " + TestConfiguration.openShiftUrl());
         log.info("  Namespace: " + TestConfiguration.openShiftNamespace());
 
-        if (TestConfiguration.getIndexImage() != null || TestConfiguration.getBundleImage() != null) {
+        if (TestConfiguration.isOperatorHubInstall()) {
             deployViaBundle();
             return;
         }
@@ -166,7 +152,7 @@ public class Syndesis implements Resource {
         if (!OpenShiftUtils.isOpenshift3() && Syndesis.subscriptionExists()) {
             try {
                 OpenShiftUtils.getInstance().customResource(getSubscriptionCRDContext())
-                    .delete(TestConfiguration.openShiftNamespace(), "fuse-online");
+                    .delete(TestConfiguration.openShiftNamespace(), SUBSCRIPTION_NAME);
                 //For some reason the CSV is sometimes left over from deleting the subscription
                 OpenShiftUtils.getInstance().customResource(new CustomResourceDefinitionContext.Builder()
                     .withPlural("clusterserviceversions")
@@ -174,7 +160,7 @@ public class Syndesis implements Resource {
                     .withVersion("v1alpha1")
                     .withScope("Namespaced")
                     .build()
-                ).delete(TestConfiguration.openShiftNamespace(), CSV_NAME);
+                ).delete(TestConfiguration.openShiftNamespace(), TestConfiguration.getOperatorHubCSVName());
             } catch (KubernetesClientException | IOException e) {
                 log.warn("Failed to delete CSV for previous subscription, is your subscription OK?", e);
             }
@@ -564,17 +550,7 @@ public class Syndesis implements Resource {
         deployment.getSpec().getTemplate().getSpec().getContainers().get(0).getEnv().addAll(envVarsToAdd);
 
         OpenShiftUtils.asRegularUser(() -> OpenShiftUtils.getInstance().resourceList(resourceList).createOrReplace());
-
-        log.info("Waiting for syndesis-operator to be ready");
-        try {
-            OpenShiftUtils.getInstance().waiters()
-                .areExactlyNPodsReady(1, "syndesis.io/component", operatorResourcesName)
-                .interval(TimeUnit.SECONDS, 20)
-                .timeout(TimeUnit.MINUTES, 10)
-                .waitFor();
-        } catch (WaiterException e) {
-            InfraFail.fail("Unable to find operator pod in 10 minutes");
-        }
+        waitingForSyndesisOperator(operatorResourcesName);
     }
 
     public void deploySyndesisViaOperator() {
@@ -631,17 +607,17 @@ public class Syndesis implements Resource {
             log.info("Appending maven repo {}", replacementRepo);
             mavenConfiguration.put("append", true);
             mavenConfiguration.put("repositories", TestUtils.map(
-                "central", "https://repo.maven.apache.org/maven2/",
-                "repo-02-redhat-ga", "https://maven.repository.redhat.com/ga/",
-                "repo-03-jboss-ea", "https://repository.jboss.org/nexus/content/groups/ea/",
-                "qe-repo", replacementRepo
+                    "central", "https://repo.maven.apache.org/maven2/",
+                    "repo-02-redhat-ga", "https://maven.repository.redhat.com/ga/",
+                    "repo-03-jboss-ea", "https://repository.jboss.org/nexus/content/groups/ea/",
+                    "qe-repo", replacementRepo
                 )
             );
         } else {
             log.info("Adding maven repo {}", replacementRepo);
             mavenConfiguration.put("append", false);
             mavenConfiguration.put("repositories", TestUtils.map(
-                "qe-repo", replacementRepo
+                    "qe-repo", replacementRepo
                 )
             );
         }
@@ -893,7 +869,7 @@ public class Syndesis implements Resource {
         JSONObject subs = new JSONObject(OpenShiftUtils.getInstance().customResource(context).list(TestConfiguration.openShiftNamespace()));
         JSONArray items = subs.getJSONArray("items");
         for (int i = 0; i < items.length(); i++) {
-            if (items.getJSONObject(i).getJSONObject("spec").getString("name").equals("fuse-online")) {
+            if (items.getJSONObject(i).getJSONObject("spec").getString("name").equals(SUBSCRIPTION_NAME)) {
                 return items.getJSONObject(i);
             }
         }
@@ -908,89 +884,20 @@ public class Syndesis implements Resource {
         if (subscriptionExists()) {
             return;
         }
-        Index index;
-        OpenShiftService ocpSvc;
-        if (TestConfiguration.getBundleImage() != null) {
-            ocpSvc = TestConfiguration.getOpenShiftService("fuse-online-index");
-        } else {
-            String[] parts = TestConfiguration.getIndexImage().split("/");
-            String quayProject = parts[parts.length - 1].split(":")[0];
-            ocpSvc = TestConfiguration.getOpenShiftService(quayProject);
-        }
-        prepareDockerConfig();
-
-        Opm opm = new Opm(ocpSvc);
-        QuayUser quayUser = TestConfiguration.getQuayUser();
-        if (TestConfiguration.getBundleImage() != null) {
-            //Deploy from bundle
-            index = opm.createIndex("quay.io/marketplace/fuse-online-index:" + TestConfiguration.syndesisVersion(), quayUser);
-            index.addBundle("registry.redhat.io/fuse7/fuse-online-operator-bundle:1.8");
-            previousBundle = index.addBundle("registry.redhat.io/fuse7/fuse-online-rhel8-operator-bundle:1.9");
-            previousBundle = index.addBundle("registry.redhat.io/fuse7/fuse-online-rhel8-operator-bundle:1.10");
-            currentBundle = index.addBundle(TestConfiguration.getBundleImage());
-            //TODO: move to a step?
-            checkBundle(currentBundle);
-        } else {
-            //deploy from existing index image
-            index = opm.pullIndex(TestConfiguration.getIndexImage(), quayUser);
-        }
-
-        try {
-            // OCP stuff - add index
-            index.addIndexToCluster("fuse-online-test-catalog");
-            ocpSvc.refreshOperators();
-            if (currentBundle != null) {
-                currentBundle.createSubscription();
-            } else {
-                Bundle.createSubscription(ocpSvc, "fuse-online", "fuse-online-7.10.x", "''", "fuse-online-test-catalog");
-            }
-            OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsRunning("name", "syndesis-operator", 1));
-        } catch (IOException | TimeoutException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        Bundle.createSubscription(TestConfiguration.getOpenShiftService(), SUBSCRIPTION_NAME, "7.11.x", "''", TestConfiguration.getOperatorHubCatalogSource());
+        waitingForSyndesisOperator("syndesis-operator");
         createPullSecret();
-        TestUtils.withRetry(this::enableTestSupport, 5, 10, "Failed to patch CSV");
+        TestUtils.withRetry(this::enableTestSupportInCsv, 5, 10, "Failed to patch CSV");
         deployCrAndRoutes();
         OpenShiftUtils.getInstance().addRoleToUser("view", TestConfiguration.syndesisUsername());
         CommonSteps.waitForSyndesis();
     }
 
-    private void checkBundle(Bundle foBundle) {
-        if (System.getProperty(TestConfiguration.SYNDESIS_BUILD_PROPERTIES_URL) != null) {
-            prepareDockerConfig();
-            final Map<String, String> imgMap = new HashMap<>();
-            for (Image img : Image.values()) {
-                if (img == Image.CAMELK) {
-                    continue;
-                }
-                imgMap.put(img.name().toLowerCase(), TestConfiguration.image(img));
-            }
-            imgMap.put("syndesis-operator", TestConfiguration.syndesisOperatorImage());
-            foBundle.assertSameImages(imgMap);
-        }
-    }
-
-    private void prepareDockerConfig() {
-        if (System.getProperty("DOCKER_CONFIG") == null) {
-            try {
-                final Path configFolder = Files.createTempDirectory("syndesis-qe");
-                final File dockerCfg = new File(configFolder.toFile(), "config.json");
-                try (FileWriter wf = new FileWriter(dockerCfg)) {
-                    IOUtils.write(new String(Base64.decodeBase64(TestConfiguration.syndesisPullSecret())), wf);
-                }
-                System.setProperty("DOCKER_CONFIG", configFolder.toAbsolutePath().toString());
-                configFolder.toFile().deleteOnExit();
-            } catch (IOException e) {
-                log.error("Failed to write docker config for bundle tests", e);
-            }
-        }
-    }
-
-    private boolean enableTestSupport() {
+    private boolean enableTestSupportInCsv() {
         TestUtils.waitFor(() -> "AtLatestKnown".equalsIgnoreCase(getSubscription().getJSONObject("status").getString("state")), 2, 60 * 3,
             "CSV didn't get installed in time");
         JSONObject json = new JSONObject(
-            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), CSV_NAME));
+            OpenShiftUtils.getInstance().customResource(getCSVContext()).get(TestConfiguration.openShiftNamespace(), TestConfiguration.getOperatorHubCSVName()));
         JSONObject operatorDeployment =
             json.getJSONObject("spec").getJSONObject("install").getJSONObject("spec").getJSONArray("deployments").getJSONObject(0);
         JSONArray envVars =
@@ -999,11 +906,24 @@ public class Syndesis implements Resource {
         envVars.put(TestUtils.map("name", "TEST_SUPPORT", "value", "true"));
         try {
             OpenShiftUtils.getInstance().customResource(getCSVContext())
-                .edit(TestConfiguration.openShiftNamespace(), CSV_NAME, json.toMap());
+                .edit(TestConfiguration.openShiftNamespace(), TestConfiguration.getOperatorHubCSVName(), json.toMap());
             return true;
         } catch (Exception e) {
             log.error("Couldn't edit Syndesis CSV", e);
             return false;
+        }
+    }
+
+    private void waitingForSyndesisOperator(String operatorResourcesName){
+        log.info("Waiting for syndesis-operator to be ready");
+        try {
+            OpenShiftUtils.getInstance().waiters()
+                .areExactlyNPodsReady(1, "syndesis.io/component", operatorResourcesName)
+                .interval(TimeUnit.SECONDS, 20)
+                .timeout(TimeUnit.MINUTES, 10)
+                .waitFor();
+        } catch (WaiterException e) {
+            InfraFail.fail("Unable to find operator pod in 10 minutes");
         }
     }
 }
