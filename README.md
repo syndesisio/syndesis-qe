@@ -300,18 +300,15 @@ To install syndesis using a particular operator image, use the following paramet
 You can also use the property `syndesis.config.build.properties.url` to specify a URL to a properties file, that will be sourced, so if you prefer, you can "hide" all command-line properties into one file and use only one parameter for the configuration.
 
 #### Deploying Syndesis from Operatorhub via the testsuite
-You can deploy Syndesis via Operatorhub using the deploy profile and providing bundle or index image. You will need to add the following entries into test.properties:
-```
-syndesis.config.quay.pullsecret=<pull-secret to pull from quay, you can generate it here: https://cloud.redhat.com/openshift/install/crc/installer-provisioned>
-
-syndesis.config.quay.username=<quay username in plaintext>
-syndesis.config.quay.password=<quay password in plaintext or encrypted password>
-syndesis.config.quay.namespace=<quay namespace to pull from & deploy index to>
-syndesis.config.quay.auth.token=<quay token for a robot linked to the quay namespace>
-syndesis.config.quay.opsrc.token=<follow https://github.com/jboss-fuse/marketplace-utilities for instructions>
+You can deploy Syndesis via Operatorhub using the deploy profile and set `syndesis.config.install.operatorhub` to `true`.
+In that case the latest released Fuse Online is used from `Red Hat` catalog source.
+If you want to use your own catalog source (e.g. for testing new image), you need to set `syndesis.config.operatorhub.catalogsource` and `syndesis.config.operatorhub.csv.name`.
 
 ```
-And you can specify a bundle to be used with following parameter: `-Dsyndesis.config.bundle.image=<bundle-image-refspec>` to deploy Syndesis from this bundle. If you want to use an already existing index image you can use parameter: `-Dsyndesis.config.index.image=<index-image-refspec>`. 
+syndesis.config.install.operatorhub=true
+syndesis.config.operatorhub.catalogsource=fuse-online-iib-images
+syndesis.config.operatorhub.csv.name=fuse-online.v7.10.1
+```
 
 ##### Using maven central proxy
 Maven central is used when building integrations in minishift. That can occasionally fail, because a request limit is reached.
