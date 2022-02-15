@@ -98,6 +98,10 @@ elif [ "${MODE,,}" = "delorean" ]; then
 fi
 
 Xvfb :99 -ac &
+if [ ! "${VNC,,}" = "false" ]; then
+	/opt/bin/start-vnc.sh &
+  /opt/bin/start-novnc.sh &
+fi
 
 cat <<EOF > ./test.properties
 syndesis.config.ui.username=${UI_USERNAME}
