@@ -117,4 +117,9 @@ WORKDIR /home/seluser/syndesis-qe
 
 COPY default-cr.yml /home/seluser/fuse-online-install/
 
+RUN mkdir -p /home/seluser/.cache/selenium/geckodriver/linux64/0.26.0/ \
+    && ln -s /opt/geckodriver-0.26.0 /home/seluser/.cache/selenium/geckodriver/linux64/0.26.0/geckodriver
+
+COPY resolution.properties /home/seluser/.cache/selenium
+
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
