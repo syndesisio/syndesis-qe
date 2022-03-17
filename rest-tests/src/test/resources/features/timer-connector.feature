@@ -24,7 +24,7 @@ Feature: Integration - Timer
     And wait for integration with name: "timer-to-http-1" to become active
     And wait until integration timer-to-http-1 processed at least 1 message
     # +2sec since it takes some time to http server for processing the event
-    Then verify that after 9 seconds there was 2 call
+    Then verify that after 10 seconds there was 2 call
 
   @delorean
   @cron-timer

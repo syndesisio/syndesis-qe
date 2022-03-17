@@ -129,13 +129,13 @@ public class HTTPValidationSteps {
                                 .endVolume()
                                 .editFirstContainer()
                                     .addNewVolumeMount()
-                                        .withNewMountPath("/opt/jboss/")
+                                        .withNewMountPath("/opt/keystore/")
                                         .withName("keystore")
                                     .endVolumeMount()
                                     .addToEnv(new EnvVar(
                                         "JAVA_OPTIONS",
                                         "-Djackson.deserialization.whitelist.packages=io.syndesis.common.model,io.atlasmap" +
-                                        " -Djavax.net.ssl.trustStore=/opt/jboss/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
+                                        " -Djavax.net.ssl.trustStore=/opt/keystore/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
                                         null
                                     ))
                                 .endContainer()

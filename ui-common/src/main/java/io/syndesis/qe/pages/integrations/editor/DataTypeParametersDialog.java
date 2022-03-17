@@ -34,6 +34,9 @@ public class DataTypeParametersDialog extends ModalDialogPage {
 
     public void addParameter(String paramName, String value) {
         int numberOfParams = getNumberOfParameters();
+        if (!getRootElement().text().contains("CSV File Format")) {
+            getRootElement().find(Button.ADD_PARAMETER).shouldBe(visible).click();
+        }
         getRootElement().find(Button.ADD_PARAMETER).shouldBe(visible).click();
         SelenideElement newParameterRootElement = getParameterRootElement(numberOfParams + 1);
         newParameterRootElement.find(Element.PARAMETER_SELECT).selectOptionContainingText(paramName);
