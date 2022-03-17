@@ -330,8 +330,8 @@ Feature: Conditional flows - content base routing
     And select "Advanced expression builder" integration action
     When Add another condition
     And fill in values by element data-testid
-      | flowconditions-0-condition | first  |
-      | flowconditions-1-condition | second |
+      | flowconditions-0-condition | ${body.message} == 'first'  |
+      | flowconditions-1-condition | ${body.message} == 'second' |
     And fill in values by element data-testid
       | usedefaultflow | true |
     And click on the "Next" button
@@ -342,15 +342,15 @@ Feature: Conditional flows - content base routing
     When edit integration step on position 2
     Then validate that condition count is equal to 2
     And validate condition content in condition flow step
-      | 0 | first  |
-      | 1 | second |
+      | 0 | ${body.message} == 'first'  |
+      | 1 | ${body.message} == 'second' |
 
     When fill in values by element data-testid
       | usedefaultflow             | false   |
-      | flowconditions-0-condition | changed |
+      | flowconditions-0-condition | ${body.message} == 'changed' |
     And validate condition content in condition flow step
-      | 0 | changed |
-      | 1 | second  |
+      | 0 | ${body.message} == 'changed' |
+      | 1 | ${body.message} == 'second' |
     And click on the "Next" button
     And click on the "Next" button
     Then check that conditional flow step contains 2 flows
@@ -358,8 +358,8 @@ Feature: Conditional flows - content base routing
     When edit integration step on position 2
     Then validate that condition count is equal to 2
     And validate condition content in condition flow step
-      | 0 | changed |
-      | 1 | second  |
+      | 0 | ${body.message} == 'changed' |
+      | 1 | ${body.message} == 'second' |
 
 
   @integrations-conditional-flows-multiple-flows
