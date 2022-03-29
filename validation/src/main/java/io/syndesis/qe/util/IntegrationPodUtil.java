@@ -17,9 +17,15 @@ public class IntegrationPodUtil {
         final String integrationPodName = OpenShiftUtils.getPodByPartialName("i-" + integrationName).get().getMetadata().getName();
         // It adds quotes around the command for exec and oc client doesn't understand that, so rsync the file instead
         OpenShiftUtils.binary().execute(
+            "exec",
+            "-n", TestConfiguration.openShiftNamespace(), integrationPodName, "--", "/bin/bash", "-c",
+            "unzip -p /deployments/project-0.1-SNAPSHOT.jar META-INF/maven/io.syndesis.integrations/project/pom.xml > /deployments/pom.xml"
+        );
+
+        OpenShiftUtils.binary().execute(
             "rsync",
             "-n", TestConfiguration.openShiftNamespace(),
-            integrationPodName + ":/tmp/src/pom.xml",
+            integrationPodName + ":/deployments/pom.xml",
             "/tmp"
         );
 
