@@ -26,6 +26,7 @@ import com.vdurmont.semver4j.Semver;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +56,7 @@ public class UpgradeSteps {
     @When("^prepare upgrade$")
     public void getUpgradeVersions() {
         Syndesis syndesis = ResourceFactory.get(PreviousSyndesis.class);
+        syndesis.defaultValues();
         // If it is a prod build, we can use released images from registry.redhat.io
         if (TestUtils.isProdBuild()) {
             // If it is a prod build and the version is null, it means it was started by test-runner, so skip it as for prod upgrade there is a
@@ -105,6 +107,9 @@ public class UpgradeSteps {
         log.info("Upgrade properties:");
         log.info("  Previous version: " + TestConfiguration.upgradePreviousVersion());
         log.info("  Current version:  " + TestConfiguration.upgradeCurrentVersion());
+
+        //temporary fix fox 1.12.x
+        OpenShiftUtils.binary().execute("delete", "crd", "syndesises.syndesis.io");
     }
 
     @When("^perform syndesis upgrade to newer version using operator$")
@@ -115,6 +120,12 @@ public class UpgradeSteps {
         syndesis.installCluster();
         syndesis.grantPermissions();
         syndesis.deployOperator();
+        if (OpenShiftUtils.isOpenshift3()) {
+            // Workaround for https://issues.redhat.com/browse/ENTESB-17354
+            JSONObject cr = new JSONObject(syndesis.getCr());
+            cr.getJSONObject("status").put("forceUpgrade", "false");
+            syndesis.editCr(cr.toMap());
+        }
     }
 
     @Then("^verify syndesis \"([^\"]*)\" version$")
