@@ -64,6 +64,9 @@ if [ "${MODE,,}" = "full" ]; then
 
 	pushd /home/seluser/fuse-online-install
 
+	# Workaround for 4.11
+	sed -i 's/check_error $jaeger_enabled/check_error $jaeger_enabled\n sleep 1m\n .\/workaround411.sh/g' ./install_ocp.sh
+
 	oc login  --insecure-skip-tls-verify=true -u "${UI_USERNAME}" -p "${UI_PASSWORD}" "${URL}"
 	oc new-project ${NAMESPACE}
 	oc login  --insecure-skip-tls-verify=true -u "${ADMIN_USERNAME}" -p "${ADMIN_PASSWORD}" "${URL}"
@@ -78,13 +81,18 @@ if [ "${MODE,,}" = "full" ]; then
 		oc create secret generic syndesis-pull-secret --from-file=.dockerconfigjson=/tmp/secret --type=kubernetes.io/dockerconfigjson
 	fi
 	./install_ocp.sh --skip-pull-secret
-
+	./workaround411.sh
+	
 	oc patch syndesis app -p '{"spec": {"demoData": true, "addons": {"todo": {"enabled": true}}}}' --type=merge
 	oc get syndesis app -o yaml > /tmp/syndesis.yml
 	oc delete syndesis app
 	until [[ "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
 	oc create -f /tmp/syndesis.yml
+	
+	sleep 1m
+	./workaround411.sh
 	until [[ ! "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
+	./workaround411.sh
 	SERVER_POD="$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')"
 	oc set env deployment/syndesis-operator TEST_SUPPORT=true
 	echo "Waiting until server pod is reloaded"
