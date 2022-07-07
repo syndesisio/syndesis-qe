@@ -117,6 +117,7 @@ USER seluser
 WORKDIR /home/seluser/syndesis-qe
 
 COPY default-cr.yml /home/seluser/fuse-online-install/
+COPY workaround411.sh /home/seluser/fuse-online-install/
 
 RUN mkdir -p /home/seluser/.cache/selenium/geckodriver/linux64/0.30.0/ \
     && ln -s /opt/geckodriver-0.30.0 /home/seluser/.cache/selenium/geckodriver/linux64/0.30.0/geckodriver
