@@ -427,6 +427,11 @@ public final class OpenShiftUtils {
         return version != null && version.getMinor() != null && version.getMinor().contains("11+");
     }
 
+    public static boolean isLessThenOCP411(){
+        VersionInfo version = getInstance().getVersion();
+        return version != null && version.getMinor() != null && Double.parseDouble(version.getMinor())<11;
+    }
+
     public static boolean isCrc() {
         return TestConfiguration.openShiftUrl().matches("^.*api\\.crc.*:6443$");
     }
