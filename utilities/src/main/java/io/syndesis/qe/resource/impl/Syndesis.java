@@ -45,11 +45,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import cz.xtf.core.waiting.WaiterException;
-import io.fabric8.kubernetes.api.model.DoneableServiceAccount;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
-import io.fabric8.kubernetes.api.model.ObjectReference;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
@@ -58,10 +56,8 @@ import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionVersion;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.client.KubernetesClientException;
-import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
-import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -596,7 +592,7 @@ public class Syndesis implements Resource {
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
                 replacementRepo = TestConfiguration.prodRepository();
-            } else {
+            } if (!TestConfiguration.isOperatorHubInstall()) {
                 fail("Trying to deploy prod version using operator and system property " + TestConfiguration.PROD_REPOSITORY + " is not set!");
             }
         } else {
@@ -921,7 +917,7 @@ public class Syndesis implements Resource {
         }
     }
 
-    private void waitingForSyndesisOperator(String operatorResourcesName){
+    private void waitingForSyndesisOperator(String operatorResourcesName) {
         log.info("Waiting for syndesis-operator to be ready");
         try {
             OpenShiftUtils.getInstance().waiters()
@@ -937,8 +933,8 @@ public class Syndesis implements Resource {
     /**
      * oc secrets link syndesis-<component> syndesis-<component>-token
      */
-    private void workaround411(){
-        if(!OpenShiftUtils.isLessThenOCP411()) {
+    private void workaround411() {
+        if (!OpenShiftUtils.isLessThenOCP411()) {
             TestUtils.sleepIgnoreInterrupt(20000L);
             log.info("Workaround for OCP 4.11+");
             ServiceAccountList list = OpenShiftUtils.getInstance().serviceAccounts().list();
@@ -947,8 +943,9 @@ public class Syndesis implements Resource {
                     .filter(
                         secret -> secret.getMetadata().getName().contains(serviceAccount.getMetadata().getName() + "-token")
                     ).findFirst();
-                if(token.isPresent()){
-                    log.info(String.format("Linking SA: %s with token: %s", serviceAccount.getMetadata().getName(), token.get().getMetadata().getName()));
+                if (token.isPresent()) {
+                    log.info(
+                        String.format("Linking SA: %s with token: %s", serviceAccount.getMetadata().getName(), token.get().getMetadata().getName()));
                     OpenShiftUtils.binary().execute("secrets", "link", serviceAccount.getMetadata().getName(), token.get().getMetadata().getName());
                 }
             });
