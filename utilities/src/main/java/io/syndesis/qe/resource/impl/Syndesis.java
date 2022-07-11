@@ -606,7 +606,7 @@ public class Syndesis implements Resource {
         }
 
         Map<String, Object> mavenConfiguration = new HashMap<>();
-        if (TestConfiguration.appendRepository()) {
+        if (replacementRepo != null && TestConfiguration.appendRepository()) {
             log.info("Appending maven repo {}", replacementRepo);
             mavenConfiguration.put("append", true);
             mavenConfiguration.put("repositories", TestUtils.map(
@@ -616,7 +616,7 @@ public class Syndesis implements Resource {
                     "qe-repo", replacementRepo
                 )
             );
-        } else {
+        } else if (replacementRepo != null) {
             log.info("Adding maven repo {}", replacementRepo);
             mavenConfiguration.put("append", false);
             mavenConfiguration.put("repositories", TestUtils.map(
