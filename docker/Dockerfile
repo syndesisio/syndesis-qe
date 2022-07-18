@@ -89,7 +89,7 @@ RUN mvn -P ui clean install -DskipTests
 COPY credentials_minimal.json /syndesis-qe/credentials.json
 
 #================================================================================================================================
-FROM docker.io/selenium/standalone-firefox:96.0 as runningEnv
+FROM docker.io/selenium/standalone-chrome:103.0 as runningEnv
 
 WORKDIR /home/seluser
 COPY --from=buildSyndesisQE /root/.m2/repository/ /home/seluser/.m2/repository/
@@ -118,9 +118,6 @@ WORKDIR /home/seluser/syndesis-qe
 
 COPY default-cr.yml /home/seluser/fuse-online-install/
 COPY workaround411.sh /home/seluser/fuse-online-install/
-
-RUN mkdir -p /home/seluser/.cache/selenium/geckodriver/linux64/0.30.0/ \
-    && ln -s /opt/geckodriver-0.30.0 /home/seluser/.cache/selenium/geckodriver/linux64/0.30.0/geckodriver
 
 COPY resolution.properties /home/seluser/.cache/selenium
 

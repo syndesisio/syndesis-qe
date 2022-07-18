@@ -117,7 +117,7 @@ syndesis.config.ui.password=${UI_PASSWORD}
 syndesis.config.openshift.namespace=${NAMESPACE}
 syndesis.config.openshift.namespace.lock=false
 syndesis.config.openshift.namespace.cleanup=false
-syndesis.config.ui.browser=firefox
+syndesis.config.ui.browser=chrome
 syndesis.config.single.user=${ONE_USER}
 EOF
 
