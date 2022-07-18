@@ -119,6 +119,4 @@ WORKDIR /home/seluser/syndesis-qe
 COPY default-cr.yml /home/seluser/fuse-online-install/
 COPY workaround411.sh /home/seluser/fuse-online-install/
 
-COPY resolution.properties /home/seluser/.cache/selenium
-
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
