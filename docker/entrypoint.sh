@@ -53,57 +53,6 @@ else
     echo "The Syndesis UI URL was not specified. The test suite suppose that the Syndesis UI URL is in default format (when the user doesn't specify URL during the Syndesis install, e.g. https://syndesis-<namespace>.apps.<cluster>). The OAuth tests will not work!"
 fi
 
-IS_DELOREAN=false
-	oc login  --insecure-skip-tls-verify=true -u "${ADMIN_USERNAME}" -p "${ADMIN_PASSWORD}" "${URL}"
-# Full mode means install & test
-if [ "${MODE,,}" = "full" ]; then
-	echo "Using full mode, deploying Fuse Online"
-
-	oc delete project ${NAMESPACE} || :
-	until ! oc project "${NAMESPACE}"; do echo "Project still exists"; sleep 5; done
-
-	pushd /home/seluser/fuse-online-install
-
-	# Workaround for 4.11
-	sed -i 's/check_error $jaeger_enabled/check_error $jaeger_enabled\n sleep 1m\n .\/workaround411.sh/g' ./install_ocp.sh
-
-	oc login  --insecure-skip-tls-verify=true -u "${UI_USERNAME}" -p "${UI_PASSWORD}" "${URL}"
-	oc new-project ${NAMESPACE}
-	oc login  --insecure-skip-tls-verify=true -u "${ADMIN_USERNAME}" -p "${ADMIN_PASSWORD}" "${URL}"
-	oc project ${NAMESPACE}
-	./install_ocp.sh --setup
-	./install_ocp.sh --grant ${UI_USERNAME}
-
-	oc login  --insecure-skip-tls-verify=true -u "${UI_USERNAME}" -p "${UI_PASSWORD}" "${URL}"
-	oc project ${NAMESPACE}
-	if [ -n "${PULL_SECRET}" ]; then
-		base64 -d <<< "${PULL_SECRET}" > /tmp/secret
-		oc create secret generic syndesis-pull-secret --from-file=.dockerconfigjson=/tmp/secret --type=kubernetes.io/dockerconfigjson
-	fi
-	./install_ocp.sh --skip-pull-secret
-	./workaround411.sh
-	
-	oc patch syndesis app -p '{"spec": {"demoData": true, "addons": {"todo": {"enabled": true}}}}' --type=merge
-	oc get syndesis app -o yaml > /tmp/syndesis.yml
-	oc delete syndesis app
-	until [[ "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
-	oc create -f /tmp/syndesis.yml
-	
-	sleep 1m
-	./workaround411.sh
-	until [[ ! "$(oc get pods -l syndesis.io/component=syndesis-server 2>&1 || echo No resources)" == "No resources"* ]]; do sleep 5; done
-	./workaround411.sh
-	SERVER_POD="$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')"
-	oc set env deployment/syndesis-operator TEST_SUPPORT=true
-	echo "Waiting until server pod is reloaded"
-	until [[ ! "$(oc get pod -l syndesis.io/component=syndesis-server -o 'jsonpath={.items[*].metadata.name}')" == *"${SERVER_POD}"* ]]; do sleep 5; done
-
-	echo "Waiting until all pods are ready"
-	until [[ ! "$(oc get pods -l syndesis.io/component -o jsonpath='{.items[*].status.containerStatuses[0].ready}' 2>/dev/null || echo false)" == *"false"* ]]; do sleep 5; done
-	popd
-elif [ "${MODE,,}" = "delorean" ]; then
-	IS_DELOREAN=true
-fi
 
 Xvfb :99 -ac &
 if [ ! "${VNC,,}" = "false" ]; then
@@ -116,8 +65,7 @@ syndesis.config.ui.username=${UI_USERNAME}
 syndesis.config.ui.password=${UI_PASSWORD}
 syndesis.config.openshift.namespace=${NAMESPACE}
 syndesis.config.openshift.namespace.lock=false
-syndesis.config.openshift.namespace.cleanup=false
-syndesis.config.ui.browser=firefox
+syndesis.config.ui.browser=chrome
 syndesis.config.single.user=${ONE_USER}
 EOF
 
@@ -125,7 +73,7 @@ if [ -n "${UI_URL}" ]; then
 	echo "syndesis.config.ui.url=${UI_URL}" >> ./test.properties
 fi
 
-if [ "${IS_DELOREAN}" = "true" ]; then
+if [ "${MODE,,}" = "delorean" ]; then
 	echo "syndesis.config.environment.delorean=true" >> ./test.properties
 else
 	cat <<EOF >> ./test.properties
@@ -135,6 +83,31 @@ syndesis.config.admin.password=${ADMIN_PASSWORD}
 syndesis.config.enableTestSupport=true
 EOF
 fi
+
+oc login  --insecure-skip-tls-verify=true -u "${ADMIN_USERNAME}" -p "${ADMIN_PASSWORD}" "${URL}"
+# Full mode means install & test
+if [ "${MODE,,}" = "full" ]; then
+	
+	echo "Using full mode, deploying Fuse Online via OperatorHub. CatalogSource: ${CATALOG_SOURCE}, csv version: ${CSV_VERSION}, syndesis version ${SYNDESIS_VERSION}"
+
+	oc delete project ${NAMESPACE} || :
+	until ! oc project "${NAMESPACE}"; do echo "Project still exists"; sleep 5; done
+
+	oc login  --insecure-skip-tls-verify=true -u "${UI_USERNAME}" -p "${UI_PASSWORD}" "${URL}"
+	oc new-project ${NAMESPACE}
+	oc login  --insecure-skip-tls-verify=true -u "${ADMIN_USERNAME}" -p "${ADMIN_PASSWORD}" "${URL}"
+	oc project ${NAMESPACE}
+	
+	cat <<EOF >> ./test.properties
+syndesis.config.install.operatorhub=true
+syndesis.config.operatorhub.catalogsource=${CATALOG_SOURCE}
+syndesis.config.operatorhub.csv.name=${CSV_VERSION}
+syndesis.config.append.repository=false
+EOF
+	#deploy Fuse Online
+	./mvnw clean verify -fn -Prest -Pdeploy -Dtags="@deploy"
+fi
+
 
 CURRENT_RETRIES=0
 while [ ${CURRENT_RETRIES} -lt ${RETRIES} ]; do
@@ -151,3 +124,4 @@ while read -r FILE; do sudo mkdir -p /test-run-results/"$(dirname "$FILE")"; sud
 while read -r DIR; do sudo mkdir -p /test-run-results/"$DIR"; sudo cp -r "$DIR"/* /test-run-results/"$DIR"; done <<< "$(find * -maxdepth 2 -type d -wholename "*target/cucumber*")"
 
 [ -z "${HAS_FAILURES}" ] && exit 0 || exit 1
+

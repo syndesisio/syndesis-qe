@@ -34,8 +34,7 @@ ARG SYNDESIS_BRANCH_OWNER=syndesisio
 ARG SYNDESIS_BRANCH_VERSION=1.14.x
 ARG INSTALL_TAG=1.14
 
-RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis \
-	&& git clone -b ${INSTALL_TAG} https://github.com/${SYNDESIS_BRANCH_OWNER}/fuse-online-install.git /fuse-online-install
+RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
 
 #================================================================================================================================
 ## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
@@ -89,19 +88,13 @@ RUN mvn -P ui clean install -DskipTests
 COPY credentials_minimal.json /syndesis-qe/credentials.json
 
 #================================================================================================================================
-FROM docker.io/selenium/standalone-firefox:96.0 as runningEnv
+FROM docker.io/selenium/standalone-chrome:103.0 as runningEnv
 
 WORKDIR /home/seluser
 COPY --from=buildSyndesisQE /root/.m2/repository/ /home/seluser/.m2/repository/
 COPY --from=buildSyndesisQE /syndesis-qe /home/seluser/syndesis-qe
-COPY --from=gitRepoSyndesis /fuse-online-install /home/seluser/fuse-online-install
+
 COPY entrypoint.sh /home/seluser/entrypoint.sh
-## Default environment variables values
-ENV TAGS '@smoke'
-ENV MODULE 'all'
-ENV MODE 'full'
-ENV RETRIES '3'
-ENV VNC 'false'
 
 USER root
 RUN apt update -y \
@@ -116,12 +109,13 @@ RUN apt update -y \
 USER seluser
 WORKDIR /home/seluser/syndesis-qe
 
-COPY default-cr.yml /home/seluser/fuse-online-install/
-COPY workaround411.sh /home/seluser/fuse-online-install/
-
-RUN mkdir -p /home/seluser/.cache/selenium/geckodriver/linux64/0.30.0/ \
-    && ln -s /opt/geckodriver-0.30.0 /home/seluser/.cache/selenium/geckodriver/linux64/0.30.0/geckodriver
-
-COPY resolution.properties /home/seluser/.cache/selenium
+## Default environment variables values
+ENV TAGS '@smoke'
+ENV MODULE 'all'
+ENV MODE 'full'
+ENV RETRIES '3'
+ENV VNC 'false'
+ENV CATALOG_SOURCE 'redhat-operators'
+ENV CSV_VERSION 'fuse-online.v7.11.0'
 
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
