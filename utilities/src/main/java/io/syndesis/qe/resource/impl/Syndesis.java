@@ -592,7 +592,7 @@ public class Syndesis implements Resource {
         if (TestUtils.isProdBuild()) {
             if (TestConfiguration.prodRepository() != null) {
                 replacementRepo = TestConfiguration.prodRepository();
-            } if (!TestConfiguration.isOperatorHubInstall()) {
+            } else if (!TestConfiguration.isOperatorHubInstall()) {
                 fail("Trying to deploy prod version using operator and system property " + TestConfiguration.PROD_REPOSITORY + " is not set!");
             }
         } else {
