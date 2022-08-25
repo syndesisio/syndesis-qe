@@ -113,8 +113,6 @@ public class Syndesis implements Resource {
     public void deployCrAndRoutes() {
         log.info("Deploying Syndesis CR");
         deploySyndesisViaOperator();
-        workaround411();
-        workaround411();
         changeRuntime(TestConfiguration.syndesisRuntime());
         checkRoute();
         TodoUtils.createDefaultRouteForTodo("todo2", "/");
@@ -582,6 +580,8 @@ public class Syndesis implements Resource {
                 crJson.getJSONObject("spec").put("demoData", true);
             }
             createCr(crJson.toMap());
+            workaround411();
+            workaround411();
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
@@ -933,7 +933,7 @@ public class Syndesis implements Resource {
     /**
      * oc secrets link syndesis-<component> syndesis-<component>-token
      */
-    private void workaround411() {
+    public void workaround411() {
         if (!OpenShiftUtils.isLessThenOCP411()) {
             TestUtils.sleepIgnoreInterrupt(20000L);
             log.info("Workaround for OCP 4.11+");
