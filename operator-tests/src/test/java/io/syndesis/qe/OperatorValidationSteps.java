@@ -133,6 +133,8 @@ public class OperatorValidationSteps {
             } else {
                 String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
+                syndesis.workaround411();
+                syndesis.workaround411();
                 //don't do workarounds for external Jaeger
                 if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
                     syndesis.jaegerWorkarounds();
