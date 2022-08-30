@@ -17,5 +17,7 @@ public class PreviousSyndesis extends Syndesis {
         super.installCluster();
         super.deployOperator();
         deploySyndesisViaOperator();
+        super.workaround411();
+        super.workaround411();
     }
 }

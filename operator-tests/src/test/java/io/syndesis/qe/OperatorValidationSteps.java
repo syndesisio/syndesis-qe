@@ -127,18 +127,18 @@ public class OperatorValidationSteps {
             if (file == null) {
                 syndesis.deploySyndesisViaOperator();
                 //don't do workarounds for external Jaeger
-                if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
-                    syndesis.jaegerWorkarounds();
-                }
             } else {
                 String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-                syndesis.workaround411();
-                syndesis.workaround411();
-                //don't do workarounds for external Jaeger
-                if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
-                    syndesis.jaegerWorkarounds();
+                if (!TestUtils.isProdBuild()) {
+                    //workaround is not in the upstream yet
+                    syndesis.workaround411();
+                    syndesis.workaround411();
                 }
+                //don't do workarounds for external Jaeger
+            }
+            if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+                syndesis.jaegerWorkarounds();
             }
         } catch (IOException e) {
             fail("Couldn't create CR from provided file", e);
