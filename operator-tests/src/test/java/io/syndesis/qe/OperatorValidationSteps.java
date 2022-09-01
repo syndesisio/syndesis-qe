@@ -127,18 +127,13 @@ public class OperatorValidationSteps {
             if (file == null) {
                 syndesis.deploySyndesisViaOperator();
                 //don't do workarounds for external Jaeger
-                if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
-                    syndesis.jaegerWorkarounds();
-                }
             } else {
                 String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-                syndesis.workaround411();
-                syndesis.workaround411();
                 //don't do workarounds for external Jaeger
-                if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
-                    syndesis.jaegerWorkarounds();
-                }
+            }
+            if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
+                syndesis.jaegerWorkarounds();
             }
         } catch (IOException e) {
             fail("Couldn't create CR from provided file", e);
@@ -379,8 +374,10 @@ public class OperatorValidationSteps {
             if (!OpenShiftUtils.isOpenshift3()) {
                 if (OpenShiftUtils.isOSD()) {
                     pv.withStorageClassName("gp2");
-                } else {
+                } else if (OpenShiftUtils.isLessThenOCP411()){
                     pv.withStorageClassName("standard");
+                } else {
+                    pv.withStorageClassName("standard-csi"); // OCP 4.11+
                 }
             }
         } else {
