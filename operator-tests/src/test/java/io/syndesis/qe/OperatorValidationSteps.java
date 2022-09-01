@@ -130,11 +130,6 @@ public class OperatorValidationSteps {
             } else {
                 String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-                if (!TestUtils.isProdBuild()) {
-                    //workaround is not in the upstream yet
-                    syndesis.workaround411();
-                    syndesis.workaround411();
-                }
                 //don't do workarounds for external Jaeger
             }
             if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
@@ -379,8 +374,10 @@ public class OperatorValidationSteps {
             if (!OpenShiftUtils.isOpenshift3()) {
                 if (OpenShiftUtils.isOSD()) {
                     pv.withStorageClassName("gp2");
-                } else {
+                } else if (OpenShiftUtils.isLessThenOCP411()){
                     pv.withStorageClassName("standard");
+                } else {
+                    pv.withStorageClassName("standard-csi"); // OCP 4.11+
                 }
             }
         } else {

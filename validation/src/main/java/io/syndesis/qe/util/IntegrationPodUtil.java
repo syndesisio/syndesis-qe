@@ -19,7 +19,8 @@ public class IntegrationPodUtil {
         OpenShiftUtils.binary().execute(
             "exec",
             "-n", TestConfiguration.openShiftNamespace(), integrationPodName, "--", "/bin/bash", "-c",
-            "unzip -p /deployments/project-0.1-SNAPSHOT.jar META-INF/maven/io.syndesis.integrations/project/pom.xml > /deployments/pom.xml"
+            "jar xf /deployments/project-0.1-SNAPSHOT.jar META-INF/maven/io.syndesis.integrations/project/pom.xml && " +
+                "cp META-INF/maven/io.syndesis.integrations/project/pom.xml /deployments/pom.xml"
         );
 
         OpenShiftUtils.binary().execute(
