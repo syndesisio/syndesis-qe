@@ -580,6 +580,11 @@ public class Syndesis implements Resource {
                 crJson.getJSONObject("spec").put("demoData", true);
             }
             createCr(crJson.toMap());
+            if (TestUtils.isProdBuild() && TestConfiguration.syndesisVersion().contains("1.14.0.fuse-7_11_0")) {
+                //workaround is not in version < 7.11.1
+                workaround411();
+                workaround411();
+            }
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
