@@ -126,12 +126,16 @@ public class OperatorValidationSteps {
         try {
             if (file == null) {
                 syndesis.deploySyndesisViaOperator();
-                //don't do workarounds for external Jaeger
             } else {
                 String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-                //don't do workarounds for external Jaeger
+                if (TestUtils.isProdBuild() && TestConfiguration.syndesisVersion().contains("1.14.0.fuse-7_11_0")) {
+                    //workaround is not in version < 7.11.1
+                    syndesis.workaround411();
+                    syndesis.workaround411();
+                }
             }
+            //don't do workarounds for external Jaeger
             if (syndesis.isAddonEnabled(Addon.JAEGER) && !syndesis.containsAddonProperty(Addon.JAEGER, "collectorUri")) {
                 syndesis.jaegerWorkarounds();
             }
