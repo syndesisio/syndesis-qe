@@ -31,6 +31,10 @@ echo "MODE: ${MODE}"
 echo "USER: $(whoami)"
 echo "RETRIES: ${RETRIES}"
 
+echo "CATALOG_SOURCE: ${CATALOG_SOURCE}"
+echo "CSV_VERSION: ${CSV_VERSION}"
+echo "CSV_CHANNEL: ${CSV_CHANNEL}"
+
 if [[ -z "${CREDENTIALS_URL}" ]]; then
   echo "URL for credentials.json with 3rd party services credentials was not set in CREDENTIALS_URL env. Tests that use 3rd party services will fail."
 else
@@ -87,8 +91,21 @@ fi
 oc login  --insecure-skip-tls-verify=true -u "${ADMIN_USERNAME}" -p "${ADMIN_PASSWORD}" "${URL}"
 # Full mode means install & test
 if [ "${MODE,,}" = "full" ]; then
-	
-	echo "Using full mode, deploying Fuse Online via OperatorHub. CatalogSource: ${CATALOG_SOURCE}, csv version: ${CSV_VERSION}, syndesis version ${SYNDESIS_VERSION}"
+
+  if [ -z "${CSV_VERSION}" ]
+  then
+        echo "\$CSV_VERSION env is empty. Trying to detect CSV version from CatalogSource"
+        # get all packagemanifests from the desired catalogsource, print name and CSV version for the latest channel, then grep only `fuse online` element and return only CSV version
+        CSV_VERSION=$(oc get -n openshift-marketplace packagemanifests -l catalog==${CATALOG_SOURCE} -o=custom-columns=NAME:.metadata.name,CSVLATEST:".status.channels[?(@.name==\"${CSV_CHANNEL}\")].currentCSV" | grep 'fuse-online ' | awk -F ' ' '{ print $2 }')
+        # empty when catalog source doesn't exist, none when channel doesn't exist
+        if [ -z "${CSV_VERSION}" ] || [ "${CSV_VERSION}" == '<none>' ]
+        then
+          echo "[ERROR] Unable to find CSV_VERSION in the \"${CSV_CHANNEL}\" channel for fuse-online packagemanifest in \"${CATALOG_SOURCE}\" catalog source. Check it manually if catalogsource or channel exist or specify CSV_VERSION env explicitly!"
+          exit 1
+        fi
+  fi
+
+	echo "Using full mode, deploying Fuse Online via OperatorHub. CatalogSource: ${CATALOG_SOURCE}, csv version: ${CSV_VERSION}"
 
 	oc delete project ${NAMESPACE} || :
 	until ! oc project "${NAMESPACE}"; do echo "Project still exists"; sleep 5; done

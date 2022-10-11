@@ -116,6 +116,6 @@ ENV MODE 'full'
 ENV RETRIES '3'
 ENV VNC 'false'
 ENV CATALOG_SOURCE 'redhat-operators'
-ENV CSV_VERSION 'fuse-online.v7.11.0-0.1665054365.p'
+ENV CSV_CHANNEL 'latest'
 
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
