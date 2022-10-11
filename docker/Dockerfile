@@ -88,7 +88,7 @@ RUN mvn -P ui clean install -DskipTests
 COPY credentials_minimal.json /syndesis-qe/credentials.json
 
 #================================================================================================================================
-FROM docker.io/selenium/standalone-chrome:103.0 as runningEnv
+FROM docker.io/selenium/standalone-chrome:106.0 as runningEnv
 
 WORKDIR /home/seluser
 COPY --from=buildSyndesisQE /root/.m2/repository/ /home/seluser/.m2/repository/
@@ -116,6 +116,6 @@ ENV MODE 'full'
 ENV RETRIES '3'
 ENV VNC 'false'
 ENV CATALOG_SOURCE 'redhat-operators'
-ENV CSV_VERSION 'fuse-online.v7.11.0-0.1662457147.p'
+ENV CSV_CHANNEL 'latest'
 
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]

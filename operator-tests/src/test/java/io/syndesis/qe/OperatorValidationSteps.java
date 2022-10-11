@@ -129,7 +129,8 @@ public class OperatorValidationSteps {
             } else {
                 String content = getCrFromFileAsString(file);
                 syndesis.getSyndesisCrClient().create(TestConfiguration.openShiftNamespace(), content);
-                if (TestUtils.isProdBuild() && TestConfiguration.syndesisVersion().contains("1.14.0.fuse-7_11_0")) {
+                if (TestUtils.isProdBuild() && TestConfiguration.syndesisVersion().contains("1.14.0.fuse-7_11_0") ||
+                    TestConfiguration.isOperatorHubInstall() && TestConfiguration.getOperatorHubCSVName().contains("fuse-online.v7.11.0")) {
                     //workaround is not in version < 7.11.1
                     syndesis.workaround411();
                     syndesis.workaround411();

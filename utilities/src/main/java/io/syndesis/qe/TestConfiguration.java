@@ -394,7 +394,7 @@ public class TestConfiguration {
     }
 
     public static String getOperatorHubCSVName() {
-        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-online.v7.11.0-0.1662457147.p");
+        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-online.v7.11.0-0.1665054365.p");
     }
 
     public static String keycloakNamespace() {
