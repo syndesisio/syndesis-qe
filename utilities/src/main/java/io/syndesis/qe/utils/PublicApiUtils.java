@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.fail;
 
 import io.syndesis.qe.TestConfiguration;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import io.fabric8.kubernetes.api.model.ServiceAccount;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +33,8 @@ public class PublicApiUtils {
                     .done();
             OpenShiftUtils.getInstance().addRoleToUser("edit", "system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":syndesis-cd-client");
         }
-        publicApiToken = OpenShiftUtils.binary().execute("sa", "get-token", SERVICE_ACCOUNT_NAME);
+        publicApiToken = new String(
+            Base64.decode(OpenShiftUtils.getInstance().secrets().list().getItems().stream().filter(secret -> secret.getMetadata().getName().contains(SERVICE_ACCOUNT_NAME + "-token")).findFirst().get().getData().get("token")));
     }
 
     public static String getPublicToken() {
