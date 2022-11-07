@@ -17,6 +17,7 @@ import io.syndesis.qe.utils.ByUtils;
 import io.syndesis.qe.utils.OpenShiftUtils;
 import io.syndesis.qe.utils.TestUtils;
 
+import org.openqa.selenium.By;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.codeborne.selenide.ElementsCollection;
@@ -65,6 +66,8 @@ public class KafkaSteps {
             connectionsPage.fillInput($(ByUtils.containsId("password")), kafkaAccount.getProperty("clientSecret"));
             if (saslMechanism.contains("OAUTHBEARER")) {
                 commonSteps.selectsFromDropdown("OAUTHBEARER", "saslmechanism");
+                connectionsPage.fillInput($(By.name("oauthTokenEndpointURI")), "https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token");
+
             } else {
                 commonSteps.selectsFromDropdown("PLAIN", "saslmechanism");
                 connectionsPage.fillInput($(ByUtils.containsId("sasllogincallbackhandlerclass")), "");
