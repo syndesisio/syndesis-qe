@@ -1,6 +1,7 @@
 # @sustainer: alice.rum@redhat.com
 
 @ui
+@notOsd
 @oracle12
 @database
 @datamapper

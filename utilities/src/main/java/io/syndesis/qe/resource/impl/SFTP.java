@@ -20,6 +20,8 @@ import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.openshift.api.model.SecurityContextConstraints;
+import io.fabric8.openshift.api.model.SecurityContextConstraintsBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,6 +31,8 @@ public class SFTP implements Resource {
 
     private final String labelName = "app";
     private final String serviceAccountName = "mysvcacct";
+
+    private final String sccName = "sftp";
     private String appName;
     private int sftpPort;
     private String userAndPassword;
@@ -49,12 +53,17 @@ public class SFTP implements Resource {
                 new LocalObjectReference(TestConfiguration.syndesisPullSecretName())
             )
             .done();
-        OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
-            .addNewUser("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
-            .done();
-        OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
-            .addToDefaultAddCapabilities("SYS_CHROOT")
-            .done();
+
+        SecurityContextConstraints scc = OpenShiftUtils.getInstance().securityContextConstraints().create(
+            new SecurityContextConstraintsBuilder(OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").get())
+                .withNewMetadata() // new metadata to override the existing annotations
+                .withName(sccName)
+                .endMetadata()
+                .addToDefaultAddCapabilities("SYS_CHROOT")
+                .build());
+
+        scc.getUsers().add("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName);
+        OpenShiftUtils.getInstance().securityContextConstraints().withName(scc.getMetadata().getName()).patch(scc);
 
         if (!isDeployed()) {
             List<ContainerPort> ports = new LinkedList<>();
@@ -114,9 +123,7 @@ public class SFTP implements Resource {
     @Override
     public void undeploy() {
         OpenShiftUtils.getInstance().deleteServiceAccount(OpenShiftUtils.getInstance().getServiceAccount(serviceAccountName));
-        OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").edit()
-            .removeFromUsers("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName)
-            .done();
+        OpenShiftUtils.getInstance().securityContextConstraints().withName(sccName).delete();
         OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(appName), true);
         OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(appName));
     }
