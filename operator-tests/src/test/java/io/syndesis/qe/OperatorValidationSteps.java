@@ -378,7 +378,7 @@ public class OperatorValidationSteps {
         if ("".equals(className)) {
             if (!OpenShiftUtils.isOpenshift3()) {
                 if (OpenShiftUtils.isOSD()) {
-                    pv.withStorageClassName("gp2");
+                    pv.withStorageClassName("gp3");
                 } else if (OpenShiftUtils.isLessThenOCP411()){
                     pv.withStorageClassName("standard");
                 } else {
@@ -408,7 +408,7 @@ public class OperatorValidationSteps {
             if (!OpenShiftUtils.isOpenshift3()) {
                 // This should always be the default value despite the actual value of className - that is used only in "test-pv" intentionally
                 if (OpenShiftUtils.isOSD()) {
-                    pv.withStorageClassName("gp2");
+                    pv.withStorageClassName("gp3");
                 } else {
                     pv.withStorageClassName("standard");
                 }

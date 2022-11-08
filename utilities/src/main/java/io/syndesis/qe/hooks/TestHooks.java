@@ -34,6 +34,12 @@ public class TestHooks {
         Assumptions.assumeThat(OpenShiftUtils.isOSD()).isTrue();
     }
 
+    @Before("@notOsd")
+    public void skipIfOSD() {
+        // Skip test if environment is OSD (e.g. when resources are behind VPN)
+        Assumptions.assumeThat(OpenShiftUtils.isOSD()).isFalse();
+    }
+
     @Before("@ocp3-only")
     public void skipIfNotOCP3() {
         // Skip test if environment is not OSD (with SSO)
