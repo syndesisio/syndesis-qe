@@ -49,6 +49,7 @@ public class TestConfiguration {
     public static final String SYNDESIS_CALLBACK_URL_SUFFIX = "syndesis.config.callbackUrlSuffix";
     public static final String SYNDESIS_ENABLE_TEST_SUPPORT = "syndesis.config.enableTestSupport";
     public static final String SYNDESIS_ENVIRONMENT_DELOREAN = "syndesis.config.environment.delorean";
+    public static final String SYNDESIS_ENVIRONMENT_DISCONNECTED = "syndesis.config.environment.disconnected";
 
     public static final String SYNDESIS_LOCAL_REST_URL = "syndesis.config.local.rest.url";
 
@@ -269,6 +270,10 @@ public class TestConfiguration {
         return Boolean.parseBoolean(get().readValue(SYNDESIS_ENVIRONMENT_DELOREAN));
     }
 
+    public static boolean isDisconnecterEnvironment() {
+        return Boolean.parseBoolean(get().readValue(SYNDESIS_ENVIRONMENT_DISCONNECTED, "false"));
+    }
+
     public static String syndesisCrdUrl() {
         if (OpenShiftUtils.isOpenshift3()) {
             return TestConfiguration.class.getClassLoader().getResource("syndesis-crd-3.11.yaml").toString();
@@ -474,7 +479,7 @@ public class TestConfiguration {
         }
 
         if (properties.getProperty(SYNDESIS_CR_URL) == null) {
-            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.13.x/default-cr.yml");
+            defaultProps.setProperty(SYNDESIS_CR_URL, "https://raw.githubusercontent.com/syndesisio/fuse-online-install/1.14.x/default-cr.yml");
         }
 
         defaultProps.setProperty(SYNDESIS_CUSTOM_RESOURCE_PLURAL, "syndesises");
