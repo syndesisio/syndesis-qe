@@ -247,16 +247,6 @@ public class CommonSteps {
 
             String linkText = "htpasswd";
 
-            // 3scale login
-            if (currentUrl.contains("osp") || currentUrl.contains("api-qe")) {
-                linkText = "HTPasswd";
-                // 3.11 clusters contain only Kerberos identity provider
-                if (!$(By.partialLinkText(linkText)).exists()) {
-                    linkText = "Kerberos PSI";
-                    login = new KeyCloakLogin();
-                }
-            }
-
             if (!currentUrl.contains("apps-crc.testing")) { // for CRC 1.27, no IDP chooser
                 $(By.partialLinkText(linkText)).click();
             }
