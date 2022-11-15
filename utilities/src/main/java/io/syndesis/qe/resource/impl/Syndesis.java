@@ -565,7 +565,14 @@ public class Syndesis implements Resource {
                 serverFeatures.put("integrationStateCheckInterval", TestConfiguration.stateCheckInterval());
             }
             serverFeatures.put("integrationLimit", 10);
+
+            if (TestConfiguration.isDisconnecterEnvironment()) {
+                crJson.getJSONObject("spec").getJSONObject("addons").getJSONObject("jaeger").put("enabled", false);
+                setupOauthProxyEnvVars(crJson);
+            }
+
             crJson.getJSONObject("spec").getJSONObject("addons").getJSONObject("todo").put("enabled", true);
+
             // add nexus
             addMavenRepo(serverFeatures);
 
@@ -589,6 +596,18 @@ public class Syndesis implements Resource {
         } catch (IOException ex) {
             throw new IllegalArgumentException("Unable to load operator syndesis template", ex);
         }
+    }
+
+    private void setupOauthProxyEnvVars(JSONObject crJson) {
+        crJson.getJSONObject("spec")
+                .getJSONObject("components")
+                .putOpt("oauth", new JSONObject())
+                .getJSONObject("oauth")
+                .putOpt("environment", new JSONObject())
+                .getJSONObject("environment")
+                .putOpt("HTTPS_PROXY", OpenShiftUtils.getClusterProxy("httpsProxy"))
+                .putOpt("HTTP_PROXY", OpenShiftUtils.getClusterProxy("httpProxy"))
+                .putOpt("NO_PROXY", OpenShiftUtils.getClusterProxy("noProxy"));
     }
 
     protected void addMavenRepo(JSONObject serverFeatures) {

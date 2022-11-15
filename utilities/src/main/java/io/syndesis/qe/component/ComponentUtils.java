@@ -41,7 +41,8 @@ public class ComponentUtils {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
         EnumSet<Component> components = EnumSet.of(OAUTH, PROMETHEUS, SERVER, UI, META, OPERATOR);
 
-        if (syndesis.isAddonEnabled(Addon.TODO)) {
+        // For disconnected cluster testing, this addon needs to be enabled for demo data, but won't actually run (cannot get to source code on github)
+        if (syndesis.isAddonEnabled(Addon.TODO) && !TestConfiguration.isDisconnecterEnvironment()) {
             components.add(TODO);
         }
 

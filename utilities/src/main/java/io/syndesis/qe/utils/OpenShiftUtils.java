@@ -470,4 +470,16 @@ public final class OpenShiftUtils {
     public static boolean isOSD() {
         return getInstance().getOpenshiftUrl().toString().contains("osd4");
     }
+
+    public static String getClusterProxy(String type) {
+        final String output = binary().execute(
+                "get",
+                "proxy",
+                "cluster",
+                String.format("-ojsonpath='{.status.%s}'", type)
+        );
+        log.info(type + " proxy: " + output);
+        return output;
+    }
+
 }
