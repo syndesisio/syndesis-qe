@@ -77,6 +77,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -992,9 +993,14 @@ public class CommonSteps {
         $(By.id("password")).shouldBe(visible).sendKeys(account.getProperty("password"));
         $(By.id("allow")).shouldBe(visible).click();
 
-        TestUtils.sleepIgnoreInterrupt(5000);
+        TestUtils.sleepIgnoreInterrupt(4000);
         //WIP the dialog is not appeared again.
-        if (!$$(ByUtils.customAttribute("name", "username")).isEmpty()) {
+        if ($(By.id("challenge_response")).exists()) {
+            $(By.id("challenge_response")).shouldBe(visible).sendKeys(account.getProperty("telNumber"));
+            $(By.id("email_challenge_submit")).shouldBe(visible).click();
+            TestUtils.sleepIgnoreInterrupt(2000);
+            $(By.id("allow")).shouldBe(visible).click();
+        } else if (!$$(ByUtils.customAttribute("name", "username")).isEmpty()) {
             $(ByUtils.customAttribute("name", "username")).shouldBe(visible).sendKeys(account.getProperty("screenName"));
             $$(ByUtils.customAttribute("role", "button")).stream().filter(p -> "Next".equals(p.text())).findFirst().get().click();
             TestUtils.sleepIgnoreInterrupt(5000);
@@ -1033,6 +1039,17 @@ public class CommonSteps {
 
         $(By.id("password")).shouldBe(visible).find(By.tagName("input")).sendKeys(googleAccount.getProperty("password"));
         $(By.id("passwordNext")).shouldBe(visible).click();
+
+        TestUtils.sleepIgnoreInterrupt(3000);
+        List<SelenideElement> confirmNumber =
+            $$(By.className("vxx8jf")).stream().filter(element -> element.text().contains("Confirm your recovery phone number"))
+                .collect(Collectors.toList());
+        if (!confirmNumber.isEmpty()) {
+            confirmNumber.get(0).click();
+            TestUtils.sleepIgnoreInterrupt(3000);
+            $(By.id("phoneNumberId")).shouldBe(visible).sendKeys(googleAccount.getProperty("telNumber"));
+            $$(By.className("VfPpkd-vQzf8d")).stream().filter(element -> element.text().contains("Next")).findFirst().get().click();
+        }
     }
 
     private void fillAndValidateConcur() {

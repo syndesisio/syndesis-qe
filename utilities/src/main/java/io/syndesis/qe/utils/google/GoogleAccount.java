@@ -45,8 +45,8 @@ public class GoogleAccount {
     private static Credential createGoogleCredential(Account account) {
 
         Map<String, String> accountProps = account.getProperties();
-        String clientId = accountProps.get("clientId");
-        String clientSecret = accountProps.get("clientSecret");
+        String clientId = accountProps.get("desktopClientId");
+        String clientSecret = accountProps.get("desktopClientSecret");
         String refreshToken = accountProps.get("refreshToken");
 
         Credential credential = new GoogleCredential.Builder()
