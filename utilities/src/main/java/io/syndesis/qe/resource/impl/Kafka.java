@@ -23,17 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Kafka implements Resource {
 
-    private static String RESOURCES_FOLDER = "../utilities/src/main/resources/kafka/amq-streams-%s-cluster-operator";
-    private static String KAFKA_CR = "../utilities/src/main/resources/kafka/kafka-ephemeral-%s.yaml";
+    /**
+     * Resources from repo https://github.com/jboss-container-images/amqstreams-1-openshift-image
+     */
+    private static String RESOURCES_FOLDER = "../utilities/src/main/resources/kafka/amq-streams-2.3-cluster-operator";
+    private static String KAFKA_CR = "../utilities/src/main/resources/kafka/kafka-ephemeral-2.3.yaml";
 
     public Kafka() {
-        if (OpenShiftUtils.isOpenshift3()) {
-            RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.6")).toAbsolutePath().toString();
-            KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.6")).toAbsolutePath().toString();
-        } else {
-            RESOURCES_FOLDER = Paths.get(String.format(RESOURCES_FOLDER, "1.8")).toAbsolutePath().toString();
-            KAFKA_CR = Paths.get(String.format(KAFKA_CR, "1.8")).toAbsolutePath().toString();
-        }
+        RESOURCES_FOLDER = Paths.get(RESOURCES_FOLDER).toAbsolutePath().toString();
+        KAFKA_CR = Paths.get(KAFKA_CR).toAbsolutePath().toString();
     }
 
     @Override
