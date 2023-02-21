@@ -20,6 +20,8 @@
 		<maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 		<failsafe.version>2.22.0</failsafe.version>
 		<apache.http.core.version>4.4.10</apache.http.core.version>
+		<!-- Need in webdrivermanager -->
+		<apache.httpclient5.version>5.2.1</apache.httpclient5.version>
 		<lombok.version>1.18.12</lombok.version>
 		<junit.version>4.13.1</junit.version>
 		<org.json.version>20160810</org.json.version>
@@ -37,7 +39,7 @@
 		<mysql.version>6.0.6</mysql.version>
 		<oracle.version>12.2.0.1</oracle.version>
 		<commons-lang3.version>3.10</commons-lang3.version>
-		<webdrivermanager.version>5.0.1</webdrivermanager.version>
+		<webdrivermanager.version>5.3.2</webdrivermanager.version>
 		<xtf.utilities.version>0.23</xtf.utilities.version>
 		<ftp.client.version>3.6</ftp.client.version>
 		<dropbox.core.sdk.version>3.0.6</dropbox.core.sdk.version>
