@@ -20,6 +20,8 @@
 		<maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
 		<failsafe.version>2.22.0</failsafe.version>
 		<apache.http.core.version>4.4.10</apache.http.core.version>
+		<!-- Need in webdrivermanager -->
+		<apache.httpclient5.version>5.2.1</apache.httpclient5.version>
 		<lombok.version>1.18.12</lombok.version>
 		<junit.version>4.13.1</junit.version>
 		<org.json.version>20160810</org.json.version>
