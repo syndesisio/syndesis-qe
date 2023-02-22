@@ -585,7 +585,7 @@ public class OperatorValidationSteps {
      */
     @Then("check that metering labels have correct values for \"([^\"]*)\"$")
     public void checkThatMeteringLabelsHaveCorrectValues(Component component) {
-        final String version = "7.11";
+        final String version = "7.12";
         final String company = "Red_Hat";
         final String prodName = "Red_Hat_Integration";
         final String componentName = "Fuse";
