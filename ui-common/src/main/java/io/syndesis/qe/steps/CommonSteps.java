@@ -955,9 +955,10 @@ public class CommonSteps {
 
         // change language if needs
         if ($(ByUtils.customAttribute("data-value", "en")).has(Condition.attribute("tabindex", "-1"))) {
-            $(By.id("lang-chooser")).click();
+            SelenideElement langChooser = $(ByUtils.customAttribute("jsname","wSASue")).shouldBe(Condition.exist);
+            langChooser.click();
             TestUtils.sleepIgnoreInterrupt(2000);
-            $(By.id("lang-chooser")).$$(ByUtils.customAttribute("data-value", "en")).filter(Condition.visible).get(0).click();
+            langChooser.$$(ByUtils.customAttribute("data-value", "en")).filter(Condition.visible).get(0).click();
             TestUtils.sleepIgnoreInterrupt(2000);
         }
 
