@@ -173,25 +173,25 @@ public class CommonSteps {
     @Given("^log into the Syndesis after logout$")
     public void loginAfterLogOut() {
 // just commented, in case KeyCloak will be used in the future for OSD.
-//        if (OpenShiftUtils.isOSD()) {
-//            //when SSO is used, the session needs to be deleted on KeyCloak too in order to fill credentials again.
-//            WebDriver driver = WebDriverRunner.getWebDriver();
-//            //open new tab and use it
-//            JavascriptExecutor jse = (JavascriptExecutor) driver;
-//            jse.executeScript("window.open()");
-//            ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
-//            driver.switchTo().window(tabs.get(1));
-//            String osdSuffix = "apps." + StringUtils.substringBetween(TestConfiguration.openShiftUrl(), "https://api.", ":6443");
-//
-//            String keyCloakLogoutUrl =
-//                String.format("https://keycloak-%s.%s/auth/realms/%s/protocol/openid-connect/logout", TestConfiguration.keycloakNamespace(),
-//                    osdSuffix, TestConfiguration.keyCloakSyndesisRealm());
-//
-//            driver.navigate().to(keyCloakLogoutUrl);
-//            TestUtils.sleepForJenkinsDelayIfHigher(3);
-//            driver.close();
-//            driver.switchTo().window(tabs.get(0));
-//        }
+        if (OpenShiftUtils.isOSD()) {
+            //when SSO is used, the session needs to be deleted on KeyCloak too in order to fill credentials again.
+            WebDriver driver = WebDriverRunner.getWebDriver();
+            //open new tab and use it
+            JavascriptExecutor jse = (JavascriptExecutor) driver;
+            jse.executeScript("window.open()");
+            ArrayList<String> tabs = new ArrayList<>(driver.getWindowHandles());
+            driver.switchTo().window(tabs.get(1));
+            String osdSuffix = "apps." + StringUtils.substringBetween(TestConfiguration.openShiftUrl(), "https://api.", ":6443");
+
+            String keyCloakLogoutUrl =
+                String.format("https://keycloak-%s.%s/auth/realms/%s/protocol/openid-connect/logout", TestConfiguration.keycloakNamespace(),
+                    osdSuffix, TestConfiguration.keyCloakSyndesisRealm());
+
+            driver.navigate().to(keyCloakLogoutUrl);
+            TestUtils.sleepForJenkinsDelayIfHigher(3);
+            driver.close();
+            driver.switchTo().window(tabs.get(0));
+        }
         doLogin(true);
     }
 
@@ -239,10 +239,10 @@ public class CommonSteps {
             GitHubLogin gitHubLogin = new GitHubLogin();
             gitHubLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
 // just commented, in case KeyCloak will be used in the future for OSD.
-//        } else if (currentUrl.contains("osd4") && currentUrl.contains("oauth/authorize")) {
-//            $(By.partialLinkText(TestConfiguration.keyCloakIdpName())).click();
-//            KeyCloakLogin kcLogin = new KeyCloakLogin();
-//            kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
+        } else if (currentUrl.contains("osd4") && currentUrl.contains("oauth/authorize")) {
+            $(By.partialLinkText(TestConfiguration.keyCloakIdpName())).click();
+            KeyCloakLogin kcLogin = new KeyCloakLogin();
+            kcLogin.login(TestConfiguration.syndesisUsername(), TestConfiguration.syndesisPassword());
         } else if (currentUrl.contains("oauth/authorize") || currentUrl.contains("oauth%2Fauthorize")) {
             Login login = new MinishiftLogin();
 

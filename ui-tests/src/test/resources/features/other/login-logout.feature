@@ -44,14 +44,14 @@ Feature: Login logout
 ## just commented, in case KeyCloak will be used in the future for OSD.
 ##  3. logout -> login with sso
 ##
-#  @osd
-#  @logout-test-logout-login-sso
-#  Scenario: Log out and log in with sso
-#    Then check visibility of Syndesis home page
-#
-#    When log out from Syndesis
-#    And log into the Syndesis after logout with SSO
-#    Then check visibility of Syndesis home page
+  @osd
+  @logout-test-logout-login-sso
+  Scenario: Log out and log in with sso
+    Then check visibility of Syndesis home page
+
+    When log out from Syndesis
+    And log into the Syndesis after logout with SSO
+    Then check visibility of Syndesis home page
 
 
 #
