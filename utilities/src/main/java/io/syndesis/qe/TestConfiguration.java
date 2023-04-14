@@ -110,6 +110,7 @@ public class TestConfiguration {
 
     private static final String INSTALL_VIA_OPERATORHUB = "syndesis.config.install.operatorhub";
     private static final String OPERATORHUB_CATALOG_SOURCE = "syndesis.config.operatorhub.catalogsource";
+    private static final String OPERATORHUB_CSV_CHANNEL = "syndesis.config.operatorhub.csv.channel";
     private static final String OPERATORHUB_CSV_NAME = "syndesis.config.operatorhub.csv.name";
 
     private static final String KEYCLOAK_NAMESPACE = "keycloak.namespace";
@@ -399,7 +400,11 @@ public class TestConfiguration {
     }
 
     public static String getOperatorHubCSVName() {
-        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-online.v7.11.0-0.1665054365.p");
+        return get().readValue(OPERATORHUB_CSV_NAME, "fuse-online.v7.12.0");
+    }
+
+    public static String getOperatorHubCSVChannel() {
+        return get().readValue(OPERATORHUB_CSV_CHANNEL, "latest");
     }
 
     public static String keycloakNamespace() {

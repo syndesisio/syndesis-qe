@@ -119,6 +119,7 @@ if [ "${MODE,,}" = "full" ]; then
 syndesis.config.install.operatorhub=true
 syndesis.config.operatorhub.catalogsource=${CATALOG_SOURCE}
 syndesis.config.operatorhub.csv.name=${CSV_VERSION}
+syndesis.config.operatorhub.csv.channel=${CSV_CHANNEL}
 syndesis.config.append.repository=false
 EOF
 	#deploy Fuse Online

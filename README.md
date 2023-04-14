@@ -307,6 +307,7 @@ If you want to use your own catalog source (e.g. for testing new image), you nee
 ```
 syndesis.config.install.operatorhub=true
 syndesis.config.operatorhub.catalogsource=fuse-online-iib-images
+syndesis.config.operatorhub.csv.channel=latest
 syndesis.config.operatorhub.csv.name=fuse-online.v7.10.1
 ```
 
