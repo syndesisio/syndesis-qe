@@ -910,7 +910,7 @@ public class Syndesis implements Resource {
         if (subscriptionExists()) {
             return;
         }
-        Bundle.createSubscription(TestConfiguration.getOpenShiftService(), SUBSCRIPTION_NAME, "7.11.x", "''", TestConfiguration.getOperatorHubCatalogSource());
+        Bundle.createSubscription(TestConfiguration.getOpenShiftService(), SUBSCRIPTION_NAME, TestConfiguration.getOperatorHubCSVChannel(), "''", TestConfiguration.getOperatorHubCatalogSource());
         waitingForSyndesisOperator("syndesis-operator");
         createPullSecret();
         TestUtils.withRetry(this::enableTestSupportInCsv, 5, 10, "Failed to patch CSV");
