@@ -1,5 +1,5 @@
 #================================================================================================================================
-# Default version, for now, is 1.14.x, `docker build -t syndesisqe/syndesisqe-tests:1.14.x .`
+# Default version, for now, is 1.15.x, `docker build -t syndesisqe/syndesisqe-tests:1.15.x .`
 # With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
 # e.g. `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
 # If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
@@ -19,7 +19,7 @@
 #   -e ADMIN_PASSWORD='admin' \
 #   -e NAMESPACE='mkralik' \
 #   --shm-size=2g \
-#   syndesisqe/syndesisqe-tests:1.14.x
+#   syndesisqe/syndesisqe-tests:1.15.x
 #
 #
 # For debugging, you have to expose port 5005 by `-p 5005:5005`
@@ -31,8 +31,8 @@
 FROM alpine/git as gitRepoSyndesis
 
 ARG SYNDESIS_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_BRANCH_VERSION=1.14.x
-ARG INSTALL_TAG=1.14
+ARG SYNDESIS_BRANCH_VERSION=1.15.x
+ARG INSTALL_TAG=1.15
 
 RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
 
@@ -52,7 +52,7 @@ RUN apt-get update -y \
 FROM alpine/git as gitRepoSyndesisQe
 
 ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_QE_BRANCH_VERSION=1.14.x
+ARG SYNDESIS_QE_BRANCH_VERSION=1.15.x
 
 ARG MARKETPLACE_BRANCH_VERSION=upgrade-functionality
 
