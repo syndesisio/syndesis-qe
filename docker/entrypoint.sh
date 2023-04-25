@@ -94,15 +94,41 @@ if [ "${MODE,,}" = "full" ]; then
 
   if [ -z "${CSV_VERSION}" ]
   then
-        echo "\$CSV_VERSION env is empty. Trying to detect CSV version from CatalogSource"
+      echo "\$CSV_VERSION env is empty. Trying to detect CSV version from CatalogSource \"${CATALOG_SOURCE}\""
+      CURRENT_RETRIES=0
+      while [ ${CURRENT_RETRIES} -lt 18 ]; do
+        IS_POD_READY="$(oc get -n openshift-marketplace pod -l olm.catalogSource=${CATALOG_SOURCE} -o jsonpath='{.items[*].status.containerStatuses[*].ready}')"
+        [ "${IS_POD_READY,,}" = "true" ] && break
+        (( CURRENT_RETRIES++ ))
+        echo "Catalog source \"${CATALOG_SOURCE}\" was not found or is not ready! Waiting 10 seconds and try again... (${CURRENT_RETRIES}/18)"
+
+        if [ "${CURRENT_RETRIES}" -eq 18 ];
+        then
+          echo "[ERROR] Catalog source \"${CATALOG_SOURCE}\" was not found or is not ready after 3 minutes."
+          echo "[DEBUG] Pods in openshift-marketplace:"
+          oc get -n openshift-marketplace pod
+          exit 1
+        fi
+        sleep 10
+      done
+
+      CURRENT_RETRIES=0
+      while [ ${CURRENT_RETRIES} -lt 18 ]; do
         # get all packagemanifests from the desired catalogsource, print name and CSV version for the latest channel, then grep only `fuse online` element and return only CSV version
         CSV_VERSION=$(oc get -n openshift-marketplace packagemanifests -l catalog==${CATALOG_SOURCE} -o=custom-columns=NAME:.metadata.name,CSVLATEST:".status.channels[?(@.name==\"${CSV_CHANNEL}\")].currentCSV" | grep 'fuse-online ' | awk -F ' ' '{ print $2 }')
         # empty when catalog source doesn't exist, none when channel doesn't exist
-        if [ -z "${CSV_VERSION}" ] || [ "${CSV_VERSION}" == '<none>' ]
+        [ "${CSV_VERSION}" ] && [ "${CSV_VERSION}" != '<none>' ] && break
+        (( CURRENT_RETRIES++ ))
+        echo "Catalog source \"${CATALOG_SOURCE}\" pod is ready but doesn't return packagemanifest yet! Waiting 10 seconds and try again... (${CURRENT_RETRIES}/18)"
+        if [ "${CURRENT_RETRIES}" -eq 18 ];
         then
           echo "[ERROR] Unable to find CSV_VERSION in the \"${CSV_CHANNEL}\" channel for fuse-online packagemanifest in \"${CATALOG_SOURCE}\" catalog source. Check it manually if catalogsource or channel exist or specify CSV_VERSION env explicitly!"
+          echo "[DEBUG] Manifests and channels in \"${CATALOG_SOURCE}\" catalogsource:";
+          oc get -n openshift-marketplace packagemanifests -l catalog==${CATALOG_SOURCE} -o=custom-columns=NAME:.metadata.name,ALL_CHANNELS:".status.channels[*].name"
           exit 1
         fi
+        sleep 10
+      done
   fi
 
 	echo "Using full mode, deploying Fuse Online via OperatorHub. CatalogSource: ${CATALOG_SOURCE}, csv version: ${CSV_VERSION}"
