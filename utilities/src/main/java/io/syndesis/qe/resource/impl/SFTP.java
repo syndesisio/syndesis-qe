@@ -18,8 +18,11 @@ import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.IntOrString;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
+import io.fabric8.kubernetes.api.model.ServiceAccountBuilder;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import io.fabric8.openshift.api.model.SecurityContextConstraints;
 import io.fabric8.openshift.api.model.SecurityContextConstraintsBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -44,25 +47,26 @@ public class SFTP implements Resource {
     @Override
     public void deploy() {
         //        preparation for our specific SFTP image to fit Openshift requirements:
-        OpenShiftUtils.getInstance().serviceAccounts()
-            .createNew()
+        OpenShiftUtils.getInstance().serviceAccounts().create(new ServiceAccountBuilder()
             .withNewMetadata()
             .withName(serviceAccountName)
             .endMetadata()
             .addToImagePullSecrets(
                 new LocalObjectReference(TestConfiguration.syndesisPullSecretName())
             )
-            .done();
+            .build());
 
         SecurityContextConstraints scc = OpenShiftUtils.getInstance().securityContextConstraints().create(
-            new SecurityContextConstraintsBuilder(OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").get())
+            new SecurityContextConstraintsBuilder(
+                OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").get())
                 .withNewMetadata() // new metadata to override the existing annotations
                 .withName(sccName)
                 .endMetadata()
                 .addToDefaultAddCapabilities("SYS_CHROOT")
                 .build());
 
-        scc.getUsers().add("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName);
+        scc.getUsers()
+            .add("system:serviceaccount:" + TestConfiguration.openShiftNamespace() + ":" + serviceAccountName);
         OpenShiftUtils.getInstance().securityContextConstraints().withName(scc.getMetadata().getName()).patch(scc);
 
         if (!isDeployed()) {
@@ -74,7 +78,8 @@ public class SFTP implements Resource {
 
             List<EnvVar> templateParams = new ArrayList<>();
             templateParams.add(new EnvVar("SFTP_USERS", userAndPassword, null));
-            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
                 .editOrNewMetadata()
                 .withName(appName)
                 .addToLabels(labelName, appName)
@@ -99,7 +104,7 @@ public class SFTP implements Resource {
                 .withType("ConfigChange")
                 .endTrigger()
                 .endSpec()
-                .done();
+                .build());
 
             ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(labelName, appName);
 
@@ -109,22 +114,24 @@ public class SFTP implements Resource {
                 .withTargetPort(new IntOrString(sftpPort))
                 .build());
 
-            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
                 .editOrNewMetadata()
                 .withName(appName)
                 .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
-                .done();
+                .build());
         }
     }
 
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().deleteServiceAccount(OpenShiftUtils.getInstance().getServiceAccount(serviceAccountName));
+        OpenShiftUtils.getInstance()
+            .deleteServiceAccount(OpenShiftUtils.getInstance().getServiceAccount(serviceAccountName));
         OpenShiftUtils.getInstance().securityContextConstraints().withName(sccName).delete();
-        OpenShiftUtils.getInstance().deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(appName), true);
+        OpenShiftUtils.getInstance()
+            .deleteDeploymentConfig(OpenShiftUtils.getInstance().getDeploymentConfig(appName), true);
         OpenShiftUtils.getInstance().deleteService(OpenShiftUtils.getInstance().getService(appName));
     }
 

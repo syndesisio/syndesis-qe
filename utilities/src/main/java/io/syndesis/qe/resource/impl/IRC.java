@@ -17,8 +17,11 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
+import io.fabric8.openshift.api.model.RouteBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -77,7 +80,7 @@ public class IRC implements Resource {
             .withContainerPort(IRC_PORT)
             .withProtocol("TCP").build());
 
-        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
             .editOrNewMetadata()
             .withName(SERVER_APP_NAME)
             .addToLabels(LABEL_NAME, SERVER_APP_NAME)
@@ -100,7 +103,7 @@ public class IRC implements Resource {
             .withType("ConfigChange")
             .endTrigger()
             .endSpec()
-            .done();
+            .build());
 
         ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, SERVER_APP_NAME);
 
@@ -110,14 +113,14 @@ public class IRC implements Resource {
             .withTargetPort(new IntOrString(IRC_PORT))
             .build());
 
-        OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
             .withNewMetadata()
             .withName(SERVER_APP_NAME)
             .addToLabels(LABEL_NAME, SERVER_APP_NAME)
             .endMetadata()
             .withNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
-            .done();
+            .build());
     }
 
     private static void deployIrcController() {
@@ -130,7 +133,7 @@ public class IRC implements Resource {
         List<EnvVar> envVars = new ArrayList<>();
         envVars.add(new EnvVar("HOST", SERVER_APP_NAME, null));
 
-        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
             .editOrNewMetadata()
             .withName(CONTROLLER_APP_NAME)
             .addToLabels(LABEL_NAME, CONTROLLER_APP_NAME)
@@ -153,7 +156,7 @@ public class IRC implements Resource {
             .withType("ConfigChange")
             .endTrigger()
             .endSpec()
-            .done();
+            .build());
 
         ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, CONTROLLER_APP_NAME);
 
@@ -163,16 +166,16 @@ public class IRC implements Resource {
             .withTargetPort(new IntOrString(CONTROLLER_PORT))
             .build());
 
-        OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
             .editOrNewMetadata()
             .withName(CONTROLLER_APP_NAME)
             .addToLabels(LABEL_NAME, CONTROLLER_APP_NAME)
             .endMetadata()
             .editOrNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
-            .done();
+            .build());
 
-        OpenShiftUtils.getInstance().routes().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().routes().createOrReplace(new RouteBuilder()
             .withNewMetadata()
             .withName(CONTROLLER_APP_NAME)
             .endMetadata()
@@ -187,7 +190,7 @@ public class IRC implements Resource {
             .withKind("Service").withName(CONTROLLER_APP_NAME)
             .endTo()
             .endSpec()
-            .done();
+            .build());
     }
 
     public void addAccount() {

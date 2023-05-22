@@ -28,6 +28,7 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.KubernetesClientException;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -117,32 +118,34 @@ public class HTTPValidationSteps {
         TestUtils.withRetry(() -> {
             try {
                 //@formatter:off
-                OpenShiftUtils.getInstance().deploymentConfigs().withName(dc.getMetadata().getName()).edit()
-                    .editSpec()
-                        .editTemplate()
-                            .editSpec()
-                                .addNewVolume()
-                                    .withName("keystore")
-                                    .withNewSecret()
-                                        .withSecretName(HTTPEndpoints.KEYSTORE_SECRET_NAME)
-                                    .endSecret()
-                                .endVolume()
-                                .editFirstContainer()
-                                    .addNewVolumeMount()
-                                        .withNewMountPath("/opt/keystore/")
+                OpenShiftUtils.getInstance().deploymentConfigs().withName(dc.getMetadata().getName()).edit(
+                    deploymentConfig -> new DeploymentConfigBuilder(deploymentConfig)
+                        .editSpec()
+                            .editTemplate()
+                                .editSpec()
+                                    .addNewVolume()
                                         .withName("keystore")
-                                    .endVolumeMount()
-                                    .addToEnv(new EnvVar(
-                                        "JAVA_OPTIONS",
-                                        "-Djackson.deserialization.whitelist.packages=io.syndesis.common.model,io.atlasmap" +
-                                        " -Djavax.net.ssl.trustStore=/opt/keystore/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
-                                        null
-                                    ))
-                                .endContainer()
-                            .endSpec()
-                        .endTemplate()
-                    .endSpec()
-                .done();
+                                        .withNewSecret()
+                                            .withSecretName(HTTPEndpoints.KEYSTORE_SECRET_NAME)
+                                        .endSecret()
+                                    .endVolume()
+                                    .editFirstContainer()
+                                        .addNewVolumeMount()
+                                            .withNewMountPath("/opt/keystore/")
+                                            .withName("keystore")
+                                        .endVolumeMount()
+                                        .addToEnv(new EnvVar(
+                                            "JAVA_OPTIONS",
+                                            "-Djackson.deserialization.whitelist.packages=io.syndesis.common.model,io.atlasmap" +
+                                            " -Djavax.net.ssl.trustStore=/opt/keystore/keystore.p12 -Djavax.net.ssl.trustStorePassword=tomcat -Djavax.net.ssl.trustStoreAlias=tomcat",
+                                            null
+                                        ))
+                                    .endContainer()
+                                .endSpec()
+                            .endTemplate()
+                        .endSpec()
+                    .build()
+                );
                 //@formatter:on
                 // Just to be sure, delete the integration pod if it exists, so that the change in DC is picked up
                 OpenShiftUtils.getInstance().deletePods("syndesis.io/type", "integration");

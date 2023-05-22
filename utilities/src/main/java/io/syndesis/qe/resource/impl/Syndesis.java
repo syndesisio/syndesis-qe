@@ -49,8 +49,11 @@ import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.LocalObjectReference;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.api.model.ServiceAccount;
+import io.fabric8.kubernetes.api.model.ServiceAccountBuilder;
 import io.fabric8.kubernetes.api.model.ServiceAccountList;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionVersion;
@@ -184,13 +187,13 @@ public class Syndesis implements Resource {
     public void createPullSecret() {
         if (TestConfiguration.syndesisPullSecret() != null) {
             log.info("Creating a pull secret with name " + TestConfiguration.syndesisPullSecretName());
-            OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().secrets().createOrReplace(new SecretBuilder()
                 .withNewMetadata()
                 .withName(TestConfiguration.syndesisPullSecretName())
                 .endMetadata()
                 .withData(TestUtils.map(".dockerconfigjson", TestConfiguration.syndesisPullSecret()))
                 .withType("kubernetes.io/dockerconfigjson")
-                .done();
+                .build());
         }
     }
 
@@ -208,8 +211,12 @@ public class Syndesis implements Resource {
                 Optional<Pod> jaegerPod = OpenShiftUtils.getPodByPartialName("syndesis-jaeger");
                 TestUtils.withRetry(() -> {
                     try {
-                        OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit()
-                            .editMetadata().addToLabels("syndesis.io/component", "syndesis-jaeger").endMetadata().done();
+                        OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit(
+                            pod -> new PodBuilder()
+                                .editMetadata()
+                                .addToLabels("syndesis.io/component", "syndesis-jaeger")
+                                .endMetadata().build()
+                            );
                         return true;
                     } catch (KubernetesClientException kce) {
                         log.debug("Exception thrown while editing jaeger pod: ", kce);
@@ -507,10 +514,12 @@ public class Syndesis implements Resource {
             log.error("Service account not found in resources");
         }
 
-        OpenShiftUtils.getInstance().serviceAccounts().withName("default")
-            .edit()
-            .addToImagePullSecrets(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()))
-            .done();
+        OpenShiftUtils.getInstance().serviceAccounts().withName("default").edit(
+            sa -> new ServiceAccountBuilder(sa)
+                .addToImagePullSecrets(new LocalObjectReference(TestConfiguration.syndesisPullSecretName()))
+                .build()
+
+        );
 
         List<EnvVar> envVarsToAdd = new ArrayList<>();
         envVarsToAdd.add(new EnvVar("TEST_SUPPORT", "true", null));
