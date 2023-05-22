@@ -19,12 +19,15 @@ import java.util.stream.Collectors;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
+import io.fabric8.kubernetes.api.model.PodBuilder;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRole;
 import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
 import io.fabric8.kubernetes.api.model.rbac.Subject;
 import io.fabric8.kubernetes.client.KubernetesClientException;
+import io.fabric8.openshift.api.model.RoleBindingBuilder;
+import io.fabric8.openshift.api.model.RouteBuilder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -77,22 +80,27 @@ public class Jaeger implements Resource {
             }
         });
 
-        OpenShiftUtils.getInstance().roleBindings().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().roleBindings().createOrReplace(new RoleBindingBuilder()
             .withNewMetadata().withName("jaeger-operator-cluster").endMetadata()
             .withNewRoleRef().withName("jaeger-operator-cluster").endRoleRef()
             .withSubjects(new ObjectReferenceBuilder().withKind("ServiceAccount").withName("jaeger-operator")
                 .withNamespace(TestConfiguration.openShiftNamespace()).build())
-            .done();
+            .build());
 
         OpenShiftWaitUtils.waitUntilPodIsRunning("jaeger-operator");
-        OpenShiftUtils.getInstance().pods().withName(OpenShiftUtils.getPodByPartialName("jaeger-operator").get().getMetadata().getName())
-            .edit().editMetadata().addToLabels("syndesis.io/component", "jaeger-operator").endMetadata().done();
+        OpenShiftUtils.getInstance().pods()
+            .withName(OpenShiftUtils.getPodByPartialName("jaeger-operator").get().getMetadata().getName())
+            .edit(
+                pod -> new PodBuilder(pod)
+                    .editMetadata()
+                    .addToLabels("syndesis.io/component", "jaeger-operator")
+                    .endMetadata().build());
         createJaegerCr("jaeger-external");
         OpenShiftWaitUtils.waitUntilPodIsRunning("jaeger-all-in-one");
 
         OpenShiftUtils.getInstance().createService(OpenShiftUtils.getInstance().services()
             .load(Paths.get("src/test/resources/jaeger/jaeger-service-collector.yml").toFile()).get());
-        collectorServiceHost = OpenShiftUtils.getInstance().routes().createOrReplaceWithNew()
+        collectorServiceHost = OpenShiftUtils.getInstance().routes().createOrReplace(new RouteBuilder()
             .withNewMetadata()
             .withName(COLLECTOR_SERVICE_NAME)
             .endMetadata()
@@ -102,11 +110,11 @@ public class Jaeger implements Resource {
             .withKind("Service").withName(COLLECTOR_SERVICE_NAME)
             .endTo()
             .endSpec()
-            .done().getSpec().getHost();
+            .build()).getSpec().getHost();
 
         OpenShiftUtils.getInstance().createService(OpenShiftUtils.getInstance().services()
             .load(Paths.get("src/test/resources/jaeger/jaeger-service-query.yml").toFile()).get());
-        queryServiceHost = OpenShiftUtils.getInstance().routes().createOrReplaceWithNew()
+        queryServiceHost = OpenShiftUtils.getInstance().routes().createOrReplace(new RouteBuilder()
             .withNewMetadata()
             .withName(QUERY_SERVICE_NAME)
             .endMetadata()
@@ -116,7 +124,7 @@ public class Jaeger implements Resource {
             .withKind("Service").withName(QUERY_SERVICE_NAME)
             .endTo()
             .endSpec()
-            .done().getSpec().getHost();
+            .build()).getSpec().getHost();
     }
 
     @Override

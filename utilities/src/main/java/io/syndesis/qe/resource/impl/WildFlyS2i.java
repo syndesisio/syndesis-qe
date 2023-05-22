@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.fabric8.openshift.api.model.ImageStreamBuilder;
 import io.fabric8.openshift.api.model.Template;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class WildFlyS2i implements Resource {
 
             OpenShiftUtils.getInstance().templates().withName(appName).delete();
 
-            OpenShiftUtils.getInstance().imageStreams().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().imageStreams().create(new ImageStreamBuilder()
                 .editOrNewMetadata()
                 .withName("wildfly-130-centos7")
                 .addToLabels("app", appName)
@@ -62,7 +63,7 @@ public class WildFlyS2i implements Resource {
                 .endReferencePolicy()
                 .endTag()
                 .endSpec()
-                .done();
+                .build());
 
             OpenShiftUtils.getInstance().createResources(OpenShiftUtils.getInstance().recreateAndProcessTemplate(template,
                 templateParams));

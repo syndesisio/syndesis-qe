@@ -35,7 +35,10 @@ import java.util.stream.Collectors;
 
 import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
+import io.fabric8.kubernetes.api.model.NamespaceBuilder;
 import io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding;
+import io.fabric8.kubernetes.api.model.rbac.ClusterRoleBindingBuilder;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import io.fabric8.kubernetes.client.dsl.internal.RawCustomResourceOperationsImpl;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -145,7 +148,7 @@ public class Ops implements Resource {
                 Assert.fail("Monitoring applications deployment failed \n" + e.getMessage());
             }
         }
-        OpenShiftUtils.getInstance().rbac().clusterRoleBindings().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().rbac().clusterRoleBindings().createOrReplace(new ClusterRoleBindingBuilder()
             .withNewMetadata()
             .withName(CRB_NAME)
             .endMetadata()
@@ -157,12 +160,14 @@ public class Ops implements Resource {
             .withName("view")
             .withKind("ClusterRole")
             .endRoleRef()
-            .done();
-        OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit()
-            .editMetadata()
-            .addToLabels("monitoring-key", "middleware")
-            .endMetadata()
-            .done();
+            .build());
+        OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit(
+            namespace -> new NamespaceBuilder(namespace)
+                .editMetadata()
+                .addToLabels("monitoring-key", "middleware")
+                .endMetadata()
+                .build());
+
         finalizerWorkaround();
         try {
             OpenShiftWaitUtils.waitFor(() -> ocp.pods().list().getItems().size() > 4);
@@ -174,11 +179,13 @@ public class Ops implements Resource {
 
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit()
-            .editMetadata()
-            .removeFromLabels("monitoring-key")
-            .endMetadata()
-            .done();
+        OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit(
+            namespace -> new NamespaceBuilder(namespace)
+                .editMetadata()
+                .removeFromLabels("monitoring-key")
+                .endMetadata()
+                .build());
+
         OpenShiftUtils.getInstance().clusterRoleBindings().withName(CRB_NAME).delete();
         if (!OpenShiftWaitUtils.isAPodReady("syndesis.io/component", "operator").getAsBoolean()) {
             OpenShiftUtils.scale("syndesis-operator", 1, OpenShiftUtils.ResourceType.DEPLOYMENT);

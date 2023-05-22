@@ -14,8 +14,10 @@ import java.util.Map;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -49,7 +51,7 @@ public class FTP implements Resource {
                 ports.add(dataPort);
             }
 
-            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
                 .editOrNewMetadata()
                 .withName(appName)
                 .addToLabels(labelName, appName)
@@ -71,7 +73,7 @@ public class FTP implements Resource {
                 .withType("ConfigChange")
                 .endTrigger()
                 .endSpec()
-                .done();
+                .build());
 
             ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(labelName, appName);
 
@@ -89,14 +91,14 @@ public class FTP implements Resource {
                     .build());
             }
 
-            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
                 .editOrNewMetadata()
                 .withName(appName)
                 .addToLabels(labelName, appName)
                 .endMetadata()
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
-                .done();
+                .build());
         }
     }
 

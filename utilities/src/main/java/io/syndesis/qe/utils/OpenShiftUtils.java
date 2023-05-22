@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShiftBinary;
 import cz.xtf.core.openshift.OpenShifts;
-import io.fabric8.kubernetes.api.model.DoneablePod;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
@@ -113,7 +112,7 @@ public final class OpenShiftUtils {
         return getPodResource(pod).portForward(remotePort, localPort);
     }
 
-    private static PodResource<Pod, DoneablePod> getPodResource(Pod pod) {
+    private static PodResource<Pod> getPodResource(Pod pod) {
         if (pod.getMetadata().getNamespace() != null) {
             return getInstance().pods().inNamespace(pod.getMetadata().getNamespace()).withName(pod.getMetadata().getName());
         } else {

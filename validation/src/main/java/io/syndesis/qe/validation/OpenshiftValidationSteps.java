@@ -39,6 +39,7 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apps.Deployment;
 import io.fabric8.kubernetes.api.model.autoscaling.v1.HorizontalPodAutoscalerBuilder;
 import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -209,7 +210,9 @@ public class OpenshiftValidationSteps {
 
     @When("edit replicas count for deployment config {string} to {int}")
     public void editReplicasCount(String dcName, int replicas) {
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().withReplicas(replicas).endSpec().done();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit(
+            deploymentConfig -> new DeploymentConfigBuilder(deploymentConfig)
+                .editSpec().withReplicas(replicas).endSpec().build());
     }
 
     @When("add following variables to the {string} deployment config:")
@@ -233,8 +236,12 @@ public class OpenshiftValidationSteps {
 
     @When("change deployment strategy for {string} deployment config to {string}")
     public void changeDeploymentStrategy(String dcName, String strategy) {
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit().editSpec().editStrategy().withType(strategy).endStrategy().endSpec()
-            .done();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit(
+            deploymentConfig -> new DeploymentConfigBuilder(deploymentConfig)
+                .editSpec()
+                .editStrategy().withType(strategy)
+                .endStrategy()
+                .endSpec().build());
     }
 
     @Then("chech that the deployment strategy for {string} deployment config is {string}")
@@ -257,8 +264,7 @@ public class OpenshiftValidationSteps {
                 .withMinReplicas(replicas)
                 .withMaxReplicas(replicas)
                 .endSpec()
-                .build()
-        );
+                .build());
     }
 
     @Then("^check that deployment config \"([^\"]*)\" (does|does not) exist$")
@@ -316,20 +322,21 @@ public class OpenshiftValidationSteps {
             }
         }
         // @formatter:off
-        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit()
-            .editSpec()
-            .editTemplate()
-            .editSpec()
-            .editFirstContainer()
-            .editResources()
-            .withLimits(limits)
-            .withRequests(requests)
-            .endResources()
-            .endContainer()
-            .endSpec()
-            .endTemplate()
-            .endSpec()
-            .done();
+        OpenShiftUtils.getInstance().deploymentConfigs().withName(dcName).edit(
+            deploymentConfig -> new DeploymentConfigBuilder(deploymentConfig)
+                .editSpec()
+                .editTemplate()
+                .editSpec()
+                .editFirstContainer()
+                .editResources()
+                .withLimits(limits)
+                .withRequests(requests)
+                .endResources()
+                .endContainer()
+                .endSpec()
+                .endTemplate()
+                .endSpec()
+                .build());
         // @formatter:on
     }
 

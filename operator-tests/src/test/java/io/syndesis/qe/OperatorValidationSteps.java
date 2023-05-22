@@ -60,17 +60,17 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.fabric8.kubernetes.api.model.Affinity;
-import io.fabric8.kubernetes.api.model.DoneablePersistentVolume;
 import io.fabric8.kubernetes.api.model.Endpoints;
 import io.fabric8.kubernetes.api.model.Node;
 import io.fabric8.kubernetes.api.model.NodeAffinity;
 import io.fabric8.kubernetes.api.model.NodeSelector;
 import io.fabric8.kubernetes.api.model.NodeSelectorTerm;
-import io.fabric8.kubernetes.api.model.PersistentVolumeFluent;
+import io.fabric8.kubernetes.api.model.PersistentVolumeBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
 import io.fabric8.kubernetes.api.model.Toleration;
+import io.fabric8.kubernetes.api.model.storage.StorageClassBuilder;
 import io.fabric8.kubernetes.client.LocalPortForward;
 import io.fabric8.openshift.api.model.DeploymentConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -355,13 +355,27 @@ public class OperatorValidationSteps {
         capacity.put("storage", new Quantity("3Gi"));
         if (!"".equals(className) && OpenShiftUtils.getInstance().storage().storageClasses().withName(className).get() == null) {
             log.info("Creating storage class " + className);
-            OpenShiftUtils.getInstance().storage().storageClasses().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().storage().storageClasses().createOrReplace(new StorageClassBuilder()
                 .withNewMetadata().withName(className).endMetadata()
                 .withProvisioner("kubernetes.io/cinder")
-                .done();
+                .build());
         }
-        PersistentVolumeFluent.SpecNested<DoneablePersistentVolume> pv = OpenShiftUtils.getInstance().persistentVolumes()
-            .createOrReplaceWithNew()
+
+        String pvClassName=className;
+        // The default storage class for OCP3 is empty, for OCP4 is "standard", so if the className is empty, we should use the default one
+        if ("".equals(pvClassName)) {
+            if (!OpenShiftUtils.isOpenshift3()) {
+                if (OpenShiftUtils.isOSD()) {
+                    pvClassName = "gp3";
+                } else if (OpenShiftUtils.isLessThenOCP411()){
+                    pvClassName = "standard";
+                } else {
+                    pvClassName = "standard-csi"; // OCP 4.11+
+                }
+            }
+        }
+
+        OpenShiftUtils.getInstance().persistentVolumes().createOrReplace(new PersistentVolumeBuilder()
             .withNewMetadata()
             .withName(TEST_PV_NAME)
             .withLabels(TestUtils.map("operator", "test"))
@@ -372,28 +386,14 @@ public class OperatorValidationSteps {
             .withNewNfs()
             .withNewServer("testServer")
             .withNewPath("/testPath")
-            .endNfs();
-
-        // The default storage class for OCP3 is empty, for OCP4 is "standard", so if the className is empty, we should use the default one
-        if ("".equals(className)) {
-            if (!OpenShiftUtils.isOpenshift3()) {
-                if (OpenShiftUtils.isOSD()) {
-                    pv.withStorageClassName("gp3");
-                } else if (OpenShiftUtils.isLessThenOCP411()){
-                    pv.withStorageClassName("standard");
-                } else {
-                    pv.withStorageClassName("standard-csi"); // OCP 4.11+
-                }
-            }
-        } else {
-            pv.withStorageClassName(className);
-        }
-
-        pv.endSpec().done();
+            .endNfs()
+            .withStorageClassName(pvClassName)
+            .endSpec()
+            .build());
 
         capacity.put("storage", new Quantity("5Gi"));
         for (int i = 1; i < 3; i++) {
-            pv = OpenShiftUtils.getInstance().persistentVolumes().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().persistentVolumes().createOrReplace(new PersistentVolumeBuilder()
                 .withNewMetadata()
                 .withName(TEST_PV_NAME + "-" + i)
                 .endMetadata()
@@ -403,17 +403,11 @@ public class OperatorValidationSteps {
                 .withNewNfs()
                 .withNewServer("testServer")
                 .withNewPath("/testPath")
-                .endNfs();
-
-            if (!OpenShiftUtils.isOpenshift3()) {
+                .endNfs()
                 // This should always be the default value despite the actual value of className - that is used only in "test-pv" intentionally
-                if (OpenShiftUtils.isOSD()) {
-                    pv.withStorageClassName("gp3");
-                } else {
-                    pv.withStorageClassName("standard");
-                }
-            }
-            pv.endSpec().done();
+                // .withStorageClassName(pvClassName)
+                .endSpec()
+                .build());
         }
     }
 
@@ -431,8 +425,7 @@ public class OperatorValidationSteps {
                     "region", aws.getProperty("region").toLowerCase().replaceAll("_", "-"),
                     "bucket-name", S3BucketNameBuilder.getBucketName(SYNDESIS_BACKUP_BUCKET_PREFIX)
                 ))
-                .build()
-        );
+                .build());
     }
 
     @Then("wait for backup with {int}s interval")

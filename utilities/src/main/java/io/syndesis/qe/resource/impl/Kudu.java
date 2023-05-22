@@ -16,8 +16,10 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import io.fabric8.openshift.api.model.Route;
 import io.fabric8.openshift.api.model.RouteBuilder;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +47,7 @@ public class Kudu implements Resource {
                 .withProtocol("TCP").build());
 
             List<EnvVar> templateParams = new ArrayList<>();
-            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
                 .editOrNewMetadata()
                 .withName(APP_NAME)
                 .addToLabels(LABEL_NAME, APP_NAME)
@@ -82,7 +84,7 @@ public class Kudu implements Resource {
                 .withType("ConfigChange")
                 .endTrigger()
                 .endSpec()
-                .done();
+                .build());
 
             ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, APP_NAME);
 
@@ -92,14 +94,14 @@ public class Kudu implements Resource {
                 .withTargetPort(new IntOrString(KUDU_PORT))
                 .build());
 
-            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
                 .editOrNewMetadata()
                 .withName(APP_NAME)
                 .addToLabels(LABEL_NAME, APP_NAME)
                 .endMetadata()
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
-                .done();
+                .build());
         }
 
         if (!OpenShiftUtils.isDcDeployed(API_APP_NAME)) {
@@ -109,7 +111,7 @@ public class Kudu implements Resource {
                 .withContainerPort(REST_PORT)
                 .build());
 
-            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
                 .editOrNewMetadata()
                 .withName(API_APP_NAME)
                 .addToLabels(LABEL_NAME, API_APP_NAME)
@@ -123,7 +125,8 @@ public class Kudu implements Resource {
                 .addToLabels(LABEL_NAME, API_APP_NAME)
                 .endMetadata()
                 .editOrNewSpec()
-                .addNewContainer().withName(API_APP_NAME).withImage("quay.io/syndesis_qe/kudu-rest-api:latest").addAllToPorts(ports)
+                .addNewContainer().withName(API_APP_NAME).withImage("quay.io/syndesis_qe/kudu-rest-api:latest")
+                .addAllToPorts(ports)
                 .endContainer()
                 .endSpec()
                 .endTemplate()
@@ -131,7 +134,7 @@ public class Kudu implements Resource {
                 .withType("ConfigChange")
                 .endTrigger()
                 .endSpec()
-                .done();
+                .build());
 
             ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, API_APP_NAME);
 
@@ -141,14 +144,14 @@ public class Kudu implements Resource {
                 .withTargetPort(new IntOrString(REST_PORT))
                 .build());
 
-            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
                 .editOrNewMetadata()
                 .withName(API_APP_NAME)
                 .addToLabels(LABEL_NAME, API_APP_NAME)
                 .endMetadata()
                 .editOrNewSpecLike(serviceSpecBuilder.build())
                 .endSpec()
-                .done();
+                .build());
 
             final Route route = new RouteBuilder()
                 .withNewMetadata()
@@ -176,23 +179,29 @@ public class Kudu implements Resource {
 
     @Override
     public void undeploy() {
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream()
+            .filter(dc -> dc.getMetadata().getName().equals(APP_NAME)).findFirst()
             .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getServices().stream()
+            .filter(service -> APP_NAME.equals(service.getMetadata().getName())).findFirst()
             .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        OpenShiftUtils.getInstance().getRoutes().stream().filter(route -> ROUTE_NAME.equals(route.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getRoutes().stream()
+            .filter(route -> ROUTE_NAME.equals(route.getMetadata().getName())).findFirst()
             .ifPresent(route -> OpenShiftUtils.getInstance().deleteRoute(route));
         OpenShiftUtils.getInstance().getPersistentVolumeClaims().stream()
             .filter(volume -> (volume.getMetadata().getName()).contains(APP_NAME))
             .forEach(volume -> OpenShiftUtils.getInstance().deletePersistentVolumeClaim(volume));
 
-        OpenShiftUtils.getInstance().getDeploymentConfigs().stream().filter(dc -> dc.getMetadata().getName().equals(API_APP_NAME))
+        OpenShiftUtils.getInstance().getDeploymentConfigs().stream()
+            .filter(dc -> dc.getMetadata().getName().equals(API_APP_NAME))
             .findFirst()
             .ifPresent(dc -> OpenShiftUtils.getInstance().deleteDeploymentConfig(dc, true));
-        OpenShiftUtils.getInstance().getServices().stream().filter(service -> API_APP_NAME.equals(service.getMetadata().getName()))
+        OpenShiftUtils.getInstance().getServices().stream()
+            .filter(service -> API_APP_NAME.equals(service.getMetadata().getName()))
             .findFirst()
             .ifPresent(service -> OpenShiftUtils.getInstance().deleteService(service));
-        OpenShiftUtils.getInstance().getRoutes().stream().filter(route -> API_APP_NAME.equals(route.getMetadata().getName())).findFirst()
+        OpenShiftUtils.getInstance().getRoutes().stream()
+            .filter(route -> API_APP_NAME.equals(route.getMetadata().getName())).findFirst()
             .ifPresent(route -> OpenShiftUtils.getInstance().deleteRoute(route));
     }
 

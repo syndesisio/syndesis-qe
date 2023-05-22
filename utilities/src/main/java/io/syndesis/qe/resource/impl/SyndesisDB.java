@@ -25,8 +25,10 @@ import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.ServiceSpecBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -74,7 +76,7 @@ public class SyndesisDB implements Resource {
             }
         }
 
-        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
             .editOrNewMetadata()
             .withName(APP_NAME)
             .addToLabels(LABEL_NAME, APP_NAME)
@@ -119,7 +121,7 @@ public class SyndesisDB implements Resource {
             .withType("ConfigChange")
             .endTrigger()
             .endSpec()
-            .done();
+            .build());
 
         ServiceSpecBuilder serviceSpecBuilder = new ServiceSpecBuilder().addToSelector(LABEL_NAME, APP_NAME);
 
@@ -129,14 +131,14 @@ public class SyndesisDB implements Resource {
             .withTargetPort(new IntOrString(5432))
             .build());
 
-        OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
             .editOrNewMetadata()
             .withName(APP_NAME)
             .addToLabels(LABEL_NAME, APP_NAME)
             .endMetadata()
             .editOrNewSpecLike(serviceSpecBuilder.build())
             .endSpec()
-            .done();
+            .build());
 
         try {
             OpenShiftWaitUtils.waitFor(OpenShiftWaitUtils.areExactlyNPodsReady(LABEL_NAME, APP_NAME, 1));

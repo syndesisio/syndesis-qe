@@ -9,7 +9,10 @@ import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.ObjectReferenceBuilder;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import io.fabric8.openshift.api.model.DeploymentTriggerPolicyBuilder;
 
 public class ExternalDatabase implements Resource {
@@ -17,7 +20,7 @@ public class ExternalDatabase implements Resource {
 
     @Override
     public void deploy() {
-        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
             .withNewMetadata()
             .withName(NAME)
             .withLabels(TestUtils.map("app", NAME))
@@ -56,9 +59,9 @@ public class ExternalDatabase implements Resource {
                     .withNewType("ImageChange")
                     .build()
             )
-            .endSpec().done();
+            .endSpec().build());
 
-        OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
             .withNewMetadata()
             .withName(NAME)
             .withLabels(TestUtils.map("app", NAME))
@@ -66,14 +69,15 @@ public class ExternalDatabase implements Resource {
             .withNewSpec()
             .addToPorts(new ServicePortBuilder().withNewName("5432-tcp").withNewTargetPort(5432).withNewProtocol("TCP").withPort(5432).build())
             .addToSelector(TestUtils.map("app", NAME))
-            .endSpec().done();
+            .endSpec()
+            .build());
 
         // create a needed secret with the password
-        OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
+        OpenShiftUtils.getInstance().secrets().createOrReplace(new SecretBuilder()
             .withNewMetadata().withName("syndesis-global-config").endMetadata()
             .withStringData(TestUtils.map("POSTGRESQL_PASSWORD", "testpassword"))
             .withNewType("Opaque")
-            .done();
+            .build());
     }
 
     @Override

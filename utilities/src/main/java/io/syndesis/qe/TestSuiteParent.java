@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import io.fabric8.kubernetes.api.model.NamespaceBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -80,11 +81,12 @@ public abstract class TestSuiteParent {
             // So add them after the project is created
             // @formatter:off
             Map<String, String> labels = TestUtils.map("syndesis-qe/lastUsedBy", System.getProperty("user.name"));
-            OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit()
-                .editMetadata()
-                .addToLabels(labels)
-                .endMetadata()
-                .done();
+            OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit(
+                namespace -> new NamespaceBuilder()
+                    .editMetadata()
+                    .addToLabels(labels)
+                    .endMetadata()
+                    .build());
             // @formatter:on
             cleanNamespace();
             deploySyndesis();

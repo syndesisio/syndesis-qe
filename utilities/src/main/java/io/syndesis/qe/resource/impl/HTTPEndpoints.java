@@ -23,8 +23,11 @@ import io.fabric8.kubernetes.api.model.ContainerBuilder;
 import io.fabric8.kubernetes.api.model.ContainerPort;
 import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePort;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -46,7 +49,7 @@ public class HTTPEndpoints implements Resource {
             ports.add(new ContainerPortBuilder().withName("http").withContainerPort(8080).build());
             ports.add(new ContainerPortBuilder().withName("https").withContainerPort(8443).build());
             //@formatter:off
-            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().deploymentConfigs().createOrReplace(new DeploymentConfigBuilder()
                 .withNewMetadata()
                     .withName(APP_NAME)
                     .withLabels(labels)
@@ -66,9 +69,9 @@ public class HTTPEndpoints implements Resource {
                         .withType("ConfigChange")
                     .endTrigger()
                 .endSpec()
-            .done();
+            .build());
 
-            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
                 .withNewMetadata()
                     .withName(HTTP_SERVICE_NAME)
                     .withLabels(labels)
@@ -77,9 +80,9 @@ public class HTTPEndpoints implements Resource {
                     .withPorts(getServicePort(HTTP_SERVICE_NAME, 8080))
                     .withSelector(labels)
                 .endSpec()
-            .done();
+            .build());
 
-            OpenShiftUtils.getInstance().services().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().services().createOrReplace(new ServiceBuilder()
                 .withNewMetadata()
                 .withName(HTTPS_SERVICE_NAME)
                 .withLabels(labels)
@@ -88,7 +91,7 @@ public class HTTPEndpoints implements Resource {
                 .withPorts(getServicePort(HTTPS_SERVICE_NAME, 8443))
                 .withSelector(labels)
                 .endSpec()
-                .done();
+                .build());
 
             String content = "";
             // Download the keystore and base64 encode it
@@ -98,19 +101,20 @@ public class HTTPEndpoints implements Resource {
                 fail("Unable to read " + KEYSTORE_URL, e);
             }
 
-            OpenShiftUtils.getInstance().secrets().createOrReplaceWithNew()
+            OpenShiftUtils.getInstance().secrets().createOrReplace(new SecretBuilder()
                 .withNewMetadata()
                     .withName(KEYSTORE_SECRET_NAME)
                 .endMetadata()
                 .addToData("keystore.p12", content)
-                .done();
+                .build());
             //@formatter:on
         }
         addAccounts();
     }
 
     private ServicePort getServicePort(String name, int port) {
-        return new ServicePortBuilder().withName(name).withPort(port).withProtocol("TCP").withTargetPort(new IntOrString(port)).build();
+        return new ServicePortBuilder().withName(name).withPort(port).withProtocol("TCP")
+            .withTargetPort(new IntOrString(port)).build();
     }
 
     @Override
@@ -118,7 +122,8 @@ public class HTTPEndpoints implements Resource {
         OpenShiftUtils.getInstance().secrets().withName(KEYSTORE_SECRET_NAME).delete();
         OpenShiftUtils.getInstance().deploymentConfigs().withName(APP_NAME).cascading(true).delete();
         OpenShiftUtils.getInstance().imageStreams().withName(APP_NAME).delete();
-        OpenShiftUtils.getInstance().services().list().getItems().stream().filter(s -> s.getMetadata().getName().endsWith("-svc"))
+        OpenShiftUtils.getInstance().services().list().getItems().stream()
+            .filter(s -> s.getMetadata().getName().endsWith("-svc"))
             .forEach(s -> OpenShiftUtils.getInstance().services().delete(s));
     }
 
