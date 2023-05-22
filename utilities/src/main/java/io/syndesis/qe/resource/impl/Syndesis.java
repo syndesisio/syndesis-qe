@@ -212,7 +212,7 @@ public class Syndesis implements Resource {
                 TestUtils.withRetry(() -> {
                     try {
                         OpenShiftUtils.getInstance().pods().withName(jaegerPod.get().getMetadata().getName()).edit(
-                            pod -> new PodBuilder()
+                            pod -> new PodBuilder(pod)
                                 .editMetadata()
                                 .addToLabels("syndesis.io/component", "syndesis-jaeger")
                                 .endMetadata().build()

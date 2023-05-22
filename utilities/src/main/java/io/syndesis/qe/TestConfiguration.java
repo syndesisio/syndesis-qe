@@ -513,7 +513,7 @@ public class TestConfiguration {
         System.setProperty("xtf.openshift.namespace", properties.getProperty(OPENSHIFT_NAMESPACE));
 
         // Set oc version - this version of the client will be used as the binary client
-        System.setProperty("xtf.openshift.version", "4.3");
+        System.setProperty("xtf.openshift.version", "4.13.0");
 
         // Set jackson properties for productized build
         System.setProperty("jackson.deserialization.whitelist.packages", "io.syndesis.common.model,io.atlasmap");
