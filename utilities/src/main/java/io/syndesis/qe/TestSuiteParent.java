@@ -82,7 +82,7 @@ public abstract class TestSuiteParent {
             // @formatter:off
             Map<String, String> labels = TestUtils.map("syndesis-qe/lastUsedBy", System.getProperty("user.name"));
             OpenShiftUtils.getInstance().namespaces().withName(TestConfiguration.openShiftNamespace()).edit(
-                namespace -> new NamespaceBuilder()
+                namespace -> new NamespaceBuilder(namespace)
                     .editMetadata()
                     .addToLabels(labels)
                     .endMetadata()
