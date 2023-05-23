@@ -407,7 +407,7 @@ public class Syndesis implements Resource {
                     crs.putAll(getSyndesisCrClient(version.getName()).list(TestConfiguration.openShiftNamespace()));
                 } catch (KubernetesClientException kce) {
                     // If there are no custom resources with this version, ignore
-                    if (!kce.getMessage().contains("404")) {
+                    if (!kce.getMessage().contains("Not Found.")) {
                         throw kce;
                     }
                 }
@@ -694,7 +694,7 @@ public class Syndesis implements Resource {
                 return spec.getJSONObject("addons").getJSONObject(addon.getValue()).getBoolean("enabled");
             }
         } catch (KubernetesClientException kce) {
-            if (!kce.getMessage().contains("404")) {
+            if (!kce.getMessage().contains("Not Found.")) {
                 // If the error is something different than the CR wasn't found rethrow the exception
                 throw kce;
             }
