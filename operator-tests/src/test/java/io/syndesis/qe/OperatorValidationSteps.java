@@ -704,6 +704,6 @@ public class OperatorValidationSteps {
     @When("update CR with {string} file")
     public void updateCustomResource(String file) {
         Syndesis syndesis = ResourceFactory.get(Syndesis.class);
-        syndesis.editCr(getCrFromFileAsString(file));
+        syndesis.editCr(new Yaml().load(getCrFromFileAsString(file)));
     }
 }

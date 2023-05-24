@@ -352,4 +352,4 @@ Feature: Activity
     And check that 2. step in the 1. activity contains No output in the output
     And check that 3. step in the 1. activity is Invoke SQL step
     And check that 3. step in the 1. activity has Error status
-    And check that 3. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; Bad value for type timestamp/date/time: {1}; nested exception is org.postgresql.util.PSQLException: Bad value for type timestamp/date/time: {1} in the output
+    And check that 3. step in the 1. activity contains DataIntegrityViolationException: PreparedStatementCallback; Bad value for type timestamp/date/time: Red Hat; nested exception is org.postgresql.util.PSQLException: Bad value for type timestamp/date/time: Red Hat in the output
