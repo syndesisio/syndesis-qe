@@ -1,11 +1,8 @@
 #================================================================================================================================
 # Default version, for now, is 1.15.x, `docker build -t syndesisqe/syndesisqe-tests:1.15.x .`
-# With the BUILD ARG, you can specify which version of Syndesis QE and Syndesis will be used in the final image
-# e.g. `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_BRANCH_VERSION=1.10.x --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
-# If you want to use your Syndesis/SyndesisQE fork during building, you can specify a build arg SYNDESIS_BRANCH_OWNER or SYNDESIS_QE_BRANCH_OWNER
-# e.g. For building an image for testing changes in the code base which are committed only in the owner repo:
-# `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_QE_BRANCH_VERSION=FUSEQE-9071_Containerizing-test-suite --build-arg SYNDESIS_QE_BRANCH_OWNER=mkralik3 .`
-
+# With the BUILD ARG, you can specify which version of Syndesis QE will be used in the final image
+# e.g. `docker build -t docker.io/syndesisqe/syndesisqe-tests:<tag> --build-arg SYNDESIS_QE_BRANCH_VERSION=1.10.x .`
+# If you want to use your SyndesisQE fork during building, you can specify a build SYNDESIS_QE_BRANCH_OWNER
 
 # You have to specify the cluster URL, NAMESPACE and ui credentials in the environment variables. When you don't specify tags, only the smoke test will be running.
 # You can specify multiple test tags using cucumber notation via TAGS environment variable  like `-e TAGS='@smoke OR @database'`
@@ -26,27 +23,6 @@
 # For running tests with 3rd party services, use CREDENTIALS_URL env `-e CREDENTIALS_URL=http://.../credentials.json`
 # If you want to see the test results (in case the test failed) after the container is finished, you have to mount any folder from
 # your local machine (/tmp/syndesisQe in the example) to the container. `-v <your folder in localhost>:/test-run-results:Z`
-#================================================================================================================================
-
-FROM alpine/git as gitRepoSyndesis
-
-ARG SYNDESIS_BRANCH_OWNER=syndesisio
-ARG SYNDESIS_BRANCH_VERSION=1.15.x
-ARG INSTALL_TAG=1.15
-
-RUN git clone -b ${SYNDESIS_BRANCH_VERSION} https://github.com/${SYNDESIS_BRANCH_OWNER}/syndesis.git /syndesis
-
-#================================================================================================================================
-## The rest tests and utils modules use some Syndesis artifacts which are not available, it needs to build them and copy to the final image
-# for some reason, the syndesis build doesn't work on alpine image
-FROM maven:3.6-jdk-8-slim as buildSyndesis
-COPY --from=gitRepoSyndesis /syndesis /syndesis
-WORKDIR /syndesis/app
-## Syndesis build needs git for some reason
-## Build only dependencies that the test suite needs
-RUN apt-get update -y \
-	&& apt-get install -y git \
-	&& mvn clean install -P flash --projects :common-model,:server-endpoint --also-make
 
 #================================================================================================================================
 FROM alpine/git as gitRepoSyndesisQe
@@ -62,7 +38,6 @@ RUN git clone --recurse-submodules -b ${SYNDESIS_QE_BRANCH_VERSION} https://gith
 FROM maven:3.6-jdk-8-slim as buildSyndesisQE
 
 ## Copy built Syndesis and Apicurio dependencies
-COPY --from=buildSyndesis /root/.m2/repository/io/syndesis /root/.m2/repository/io/syndesis
 COPY --from=gitRepoSyndesisQe /syndesis-qe /syndesis-qe
 
 WORKDIR /syndesis-qe
