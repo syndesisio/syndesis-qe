@@ -54,25 +54,15 @@ FROM alpine/git as gitRepoSyndesisQe
 ARG SYNDESIS_QE_BRANCH_OWNER=syndesisio
 ARG SYNDESIS_QE_BRANCH_VERSION=1.14.x
 
-ARG MARKETPLACE_BRANCH_VERSION=upgrade-functionality
-
 RUN git clone --recurse-submodules -b ${SYNDESIS_QE_BRANCH_VERSION} https://github.com/${SYNDESIS_QE_BRANCH_OWNER}/syndesis-qe.git /syndesis-qe \
-	&& git clone -b ${MARKETPLACE_BRANCH_VERSION} https://github.com/jboss-fuse/marketplace-utilities /marketplace-utilities \
 	&& cd /syndesis-qe/syndesis-extensions \
 	&& git checkout master
-
-#================================================================================================================================
-FROM maven:3.6-jdk-8-slim as buildMarketplace
-COPY --from=gitRepoSyndesisQe /marketplace-utilities /marketplace-utilities
-
-RUN mvn clean install -DskipTests=true -f /marketplace-utilities/pom.xml
 
 #================================================================================================================================
 FROM maven:3.6-jdk-8-slim as buildSyndesisQE
 
 ## Copy built Syndesis and Apicurio dependencies
 COPY --from=buildSyndesis /root/.m2/repository/io/syndesis /root/.m2/repository/io/syndesis
-COPY --from=buildMarketplace /root/.m2/repository/io/syndesis/qe/marketplace-utilities /root/.m2/repository/io/syndesis/qe/marketplace-utilities
 COPY --from=gitRepoSyndesisQe /syndesis-qe /syndesis-qe
 
 WORKDIR /syndesis-qe

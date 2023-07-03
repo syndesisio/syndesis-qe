@@ -463,6 +463,11 @@
 			<url>https://maven.repository.redhat.com/ga/</url>
 		</repository>
 		<repository>
+			<id>jboss-releases</id>
+			<name>Jboss Repository</name>
+			<url>https://repository.jboss.org</url>
+		</repository>
+		<repository>
 			<id>atlassian</id>
 			<name>Atlassian</name>
 			<url>https://packages.atlassian.com/maven-external</url>
