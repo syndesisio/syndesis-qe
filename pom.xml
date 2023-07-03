@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<syndesis.version>1.15-SNAPSHOT</syndesis.version>
+		<syndesis.version>1.15.0.fuse-7_12_0-00020-redhat-00001</syndesis.version>
 		<syndesis.qe.version>0.1-SNAPSHOT</syndesis.qe.version>
 		<atlas.mapper.version>2.3.14</atlas.mapper.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
