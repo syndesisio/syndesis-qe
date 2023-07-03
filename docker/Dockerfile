@@ -82,5 +82,7 @@ ENV RETRIES '3'
 ENV VNC 'false'
 ENV CATALOG_SOURCE 'redhat-operators'
 ENV CSV_CHANNEL '7.12.x'
+ENV SYNDESIS_PROD_VERSION '1.15.0.fuse-7_12_0-00020-redhat-00001'
+ENV CAMEL_PROD_VERSION '2.23.2.fuse-7_12_0-00019-redhat-00001'
 
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
