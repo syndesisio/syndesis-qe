@@ -35,6 +35,10 @@ echo "CATALOG_SOURCE: ${CATALOG_SOURCE}"
 echo "CSV_VERSION: ${CSV_VERSION}"
 echo "CSV_CHANNEL: ${CSV_CHANNEL}"
 
+echo "SYNDESIS_PROD_VERSION: ${SYNDESIS_PROD_VERSION}"
+echo "CAMEL_PROD_VERSION: ${CAMEL_PROD_VERSION}"
+
+
 if [[ -z "${CREDENTIALS_URL}" ]]; then
   echo "URL for credentials.json with 3rd party services credentials was not set in CREDENTIALS_URL env. Tests that use 3rd party services will fail."
 else
@@ -155,7 +159,7 @@ fi
 
 CURRENT_RETRIES=0
 while [ ${CURRENT_RETRIES} -lt ${RETRIES} ]; do
-	./mvnw clean verify -fn -P "${PROFILE}" -Dtags="${TAGS}" -Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
+	./mvnw clean verify -fn -P "${PROFILE}" -Dtags="${TAGS}" -Dsyndesis.version=${SYNDESIS_PROD_VERSION} -Dcamel.version=${CAMEL_PROD_VERSION} -Dmaven.failsafe.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005 -Xnoagent -Djava.compiler=NONE"
 
 	HAS_FAILURES="$(grep -R --exclude-dir docker "<failure message" . || :)"
 	[ -z "${HAS_FAILURES}" ] && break
