@@ -116,6 +116,6 @@ ENV MODE 'full'
 ENV RETRIES '3'
 ENV VNC 'false'
 ENV CATALOG_SOURCE 'redhat-operators'
-ENV CSV_CHANNEL 'latest'
+ENV CSV_CHANNEL '7.11.x'
 
 ENTRYPOINT ["/home/seluser/entrypoint.sh"]
