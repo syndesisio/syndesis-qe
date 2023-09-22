@@ -8,6 +8,9 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
+
+import java.time.Duration;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -39,7 +42,7 @@ public class AdvancedFilter extends AbstractStep {
 
     public boolean validate() {
         log.debug("Validating advanced filter configure page");
-        return this.getFilterTextarea().waitWhile(Condition.not(visible), 5 * 1000).isDisplayed();
+        return this.getFilterTextarea().shouldBe(visible, Duration.ofSeconds(5)).isDisplayed();
     }
 
     public void initialize() {

@@ -150,7 +150,7 @@ public class Details extends SyndesisPageObject {
     }
 
     public String getApiUrl() {
-        return $$(Element.EXPOSED_URL).shouldHaveSize(1).first().shouldBe(enabled, visible)
+        return $$(Element.EXPOSED_URL).shouldHave(CollectionCondition.size(1)).first().shouldBe(enabled, visible)
             .getValue();
     }
 }

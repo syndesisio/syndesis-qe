@@ -71,6 +71,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -452,7 +453,7 @@ public class CommonSteps {
         ElementsCollection dropdownElements = dropdownElementsTable.findAll(By.tagName("a"))
             .shouldBe(CollectionCondition.sizeGreaterThanOrEqual(1));
 
-        dropdownElements.filter(text(title)).shouldHaveSize(1).get(0).shouldBe(visible).click();
+        dropdownElements.filter(text(title)).shouldHave(CollectionCondition.size(1)).get(0).shouldBe(visible).click();
 
         //TODO: following if statement can be removed after
         //TODO: this issue gets fixed: https://github.com/syndesisio/syndesis/issues/4655
@@ -480,7 +481,7 @@ public class CommonSteps {
             // this is hack to replace Done with Next if not present
             try {
                 syndesisRootPage.getRootElement().shouldBe(visible).findAll(By.tagName("button"))
-                    .filter(matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().waitUntil(visible, 10 * 1000);
+                    .filter(matchText("(\\s*)" + buttonTitle + "(\\s*)")).first().shouldBe(visible, Duration.ofSeconds(10));
             } catch (Throwable t) {
                 buttonTitle = "Next";
             }
@@ -593,7 +594,7 @@ public class CommonSteps {
     @Then("^check visibility of \"([^\"]*)\" in alert-(\\w+) notification$")
     public void successNotificationIsPresentWithError(String textMessage, String type) {
         TestUtils
-            .waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage))).size() == 1,
+            .waitFor(() -> $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchText(sanitizeSpecialCharacter(textMessage))).size() == 1,
                 2, 20, "Success notification not found!");
         ElementsCollection successList = getAllAlerts(textMessage, type);
         assertThat(successList).hasSize(1);
@@ -601,7 +602,7 @@ public class CommonSteps {
     }
 
     private ElementsCollection getAllAlerts(String textMessage, String type) {
-        return $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchesText(sanitizeSpecialCharacter(textMessage)));
+        return $$(Alert.getALERTS().get(type).getBy()).filterBy(Condition.matchText(sanitizeSpecialCharacter(textMessage)));
     }
 
     /**
@@ -841,7 +842,7 @@ public class CommonSteps {
     }
 
     private void waitTillPageIsLoaded() {
-        new WebDriverWait(WebDriverRunner.getWebDriver(), 300).until(
+        new WebDriverWait(WebDriverRunner.getWebDriver(), Duration.ofSeconds(10)).until(
             webDriver -> ((JavascriptExecutor) webDriver).executeScript("return document.readyState").equals("complete"));
     }
 

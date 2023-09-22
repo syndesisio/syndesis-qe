@@ -22,6 +22,7 @@ import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
@@ -214,7 +215,7 @@ public class ApicurioSteps {
 
         $(Elements.RESPONSE_SECTION).shouldBe(visible).scrollIntoView(true)
             .$$(By.tagName("button")).filter(Condition.attribute("title", "Add a response to the operation."))
-            .shouldHaveSize(1).first().click();
+            .shouldHave(CollectionCondition.size(1)).first().click();
 
         $(Elements.MODAL_SUBMIT_ADD).shouldBe(visible).click();
 
@@ -230,7 +231,7 @@ public class ApicurioSteps {
 
             $(Elements.RESPONSE_SECTION).shouldBe(visible).scrollIntoView(true)
                 .$$(By.tagName("button")).filter(Condition.attribute("title", "Save changes."))
-                .shouldHaveSize(1).first().click();
+                .shouldHave(CollectionCondition.size(1)).first().click();
         }
     }
 

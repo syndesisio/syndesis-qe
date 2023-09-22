@@ -10,6 +10,7 @@ import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
@@ -28,7 +29,7 @@ public class ReadMessages {
     public void selectChannel(String channel) {
         //check that value of the channel is in the option data list
         SelenideElement dataList = $(By.id("channel"));
-        dataList.findAll(By.tagName("option")).filter(Condition.value(channel)).shouldHaveSize(1);
+        dataList.findAll(By.tagName("option")).filter(Condition.value(channel)).shouldHave(CollectionCondition.size(1));
         //the name of the channel has to be fill in manually. The select from the option in the <datalist> is not able
         Map<String, String> mymap = new HashMap<String, String>();
         mymap.put("channel", channel);

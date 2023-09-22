@@ -3,6 +3,7 @@ package io.syndesis.qe.pages.integrations.CiCd;
 import static org.junit.Assert.fail;
 
 import static com.codeborne.selenide.Condition.appears;
+import static com.codeborne.selenide.Condition.visible;
 
 import io.syndesis.qe.pages.ModalDialogPage;
 import io.syndesis.qe.utils.ByUtils;
@@ -13,6 +14,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,7 +85,7 @@ public class ManageCiCdDialog extends ModalDialogPage {
         if (getRootElement().find(ByUtils.dataTestId("tag-integration-dialog-empty-state-manage-cicd-button")).exists()) {
             fail("The Manage CI/CD dialog is empty and doesn't contain any tag");
         }
-        getRootElement().find(ByUtils.containsDataTestId("tag-integration-list-item-")).waitUntil(appears, 5000);
+        getRootElement().find(ByUtils.containsDataTestId("tag-integration-list-item-")).shouldBe(appears, Duration.ofSeconds(5));
         TestUtils.sleepIgnoreInterrupt(2000); // needs to wait for items list shows correctly
     }
 }

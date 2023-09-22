@@ -1,6 +1,7 @@
 #@sustainer: mmuzikar@redhat.com
 
 @ui
+@chrome-only
 @data-mapper
 @template
 @oauth

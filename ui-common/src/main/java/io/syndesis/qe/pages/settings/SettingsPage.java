@@ -16,6 +16,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public SelenideElement getOauthAppsRootElement() {
-        return $(Element.ROOT).shouldBe(visible);
+        return $(Element.ROOT).shouldBe(visible, Duration.ofSeconds(5));
     }
 
     public void fillAllOAuthSettings() {
@@ -119,7 +120,7 @@ public class SettingsPage extends SyndesisPageObject {
     }
 
     public ElementsCollection getSettingsItems() {
-        ElementsCollection items = getOauthAppsRootElement().$(Element.SETTINGS_LIST).$$(Element.SETTINGS_ITEM);
+        ElementsCollection items = getOauthAppsRootElement().$(Element.SETTINGS_LIST).shouldBe(visible, Duration.ofSeconds(5)).$$(Element.SETTINGS_ITEM);
         log.info("Number of items found: {}", items.size());
         return items;
     }

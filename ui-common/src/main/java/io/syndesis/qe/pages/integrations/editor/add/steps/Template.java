@@ -6,6 +6,7 @@ import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 
+import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.pages.integrations.editor.add.steps.getridof.AbstractStep;
 import io.syndesis.qe.utils.Conditions;
 import io.syndesis.qe.utils.TestUtils;
@@ -21,6 +22,7 @@ import com.codeborne.selenide.WebDriverRunner;
 import com.google.common.collect.ImmutableMap;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -137,7 +139,7 @@ public class Template extends AbstractStep {
         if ("none".equals(textarea.attr("display"))) {
             JavascriptExecutor jse = (JavascriptExecutor) WebDriverRunner.getWebDriver();
             jse.executeScript("arg[0].style.display='';", textarea);
-            WebDriverWait wait = new WebDriverWait(WebDriverRunner.getWebDriver(), 20);
+            WebDriverWait wait = new WebDriverWait(WebDriverRunner.getWebDriver(), Duration.ofSeconds(20));
             wait.until(ExpectedConditions.visibilityOf(textarea));
         }
         return textarea;
@@ -153,7 +155,7 @@ public class Template extends AbstractStep {
     }
 
     public void setTemplate(String template) {
-        if (WebDriverRunner.isFirefox()) {
+        if (TestConfiguration.syndesisBrowser().contains("firefox")) {
             log.info("template text area: {}", getTextAreaElement());
             getTextAreaElement().sendKeys(template);
             //Should validate the textarea to enable the next button if the template is valid
@@ -163,7 +165,7 @@ public class Template extends AbstractStep {
             WebDriver driver = WebDriverRunner.getWebDriver();
             JavascriptExecutor jse = (JavascriptExecutor) driver;
             jse.executeScript("arguments[0].CodeMirror.setValue(arguments[1]);", cm, template);
-            WebDriverWait wait = new WebDriverWait(driver, 20);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
             wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".CodeMirror"), template));
         }
     }
@@ -180,7 +182,7 @@ public class Template extends AbstractStep {
         WebDriver driver = WebDriverRunner.getWebDriver();
         JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript("arguments[0].style.display=\"block\";", upload);
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         wait.until(ExpectedConditions.elementToBeClickable(upload));
         log.info("uploading file " + tplFile.getAbsolutePath());
         upload.uploadFile(tplFile);

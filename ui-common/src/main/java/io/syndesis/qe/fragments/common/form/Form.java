@@ -23,6 +23,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -166,7 +167,7 @@ public class Form {
         WebDriver driver = WebDriverRunner.getWebDriver();
         JavascriptExecutor jse = (JavascriptExecutor) driver;
         jse.executeScript("arguments[0].CodeMirror.setValue(arguments[1]);", editor, data);
-        WebDriverWait wait = new WebDriverWait(driver, 20);
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
 
     /**
@@ -299,7 +300,7 @@ public class Form {
     }
 
     public static void waitForInputs(int timeInSeconds) {
-        $(By.cssSelector("form input,select")).waitUntil(exist, timeInSeconds * 1000);
+        $(By.cssSelector("form input,select")).shouldBe(exist, Duration.ofSeconds(timeInSeconds));
     }
 
     public boolean selectDivDropdownValue(SelenideElement parent, String itemValue) {
@@ -319,7 +320,7 @@ public class Form {
         if (parent.$(Elements.DROPDOWN_MENU).exists()) {
             return;
         }
-        SelenideElement dropdownToggle = parent.$(Elements.DROPDOWN_TOGGLE).waitUntil(visible, 30000);
+        SelenideElement dropdownToggle = parent.$(Elements.DROPDOWN_TOGGLE).shouldBe(visible, Duration.ofSeconds(30000));
         dropdownToggle.click();
     }
 

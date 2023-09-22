@@ -19,6 +19,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;
 
+import java.time.Duration;
 import java.util.List;
 
 import io.cucumber.datatable.DataTable;
@@ -196,7 +197,7 @@ public class ConditionalFlowSteps {
             "Dropdown menu was not loaded in time");
 
         $(EditFlowStepElements.FLOW_DROPDOWN).click();
-        WebDriverWait wait = new WebDriverWait(WebDriverRunner.getWebDriver(), 10);
+        WebDriverWait wait = new WebDriverWait(WebDriverRunner.getWebDriver(), Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf($(EditFlowStepElements.FLOW_DROPDOWN_BODY)));
     }
 }

@@ -259,6 +259,7 @@ Feature: Test auditing feature
       | recordType | deleted     |
 
   @auditing-oauth
+  @chrome-only
   Scenario: Test auditing on oauth
     When navigate to the "Settings" page
     And click on element with data-testid "o-auth-app-list-item-gmail-list-item-edit-button"

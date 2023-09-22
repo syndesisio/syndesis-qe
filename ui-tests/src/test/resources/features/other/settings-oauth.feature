@@ -2,6 +2,7 @@
 @ui
 @google-calendar
 @settings-oauth-test
+@chrome-only
 @oauth
 Feature: Settings OAuth
 

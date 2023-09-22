@@ -13,6 +13,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,10 +159,10 @@ public class BasicFilter extends AbstractStep {
         SelenideElement valueInput = this.getValueInput();
         SelenideElement opSelect = this.getOpSelect();
 
-        boolean isPredicateSelect = predicateSelect.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
-        boolean isPathInput = pathInput.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
-        boolean isValueInput = valueInput.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
-        boolean isOpSelect = opSelect.waitWhile(Condition.not(visible), 5 * 1000).is(visible);
+        boolean isPredicateSelect = predicateSelect.shouldBe(visible, Duration.ofSeconds(5)).is(visible);
+        boolean isPathInput = pathInput.shouldBe(visible, Duration.ofSeconds(5)).is(visible);
+        boolean isValueInput = valueInput.shouldBe(visible, Duration.ofSeconds(5)).is(visible);
+        boolean isOpSelect = opSelect.shouldBe(visible, Duration.ofSeconds(5)).is(visible);
 
         log.info("isPredicateSelect {}, isPathInput {}, isValueInput {}, isOpSelect {}", isPredicateSelect, isPathInput, isValueInput, isOpSelect);
 

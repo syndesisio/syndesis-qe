@@ -12,6 +12,7 @@ import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -144,7 +145,7 @@ public class IntegrationFlowView extends SyndesisPageObject {
             // which is between start and finish step.
             // Explanation: we have 3 steps and between them 2 elements with insert step option --> 5 total
             // with class "step" and we want the third element
-            $$(By.className("step")).shouldHaveSize(5).get(2)
+            $$(By.className("step")).shouldHave(CollectionCondition.size(5)).get(2)
                 .shouldBe(visible).find(By.className("icon")).shouldBe(visible).hover();
             text = $(By.className("popover")).shouldBe(visible).getText();
         } else {

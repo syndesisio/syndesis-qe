@@ -1,6 +1,7 @@
 # @sustainer: jsafarik@redhat.com
 
 @ui
+@chrome-only
 @gmail
 @oauth
 @database

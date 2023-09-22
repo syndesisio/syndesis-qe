@@ -56,6 +56,11 @@
 			<artifactId>httpcore5-h2</artifactId>
 			<version>${apache.httpclient5.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20230618</version>
+		</dependency>
 	</dependencies>
 
 </project>

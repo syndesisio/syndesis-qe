@@ -15,10 +15,13 @@ import io.syndesis.qe.steps.other.ApicurioSteps;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+
+import java.time.Duration;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,7 +86,7 @@ public class ApicurioUtils {
     public static SelenideElement getOperationButton(ApicurioSteps.Operations operation, SelenideElement differentRoot) {
         log.info("searching for operation button for operation {}", operation);
 
-        return differentRoot.$(By.className(operation.toString().toLowerCase() + "-tab")).waitUntil(visible, 5000).shouldBe(enabled);
+        return differentRoot.$(By.className(operation.toString().toLowerCase() + "-tab")).shouldBe(visible, Duration.ofSeconds(5)).shouldBe(enabled);
     }
 
     public static void createPathParameter(String parameter, SelenideElement root) {
@@ -253,7 +256,7 @@ public class ApicurioUtils {
         return getAppRoot()
             .$$(By.cssSelector(".dropdown-menu li a span"))
             .filter(text(name))
-            .shouldHaveSize(1).first();
+            .shouldHave(CollectionCondition.size(1)).first();
     }
 
     /**

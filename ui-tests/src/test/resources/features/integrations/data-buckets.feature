@@ -27,6 +27,7 @@ Feature: Integration - Databucket
 #
 #  2. check that data buckets are available
 #
+  @chrome-only
   @ENTESB-11787
   @gh-5042
   @data-buckets-usage

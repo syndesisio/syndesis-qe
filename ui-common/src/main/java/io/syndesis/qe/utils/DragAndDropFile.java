@@ -1,14 +1,18 @@
 package io.syndesis.qe.utils;
 
 import static com.codeborne.selenide.Condition.appears;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.executeJavaScript;
+
+import io.syndesis.qe.pages.ModalDialogPage;
 
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
 
 import java.io.File;
+import java.time.Duration;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,7 +52,8 @@ public class DragAndDropFile {
         //        dispatchFileDragAndDropEvent("drop", dragTarget, fileInput, file);
 
         // wait until file appears on the page
-        $(waitForElement).waitUntil(appears, 5000);
+        $(waitForElement).shouldBe(appears, Duration.ofSeconds(5));
+
         // remove fake input file element
         executeJavaScript("arguments[0].parentNode.removeChild(arguments[0]);", fileInput);
     }

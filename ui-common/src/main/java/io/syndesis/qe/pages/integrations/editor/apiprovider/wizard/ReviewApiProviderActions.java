@@ -1,5 +1,6 @@
 package io.syndesis.qe.pages.integrations.editor.apiprovider.wizard;
 
+import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -13,6 +14,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.ex.UIAssertionError;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -82,7 +84,7 @@ public class ReviewApiProviderActions extends SyndesisPageObject implements Wiza
 
     private int getNumberFromLabel(By selector) {
         try {
-            SelenideElement labelElement = $(selector).waitUntil(visible, 15000);
+            SelenideElement labelElement = $(selector).shouldBe(visible, Duration.ofSeconds(15));
             return Integer.parseInt(labelElement.$(By.tagName("span")).getText().trim());
         } catch (UIAssertionError e) {
             return 0;

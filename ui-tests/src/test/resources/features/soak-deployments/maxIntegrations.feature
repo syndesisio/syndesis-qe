@@ -188,6 +188,7 @@ Feature: Test maximum integration
     And validate that logs of integration "Integration10" contains string "RedHat integration"
 
   @prod
+  @chrome-only
   @10-integrations-complex
   Scenario: Test whether 10 integrations are successfully deployed - complex scenario
     # pre-scenario setup

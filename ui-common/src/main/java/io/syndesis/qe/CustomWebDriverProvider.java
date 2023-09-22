@@ -1,6 +1,7 @@
 package io.syndesis.qe;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -9,6 +10,9 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import com.codeborne.selenide.WebDriverProvider;
+import com.frogking.chromedriver.ChromeDriverBuilder;
+
+import javax.annotation.Nonnull;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +29,9 @@ public class CustomWebDriverProvider implements WebDriverProvider {
 
     private final String INTEGRATION_EXPORT_MIME_TYPE = "application/octet-stream;application/zip";
 
+    @Nonnull
     @Override
-    public WebDriver createDriver(DesiredCapabilities capabilities) {
+    public WebDriver createDriver(@Nonnull Capabilities capabilities) {
         log.info("malphite - I am now inside CustomWebDriverProvider");
 
         if (TestConfiguration.syndesisBrowser().contentEquals("chrome")) {
@@ -50,7 +55,8 @@ public class CustomWebDriverProvider implements WebDriverProvider {
     private ChromeDriver prepareChromeWebDriver() {
         log.info("setting chrome profile");
 
-        WebDriverManager.chromedriver().setup();
+        WebDriverManager chromedriver = WebDriverManager.chromedriver();
+        chromedriver.setup();
 
         Map<String, Object> preferences = new Hashtable<String, Object>();
         preferences.put("profile.default_content_settings.popups", 0);
@@ -73,7 +79,10 @@ public class CustomWebDriverProvider implements WebDriverProvider {
         return new ChromeDriver(capabilities);
         */
 
-        return new ChromeDriver(options);
+        // Workaround to use undetected chrome driver to not be detected by Google anti-bot service
+        //        return new ChromeDriver(options);
+        return new ChromeDriverBuilder()
+                .build(options, chromedriver.getDownloadedDriverPath());
     }
 
     /**

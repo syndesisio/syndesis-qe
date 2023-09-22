@@ -10,6 +10,7 @@ import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
@@ -43,7 +44,7 @@ public class ApiProviderToolbar extends SyndesisPageObject {
         getDropDown()
             .$$(By.cssSelector("a strong"))
             .filter(Condition.text(operationName))
-            .shouldHaveSize(1)
+            .shouldHave(CollectionCondition.size(1))
             .get(0)
             .click();
     }

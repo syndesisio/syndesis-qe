@@ -14,6 +14,7 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class ConfigureConnectionSteps {
     }
 
     private void fillFormInLowerCase(Map<String, String> properties) {
-        SelenideElement form = $(By.className("pf-c-form")).waitUntil(visible, 5000);
+        SelenideElement form = $(By.className("pf-c-form")).shouldBe(visible, Duration.ofSeconds(5));
 
         new Form(form.shouldBe(visible)).fillByTestId(
             properties.entrySet().stream()

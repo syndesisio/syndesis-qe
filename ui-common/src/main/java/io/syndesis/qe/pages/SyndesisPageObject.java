@@ -28,6 +28,7 @@ import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
@@ -282,7 +283,7 @@ public abstract class SyndesisPageObject {
     public void checkButtonStatus(String buttonTitle, String status) {
         log.info("checking button {} status", buttonTitle);
         // this speed-up the check we don't need shoulBe here
-        this.getButton(buttonTitle).waitUntil(this.conditionValueOf(status), 5 * 1000).is(this.conditionValueOf(status));
+        this.getButton(buttonTitle).shouldBe(this.conditionValueOf(status), Duration.ofSeconds(5)).is(this.conditionValueOf(status));
     }
 
     public Condition conditionValueOf(String status) {

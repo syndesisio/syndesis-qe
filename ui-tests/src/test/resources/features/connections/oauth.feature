@@ -1,6 +1,7 @@
 # @sustainer: mkralik@redhat.com
 
 @ui
+@chrome-only
 @oauth
 Feature: Connections - OAuth
 

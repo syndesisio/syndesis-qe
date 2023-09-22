@@ -2,7 +2,6 @@ package io.syndesis.qe.hooks;
 
 import io.syndesis.qe.TestConfiguration;
 import io.syndesis.qe.report.selector.ExcludeFromSelectorReports;
-import io.syndesis.qe.report.selector.SelectorSnooper;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.plugin.EventListener;
@@ -10,7 +9,6 @@ import io.cucumber.plugin.event.EventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
-import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.annotation.AnnotationDescription;
 import net.bytebuddy.description.type.PackageDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -51,19 +49,6 @@ public class ClassTransformerHook implements EventListener {
         TLDR: before the actual method is executed SelectorSnooper#pauseReporting() is called and SelectorSnooper#resumeReporting() is called after
          the method finishes
          */
-        new AgentBuilder.Default()
-            .with(AgentBuilder.PoolStrategy.Eager.EXTENDED)
-            .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
-            .type(ElementMatchers.nameContainsIgnoreCase("syndesis"))
-            .transform((builder, typeDescription, classLoader, module) -> {
-                if (typeDescription.getDeclaredMethods().stream()
-                    .anyMatch(inDefinedShape -> inDefinedShape.getDeclaredAnnotations().isAnnotationPresent(ExcludeFromSelectorReports.class))) {
-                    log.debug("Transforming {}", typeDescription);
-                }
-                return builder
-                    .method(ElementMatchers.isAnnotatedWith(ExcludeFromSelectorReports.class))
-                    .intercept(Advice.to(ReporterPauseInterceptor.class));
-            }).installOnByteBuddyAgent();
     }
 
     private void transform() {
@@ -77,19 +62,6 @@ public class ClassTransformerHook implements EventListener {
         if (shouldLoadAgent) {
             ByteBuddyAgent.install();
             shouldLoadAgent = false;
-        }
-    }
-
-    public static class ReporterPauseInterceptor {
-
-        @org.assertj.core.internal.bytebuddy.asm.Advice.OnMethodEnter
-        public static void onEnter() {
-            SelectorSnooper.pauseReporting();
-        }
-
-        @Advice.OnMethodExit
-        public static void onExit() {
-            SelectorSnooper.resumeReporting();
         }
     }
 

@@ -12,6 +12,7 @@ import io.syndesis.qe.utils.ByUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -60,7 +61,7 @@ public class ApiClientConnectors extends SyndesisPageObject {
 
     public boolean isConnectorsListLongAs(int expectedSize) {
         try {
-            $$(Element.CONNECTORS_LIST_ITEM).shouldHaveSize(expectedSize);
+            $$(Element.CONNECTORS_LIST_ITEM).shouldHave(CollectionCondition.size(expectedSize));
             return true;
         } catch (WebDriverException wde) {
             return false;

@@ -3,11 +3,14 @@ package io.syndesis.qe.pages;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
+import io.syndesis.qe.fragments.common.form.Form;
 import io.syndesis.qe.utils.ByUtils;
 
 import org.openqa.selenium.By;
 
 import com.codeborne.selenide.SelenideElement;
+
+import java.time.Duration;
 
 public class ModalDialogPage extends SyndesisPageObject {
 
@@ -19,7 +22,8 @@ public class ModalDialogPage extends SyndesisPageObject {
 
     @Override
     public SelenideElement getRootElement() {
-        $(Element.ROOT).waitUntil(visible, 30000);
+        $(Element.ROOT).shouldBe(visible, Duration.ofSeconds(30));
+
         return $(Element.ROOT).shouldBe(visible);
     }
 

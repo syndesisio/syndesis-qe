@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -60,7 +61,6 @@ public class SelectorSnooper {
     public static void init() {
         if (TestConfiguration.snoopSelectors()) {
             log.info("Overriding WebElementSelector to report selectors");
-            WebElementSelector.instance = new WebElementSelectorDetector();
             log.info("Creating folder {} for storing screenshots", SCREEN_SHOT_FOLDER.toAbsolutePath());
             try {
                 File folder = new File(SCREEN_SHOT_FOLDER.toUri());
@@ -78,7 +78,6 @@ public class SelectorSnooper {
         if (TestConfiguration.snoopSelectors()) {
             log.info("Generating selector reports");
             reporter.generateReports();
-            log.info("Logging selectors took {} ms from total test run", WebElementSelectorDetector.delta);
         }
     }
 
@@ -91,7 +90,7 @@ public class SelectorSnooper {
      */
     private static String highlightElement(WebElement el) {
         String originalBorder = Selenide.executeJavaScript("arguments[0].style.border", el);
-        WebDriverWait wait = new WebDriverWait(WebDriverRunner.getWebDriver(), 3);
+        WebDriverWait wait = new WebDriverWait(WebDriverRunner.getWebDriver(), Duration.ofSeconds(3));
         Selenide.executeJavaScript("arguments[0].style.border=\"2px solid red\"", el);
         wait.until(ExpectedConditions.attributeContains(el, "style", "2px solid red"));
         File tmpImage = Screenshots.takeScreenShotAsFile();
@@ -139,59 +138,5 @@ public class SelectorSnooper {
     private static boolean usesForbiddenCssCharacters(String id) {
         Matcher matcher = FORBIDDEN_CSS_CHARACTERS.matcher(id);
         return matcher.matches();
-    }
-
-    private static final class WebElementSelectorDetector extends WebElementSelector {
-
-        public static long delta = 0;
-
-        @Override
-        public List<WebElement> findElements(Driver driver, SearchContext context, By selector) {
-            //Ignore all currently logged selectors, if this condition wasn't here everything would burn in recursive hell
-            if (pauseReporting || currentSelectors.contains(selector)) {
-                return super.findElements(driver, context, selector);
-            }
-            currentSelectors.add(selector);
-            List<WebElement> elements = super.findElements(driver, context, selector);
-            if (elements.size() > 0) {
-                long startTime = Instant.now().toEpochMilli();
-                WebElement el = elements.get(0);
-                if (selector.getClass() == By.ByCssSelector.class) {
-                    String type = selector.toString().replace("By.cssSelector: ", "");
-                    if (usesForbiddenCssCharacters(type)) {
-                        reportWrongSelector(selector, el);
-                    }
-                } else {
-                    reportWrongSelector(selector, el);
-                }
-                //Time tracking of the logging logic
-                delta += Instant.now().minusMillis(startTime).toEpochMilli();
-            }
-            currentSelectors.remove(selector);
-            return elements;
-        }
-
-        @Override
-        public WebElement findElement(Driver driver, SearchContext context, By selector) {
-            if (pauseReporting || currentSelectors.contains(selector)) {
-                return super.findElement(driver, context, selector);
-            }
-            currentSelectors.add(selector);
-            WebElement el = super.findElement(driver, context, selector);
-            if (el != null) {
-                long start = Instant.now().toEpochMilli();
-                if (selector.getClass() == By.ByCssSelector.class) {
-                    String type = selector.toString().replace("By.cssSelector: ", "");
-                    if (usesForbiddenCssCharacters(type)) {
-                        reportWrongSelector(selector, el);
-                    }
-                } else {
-                    reportWrongSelector(selector, el);
-                }
-                delta += Instant.now().minusMillis(start).toEpochMilli();
-            }
-            currentSelectors.remove(selector);
-            return el;
-        }
     }
 }

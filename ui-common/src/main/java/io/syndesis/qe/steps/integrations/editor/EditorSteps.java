@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static com.codeborne.selenide.Condition.appears;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
@@ -21,6 +22,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -248,8 +250,8 @@ public class EditorSteps {
         TestUtils.sleepIgnoreInterrupt(2000);
         editor.getRootElement().$(Button.CANCEL).shouldBe(visible).click();
         SelenideElement dialog = new ModalDialogPage().getRootElement();
-        dialog.find(By.xpath(".//button[text()[contains(.,'Confirm')]]")).waitUntil(Condition.appears, 10000).click();
-        dialog.waitUntil(Condition.not(visible), 10 * 1000);
+        dialog.find(By.xpath(".//button[text()[contains(.,'Confirm')]]")).shouldBe(appears, Duration.ofSeconds(10)).click();
+        dialog.shouldBe(Condition.not(visible), Duration.ofSeconds(10));
     }
 
     @Then("^validate that input datashape on step (\\d+) contains \"([^\"]*)\"$")

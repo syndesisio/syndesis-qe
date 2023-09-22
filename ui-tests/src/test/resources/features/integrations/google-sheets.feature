@@ -1,5 +1,6 @@
 # @sustainer: tplevko@redhat.com
 @ui
+@chrome-only
 @google-sheets
 @oauth
 @database

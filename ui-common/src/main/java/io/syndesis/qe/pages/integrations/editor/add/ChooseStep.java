@@ -12,6 +12,8 @@ import org.openqa.selenium.By;
 import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.SelenideElement;
 
+import java.time.Duration;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -58,6 +60,7 @@ public class ChooseStep extends SyndesisPageObject {
      * @param timeoutMillis - timeout
      */
     public void waitForStepAppears(By stepIdentificationElement, long timeoutMillis) {
-        $(stepIdentificationElement).waitUntil(appears, timeoutMillis);
+
+        $(stepIdentificationElement).shouldBe(appears, Duration.ofMillis(timeoutMillis));
     }
 }

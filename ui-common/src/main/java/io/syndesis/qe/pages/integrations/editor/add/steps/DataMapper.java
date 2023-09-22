@@ -17,6 +17,7 @@ import io.syndesis.qe.utils.UIUtils;
 
 import org.openqa.selenium.By;
 
+import com.codeborne.selenide.CollectionCondition;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
@@ -369,8 +370,8 @@ public class DataMapper extends SyndesisPageObject {
 
     public SelenideElement getDataBucketElement(String bucketName) {
         return getRootElement().findAll(Element.DATA_BUCKET_ROOT)
-            .filter(Condition.matchesText(bucketName))
-            .shouldHaveSize(1)
+            .filter(Condition.matchText(bucketName))
+            .shouldHave(CollectionCondition.size(1))
             .get(0)
             .shouldBe(visible);
     }

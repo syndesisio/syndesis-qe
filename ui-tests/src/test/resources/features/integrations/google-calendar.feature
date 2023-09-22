@@ -1,6 +1,7 @@
 # @sustainer: asmigala@redhat.com
 
 @ui
+@chrome-only
 @google-calendar
 @oauth
 @database
