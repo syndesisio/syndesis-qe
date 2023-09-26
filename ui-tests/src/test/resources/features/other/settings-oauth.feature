@@ -62,4 +62,4 @@ Feature: Settings OAuth
       | type            | account            |
       | Gmail           | QE Google Mail     |
       | Google Calendar | QE Google Calendar |
-      | Twitter         | twitter_talky      |
+#      | Twitter         | twitter_talky      |

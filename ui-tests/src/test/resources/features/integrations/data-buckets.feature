@@ -2,7 +2,6 @@
 
 @ui
 @dropbox
-@twitter
 @gmail
 @oauth
 @database
@@ -20,56 +19,10 @@ Feature: Integration - Databucket
     And navigate to the "Settings" page
     And fill all oauth settings
     And create connections using oauth
-      | Twitter | Twitter Listener |
       | Gmail   | QE Google Mail   |
     And created connections
       | Dropbox | QE Dropbox | QE Dropbox | SyndesisQE Dropbox test |
     And navigate to the "Home" page
-
-#
-#  1. hover with mouse - error check
-#
-  @data-buckets-check-popups
-  Scenario: Error mark indicator
-    When click on the "Create Integration" link to create a new integration.
-    Then check visibility of visual integration editor
-    And check that position of connection to fill is "Start"
-
-    When select the "Twitter Listener" connection
-    And select "Mention" integration action
-    And click on the "Next" button
-    Then check that position of connection to fill is "Finish"
-    And check visibility of page "Choose a Finish Connection"
-
-    When select the "PostgresDB" connection
-    And select "Invoke SQL" integration action
-    Then fill in invoke query input with "UPDATE TODO SET completed=1 WHERE TASK = :#TASK" value
-    And click on the "Next" button
-    And check that text "Add a data mapping step" is "visible" in step warning inside of step number "2"
-    And check that there is no warning inside of step number "1"
-
-    When open integration flow details
-    Then check that in connection info popover for step number "1" is following text
-      | Action | Mention | Data Type | Twitter Mention |
-    And check that in connection info popover for step number "2" is following text
-      | Action | Invoke SQL | Data Type | SQL Parameter |
-
-    When add integration step on position "0"
-    And select "Data Mapper" integration step
-    Then check visibility of data mapper ui
-
-    When create data mapper mappings
-      | user.screenName | TASK |
-    And scroll "top" "right"
-    And click on the "Done" button
-    And open integration flow details
-    Then check that in connection info popover for step number "1" is following text
-      | Action | Mention | Data Type | Twitter Mention |
-    And check that in connection info popover for step number "3" is following text
-      | Action | Invoke SQL | Data Type | SQL Parameter |
-    And check that there is no warning inside of step number "3"
-    And check that there is no warning inside of step number "1"
-    And check that there is no warning inside of step number "2"
 
 #
 #  2. check that data buckets are available

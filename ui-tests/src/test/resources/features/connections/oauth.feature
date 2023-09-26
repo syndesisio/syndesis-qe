@@ -23,7 +23,6 @@ Feature: Connections - OAuth
       | Salesforce      | Test-Salesforce-connection      |
       | Google Sheets   | Test-Google-Sheets-connection   |
       | Google Calendar | Test-Google-Calendar-connection |
-      | Twitter         | Test-Twitter-connection         |
 
   @oauth-gmail
   Scenario: Testing Gmail OAuth connector
@@ -65,42 +64,6 @@ Feature: Connections - OAuth
     And wait until integration OAuth-gmail-test processed at least 1 message
     Then validate that logs of integration "OAuth-gmail-test" contains string "syndesis-tests"
     And delete emails from "QE Google Mail" with subject "syndesis-tests"
-
-  @oauth-twitter
-  Scenario: Testing Twitter OAuth connector
-    Given clean all tweets in twitter_talky account
-    When navigate to the "Settings" page
-    And fill "Twitter" oauth settings "Twitter Listener"
-    And navigate to the "Connections" page
-    And create connections using oauth
-      | Twitter | Twitter-test |
-    And navigate to the "Home" page
-    And click on the "Create Integration" link to create a new integration
-    Then check visibility of visual integration editor
-
-    Then check that position of connection to fill is "Start"
-    When select the "Twitter-test" connection
-    And select "Mention" integration action
-    And click on the "Next" button
-
-    Then check that position of connection to fill is "Finish"
-    When select the "Log" connection
-    And fill in values by element data-testid
-      | bodyloggingenabled | true |
-    And click on the "Next" button
-
-    And click on the "Save" link
-    And set integration name "OAuth-twitter-test"
-    And publish integration
-
-    When navigate to the "Integrations" page
-    Then Integration "OAuth-twitter-test" is present in integrations list
-    And wait until integration "OAuth-twitter-test" gets into "Running" state
-
-    When tweet a message from twitter_talky to "Twitter Listener" with text "OAuth testing"
-    And wait until integration OAuth-twitter-test processed at least 1 message
-    Then validate that logs of integration "OAuth-twitter-test" contains string "OAuth testing"
-    And clean all tweets in twitter_talky account
 
   @ENTESB-11282
   @ENTESB-13204
@@ -252,12 +215,12 @@ Feature: Connections - OAuth
   @oauth-description
   Scenario: Testing oauth description
     When navigate to the "Settings" page
-    And fill "Twitter" oauth settings "Twitter Listener"
+    And fill all oauth settings
     And navigate to the "Connections" page
     And create connections using oauth
-      | Twitter | Twitter-test |
+      | Salesforce | Salesforce-test |
     And navigate to the "Connections" page
-    And select the "Twitter-test" connection
-    Then check that connection description "Trigger integrations based on tweet content."
+    And select the "Salesforce-test" connection
+    Then check that connection description "Manage customer relations in the cloud."
     And change connection description to "updatedDescription"
     Then check that connection description "updatedDescription"
