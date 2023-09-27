@@ -1,6 +1,6 @@
 # @sustainer: mkralik@redhat.com
 
-@ignore
+@disabled
 @ui
 @doc-tutorial
 @oauth

@@ -46,6 +46,8 @@ Feature: Integration - AMQ to REST
       | Red Hat AMQ    | AMQ_PROD | AMQ             | AMQ on OpenShift |
       | Todo connector | todo     | TODO connection | no validation    |
 
+  # run manually after GA
+  @ignore
   @integrations-amq-to-rest-xml-message
   Scenario: Publish subscribe on amq topic
     When navigate to the "Home" page

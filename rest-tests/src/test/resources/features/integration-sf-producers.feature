@@ -8,7 +8,7 @@
 @long-running
 Feature: Integration - Salesforce
   Background:
-    Given clean SF, removes all leads with email: "jdoeprod@sf-producers.feature,joedoeprod@sf-producers.feature"
+    Given clean SF, removes all leads with email: "jdoeprod@sf-producers.feature,joedoeprod@sf-producers.feature,test@integration-sf-db.feature,test@salesfoce-to-database.feature"
       And deploy ActiveMQ broker
       And clean destination type "queue" with name "sf-producers-input"
       And clean destination type "queue" with name "sf-producers-output"

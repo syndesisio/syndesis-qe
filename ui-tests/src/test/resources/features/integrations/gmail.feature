@@ -1,5 +1,6 @@
 # @sustainer: jsafarik@redhat.com
 
+@disabled
 @ui
 @gmail
 @oauth

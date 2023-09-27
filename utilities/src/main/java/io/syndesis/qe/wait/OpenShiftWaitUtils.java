@@ -280,6 +280,15 @@ public class OpenShiftWaitUtils {
         }
     }
 
+    public static void waitUntilPodIsReady(String podPartialName) {
+        waitUntilPodIsRunning(podPartialName);
+        try {
+            waitFor(() -> isPodReady(OpenShiftUtils.getPodByPartialName(podPartialName)), 5 * 60 * 1000);
+        } catch (TimeoutException | InterruptedException e) {
+            InfraFail.fail("Error thrown while checking if pod is ready", e);
+        }
+    }
+
     public static void waitUntilPodIsDeleted(String podPartialName) {
         try {
             waitFor(() -> !isPodPresent(podPartialName), 5 * 60 * 1000);
