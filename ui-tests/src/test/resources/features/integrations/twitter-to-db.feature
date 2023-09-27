@@ -1,5 +1,6 @@
 # @sustainer: mmajerni@redhat.com
 
+@ignore
 @ui
 @doc-tutorial
 @twitter

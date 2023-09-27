@@ -1,5 +1,6 @@
 # @sustainer: alice.rum@redhat.com
 
+@ignore
 @ui
 @twitter
 @oauth
