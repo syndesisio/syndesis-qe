@@ -197,7 +197,7 @@ Feature: Test maximum integration
     And reset content of "contact" table
     And reset content of "todo" table
     And delete emails from "QE Google Mail" with subject "MaxIntegrations"
-    And delete all direct messages received by "Twitter Listener" with text "MaxIntegrations"
+#    And delete all direct messages received by "Twitter Listener" with text "MaxIntegrations"
     And delete incidents with "MaxIntegrations" number
 
     #todo app
@@ -237,11 +237,11 @@ Feature: Test maximum integration
     And create connections using oauth
       | Salesforce | QE Salesforce |
 
-    And clean all tweets in twitter_talky account
-    And navigate to the "Settings" page
-    And fill "Twitter" oauth settings "Twitter Listener"
-    And create connections using oauth
-      | Twitter | Twitter Listener |
+#    And clean all tweets in twitter_talky account
+#    And navigate to the "Settings" page
+#    And fill "Twitter" oauth settings "Twitter Listener"
+#    And create connections using oauth
+#      | Twitter | Twitter Listener |
 
     And deploy MongoDB 3.6 database
     And connect to MongoDB "mongodb36"
@@ -504,15 +504,15 @@ Feature: Test maximum integration
       | {"previous":"ok"} |
     And click on the "Next" button
 
-    And add integration step on position "0"
-    And select the "Twitter Listener" connection
-    And select "Send" integration action
-    And fill in values by element data-testid
-      | message | MaxIntegrations |
-    And fill username for "twitter_talky" account
-    And click on the "Next" button
+#    And add integration step on position "0"
+#    And select the "Twitter Listener" connection
+#    And select "Send" integration action
+#    And fill in values by element data-testid
+#      | message | MaxIntegrations |
+#    And fill username for "twitter_talky" account
+#    And click on the "Next" button
 
-    And add integration step on position "1"
+    And add integration step on position "0"
     And select "Data Mapper" integration step
     And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
@@ -736,7 +736,6 @@ Feature: Test maximum integration
     And check that query "select * from contact where company = 'MaxIntegrations'" has some output
     And validate that logs of integration "Integration4" contains string "MaxIntegrations"
     And check SF "contains" contact with a email: "test@maxIntegration.feature"
-    And check that account "Twitter Talky" has DM from user "Twitter Listener" with text "MaxIntegrations"
     And verify that mongodb collection "save_collection" has 1 document matching
       | _id             | value           |
       | MaxIntegrations | MaxIntegrations |

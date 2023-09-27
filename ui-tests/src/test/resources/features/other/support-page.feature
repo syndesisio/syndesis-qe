@@ -3,7 +3,6 @@
 @ui
 @datamapper
 @salesforce
-@twitter
 @support-page
 Feature: Support page
 

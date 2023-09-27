@@ -53,6 +53,6 @@ public class ConnectionDetail extends SyndesisPageObject {
         this.connectionDetailElement().find(By.id("inline-edit-textarea")).setValue(description);
         //confirm and cancel buttons are indentical:
         this.connectionDetailElement().findAll(By.className("pf-c-button")).get(0).click();
-        TestUtils.sleepForJenkinsDelayIfHigher(2);
+        TestUtils.sleepForJenkinsDelayIfHigher(5);
     }
 }

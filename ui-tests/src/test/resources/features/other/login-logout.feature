@@ -2,17 +2,17 @@
 
 @ui
 @oauth
-@twitter
 @logout-test
 Feature: Login logout
 
   Background: Clean application state
     Given log into the Syndesis
     And clean application state
-    And navigate to the "Settings" page
-    And fill "Twitter" oauth settings "Twitter Listener"
+    When navigate to the "Settings" page
+    And fill all oauth settings
+    And navigate to the "Connections" page
     And create connections using oauth
-      | Twitter | Twitter Listener |
+      | Salesforce | Salesforce-test |
 
 
 #
@@ -38,8 +38,8 @@ Feature: Login logout
     When navigate to the "Connections" page
     Then check visibility of page "Connections"
 
-    When click on the "View" kebab menu button of "Twitter Listener"
-    Then check visibility of "Twitter Listener" connection details
+    When click on the "View" kebab menu button of "Salesforce-test"
+    Then check visibility of "Salesforce-test" connection details
 
 ## just commented, in case KeyCloak will be used in the future for OSD.
 ##  3. logout -> login with sso
