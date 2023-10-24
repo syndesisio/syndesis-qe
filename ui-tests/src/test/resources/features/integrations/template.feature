@@ -9,14 +9,13 @@ Feature: Templates
   Background: Clean application state
     Given clean application state
     And log into the Syndesis
-    And delete emails from "QE Google Mail" with subject "syndesis-template-test"
-    And navigate to the "Settings" page
-    And fill "Gmail" oauth settings "QE Google Mail"
-    And create connections using oauth
-      | Gmail | QE Google Mail |
+    And created connections
+      | Slack | QE Slack | QE Slack | SyndesisQE Slack test |
     And reset content of "contact" table
     And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
+    And send message "StartingNewTest" on channel "template_test"
+
 
   @db-template-send
   Scenario Outline: Send an Email with text formatted by <template_type> template
@@ -32,13 +31,11 @@ Feature: Templates
     And click on the "Next" button
     And check that position of connection to fill is "Finish"
 
-    #select GMail connection as 'to' point
-    When select the "QE Google Mail" connection
-    And select "Send Email" integration action
-    And fill in values by element data-testid
-      | subject | syndesis-template-test |
-    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
-    And click on the "Next" button
+    #select Slack connection as 'to' point
+    When select the "QE Slack" connection
+    And select "Channel" integration action
+    And select "template_test" from slack channel dropdown
+    And click on the "Done" button
 
     #adding split step to split the result of Db connection
     # Then check visibility of page "Add to Integration"
@@ -72,7 +69,7 @@ Feature: Templates
     And select "Data Mapper" integration step
     Then check visibility of data mapper ui
     When create data mapper mappings
-      | message | text |
+      | message | message |
     And scroll "top" "right"
     And click on the "Done" button
 
@@ -85,7 +82,7 @@ Feature: Templates
     And wait until integration "db-template-send-<template_type>" gets into "Running" state
     And wait until integration db-template-send-<template_type> processed at least 1 message
 
-    Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
+    Then check that last slack message equals "Joe Jackson works at Red Hat" on channel "template_test"
 
     Examples:
       | template_type | template_text                                  |
@@ -108,12 +105,10 @@ Feature: Templates
     And click on the "Done" button
     And check that position of connection to fill is "Finish"
 
-    #select GMail connection as 'to' point
-    When select the "QE Google Mail" connection
-    And select "Send Email" integration action
-    And fill in values by element data-testid
-      | subject | syndesis-template-test |
-    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
+    #select Slack connection as 'to' point
+    When select the "QE Slack" connection
+    And select "Channel" integration action
+    And select "template_test" from slack channel dropdown
     And click on the "Done" button
 
     #adding split step to split the result of Db connection
@@ -149,21 +144,21 @@ Feature: Templates
     And select "Data Mapper" integration step
     And check visibility of data mapper ui
     And create data mapper mappings
-      | message | text |
+      | message | message |
     And scroll "top" "right"
     And click on the "Done" button
 
     #finish and save integration
     When click on the "Save" link
-    And set integration name "DB to gmail-template"
+    And set integration name "DB to slack-template"
     And publish integration
 
-    Then Integration "DB to gmail-template" is present in integrations list
+    Then Integration "DB to slack-template" is present in integrations list
     #wait for integration to get in active state
-    And wait until integration "DB to gmail-template" gets into "Running" state
-    And wait until integration DB to gmail-template processed at least 1 message
+    And wait until integration "DB to slack-template" gets into "Running" state
+    And wait until integration DB to slack-template processed at least 1 message
 
-    Then check that email from "QE Google Mail" with subject "syndesis-template-test" and text "Joe Jackson works at Red Hat" exists
+    Then check that last slack message equals "Joe Jackson works at Red Hat" on channel "template_test"
 
   @gh-6317
   @ENTESB-11393
@@ -181,12 +176,10 @@ Feature: Templates
     And click on the "Done" button
     And check that position of connection to fill is "Finish"
 
-    #select GMail connection as 'to' point
-    When select the "QE Google Mail" connection
-    And select "Send Email" integration action
-    And fill in values by element data-testid
-      | subject | syndesis-template-test |
-    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
+    #select Slack connection as 'to' point
+    When select the "QE Slack" connection
+    And select "Channel" integration action
+    And select "template_test" from slack channel dropdown
     And click on the "Done" button
 
     #adding split step to split the result of Db connection

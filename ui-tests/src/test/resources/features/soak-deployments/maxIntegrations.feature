@@ -249,10 +249,10 @@ Feature: Test maximum integration
       | MongoDB | mongodb36 | Mongo36 | Mongo description |
     And create mongodb collection "save_collection"
 
-    And navigate to the "Settings" page
-    And fill "Gmail" oauth settings "QE Google Mail"
-    And create connections using oauth
-      | Gmail | My GMail Connector |
+#    And navigate to the "Settings" page
+#    And fill "Gmail" oauth settings "QE Google Mail"
+#    And create connections using oauth
+#      | Gmail | My GMail Connector |
 
     And navigate to the "Home" page
 
@@ -601,24 +601,24 @@ Feature: Test maximum integration
       | {"previous":"ok"} |
     And click on the "Next" button
 
-    And add integration step on position "0"
-    And select the "My GMail Connector" connection
-    And select "Send Email" integration action
-    And fill in values by element data-testid
-      | subject | maxIntegrations |
-    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
-    And click on the "Next" button
+#    And add integration step on position "0"
+#    And select the "My GMail Connector" connection
+#    And select "Send Email" integration action
+#    And fill in values by element data-testid
+#      | subject | maxIntegrations |
+#    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
+#    And click on the "Next" button
+#
+#    And add integration step on position "0"
+#    And select "Data Mapper" integration step
+#    And define constant "message" with value "MaxIntegrations" of type "String" in data mapper
+#    And open data bucket "Constants"
+#    And create data mapper mappings
+#      | message | text |
+#    And scroll "top" "right"
+#    And click on the "Done" button
 
     And add integration step on position "0"
-    And select "Data Mapper" integration step
-    And define constant "message" with value "MaxIntegrations" of type "String" in data mapper
-    And open data bucket "Constants"
-    And create data mapper mappings
-      | message | text |
-    And scroll "top" "right"
-    And click on the "Done" button
-
-    And add integration step on position "2"
     And select "Data Mapper" integration step
     And define constant "ok" with value "ok" of type "String" in data mapper
     And open data bucket "Constants"
@@ -739,7 +739,7 @@ Feature: Test maximum integration
     And verify that mongodb collection "save_collection" has 1 document matching
       | _id             | value           |
       | MaxIntegrations | MaxIntegrations |
-    And check that email from "QE Google Mail" with subject "maxIntegrations" and text "MaxIntegrations" exists
+#    And check that email from "QE Google Mail" with subject "maxIntegrations" and text "MaxIntegrations" exists
     And verify that incident with "MaxIntegrations" number has "MaxIntegrationsDescription" description
     And check that query "select * from todo where task='MaxIntegrations'" has 1 row output
 

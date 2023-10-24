@@ -1,6 +1,7 @@
 package io.syndesis.qe.utils.jms;
 
 import io.syndesis.qe.utils.OpenShiftUtils;
+import io.syndesis.qe.wait.OpenShiftWaitUtils;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.qpid.jms.JmsConnectionFactory;
@@ -75,7 +76,8 @@ public class JmsClientManager {
 
     private JmsClient getClient() {
         if (jmsLocalPortForward == null || !jmsLocalPortForward.isAlive()) {
-            Pod pod = OpenShiftUtils.getInstance().getAnyPod("app", jmsAppName);
+            Pod pod = OpenShiftUtils.getInstance().getAnyPod("application", jmsAppName);
+            OpenShiftWaitUtils.waitUntilPodIsReady(pod.getMetadata().getName());
             jmsLocalPortForward = OpenShiftUtils.portForward(pod, jmsPort, jmsPort);
         }
         return this.initClient();

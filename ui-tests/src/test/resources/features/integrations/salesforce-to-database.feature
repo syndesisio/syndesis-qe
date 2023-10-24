@@ -13,7 +13,7 @@ Feature: Integration - Salesforce to DB
     Given clean application state
     And log into the Syndesis
     And reset content of "contact" table
-    And clean SF, removes all leads with email: "test@salesfoce-to-database.feature"
+    And clean SF, removes all leads with email: "jdoeprod@sf-producers.feature,joedoeprod@sf-producers.feature,test@integration-sf-db.feature,test@salesfoce-to-database.feature"
     And navigate to the "Settings" page
     And fill "Salesforce" oauth settings "QE Salesforce"
     And create connections using oauth

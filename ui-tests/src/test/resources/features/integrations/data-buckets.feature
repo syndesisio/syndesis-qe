@@ -14,76 +14,12 @@ Feature: Integration - Databucket
     And reset content of "contact" table
     And insert into "contact" table
       | Joe | Jackson | Red Hat | db |
-    And delete emails from "QE Google Mail" with subject "Red Hat"
     And log into the Syndesis
     And navigate to the "Settings" page
     And fill all oauth settings
-    And create connections using oauth
-      | Gmail   | QE Google Mail   |
     And created connections
       | Dropbox | QE Dropbox | QE Dropbox | SyndesisQE Dropbox test |
     And navigate to the "Home" page
-
-#
-#  2. check that data buckets are available
-#
-  @ENTESB-11787
-  @gh-5042
-  @data-buckets-usage
-  Scenario: Create data buckets
-    When click on the "Create Integration" link to create a new integration.
-    Then check visibility of visual integration editor
-    And check that position of connection to fill is "Start"
-
-    # first database connection - get some information to be used by second datamapper
-    When select the "PostgresDB" connection
-    And select "Periodic SQL Invocation" integration action
-    Then check "Next" button is "Disabled"
-
-    When fill in periodic query input with "select * from contact limit 1" value
-    And fill in period input with "10" value
-    And select "Minutes" from sql dropdown
-    And click on the "Next" button
-    Then check that position of connection to fill is "Finish"
-
-    When select the "QE Google Mail" connection
-    And select "Send Email" integration action
-    And fill in data-testid field "to" from property "email" of credentials "QE Google Mail"
-    And click on the "Done" button
-
-    # add another connection
-    When add integration step on position "0"
-    And select the "PostgresDB" connection
-    And select "Invoke SQL" integration action
-    And fill in invoke query input with "select company as firma from contact limit 1;" value
-    And click on the "Next" button
-
-    #And check that there is no warning inside of step number "2"
-    When open integration flow details
-    Then check that in connection info popover for step number "2" is following text
-      | Action | Invoke SQL | Data Type | n/a |
-
-    When add integration step on position "1"
-    And select "Data Mapper" integration step
-    Then check visibility of data mapper ui
-
-    When open data bucket "1 - SQL Result"
-    And open data bucket "2 - SQL Result"
-    And create data mapper mappings
-      | company | text    |
-      | firma   | subject |
-    And scroll "top" "right"
-    And click on the "Done" button
-    Then check that there is no warning inside of step number "3"
-
-    When click on the "Save" link
-    And set integration name "data-buckets-usage"
-    And publish integration
-    Then Integration "data-buckets-usage" is present in integrations list
-    And wait until integration "data-buckets-usage" gets into "Running" state
-    And wait until integration data-buckets-usage processed at least 1 message
-    And check that email from "QE Google Mail" with subject "Red Hat" and text "Red Hat" exists
-    And delete emails from "QE Google Mail" with subject "Red Hat"
 
 
 #

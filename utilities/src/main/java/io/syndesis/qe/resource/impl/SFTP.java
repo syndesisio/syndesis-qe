@@ -56,7 +56,7 @@ public class SFTP implements Resource {
             )
             .build());
 
-        SecurityContextConstraints scc = OpenShiftUtils.getInstance().securityContextConstraints().create(
+        SecurityContextConstraints scc = OpenShiftUtils.getInstance().securityContextConstraints().createOrReplace(
             new SecurityContextConstraintsBuilder(
                 OpenShiftUtils.getInstance().securityContextConstraints().withName("anyuid").get())
                 .withNewMetadata() // new metadata to override the existing annotations

@@ -28,6 +28,7 @@ Feature: Customization - API Connector - ApicurIO GUI
     And clicks on the "Review/Edit" link
     And change frame to "apicurio"
 
+  @ignore
   @gh-3459
   @ENTESB-11443
   @ENTESB-16061

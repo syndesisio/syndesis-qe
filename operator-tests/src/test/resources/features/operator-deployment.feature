@@ -382,9 +382,9 @@ Feature: Operator Deployment
 
     Examples:
       | customResource              | method   | type     | customResourceAfter                    |
-      | spec/backup.yml             | operator | standard | minimal.yml                            |
+#      | spec/backup.yml             | operator | standard | minimal.yml                            | ENTESB-13046
       | spec/backup.yml             | manual   | standard | minimal.yml                            |
-      | spec/backup-external-db.yml | operator | external |spec/components/database/externalDb.yml |
+#      | spec/backup-external-db.yml | operator | external |spec/components/database/externalDb.yml | ENTESB-13046
       | spec/backup-external-db.yml | manual   | external |spec/components/database/externalDb.yml |
 
   @operator-affinity

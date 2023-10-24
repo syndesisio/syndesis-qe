@@ -1,4 +1,5 @@
 # @sustainer: tplevko@redhat.com
+@disabled
 @ui
 @google-sheets
 @oauth

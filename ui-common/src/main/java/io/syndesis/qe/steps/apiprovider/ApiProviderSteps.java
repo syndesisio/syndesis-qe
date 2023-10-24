@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Random;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -60,8 +61,9 @@ public class ApiProviderSteps {
     @When("^create API Provider spec from ([\\w]+) (.+)$")
     public void createApiProviderSpec(String source, String path) {
         if ("url".equals(source) && "todo-app".equals(path)) {
-            TodoUtils.createDefaultRouteForTodo(path, "/");
-            path = "http://" + OpenShiftUtils.getInstance().getRoute(path).getSpec().getHost() + "/swagger.json";
+            String routeName = path + new Random().nextInt(1000);
+            TodoUtils.createDefaultRouteForTodo(routeName, "/");
+            path = "http://" + OpenShiftUtils.getInstance().getRoute(routeName).getSpec().getHost() + "/swagger.json";
         }
         new UploadApiProviderSpecification().upload(source, path);
     }

@@ -7,7 +7,7 @@
 Feature: Integration - Salesforce
 
   Background: Clean application state
-    Given clean SF, removes all leads with email: "test@integration-sf-db.feature"
+    Given clean SF, removes all leads with email: "jdoeprod@sf-producers.feature,joedoeprod@sf-producers.feature,test@integration-sf-db.feature,test@salesfoce-to-database.feature"
     And remove all records from table "todo"
     And create SalesForce connection
 
@@ -24,6 +24,7 @@ Feature: Integration - Salesforce
     When create integration with name: "SF create to DB rest test"
     Then wait for integration with name: "SF create to DB rest test" to become active
     Then create SF lead with first name: "John", last name: "Doe", email: "test@integration-sf-db.feature" and company: "ACME"
+    And wait until integration SF create to DB rest test processed at least 1 message
     Then validate DB created new lead with first name: "John", last name: "Doe", email: "test@integration-sf-db.feature"
 
   @integration-sf-db @integration-sf-db-delete
@@ -37,6 +38,7 @@ Feature: Integration - Salesforce
     When create integration with name: "SF delete to DB rest test"
     Then wait for integration with name: "SF delete to DB rest test" to become active
     Then delete lead from SF with email: "test@integration-sf-db.feature"
+    And wait until integration SF delete to DB rest test processed at least 1 message
     Then validate SF on delete to DB created new task
 
   @integration-sf-db @integration-sf-db-update
@@ -51,4 +53,5 @@ Feature: Integration - Salesforce
     When create integration with name: "SF update to DB rest test"
     Then wait for integration with name: "SF update to DB rest test" to become active
     Then update SF lead with email "test@integration-sf-db.feature" to first name: "Joe", last name "Carrot", email "test@integration-sf-db.feature", company name "EMCA"
+    And wait until integration SF update to DB rest test processed at least 1 message
     Then validate DB created new lead with first name: "Joe", last name: "Carrot", email: "test@integration-sf-db.feature"
