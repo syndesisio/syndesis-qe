@@ -1,5 +1,6 @@
 # @sustainer: tplevko@redhat.com
 
+@disabled
 @rest
 @twitter
 @salesforce

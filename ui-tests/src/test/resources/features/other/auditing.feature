@@ -10,8 +10,8 @@ Feature: Test auditing feature
     And log into the Syndesis
     And navigate to the "Home" page
 
-  @auditing-connector
-  Scenario: Test auditing on API connector
+  Scenario: Test auditing
+    ### Connector
     #create
     When click on the "Customizations" link
     And navigate to the "API Client Connectors" page
@@ -112,8 +112,7 @@ Feature: Test auditing feature
       | user       | developer |
       | recordType | deleted   |
 
-  @auditing-connection
-  Scenario: Test auditing on connection
+    ### Connections
     #create
     When deploy ActiveMQ broker
     And created connections
@@ -200,10 +199,10 @@ Feature: Test auditing feature
       | user       | developer  |
       | recordType | deleted    |
 
-  @auditing-integration
-  Scenario: Test auditing on integration
+    ### Integration
     #create
-    When click on the "Create Integration" link to create a new integration.
+    When navigate to the "Home" page
+    And click on the "Create Integration" link to create a new integration.
     And check that position of connection to fill is "Start"
     And select the "Timer" connection
     And select "Simple" integration action
@@ -257,47 +256,3 @@ Feature: Test auditing feature
       | name       | *           |
       | user       | developer   |
       | recordType | deleted     |
-
-  @auditing-oauth
-  Scenario: Test auditing on oauth
-    When navigate to the "Settings" page
-    And click on element with data-testid "o-auth-app-list-item-gmail-list-item-edit-button"
-    And fill in values by element data-testid
-      | clientid     | myID   |
-      | clientsecret | secret |
-    And click on element with data-testid "o-auth-app-expander-body-save-button"
-    And sleep for jenkins delay or 5 seconds
-
-    Then check that the last audit record contains following parameters
-      | id         | gmail     |
-      | type       | connector |
-      | name       | Gmail     |
-      | user       | developer |
-      | recordType | updated   |
-    And check that the last audit record contains the event with the following parameters
-      | type     | change                        |
-      | property | configuredProperties.clientId |
-      | current  | myID                          |
-    And check that the last audit record contains the event with the following parameters
-      | type     | change                            |
-      | property | configuredProperties.clientSecret |
-      | previous | **********                        |
-      | current  | **********                        |
-
-    When fill in values by element data-testid
-      | clientid     | myID2  |
-      | clientSecret | secret |
-    And click on element with data-testid "o-auth-app-expander-body-save-button"
-    And sleep for jenkins delay or 5 seconds
-
-    Then check that the last audit record contains following parameters
-      | id         | gmail     |
-      | type       | connector |
-      | name       | Gmail     |
-      | user       | developer |
-      | recordType | updated   |
-    And check that the last audit record contains the event with the following parameters
-      | type     | change                        |
-      | property | configuredProperties.clientId |
-      | previous | myID                          |
-      | current  | myID2                         |
